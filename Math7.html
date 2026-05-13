@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Mathématiques - 7e année | Écolia</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', 'Fira Code', 'Cascadia Code', monospace;
+            background: linear-gradient(135deg, #1e3c3c 0%, #2a4a5a 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            width: 100%;
+            max-width: 1300px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 6px;
+            background: #e9ecef;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #306c6c, #1e3c3c);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .header {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .header h1 {
+            color: #1e3c3c;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        .badge {
+            background: #306c6c;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        .search-container {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            background: white;
+            padding: 5px 12px;
+            border-radius: 40px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .search-container input {
+            border: none;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            border-radius: 30px;
+            outline: none;
+            width: 200px;
+            font-family: monospace;
+        }
+        .search-container button {
+            background: #306c6c;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 6px 14px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .search-container button:hover {
+            background: #1e4a4a;
+        }
+        .search-nav {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            font-size: 0.85em;
+            background: #e9ecef;
+            padding: 4px 12px;
+            border-radius: 30px;
+        }
+        .search-nav button {
+            background: #306c6c;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 4px 12px;
+            cursor: pointer;
+            font-size: 0.8em;
+        }
+        .content {
+            padding: 30px;
+            min-height: 500px;
+            max-height: 70vh;
+            overflow-y: auto;
+            background: #ffffff;
+            scroll-behavior: smooth;
+        }
+        .slide {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        .slide.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .slide-title {
+            color: #1e3c3c;
+            font-size: 2rem;
+            margin-bottom: 25px;
+            font-weight: 700;
+            border-left: 5px solid #306c6c;
+            padding-left: 20px;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+        .slide-content {
+            color: #2c3e3e;
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+        .slide-content h3 {
+            color: #306c6c;
+            margin: 25px 0 15px 0;
+            font-size: 1.4rem;
+        }
+        .slide-content p {
+            margin: 15px 0;
+        }
+        .slide-content ul, .slide-content ol {
+            margin: 15px 0 15px 30px;
+        }
+        .definition {
+            background: #e8f0f0;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-left: 5px solid #306c6c;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .example {
+            background: #fef5e7;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-left: 5px solid #f39c12;
+        }
+        .code {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.95rem;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+        }
+        th {
+            background: #306c6c;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+        td {
+            border: 1px solid #e9ecef;
+            padding: 10px;
+        }
+        .controls {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        .nav-btn {
+            background: white;
+            color: #306c6c;
+            border: 1px solid #dee2e6;
+        }
+        .nav-btn:hover:not(:disabled) {
+            background: #e9ecef;
+            transform: translateY(-1px);
+        }
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .play-btn {
+            background: linear-gradient(90deg, #306c6c, #1e3c3c);
+            color: white;
+            box-shadow: 0 4px 15px rgba(48,108,108,0.4);
+        }
+        .stop-btn {
+            background: #e74c3c;
+            color: white;
+        }
+        .counter {
+            color: #6c757d;
+            font-size: 0.95em;
+            background: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+        }
+        .status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+        .highlight {
+            background-color: #f9f1c0;
+            color: #1e3c3c;
+            font-weight: bold;
+            border-radius: 4px;
+            padding: 0 2px;
+        }
+        @media (max-width: 768px) {
+            .content { padding: 20px; max-height: 60vh; }
+            .slide-title { font-size: 1.5rem; }
+            .controls { flex-direction: column; }
+            button { flex: 1; text-align: center; }
+            .search-container input { width: 140px; }
+        }
+    </style>
+</head>
+<body>
+<div class="status" id="status">Mode navigation</div>
+<div class="container">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="header">
+        <h1>📐 Mathématiques – 7ᵉ année (Tronc commun)</h1>
+        <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Rechercher ...">
+                <button id="searchBtn">🔍 Chercher</button>
+            </div>
+            <div class="search-nav" id="searchNav" style="display: none;">
+                <button id="prevResultBtn">◀</button>
+                <span id="resultCounter">0/0</span>
+                <button id="nextResultBtn">▶</button>
+            </div>
+            <span class="badge" id="slideCounter">1/16</span>
+        </div>
+    </div>
+    <div class="content" id="content"></div>
+    <div class="controls">
+        <div class="nav-buttons">
+            <button class="nav-btn" id="prevBtn">← Précédent</button>
+            <button class="nav-btn" id="nextBtn">Suivant →</button>
+        </div>
+        <button class="play-btn" id="playBtn">▶ Lecture automatique</button>
+        <span class="counter" id="timeDisplay">00:00 / 00:00</span>
+    </div>
+</div>
+<audio id="audioPlayer" src="math7_audio.mp3" preload="auto"></audio>
+
+<script>
+    // 16 slides pour le cours de maths 7e – conforme au programme congolais
+    const slides = [
+        { title: "Chapitre 1 : Les nombres entiers naturels", content: `
+            <div class="definition"><strong>📌 Objectif :</strong> Maîtriser les opérations de base sur les entiers naturels et comprendre la numération.</div>
+            <h3>🔢 Rappels</h3>
+            <p>Les nombres 0, 1, 2, 3, ... sont appelés <strong>entiers naturels</strong>. On les note ℕ.</p>
+            <h3>➕ Addition et soustraction</h3>
+            <p>L'addition permet de <strong>regrouper</strong> : <code>127 + 45 = 172</code>. La soustraction enlève une partie : <code>172 - 45 = 127</code>.</p>
+            <h3>✖ Multiplication</h3>
+            <p>La multiplication est une addition répétée : <code>25 × 4 = 100</code>.</p>
+            <div class="example">
+                <strong>À toi de jouer !</strong> Calcule : <br>
+                1) 348 + 276 &nbsp;&nbsp; 2) 1000 - 458 &nbsp;&nbsp; 3) 56 × 12
+            </div>
+        ` },
+        { title: "Puissances d’un nombre", content: `
+            <h3>📈 Définition</h3>
+            <p>Une <strong>puissance</strong> est une multiplication répétée du même nombre.<br>
+            <code>a<sup>n</sup> = a × a × ... × a</code> (n facteurs).</p>
+            <div class="definition">
+                Exemples : <code>2<sup>5</sup> = 2×2×2×2×2 = 32</code><br>
+                <code>10<sup>3</sup> = 1000</code> ; <code>3<sup>4</sup> = 81</code>
+            </div>
+            <h3>⚡ Règles importantes</h3>
+            <ul>
+                <li><code>a<sup>1</sup> = a</code></li>
+                <li><code>a<sup>0</sup> = 1</code> (pour a ≠ 0)</li>
+                <li><code>a<sup>m</sup> × a<sup>n</sup> = a<sup>m+n</sup></code></li>
+            </ul>
+            <div class="example">💡 Exercice : Écris sous forme de puissance unique : <code>4<sup>3</sup> × 4<sup>5</sup></code>.</div>
+        ` },
+        { title: "Chapitre 2 : Divisibilité", content: `
+            <h3>🔍 Multiples et diviseurs</h3>
+            <p>On dit que <strong>a est un multiple de b</strong> s'il existe un entier k tel que a = b × k.</p>
+            <p><strong>b est un diviseur de a</strong> si a ÷ b donne un entier.</p>
+            <div class="definition">
+                Exemple : 12 est multiple de 3 (12 = 3×4) ; 3 est diviseur de 12.
+            </div>
+            <h3>⭐ Critères de divisibilité</h3>
+            <ul>
+                <li>Par 2 : le dernier chiffre est pair (0,2,4,6,8).</li>
+                <li>Par 3 : la somme des chiffres est multiple de 3.</li>
+                <li>Par 5 : le dernier chiffre est 0 ou 5.</li>
+            </ul>
+            <div class="example">✔️ Vrai ou faux ? 245 est divisible par 5 ? par 3 ?</div>
+        ` },
+        { title: "Nombres premiers – PGCD – PPCM", content: `
+            <h3>✨ Nombres premiers</h3>
+            <p>Un nombre est <strong>premier</strong> s'il possède exactement deux diviseurs : 1 et lui‑même.<br> Exemples : 2, 3, 5, 7, 11, 13...</p>
+            <h3>📏 PGCD (Plus Grand Commun Diviseur)</h3>
+            <p>Le PGCD de deux nombres est le plus grand entier qui les divise tous les deux.<br>
+            <code>PGCD(24, 36) = 12</code> car 24 = 12×2 et 36 = 12×3.</p>
+            <h3>📐 PPCM (Plus Petit Commun Multiple)</h3>
+            <p>Le PPCM est le plus petit nombre qui est multiple des deux nombres.<br>
+            <code>PPCM(4, 6) = 12</code>.</p>
+            <div class="example">Méthode pratique : utilise la décomposition en facteurs premiers.</div>
+        ` },
+        { title: "Chapitre 3 : Les fractions", content: `
+            <h3>🧩 Qu'est‑ce qu'une fraction ?</h3>
+            <p>Une fraction représente une partie d'un tout : <code>3/4</code> signifie 3 parts sur 4.</p>
+            <div class="definition">
+                <strong>Simplification :</strong> on divise le numérateur et le dénominateur par un même diviseur.<br>
+                Exemple : <code>12/18 = (12÷6)/(18÷6) = 2/3</code>.
+            </div>
+            <h3>➕ Addition et soustraction</h3>
+            <p>On met au même dénominateur : <code>1/2 + 1/3 = 3/6 + 2/6 = 5/6</code>.</p>
+            <div class="example">✏️ Calcule : <code>2/5 + 1/10</code> puis simplifie.</div>
+        ` },
+        { title: "Opérations sur les fractions", content: `
+            <h3>✖ Multiplication de fractions</h3>
+            <p>On multiplie les numérateurs entre eux et les dénominateurs entre eux :<br>
+            <code>a/b × c/d = (a×c)/(b×d)</code>.</p>
+            <div class="definition">Exemple : <code>2/3 × 4/5 = 8/15</code>.</div>
+            <h3>➗ Division de fractions</h3>
+            <p>Diviser par une fraction revient à multiplier par son inverse :<br>
+            <code>(a/b) ÷ (c/d) = a/b × d/c</code>.</p>
+            <div class="example">Entraînement : <code>3/4 ÷ 2/5 = ?</code></div>
+        ` },
+        { title: "Chapitre 4 : Nombres décimaux et notation scientifique", content: `
+            <h3>🔟 Écriture décimale</h3>
+            <p>Un nombre décimal s'écrit avec une virgule. Exemples : 0,25 ; 12,5.</p>
+            <h3>🔬 Notation scientifique</h3>
+            <p>Elle sert à écrire des nombres très grands ou très petits sous la forme<br>
+            <strong>a × 10<sup>n</sup></strong> avec 1 ≤ a < 10.<br>
+            Exemple : 45000 = 4,5 × 10<sup>4</sup> ; 0,00012 = 1,2 × 10<sup>-4</sup>.</p>
+            <div class="example">📝 Écris 0,00045 en notation scientifique.</div>
+        ` },
+        { title: "Chapitre 5 : Initiation à l’algèbre", content: `
+            <h3>🔤 Expressions littérales</h3>
+            <p>On utilise des <strong>lettres</strong> (x, y, a, ...) pour représenter des nombres.</p>
+            <div class="definition">
+                Exemple : l’aire d’un rectangle de longueur L et largeur l est <code>A = L × l</code>.
+            </div>
+            <h3>✉️ Réduire une expression</h3>
+            <p><code>3x + 2x = 5x</code> ; <code>5y - 2y = 3y</code>.</p>
+            <div class="example">Simplifie : <code>4a + 3b - a + 2b</code>.</div>
+        ` },
+        { title: "Équations simples du premier degré", content: `
+            <h3>⚖️ Résoudre une équation</h3>
+            <p>Une équation est une égalité contenant une inconnue (souvent x).<br>
+            <strong>Objectif :</strong> trouver la valeur de x qui vérifie l’égalité.</p>
+            <div class="definition">
+                Exemple : <code>x + 5 = 12</code> → on soustrait 5 des deux côtés → <code>x = 7</code>.
+            </div>
+            <h3>🧠 Méthode pratique</h3>
+            <p>On isole l’inconnue en effectuant la même opération dans les deux membres.</p>
+            <div class="example">Résous : <code>3x - 4 = 8</code> puis <code>x/2 + 3 = 7</code>.</div>
+        ` },
+        { title: "Chapitre 6 : Géométrie de base", content: `
+            <h3>📐 Droites et points</h3>
+            <p>Une droite est illimitée, elle se note (AB). Un segment est une partie de droite limitée par deux points.</p>
+            <h3>📏 Angles</h3>
+            <ul><li>Angle aigu : < 90°</li><li>Angle droit = 90°</li><li>Angle obtus : > 90° et < 180°</li><li>Angle plat = 180°</li></ul>
+            <div class="definition">
+                Propriété : deux angles complémentaires ont pour somme 90° ; supplémentaires : somme 180°.
+            </div>
+        ` },
+        { title: "Polygones et leurs propriétés", content: `
+            <h3>🔺 Triangle</h3>
+            <p>Polygone à 3 côtés. Somme des angles = 180°.</p>
+            <h3>🟩 Quadrilatères</h3>
+            <ul><li>Carré : 4 côtés égaux, 4 angles droits.</li><li>Rectangle : côtés opposés égaux, angles droits.</li><li>Parallélogramme : côtés opposés parallèles.</li></ul>
+            <div class="example">Trace un losange ; quelles sont ses propriétés ?</div>
+        ` },
+        { title: "Chapitre 7 : Périmètres et aires", content: `
+            <h3>📏 Périmètre</h3>
+            <p>Le périmètre est la longueur du contour d'une figure.</p>
+            <ul><li>Carré : P = 4 × côté</li><li>Rectangle : P = 2 × (L + l)</li><li>Cercle : P = 2πr (π ≈ 3,14)</li></ul>
+            <h3>📐 Aire</h3>
+            <ul><li>Carré : A = côté²</li><li>Rectangle : A = L × l</li><li>Triangle : A = (base × hauteur)/2</li><li>Disque : A = πr²</li></ul>
+            <div class="example">Une salle rectangulaire de 8 m sur 5 m : quel est son périmètre ? son aire ?</div>
+        ` },
+        { title: "Chapitre 8 : Statistiques élémentaires", content: `
+            <h3>📊 Moyenne, médiane, mode</h3>
+            <p><strong>Moyenne</strong> : somme des valeurs divisée par l’effectif total.<br>
+            Exemple : notes 12, 14, 10 → moyenne = (12+14+10)/3 = 12.</p>
+            <p><strong>Médiane</strong> : valeur centrale quand on range les données en ordre croissant.</p>
+            <p><strong>Mode</strong> : valeur la plus fréquente.</p>
+            <div class="definition">
+                Pour 5, 7, 7, 9, 12 : médiane = 7 ; mode = 7.
+            </div>
+        ` },
+        { title: "Représentation graphique des données", content: `
+            <h3>📈 Diagramme en bâtons et histogramme</h3>
+            <p>On utilise des bâtons (ou barres) pour représenter des effectifs.</p>
+            <h3>🥧 Diagramme circulaire</h3>
+            <p>Les parts d’un camembert sont proportionnelles aux fréquences.</p>
+            <div class="example">
+                Dans une classe de 20 élèves, 8 préfèrent les maths, 6 la physique, 4 le français, 2 l’histoire. Calcule les angles pour un diagramme circulaire.
+            </div>
+        ` },
+        { title: "Synthèse – Exercices récapitulatifs", content: `
+            <div class="definition"><strong>🧠 À toi de jouer !</strong></div>
+            <ol>
+                <li>Calcule : 2<sup>6</sup> + 3<sup>4</sup> – 5<sup>2</sup>.</li>
+                <li>Simplifie la fraction 48/60.</li>
+                <li>Résous l’équation : 5x + 3 = 2x + 15.</li>
+                <li>Un rectangle a une longueur de 12 cm et une largeur de 7 cm. Calcule son périmètre et son aire.</li>
+                <li>La série suivante : 4, 7, 9, 7, 12, 7, 5. Trouve la moyenne, la médiane et le mode.</li>
+            </ol>
+        ` },
+        { title: "Corrigés rapides – Pour s’auto‑évaluer", content: `
+            <h3>✔️ Solutions</h3>
+            <ol>
+                <li>2<sup>6</sup>=64 ; 3<sup>4</sup>=81 ; 5<sup>2</sup>=25 → 64+81-25 = 120.</li>
+                <li>48/60 = (48÷12)/(60÷12) = 4/5.</li>
+                <li>5x - 2x = 15 - 3 → 3x = 12 → x = 4.</li>
+                <li>Périmètre = 2×(12+7) = 38 cm ; Aire = 12×7 = 84 cm².</li>
+                <li>Moyenne = (4+7+9+7+12+7+5)/7 = 51/7 ≈ 7,29 ; Médiane : 4,5,7,7,7,9,12 → 7 ; Mode = 7.</li>
+            </ol>
+            <div class="example">🎉 Félicitations ! Tu as terminé le cours de mathématiques de 7e année.</div>
+        ` }
+    ];
+
+    let currentSlide = 0, isAutoPlaying = false, syncInterval;
+    let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+    const audioPlayer = document.getElementById('audioPlayer');
+    const contentDiv = document.getElementById('content');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const playBtn = document.getElementById('playBtn');
+    const statusDiv = document.getElementById('status');
+    const slideCounterSpan = document.getElementById('slideCounter');
+    const progressFill = document.getElementById('progressFill');
+    const timeDisplay = document.getElementById('timeDisplay');
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const searchNav = document.getElementById('searchNav');
+    const prevResultBtn = document.getElementById('prevResultBtn');
+    const nextResultBtn = document.getElementById('nextResultBtn');
+    const resultCounterSpan = document.getElementById('resultCounter');
+
+    // Durée estimée (secondes) pour chaque slide – synchronisation audio approximative
+    const timeline = [0,54,93,129,162,198,214,255,280,313,344,366,398,430,453,491];
+    const totalDuration = 545;
+
+    function getTextFromHtml(html) {
+        const div = document.createElement('div');
+        div.innerHTML = html;
+        return div.textContent || div.innerText || "";
+    }
+
+    function searchSlides(term) {
+        if (!term.trim()) return [];
+        const lowerTerm = term.toLowerCase();
+        const results = [];
+        slides.forEach((slide, idx) => {
+            if (slide.title.toLowerCase().includes(lowerTerm) ||
+                getTextFromHtml(slide.content).toLowerCase().includes(lowerTerm)) {
+                results.push(idx);
+            }
+        });
+        return results;
+    }
+
+    function highlightInCurrentSlide(term) {
+        if (!term || term.trim() === "") return;
+        const slideContentDiv = document.querySelector('.slide-content');
+        if (!slideContentDiv) return;
+        const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+        const walker = document.createTreeWalker(slideContentDiv, NodeFilter.SHOW_TEXT, null, false);
+        const textNodes = [];
+        while (walker.nextNode()) textNodes.push(walker.currentNode);
+        for (let node of textNodes) {
+            if (node.nodeValue && regex.test(node.nodeValue)) {
+                const span = document.createElement('span');
+                span.innerHTML = node.nodeValue.replace(regex, '<span class="highlight">$1</span>');
+                node.parentNode.replaceChild(span, node);
+            }
+        }
+    }
+
+    function renderSlide(index, keepHighlight = true) {
+        const slide = slides[index];
+        contentDiv.innerHTML = `
+            <div class="slide active">
+                <h2 class="slide-title">${slide.title}</h2>
+                <div class="slide-content">${slide.content}</div>
+            </div>
+        `;
+        slideCounterSpan.textContent = `${index+1}/${slides.length}`;
+        progressFill.style.width = `${((index+1)/slides.length)*100}%`;
+        if (!isAutoPlaying) {
+            prevBtn.disabled = index === 0;
+            nextBtn.disabled = index === slides.length-1;
+        }
+        contentDiv.scrollTop = 0;
+        if (keepHighlight && lastSearchTerm && lastSearchTerm.trim() !== "") {
+            highlightInCurrentSlide(lastSearchTerm);
+        }
+    }
+
+    function updateResultDisplay() {
+        if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+        searchNav.style.display = 'flex';
+        resultCounterSpan.innerText = `${currentResultIdx+1}/${searchResults.length}`;
+    }
+
+    function goToResult(idx) {
+        if (idx < 0 || idx >= searchResults.length) return;
+        currentResultIdx = idx;
+        currentSlide = searchResults[currentResultIdx];
+        renderSlide(currentSlide, true);
+        updateResultDisplay();
+    }
+
+    function performSearch() {
+        const term = searchInput.value.trim();
+        if (term === "") { alert("Entrez un terme à rechercher."); return; }
+        if (isAutoPlaying) stopAutoPlay();
+        lastSearchTerm = term;
+        searchResults = searchSlides(term);
+        if (searchResults.length === 0) { alert(`Aucun résultat pour "${term}".`); searchNav.style.display = 'none'; return; }
+        currentResultIdx = 0;
+        goToResult(0);
+    }
+
+    function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+    function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+
+    function nextSlide() {
+        if (currentSlide < slides.length-1) {
+            currentSlide++;
+            renderSlide(currentSlide, true);
+            if (lastSearchTerm) { lastSearchTerm = ""; searchResults = []; searchNav.style.display = 'none'; searchInput.value = ""; }
+        }
+    }
+    function prevSlide() {
+        if (currentSlide > 0) {
+            currentSlide--;
+            renderSlide(currentSlide, true);
+            if (lastSearchTerm) { lastSearchTerm = ""; searchResults = []; searchNav.style.display = 'none'; searchInput.value = ""; }
+        }
+    }
+
+    function updateTimeDisplay() {
+        let t = audioPlayer.currentTime;
+        let mins = Math.floor(t/60).toString().padStart(2,'0');
+        let secs = Math.floor(t%60).toString().padStart(2,'0');
+        let totalMins = Math.floor(totalDuration/60).toString().padStart(2,'0');
+        let totalSecs = Math.floor(totalDuration%60).toString().padStart(2,'0');
+        timeDisplay.innerText = `${mins}:${secs} / ${totalMins}:${totalSecs}`;
+        progressFill.style.width = `${(t/totalDuration)*100}%`;
+    }
+
+    function syncSlideFromTime() {
+        if (!isAutoPlaying) return;
+        const t = audioPlayer.currentTime;
+        for (let i=timeline.length-1; i>=0; i--) {
+            if (t >= timeline[i]) {
+                if (i !== currentSlide) {
+                    currentSlide = i;
+                    renderSlide(currentSlide, false);
+                }
+                break;
+            }
+        }
+        updateTimeDisplay();
+        if (t >= totalDuration - 1) stopAutoPlay();
+    }
+
+    function startAutoPlay() {
+        if (!audioPlayer.src || audioPlayer.src === window.location.href) console.warn("Audio non trouvé");
+        isAutoPlaying = true;
+        playBtn.innerText = "⏸ Pause";
+        playBtn.classList.remove('play-btn');
+        playBtn.classList.add('stop-btn');
+        statusDiv.innerText = "Mode automatique (synchro audio)";
+        statusDiv.style.background = "rgba(38,115,77,0.92)";
+        prevBtn.disabled = nextBtn.disabled = true;
+        if (lastSearchTerm) { lastSearchTerm = ""; searchResults = []; searchNav.style.display = 'none'; searchInput.value = ""; }
+        audioPlayer.play().catch(e => console.log("auto-play bloqué"));
+        if (syncInterval) clearInterval(syncInterval);
+        syncInterval = setInterval(syncSlideFromTime, 280);
+    }
+
+    function stopAutoPlay() {
+        isAutoPlaying = false;
+        playBtn.innerText = "▶ Lecture auto";
+        playBtn.classList.remove('stop-btn');
+        playBtn.classList.add('play-btn');
+        statusDiv.innerText = "Mode navigation";
+        statusDiv.style.background = "rgba(0,0,0,0.75)";
+        audioPlayer.pause();
+        if (syncInterval) { clearInterval(syncInterval); syncInterval = null; }
+        prevBtn.disabled = (currentSlide===0);
+        nextBtn.disabled = (currentSlide===slides.length-1);
+    }
+
+    function toggleAutoPlay() { isAutoPlaying ? stopAutoPlay() : startAutoPlay(); }
+
+    // Événements
+    document.addEventListener('keydown', (e) => {
+        if (isAutoPlaying) return;
+        if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+        else if (e.key === 'ArrowRight') { e.preventDefault(); nextSlide(); }
+        else if (e.key === ' ' && document.activeElement !== searchInput) { e.preventDefault(); toggleAutoPlay(); }
+    });
+    prevBtn.onclick = prevSlide;
+    nextBtn.onclick = nextSlide;
+    playBtn.onclick = toggleAutoPlay;
+    searchBtn.onclick = performSearch;
+    prevResultBtn.onclick = prevResult;
+    nextResultBtn.onclick = nextResult;
+    audioPlayer.addEventListener('ended', stopAutoPlay);
+    audioPlayer.addEventListener('timeupdate', () => { if(!isAutoPlaying) updateTimeDisplay(); });
+
+    renderSlide(0, false);
+    updateTimeDisplay();
+</script>
+</body>
+</html>
