@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Histoire 7e année - Du réel vers la théorie | RDC</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(160deg, #3e1f0d 0%, #5d3a1a 50%, #4a2810 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            background: #fefaf5;
+            border-radius: 24px;
+            box-shadow: 0 25px 70px rgba(0,0,0,0.35);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            max-height: 95vh;
+        }
+        .progress-bar { height: 7px; background: #e8d5c4; }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #8d6e3b, #5d4037);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+        .header {
+            padding: 18px 28px;
+            background: #fdf2e9;
+            border-bottom: 2px solid #f5cba7;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .header h1 {
+            color: #5d4037;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .badge {
+            background: #8d6e3b;
+            color: white;
+            padding: 6px 18px;
+            border-radius: 30px;
+            font-weight: bold;
+        }
+        .search-container {
+            display: flex;
+            gap: 6px;
+            background: white;
+            padding: 4px 10px;
+            border-radius: 40px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .search-container input {
+            border: none;
+            padding: 10px 16px;
+            border-radius: 30px;
+            outline: none;
+            width: 220px;
+            font-size: 0.95rem;
+        }
+        .search-container button, .quiz-btn {
+            background: #8d6e3b;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 8px 18px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .search-container button:hover, .quiz-btn:hover { background: #5d4037; }
+        .quiz-btn { background: #c62828; }
+        .quiz-btn:hover { background: #8e0000; }
+        .search-nav {
+            display: flex;
+            gap: 8px;
+            background: #efdbca;
+            padding: 6px 14px;
+            border-radius: 30px;
+            align-items: center;
+        }
+        .search-nav button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            color: #5d4037;
+        }
+        .content {
+            padding: 30px 35px;
+            flex: 1;
+            overflow-y: auto;
+            background: #ffffff;
+            scroll-behavior: smooth;
+        }
+        .slide { display: none; animation: fadeSlide 0.5s ease; }
+        .slide.active { display: block; }
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .slide-title {
+            color: #4e342e;
+            font-size: 1.8rem;
+            border-left: 6px solid #8d6e3b;
+            padding-left: 18px;
+            margin-bottom: 20px;
+        }
+        .slide-content { color: #3e2723; line-height: 1.9; font-size: 1.05rem; }
+        .slide-content h3 {
+            color: #6d4c41;
+            margin: 28px 0 14px;
+            font-size: 1.3rem;
+        }
+        .scene-box {
+            background: #fff8e1;
+            border-left: 5px solid #ff8f00;
+            padding: 18px 22px;
+            border-radius: 12px;
+            margin: 18px 0;
+            font-style: italic;
+        }
+        .image-box {
+            background: #fbe9e7;
+            padding: 18px;
+            border-radius: 14px;
+            text-align: center;
+            margin: 20px 0;
+            border: 1px dashed #ffab91;
+        }
+        .definition-box {
+            background: #efebe9;
+            padding: 22px;
+            border-radius: 14px;
+            margin: 22px 0;
+            border-left: 6px solid #8d6e3b;
+        }
+        .example-box {
+            background: #ffebee;
+            padding: 18px;
+            border-radius: 12px;
+            margin: 18px 0;
+            border-left: 5px solid #c62828;
+        }
+        .summary-box {
+            background: #e8eaf6;
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin: 18px 0;
+            border: 2px solid #3f51b5;
+        }
+        .quiz-container {
+            background: #efebe9;
+            padding: 25px;
+            border-radius: 20px;
+            margin-top: 20px;
+        }
+        .quiz-question {
+            background: white;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 18px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        }
+        .quiz-question p { font-weight: bold; margin-bottom: 10px; }
+        .quiz-question label { display: block; margin: 8px 0; cursor: pointer; }
+        .quiz-btn-submit {
+            background: #43a047;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 40px;
+            font-size: 1.05rem;
+            cursor: pointer;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        .quiz-result {
+            margin-top: 20px;
+            font-weight: bold;
+            padding: 16px;
+            border-radius: 14px;
+        }
+        .controls {
+            padding: 18px 28px;
+            background: #fafafa;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+        .nav-buttons { display: flex; gap: 10px; }
+        button {
+            padding: 12px 26px;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: 500;
+        }
+        .nav-btn { background: white; color: #5d4037; border: 1px solid #ccc; }
+        .nav-btn:hover:not(:disabled) { background: #efebe9; transform: translateY(-1px); }
+        .nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .play-btn {
+            background: linear-gradient(135deg, #8d6e3b, #5d4037);
+            color: white;
+            box-shadow: 0 4px 16px rgba(93,64,55,0.4);
+            font-weight: bold;
+        }
+        .stop-btn { background: #c62828; color: white; }
+        .counter { color: #555; background: white; padding: 8px 16px; border-radius: 20px; font-weight: 500; }
+        .status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            z-index: 1000;
+        }
+        .highlight { background-color: #ffe082; padding: 1px 3px; border-radius: 3px; }
+        ul { margin-left: 25px; }
+        li { margin: 6px 0; }
+        .timeline-box {
+            background: #f9fbe7;
+            padding: 18px;
+            border-radius: 14px;
+            margin: 20px 0;
+            border: 2px dashed #cddc39;
+        }
+        @media (max-width: 768px) {
+            .content { padding: 20px; }
+            .slide-title { font-size: 1.4rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="status" id="status">📖 Mode navigation</div>
+<div class="container">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="header">
+        <h1>📜 Histoire · 7ᵉ année</h1>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Rechercher un mot...">
+                <button id="searchBtn">🔍</button>
+                <button id="quizNavBtn" class="quiz-btn">📝 Quiz</button>
+            </div>
+            <div class="search-nav" id="searchNav" style="display: none;">
+                <button id="prevResultBtn">◀</button>
+                <span id="resultCounter">0/0</span>
+                <button id="nextResultBtn">▶</button>
+            </div>
+            <span class="badge" id="slideCounter">1/13</span>
+        </div>
+    </div>
+    <div class="content" id="content"></div>
+    <div class="controls">
+        <div class="nav-buttons">
+            <button class="nav-btn" id="prevBtn">← Leçon précédente</button>
+            <button class="nav-btn" id="nextBtn">Leçon suivante →</button>
+        </div>
+        <button class="play-btn" id="playBtn">▶ Lecture audio</button>
+        <span class="counter" id="timeDisplay">00:00 / 00:00</span>
+    </div>
+</div>
+<audio id="audioPlayer" src="histoire7_audio.mp3" preload="auto"></audio>
+
+<script>
+    const slides = [
+        {
+            title: "Leçon 1 : Qu'est-ce que l'histoire ?",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Le soir, autour du feu, ton grand-père raconte : « Quand j'avais ton âge, il n'y avait pas de route ici, seulement la forêt. Les gens traversaient le fleuve en pirogue. » Tu écoutes, fasciné. Ce qu'il raconte, c'est <strong>l'histoire</strong> de ta famille, de ton village.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> L'histoire, c'est comme un <strong>long fleuve</strong> qui coule depuis les origines jusqu'à aujourd'hui. Nous sommes debout sur la rive, et nous regardons tout ce qui est passé avant nous. Chaque événement est une vague qui a marqué le cours du fleuve.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>Nous avons tous une histoire personnelle (ta naissance, ton entrée à l'école). Les villages, les pays, les peuples ont aussi une histoire collective. L'histoire cherche à <strong>connaître le passé</strong> pour <strong>comprendre le présent</strong>.</p>
+                <div class="definition-box">
+                    <strong>📚 Définition (Théorie) :</strong><br>
+                    L'<strong>Histoire</strong> est la science qui étudie le passé des sociétés humaines. Elle s'appuie sur des <strong>sources</strong> :<br>
+                    • <strong>Sources orales :</strong> récits, légendes, témoignages des anciens.<br>
+                    • <strong>Sources écrites :</strong> documents, livres, lettres.<br>
+                    • <strong>Sources archéologiques :</strong> objets, outils, ossements trouvés dans le sol.<br>
+                    • <strong>Sources iconographiques :</strong> dessins, photos, peintures.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> L'histoire = la science du passé. Elle utilise des sources (orales, écrites, objets). Comprendre hier pour mieux vivre aujourd'hui.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 2 : Le temps historique – Chronologie et périodes",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Sur le mur de ta classe, il y a une grande bande dessinée avec des dates : 1885 (Conférence de Berlin), 1960 (Indépendance du Congo), 2006 (Nouvelle Constitution). Cette bande, c'est une <strong>frise chronologique</strong>. Elle permet de voir l'ordre des événements dans le temps.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Imagine un très long chemin. Au début, il y a la préhistoire, des hommes avec des outils en pierre. Plus loin, des pyramides égyptiennes, des rois africains. Encore plus loin, les explorateurs européens, la colonisation. Puis, l'indépendance, et aujourd'hui. Chaque pas sur ce chemin est une période.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>Pour mieux comprendre le passé, les historiens ont découpé le temps en grandes <strong>périodes</strong>.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie : Les grandes périodes de l'histoire</strong><br>
+                    • <strong>Préhistoire :</strong> avant l'écriture (jusqu'à environ 3 300 avant Jésus-Christ).<br>
+                    • <strong>Antiquité :</strong> des premières civilisations à la chute de l'Empire romain (476 après J-C).<br>
+                    • <strong>Moyen Âge :</strong> des royaumes africains aux grandes découvertes (476 – 1492).<br>
+                    • <strong>Temps modernes :</strong> de 1492 à 1789 (Révolution française).<br>
+                    • <strong>Époque contemporaine :</strong> de 1789 à nos jours.<br><br>
+                    <strong>En Afrique centrale, on parle aussi de :</strong><br>
+                    • Période précoloniale (avant l'arrivée des Européens).<br>
+                    • Période coloniale (1885 – 1960).<br>
+                    • Période postcoloniale (depuis 1960).
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> Le temps est découpé en périodes pour mieux se repérer. Le passé du Congo se divise en précolonial, colonial et postcolonial.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 3 : Les premiers habitants du Congo",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Imagine la grande forêt équatoriale il y a des milliers d'années. Pas de route, pas de ville. De petits groupes d'hommes et de femmes vivent de chasse, de pêche et de cueillette. Ils connaissent chaque arbre, chaque rivière. Ce sont les <strong>premiers habitants</strong> de ce qui deviendra le Congo.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Visualise un campement au bord d'une rivière. Des huttes en branchages. Des hommes qui taillent des pierres pour faire des flèches. Des femmes qui cueillent des fruits sauvages. Ce sont les <strong>Pygmées</strong>, les plus anciens habitants de la forêt congolaise.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>Les plus anciens habitants de l'actuelle RDC sont les <strong>Pygmées</strong> (Batwa, Bambuti). Ils vivaient en petits groupes dans la forêt, de chasse et de cueillette. Plus tard sont arrivés les <strong>Bantous</strong>, venus du Nord, qui ont apporté l'agriculture et le travail du fer.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie :</strong><br>
+                    • <strong>Pygmées :</strong> premiers occupants, chasseurs-cueilleurs, vie dans la forêt, grande connaissance de la nature.<br>
+                    • <strong>Migration bantoue :</strong> à partir de 2000 avant J-C, des peuples venus de l'Ouest africain migrent vers le centre et le sud. Ils apportent : l'agriculture (manioc, banane), la métallurgie du fer, la poterie, l'élevage.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> Premiers habitants : les Pygmées (forêt). Puis les Bantous (agriculture, fer). Deux civilisations qui ont façonné le Congo ancien.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 4 : Les grands royaumes précoloniaux – Le royaume Kongo",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Au XVᵉ siècle, bien avant que les Européens ne colonisent l'Afrique, il existait déjà de puissants royaumes organisés. Imagine un roi, le <strong>Mani Kongo</strong>, assis sur son trône dans la capitale Mbanza Kongo. Il dirige un vaste territoire avec des gouverneurs, des juges, des collecteurs d'impôts.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Le royaume Kongo, c'était comme une grande pyramide. Au sommet, le <strong>Mani Kongo</strong> (le roi). En dessous, les <strong>chefs de provinces</strong>. Puis les <strong>chefs de villages</strong>. Et à la base, le peuple : agriculteurs, forgerons, tisserands, commerçants.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>Le royaume Kongo est l'un des plus grands États d'Afrique centrale avant la colonisation. Fondé vers le XIIIᵉ siècle, il atteint son apogée au XVᵉ siècle. Il couvrait l'ouest de la RDC actuelle, le Congo-Brazzaville et le Nord de l'Angola.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie : Le royaume Kongo</strong><br>
+                    • <strong>Capitale :</strong> Mbanza Kongo (aujourd'hui en Angola).<br>
+                    • <strong>Organisation :</strong> roi (Mani Kongo), conseil des anciens, provinces dirigées par des gouverneurs.<br>
+                    • <strong>Économie :</strong> agriculture, pêche, tissage du raphia, travail du fer et du cuivre, commerce du sel.<br>
+                    • <strong>Spiritualité :</strong> culte des ancêtres, croyances traditionnelles.<br>
+                    • <strong>Contact avec l'Europe :</strong> arrivée des Portugais en 1483. Conversion du roi Nzinga a Nkuwu au christianisme.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> Le royaume Kongo = un État puissant et organisé bien avant la colonisation. Roi : le Mani Kongo. Capitale : Mbanza Kongo.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 5 : Autres grands royaumes – Luba, Lunda, Kuba",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Pendant que le royaume Kongo brillait à l'Ouest, d'autres royaumes puissants se développaient au centre et au sud de l'actuelle RDC. Au Kasaï et au Katanga, les royaumes <strong>Luba</strong> et <strong>Lunda</strong> dominaient. Au centre, le royaume <strong>Kuba</strong> était célèbre pour ses magnifiques tissus de raphia et ses sculptures.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Imagine trois grands arbres dans la savane, chacun avec ses racines profondes. L'arbre Luba, l'arbre Lunda, l'arbre Kuba. Chacun a son propre roi, ses propres traditions, mais tous font partie de la grande forêt des civilisations congolaises.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>Ces royaumes étaient très hiérarchisés, avec un roi sacré, une noblesse, et une organisation politique et économique remarquable.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie :</strong><br>
+                    <strong>Royaume Luba (XVIᵉ – XIXᵉ siècle) :</strong><br>
+                    • Fondé par Kongolo, puis consolidé par Kalala Ilunga.<br>
+                    • Centre : région du Katanga actuel.<br>
+                    • Pouvoir sacré du roi (Mulopwe).<br>
+                    • Économie : métallurgie du fer et du cuivre, commerce régional.<br><br>
+                    <strong>Royaume Lunda (XVIIᵉ – XIXᵉ siècle) :</strong><br>
+                    • Fondé par Mwata Yamvo.<br>
+                    • Vaste empire allant jusqu'en Angola et Zambie.<br><br>
+                    <strong>Royaume Kuba (XVIIᵉ – XIXᵉ siècle) :</strong><br>
+                    • Célèbre pour son art (sculptures, masques) et ses tissus de raphia (velours du Kasaï).<br>
+                    • Roi : Nyim.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> Luba (Katanga), Lunda (Sud), Kuba (Centre) = trois grands royaumes congolais, puissants, organisés, créatifs.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 6 : La traite négrière et ses conséquences",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> À partir du XVIᵉ siècle, des navires européens arrivent sur les côtes africaines. Ils échangent des fusils, de l'alcool et des tissus contre des <strong>esclaves</strong>. Des millions d'Africains sont capturés et déportés vers l'Amérique. Le royaume Kongo, comme d'autres, est durement touché.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Imagine une immense chaîne humaine traversant la savane et la forêt. Des hommes, des femmes, des enfants, attachés les uns aux autres, marchant vers la côte où les attendent des bateaux. C'est la <strong>traite négrière</strong>, l'une des plus grandes tragédies de l'histoire africaine.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>La traite négrière a duré plus de trois siècles. Elle a vidé des régions entières de leur population, brisé des familles, affaibli les royaumes africains.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie :</strong><br>
+                    La <strong>traite négrière</strong> ou <strong>traite des Noirs</strong> désigne le commerce et la déportation massive d'Africains réduits en esclavage, principalement vers les Amériques.<br>
+                    • <strong>Traite atlantique :</strong> par l'océan Atlantique (XVIᵉ – XIXᵉ siècle).<br>
+                    • <strong>Traite orientale :</strong> par l'océan Indien et le Sahara.<br>
+                    • <strong>Conséquences :</strong> déclin démographique, déstructuration des sociétés, insécurité, guerres internes.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> La traite négrière = déportation massive d'Africains. Grande souffrance. Affaiblissement des royaumes africains.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 7 : Les explorations européennes en Afrique centrale",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Au XIXᵉ siècle, des explorateurs européens pénètrent à l'intérieur du continent africain. Ils remontent le fleuve Congo, traversent la grande forêt, rencontrent les rois locaux. Parmi eux, <strong>Henry Morton Stanley</strong>, un journaliste anglo-américain, est le premier à traverser l'Afrique d'Est en Ouest en suivant le fleuve Congo (1874-1877).
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Visualise un homme blanc avec un grand chapeau, une barbe, debout dans une pirogue, entouré de pagayeurs africains. Il tient un carnet et note tout ce qu'il voit : les rapides, les villages, les forêts. Il donne au fleuve des noms européens.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>Ces explorations préparent le terrain à la <strong>colonisation</strong>. Les Européens découvrent les richesses de l'Afrique (ivoire, caoutchouc, minerais) et veulent se les approprier.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie :</strong><br>
+                    Les <strong>explorations</strong> sont des missions de reconnaissance menées par des Européens à l'intérieur de l'Afrique au XIXᵉ siècle.<br>
+                    • <strong>Stanley :</strong> traverse l'Afrique centrale (1874-1877), remonte le fleuve Congo.<br>
+                    • <strong>Livingstone :</strong> missionnaire et explorateur écossais, lutte contre l'esclavage.<br>
+                    • <strong>Brazza :</strong> explorateur français sur la rive droite du Congo.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> Les explorateurs européens (Stanley, Brazza) ouvrent la voie à la colonisation en découvrant les richesses du Congo.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 8 : La Conférence de Berlin et le partage de l'Afrique (1885)",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Imagine une grande salle de réunion en Allemagne, à Berlin, en 1885. Autour de la table, les représentants des grandes puissances européennes : Allemagne, France, Angleterre, Belgique, Portugal... Ils se partagent l'Afrique comme un gâteau, en traçant des frontières sur une carte, sans aucun Africain présent.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> L'Afrique est comme une natte que des étrangers découpent avec des ciseaux, sans demander l'avis de ceux qui dorment dessus. Les lignes qu'ils tracent ne respectent ni les royaumes, ni les ethnies, ni les langues.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>La Conférence de Berlin (novembre 1884 – février 1885) est un tournant majeur. Elle fixe les règles du partage de l'Afrique entre les puissances européennes.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie :</strong><br>
+                    La <strong>Conférence de Berlin</strong> (1884-1885) réunit 14 puissances européennes pour organiser le partage de l'Afrique et éviter les conflits entre elles.<br>
+                    • <strong>Décision majeure :</strong> le Congo est attribué au roi <strong>Léopold II de Belgique</strong>, à titre personnel.<br>
+                    • Cela crée l'<strong>État Indépendant du Congo</strong> (EIC), propriété privée du roi.<br>
+                    • Aucun chef africain n'a été consulté.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> Conférence de Berlin (1885) = partage de l'Afrique par les Européens. Le Congo devient la propriété personnelle du roi Léopold II.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 9 : L'État Indépendant du Congo et les abus coloniaux (1885-1908)",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Sous le règne de Léopold II, les Congolais sont soumis au <strong>travail forcé</strong>. Ils doivent récolter du caoutchouc et de l'ivoire pour enrichir le roi. Ceux qui refusent ou qui n'atteignent pas les quotas sont punis, mutilés, parfois tués. Des villages entiers sont rasés.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Imagine des hommes et des femmes obligés de travailler du matin au soir dans la forêt, sous la menace de gardes armés. Les mains coupées, les chaînes, la peur. C'est la période la plus sombre de l'histoire du Congo.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>Le système de Léopold II est fondé sur l'exploitation brutale. La population congolaise diminue de plusieurs millions de personnes. Des voix s'élèvent en Europe pour dénoncer ces atrocités.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie :</strong><br>
+                    L'<strong>État Indépendant du Congo</strong> (EIC, 1885-1908) est dirigé par Léopold II comme propriété privée.<br>
+                    • <strong>Économie :</strong> caoutchouc rouge (latex), ivoire, travail forcé.<br>
+                    • <strong>Exactions :</strong> mutilations, massacres, déportations, dépeuplement massif.<br>
+                    • <strong>Conséquences :</strong> la population du Congo passe d'environ 20 millions à moins de 10 millions.<br>
+                    • <strong>Réaction internationale :</strong> campagne de presse (Edmund Morel, Roger Casement) qui oblige Léopold II à céder le Congo à la Belgique en 1908.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> EIC (1885-1908) = règne de terreur de Léopold II. Caoutchouc, travail forcé, millions de morts. Scandale international.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 10 : Le Congo Belge (1908-1960)",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> En 1908, le Congo devient une colonie belge officielle. Finies les atrocités extrêmes de l'EIC, mais la colonisation continue. Des écoles sont créées, des routes, des hôpitaux, des chemins de fer. Mais le pouvoir reste aux mains des Belges. Les Congolais n'ont aucun droit politique.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Visualise une grande plantation. Au sommet, les colons belges dans leurs belles maisons. En bas, les Congolais qui travaillent la terre, construisent les routes, extraient les minerais. Un système à deux vitesses : les maîtres et les sujets.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>Le Congo Belge est une colonie d'exploitation. Les richesses (cuivre, diamant, café) sont exportées vers la Belgique. Les Congolais sont éduqués mais n'ont aucun rôle politique.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie :</strong><br>
+                    Le <strong>Congo Belge</strong> (1908-1960) est une colonie administrée directement par la Belgique.<br>
+                    • <strong>Administration :</strong> gouverneur général, fonctionnaires belges, chefs coutumiers utilisés comme intermédiaires.<br>
+                    • <strong>Économie :</strong> mines (Union Minière du Haut-Katanga), agriculture (café, coton, huile de palme), chemins de fer.<br>
+                    • <strong>Société :</strong> enseignement catholique, médecine coloniale, mais pas de droits politiques pour les Congolais.<br>
+                    • <strong>Naissance du nationalisme :</strong> dans les années 1950, des mouvements réclament l'indépendance.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> Congo Belge (1908-1960) = colonie d'exploitation. Progrès matériels mais domination totale. Les Congolais réclament l'indépendance.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 11 : La marche vers l'indépendance",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Imagine Kinshasa en 1959. Dans les rues, des foules en liesse crient : « Indépendance ! » Les leaders politiques comme <strong>Patrice Lumumba</strong>, <strong>Joseph Kasa-Vubu</strong>, <strong>Moïse Tshombé</strong> haranguent la foule. Le vent de la liberté souffle sur toute l'Afrique.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> La marche vers l'indépendance, c'est comme un grand fleuve qui gonfle après la saison des pluies. D'abord de petits ruisseaux (les associations culturelles), puis des rivières (les partis politiques), et enfin un fleuve puissant qui emporte tout sur son passage.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>Dans les années 1950, la lutte pour l'indépendance s'organise. Des partis politiques se créent. En 1960, la Belgique accepte de négocier.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie :</strong><br>
+                    • <strong>1955 :</strong> publication du plan Van Bilsen pour une émancipation en 30 ans. Jugé trop lent.<br>
+                    • <strong>1958 :</strong> création du <strong>Mouvement National Congolais (MNC)</strong> par Patrice Lumumba.<br>
+                    • <strong>Janvier 1959 :</strong> émeutes à Léopoldville (Kinshasa), répression sanglante.<br>
+                    • <strong>Janvier-février 1960 :</strong> <strong>Table Ronde de Bruxelles</strong> : les leaders congolais négocient directement avec la Belgique la date de l'indépendance.<br>
+                    • <strong>Décision :</strong> indépendance fixée au <strong>30 juin 1960</strong>.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> Marche vers l'indépendance : partis politiques (MNC), émeutes de 1959, Table Ronde de 1960. Indépendance : 30 juin 1960.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 12 : Le 30 juin 1960 – Naissance d'une nation",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Nous sommes le <strong>30 juin 1960</strong>. Dans la grande salle du Palais de la Nation à Léopoldville, le Roi des Belges Baudouin est assis. Il fait un discours qui vante l'œuvre coloniale. Puis, un homme jeune, fougueux, se lève et prend la parole : <strong>Patrice Lumumba</strong>. Son discours est un cri de dignité, de liberté, de justice.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Imagine un nouveau-né, le Congo indépendant. Il ouvre les yeux sur le monde. Devant lui, des promesses, des espoirs, mais aussi des dangers. Ce jour-là, tout un peuple pleure de joie.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>L'indépendance est le fruit de la lutte des Congolais. Mais elle ouvre aussi une période difficile de guerres civiles, d'assassinats (Lumumba, 1961), et de dictature (Mobutu, 1965-1997).</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie :</strong><br>
+                    Le <strong>30 juin 1960</strong>, la République du Congo (future RDC) devient indépendante.<br>
+                    • <strong>Premier Président :</strong> Joseph Kasa-Vubu.<br>
+                    • <strong>Premier Ministre :</strong> Patrice Lumumba.<br>
+                    • <strong>Crises :</strong> sécession du Katanga, mutinerie de la Force Publique, intervention de l'ONU, assassinat de Lumumba (17 janvier 1961).<br>
+                    • <strong>Héritage :</strong> l'indépendance reste le jour le plus important de l'histoire nationale.
+                </div>
+                <div class="example-box">
+                    📜 <strong>Mots célèbres de Lumumba :</strong> « Nous avons connu les ironies, les insultes, les coups... Nous ne sommes plus vos singes. »
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> 30 juin 1960 = indépendance du Congo. Kasa-Vubu Président, Lumumba Premier Ministre. Jour de fierté nationale.
+                </div>
+            `
+        },
+        {
+            title: "🏆 QUIZ FINAL – Teste tes connaissances en Histoire !",
+            content: `
+                <div id="quizContainer" class="quiz-container">
+                    <h3>📝 Questionnaire d'Histoire (7ᵉ année)</h3>
+                    <p style="margin-bottom:15px;">Choisis la bonne réponse pour chaque question.</p>
+                    <div id="quizQuestions"></div>
+                    <button id="submitQuiz" class="quiz-btn-submit">✅ Valider mes réponses</button>
+                    <div id="quizResult" class="quiz-result"></div>
+                </div>
+            `
+        }
+    ];
+
+    let currentSlide = 0, isAutoPlaying = false, syncInterval;
+    let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+    const audioPlayer = document.getElementById('audioPlayer');
+    const contentDiv = document.getElementById('content');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const playBtn = document.getElementById('playBtn');
+    const statusDiv = document.getElementById('status');
+    const slideCounterSpan = document.getElementById('slideCounter');
+    const progressFill = document.getElementById('progressFill');
+    const timeDisplay = document.getElementById('timeDisplay');
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const searchNav = document.getElementById('searchNav');
+    const prevResultBtn = document.getElementById('prevResultBtn');
+    const nextResultBtn = document.getElementById('nextResultBtn');
+    const resultCounterSpan = document.getElementById('resultCounter');
+    const quizNavBtn = document.getElementById('quizNavBtn');
+
+    const timeline = [0, 95, 195, 295, 395, 495, 595, 690, 790, 890, 985, 1085, 1185, 1260];
+    const totalDuration = 1330;
+
+    function getTextFromHtml(html) {
+        const div = document.createElement('div');
+        div.innerHTML = html;
+        return div.textContent || div.innerText || "";
+    }
+
+    function searchSlides(term) {
+        if (!term.trim()) return [];
+        const lowerTerm = term.toLowerCase();
+        const results = [];
+        slides.forEach((slide, idx) => {
+            if (slide.title.toLowerCase().includes(lowerTerm) ||
+                getTextFromHtml(slide.content).toLowerCase().includes(lowerTerm)) {
+                results.push(idx);
+            }
+        });
+        return results;
+    }
+
+    function highlightInCurrentSlide(term) {
+        if (!term || term.trim() === "") return;
+        const slideContentDiv = document.querySelector('.slide-content');
+        if (!slideContentDiv) return;
+        const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+        const walker = document.createTreeWalker(slideContentDiv, NodeFilter.SHOW_TEXT, null, false);
+        const textNodes = [];
+        while (walker.nextNode()) textNodes.push(walker.currentNode);
+        for (let node of textNodes) {
+            if (node.nodeValue && regex.test(node.nodeValue)) {
+                const span = document.createElement('span');
+                span.innerHTML = node.nodeValue.replace(regex, '<span class="highlight">$1</span>');
+                node.parentNode.replaceChild(span, node);
+            }
+        }
+    }
+
+    function renderQuiz() {
+        const quizDiv = document.getElementById('quizQuestions');
+        if (!quizDiv) return;
+        const questions = [
+            { text: "Qu'étudie l'histoire ?", options: ["Le futur", "Le passé des sociétés humaines", "Les mathématiques"], correct: 1 },
+            { text: "Quels sont les premiers habitants connus du Congo ?", options: ["Les Bantous", "Les Pygmées", "Les Européens"], correct: 1 },
+            { text: "Comment s'appelle le roi du royaume Kongo ?", options: ["Le Pharaon", "Le Mani Kongo", "Le Nyim"], correct: 1 },
+            { text: "En quelle année a eu lieu la Conférence de Berlin ?", options: ["1885", "1960", "1908"], correct: 0 },
+            { text: "Qui était le propriétaire de l'État Indépendant du Congo ?", options: ["Le roi Baudouin", "Le roi Léopold II", "Patrice Lumumba"], correct: 1 },
+            { text: "Quel produit était exploité de force dans l'EIC ?", options: ["Le diamant", "Le caoutchouc", "Le pétrole"], correct: 1 },
+            { text: "Quand le Congo est-il devenu une colonie belge ?", options: ["1885", "1908", "1960"], correct: 1 },
+            { text: "Quel parti politique a été fondé par Patrice Lumumba ?", options: ["Le MNC", "L'ABAKO", "Le CONAKAT"], correct: 0 },
+            { text: "Quelle est la date de l'indépendance de la RDC ?", options: ["30 juin 1960", "1er janvier 1960", "30 juin 1965"], correct: 0 },
+            { text: "Qui fut le premier Président du Congo indépendant ?", options: ["Patrice Lumumba", "Joseph Kasa-Vubu", "Mobutu Sese Seko"], correct: 1 }
+        ];
+        let html = '';
+        questions.forEach((q, idx) => {
+            html += `<div class="quiz-question"><p>${idx+1}. ${q.text}</p>`;
+            q.options.forEach((opt, optIdx) => {
+                html += `<label><input type="radio" name="q${idx}" value="${optIdx}"> ${opt}</label>`;
+            });
+            html += `</div>`;
+        });
+        quizDiv.innerHTML = html;
+        const submitBtn = document.getElementById('submitQuiz');
+        if (submitBtn) {
+            submitBtn.onclick = () => {
+                let score = 0;
+                questions.forEach((q, idx) => {
+                    const selected = document.querySelector(`input[name="q${idx}"]:checked`);
+                    if (selected && parseInt(selected.value) === q.correct) score++;
+                });
+                const resultDiv = document.getElementById('quizResult');
+                const pct = Math.round(score/questions.length*100);
+                resultDiv.innerHTML = `<div style="background:#c8e6c9; padding:18px; border-radius:12px;">
+                    🎯 <strong>Ton score : ${score} / ${questions.length} (${pct}%)</strong><br>
+                    ${score === questions.length ? '🌟 Excellent ! Tu connais l\'histoire de ton pays !' : score >=7 ? '👍 Bon travail, continue !' : '📖 Relis les leçons, l\'histoire est passionnante.'}
+                </div>`;
+            };
+        }
+    }
+
+    function renderSlide(index, keepHighlight = true) {
+        const isQuiz = (index === slides.length - 1);
+        contentDiv.innerHTML = `<div class="slide active">
+            <h2 class="slide-title">${slides[index].title}</h2>
+            <div class="slide-content">${slides[index].content}</div>
+        </div>`;
+        if (isQuiz) renderQuiz();
+        slideCounterSpan.textContent = `${index+1}/${slides.length}`;
+        progressFill.style.width = `${((index+1)/slides.length)*100}%`;
+        if (!isAutoPlaying) {
+            prevBtn.disabled = (index === 0);
+            nextBtn.disabled = (index === slides.length-1);
+        }
+        contentDiv.scrollTop = 0;
+        if (keepHighlight && lastSearchTerm && lastSearchTerm.trim() !== "" && !isQuiz) {
+            highlightInCurrentSlide(lastSearchTerm);
+        }
+    }
+
+    function updateResultDisplay() {
+        if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+        searchNav.style.display = 'flex';
+        resultCounterSpan.innerText = `${currentResultIdx+1}/${searchResults.length}`;
+    }
+
+    function goToResult(idx) {
+        if (idx < 0 || idx >= searchResults.length) return;
+        currentResultIdx = idx;
+        currentSlide = searchResults[currentResultIdx];
+        renderSlide(currentSlide, true);
+        updateResultDisplay();
+    }
+
+    function performSearch() {
+        const term = searchInput.value.trim();
+        if (!term) { alert("Entre un mot à rechercher."); return; }
+        if (isAutoPlaying) stopAutoPlay();
+        lastSearchTerm = term;
+        searchResults = searchSlides(term);
+        if (searchResults.length === 0) { alert(`Aucun résultat pour "${term}".`); searchNav.style.display = 'none'; return; }
+        currentResultIdx = 0;
+        goToResult(0);
+    }
+
+    function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+    function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+
+    function nextSlide() {
+        if (currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); clearSearch(); }
+    }
+    function prevSlide() {
+        if (currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); clearSearch(); }
+    }
+    function clearSearch() {
+        if (lastSearchTerm) { lastSearchTerm = ""; searchResults = []; searchNav.style.display = 'none'; searchInput.value = ""; }
+    }
+
+    function updateTimeDisplay() {
+        let t = audioPlayer.currentTime;
+        let mins = Math.floor(t/60).toString().padStart(2,'0');
+        let secs = Math.floor(t%60).toString().padStart(2,'0');
+        let tMins = Math.floor(totalDuration/60).toString().padStart(2,'0');
+        let tSecs = Math.floor(totalDuration%60).toString().padStart(2,'0');
+        timeDisplay.innerText = `${mins}:${secs} / ${tMins}:${tSecs}`;
+        if (!isAutoPlaying) progressFill.style.width = `${(t/totalDuration)*100}%`;
+    }
+
+    function syncSlideFromTime() {
+        if (!isAutoPlaying) return;
+        const t = audioPlayer.currentTime;
+        for (let i = timeline.length-1; i >= 0; i--) {
+            if (t >= timeline[i]) {
+                if (i !== currentSlide) { currentSlide = i; renderSlide(currentSlide, false); }
+                break;
+            }
+        }
+        updateTimeDisplay();
+        if (t >= totalDuration - 1) stopAutoPlay();
+    }
+
+    function startAutoPlay() {
+        isAutoPlaying = true;
+        playBtn.innerText = "⏸ Pause";
+        playBtn.classList.add('stop-btn');
+        statusDiv.innerText = "🔊 Lecture synchronisée en cours...";
+        statusDiv.style.background = "rgba(93,64,55,0.9)";
+        prevBtn.disabled = nextBtn.disabled = true;
+        clearSearch();
+        audioPlayer.play().catch(e => console.log("Lecture bloquée, cliquer sur play"));
+        if (syncInterval) clearInterval(syncInterval);
+        syncInterval = setInterval(syncSlideFromTime, 300);
+    }
+
+    function stopAutoPlay() {
+        isAutoPlaying = false;
+        playBtn.innerText = "▶ Lecture audio";
+        playBtn.classList.remove('stop-btn');
+        statusDiv.innerText = "📖 Mode navigation";
+        statusDiv.style.background = "rgba(0,0,0,0.8)";
+        audioPlayer.pause();
+        if (syncInterval) { clearInterval(syncInterval); syncInterval = null; }
+        prevBtn.disabled = (currentSlide===0);
+        nextBtn.disabled = (currentSlide===slides.length-1);
+    }
+
+    function toggleAutoPlay() { isAutoPlaying ? stopAutoPlay() : startAutoPlay(); }
+    function goToQuiz() { if (isAutoPlaying) stopAutoPlay(); currentSlide = slides.length-1; renderSlide(currentSlide, false); }
+
+    document.addEventListener('keydown', (e) => {
+        if (isAutoPlaying) return;
+        if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+        else if (e.key === 'ArrowRight') { e.preventDefault(); nextSlide(); }
+        else if (e.key === ' ' && document.activeElement !== searchInput) { e.preventDefault(); toggleAutoPlay(); }
+    });
+
+    prevBtn.onclick = prevSlide;
+    nextBtn.onclick = nextSlide;
+    playBtn.onclick = toggleAutoPlay;
+    searchBtn.onclick = performSearch;
+    prevResultBtn.onclick = prevResult;
+    nextResultBtn.onclick = nextResult;
+    quizNavBtn.onclick = goToQuiz;
+    audioPlayer.addEventListener('ended', stopAutoPlay);
+    audioPlayer.addEventListener('timeupdate', () => { if(!isAutoPlaying) updateTimeDisplay(); });
+
+    renderSlide(0, false);
+    updateTimeDisplay();
+</script>
+</body>
+</html>

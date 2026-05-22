@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Informatique 7e année - Du réel vers la théorie | RDC</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(160deg, #0d1f2d 0%, #1a3347 50%, #112233 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            background: #fdfdff;
+            border-radius: 24px;
+            box-shadow: 0 25px 70px rgba(0,0,0,0.35);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            max-height: 95vh;
+        }
+        .progress-bar { height: 7px; background: #c5cae9; }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #1e88e5, #0d47a1);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+        .header {
+            padding: 18px 28px;
+            background: #e3f2fd;
+            border-bottom: 2px solid #90caf9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .header h1 {
+            color: #0d47a1;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .badge {
+            background: #1565c0;
+            color: white;
+            padding: 6px 18px;
+            border-radius: 30px;
+            font-weight: bold;
+        }
+        .search-container {
+            display: flex;
+            gap: 6px;
+            background: white;
+            padding: 4px 10px;
+            border-radius: 40px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .search-container input {
+            border: none;
+            padding: 10px 16px;
+            border-radius: 30px;
+            outline: none;
+            width: 220px;
+            font-size: 0.95rem;
+        }
+        .search-container button, .quiz-btn {
+            background: #1565c0;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 8px 18px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .search-container button:hover, .quiz-btn:hover { background: #0d47a1; }
+        .quiz-btn { background: #ff6f00; }
+        .quiz-btn:hover { background: #e65100; }
+        .search-nav {
+            display: flex;
+            gap: 8px;
+            background: #bbdefb;
+            padding: 6px 14px;
+            border-radius: 30px;
+            align-items: center;
+        }
+        .search-nav button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            color: #1565c0;
+        }
+        .content {
+            padding: 30px 35px;
+            flex: 1;
+            overflow-y: auto;
+            background: #ffffff;
+            scroll-behavior: smooth;
+        }
+        .slide { display: none; animation: fadeSlide 0.5s ease; }
+        .slide.active { display: block; }
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .slide-title {
+            color: #0d47a1;
+            font-size: 1.8rem;
+            border-left: 6px solid #1e88e5;
+            padding-left: 18px;
+            margin-bottom: 20px;
+        }
+        .slide-content { color: #1a2a3a; line-height: 1.9; font-size: 1.05rem; }
+        .slide-content h3 {
+            color: #1565c0;
+            margin: 28px 0 14px;
+            font-size: 1.3rem;
+        }
+        .scene-box {
+            background: #e3f2fd;
+            border-left: 5px solid #1e88e5;
+            padding: 18px 22px;
+            border-radius: 12px;
+            margin: 18px 0;
+            font-style: italic;
+        }
+        .image-box {
+            background: #f3e5f5;
+            padding: 18px;
+            border-radius: 14px;
+            text-align: center;
+            margin: 20px 0;
+            border: 1px dashed #ab47bc;
+        }
+        .definition-box {
+            background: #e8eaf6;
+            padding: 22px;
+            border-radius: 14px;
+            margin: 22px 0;
+            border-left: 6px solid #3949ab;
+        }
+        .example-box {
+            background: #fff3e0;
+            padding: 18px;
+            border-radius: 12px;
+            margin: 18px 0;
+            border-left: 5px solid #e65100;
+        }
+        .summary-box {
+            background: #e0f2f1;
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin: 18px 0;
+            border: 2px solid #00897b;
+        }
+        .quiz-container {
+            background: #e3f2fd;
+            padding: 25px;
+            border-radius: 20px;
+            margin-top: 20px;
+        }
+        .quiz-question {
+            background: white;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 18px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        }
+        .quiz-question p { font-weight: bold; margin-bottom: 10px; }
+        .quiz-question label { display: block; margin: 8px 0; cursor: pointer; }
+        .quiz-btn-submit {
+            background: #43a047;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 40px;
+            font-size: 1.05rem;
+            cursor: pointer;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        .quiz-result {
+            margin-top: 20px;
+            font-weight: bold;
+            padding: 16px;
+            border-radius: 14px;
+        }
+        .controls {
+            padding: 18px 28px;
+            background: #fafafa;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+        .nav-buttons { display: flex; gap: 10px; }
+        button {
+            padding: 12px 26px;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: 500;
+        }
+        .nav-btn { background: white; color: #1565c0; border: 1px solid #ccc; }
+        .nav-btn:hover:not(:disabled) { background: #e3f2fd; transform: translateY(-1px); }
+        .nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .play-btn {
+            background: linear-gradient(135deg, #1e88e5, #0d47a1);
+            color: white;
+            box-shadow: 0 4px 16px rgba(13,71,161,0.4);
+            font-weight: bold;
+        }
+        .stop-btn { background: #c62828; color: white; }
+        .counter { color: #555; background: white; padding: 8px 16px; border-radius: 20px; font-weight: 500; }
+        .status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            z-index: 1000;
+        }
+        .highlight { background-color: #ffe082; padding: 1px 3px; border-radius: 3px; }
+        ul { margin-left: 25px; }
+        li { margin: 6px 0; }
+        .code-box {
+            background: #263238;
+            color: #b2ff59;
+            padding: 18px;
+            border-radius: 12px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            font-size: 0.95rem;
+        }
+        @media (max-width: 768px) {
+            .content { padding: 20px; }
+            .slide-title { font-size: 1.4rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="status" id="status">📖 Mode navigation</div>
+<div class="container">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="header">
+        <h1>💻 Informatique · 7ᵉ année</h1>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Rechercher un mot...">
+                <button id="searchBtn">🔍</button>
+                <button id="quizNavBtn" class="quiz-btn">📝 Quiz</button>
+            </div>
+            <div class="search-nav" id="searchNav" style="display: none;">
+                <button id="prevResultBtn">◀</button>
+                <span id="resultCounter">0/0</span>
+                <button id="nextResultBtn">▶</button>
+            </div>
+            <span class="badge" id="slideCounter">1/13</span>
+        </div>
+    </div>
+    <div class="content" id="content"></div>
+    <div class="controls">
+        <div class="nav-buttons">
+            <button class="nav-btn" id="prevBtn">← Leçon précédente</button>
+            <button class="nav-btn" id="nextBtn">Leçon suivante →</button>
+        </div>
+        <button class="play-btn" id="playBtn">▶ Lecture audio</button>
+        <span class="counter" id="timeDisplay">00:00 / 00:00</span>
+    </div>
+</div>
+<audio id="audioPlayer" src="informatique7_audio.mp3" preload="auto"></audio>
+
+<script>
+    const slides = [
+        {
+            title: "Leçon 1 : Qu'est-ce que l'informatique ?",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Imagine-toi assis devant un ordinateur ou tenant un téléphone portable. Tu appuies sur des touches, tu cliques, et tout à coup une image apparaît, une musique joue, un texte s'affiche. Comment cela est-il possible ? Tout cela, c'est grâce à l'<strong>informatique</strong>.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> L'informatique, c'est comme une <strong>immense cuisine</strong>. L'ordinateur est la cuisine. Les données (textes, images, sons) sont les ingrédients. Les logiciels sont les recettes. Et l'information affichée à l'écran est le plat préparé.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>Le mot « informatique » vient de deux mots : <strong>INFORmation</strong> et auto<strong>MATIQUE</strong>. C'est la science du <strong>traitement automatique de l'information</strong>.</p>
+                <div class="definition-box">
+                    <strong>📚 Définition (Théorie) :</strong><br>
+                    L'<strong>informatique</strong> est la science qui étudie le traitement <strong>automatique</strong> et <strong>rationnel</strong> de l'information à l'aide de machines appelées <strong>ordinateurs</strong>.<br><br>
+                    <strong>Les 4 fonctions de base :</strong><br>
+                    • <strong>Saisie</strong> (entrée) : clavier, souris, microphone.<br>
+                    • <strong>Traitement</strong> : le cerveau de l'ordinateur (processeur) qui calcule et organise.<br>
+                    • <strong>Stockage</strong> (mémorisation) : disque dur, clé USB.<br>
+                    • <strong>Sortie</strong> (affichage) : écran, imprimante, haut-parleurs.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> Informatique = traitement automatique de l'information. 4 fonctions : saisir, traiter, stocker, afficher.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 2 : L'ordinateur – Les parties visibles (matériel)",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Tu entres dans la salle informatique de ton école. Devant toi, il y a un écran, un clavier avec des lettres et des chiffres, une souris avec deux boutons, et une grande boîte sous la table qui fait un petit bruit de ventilateur. Tout cet ensemble s'appelle un <strong>ordinateur</strong>.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> L'ordinateur, c'est comme un <strong>corps humain</strong>. L'écran, c'est le visage qui montre les expressions. Le clavier et la souris, ce sont les mains qui donnent des ordres. L'unité centrale, c'est le cerveau et le cœur qui font tout fonctionner.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>L'ordinateur est composé de deux grandes parties : le <strong>matériel</strong> (hardware, tout ce qu'on peut toucher) et les <strong>logiciels</strong> (software, ce qu'on ne peut pas toucher). Aujourd'hui, on découvre le matériel.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie : Les périphériques</strong><br>
+                    <strong>1. L'unité centrale :</strong> le boîtier qui contient le processeur, la mémoire, le disque dur. C'est le cœur de l'ordinateur.<br><br>
+                    <strong>2. Périphériques d'entrée</strong> (pour donner des ordres) :<br>
+                    • Clavier (pour taper du texte).<br>
+                    • Souris (pour pointer, cliquer, déplacer).<br>
+                    • Microphone (pour enregistrer la voix).<br><br>
+                    <strong>3. Périphériques de sortie</strong> (pour recevoir l'information) :<br>
+                    • Écran (moniteur) : affiche les images et le texte.<br>
+                    • Imprimante : imprime sur papier.<br>
+                    • Haut-parleurs : diffusent le son.<br><br>
+                    <strong>4. Périphériques de stockage :</strong> clé USB, disque dur externe.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> Matériel = ce qu'on touche. Unité centrale (cœur), périphériques d'entrée (clavier, souris), périphériques de sortie (écran, imprimante).
+                </div>
+            `
+        },
+        {
+            title: "Leçon 3 : Le clavier – Découvrir les touches",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Tu t'assois devant l'ordinateur. Tu regardes le clavier : il y a des lettres (A, B, C...), des chiffres (1, 2, 3...), et d'autres touches étranges (Entrée, Espace, Ctrl). C'est comme un tableau de commande. Chaque touche est un <strong>ordre</strong> que tu donnes à l'ordinateur.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Le clavier, c'est comme un <strong>piano</strong>. Chaque touche produit une note (une lettre, un chiffre, une action). En appuyant sur les bonnes touches dans le bon ordre, tu joues une mélodie (un texte, un calcul).
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>Le clavier est divisé en <strong>zones</strong> pour se repérer plus facilement.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie : Les zones du clavier</strong><br>
+                    • <strong>Zone alphanumérique :</strong> lettres (A-Z), chiffres (0-9), et signes de ponctuation.<br>
+                    • <strong>Zone numérique</strong> (à droite) : pavé de chiffres pour entrer rapidement des nombres.<br>
+                    • <strong>Touches de fonction</strong> (F1 à F12, en haut) : pour des actions spéciales (F1 = aide).<br>
+                    • <strong>Touches spéciales :</strong><br>
+                    &nbsp;&nbsp;- <strong>Entrée (Enter) :</strong> valider une action, passer à la ligne.<br>
+                    &nbsp;&nbsp;- <strong>Espace (barre longue) :</strong> insérer un espace entre les mots.<br>
+                    &nbsp;&nbsp;- <strong>Retour arrière (Backspace) :</strong> effacer à gauche du curseur.<br>
+                    &nbsp;&nbsp;- <strong>Suppr (Delete) :</strong> effacer à droite du curseur.<br>
+                    &nbsp;&nbsp;- <strong>Maj (Shift) :</strong> taper une lettre en majuscule ou accéder au symbole du haut d'une touche.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> Le clavier = ton outil de commande. Apprends les zones : lettres, chiffres, fonctions. Les touches Entrée, Espace et Majuscule sont très importantes.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 4 : La souris – Cliquer, pointer, glisser",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Tu poses ta main sur la souris. Tu la fais glisser sur le tapis, et une petite flèche blanche bouge sur l'écran. C'est le <strong>curseur</strong>. Tu amènes la flèche sur une icône et tu appuies sur le bouton gauche : « clic ! », l'icône s'ouvre. Tu viens de donner un ordre avec la souris.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> La souris, c'est comme ta <strong>main invisible</strong> à l'intérieur de l'écran. Quand tu bouges la souris, ta main invisible suit le mouvement. Quand tu cliques, ta main invisible appuie sur un bouton à l'intérieur de l'écran.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>La souris permet de <strong>pointer, cliquer, double-cliquer, et glisser</strong> des éléments à l'écran.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie : Actions de la souris</strong><br>
+                    • <strong>Pointer :</strong> déplacer la souris pour amener le curseur sur un élément.<br>
+                    • <strong>Clic gauche :</strong> appuyer une fois sur le bouton gauche pour sélectionner.<br>
+                    • <strong>Double-clic :</strong> appuyer deux fois rapidement pour ouvrir un fichier ou un logiciel.<br>
+                    • <strong>Clic droit :</strong> appuyer une fois sur le bouton droit pour ouvrir un menu contextuel (des options).<br>
+                    • <strong>Glisser-déposer :</strong> maintenir le clic gauche enfoncé, déplacer l'objet, relâcher.<br>
+                    • <strong>Molette :</strong> roulette entre les deux boutons pour faire défiler la page vers le haut ou le bas.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> La souris = ta main dans l'écran. Clic gauche = sélectionner. Double-clic = ouvrir. Clic droit = options. Molette = défiler.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 5 : Le bureau de Windows – L'écran d'accueil",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Tu allumes l'ordinateur. Après quelques instants, un écran coloré apparaît avec des petites images alignées et une barre en bas. C'est le <strong>bureau</strong>. C'est comme le bureau de ta chambre : tu y poses tes cahiers, tes outils. Ici, tu poses tes <strong>fichiers</strong> et tes <strong>logiciels</strong>.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Le bureau Windows, c'est comme une <strong>grande table de travail</strong>. Les petites images (icônes) sont des dossiers et des outils posés sur la table. La barre en bas (barre des tâches) est le tiroir où tu ranges ce que tu utilises souvent.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>Le bureau est l'écran principal de Windows. On y trouve :</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie : Éléments du bureau Windows</strong><br>
+                    • <strong>Icônes :</strong> petites images représentant un fichier, un dossier ou un logiciel.<br>
+                    &nbsp;&nbsp;- <strong>Poste de travail</strong> (ou « Ce PC ») : pour voir tout ce qui est stocké dans l'ordinateur.<br>
+                    &nbsp;&nbsp;- <strong>Corbeille :</strong> poubelle où vont les fichiers supprimés.<br>
+                    &nbsp;&nbsp;- <strong>Raccourcis :</strong> icônes avec une petite flèche, qui ouvrent rapidement un logiciel.<br>
+                    • <strong>Barre des tâches :</strong> bande en bas de l'écran qui montre les programmes ouverts.<br>
+                    &nbsp;&nbsp;- Bouton <strong>Démarrer</strong> (en bas à gauche) : menu principal pour tout lancer.<br>
+                    &nbsp;&nbsp;- <strong>Horloge</strong> et notifications (à droite).<br>
+                    • <strong>Fond d'écran :</strong> image décorative derrière les icônes.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> Le bureau = table de travail. Icônes = outils posés. Barre des tâches = tiroir. Bouton Démarrer = menu principal.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 6 : Les dossiers et les fichiers",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Ton maître te rend ton cahier de français corrigé. Tu le ranges dans ton cartable. Dans ton cartable, tu as une pochette pour le français, une pour les maths, une pour l'histoire. Sur l'ordinateur, c'est pareil : les <strong>fichiers</strong> (comme tes cahiers) sont rangés dans des <strong>dossiers</strong> (comme tes pochettes).
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Imagine une grande <strong>armoire</strong> (le disque dur). Dans l'armoire, il y a des <strong>classeurs</strong> (les dossiers). Dans chaque classeur, il y a des <strong>feuilles</strong> (les fichiers). Chaque feuille a un nom inscrit en haut : c'est le <strong>nom du fichier</strong>.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>Un fichier contient des données (texte, image, musique). Un dossier sert à organiser les fichiers.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie :</strong><br>
+                    • <strong>Fichier :</strong> ensemble de données enregistrées sous un <strong>nom</strong> et une <strong>extension</strong>. Exemple : « ma_photo.jpg » (nom = ma_photo, extension = .jpg pour une image).<br>
+                    • <strong>Dossier</strong> (ou répertoire) : conteneur qui peut contenir des fichiers et d'autres dossiers. Représenté par une icône jaune en forme de chemise.<br><br>
+                    <strong>Extensions courantes :</strong><br>
+                    • .docx → document texte (Word).<br>
+                    • .jpg ou .png → image.<br>
+                    • .mp3 → musique.<br>
+                    • .mp4 → vidéo.<br>
+                    • .pdf → document protégé.<br><br>
+                    <strong>Opérations :</strong> créer un dossier, renommer, copier, déplacer, supprimer.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> Fichier = document enregistré (nom + extension). Dossier = chemise pour ranger les fichiers. Organise bien ton armoire numérique !
+                </div>
+            `
+        },
+        {
+            title: "Leçon 7 : Initiation au traitement de texte (Microsoft Word)",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Tu veux écrire une belle lettre pour l'anniversaire de ta maman. Au lieu de prendre un stylo et du papier, tu ouvres <strong>Microsoft Word</strong> sur l'ordinateur. Une page blanche apparaît, comme une feuille dans une machine à écrire magique.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Word, c'est comme un <strong>atelier d'écrivain</strong>. Tu as une feuille blanche au centre. Autour, des outils : pour changer la taille des lettres, les mettre en gras, en couleur, ajouter des images. Tout est à portée de clic.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>Un traitement de texte permet de saisir, modifier, mettre en forme et imprimer du texte.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie : Fonctions de base de Word</strong><br>
+                    • <strong>Saisie du texte :</strong> taper les lettres au clavier. Le curseur clignotant indique où le texte va apparaître.<br>
+                    • <strong>Sélection :</strong> cliquer-glisser pour surligner une partie du texte (elle devient bleue).<br>
+                    • <strong>Mise en forme :</strong><br>
+                    &nbsp;&nbsp;- <strong>Gras</strong> (B) : épaissir le texte.<br>
+                    &nbsp;&nbsp;- <em>Italique</em> (I) : pencher le texte.<br>
+                    &nbsp;&nbsp;- <u>Souligné</u> (U) : souligner.<br>
+                    &nbsp;&nbsp;- Taille de la police, couleur du texte.<br>
+                    • <strong>Enregistrer :</strong> Ctrl + S pour sauvegarder le travail.<br>
+                    • <strong>Imprimer :</strong> Ctrl + P pour envoyer le document sur l'imprimante.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> Word = la machine à écrire moderne. Tu peux taper, corriger, décorer ton texte, et l'imprimer. Ctrl+S pour sauvegarder !
+                </div>
+            `
+        },
+        {
+            title: "Leçon 8 : Internet – La toile qui relie le monde",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Ton cousin qui vit à Lubumbashi t'envoie un message sur WhatsApp. Tu lui réponds depuis Kinshasa en une seconde. Comment est-ce possible ? Grâce à <strong>Internet</strong>, un immense réseau qui relie des millions d'ordinateurs dans le monde entier.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Internet, c'est comme une <strong>gigantesque toile d'araignée</strong> qui recouvre toute la planète. Chaque fil relie un ordinateur à un autre. Un message lancé sur la toile voyage à la vitesse de la lumière.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>Internet est un réseau mondial qui permet de communiquer, de chercher des informations, de regarder des vidéos, d'apprendre.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie :</strong><br>
+                    <strong>Internet</strong> est un réseau informatique mondial reliant des millions d'ordinateurs.<br><br>
+                    <strong>Services offerts par Internet :</strong><br>
+                    • <strong>Web (WWW) :</strong> pages consultables avec un navigateur (Chrome, Firefox).<br>
+                    • <strong>Email (courrier électronique) :</strong> envoyer des lettres numériques.<br>
+                    • <strong>Réseaux sociaux :</strong> WhatsApp, Facebook, Instagram.<br>
+                    • <strong>Moteur de recherche :</strong> Google pour trouver des informations.<br>
+                    • <strong>Vidéos :</strong> YouTube.<br><br>
+                    <strong>Pour se connecter, il faut :</strong> un ordinateur ou un téléphone + une connexion (Wi-Fi, données mobiles).
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> Internet = réseau mondial. On l'utilise pour communiquer, apprendre, se divertir. Le Web est la partie la plus utilisée.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 9 : La recherche sur Internet – Trouver une information",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Le maître t'a demandé de faire un exposé sur le fleuve Congo. Tu ne sais pas tout. Alors, tu ouvres <strong>Google</strong> et tu tapes : « longueur du fleuve Congo ». En une seconde, des centaines de réponses apparaissent. Tu viens de faire une <strong>recherche sur Internet</strong>.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Google, c'est comme un <strong>bibliothécaire géant</strong> qui connaît tous les livres du monde. Tu lui poses une question, et il te montre tous les livres qui contiennent la réponse.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>Pour trouver une information sur Internet, on utilise un <strong>moteur de recherche</strong>. Le plus connu est Google.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie : Méthode de recherche</strong><br>
+                    1. Ouvrir le navigateur (Chrome, Firefox).<br>
+                    2. Dans la barre d'adresse (en haut), taper <strong>www.google.com</strong>.<br>
+                    3. Dans la zone de recherche, taper des <strong>mots-clés</strong> simples et précis.<br>
+                    &nbsp;&nbsp;Exemple : « capitale de la RDC » plutôt que « dis-moi quelle est la capitale de mon pays ».<br>
+                    4. Appuyer sur <strong>Entrée</strong>.<br>
+                    5. Parcourir la liste des résultats et cliquer sur le lien qui semble le plus fiable.<br><br>
+                    <strong>Conseils :</strong><br>
+                    • Toujours vérifier l'information sur plusieurs sites.<br>
+                    • Privilégier les sites officiels ou les encyclopédies en ligne (Vikidia, Wikipédia).
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> Recherche = ouvrir Google, taper des mots-clés simples, lire les résultats, vérifier. Sois curieux mais prudent !
+                </div>
+            `
+        },
+        {
+            title: "Leçon 10 : Les dangers d'Internet – Rester en sécurité",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Un inconnu t'envoie un message sur Facebook : « Bonjour, je suis un ami de ton père. Donne-moi ton adresse, je viendrai te voir avec un cadeau. » Tu ne connais pas cette personne. Que dois-tu faire ? <strong>Ne jamais répondre</strong> et en parler tout de suite à tes parents ou à ton maître.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Internet, c'est comme une <strong>grande ville</strong>. Il y a de belles places et des jardins (les sites éducatifs), mais aussi des ruelles sombres et des inconnus dangereux. Il faut apprendre à se protéger.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>Internet est un outil formidable, mais il comporte des dangers qu'il faut connaître pour les éviter.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie : Règles de sécurité sur Internet</strong><br>
+                    <strong>Ce qu'il ne faut jamais faire :</strong><br>
+                    • Donner son nom complet, son adresse, son numéro de téléphone à un inconnu.<br>
+                    • Envoyer une photo de soi à un inconnu.<br>
+                    • Accepter un rendez-vous avec une personne rencontrée en ligne.<br>
+                    • Ouvrir les pièces jointes d'un email suspect.<br>
+                    • Croire tout ce qu'on lit (fausses informations).<br><br>
+                    <strong>Ce qu'il faut toujours faire :</strong><br>
+                    • Parler à un adulte de confiance en cas de problème.<br>
+                    • Utiliser un mot de passe solide et ne le partager avec personne (sauf les parents).<br>
+                    • Se déconnecter après avoir utilisé un ordinateur public.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> Internet = outil génial mais prudent. Ne parle pas aux inconnus, ne donne pas tes infos personnelles, protège ton mot de passe.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 11 : Les bases de la programmation – Donner des ordres à la machine",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Imagine que tu veux qu'un robot fasse le tour de la cour et revienne. Tu dois lui donner des instructions très précises : « Avance de 10 pas. Tourne à droite. Avance de 5 pas. Tourne à droite. Avance de 10 pas. Tourne à droite. Avance de 5 pas. » C'est cela, <strong>programmer</strong> : donner une suite d'ordres logiques à une machine.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> La programmation, c'est comme écrire une <strong>recette de cuisine</strong> pour un robot. Chaque ligne est une étape. Si les étapes sont dans le bon ordre, le plat est réussi. Sinon, c'est raté !
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>Un programme informatique est une suite d'<strong>instructions</strong> écrites dans un langage que l'ordinateur comprend.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie : Notions de base</strong><br>
+                    • <strong>Algorithme :</strong> suite d'étapes logiques pour résoudre un problème. Exemple : la recette de cuisine.<br>
+                    • <strong>Programme :</strong> algorithme traduit dans un langage de programmation.<br>
+                    • <strong>Langage de programmation :</strong> ensemble de mots et de règles pour écrire des programmes. Exemple : <strong>Scratch</strong> (pour débuter, avec des blocs colorés), Python, Java.<br><br>
+                    <strong>3 structures de base :</strong><br>
+                    1. <strong>Séquence :</strong> les instructions s'exécutent les unes après les autres.<br>
+                    2. <strong>Répétition (boucle) :</strong> répéter une action plusieurs fois.<br>
+                    3. <strong>Condition (Si... Alors) :</strong> faire une action seulement si une condition est vraie.<br>
+                    &nbsp;&nbsp;Exemple : « SI le feu est rouge, ALORS arrête-toi. SINON avance. »
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> Programmer = donner des ordres précis à l'ordinateur. Algorithme = recette. Scratch = langage en blocs pour débutants.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 12 : Découvrir Scratch – Créer ton premier programme",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Tu ouvres <strong>Scratch</strong> sur l'ordinateur. Tu vois un petit chat orange sur une scène blanche. À gauche, des blocs de couleur avec des mots comme « avancer », « tourner », « dire ». Tu prends un bloc, tu le glisses au milieu. Tu cliques : le chat bouge ! Tu viens de créer ton premier programme.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Scratch, c'est comme un <strong>jeu de Lego</strong> pour apprendre à programmer. Chaque bloc coloré est une brique. En assemblant les briques dans le bon ordre, tu construis une animation, un jeu, une histoire interactive.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>Scratch est un environnement de programmation visuel, créé pour les débutants.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie : L'interface de Scratch</strong><br>
+                    • <strong>La scène :</strong> zone blanche où le programme s'exécute (en haut à droite).<br>
+                    • <strong>Le lutin (Sprite) :</strong> personnage qui exécute les ordres (le chat par défaut).<br>
+                    • <strong>Les blocs :</strong> instructions classées par couleur :<br>
+                    &nbsp;&nbsp;- <strong>Bleu</strong> (Mouvement) : avancer, tourner.<br>
+                    &nbsp;&nbsp;- <strong>Violet</strong> (Apparence) : dire, changer de costume.<br>
+                    &nbsp;&nbsp;- <strong>Orange</strong> (Événements) : quand le drapeau vert est cliqué.<br>
+                    &nbsp;&nbsp;- <strong>Jaune</strong> (Contrôle) : répéter, attendre, si... alors.<br>
+                    • <strong>La zone de script :</strong> espace au centre où l'on assemble les blocs.<br><br>
+                    <strong>Premier programme :</strong><br>
+                    1. Prendre le bloc « quand le drapeau vert est cliqué ».<br>
+                    2. Ajouter « avancer de 100 pas ».<br>
+                    3. Ajouter « dire Bonjour ! pendant 2 secondes ».<br>
+                    4. Cliquer sur le drapeau vert pour lancer.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> Scratch = Lego de la programmation. Blocs à assembler, chat à animer. Commence par le drapeau vert et amuse-toi !
+                </div>
+            `
+        },
+        {
+            title: "🏆 QUIZ FINAL – Teste tes connaissances en Informatique !",
+            content: `
+                <div id="quizContainer" class="quiz-container">
+                    <h3>📝 Questionnaire d'Informatique (7ᵉ année)</h3>
+                    <p style="margin-bottom:15px;">Choisis la bonne réponse pour chaque question.</p>
+                    <div id="quizQuestions"></div>
+                    <button id="submitQuiz" class="quiz-btn-submit">✅ Valider mes réponses</button>
+                    <div id="quizResult" class="quiz-result"></div>
+                </div>
+            `
+        }
+    ];
+
+    let currentSlide = 0, isAutoPlaying = false, syncInterval;
+    let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+    const audioPlayer = document.getElementById('audioPlayer');
+    const contentDiv = document.getElementById('content');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const playBtn = document.getElementById('playBtn');
+    const statusDiv = document.getElementById('status');
+    const slideCounterSpan = document.getElementById('slideCounter');
+    const progressFill = document.getElementById('progressFill');
+    const timeDisplay = document.getElementById('timeDisplay');
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const searchNav = document.getElementById('searchNav');
+    const prevResultBtn = document.getElementById('prevResultBtn');
+    const nextResultBtn = document.getElementById('nextResultBtn');
+    const resultCounterSpan = document.getElementById('resultCounter');
+    const quizNavBtn = document.getElementById('quizNavBtn');
+
+    const timeline = [0, 95, 195, 295, 395, 495, 590, 685, 780, 875, 970, 1070, 1170, 1250];
+    const totalDuration = 1320;
+
+    function getTextFromHtml(html) {
+        const div = document.createElement('div');
+        div.innerHTML = html;
+        return div.textContent || div.innerText || "";
+    }
+
+    function searchSlides(term) {
+        if (!term.trim()) return [];
+        const lowerTerm = term.toLowerCase();
+        const results = [];
+        slides.forEach((slide, idx) => {
+            if (slide.title.toLowerCase().includes(lowerTerm) ||
+                getTextFromHtml(slide.content).toLowerCase().includes(lowerTerm)) {
+                results.push(idx);
+            }
+        });
+        return results;
+    }
+
+    function highlightInCurrentSlide(term) {
+        if (!term || term.trim() === "") return;
+        const slideContentDiv = document.querySelector('.slide-content');
+        if (!slideContentDiv) return;
+        const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+        const walker = document.createTreeWalker(slideContentDiv, NodeFilter.SHOW_TEXT, null, false);
+        const textNodes = [];
+        while (walker.nextNode()) textNodes.push(walker.currentNode);
+        for (let node of textNodes) {
+            if (node.nodeValue && regex.test(node.nodeValue)) {
+                const span = document.createElement('span');
+                span.innerHTML = node.nodeValue.replace(regex, '<span class="highlight">$1</span>');
+                node.parentNode.replaceChild(span, node);
+            }
+        }
+    }
+
+    function renderQuiz() {
+        const quizDiv = document.getElementById('quizQuestions');
+        if (!quizDiv) return;
+        const questions = [
+            { text: "Que signifie le mot INFORMATIQUE ?", options: ["Information automatique", "Information mathématique", "Internet magique"], correct: 0 },
+            { text: "Quel est le périphérique qui affiche le texte et les images ?", options: ["Le clavier", "L'écran", "La souris"], correct: 1 },
+            { text: "Quelle touche permet de valider une action ou passer à la ligne ?", options: ["Espace", "Entrée (Enter)", "Ctrl"], correct: 1 },
+            { text: "Que fait un double-clic avec la souris ?", options: ["Supprimer un fichier", "Ouvrir un fichier ou un logiciel", "Éteindre l'ordinateur"], correct: 1 },
+            { text: "Comment s'appelle la poubelle où vont les fichiers supprimés ?", options: ["Le dossier", "La corbeille", "Le raccourci"], correct: 1 },
+            { text: "Quelle est l'extension d'un document texte Word ?", options: [".jpg", ".mp3", ".docx"], correct: 2 },
+            { text: "Quel raccourci clavier permet d'enregistrer un document ?", options: ["Ctrl + P", "Ctrl + S", "Ctrl + C"], correct: 1 },
+            { text: "Internet est :", options: ["Un logiciel de dessin", "Un réseau mondial d'ordinateurs", "Un jeu vidéo"], correct: 1 },
+            { text: "Quel moteur de recherche est le plus connu ?", options: ["Word", "Google", "Scratch"], correct: 1 },
+            { text: "Dans Scratch, quel bloc déclenche le programme au début ?", options: ["Le bloc vert 'avancer'", "Le bloc orange 'quand drapeau vert cliqué'", "Le bloc bleu 'tourner'"], correct: 1 }
+        ];
+        let html = '';
+        questions.forEach((q, idx) => {
+            html += `<div class="quiz-question"><p>${idx+1}. ${q.text}</p>`;
+            q.options.forEach((opt, optIdx) => {
+                html += `<label><input type="radio" name="q${idx}" value="${optIdx}"> ${opt}</label>`;
+            });
+            html += `</div>`;
+        });
+        quizDiv.innerHTML = html;
+        const submitBtn = document.getElementById('submitQuiz');
+        if (submitBtn) {
+            submitBtn.onclick = () => {
+                let score = 0;
+                questions.forEach((q, idx) => {
+                    const selected = document.querySelector(`input[name="q${idx}"]:checked`);
+                    if (selected && parseInt(selected.value) === q.correct) score++;
+                });
+                const resultDiv = document.getElementById('quizResult');
+                const pct = Math.round(score/questions.length*100);
+                resultDiv.innerHTML = `<div style="background:#c8e6c9; padding:18px; border-radius:12px;">
+                    🎯 <strong>Ton score : ${score} / ${questions.length} (${pct}%)</strong><br>
+                    ${score === questions.length ? '🌟 Excellent ! Tu es un vrai génie de l\'informatique !' : score >=7 ? '👍 Bon travail, continue à apprendre !' : '📖 Relis les leçons, l\'informatique c\'est l\'avenir.'}
+                </div>`;
+            };
+        }
+    }
+
+    function renderSlide(index, keepHighlight = true) {
+        const isQuiz = (index === slides.length - 1);
+        contentDiv.innerHTML = `<div class="slide active">
+            <h2 class="slide-title">${slides[index].title}</h2>
+            <div class="slide-content">${slides[index].content}</div>
+        </div>`;
+        if (isQuiz) renderQuiz();
+        slideCounterSpan.textContent = `${index+1}/${slides.length}`;
+        progressFill.style.width = `${((index+1)/slides.length)*100}%`;
+        if (!isAutoPlaying) {
+            prevBtn.disabled = (index === 0);
+            nextBtn.disabled = (index === slides.length-1);
+        }
+        contentDiv.scrollTop = 0;
+        if (keepHighlight && lastSearchTerm && lastSearchTerm.trim() !== "" && !isQuiz) {
+            highlightInCurrentSlide(lastSearchTerm);
+        }
+    }
+
+    function updateResultDisplay() {
+        if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+        searchNav.style.display = 'flex';
+        resultCounterSpan.innerText = `${currentResultIdx+1}/${searchResults.length}`;
+    }
+
+    function goToResult(idx) {
+        if (idx < 0 || idx >= searchResults.length) return;
+        currentResultIdx = idx;
+        currentSlide = searchResults[currentResultIdx];
+        renderSlide(currentSlide, true);
+        updateResultDisplay();
+    }
+
+    function performSearch() {
+        const term = searchInput.value.trim();
+        if (!term) { alert("Entre un mot à rechercher."); return; }
+        if (isAutoPlaying) stopAutoPlay();
+        lastSearchTerm = term;
+        searchResults = searchSlides(term);
+        if (searchResults.length === 0) { alert(`Aucun résultat pour "${term}".`); searchNav.style.display = 'none'; return; }
+        currentResultIdx = 0;
+        goToResult(0);
+    }
+
+    function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+    function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+
+    function nextSlide() {
+        if (currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); clearSearch(); }
+    }
+    function prevSlide() {
+        if (currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); clearSearch(); }
+    }
+    function clearSearch() {
+        if (lastSearchTerm) { lastSearchTerm = ""; searchResults = []; searchNav.style.display = 'none'; searchInput.value = ""; }
+    }
+
+    function updateTimeDisplay() {
+        let t = audioPlayer.currentTime;
+        let mins = Math.floor(t/60).toString().padStart(2,'0');
+        let secs = Math.floor(t%60).toString().padStart(2,'0');
+        let tMins = Math.floor(totalDuration/60).toString().padStart(2,'0');
+        let tSecs = Math.floor(totalDuration%60).toString().padStart(2,'0');
+        timeDisplay.innerText = `${mins}:${secs} / ${tMins}:${tSecs}`;
+        if (!isAutoPlaying) progressFill.style.width = `${(t/totalDuration)*100}%`;
+    }
+
+    function syncSlideFromTime() {
+        if (!isAutoPlaying) return;
+        const t = audioPlayer.currentTime;
+        for (let i = timeline.length-1; i >= 0; i--) {
+            if (t >= timeline[i]) {
+                if (i !== currentSlide) { currentSlide = i; renderSlide(currentSlide, false); }
+                break;
+            }
+        }
+        updateTimeDisplay();
+        if (t >= totalDuration - 1) stopAutoPlay();
+    }
+
+    function startAutoPlay() {
+        isAutoPlaying = true;
+        playBtn.innerText = "⏸ Pause";
+        playBtn.classList.add('stop-btn');
+        statusDiv.innerText = "🔊 Lecture synchronisée en cours...";
+        statusDiv.style.background = "rgba(13,71,161,0.9)";
+        prevBtn.disabled = nextBtn.disabled = true;
+        clearSearch();
+        audioPlayer.play().catch(e => console.log("Lecture bloquée, cliquer sur play"));
+        if (syncInterval) clearInterval(syncInterval);
+        syncInterval = setInterval(syncSlideFromTime, 300);
+    }
+
+    function stopAutoPlay() {
+        isAutoPlaying = false;
+        playBtn.innerText = "▶ Lecture audio";
+        playBtn.classList.remove('stop-btn');
+        statusDiv.innerText = "📖 Mode navigation";
+        statusDiv.style.background = "rgba(0,0,0,0.8)";
+        audioPlayer.pause();
+        if (syncInterval) { clearInterval(syncInterval); syncInterval = null; }
+        prevBtn.disabled = (currentSlide===0);
+        nextBtn.disabled = (currentSlide===slides.length-1);
+    }
+
+    function toggleAutoPlay() { isAutoPlaying ? stopAutoPlay() : startAutoPlay(); }
+    function goToQuiz() { if (isAutoPlaying) stopAutoPlay(); currentSlide = slides.length-1; renderSlide(currentSlide, false); }
+
+    document.addEventListener('keydown', (e) => {
+        if (isAutoPlaying) return;
+        if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+        else if (e.key === 'ArrowRight') { e.preventDefault(); nextSlide(); }
+        else if (e.key === ' ' && document.activeElement !== searchInput) { e.preventDefault(); toggleAutoPlay(); }
+    });
+
+    prevBtn.onclick = prevSlide;
+    nextBtn.onclick = nextSlide;
+    playBtn.onclick = toggleAutoPlay;
+    searchBtn.onclick = performSearch;
+    prevResultBtn.onclick = prevResult;
+    nextResultBtn.onclick = nextResult;
+    quizNavBtn.onclick = goToQuiz;
+    audioPlayer.addEventListener('ended', stopAutoPlay);
+    audioPlayer.addEventListener('timeupdate', () => { if(!isAutoPlaying) updateTimeDisplay(); });
+
+    renderSlide(0, false);
+    updateTimeDisplay();
+</script>
+</body>
+</html>
