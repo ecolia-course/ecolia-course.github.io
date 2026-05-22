@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Éducation Civique et Morale 7e année - Du réel vers la théorie | RDC</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(160deg, #3e2723 0%, #4e342e 50%, #3e2723 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            background: #fffef9;
+            border-radius: 24px;
+            box-shadow: 0 25px 70px rgba(0,0,0,0.35);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            max-height: 95vh;
+        }
+        .progress-bar { height: 7px; background: #e0d5c1; }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #8d6e63, #5d4037);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+        .header {
+            padding: 18px 28px;
+            background: #efebe9;
+            border-bottom: 2px solid #d7ccc8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .header h1 {
+            color: #4e342e;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .badge {
+            background: #6d4c41;
+            color: white;
+            padding: 6px 18px;
+            border-radius: 30px;
+            font-weight: bold;
+        }
+        .search-container {
+            display: flex;
+            gap: 6px;
+            background: white;
+            padding: 4px 10px;
+            border-radius: 40px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .search-container input {
+            border: none;
+            padding: 10px 16px;
+            border-radius: 30px;
+            outline: none;
+            width: 220px;
+            font-size: 0.95rem;
+        }
+        .search-container button, .quiz-btn {
+            background: #6d4c41;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 8px 18px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .search-container button:hover, .quiz-btn:hover { background: #4e342e; }
+        .quiz-btn { background: #ff8f00; }
+        .quiz-btn:hover { background: #e65100; }
+        .search-nav {
+            display: flex;
+            gap: 8px;
+            background: #d7ccc8;
+            padding: 6px 14px;
+            border-radius: 30px;
+            align-items: center;
+        }
+        .search-nav button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            color: #5d4037;
+        }
+        .content {
+            padding: 30px 35px;
+            flex: 1;
+            overflow-y: auto;
+            background: #ffffff;
+            scroll-behavior: smooth;
+        }
+        .slide { display: none; animation: fadeSlide 0.5s ease; }
+        .slide.active { display: block; }
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .slide-title {
+            color: #4e342e;
+            font-size: 1.8rem;
+            border-left: 6px solid #8d6e63;
+            padding-left: 18px;
+            margin-bottom: 20px;
+        }
+        .slide-content { color: #3e2723; line-height: 1.9; font-size: 1.05rem; }
+        .slide-content h3 {
+            color: #5d4037;
+            margin: 28px 0 14px;
+            font-size: 1.3rem;
+        }
+        .scene-box {
+            background: #fff8e1;
+            border-left: 5px solid #ff8f00;
+            padding: 18px 22px;
+            border-radius: 12px;
+            margin: 18px 0;
+            font-style: italic;
+        }
+        .image-box {
+            background: #f3e5f5;
+            padding: 18px;
+            border-radius: 14px;
+            text-align: center;
+            margin: 20px 0;
+            border: 1px dashed #ce93d8;
+        }
+        .definition-box {
+            background: #e8eaf6;
+            padding: 22px;
+            border-radius: 14px;
+            margin: 22px 0;
+            border-left: 6px solid #5c6bc0;
+        }
+        .example-box {
+            background: #ffebee;
+            padding: 18px;
+            border-radius: 12px;
+            margin: 18px 0;
+            border-left: 5px solid #c62828;
+        }
+        .summary-box {
+            background: #e0f2f1;
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin: 18px 0;
+            border: 2px solid #00897b;
+        }
+        .dialogue-box {
+            background: #fff3e0;
+            padding: 18px;
+            border-radius: 12px;
+            margin: 18px 0;
+            border-left: 5px solid #ff6f00;
+            font-style: italic;
+        }
+        .quiz-container {
+            background: #efebe9;
+            padding: 25px;
+            border-radius: 20px;
+            margin-top: 20px;
+        }
+        .quiz-question {
+            background: white;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 18px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        }
+        .quiz-question p { font-weight: bold; margin-bottom: 10px; }
+        .quiz-question label { display: block; margin: 8px 0; cursor: pointer; }
+        .quiz-btn-submit {
+            background: #43a047;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 40px;
+            font-size: 1.05rem;
+            cursor: pointer;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        .quiz-result {
+            margin-top: 20px;
+            font-weight: bold;
+            padding: 16px;
+            border-radius: 14px;
+        }
+        .controls {
+            padding: 18px 28px;
+            background: #fafafa;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+        .nav-buttons { display: flex; gap: 10px; }
+        button {
+            padding: 12px 26px;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: 500;
+        }
+        .nav-btn { background: white; color: #5d4037; border: 1px solid #ccc; }
+        .nav-btn:hover:not(:disabled) { background: #efebe9; transform: translateY(-1px); }
+        .nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .play-btn {
+            background: linear-gradient(135deg, #8d6e63, #5d4037);
+            color: white;
+            box-shadow: 0 4px 16px rgba(93,64,55,0.4);
+            font-weight: bold;
+        }
+        .stop-btn { background: #c62828; color: white; }
+        .counter { color: #555; background: white; padding: 8px 16px; border-radius: 20px; font-weight: 500; }
+        .status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            z-index: 1000;
+        }
+        .highlight { background-color: #ffe082; padding: 1px 3px; border-radius: 3px; }
+        ul { margin-left: 25px; }
+        li { margin: 6px 0; }
+        @media (max-width: 768px) {
+            .content { padding: 20px; }
+            .slide-title { font-size: 1.4rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="status" id="status">📖 Mode navigation</div>
+<div class="container">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="header">
+        <h1>🏛️ Éducation Civique et Morale · 7ᵉ année</h1>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Rechercher un mot...">
+                <button id="searchBtn">🔍</button>
+                <button id="quizNavBtn" class="quiz-btn">📝 Quiz</button>
+            </div>
+            <div class="search-nav" id="searchNav" style="display: none;">
+                <button id="prevResultBtn">◀</button>
+                <span id="resultCounter">0/0</span>
+                <button id="nextResultBtn">▶</button>
+            </div>
+            <span class="badge" id="slideCounter">1/13</span>
+        </div>
+    </div>
+    <div class="content" id="content"></div>
+    <div class="controls">
+        <div class="nav-buttons">
+            <button class="nav-btn" id="prevBtn">← Leçon précédente</button>
+            <button class="nav-btn" id="nextBtn">Leçon suivante →</button>
+        </div>
+        <button class="play-btn" id="playBtn">▶ Lecture audio</button>
+        <span class="counter" id="timeDisplay">00:00 / 00:00</span>
+    </div>
+</div>
+<audio id="audioPlayer" src="ecm7_audio.mp3" preload="auto"></audio>
+
+<script>
+    const slides = [
+        {
+            title: "Leçon 1 : Le respect de soi-même",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Imagine-toi le matin avant d'aller à l'école. Tu te laves le visage, tu brosses tes dents, tu mets ton uniforme bien propre. Ta maman te regarde et sourit : « Comme tu es beau aujourd'hui ! » Ce que tu fais, c'est te respecter toi-même. Le respect commence par <strong>toi</strong>.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Visualise-toi debout, fier, bien habillé, le sourire aux lèvres. Tu te sens bien dans ta peau. C'est cela, la <strong>dignité</strong> : se sentir important et précieux.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>Prendre soin de son corps, c'est du respect. Dire non à ce qui est mauvais pour toi (la bagarre, les insultes, la paresse), c'est du respect. Quand tu fais tes devoirs au lieu de traîner dans la rue, tu te respectes.</p>
+                <h3>❓ Questions pour réfléchir</h3>
+                <ul>
+                    <li>Pourquoi est-il important de prendre soin de ton corps ?</li>
+                    <li>Est-ce que refuser de tricher à un examen, c'est se respecter ? Pourquoi ?</li>
+                    <li>Que ressens-tu quand quelqu'un te parle mal ?</li>
+                </ul>
+                <h3>💡 Découverte</h3>
+                <p>L'élève comprend que le respect de soi est la base de tout. Une personne qui se respecte prend soin de son corps, de son esprit, et fait des choix qui l'élèvent.</p>
+                <div class="definition-box">
+                    <strong>📚 Définition (Théorie) :</strong><br>
+                    Le <strong>respect de soi</strong> est l'attitude qui consiste à prendre soin de son corps, de sa santé, de son éducation, et à défendre sa <strong>dignité</strong>. C'est reconnaître sa propre valeur en tant que personne humaine.<br>
+                    <strong>La dignité</strong> est la valeur inestimable que possède chaque être humain, simplement parce qu'il est une personne.
+                </div>
+                <div class="example-box">
+                    ✅ <strong>Actes de respect de soi :</strong><br>
+                    • Se laver chaque jour.<br>
+                    • Bien s'habiller.<br>
+                    • Dire non à la drogue et à l'alcool.<br>
+                    • Étudier avec sérieux.<br>
+                    • Choisir de bons amis.<br>
+                    ❌ <strong>Manques de respect de soi :</strong> se négliger, accepter les humiliations, paresser.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé ultra-simple :</strong> Le respect de soi = prendre soin de toi, de ton corps et de ton avenir. Tu as de la valeur, ne l'oublie jamais.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 2 : Le respect des autres",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Dans la cour de récréation, tu vois deux enfants qui se disputent un ballon. L'un insulte l'autre et le pousse. Un troisième enfant arrive et dit : « Arrêtez ! On peut jouer ensemble sans se battre. » Ce troisième enfant fait preuve de <strong>respect des autres</strong>.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Imagine une ronde où tout le monde se tient la main. Chacun regarde l'autre avec bienveillance. Le respect, c'est cette ronde où personne n'est exclu.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>Respecter les autres, c'est reconnaître qu'ils ont la même <strong>dignité</strong> que toi. Le maître, le camarade, le vendeur du marché, le petit enfant, la personne âgée : tous méritent le respect.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie :</strong><br>
+                    Le <strong>respect des autres</strong> consiste à traiter chaque personne avec égard, politesse et justice, quels que soient son âge, son origine, sa religion ou son apparence.<br><br>
+                    <strong>La règle d'or :</strong> « Ne fais pas aux autres ce que tu ne voudrais pas qu'on te fasse. »
+                </div>
+                <div class="example-box">
+                    📝 <strong>Concrètement :</strong><br>
+                    • Dire « bonjour », « merci », « pardon », « s'il te plaît ».<br>
+                    • Écouter celui qui parle sans le couper.<br>
+                    • Ne pas se moquer d'un camarade qui a mal répondu.<br>
+                    • Aider un aveugle à traverser la rue.<br>
+                    • Respecter les anciens et les parents.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> Respecter les autres = les traiter comme tu aimerais être traité. Chaque personne est précieuse.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 3 : Le respect des biens publics et privés",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Tu arrives à l'école et tu vois qu'un banc est cassé, les murs sont couverts de dessins au charbon, et le robinet de la cour coule sans que personne ne le ferme. Tout cela, ce sont des <strong>biens publics</strong> qui sont abîmés. Chez toi, ton petit frère a déchiré ton cahier sans permission : c'est un <strong>bien privé</strong> qui n'a pas été respecté.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Imagine deux mains : l'une qui répare un banc cassé, l'autre qui ferme un robinet qui goutte. Ce sont les gestes d'un bon citoyen.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>Un <strong>bien public</strong> appartient à tout le monde (l'école, la route, l'hôpital, le marché). Un <strong>bien privé</strong> appartient à une personne ou une famille (ton cahier, la voiture de ton oncle). Les deux doivent être respectés.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie :</strong><br>
+                    • <strong>Bien public :</strong> bien qui appartient à la communauté, à l'État. Tout le monde peut l'utiliser, personne ne doit le détruire.<br>
+                    • <strong>Bien privé :</strong> bien qui appartient à un individu ou une famille. On ne peut pas l'utiliser sans permission.<br>
+                    • <strong>Vandalisme :</strong> destruction volontaire d'un bien public ou privé. C'est une faute grave.
+                </div>
+                <div class="example-box">
+                    🏫 <strong>Dans ton école :</strong><br>
+                    • Bien public : les tables-bancs, le tableau, les toilettes, la cour.<br>
+                    • Bien privé : ton stylo, ton cahier, le sac de ton camarade.<br>
+                    💡 <strong>Bon geste :</strong> ramasser un papier par terre, même si ce n'est pas toi qui l'as jeté.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> Respecte ce qui appartient à tout le monde (biens publics) et ce qui appartient à chacun (biens privés). Ne détruis rien.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 4 : La famille – Première communauté de vie",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Le soir, toute ta famille se réunit autour du repas. Papa demande à chacun comment s'est passée sa journée. Maman encourage le petit dernier qui a eu une bonne note. Ta grande sœur raconte une histoire drôle. Ce moment de partage, c'est la <strong>vie de famille</strong>.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Visualise un grand arbre, le <strong>baobab</strong>. Le tronc, ce sont les parents. Les branches, ce sont les enfants. Les racines, ce sont les ancêtres. La famille, c'est cet arbre qui protège et nourrit.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>La famille est le premier endroit où tu apprends à vivre avec les autres. Tu y apprends le respect, le partage, l'obéissance, la solidarité.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie :</strong><br>
+                    La <strong>famille</strong> est une communauté de personnes unies par le sang (parents, enfants) ou par le mariage. C'est la <strong>cellule de base</strong> de la société.<br><br>
+                    Types de familles :<br>
+                    • <strong>Famille nucléaire :</strong> père, mère, enfants.<br>
+                    • <strong>Famille élargie :</strong> oncles, tantes, cousins, grands-parents vivent ensemble.
+                </div>
+                <div class="example-box">
+                    👨‍👩‍👧‍👦 <strong>Devoirs envers la famille :</strong><br>
+                    • Respecter ses parents et les personnes âgées.<br>
+                    • Obéir aux règles de la maison.<br>
+                    • Aider aux tâches ménagères (balayer, chercher l'eau).<br>
+                    • Partager avec ses frères et sœurs.<br>
+                    • Bien étudier pour rendre la famille fière.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> La famille = ton premier chez-toi. Tu y apprends à aimer, respecter et partager. C'est la base de toute la société.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 5 : L'école – Lieu d'instruction et d'éducation",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Chaque matin, tu quittes ta maison pour venir à l'école. Tu salues le directeur à la porte, tu entres en classe, le maître écrit au tableau. Ici, tu apprends à lire, à compter, mais aussi à <strong>vivre ensemble</strong> avec des camarades venus de partout.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> L'école, c'est comme un grand <strong>jardin</strong>. Chaque élève est une plante différente. Le maître est le jardinier qui arrose, qui donne de l'engrais, et qui protège pour que chaque plante grandisse bien droite.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>L'école n'est pas seulement un lieu où l'on remplit la tête. C'est aussi un lieu où l'on apprend à être un <strong>bon citoyen</strong>, à respecter les règles, à travailler en groupe, à écouter les autres.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie :</strong><br>
+                    L'<strong>école</strong> est une institution qui assure l'<strong>instruction</strong> (transmission des connaissances) et l'<strong>éducation</strong> (formation du caractère et du citoyen).<br><br>
+                    <strong>Droits de l'élève :</strong> être instruit, être protégé, être écouté.<br>
+                    <strong>Devoirs de l'élève :</strong> être assidu, respecter le règlement, respecter les maîtres et les camarades, faire son travail.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> L'école = le lieu où tu construis ton savoir et ton savoir-vivre. Élève sérieux aujourd'hui, citoyen utile demain.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 6 : Le quartier et le village – Vivre en communauté",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Dans ton quartier, il y a le voisin qui vend des beignets, le menuisier au coin de la rue, l'église ou la mosquée, le dispensaire. Le matin, les femmes balaient devant leur porte. Les enfants jouent au ballon sur la terre battue. Tout ce petit monde, c'est ta <strong>communauté de quartier</strong>.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Imagine un grand filet de pêche. Chaque nœud du filet est une personne. Si un nœud se casse, le filet est moins solide. Ta communauté, c'est ce filet : chacun compte.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>Un quartier ou un village fonctionne bien quand tout le monde se respecte et s'entraide. Le <strong>chef de quartier</strong> ou le <strong>chef du village</strong> veille à l'ordre et à la sécurité.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie :</strong><br>
+                    Le <strong>quartier</strong> (en ville) ou le <strong>village</strong> (en milieu rural) est une communauté de voisinage. On y pratique la <strong>solidarité</strong> (entraide) et le <strong>civisme</strong> (respect des règles communes).<br><br>
+                    <strong>Bon citoyen du quartier :</strong><br>
+                    • Saluer ses voisins.<br>
+                    • Ne pas jeter d'ordures dans la rue.<br>
+                    • Participer aux travaux communautaires (salongo).<br>
+                    • Signaler un danger aux autorités.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> Le quartier, c'est ta grande famille élargie. Sois propre, sois poli, sois solidaire.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 7 : La nation – Qu'est-ce qu'un pays ?",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Le jour de la fête de l'indépendance, le 30 juin, tu vois flotter partout le drapeau bleu, jaune et rouge. À la radio, on chante « Debout Congolais ». Tu sens quelque chose de fort dans ton cœur : la <strong>fierté d'être Congolais</strong>.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Imagine une immense case, grande comme tout le pays. À l'intérieur, il y a des millions de personnes différentes : des Luba, des Kongo, des Mongo, des Zande... mais tous dorment sous le même toit : la <strong>nation congolaise</strong>.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>Une nation, c'est un groupe d'hommes et de femmes qui vivent sur un même territoire, qui ont une histoire commune, et qui veulent vivre ensemble.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie :</strong><br>
+                    Une <strong>nation</strong> est une communauté humaine qui partage :<br>
+                    • un <strong>territoire</strong> (le sol, les frontières),<br>
+                    • une <strong>histoire</strong> commune,<br>
+                    • une <strong>culture</strong> (langues, traditions, valeurs),<br>
+                    • et la <strong>volonté de vivre ensemble</strong>.<br><br>
+                    <strong>Symboles de la RDC :</strong><br>
+                    • Le <strong>drapeau</strong> (bleu, jaune, rouge avec l'étoile jaune).<br>
+                    • L'<strong>hymne national</strong> : « Debout Congolais ».<br>
+                    • La <strong>devise</strong> : Justice – Paix – Travail.<br>
+                    • Les <strong>armoiries</strong> : tête de léopard, défenses d'éléphant, lance.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> La nation = un peuple, un territoire, une histoire, un drapeau. Sois fier de ton pays, la RDC.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 8 : L'État – Qui dirige le pays ?",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Un jour, une nouvelle route est construite dans ta commune. Des lampadaires sont installés. L'hôpital reçoit des médicaments. Qui fait tout cela ? C'est l'<strong>État</strong>, à travers ses dirigeants.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> L'État, c'est comme le <strong>pilote d'un grand avion</strong> (le pays). Le Président est le commandant de bord. Les ministres sont les copilotes. Les députés et sénateurs sont les stewards qui s'occupent des passagers. Tout le monde doit travailler ensemble pour que l'avion arrive à bon port.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>L'État est une organisation qui dirige le pays. Il fait les lois, il fait respecter l'ordre, il construit les routes et les écoles. Il est composé de <strong>trois pouvoirs</strong>.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie : Les trois pouvoirs de l'État</strong><br>
+                    • <strong>Pouvoir exécutif :</strong> il fait appliquer les lois. C'est le Président de la République et le Gouvernement (Premier Ministre, ministres).<br>
+                    • <strong>Pouvoir législatif :</strong> il vote les lois. C'est le Parlement (Assemblée Nationale et Sénat).<br>
+                    • <strong>Pouvoir judiciaire :</strong> il juge ceux qui ne respectent pas les lois. Ce sont les Cours et Tribunaux.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> L'État = le pilote du pays. Trois pouvoirs : exécutif (gouverner), législatif (faire les lois), judiciaire (juger).
+                </div>
+            `
+        },
+        {
+            title: "Leçon 9 : La Constitution – La loi suprême",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Dans ta maison, il y a des règles : on ne crie pas à table, on fait ses devoirs avant de jouer. Dans ton école, il y a un règlement intérieur. Pour tout le pays, il y a une règle au-dessus de toutes les autres : c'est la <strong>Constitution</strong>.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> La Constitution, c'est comme le <strong>gros tronc du baobab</strong>. Toutes les autres lois sont des branches qui partent de ce tronc. Si une branche est tordue (si une loi est injuste), on la coupe, mais le tronc reste droit.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>Aucune loi ne peut être supérieure à la Constitution. Même le Président doit la respecter. Elle garantit les droits de chaque citoyen.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie :</strong><br>
+                    La <strong>Constitution</strong> est la loi fondamentale d'un État. Elle :<br>
+                    • définit la forme de l'État,<br>
+                    • organise les pouvoirs publics,<br>
+                    • énonce les droits et les devoirs des citoyens.<br>
+                    En RDC, la Constitution actuelle date du 18 février 2006.
+                </div>
+                <div class="example-box">
+                    📜 <strong>Quelques droits garantis par la Constitution :</strong><br>
+                    • Droit à la vie.<br>
+                    • Droit à l'éducation gratuite (primaire public).<br>
+                    • Liberté d'expression et de religion.<br>
+                    • Droit de vote à 18 ans.<br>
+                    • Égalité de tous devant la loi.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> La Constitution = la règle des règles. Personne n'est au-dessus d'elle. Elle protège tes droits.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 10 : Les droits et les devoirs du citoyen",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Tu as le <strong>droit</strong> d'aller à l'école gratuitement. Mais as-tu le <strong>devoir</strong> d'étudier sérieusement ? Oui ! Tu as le droit d'être soigné au dispensaire, mais tu as le devoir de ne pas salir l'hôpital. Chaque droit est accompagné d'un devoir.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Imagine une pièce de monnaie. Sur une face, il y a écrit <strong>DROIT</strong>. Sur l'autre face, <strong>DEVOIR</strong>. La pièce n'a de valeur que si les deux faces existent. Un citoyen complet, c'est celui qui connaît ses droits et qui accomplit ses devoirs.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>Un droit, c'est ce que la loi te permet de faire ou d'exiger. Un devoir, c'est ce que tu dois faire pour les autres et pour le pays.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie :</strong><br><br>
+                    <strong>DROITS du citoyen :</strong><br>
+                    • Droit à la vie, à la santé, à l'éducation.<br>
+                    • Droit de vote, de circuler librement, de s'exprimer.<br>
+                    • Droit à un procès équitable.<br><br>
+                    <strong>DEVOIRS du citoyen :</strong><br>
+                    • Respecter la Constitution et les lois.<br>
+                    • Payer ses impôts et taxes (quand on travaille).<br>
+                    • Respecter les biens publics.<br>
+                    • Défendre le pays en cas de danger.<br>
+                    • Protéger l'environnement.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> Pas de droits sans devoirs ! Chaque Congolais a des droits ET des devoirs envers le pays et les autres.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 11 : La démocratie – Le pouvoir du peuple",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Dans ta classe, la maîtresse veut élire un chef de classe. Elle demande : « Qui est candidat ? » Trois élèves lèvent la main. Ensuite, tout le monde vote à bulletin secret. Celui qui a le plus de voix est élu. C'est la <strong>démocratie</strong> en action !
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> La démocratie, c'est comme un grand <strong>village</strong> où le chef est choisi par tous les habitants. Si le chef ne travaille pas bien, aux prochaines élections, les habitants en choisissent un autre.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>Le mot « démocratie » vient du grec : <em>demos</em> (le peuple) et <em>kratos</em> (le pouvoir). La démocratie, c'est le <strong>pouvoir du peuple</strong>.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie :</strong><br>
+                    La <strong>démocratie</strong> est un système politique dans lequel le peuple choisit librement ses dirigeants.<br><br>
+                    <strong>Principes de la démocratie :</strong><br>
+                    • <strong>Élections libres</strong> et transparentes.<br>
+                    • <strong>Séparation des pouvoirs</strong> (exécutif, législatif, judiciaire).<br>
+                    • <strong>Liberté d'expression</strong> et de presse.<br>
+                    • <strong>Égalité</strong> devant la loi.<br>
+                    • <strong>Respect des droits</strong> de l'homme.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> Démocratie = le peuple choisit ses dirigeants par le vote. Un citoyen = une voix.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 12 : Protéger l'environnement – Un devoir civique",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Près de chez toi, il y avait une belle colline verte avec des arbres. Des gens ont coupé tous les arbres pour faire du charbon de bois. Aujourd'hui, quand il pleut, l'eau emporte la terre et inonde les maisons en bas. La nature a été détruite, et tout le monde en souffre.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> La Terre est comme une <strong>maman</strong> qui nous nourrit, nous donne de l'eau, de l'air pur. Si on lui fait du mal, elle ne peut plus bien s'occuper de nous.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>Protéger l'environnement, ce n'est pas seulement l'affaire du gouvernement. C'est l'affaire de <strong>chaque citoyen</strong>, y compris toi, élève de 7e année.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie :</strong><br>
+                    L'<strong>environnement</strong> est l'ensemble des éléments naturels qui nous entourent : l'air, l'eau, le sol, les forêts, les animaux.<br><br>
+                    <strong>Devoirs du citoyen envers l'environnement :</strong><br>
+                    • Ne pas jeter les déchets dans la rue ou la rivière.<br>
+                    • Planter des arbres.<br>
+                    • Ne pas couper les arbres sans raison.<br>
+                    • Économiser l'eau et l'électricité.<br>
+                    • Protéger les animaux.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> Protéger la nature = protéger ta propre vie. Chaque geste compte : ne jette rien par terre, plante un arbre.
+                </div>
+            `
+        },
+        {
+            title: "🏆 QUIZ FINAL – Teste tes connaissances en ECM !",
+            content: `
+                <div id="quizContainer" class="quiz-container">
+                    <h3>📝 Questionnaire d'Éducation Civique et Morale (7ᵉ année)</h3>
+                    <p style="margin-bottom:15px;">Choisis la bonne réponse pour chaque question.</p>
+                    <div id="quizQuestions"></div>
+                    <button id="submitQuiz" class="quiz-btn-submit">✅ Valider mes réponses</button>
+                    <div id="quizResult" class="quiz-result"></div>
+                </div>
+            `
+        }
+    ];
+
+    let currentSlide = 0, isAutoPlaying = false, syncInterval;
+    let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+    const audioPlayer = document.getElementById('audioPlayer');
+    const contentDiv = document.getElementById('content');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const playBtn = document.getElementById('playBtn');
+    const statusDiv = document.getElementById('status');
+    const slideCounterSpan = document.getElementById('slideCounter');
+    const progressFill = document.getElementById('progressFill');
+    const timeDisplay = document.getElementById('timeDisplay');
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const searchNav = document.getElementById('searchNav');
+    const prevResultBtn = document.getElementById('prevResultBtn');
+    const nextResultBtn = document.getElementById('nextResultBtn');
+    const resultCounterSpan = document.getElementById('resultCounter');
+    const quizNavBtn = document.getElementById('quizNavBtn');
+
+    const timeline = [0,86,157,212,278,332,390,445,506,564,614,663];
+    const totalDuration = 730; // ~12 minutes
+
+    function getTextFromHtml(html) {
+        const div = document.createElement('div');
+        div.innerHTML = html;
+        return div.textContent || div.innerText || "";
+    }
+
+    function searchSlides(term) {
+        if (!term.trim()) return [];
+        const lowerTerm = term.toLowerCase();
+        const results = [];
+        slides.forEach((slide, idx) => {
+            if (slide.title.toLowerCase().includes(lowerTerm) ||
+                getTextFromHtml(slide.content).toLowerCase().includes(lowerTerm)) {
+                results.push(idx);
+            }
+        });
+        return results;
+    }
+
+    function highlightInCurrentSlide(term) {
+        if (!term || term.trim() === "") return;
+        const slideContentDiv = document.querySelector('.slide-content');
+        if (!slideContentDiv) return;
+        const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+        const walker = document.createTreeWalker(slideContentDiv, NodeFilter.SHOW_TEXT, null, false);
+        const textNodes = [];
+        while (walker.nextNode()) textNodes.push(walker.currentNode);
+        for (let node of textNodes) {
+            if (node.nodeValue && regex.test(node.nodeValue)) {
+                const span = document.createElement('span');
+                span.innerHTML = node.nodeValue.replace(regex, '<span class="highlight">$1</span>');
+                node.parentNode.replaceChild(span, node);
+            }
+        }
+    }
+
+    function renderQuiz() {
+        const quizDiv = document.getElementById('quizQuestions');
+        if (!quizDiv) return;
+        const questions = [
+            { text: "Qu'est-ce que le respect de soi ?", options: ["S'insulter", "Prendre soin de son corps et de son avenir", "Ne rien faire"], correct: 1 },
+            { text: "Quelle est la règle d'or du respect ?", options: ["Fais aux autres ce qu'ils te font", "Ne fais pas aux autres ce que tu ne voudrais pas qu'on te fasse", "Ignore les autres"], correct: 1 },
+            { text: "Un banc de l'école est un bien :", options: ["Privé", "Public", "Personnel"], correct: 1 },
+            { text: "Comment s'appelle la cellule de base de la société ?", options: ["L'école", "La famille", "Le quartier"], correct: 1 },
+            { text: "Quels sont les trois pouvoirs de l'État ?", options: ["Exécutif, militaire, religieux", "Exécutif, législatif, judiciaire", "Présidentiel, royal, coutumier"], correct: 1 },
+            { text: "La loi suprême du pays s'appelle :", options: ["Le règlement", "La Constitution", "Le code de la route"], correct: 1 },
+            { text: "Parmi ces droits, lequel est garanti par la Constitution ?", options: ["Droit de ne pas aller à l'école", "Droit à l'éducation", "Droit de détruire la nature"], correct: 1 },
+            { text: "La démocratie signifie :", options: ["Le pouvoir du Président", "Le pouvoir du peuple", "Le pouvoir de l'armée"], correct: 1 },
+            { text: "Planter un arbre est un geste pour :", options: ["Détruire l'environnement", "Protéger l'environnement", "Gaspiller l'eau"], correct: 1 },
+            { text: "Le drapeau de la RDC a trois couleurs :", options: ["Rouge, jaune, vert", "Bleu, jaune, rouge", "Noir, jaune, rouge"], correct: 1 }
+        ];
+        let html = '';
+        questions.forEach((q, idx) => {
+            html += `<div class="quiz-question"><p>${idx+1}. ${q.text}</p>`;
+            q.options.forEach((opt, optIdx) => {
+                html += `<label><input type="radio" name="q${idx}" value="${optIdx}"> ${opt}</label>`;
+            });
+            html += `</div>`;
+        });
+        quizDiv.innerHTML = html;
+        const submitBtn = document.getElementById('submitQuiz');
+        if (submitBtn) {
+            submitBtn.onclick = () => {
+                let score = 0;
+                questions.forEach((q, idx) => {
+                    const selected = document.querySelector(`input[name="q${idx}"]:checked`);
+                    if (selected && parseInt(selected.value) === q.correct) score++;
+                });
+                const resultDiv = document.getElementById('quizResult');
+                const pct = Math.round(score/questions.length*100);
+                resultDiv.innerHTML = `<div style="background:#c8e6c9; padding:18px; border-radius:12px;">
+                    🎯 <strong>Ton score : ${score} / ${questions.length} (${pct}%)</strong><br>
+                    ${score === questions.length ? '🌟 Excellent ! Tu es un vrai bon citoyen !' : score >=7 ? '👍 Bon travail, continue à apprendre !' : '📖 Relis les leçons, tu vas progresser.'}
+                </div>`;
+            };
+        }
+    }
+
+    function renderSlide(index, keepHighlight = true) {
+        const isQuiz = (index === slides.length - 1);
+        contentDiv.innerHTML = `<div class="slide active">
+            <h2 class="slide-title">${slides[index].title}</h2>
+            <div class="slide-content">${slides[index].content}</div>
+        </div>`;
+        if (isQuiz) renderQuiz();
+        slideCounterSpan.textContent = `${index+1}/${slides.length}`;
+        progressFill.style.width = `${((index+1)/slides.length)*100}%`;
+        if (!isAutoPlaying) {
+            prevBtn.disabled = (index === 0);
+            nextBtn.disabled = (index === slides.length-1);
+        }
+        contentDiv.scrollTop = 0;
+        if (keepHighlight && lastSearchTerm && lastSearchTerm.trim() !== "" && !isQuiz) {
+            highlightInCurrentSlide(lastSearchTerm);
+        }
+    }
+
+    function updateResultDisplay() {
+        if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+        searchNav.style.display = 'flex';
+        resultCounterSpan.innerText = `${currentResultIdx+1}/${searchResults.length}`;
+    }
+
+    function goToResult(idx) {
+        if (idx < 0 || idx >= searchResults.length) return;
+        currentResultIdx = idx;
+        currentSlide = searchResults[currentResultIdx];
+        renderSlide(currentSlide, true);
+        updateResultDisplay();
+    }
+
+    function performSearch() {
+        const term = searchInput.value.trim();
+        if (!term) { alert("Entre un mot à rechercher."); return; }
+        if (isAutoPlaying) stopAutoPlay();
+        lastSearchTerm = term;
+        searchResults = searchSlides(term);
+        if (searchResults.length === 0) { alert(`Aucun résultat pour "${term}".`); searchNav.style.display = 'none'; return; }
+        currentResultIdx = 0;
+        goToResult(0);
+    }
+
+    function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+    function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+
+    function nextSlide() {
+        if (currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); clearSearch(); }
+    }
+    function prevSlide() {
+        if (currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); clearSearch(); }
+    }
+    function clearSearch() {
+        if (lastSearchTerm) { lastSearchTerm = ""; searchResults = []; searchNav.style.display = 'none'; searchInput.value = ""; }
+    }
+
+    function updateTimeDisplay() {
+        let t = audioPlayer.currentTime;
+        let mins = Math.floor(t/60).toString().padStart(2,'0');
+        let secs = Math.floor(t%60).toString().padStart(2,'0');
+        let tMins = Math.floor(totalDuration/60).toString().padStart(2,'0');
+        let tSecs = Math.floor(totalDuration%60).toString().padStart(2,'0');
+        timeDisplay.innerText = `${mins}:${secs} / ${tMins}:${tSecs}`;
+        if (!isAutoPlaying) progressFill.style.width = `${(t/totalDuration)*100}%`;
+    }
+
+    function syncSlideFromTime() {
+        if (!isAutoPlaying) return;
+        const t = audioPlayer.currentTime;
+        for (let i = timeline.length-1; i >= 0; i--) {
+            if (t >= timeline[i]) {
+                if (i !== currentSlide) { currentSlide = i; renderSlide(currentSlide, false); }
+                break;
+            }
+        }
+        updateTimeDisplay();
+        if (t >= totalDuration - 1) stopAutoPlay();
+    }
+
+    function startAutoPlay() {
+        isAutoPlaying = true;
+        playBtn.innerText = "⏸ Pause";
+        playBtn.classList.add('stop-btn');
+        statusDiv.innerText = "🔊 Lecture synchronisée en cours...";
+        statusDiv.style.background = "rgba(93,64,55,0.9)";
+        prevBtn.disabled = nextBtn.disabled = true;
+        clearSearch();
+        audioPlayer.play().catch(e => console.log("Lecture bloquée, cliquer sur play"));
+        if (syncInterval) clearInterval(syncInterval);
+        syncInterval = setInterval(syncSlideFromTime, 300);
+    }
+
+    function stopAutoPlay() {
+        isAutoPlaying = false;
+        playBtn.innerText = "▶ Lecture audio";
+        playBtn.classList.remove('stop-btn');
+        statusDiv.innerText = "📖 Mode navigation";
+        statusDiv.style.background = "rgba(0,0,0,0.8)";
+        audioPlayer.pause();
+        if (syncInterval) { clearInterval(syncInterval); syncInterval = null; }
+        prevBtn.disabled = (currentSlide===0);
+        nextBtn.disabled = (currentSlide===slides.length-1);
+    }
+
+    function toggleAutoPlay() { isAutoPlaying ? stopAutoPlay() : startAutoPlay(); }
+    function goToQuiz() { if (isAutoPlaying) stopAutoPlay(); currentSlide = slides.length-1; renderSlide(currentSlide, false); }
+
+    document.addEventListener('keydown', (e) => {
+        if (isAutoPlaying) return;
+        if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+        else if (e.key === 'ArrowRight') { e.preventDefault(); nextSlide(); }
+        else if (e.key === ' ' && document.activeElement !== searchInput) { e.preventDefault(); toggleAutoPlay(); }
+    });
+
+    prevBtn.onclick = prevSlide;
+    nextBtn.onclick = nextSlide;
+    playBtn.onclick = toggleAutoPlay;
+    searchBtn.onclick = performSearch;
+    prevResultBtn.onclick = prevResult;
+    nextResultBtn.onclick = nextResult;
+    quizNavBtn.onclick = goToQuiz;
+    audioPlayer.addEventListener('ended', stopAutoPlay);
+    audioPlayer.addEventListener('timeupdate', () => { if(!isAutoPlaying) updateTimeDisplay(); });
+
+    renderSlide(0, false);
+    updateTimeDisplay();
+</script>
+</body>
+</html>

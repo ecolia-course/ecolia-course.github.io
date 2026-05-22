@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>SVT 7e année - Du réel vers la théorie | RDC</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(160deg, #1a4a1a 0%, #2d6b2d 50%, #1d521d 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            background: #fdfef9;
+            border-radius: 24px;
+            box-shadow: 0 25px 70px rgba(0,0,0,0.35);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            max-height: 95vh;
+        }
+        .progress-bar { height: 7px; background: #c8e6c9; }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50, #2e7d32);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+        .header {
+            padding: 18px 28px;
+            background: #e8f5e9;
+            border-bottom: 2px solid #a5d6a7;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .header h1 {
+            color: #2e7d32;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .badge {
+            background: #388e3c;
+            color: white;
+            padding: 6px 18px;
+            border-radius: 30px;
+            font-weight: bold;
+        }
+        .search-container {
+            display: flex;
+            gap: 6px;
+            background: white;
+            padding: 4px 10px;
+            border-radius: 40px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .search-container input {
+            border: none;
+            padding: 10px 16px;
+            border-radius: 30px;
+            outline: none;
+            width: 220px;
+            font-size: 0.95rem;
+        }
+        .search-container button, .quiz-btn {
+            background: #388e3c;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 8px 18px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .search-container button:hover, .quiz-btn:hover { background: #1b5e20; }
+        .quiz-btn { background: #0277bd; }
+        .quiz-btn:hover { background: #01579b; }
+        .search-nav {
+            display: flex;
+            gap: 8px;
+            background: #c8e6c9;
+            padding: 6px 14px;
+            border-radius: 30px;
+            align-items: center;
+        }
+        .search-nav button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            color: #2e7d32;
+        }
+        .content {
+            padding: 30px 35px;
+            flex: 1;
+            overflow-y: auto;
+            background: #ffffff;
+            scroll-behavior: smooth;
+        }
+        .slide { display: none; animation: fadeSlide 0.5s ease; }
+        .slide.active { display: block; }
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .slide-title {
+            color: #2e7d32;
+            font-size: 1.8rem;
+            border-left: 6px solid #66bb6a;
+            padding-left: 18px;
+            margin-bottom: 20px;
+        }
+        .slide-content { color: #1e3c1e; line-height: 1.9; font-size: 1.05rem; }
+        .slide-content h3 {
+            color: #388e3c;
+            margin: 28px 0 14px;
+            font-size: 1.3rem;
+        }
+        .scene-box {
+            background: #fffde7;
+            border-left: 5px solid #ffb300;
+            padding: 18px 22px;
+            border-radius: 12px;
+            margin: 18px 0;
+            font-style: italic;
+        }
+        .image-box {
+            background: #e8f5e9;
+            padding: 18px;
+            border-radius: 14px;
+            text-align: center;
+            margin: 20px 0;
+            border: 1px dashed #81c784;
+        }
+        .definition-box {
+            background: #f1f8e9;
+            padding: 22px;
+            border-radius: 14px;
+            margin: 22px 0;
+            border-left: 6px solid #43a047;
+        }
+        .example-box {
+            background: #fff3e0;
+            padding: 18px;
+            border-radius: 12px;
+            margin: 18px 0;
+            border-left: 5px solid #e65100;
+        }
+        .summary-box {
+            background: #e1f5fe;
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin: 18px 0;
+            border: 2px solid #0288d1;
+        }
+        .quiz-container {
+            background: #f1f8e9;
+            padding: 25px;
+            border-radius: 20px;
+            margin-top: 20px;
+        }
+        .quiz-question {
+            background: white;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 18px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        }
+        .quiz-question p { font-weight: bold; margin-bottom: 10px; }
+        .quiz-question label { display: block; margin: 8px 0; cursor: pointer; }
+        .quiz-btn-submit {
+            background: #43a047;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 40px;
+            font-size: 1.05rem;
+            cursor: pointer;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        .quiz-result {
+            margin-top: 20px;
+            font-weight: bold;
+            padding: 16px;
+            border-radius: 14px;
+        }
+        .controls {
+            padding: 18px 28px;
+            background: #fafafa;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+        .nav-buttons { display: flex; gap: 10px; }
+        button {
+            padding: 12px 26px;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: 500;
+        }
+        .nav-btn { background: white; color: #2e7d32; border: 1px solid #ccc; }
+        .nav-btn:hover:not(:disabled) { background: #e8f5e9; transform: translateY(-1px); }
+        .nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .play-btn {
+            background: linear-gradient(135deg, #43a047, #2e7d32);
+            color: white;
+            box-shadow: 0 4px 16px rgba(46,125,50,0.4);
+            font-weight: bold;
+        }
+        .stop-btn { background: #c62828; color: white; }
+        .counter { color: #555; background: white; padding: 8px 16px; border-radius: 20px; font-weight: 500; }
+        .status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            z-index: 1000;
+        }
+        .highlight { background-color: #fff59d; padding: 1px 3px; border-radius: 3px; }
+        ul { margin-left: 25px; }
+        li { margin: 6px 0; }
+        @media (max-width: 768px) {
+            .content { padding: 20px; }
+            .slide-title { font-size: 1.4rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="status" id="status">📖 Mode navigation</div>
+<div class="container">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="header">
+        <h1>🧬 SVT · 7ᵉ année</h1>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Rechercher un mot...">
+                <button id="searchBtn">🔍</button>
+                <button id="quizNavBtn" class="quiz-btn">📝 Quiz</button>
+            </div>
+            <div class="search-nav" id="searchNav" style="display: none;">
+                <button id="prevResultBtn">◀</button>
+                <span id="resultCounter">0/0</span>
+                <button id="nextResultBtn">▶</button>
+            </div>
+            <span class="badge" id="slideCounter">1/13</span>
+        </div>
+    </div>
+    <div class="content" id="content"></div>
+    <div class="controls">
+        <div class="nav-buttons">
+            <button class="nav-btn" id="prevBtn">← Leçon précédente</button>
+            <button class="nav-btn" id="nextBtn">Leçon suivante →</button>
+        </div>
+        <button class="play-btn" id="playBtn">▶ Lecture audio</button>
+        <span class="counter" id="timeDisplay">00:00 / 00:00</span>
+    </div>
+</div>
+<audio id="audioPlayer" src="svt7_audio.mp3" preload="auto"></audio>
+
+<script>
+    const slides = [
+        {
+            title: "Leçon 1 : Qu'est-ce qu'un être vivant ?",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Tu marches dans la cour de l'école. Tu vois un manguier, un oiseau qui picore, des fourmis en file, un chat qui dort à l'ombre. À côté, il y a un caillou, une flaque d'eau, un banc en fer. Parmi tout cela, qu'est-ce qui est <strong>vivant</strong> et qu'est-ce qui ne l'est pas ?
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Imagine deux boîtes. Dans la première, tu mets tout ce qui naît, grandit, se nourrit, respire, se reproduit et meurt. Dans la deuxième, ce qui ne fait rien de tout cela. La première boîte contient les <strong>êtres vivants</strong>.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>Un être vivant se distingue d'un objet inerte par plusieurs <strong>fonctions</strong> qu'il accomplit tout au long de sa vie.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie : Les caractéristiques des êtres vivants</strong><br>
+                    Un <strong>être vivant</strong> est capable de :<br>
+                    • <strong>Naître</strong> et se développer.<br>
+                    • <strong>Se nourrir</strong> pour avoir de l'énergie.<br>
+                    • <strong>Respirer</strong> (même les plantes !).<br>
+                    • <strong>Se reproduire</strong> pour donner la vie.<br>
+                    • <strong>Réagir</strong> à son environnement (fuir un danger, pousser vers la lumière).<br>
+                    • <strong>Mourir</strong>.<br><br>
+                    <strong>Deux grands groupes :</strong><br>
+                    • <strong>Animaux :</strong> se déplacent, mangent d'autres êtres vivants.<br>
+                    • <strong>Végétaux :</strong> fixés au sol, fabriquent leur nourriture grâce au soleil.
+                </div>
+                <div class="example-box">
+                    🌱 <strong>Exemple :</strong> Un manguier naît d'une graine, grandit, respire par ses feuilles, produit des fruits (reproduction) et finit par mourir. C'est un être vivant.<br>
+                    🪨 Un caillou ne naît pas, ne mange pas, ne respire pas : ce n'est pas un être vivant.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> Être vivant = naître, grandir, se nourrir, respirer, se reproduire, mourir. Deux grands groupes : les animaux et les végétaux.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 2 : La cellule – L'unité de base du vivant",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Tu regardes un mur de briques. Le mur est grand, mais il est construit avec des milliers de petites briques identiques. Pour les êtres vivants, c'est pareil : ton corps, celui d'un chien, un arbre, une mouche, tous sont construits avec de minuscules briques appelées <strong>cellules</strong>.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Imagine une immense cité. Chaque maison est une <strong>cellule</strong>. Chaque maison a une porte (la membrane), une cuisine (le cytoplasme), et un bureau du chef (le noyau). La cité tout entière, c'est l'être vivant.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>La cellule est si petite qu'on ne peut la voir qu'au microscope. Pourtant, tout être vivant est fait de cellules.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie : La cellule</strong><br>
+                    La <strong>cellule</strong> est la plus petite unité vivante qui constitue tous les êtres vivants.<br><br>
+                    <strong>Structure d'une cellule animale :</strong><br>
+                    • <strong>Membrane :</strong> enveloppe qui protège et délimite la cellule.<br>
+                    • <strong>Cytoplasme :</strong> liquide à l'intérieur où se passent les réactions.<br>
+                    • <strong>Noyau :</strong> centre de contrôle, contient l'ADN (le « plan » de l'être vivant).<br><br>
+                    <strong>La cellule végétale</strong> possède en plus :<br>
+                    • <strong>Paroi :</strong> couche rigide autour de la membrane (comme un mur).<br>
+                    • <strong>Chloroplastes :</strong> petites usines vertes qui captent la lumière.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> La cellule = la brique de base du vivant. Membrane + cytoplasme + noyau. La cellule végétale a une paroi et des chloroplastes.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 3 : La nutrition – Comment les êtres vivants se nourrissent ?",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Ce midi, tu manges du fufu avec de la viande et des légumes. Ton corps va transformer ce repas en <strong>énergie</strong> pour courir, réfléchir, grandir. En même temps, le manguier dans la cour, lui, ne mange rien. Il fabrique sa propre nourriture avec de l'eau, de l'air et du soleil. Deux façons complètement différentes de se nourrir !
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Imagine deux cuisines. La cuisine des <strong>animaux</strong> : ils prennent des aliments déjà prêts (plantes, viande). La cuisine des <strong>plantes</strong> : elles fabriquent tout elles-mêmes avec de l'eau, du gaz carbonique et de la lumière.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>Les animaux sont des <strong>consommateurs</strong> : ils doivent manger d'autres êtres vivants. Les plantes sont des <strong>producteurs</strong> : elles fabriquent leur nourriture.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie : Les deux modes de nutrition</strong><br>
+                    • <strong>Nutrition autotrophe</strong> (plantes vertes) : fabrication de matière organique à partir de matière minérale (eau, CO₂) grâce à la lumière. C'est la <strong>photosynthèse</strong>.<br>
+                    <em>Équation simplifiée : Eau + Gaz carbonique + Lumière → Sucre (glucose) + Oxygène</em><br><br>
+                    • <strong>Nutrition hétérotrophe</strong> (animaux, champignons) : consommation de matière organique déjà fabriquée par d'autres êtres vivants.
+                </div>
+                <div class="example-box">
+                    🐄🦁 <strong>Exemples :</strong><br>
+                    • Herbivores : la chèvre mange de l'herbe.<br>
+                    • Carnivores : le lion mange la gazelle.<br>
+                    • Omnivores : l'homme mange de tout.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> Plantes = autotrophes (fabriquent leur nourriture avec le soleil). Animaux = hétérotrophes (mangent d'autres êtres vivants).
+                </div>
+            `
+        },
+        {
+            title: "Leçon 4 : La respiration – Un échange de gaz invisible",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Pose ta main sur ta poitrine. Sens-tu qu'elle se soulève et s'abaisse ? C'est ta <strong>respiration</strong>. Tu inspires de l'air, et tu expires de l'air. Mais ce n'est pas le même air qui entre et qui sort : ton corps a pris quelque chose dedans.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> La respiration, c'est comme un <strong>marché</strong> qui se fait à l'entrée de ton corps. Tu donnes du <strong>gaz carbonique</strong> (un déchet) et tu reçois de l'<strong>oxygène</strong> (un produit précieux). Ce marché se passe dans tes poumons.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>Tous les êtres vivants respirent, même les plantes ! La respiration permet de libérer l'énergie contenue dans les aliments.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie : La respiration</strong><br>
+                    La <strong>respiration</strong> est un échange de gaz entre un être vivant et son milieu.<br>
+                    • <strong>Inspiration :</strong> absorption d'<strong>oxygène</strong> (O₂).<br>
+                    • <strong>Expiration :</strong> rejet de <strong>gaz carbonique</strong> (CO₂) et de vapeur d'eau.<br><br>
+                    <strong>Organes respiratoires :</strong><br>
+                    • Chez l'homme : les <strong>poumons</strong>.<br>
+                    • Chez les poissons : les <strong>branchies</strong>.<br>
+                    • Chez les insectes : les <strong>trachées</strong>.<br>
+                    • Chez les plantes : les <strong>stomates</strong> (petits trous sur les feuilles).
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> Respirer = absorber de l'oxygène et rejeter du gaz carbonique. Tous les êtres vivants respirent, avec des organes différents.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 5 : La photosynthèse – La magie des plantes vertes",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Tu as une plante dans un pot à la maison. Tu l'arroses de temps en temps. Elle ne mange rien, pourtant elle grandit, elle fait de nouvelles feuilles. D'où vient sa nourriture ? De l'air, de l'eau et du soleil !
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Chaque feuille verte est une <strong>petite usine solaire</strong>. Elle capte la lumière avec ses panneaux (la chlorophylle, le pigment vert), prend de l'eau par les racines, du gaz carbonique dans l'air, et fabrique du sucre et de l'oxygène.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>La photosynthèse est le processus qui permet aux plantes de fabriquer leur propre nourriture. Sans elle, il n'y aurait pas de vie sur Terre (pas d'oxygène, pas de nourriture).</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie : La photosynthèse</strong><br>
+                    La <strong>photosynthèse</strong> est le processus par lequel les plantes vertes fabriquent du sucre (glucose) et de l'oxygène à partir d'eau, de gaz carbonique et de lumière.<br><br>
+                    <strong>Équation simplifiée :</strong><br>
+                    Eau (H₂O) + Gaz carbonique (CO₂) + Lumière → Glucose (C₆H₁₂O₆) + Oxygène (O₂)<br><br>
+                    <strong>Conditions :</strong><br>
+                    • Présence de <strong>chlorophylle</strong> (pigment vert dans les feuilles).<br>
+                    • Présence de <strong>lumière</strong>.<br>
+                    • Présence d'eau et de gaz carbonique.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> Photosynthèse = les plantes fabriquent du sucre et de l'oxygène avec de l'eau, du CO₂ et de la lumière. C'est la base de toute la vie sur Terre.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 6 : La reproduction des animaux",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Dans la basse-cour, tu as vu une poule pondre un œuf. Trois semaines plus tard, un poussin est sorti de l'œuf en piaillant. Dans la cour voisine, la chienne a mis au monde quatre petits chiots qui tètent déjà. Deux façons différentes de donner la vie !
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Imagine deux types de naissances. Dans un cas, le petit est déjà tout formé quand il naît (comme le chiot, le veau). Dans l'autre cas, le petit sort d'un œuf pondu et continue à se développer dehors (comme le poussin, le crocodile).
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>La reproduction permet aux animaux de donner naissance à de nouveaux individus et d'assurer la survie de l'espèce.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie : Les modes de reproduction animale</strong><br>
+                    • <strong>Ovipare :</strong> l'animal pond des œufs qui se développent à l'extérieur du corps. Exemples : poule, tortue, crocodile, poisson.<br>
+                    • <strong>Vivipare :</strong> le petit se développe à l'intérieur du ventre de la mère et naît déjà formé. Exemples : chien, vache, homme.<br>
+                    • <strong>Ovovivipare :</strong> les œufs se développent à l'intérieur du corps, mais sans lien direct avec la mère. Exemple : vipère.<br><br>
+                    <strong>Reproduction sexuée :</strong> nécessite un mâle et une femelle. Le petit hérite des caractéristiques des deux parents.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> Ovipare = pond des œufs. Vivipare = le petit naît déjà formé. La reproduction assure la survie de l'espèce.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 7 : La reproduction des plantes à fleurs",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Tu observes une fleur d'hibiscus dans la cour. Au centre, tu vois une petite tige avec une boule au bout, entourée de fils jaunes avec de la poudre. Un jour, la fleur se fane, et à sa place apparaît un petit fruit qui grossit et contient des graines.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> La fleur, c'est l'<strong>organe de séduction</strong> de la plante. Avec ses belles couleurs et son parfum, elle attire les insectes (abeilles, papillons) qui vont transporter le pollen d'une fleur à l'autre, comme un messager d'amour.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>La fleur est l'organe reproducteur des plantes. Elle contient les parties mâles et femelles.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie : Structure et reproduction de la fleur</strong><br>
+                    <strong>Parties de la fleur :</strong><br>
+                    • <strong>Étamines :</strong> organes mâles, produisent le <strong>pollen</strong> (poudre jaune).<br>
+                    • <strong>Pistil :</strong> organe femelle, contient l'<strong>ovaire</strong> avec les ovules.<br>
+                    • <strong>Pétales :</strong> attirent les insectes par leurs couleurs.<br>
+                    • <strong>Sépales :</strong> protègent la fleur en bouton.<br><br>
+                    <strong>Étapes :</strong><br>
+                    1. <strong>Pollinisation :</strong> le pollen est transporté sur le pistil (par le vent, les insectes).<br>
+                    2. <strong>Fécondation :</strong> le pollen fusionne avec l'ovule.<br>
+                    3. <strong>Formation du fruit :</strong> l'ovaire se transforme en fruit contenant les graines.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> La fleur = organe reproducteur. Étamines (mâle) + pistil (femelle). Le pollen féconde l'ovule → fruit → graines.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 8 : Les relations entre les êtres vivants – La chaîne alimentaire",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Observe un champ de maïs. L'herbe pousse (elle fabrique sa nourriture). Une chenille mange une feuille de maïs. Un oiseau attrape la chenille et la mange. Un serpent avale l'oiseau. Et un aigle, du haut du ciel, fond sur le serpent. Tout ce monde est relié : c'est une <strong>chaîne alimentaire</strong>.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> La chaîne alimentaire, c'est comme une <strong>grande chaîne de solidarité inversée</strong>. Chaque maillon mange celui qui est avant lui et est mangé par celui qui vient après. Le premier maillon est toujours une plante.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>Dans la nature, les êtres vivants sont liés par des relations de <strong>nutrition</strong> : qui mange qui ?</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie : La chaîne alimentaire</strong><br>
+                    Une <strong>chaîne alimentaire</strong> est une suite d'êtres vivants où chacun mange celui qui le précède.<br><br>
+                    <strong>Niveaux trophiques :</strong><br>
+                    • <strong>Producteurs :</strong> les plantes vertes (fabriquent leur nourriture).<br>
+                    • <strong>Consommateurs primaires :</strong> herbivores (mangent les plantes).<br>
+                    • <strong>Consommateurs secondaires :</strong> carnivores (mangent les herbivores).<br>
+                    • <strong>Consommateurs tertiaires :</strong> super-prédateurs (au sommet de la chaîne).<br>
+                    • <strong>Décomposeurs :</strong> bactéries, champignons (recyclent les déchets).
+                </div>
+                <div class="example-box">
+                    🌿→🐛→🐦→🐍→🦅 <strong>Exemple :</strong> Maïs → Chenille → Oiseau → Serpent → Aigle.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> Chaîne alimentaire = qui mange qui. Plante → herbivore → carnivore → super-prédateur. Tous sont reliés.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 9 : L'écosystème – Un monde en équilibre",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Regarde la rivière près de ton village. Il y a l'eau qui coule, les poissons, les nénuphars, les libellules, les oiseaux pêcheurs, les arbres sur la berge. Tout ce petit monde vit ensemble, dépend les uns des autres. C'est un <strong>écosystème</strong>.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Un écosystème, c'est comme une <strong>grande maison</strong> où vivent ensemble la famille (les êtres vivants) et les meubles (l'eau, le sol, l'air). Si on enlève un meuble ou un membre de la famille, toute la maison est déséquilibrée.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>Un écosystème est un ensemble formé par les êtres vivants (animaux, plantes) et leur milieu (sol, eau, climat). Tout est en équilibre.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie : L'écosystème</strong><br>
+                    Un <strong>écosystème</strong> est l'association entre un milieu (le <strong>biotope</strong>) et les êtres vivants qui y habitent (la <strong>biocénose</strong>).<br><br>
+                    <strong>Composants :</strong><br>
+                    • <strong>Biotope :</strong> le cadre de vie (sol, eau, température, lumière).<br>
+                    • <strong>Biocénose :</strong> l'ensemble des êtres vivants.<br><br>
+                    <strong>Exemples d'écosystèmes :</strong><br>
+                    • La forêt équatoriale.<br>
+                    • La savane.<br>
+                    • Le lac.<br>
+                    • La rivière.<br>
+                    • La mangrove.
+                </div>
+                <div class="example-box">
+                    🌍 <strong>En RDC :</strong> la forêt du bassin du Congo est le 2ᵉ plus grand écosystème forestier du monde.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> Écosystème = biotope (milieu) + biocénose (êtres vivants). Tout est lié, tout est en équilibre.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 10 : L'homme et son environnement – Protéger la nature",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Près de ton école, il y avait un petit bois où les enfants jouaient. Un jour, des hommes sont venus avec des tronçonneuses et ont coupé tous les arbres pour vendre le bois. Aujourd'hui, quand il pleut, l'eau emporte toute la terre et rien ne pousse. L'homme a détruit son environnement.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> La Terre est comme une <strong>maman généreuse</strong> qui nous nourrit et nous protège. Si on lui fait du mal, elle devient faible et ne peut plus bien s'occuper de nous.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>L'homme a un impact immense sur la nature. Il peut la détruire, mais il peut aussi la <strong>protéger</strong>.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie : Actions de l'homme sur l'environnement</strong><br>
+                    <strong>Actions négatives :</strong><br>
+                    • <strong>Déforestation :</strong> coupe abusive des arbres.<br>
+                    • <strong>Pollution :</strong> rejet de déchets dans l'eau, l'air, le sol.<br>
+                    • <strong>Braconnage :</strong> chasse illégale d'animaux protégés.<br>
+                    • <strong>Incendies de brousse.</strong><br><br>
+                    <strong>Actions positives (gestes écocitoyens) :</strong><br>
+                    • Planter des arbres (reboisement).<br>
+                    • Ne pas jeter les déchets dans la nature.<br>
+                    • Protéger les animaux.<br>
+                    • Économiser l'eau et l'énergie.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> L'homme peut détruire ou protéger la nature. Planter un arbre, ne pas polluer, c'est être un <strong>écocitoyen</strong>.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 11 : L'hygiène et la santé – Le corps, un temple à protéger",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Tu te souviens de ce jour où tu es tombé malade parce que tu avais mangé des fruits sans les laver. Tu as eu mal au ventre, de la fièvre. Depuis, ta maman te dit : « Lave-toi toujours les mains avant de manger, lave les fruits, bois de l'eau propre. » C'est cela, l'<strong>hygiène</strong>.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Ton corps est comme un <strong>temple précieux</strong>. L'hygiène, c'est la clé qui ferme la porte aux microbes (les ennemis invisibles). Le savon, l'eau propre, les aliments bien lavés sont les gardiens du temple.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>Beaucoup de maladies sont évitées par des gestes simples d'hygiène.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie : Les règles d'hygiène de base</strong><br>
+                    • <strong>Hygiène corporelle :</strong> se laver chaque jour, brosser les dents, laver les mains avant de manger et après les toilettes.<br>
+                    • <strong>Hygiène alimentaire :</strong> laver les fruits et légumes, bien cuire la viande, boire de l'eau potable.<br>
+                    • <strong>Hygiène du milieu :</strong> balayer la maison, jeter les ordures dans une poubelle, éviter l'eau stagnante (moustiques).<br>
+                    • <strong>Vaccination :</strong> se faire vacciner pour se protéger des maladies graves.
+                </div>
+                <div class="example-box">
+                    🦟 <strong>En RDC :</strong> le paludisme (malaria) est transmis par les moustiques. Dormir sous une moustiquaire imprégnée est un geste d'hygiène qui sauve des vies.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> Hygiène = se laver, manger propre, vivre dans un milieu propre. Des gestes simples pour rester en bonne santé.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 12 : L'éducation à la vie familiale – La puberté",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Tu as peut-être remarqué que ton corps change depuis quelque temps. Ta voix devient plus grave (pour les garçons), ta poitrine se développe (pour les filles), des poils apparaissent sous les bras. Ce ne sont pas des maladies : c'est la <strong>puberté</strong>, le passage de l'enfance à l'adolescence.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> La puberté, c'est comme une <strong>métamorphose</strong>. La chenille devient papillon. L'enfant devient progressivement un adulte capable de donner la vie. C'est une étape naturelle et merveilleuse.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>La puberté est déclenchée par des <strong>hormones</strong>, des substances chimiques fabriquées par le corps. Elle survient entre 10 et 15 ans.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie : La puberté</strong><br>
+                    La <strong>puberté</strong> est la période de transformation du corps de l'enfant en corps d'adulte, rendant possible la reproduction.<br><br>
+                    <strong>Changements chez le garçon :</strong> mue de la voix, apparition de la barbe et des poils, développement des muscles, premières érections.<br>
+                    <strong>Changements chez la fille :</strong> développement des seins, apparition des règles (menstruations), élargissement du bassin, apparition des poils.<br><br>
+                    <strong>Hygiène pendant la puberté :</strong> se laver tous les jours, changer de sous-vêtements, ne pas avoir honte de parler à un adulte de confiance.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> La puberté = le corps qui devient adulte. C'est normal. Il faut en parler et rester propre.
+                </div>
+            `
+        },
+        {
+            title: "🏆 QUIZ FINAL – Teste tes connaissances en SVT !",
+            content: `
+                <div id="quizContainer" class="quiz-container">
+                    <h3>📝 Questionnaire de SVT (7ᵉ année)</h3>
+                    <p style="margin-bottom:15px;">Choisis la bonne réponse pour chaque question.</p>
+                    <div id="quizQuestions"></div>
+                    <button id="submitQuiz" class="quiz-btn-submit">✅ Valider mes réponses</button>
+                    <div id="quizResult" class="quiz-result"></div>
+                </div>
+            `
+        }
+    ];
+
+    let currentSlide = 0, isAutoPlaying = false, syncInterval;
+    let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+    const audioPlayer = document.getElementById('audioPlayer');
+    const contentDiv = document.getElementById('content');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const playBtn = document.getElementById('playBtn');
+    const statusDiv = document.getElementById('status');
+    const slideCounterSpan = document.getElementById('slideCounter');
+    const progressFill = document.getElementById('progressFill');
+    const timeDisplay = document.getElementById('timeDisplay');
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const searchNav = document.getElementById('searchNav');
+    const prevResultBtn = document.getElementById('prevResultBtn');
+    const nextResultBtn = document.getElementById('nextResultBtn');
+    const resultCounterSpan = document.getElementById('resultCounter');
+    const quizNavBtn = document.getElementById('quizNavBtn');
+
+    const timeline = [0,69,129,179,224,275,318,367,415,461,501,550,604];
+    const totalDuration = 610;
+
+    function getTextFromHtml(html) {
+        const div = document.createElement('div');
+        div.innerHTML = html;
+        return div.textContent || div.innerText || "";
+    }
+
+    function searchSlides(term) {
+        if (!term.trim()) return [];
+        const lowerTerm = term.toLowerCase();
+        const results = [];
+        slides.forEach((slide, idx) => {
+            if (slide.title.toLowerCase().includes(lowerTerm) ||
+                getTextFromHtml(slide.content).toLowerCase().includes(lowerTerm)) {
+                results.push(idx);
+            }
+        });
+        return results;
+    }
+
+    function highlightInCurrentSlide(term) {
+        if (!term || term.trim() === "") return;
+        const slideContentDiv = document.querySelector('.slide-content');
+        if (!slideContentDiv) return;
+        const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+        const walker = document.createTreeWalker(slideContentDiv, NodeFilter.SHOW_TEXT, null, false);
+        const textNodes = [];
+        while (walker.nextNode()) textNodes.push(walker.currentNode);
+        for (let node of textNodes) {
+            if (node.nodeValue && regex.test(node.nodeValue)) {
+                const span = document.createElement('span');
+                span.innerHTML = node.nodeValue.replace(regex, '<span class="highlight">$1</span>');
+                node.parentNode.replaceChild(span, node);
+            }
+        }
+    }
+
+    function renderQuiz() {
+        const quizDiv = document.getElementById('quizQuestions');
+        if (!quizDiv) return;
+        const questions = [
+            { text: "Qu'est-ce qui caractérise un être vivant ?", options: ["Il est solide", "Il naît, grandit, se nourrit, respire, se reproduit, meurt", "Il est fabriqué par l'homme"], correct: 1 },
+            { text: "Quelle est la plus petite unité du vivant ?", options: ["L'organe", "Le tissu", "La cellule"], correct: 2 },
+            { text: "Comment les plantes se nourrissent-elles ?", options: ["En mangeant des insectes", "Par la photosynthèse", "En buvant seulement de l'eau"], correct: 1 },
+            { text: "Quel gaz est absorbé lors de la respiration ?", options: ["Le gaz carbonique", "L'oxygène", "L'azote"], correct: 1 },
+            { text: "Un animal qui pond des œufs est dit :", options: ["Vivipare", "Ovipare", "Ovovivipare"], correct: 1 },
+            { text: "Dans une fleur, l'organe mâle s'appelle :", options: ["Le pistil", "Les étamines", "Les pétales"], correct: 1 },
+            { text: "Dans une chaîne alimentaire, le premier maillon est toujours :", options: ["Un carnivore", "Un herbivore", "Une plante verte"], correct: 2 },
+            { text: "Un écosystème est composé :", options: ["Du biotope et de la biocénose", "Seulement des animaux", "Seulement des plantes"], correct: 0 },
+            { text: "Quel geste protège l'environnement ?", options: ["Couper tous les arbres", "Planter un arbre", "Jeter ses déchets dans la rivière"], correct: 1 },
+            { text: "La puberté est déclenchée par :", options: ["Les microbes", "Les hormones", "Le soleil"], correct: 1 }
+        ];
+        let html = '';
+        questions.forEach((q, idx) => {
+            html += `<div class="quiz-question"><p>${idx+1}. ${q.text}</p>`;
+            q.options.forEach((opt, optIdx) => {
+                html += `<label><input type="radio" name="q${idx}" value="${optIdx}"> ${opt}</label>`;
+            });
+            html += `</div>`;
+        });
+        quizDiv.innerHTML = html;
+        const submitBtn = document.getElementById('submitQuiz');
+        if (submitBtn) {
+            submitBtn.onclick = () => {
+                let score = 0;
+                questions.forEach((q, idx) => {
+                    const selected = document.querySelector(`input[name="q${idx}"]:checked`);
+                    if (selected && parseInt(selected.value) === q.correct) score++;
+                });
+                const resultDiv = document.getElementById('quizResult');
+                const pct = Math.round(score/questions.length*100);
+                resultDiv.innerHTML = `<div style="background:#c8e6c9; padding:18px; border-radius:12px;">
+                    🎯 <strong>Ton score : ${score} / ${questions.length} (${pct}%)</strong><br>
+                    ${score === questions.length ? '🌟 Excellent ! Tu es un vrai petit scientifique !' : score >=7 ? '👍 Bon travail, continue !' : '📖 Relis les leçons, la nature est fascinante.'}
+                </div>`;
+            };
+        }
+    }
+
+    function renderSlide(index, keepHighlight = true) {
+        const isQuiz = (index === slides.length - 1);
+        contentDiv.innerHTML = `<div class="slide active">
+            <h2 class="slide-title">${slides[index].title}</h2>
+            <div class="slide-content">${slides[index].content}</div>
+        </div>`;
+        if (isQuiz) renderQuiz();
+        slideCounterSpan.textContent = `${index+1}/${slides.length}`;
+        progressFill.style.width = `${((index+1)/slides.length)*100}%`;
+        if (!isAutoPlaying) {
+            prevBtn.disabled = (index === 0);
+            nextBtn.disabled = (index === slides.length-1);
+        }
+        contentDiv.scrollTop = 0;
+        if (keepHighlight && lastSearchTerm && lastSearchTerm.trim() !== "" && !isQuiz) {
+            highlightInCurrentSlide(lastSearchTerm);
+        }
+    }
+
+    function updateResultDisplay() {
+        if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+        searchNav.style.display = 'flex';
+        resultCounterSpan.innerText = `${currentResultIdx+1}/${searchResults.length}`;
+    }
+
+    function goToResult(idx) {
+        if (idx < 0 || idx >= searchResults.length) return;
+        currentResultIdx = idx;
+        currentSlide = searchResults[currentResultIdx];
+        renderSlide(currentSlide, true);
+        updateResultDisplay();
+    }
+
+    function performSearch() {
+        const term = searchInput.value.trim();
+        if (!term) { alert("Entre un mot à rechercher."); return; }
+        if (isAutoPlaying) stopAutoPlay();
+        lastSearchTerm = term;
+        searchResults = searchSlides(term);
+        if (searchResults.length === 0) { alert(`Aucun résultat pour "${term}".`); searchNav.style.display = 'none'; return; }
+        currentResultIdx = 0;
+        goToResult(0);
+    }
+
+    function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+    function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+
+    function nextSlide() {
+        if (currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); clearSearch(); }
+    }
+    function prevSlide() {
+        if (currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); clearSearch(); }
+    }
+    function clearSearch() {
+        if (lastSearchTerm) { lastSearchTerm = ""; searchResults = []; searchNav.style.display = 'none'; searchInput.value = ""; }
+    }
+
+    function updateTimeDisplay() {
+        let t = audioPlayer.currentTime;
+        let mins = Math.floor(t/60).toString().padStart(2,'0');
+        let secs = Math.floor(t%60).toString().padStart(2,'0');
+        let tMins = Math.floor(totalDuration/60).toString().padStart(2,'0');
+        let tSecs = Math.floor(totalDuration%60).toString().padStart(2,'0');
+        timeDisplay.innerText = `${mins}:${secs} / ${tMins}:${tSecs}`;
+        if (!isAutoPlaying) progressFill.style.width = `${(t/totalDuration)*100}%`;
+    }
+
+    function syncSlideFromTime() {
+        if (!isAutoPlaying) return;
+        const t = audioPlayer.currentTime;
+        for (let i = timeline.length-1; i >= 0; i--) {
+            if (t >= timeline[i]) {
+                if (i !== currentSlide) { currentSlide = i; renderSlide(currentSlide, false); }
+                break;
+            }
+        }
+        updateTimeDisplay();
+        if (t >= totalDuration - 1) stopAutoPlay();
+    }
+
+    function startAutoPlay() {
+        isAutoPlaying = true;
+        playBtn.innerText = "⏸ Pause";
+        playBtn.classList.add('stop-btn');
+        statusDiv.innerText = "🔊 Lecture synchronisée en cours...";
+        statusDiv.style.background = "rgba(46,125,50,0.9)";
+        prevBtn.disabled = nextBtn.disabled = true;
+        clearSearch();
+        audioPlayer.play().catch(e => console.log("Lecture bloquée, cliquer sur play"));
+        if (syncInterval) clearInterval(syncInterval);
+        syncInterval = setInterval(syncSlideFromTime, 300);
+    }
+
+    function stopAutoPlay() {
+        isAutoPlaying = false;
+        playBtn.innerText = "▶ Lecture audio";
+        playBtn.classList.remove('stop-btn');
+        statusDiv.innerText = "📖 Mode navigation";
+        statusDiv.style.background = "rgba(0,0,0,0.8)";
+        audioPlayer.pause();
+        if (syncInterval) { clearInterval(syncInterval); syncInterval = null; }
+        prevBtn.disabled = (currentSlide===0);
+        nextBtn.disabled = (currentSlide===slides.length-1);
+    }
+
+    function toggleAutoPlay() { isAutoPlaying ? stopAutoPlay() : startAutoPlay(); }
+    function goToQuiz() { if (isAutoPlaying) stopAutoPlay(); currentSlide = slides.length-1; renderSlide(currentSlide, false); }
+
+    document.addEventListener('keydown', (e) => {
+        if (isAutoPlaying) return;
+        if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+        else if (e.key === 'ArrowRight') { e.preventDefault(); nextSlide(); }
+        else if (e.key === ' ' && document.activeElement !== searchInput) { e.preventDefault(); toggleAutoPlay(); }
+    });
+
+    prevBtn.onclick = prevSlide;
+    nextBtn.onclick = nextSlide;
+    playBtn.onclick = toggleAutoPlay;
+    searchBtn.onclick = performSearch;
+    prevResultBtn.onclick = prevResult;
+    nextResultBtn.onclick = nextResult;
+    quizNavBtn.onclick = goToQuiz;
+    audioPlayer.addEventListener('ended', stopAutoPlay);
+    audioPlayer.addEventListener('timeupdate', () => { if(!isAutoPlaying) updateTimeDisplay(); });
+
+    renderSlide(0, false);
+    updateTimeDisplay();
+</script>
+</body>
+</html>

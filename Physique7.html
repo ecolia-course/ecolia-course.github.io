@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Physique 7e année - Du réel vers la théorie | RDC</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(160deg, #1a3a2a 0%, #2c5c3a 50%, #1e3c2c 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            background: #fefefe;
+            border-radius: 24px;
+            box-shadow: 0 25px 70px rgba(0,0,0,0.35);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            max-height: 95vh;
+        }
+        .progress-bar { height: 7px; background: #e0e0e0; }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2e7d32, #1b5e20);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+        .header {
+            padding: 18px 28px;
+            background: #f1f8e9;
+            border-bottom: 2px solid #c8e6c9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .header h1 {
+            color: #1b5e20;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .badge {
+            background: #2e7d32;
+            color: white;
+            padding: 6px 18px;
+            border-radius: 30px;
+            font-weight: bold;
+        }
+        .search-container {
+            display: flex;
+            gap: 6px;
+            background: white;
+            padding: 4px 10px;
+            border-radius: 40px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .search-container input {
+            border: none;
+            padding: 10px 16px;
+            border-radius: 30px;
+            outline: none;
+            width: 220px;
+            font-size: 0.95rem;
+        }
+        .search-container button, .quiz-btn {
+            background: #2e7d32;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 8px 18px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .search-container button:hover, .quiz-btn:hover { background: #1b5e20; }
+        .quiz-btn { background: #f57c00; }
+        .quiz-btn:hover { background: #e65100; }
+        .search-nav {
+            display: flex;
+            gap: 8px;
+            background: #e8f5e9;
+            padding: 6px 14px;
+            border-radius: 30px;
+            align-items: center;
+        }
+        .search-nav button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            color: #2e7d32;
+        }
+        .content {
+            padding: 30px 35px;
+            flex: 1;
+            overflow-y: auto;
+            background: #ffffff;
+            scroll-behavior: smooth;
+        }
+        .slide { display: none; animation: fadeSlide 0.5s ease; }
+        .slide.active { display: block; }
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .slide-title {
+            color: #1b5e20;
+            font-size: 1.8rem;
+            border-left: 6px solid #4caf50;
+            padding-left: 18px;
+            margin-bottom: 20px;
+        }
+        .slide-content { color: #263238; line-height: 1.9; font-size: 1.05rem; }
+        .slide-content h3 {
+            color: #2e7d32;
+            margin: 28px 0 14px;
+            font-size: 1.3rem;
+        }
+        .scene-box {
+            background: #fff8e1;
+            border-left: 5px solid #ff8f00;
+            padding: 18px 22px;
+            border-radius: 12px;
+            margin: 18px 0;
+            font-style: italic;
+        }
+        .image-box {
+            background: #e3f2fd;
+            padding: 18px;
+            border-radius: 14px;
+            text-align: center;
+            margin: 20px 0;
+            border: 1px dashed #90caf9;
+        }
+        .definition-box {
+            background: #e8f5e9;
+            padding: 22px;
+            border-radius: 14px;
+            margin: 22px 0;
+            border-left: 6px solid #2e7d32;
+        }
+        .example-box {
+            background: #fce4ec;
+            padding: 18px;
+            border-radius: 12px;
+            margin: 18px 0;
+            border-left: 5px solid #c62828;
+        }
+        .summary-box {
+            background: #f3e5f5;
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin: 18px 0;
+            border: 2px solid #7b1fa2;
+        }
+        .quiz-container {
+            background: #f1f8e9;
+            padding: 25px;
+            border-radius: 20px;
+            margin-top: 20px;
+        }
+        .quiz-question {
+            background: white;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 18px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        }
+        .quiz-question p { font-weight: bold; margin-bottom: 10px; }
+        .quiz-question label { display: block; margin: 8px 0; cursor: pointer; }
+        .quiz-btn-submit {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 40px;
+            font-size: 1.05rem;
+            cursor: pointer;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        .quiz-result {
+            margin-top: 20px;
+            font-weight: bold;
+            padding: 16px;
+            border-radius: 14px;
+        }
+        .controls {
+            padding: 18px 28px;
+            background: #f8f9fa;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+        .nav-buttons { display: flex; gap: 10px; }
+        button {
+            padding: 12px 26px;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: 500;
+        }
+        .nav-btn { background: white; color: #2e7d32; border: 1px solid #ccc; }
+        .nav-btn:hover:not(:disabled) { background: #e8f5e9; transform: translateY(-1px); }
+        .nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .play-btn {
+            background: linear-gradient(135deg, #2e7d32, #1b5e20);
+            color: white;
+            box-shadow: 0 4px 16px rgba(46,125,50,0.4);
+            font-weight: bold;
+        }
+        .stop-btn { background: #c62828; color: white; }
+        .counter { color: #555; background: white; padding: 8px 16px; border-radius: 20px; font-weight: 500; }
+        .status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            z-index: 1000;
+        }
+        .highlight { background-color: #ffeb3b; padding: 1px 3px; border-radius: 3px; }
+        ul { margin-left: 25px; }
+        li { margin: 6px 0; }
+        @media (max-width: 768px) {
+            .content { padding: 20px; }
+            .slide-title { font-size: 1.4rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="status" id="status">📖 Mode navigation</div>
+<div class="container">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="header">
+        <h1>🔬 Physique · 7ᵉ année</h1>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Rechercher un mot...">
+                <button id="searchBtn">🔍</button>
+                <button id="quizNavBtn" class="quiz-btn">📝 Quiz</button>
+            </div>
+            <div class="search-nav" id="searchNav" style="display: none;">
+                <button id="prevResultBtn">◀</button>
+                <span id="resultCounter">0/0</span>
+                <button id="nextResultBtn">▶</button>
+            </div>
+            <span class="badge" id="slideCounter">1/13</span>
+        </div>
+    </div>
+    <div class="content" id="content"></div>
+    <div class="controls">
+        <div class="nav-buttons">
+            <button class="nav-btn" id="prevBtn">← Leçon précédente</button>
+            <button class="nav-btn" id="nextBtn">Leçon suivante →</button>
+        </div>
+        <button class="play-btn" id="playBtn">▶ Lecture audio</button>
+        <span class="counter" id="timeDisplay">00:00 / 00:00</span>
+    </div>
+</div>
+<audio id="audioPlayer" src="physique7_audio.mp3" preload="auto"></audio>
+
+<script>
+    const slides = [
+        {
+            title: "Leçon 1 : Qu'est-ce que la matière ?",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Imagine-toi assis dans ta classe, à Kinshasa ou à Goma. Devant toi, il y a ton banc en bois, ton cahier, un stylo, et peut-être un verre d'eau. Derrière la fenêtre, tu vois un manguier, le ciel bleu, et tu sens l'air chaud qui entre. Maintenant, ferme les yeux et pense : <em>tout ce que je viens de citer, qu'est-ce que ça a en commun ?</em>
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Un grand panier dans lequel on met : une pierre, une bouteille d'eau, un ballon gonflé d'air, une mangue. Tout cela, ce sont des <strong>choses</strong> qui existent, qui pèsent quelque chose et qui prennent de la place.
+                </div>
+                <h3>🔍 Observons ensemble</h3>
+                <p>Prends une pierre dans ta main. Tu sens qu'elle est lourde : elle a un <strong>poids</strong>. Pose-la dans un seau rempli d'eau à ras bord : l'eau déborde. Pourquoi ? Parce que la pierre prend de la <strong>place</strong> dans le seau. Même l'air, qu'on ne voit pas, prend de la place : c'est pour cela qu'un ballon gonflé est bien rond et dur.</p>
+                <h3>❓ Questions pour réfléchir</h3>
+                <ul>
+                    <li>Est-ce que l'air a un poids ? (Oui, un ballon gonflé pèse plus lourd qu'un ballon dégonflé.)</li>
+                    <li>Est-ce que la lumière du soleil prend de la place dans un seau ?</li>
+                    <li>Qu'est-ce qui fait que la pierre et l'eau sont toutes les deux de la « matière » ?</li>
+                </ul>
+                <h3>💡 Découvrons ensemble</h3>
+                <p>L'élève comprend progressivement que tout ce qui existe autour de nous — visible ou invisible — a deux propriétés : cela <strong>pèse</strong> (une masse) et cela <strong>occupe un espace</strong> (un volume). Si quelque chose n'a ni masse ni volume, ce n'est pas de la matière.</p>
+                <div class="definition-box">
+                    <strong>📚 Définition (Théorie) :</strong><br>
+                    La <strong>matière</strong> est tout ce qui possède une <strong>masse</strong> et un <strong>volume</strong>.<br>
+                    • <strong>Masse</strong> : grandeur qui se mesure en kilogrammes (kg) ou grammes (g) avec une balance.<br>
+                    • <strong>Volume</strong> : espace occupé, mesuré en litres (L) ou mètres cubes (m³).
+                </div>
+                <div class="example-box">
+                    ✅ <strong>Exemples de matière :</strong> l'eau, l'air, le fer, le bois, ton corps, une banane.<br>
+                    ❌ <strong>Non-matière :</strong> la lumière, la chaleur, les sons, les idées.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé ultra-simple :</strong> La matière, c'est tout ce qui <em>pèse</em> et qui <em>prend de la place</em>. Même l'air que tu respires, c'est de la matière !
+                </div>
+            `
+        },
+        {
+            title: "Leçon 2 : Les trois états de la matière",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Ce matin, ta maman a sorti un gros bloc de glace du congélateur pour préparer du jus bien frais. Elle l'a posé dans une bassine au soleil. Une heure plus tard, le bloc avait disparu : il ne restait que de l'eau liquide dans la bassine. Et si on laissait cette eau bouillir sur le feu, elle disparaîtrait en vapeur invisible ! <em>La même matière (l'eau) peut donc se présenter de trois façons complètement différentes.</em>
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Visualise trois récipients : dans le premier, un caillou (dur, forme fixe) ; dans le deuxième, de l'eau qui prend la forme du verre ; dans le troisième, rien de visible, mais le récipient est plein d'air.
+                </div>
+                <h3>🔍 Observons</h3>
+                <ul>
+                    <li><strong>Le glaçon (solide) :</strong> Il a sa propre forme. Même si tu le changes de place, il reste cube ou rectangle. Il est dur.</li>
+                    <li><strong>L'eau liquide :</strong> Elle coule, elle prend la forme du récipient qui la contient : verre, bouteille, bassine.</li>
+                    <li><strong>La vapeur (gaz) :</strong> On ne la voit pas toujours, mais elle se répand partout dans la pièce. Elle n'a ni forme fixe, ni volume fixe.</li>
+                </ul>
+                <h3>❓ Questions-guides</h3>
+                <ul>
+                    <li>Pourquoi la glace garde-t-elle sa forme alors que l'eau coule entre les doigts ?</li>
+                    <li>Si tu ouvres un flacon de parfum dans un coin de la classe, pourquoi l'odeur arrive-t-elle jusqu'à toi, même loin ?</li>
+                    <li>Peut-on attraper de l'air avec les doigts ?</li>
+                </ul>
+                <h3>💡 Découverte</h3>
+                <p>L'élève réalise que la matière peut exister sous trois aspects différents, qu'on appelle les <strong>états de la matière</strong>. Et que c'est la chaleur (ou le froid) qui fait passer d'un état à l'autre.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie : Les trois états</strong><br>
+                    • <strong>Solide :</strong> forme propre, volume fixe, particules très proches et immobiles.<br>
+                    • <strong>Liquide :</strong> prend la forme du récipient, volume fixe, particules proches mais mobiles.<br>
+                    • <strong>Gaz :</strong> ni forme ni volume fixes, occupe tout l'espace disponible, particules très éloignées et agitées.
+                </div>
+                <div class="example-box">
+                    🧊 <strong>Exemples concrets :</strong><br>
+                    Solides : caillou, fer, bois, sucre en morceaux.<br>
+                    Liquides : eau, huile de palme, lait, essence.<br>
+                    Gaz : air, oxygène, fumée de bois, vapeur d'eau.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> La matière peut être <em>dure</em> (solide), <em>coulante</em> (liquide) ou <em>invisible et qui s'échappe</em> (gaz).
+                </div>
+            `
+        },
+        {
+            title: "Leçon 3 : Masse et volume – Deux grandeurs différentes",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Au marché, ta maman achète 1 kg de viande et 1 kg de coton pour les habits. Le vendeur met la viande dans un petit sachet, mais le coton remplit un énorme sac ! Pourtant, les deux pèsent 1 kg. Comment est-ce possible ?
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Une balance à deux plateaux. Sur le plateau gauche, un petit cube de fer bien lourd. Sur le plateau droit, un énorme ballon gonflable. La balance est équilibrée : même masse, volumes très différents.
+                </div>
+                <h3>🔍 Observation</h3>
+                <p>La masse, c'est la <strong>quantité de matière</strong> dans un objet. Le volume, c'est <strong>l'espace</strong> que cet objet occupe. Deux objets peuvent avoir la même masse mais des volumes très différents (fer / coton), ou le même volume mais des masses différentes (bille de plomb / bille de bois).</p>
+                <h3>❓ Questions-guides</h3>
+                <ul>
+                    <li>Qu'est-ce qui est le plus lourd : un kilo de plumes ou un kilo de cailloux ?</li>
+                    <li>Si tu remplis une bouteille de 1 L avec de l'eau, puis avec du sable, laquelle sera la plus lourde ?</li>
+                </ul>
+                <div class="definition-box">
+                    <strong>📚 Définitions :</strong><br>
+                    • <strong>Masse (m) :</strong> quantité de matière. Unité : kilogramme (kg) ou gramme (g). Instrument : balance.<br>
+                    • <strong>Volume (V) :</strong> espace occupé. Unité : litre (L) ou mètre cube (m³). Instrument : éprouvette graduée, verre mesureur.
+                </div>
+                <div class="example-box">
+                    💧 <strong>Expérience mentale :</strong> Prends un verre doseur de 250 mL. Remplis-le d'eau : sa masse est d'environ 250 g. Remplis-le de farine : sa masse sera d'environ 130 g. Même volume, masse différente !
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> La <em>masse</em> = combien c'est lourd. Le <em>volume</em> = combien ça prend de place. Ce sont deux choses différentes.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 4 : La masse volumique – Pourquoi ça flotte ou ça coule ?",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Tu es au bord du fleuve Congo avec ton cousin. Tu ramasses un gros morceau de bois sec et une petite pierre. Tu lances les deux dans l'eau : le bois flotte, la pierre coule à pic. Pourtant, le bois est plus gros ! Pourquoi ?
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Un verre rempli d'eau. Tu déposes délicatement un bouchon de liège : il flotte. Tu mets un clou en fer : il tombe au fond. Imagine que le liège est une « éponge » pleine de minuscules poches d'air, alors que le fer est « tout serré ».
+                </div>
+                <h3>🔍 Observation</h3>
+                <p>Le bois flotte parce qu'il est <strong>moins dense</strong> que l'eau : pour un même volume, il pèse moins lourd. On dit que sa <strong>masse volumique</strong> est plus petite que celle de l'eau.</p>
+                <h3>❓ Questions-guides</h3>
+                <ul>
+                    <li>Pourquoi un énorme bateau en fer flotte-t-il alors qu'un petit clou en fer coule ?</li>
+                    <li>L'huile de palme flotte-t-elle sur l'eau ? (Oui, elle est moins dense.)</li>
+                </ul>
+                <div class="definition-box">
+                    <strong>📚 Théorie : Masse volumique (ρ)</strong><br>
+                    La <strong>masse volumique</strong> d'une substance est la masse par unité de volume.<br>
+                    <strong>Formule : ρ = m / V</strong><br>
+                    • ρ (rhô) en g/mL ou kg/L<br>
+                    • m en g ou kg<br>
+                    • V en mL ou L<br>
+                    <br>
+                    <strong>Règle :</strong> Si ρ<sub>objet</sub> < ρ<sub>eau</sub> → l'objet flotte.<br>
+                    Masse volumique de l'eau : <strong>1 g/mL</strong> (ou 1 kg/L).
+                </div>
+                <div class="example-box">
+                    🧮 <strong>Exemples :</strong><br>
+                    • Bois : ρ ≈ 0,6 g/mL → flotte.<br>
+                    • Fer : ρ ≈ 7,8 g/mL → coule.<br>
+                    • Huile : ρ ≈ 0,9 g/mL → flotte sur l'eau.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> La masse volumique, c'est <em>combien pèse 1 litre</em> de matière. Si c'est plus léger que l'eau, ça flotte !
+                </div>
+            `
+        },
+        {
+            title: "Leçon 5 : Les mélanges – Homogènes et hétérogènes",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Ta grande sœur prépare du jus de gingembre. Elle mélange de l'eau, du sucre et du jus de gingembre pressé. Tu vois que le sucre disparaît complètement, mais de minuscules morceaux de gingembre flottent encore. Le lendemain, elle prépare de la bouillie de maïs : tu vois clairement des grumeaux blancs dans l'eau chaude.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Deux verres transparents. Dans le premier, de l'eau salée : on ne voit qu'un seul liquide clair. Dans le deuxième, de l'eau avec du sable : on voit le sable au fond et l'eau au-dessus.
+                </div>
+                <h3>🔍 Observation</h3>
+                <p>Quand on mélange plusieurs matières, on obtient un <strong>mélange</strong>. Parfois, on ne distingue plus les constituants à l'œil nu (mélange homogène). Parfois, on les voit encore (mélange hétérogène).</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie :</strong><br>
+                    • <strong>Mélange homogène :</strong> on ne voit qu'une seule phase ; les constituants sont uniformément répartis. Exemples : eau sucrée, eau salée, lait, thé filtré.<br>
+                    • <strong>Mélange hétérogène :</strong> on voit au moins deux phases distinctes. Exemples : eau + sable, eau + huile, bouillie avec grumeaux, jus de gingembre avec pulpe.
+                </div>
+                <div class="example-box">
+                    🥣 <strong>Expérience simple :</strong> Verse un peu d'huile dans un verre d'eau. Tu observes deux couches : l'huile au-dessus, l'eau en dessous. C'est un mélange hétérogène.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> Mélange homogène = on voit <em>une seule chose</em>. Mélange hétérogène = on voit <em>plusieurs choses différentes</em>.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 6 : Conservation de la masse lors d'un mélange",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Tu aides ton père à préparer du ciment pour réparer un mur. Il prend 10 kg de ciment en poudre et 5 kg de sable. Il mélange le tout. Le mélange final pèse-t-il 15 kg, plus, ou moins ?
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Une balance. D'un côté, tu poses le ciment et le sable séparés. De l'autre côté, le mélange ciment-sable dans un seau. L'aiguille de la balance ne bouge pas : la masse totale est restée la même.
+                </div>
+                <h3>🔍 Observation</h3>
+                <p>Quand on mélange deux substances, la masse totale du mélange est toujours égale à la somme des masses des constituants de départ. Rien ne se perd, rien ne se crée : c'est la <strong>conservation de la masse</strong>.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie : Loi de conservation de la masse</strong><br>
+                    <strong>Lors d'un mélange ou d'une transformation physique, la masse totale reste constante.</strong><br>
+                    m<sub>totale</sub> = m<sub>substance 1</sub> + m<sub>substance 2</sub> + ...
+                </div>
+                <div class="example-box">
+                    ⚖️ <strong>Exemple chiffré :</strong> 200 g d'eau + 30 g de sel = 230 g d'eau salée. La balance confirme !
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> Quand on mélange, <em>la masse totale ne change pas</em>. On additionne les masses.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 7 : La solubilité – Le sucre disparaît-il vraiment ?",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Tu prépares ton thé le matin. Tu verses de l'eau bien chaude dans ta tasse, puis tu ajoutes deux cuillères de sucre. Tu remues : le sucre « disparaît ». Mais quand tu goûtes, c'est sucré ! Le sucre est donc toujours là, mais sous une forme invisible.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Imagine des grains de sucre qui se détachent en minuscules particules, tellement petites qu'on ne les voit plus. Elles se glissent entre les particules d'eau, comme des enfants qui se dispersent dans une foule.
+                </div>
+                <h3>🔍 Observation</h3>
+                <p>Le sucre est <strong>soluble</strong> dans l'eau : il peut se dissoudre. Le sable, lui, est <strong>insoluble</strong> : il reste au fond.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie : Solubilité</strong><br>
+                    • Une substance est <strong>soluble</strong> si elle peut se dissoudre dans un liquide (solvant) pour former un mélange homogène.<br>
+                    • Elle est <strong>insoluble</strong> si elle ne se dissout pas.<br>
+                    • <strong>La solubilité dépend de la température :</strong> en général, l'eau chaude dissout plus de sucre (ou de sel) que l'eau froide.
+                </div>
+                <div class="example-box">
+                    🧂 <strong>Expérience :</strong> Dans 100 mL d'eau froide, on peut dissoudre environ 180 g de sucre. Dans 100 mL d'eau chaude, on peut dissoudre jusqu'à 200 g de sucre.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> Soluble = <em>disparaît dans l'eau</em> (comme le sucre). Insoluble = <em>reste visible</em> (comme le sable). L'eau chaude dissout mieux.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 8 : Les changements d'état de la matière",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Souviens-toi du matin frais au village : l'herbe est couverte de rosée (gouttelettes d'eau liquide). Au lever du soleil, ces gouttes disparaissent en vapeur invisible. Le soir, s'il fait très froid, les petites flaques d'eau deviennent de la glace.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Une casserole d'eau sur un feu de bois : l'eau chauffe, des bulles apparaissent, de la vapeur s'élève. Si on met cette casserole au congélateur, l'eau devient un bloc de glace solide.
+                </div>
+                <h3>🔍 Observation</h3>
+                <p>La matière peut passer d'un état à un autre sous l'effet de la chaleur ou du froid. Ces passages portent des noms précis.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie : Les 6 changements d'état</strong><br>
+                    • <strong>Fusion :</strong> solide → liquide (glace qui fond à 0°C)<br>
+                    • <strong>Solidification :</strong> liquide → solide (eau qui gèle à 0°C)<br>
+                    • <strong>Vaporisation :</strong> liquide → gaz (eau qui bout à 100°C)<br>
+                    • <strong>Liquéfaction :</strong> gaz → liquide (buée sur un verre froid)<br>
+                    • <strong>Sublimation :</strong> solide → gaz (neige carbonique qui fume)<br>
+                    • <strong>Condensation solide :</strong> gaz → solide (givre le matin)
+                </div>
+                <div class="example-box">
+                    ❄️🔥 <strong>Pour l'eau pure :</strong> fusion à 0°C, ébullition à 100°C. Mais l'eau salée bout à une température plus élevée !
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> Avec la chaleur, la matière passe de solide → liquide → gaz. Avec le froid, elle fait le chemin inverse. <em>La matière reste la même</em>, seul son état change.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 9 : L'énergie thermique – La chaleur",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Assis près du feu de bois le soir, tu sens la chaleur sur ton visage. Si tu approches une casserole d'eau froide, l'eau devient chaude. Quelque chose est passé du feu à l'eau, sans qu'on le voie : c'est l'<strong>énergie thermique</strong>.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Imagine des millions de toutes petites billes (les particules de matière). Dans un corps froid, elles bougent lentement. Dans un corps chaud, elles s'agitent très vite. L'énergie thermique, c'est cette agitation invisible.
+                </div>
+                <h3>🔍 Observation</h3>
+                <p>Quand deux corps de températures différentes se touchent, la chaleur passe toujours du corps le plus chaud vers le corps le plus froid, jusqu'à ce qu'ils aient la même température.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie :</strong><br>
+                    • <strong>L'énergie thermique</strong> est l'énergie liée à la température d'un corps.<br>
+                    • <strong>Conducteur thermique :</strong> matériau qui laisse passer facilement la chaleur (métal, fer, aluminium).<br>
+                    • <strong>Isolant thermique :</strong> matériau qui bloque la chaleur (bois, plastique, laine, polystyrène).
+                </div>
+                <div class="example-box">
+                    🔥 <strong>Expérience :</strong> Touche une cuillère en métal trempée dans du thé chaud : le manche devient vite chaud (conducteur). Touche une cuillère en bois : le manche reste froid (isolant).
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> La chaleur est une <em>énergie</em>. Elle passe <em>du chaud vers le froid</em>. Certains matériaux la transmettent (métal), d'autres la bloquent (bois).
+                </div>
+            `
+        },
+        {
+            title: "Leçon 10 : Les forces – Pousser et tirer",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Tu aides ton oncle à pousser sa charrette pleine de régimes de plantains vers le marché. Tu sens que tu exerces une <strong>poussée</strong> avec tes bras. Plus tard, tu joues au tir à la corde avec tes amis : tu tires de toutes tes forces.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Deux équipes qui tirent sur une corde. Chaque équipe exerce une force. Si les forces sont égales, la corde ne bouge pas. Si une équipe tire plus fort, la corde se déplace.
+                </div>
+                <h3>🔍 Observation</h3>
+                <p>Une force est une action mécanique capable de :<br>
+                • Mettre un objet en mouvement (pousser une porte).<br>
+                • Arrêter un objet en mouvement (attraper un ballon).<br>
+                • Déformer un objet (écraser une canette vide).</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie :</strong><br>
+                    Une <strong>force</strong> est une grandeur physique qui se mesure en <strong>Newtons (N)</strong>.<br>
+                    Une force est représentée par un vecteur : direction, sens, intensité, point d'application.<br>
+                    <strong>Exemples de forces :</strong> le poids (attraction terrestre), la force musculaire, la tension d'une corde, la poussée d'Archimède.
+                </div>
+                <div class="example-box">
+                    💪 <strong>Dans la vie courante :</strong> Soulever un seau d'eau (≈ 100 N), pousser une brouette (≈ 200 N), tirer un tiroir.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> Une <em>force</em> = une poussée ou une traction. Elle peut faire bouger, arrêter ou déformer. Unité : <em>Newton (N)</em>.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 11 : Masse et Poids – Attention à ne pas confondre !",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Tu regardes un reportage sur les astronautes qui marchent sur la Lune. Tu vois qu'ils font des bonds énormes, comme s'ils étaient légers. Pourtant, leur corps n'a pas changé : c'est la même personne ! Sur la Lune, ils sont toujours aussi « gros », mais ils <strong>pèsent</strong> beaucoup moins.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Sur Terre, ton cartable plein de livres te semble très lourd (environ 50 N). Sur la Lune, le même cartable te semblerait léger comme une plume (environ 8 N). Pourtant, il contient toujours les mêmes livres : sa <strong>masse</strong> n'a pas changé.
+                </div>
+                <h3>🔍 Observation</h3>
+                <p>La <strong>masse</strong> est la quantité de matière (en kg) : elle est partout la même. Le <strong>poids</strong> est la force d'attraction exercée par l'astre sur lequel on se trouve (en N) : il varie.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie :</strong><br>
+                    • <strong>Masse (m) :</strong> en kilogrammes (kg). Invariable.<br>
+                    • <strong>Poids (P) :</strong> en Newtons (N). Dépend du lieu.<br>
+                    <strong>Relation : P = m × g</strong><br>
+                    • g = intensité de la pesanteur.<br>
+                    • Sur Terre : g ≈ 10 N/kg.<br>
+                    • Sur la Lune : g ≈ 1,6 N/kg.
+                </div>
+                <div class="example-box">
+                    🧑‍🚀 <strong>Calcul :</strong> Un élève de 45 kg :<br>
+                    Sur Terre : P = 45 × 10 = <strong>450 N</strong>.<br>
+                    Sur la Lune : P = 45 × 1,6 = <strong>72 N</strong>.<br>
+                    Sa masse est restée 45 kg partout.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> La <strong>masse</strong> = ta quantité de matière (toujours la même). Le <strong>poids</strong> = la force qui t'attire vers le sol (change selon la planète). P = m × g.
+                </div>
+            `
+        },
+        {
+            title: "🏆 QUIZ FINAL – Vérifie tes connaissances !",
+            content: `
+                <div id="quizContainer" class="quiz-container">
+                    <h3>📝 Questionnaire de physique (7ᵉ année)</h3>
+                    <p style="margin-bottom:15px;">Choisis la bonne réponse pour chaque question.</p>
+                    <div id="quizQuestions"></div>
+                    <button id="submitQuiz" class="quiz-btn-submit">✅ Valider mes réponses</button>
+                    <div id="quizResult" class="quiz-result"></div>
+                </div>
+            `
+        }
+    ];
+
+    let currentSlide = 0, isAutoPlaying = false, syncInterval;
+    let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+    const audioPlayer = document.getElementById('audioPlayer');
+    const contentDiv = document.getElementById('content');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const playBtn = document.getElementById('playBtn');
+    const statusDiv = document.getElementById('status');
+    const slideCounterSpan = document.getElementById('slideCounter');
+    const progressFill = document.getElementById('progressFill');
+    const timeDisplay = document.getElementById('timeDisplay');
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const searchNav = document.getElementById('searchNav');
+    const prevResultBtn = document.getElementById('prevResultBtn');
+    const nextResultBtn = document.getElementById('nextResultBtn');
+    const resultCounterSpan = document.getElementById('resultCounter');
+    const quizNavBtn = document.getElementById('quizNavBtn');
+
+    // Timeline estimée en secondes pour chaque slide (audio long)
+    const timeline = [0,108,218,292,370,430,484,542,618,675,730,819];
+    const totalDuration = 840; // ~17 minutes
+
+    function getTextFromHtml(html) {
+        const div = document.createElement('div');
+        div.innerHTML = html;
+        return div.textContent || div.innerText || "";
+    }
+
+    function searchSlides(term) {
+        if (!term.trim()) return [];
+        const lowerTerm = term.toLowerCase();
+        const results = [];
+        slides.forEach((slide, idx) => {
+            if (slide.title.toLowerCase().includes(lowerTerm) ||
+                getTextFromHtml(slide.content).toLowerCase().includes(lowerTerm)) {
+                results.push(idx);
+            }
+        });
+        return results;
+    }
+
+    function highlightInCurrentSlide(term) {
+        if (!term || term.trim() === "") return;
+        const slideContentDiv = document.querySelector('.slide-content');
+        if (!slideContentDiv) return;
+        const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+        const walker = document.createTreeWalker(slideContentDiv, NodeFilter.SHOW_TEXT, null, false);
+        const textNodes = [];
+        while (walker.nextNode()) textNodes.push(walker.currentNode);
+        for (let node of textNodes) {
+            if (node.nodeValue && regex.test(node.nodeValue)) {
+                const span = document.createElement('span');
+                span.innerHTML = node.nodeValue.replace(regex, '<span class="highlight">$1</span>');
+                node.parentNode.replaceChild(span, node);
+            }
+        }
+    }
+
+    function renderQuiz() {
+        const quizDiv = document.getElementById('quizQuestions');
+        if (!quizDiv) return;
+        const questions = [
+            { text: "Qu'est-ce que la matière ?", options: ["Tout ce qui brille", "Tout ce qui a une masse et un volume", "Tout ce qui est chaud"], correct: 1 },
+            { text: "Comment s'appelle le passage de l'eau liquide à la glace ?", options: ["Fusion", "Solidification", "Vaporisation"], correct: 1 },
+            { text: "Un mélange où l'on voit plusieurs phases est dit :", options: ["Homogène", "Hétérogène", "Transparent"], correct: 1 },
+            { text: "Quelle est la masse volumique de l'eau ?", options: ["0,5 g/mL", "1 g/mL", "2 g/mL"], correct: 1 },
+            { text: "Lors d'un mélange, la masse totale :", options: ["Augmente", "Diminue", "Reste la même"], correct: 2 },
+            { text: "Le sucre dans l'eau est un exemple de :", options: ["Mélange hétérogène", "Substance insoluble", "Substance soluble"], correct: 2 },
+            { text: "Sur la Lune, ton poids :", options: ["Est le même que sur Terre", "Est plus petit", "Est plus grand"], correct: 1 },
+            { text: "L'unité de la force est le :", options: ["Kilogramme (kg)", "Litre (L)", "Newton (N)"], correct: 2 },
+            { text: "Quel matériau est un bon conducteur thermique ?", options: ["Le bois", "Le fer", "Le plastique"], correct: 1 },
+            { text: "La formule P = m × g relie :", options: ["La masse et le volume", "Le poids et la masse", "La masse volumique et le volume"], correct: 1 }
+        ];
+        let html = '';
+        questions.forEach((q, idx) => {
+            html += `<div class="quiz-question">
+                        <p>${idx+1}. ${q.text}</p>`;
+            q.options.forEach((opt, optIdx) => {
+                html += `<label><input type="radio" name="q${idx}" value="${optIdx}"> ${opt}</label>`;
+            });
+            html += `</div>`;
+        });
+        quizDiv.innerHTML = html;
+        const submitBtn = document.getElementById('submitQuiz');
+        if (submitBtn) {
+            submitBtn.onclick = () => {
+                let score = 0;
+                questions.forEach((q, idx) => {
+                    const selected = document.querySelector(`input[name="q${idx}"]:checked`);
+                    if (selected && parseInt(selected.value) === q.correct) score++;
+                });
+                const resultDiv = document.getElementById('quizResult');
+                const pct = Math.round(score/questions.length*100);
+                resultDiv.innerHTML = `<div style="background:#d4edda; padding:18px; border-radius:12px;">
+                    🎯 <strong>Ton score : ${score} / ${questions.length} (${pct}%)</strong><br>
+                    ${score === questions.length ? '🌟 Excellent ! Félicitations !' : score >=7 ? '👍 Bon travail, continue !' : '📖 Relis les leçons et réessaie.'}
+                </div>`;
+            };
+        }
+    }
+
+    function renderSlide(index, keepHighlight = true) {
+        const isQuiz = (index === slides.length - 1);
+        contentDiv.innerHTML = `<div class="slide active">
+            <h2 class="slide-title">${slides[index].title}</h2>
+            <div class="slide-content">${slides[index].content}</div>
+        </div>`;
+        if (isQuiz) renderQuiz();
+        slideCounterSpan.textContent = `${index+1}/${slides.length}`;
+        progressFill.style.width = `${((index+1)/slides.length)*100}%`;
+        if (!isAutoPlaying) {
+            prevBtn.disabled = (index === 0);
+            nextBtn.disabled = (index === slides.length-1);
+        }
+        contentDiv.scrollTop = 0;
+        if (keepHighlight && lastSearchTerm && lastSearchTerm.trim() !== "" && !isQuiz) {
+            highlightInCurrentSlide(lastSearchTerm);
+        }
+    }
+
+    function updateResultDisplay() {
+        if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+        searchNav.style.display = 'flex';
+        resultCounterSpan.innerText = `${currentResultIdx+1}/${searchResults.length}`;
+    }
+
+    function goToResult(idx) {
+        if (idx < 0 || idx >= searchResults.length) return;
+        currentResultIdx = idx;
+        currentSlide = searchResults[currentResultIdx];
+        renderSlide(currentSlide, true);
+        updateResultDisplay();
+    }
+
+    function performSearch() {
+        const term = searchInput.value.trim();
+        if (!term) { alert("Entre un mot à rechercher."); return; }
+        if (isAutoPlaying) stopAutoPlay();
+        lastSearchTerm = term;
+        searchResults = searchSlides(term);
+        if (searchResults.length === 0) { alert(`Aucun résultat pour "${term}".`); searchNav.style.display = 'none'; return; }
+        currentResultIdx = 0;
+        goToResult(0);
+    }
+
+    function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+    function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+
+    function nextSlide() {
+        if (currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); clearSearch(); }
+    }
+    function prevSlide() {
+        if (currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); clearSearch(); }
+    }
+    function clearSearch() {
+        if (lastSearchTerm) { lastSearchTerm = ""; searchResults = []; searchNav.style.display = 'none'; searchInput.value = ""; }
+    }
+
+    function updateTimeDisplay() {
+        let t = audioPlayer.currentTime;
+        let mins = Math.floor(t/60).toString().padStart(2,'0');
+        let secs = Math.floor(t%60).toString().padStart(2,'0');
+        let tMins = Math.floor(totalDuration/60).toString().padStart(2,'0');
+        let tSecs = Math.floor(totalDuration%60).toString().padStart(2,'0');
+        timeDisplay.innerText = `${mins}:${secs} / ${tMins}:${tSecs}`;
+        if (!isAutoPlaying) progressFill.style.width = `${(t/totalDuration)*100}%`;
+    }
+
+    function syncSlideFromTime() {
+        if (!isAutoPlaying) return;
+        const t = audioPlayer.currentTime;
+        for (let i = timeline.length-1; i >= 0; i--) {
+            if (t >= timeline[i]) {
+                if (i !== currentSlide) { currentSlide = i; renderSlide(currentSlide, false); }
+                break;
+            }
+        }
+        updateTimeDisplay();
+        if (t >= totalDuration - 1) stopAutoPlay();
+    }
+
+    function startAutoPlay() {
+        isAutoPlaying = true;
+        playBtn.innerText = "⏸ Pause";
+        playBtn.classList.add('stop-btn');
+        statusDiv.innerText = "🔊 Lecture synchronisée en cours...";
+        statusDiv.style.background = "rgba(46,125,50,0.9)";
+        prevBtn.disabled = nextBtn.disabled = true;
+        clearSearch();
+        audioPlayer.play().catch(e => console.log("Lecture bloquée, cliquer sur play"));
+        if (syncInterval) clearInterval(syncInterval);
+        syncInterval = setInterval(syncSlideFromTime, 300);
+    }
+
+    function stopAutoPlay() {
+        isAutoPlaying = false;
+        playBtn.innerText = "▶ Lecture audio";
+        playBtn.classList.remove('stop-btn');
+        statusDiv.innerText = "📖 Mode navigation";
+        statusDiv.style.background = "rgba(0,0,0,0.8)";
+        audioPlayer.pause();
+        if (syncInterval) { clearInterval(syncInterval); syncInterval = null; }
+        prevBtn.disabled = (currentSlide===0);
+        nextBtn.disabled = (currentSlide===slides.length-1);
+    }
+
+    function toggleAutoPlay() { isAutoPlaying ? stopAutoPlay() : startAutoPlay(); }
+    function goToQuiz() { if (isAutoPlaying) stopAutoPlay(); currentSlide = slides.length-1; renderSlide(currentSlide, false); }
+
+    document.addEventListener('keydown', (e) => {
+        if (isAutoPlaying) return;
+        if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+        else if (e.key === 'ArrowRight') { e.preventDefault(); nextSlide(); }
+        else if (e.key === ' ' && document.activeElement !== searchInput) { e.preventDefault(); toggleAutoPlay(); }
+    });
+
+    prevBtn.onclick = prevSlide;
+    nextBtn.onclick = nextSlide;
+    playBtn.onclick = toggleAutoPlay;
+    searchBtn.onclick = performSearch;
+    prevResultBtn.onclick = prevResult;
+    nextResultBtn.onclick = nextResult;
+    quizNavBtn.onclick = goToQuiz;
+    audioPlayer.addEventListener('ended', stopAutoPlay);
+    audioPlayer.addEventListener('timeupdate', () => { if(!isAutoPlaying) updateTimeDisplay(); });
+
+    renderSlide(0, false);
+    updateTimeDisplay();
+</script>
+</body>
+</html>

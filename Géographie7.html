@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Géographie 7e année - Du réel vers la théorie | RDC</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(160deg, #0d3b1e 0%, #1a5c2a 50%, #0f4520 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            background: #fefdf8;
+            border-radius: 24px;
+            box-shadow: 0 25px 70px rgba(0,0,0,0.35);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            max-height: 95vh;
+        }
+        .progress-bar { height: 7px; background: #d0e8c8; }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2e7d32, #1b5e20);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+        .header {
+            padding: 18px 28px;
+            background: #e8f5e9;
+            border-bottom: 2px solid #a5d6a7;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .header h1 {
+            color: #1b5e20;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .badge {
+            background: #2e7d32;
+            color: white;
+            padding: 6px 18px;
+            border-radius: 30px;
+            font-weight: bold;
+        }
+        .search-container {
+            display: flex;
+            gap: 6px;
+            background: white;
+            padding: 4px 10px;
+            border-radius: 40px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .search-container input {
+            border: none;
+            padding: 10px 16px;
+            border-radius: 30px;
+            outline: none;
+            width: 220px;
+            font-size: 0.95rem;
+        }
+        .search-container button, .quiz-btn {
+            background: #2e7d32;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 8px 18px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .search-container button:hover, .quiz-btn:hover { background: #1b5e20; }
+        .quiz-btn { background: #e65100; }
+        .quiz-btn:hover { background: #bf360c; }
+        .search-nav {
+            display: flex;
+            gap: 8px;
+            background: #c8e6c9;
+            padding: 6px 14px;
+            border-radius: 30px;
+            align-items: center;
+        }
+        .search-nav button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            color: #2e7d32;
+        }
+        .content {
+            padding: 30px 35px;
+            flex: 1;
+            overflow-y: auto;
+            background: #ffffff;
+            scroll-behavior: smooth;
+        }
+        .slide { display: none; animation: fadeSlide 0.5s ease; }
+        .slide.active { display: block; }
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .slide-title {
+            color: #1b5e20;
+            font-size: 1.8rem;
+            border-left: 6px solid #4caf50;
+            padding-left: 18px;
+            margin-bottom: 20px;
+        }
+        .slide-content { color: #1e3c1e; line-height: 1.9; font-size: 1.05rem; }
+        .slide-content h3 {
+            color: #2e7d32;
+            margin: 28px 0 14px;
+            font-size: 1.3rem;
+        }
+        .scene-box {
+            background: #fffde7;
+            border-left: 5px solid #ff8f00;
+            padding: 18px 22px;
+            border-radius: 12px;
+            margin: 18px 0;
+            font-style: italic;
+        }
+        .image-box {
+            background: #e0f2f1;
+            padding: 18px;
+            border-radius: 14px;
+            text-align: center;
+            margin: 20px 0;
+            border: 1px dashed #4db6ac;
+        }
+        .definition-box {
+            background: #e8f5e9;
+            padding: 22px;
+            border-radius: 14px;
+            margin: 22px 0;
+            border-left: 6px solid #2e7d32;
+        }
+        .example-box {
+            background: #fce4ec;
+            padding: 18px;
+            border-radius: 12px;
+            margin: 18px 0;
+            border-left: 5px solid #c62828;
+        }
+        .summary-box {
+            background: #e1f5fe;
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin: 18px 0;
+            border: 2px solid #0277bd;
+        }
+        .quiz-container {
+            background: #e8f5e9;
+            padding: 25px;
+            border-radius: 20px;
+            margin-top: 20px;
+        }
+        .quiz-question {
+            background: white;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 18px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        }
+        .quiz-question p { font-weight: bold; margin-bottom: 10px; }
+        .quiz-question label { display: block; margin: 8px 0; cursor: pointer; }
+        .quiz-btn-submit {
+            background: #43a047;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 40px;
+            font-size: 1.05rem;
+            cursor: pointer;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        .quiz-result {
+            margin-top: 20px;
+            font-weight: bold;
+            padding: 16px;
+            border-radius: 14px;
+        }
+        .controls {
+            padding: 18px 28px;
+            background: #fafafa;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+        .nav-buttons { display: flex; gap: 10px; }
+        button {
+            padding: 12px 26px;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: 500;
+        }
+        .nav-btn { background: white; color: #2e7d32; border: 1px solid #ccc; }
+        .nav-btn:hover:not(:disabled) { background: #e8f5e9; transform: translateY(-1px); }
+        .nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .play-btn {
+            background: linear-gradient(135deg, #2e7d32, #1b5e20);
+            color: white;
+            box-shadow: 0 4px 16px rgba(46,125,50,0.4);
+            font-weight: bold;
+        }
+        .stop-btn { background: #c62828; color: white; }
+        .counter { color: #555; background: white; padding: 8px 16px; border-radius: 20px; font-weight: 500; }
+        .status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            z-index: 1000;
+        }
+        .highlight { background-color: #fff59d; padding: 1px 3px; border-radius: 3px; }
+        ul { margin-left: 25px; }
+        li { margin: 6px 0; }
+        @media (max-width: 768px) {
+            .content { padding: 20px; }
+            .slide-title { font-size: 1.4rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="status" id="status">📖 Mode navigation</div>
+<div class="container">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="header">
+        <h1>🌍 Géographie · 7ᵉ année</h1>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Rechercher un mot...">
+                <button id="searchBtn">🔍</button>
+                <button id="quizNavBtn" class="quiz-btn">📝 Quiz</button>
+            </div>
+            <div class="search-nav" id="searchNav" style="display: none;">
+                <button id="prevResultBtn">◀</button>
+                <span id="resultCounter">0/0</span>
+                <button id="nextResultBtn">▶</button>
+            </div>
+            <span class="badge" id="slideCounter">1/13</span>
+        </div>
+    </div>
+    <div class="content" id="content"></div>
+    <div class="controls">
+        <div class="nav-buttons">
+            <button class="nav-btn" id="prevBtn">← Leçon précédente</button>
+            <button class="nav-btn" id="nextBtn">Leçon suivante →</button>
+        </div>
+        <button class="play-btn" id="playBtn">▶ Lecture audio</button>
+        <span class="counter" id="timeDisplay">00:00 / 00:00</span>
+    </div>
+</div>
+<audio id="audioPlayer" src="geographie7_audio.mp3" preload="auto"></audio>
+
+<script>
+    const slides = [
+        {
+            title: "Leçon 1 : Qu'est-ce que la géographie ?",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Tu es assis devant ta maison, à la tombée du jour. Tu regardes autour de toi : la colline au loin, la rivière qui coule en bas, les champs de manioc, le ciel orange et rose. Tu te poses des questions : pourquoi la rivière coule-t-elle toujours dans ce sens ? Pourquoi le soleil se couche-t-il derrière cette montagne ? Toutes ces questions, c'est le début de la <strong>géographie</strong>.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> La géographie, c'est comme une <strong>immense carte</strong> que tu déplies. Sur cette carte, tu vois les montagnes, les rivières, les villes, les forêts, et tous les hommes qui y vivent.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>La géographie étudie la <strong>Terre</strong>, ses paysages, ses habitants. Elle répond à deux grandes questions : <strong>Où ?</strong> (localiser) et <strong>Pourquoi là ?</strong> (expliquer).</p>
+                <div class="definition-box">
+                    <strong>📚 Définition (Théorie) :</strong><br>
+                    La <strong>géographie</strong> est la science qui étudie la surface de la Terre, les phénomènes naturels qui s'y déroulent, et les relations entre les hommes et leur environnement.<br><br>
+                    <strong>Deux branches :</strong><br>
+                    • <strong>Géographie physique :</strong> relief, climat, végétation, rivières.<br>
+                    • <strong>Géographie humaine :</strong> population, villes, économie, cultures.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> La géographie = la science qui étudie la Terre, ses paysages et ses habitants. Où ? Pourquoi là ?
+                </div>
+            `
+        },
+        {
+            title: "Leçon 2 : L'orientation – Les points cardinaux",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Un jour, tu accompagnes ton oncle en forêt pour chercher du bois. Au bout d'un moment, tu ne vois plus le sentier. Ton oncle regarde le soleil et dit : « C'est par là, vers l'ouest, qu'on est venus. » Il s'est <strong>orienté</strong>.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Imagine une grande croix dessinée sur le sol. Le bras qui pointe vers le lever du soleil, c'est l'<strong>Est</strong>. Le bras opposé, vers le coucher, c'est l'<strong>Ouest</strong>. Le bras qui pointe vers le fleuve Congo (au nord du pays), c'est le <strong>Nord</strong>. Le dernier, c'est le <strong>Sud</strong>.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>Pour ne pas se perdre, l'homme a inventé des repères : les <strong>points cardinaux</strong>. Ils permettent de dire où l'on va.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie : Les points cardinaux</strong><br>
+                    • <strong>Nord (N)</strong> : direction de l'étoile polaire (la nuit) ou de l'ombre la plus courte à midi.<br>
+                    • <strong>Sud (S)</strong> : opposé au Nord.<br>
+                    • <strong>Est (E)</strong> : direction du lever du soleil.<br>
+                    • <strong>Ouest (O ou W)</strong> : direction du coucher du soleil.<br><br>
+                    <strong>Moyens d'orientation :</strong> la boussole (aiguille aimantée qui pointe le Nord), le soleil, l'étoile polaire, la mousse sur les arbres (pousse plutôt côté ombragé).
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> 4 points cardinaux : Nord, Sud, Est, Ouest. Le soleil se lève à l'Est, se couche à l'Ouest. La boussole indique le Nord.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 3 : Les lignes imaginaires du globe",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Un ami t'appelle de Kinshasa et te dit : « Il fait très chaud ici ! » Toi, tu es à Goma et tu réponds : « Ici, il fait plus frais. » Pourquoi ? Parce que Kinshasa est proche de l'<strong>Équateur</strong>, une ligne imaginaire qui fait le tour de la Terre en son milieu.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Imagine une orange. Tu traces un trait tout autour, bien au milieu : c'est l'Équateur. Ensuite, tu traces des traits du haut vers le bas, du pôle Nord au pôle Sud : ce sont les méridiens. Enfin, des cercles parallèles à l'Équateur : les parallèles.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>Sur un globe terrestre, on voit des lignes qui n'existent pas dans la réalité, mais qui aident à se repérer.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie :</strong><br>
+                    • <strong>L'Équateur :</strong> ligne imaginaire qui partage la Terre en deux hémisphères égaux : <strong>Nord</strong> et <strong>Sud</strong>. Latitude 0°.<br>
+                    • <strong>Les parallèles :</strong> cercles parallèles à l'Équateur. Ils donnent la <strong>latitude</strong> (Nord ou Sud).<br>
+                    • <strong>Les méridiens :</strong> demi-cercles joignant les deux pôles. Ils donnent la <strong>longitude</strong> (Est ou Ouest). Le méridien de référence est celui de <strong>Greenwich</strong> (0°).<br>
+                    • <strong>Les tropiques :</strong> Tropique du Cancer (23,5° Nord) et Tropique du Capricorne (23,5° Sud).
+                </div>
+                <div class="example-box">
+                    🇨🇩 <strong>La RDC et l'Équateur :</strong> L'Équateur traverse la RDC par le milieu ! C'est pour cela que notre pays a un climat chaud et humide sur une grande partie.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> Équateur = ceinture du milieu. Parallèles = latitude (N/S). Méridiens = longitude (E/O). Greenwich = méridien 0.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 4 : Les continents et les océans",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Tu regardes une carte du monde accrochée au mur de ta classe. Tu vois de grandes masses de terre séparées par d'immenses étendues bleues. « Nous, on est là, en Afrique ! » dis-tu en pointant du doigt.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> La Terre, c'est comme un gros ballon bleu. Les taches marron et vertes sont les <strong>continents</strong>. Les grandes surfaces bleues sont les <strong>océans</strong>.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>La Terre a 6 continents et 5 grands océans.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie :</strong><br>
+                    <strong>Les 6 continents :</strong><br>
+                    1. <strong>Afrique</strong> (où se trouve la RDC)<br>
+                    2. <strong>Amérique</strong><br>
+                    3. <strong>Asie</strong> (le plus grand)<br>
+                    4. <strong>Europe</strong><br>
+                    5. <strong>Océanie</strong> (le plus petit)<br>
+                    6. <strong>Antarctique</strong> (le plus froid)<br><br>
+                    <strong>Les 5 océans :</strong><br>
+                    1. <strong>Pacifique</strong> (le plus vaste)<br>
+                    2. <strong>Atlantique</strong> (à l'ouest de l'Afrique)<br>
+                    3. <strong>Indien</strong> (à l'est de l'Afrique)<br>
+                    4. <strong>Arctique</strong> (au Nord)<br>
+                    5. <strong>Antarctique</strong> (au Sud)
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> 6 continents (dont l'Afrique, notre maison) et 5 océans. La Terre est surnommée la « planète bleue ».
+                </div>
+            `
+        },
+        {
+            title: "Leçon 5 : La RDC – Situation géographique",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Tu habites en République Démocratique du Congo. Mais sais-tu exactement où se trouve ton pays sur la carte du monde ? La RDC est un pays <strong>immense</strong>, le 2ᵉ plus grand d'Afrique, situé en plein cœur du continent.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Imagine l'Afrique comme un visage. La RDC serait le <strong>cœur</strong> de ce visage, juste au centre, légèrement à gauche.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>La RDC est un pays d'Afrique centrale, traversé par l'Équateur. Elle a une petite ouverture sur l'océan Atlantique (à l'Ouest).</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie : La RDC en chiffres</strong><br>
+                    • <strong>Capitale :</strong> Kinshasa (plus grande ville francophone du monde).<br>
+                    • <strong>Superficie :</strong> 2 345 409 km² (2ᵉ d'Afrique après l'Algérie).<br>
+                    • <strong>Population :</strong> environ 100 millions d'habitants.<br>
+                    • <strong>Pays voisins (9) :</strong> Congo-Brazzaville, Angola, Zambie, Tanzanie, Burundi, Rwanda, Ouganda, Soudan du Sud, République Centrafricaine.<br>
+                    • <strong>Ouverture maritime :</strong> 37 km de côte atlantique (Moanda).
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> La RDC = cœur de l'Afrique. 2ᵉ plus grand pays africain. 9 pays voisins. Capitale : Kinshasa.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 6 : Le relief de la RDC",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Si tu voyages de Kinshasa à Goma, tu passes par des paysages très différents : la plaine le long du fleuve, les collines du Kasaï, les hautes montagnes de l'Est avec leurs volcans. Le sol monte, descend, se plisse : c'est le <strong>relief</strong>.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Le relief, c'est comme la <strong>peau ridée</strong> de la Terre. Certaines rides sont douces (les plaines), d'autres sont très marquées (les montagnes).
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>Le relief de la RDC est très varié : c'est l'un des pays les plus contrastés d'Afrique.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie : Les grands ensembles du relief congolais</strong><br>
+                    • <strong>La cuvette centrale :</strong> vaste dépression au centre, couverte de forêt dense, traversée par le fleuve Congo.<br>
+                    • <strong>Les plateaux :</strong> régions élevées mais planes (Kasaï, Katanga).<br>
+                    • <strong>Les montagnes de l'Est :</strong> chaîne des Virunga, massif du Ruwenzori (point culminant : pic Marguerite, 5 119 m).<br>
+                    • <strong>La plaine côtière :</strong> étroite bande à l'ouest, vers l'Atlantique.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> Relief RDC = cuvette au centre + plateaux + hautes montagnes à l'Est. Point le plus haut : Ruwenzori (5 119 m).
+                </div>
+            `
+        },
+        {
+            title: "Leçon 7 : Le climat de la RDC",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> À Mbandaka, il fait chaud et il pleut presque tous les jours. À Lubumbashi, il y a une saison sèche bien marquée et une saison des pluies. Sur les montagnes de l'Est, il fait frais toute l'année. Pourquoi ces différences ? À cause du <strong>climat</strong>.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Le climat, c'est l'<strong>humeur du ciel</strong> sur une longue période. Certaines régions sont toujours « de bonne humeur » (chaudes et humides), d'autres sont plus « changeantes ».
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>Le climat dépend de la <strong>latitude</strong> (proximité de l'Équateur) et de l'<strong>altitude</strong> (hauteur par rapport au niveau de la mer).</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie : Les climats de la RDC</strong><br>
+                    • <strong>Climat équatorial :</strong> chaud et humide toute l'année. Centre du pays (Mbandaka, Kisangani).<br>
+                    • <strong>Climat tropical humide :</strong> deux saisons : sèche et pluvieuse. Nord et Sud de la cuvette.<br>
+                    • <strong>Climat de montagne :</strong> frais, températures modérées. Est du pays (Goma, Bukavu).<br>
+                    • <strong>Climat tropical sec :</strong> saison sèche longue. Extrême Sud (Katanga).
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> Climat RDC = équatorial au centre, tropical au nord et au sud, frais en montagne. Dépend de la latitude et de l'altitude.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 8 : Le fleuve Congo et l'hydrographie",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Tu es au port de Kinshasa. Devant toi, un immense fleuve, large comme un bras de mer, avec des îles vertes au milieu. Des bateaux chargés de marchandises, des pirogues de pêcheurs. C'est le <strong>fleuve Congo</strong>, le deuxième plus puissant du monde après l'Amazone.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Le fleuve Congo, c'est comme une <strong>gigantesque veine bleue</strong> qui traverse le cœur de l'Afrique. Ses affluents sont comme des branches qui se rejoignent pour former un tronc unique.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>Le fleuve Congo et ses affluents forment un <strong>réseau hydrographique</strong> immense. L'eau coule du Sud et du Nord vers le centre, puis vers l'Ouest.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie : L'hydrographie de la RDC</strong><br>
+                    • <strong>Le fleuve Congo :</strong> 4 700 km de long. 2ᵉ débit mondial. Se jette dans l'Atlantique.<br>
+                    • <strong>Grands affluents :</strong> Ubangi, Kasaï, Lualaba, Lomami, Aruwimi.<br>
+                    • <strong>Grands lacs :</strong> Tanganyika, Kivu, Moëro, Mai-Ndombe, Albert, Édouard.<br>
+                    • <strong>Importance :</strong> navigation, pêche, irrigation, hydroélectricité (barrage d'Inga).
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> Fleuve Congo = 2ᵉ plus puissant au monde. Nombreux affluents et grands lacs. Source d'énergie avec Inga.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 9 : La végétation de la RDC",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Imagine un voyage du Nord au Sud de la RDC. Au centre, une forêt si dense que le soleil ne touche pas le sol. Plus au Sud, de hautes herbes et quelques arbres épars : la savane. Le paysage change avec le climat : c'est la <strong>végétation</strong>.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> La végétation, c'est le <strong>manteau vert</strong> que porte la Terre. Épais et sombre dans la forêt, clairsemé dans la savane, presque absent dans les zones très sèches.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>La végétation dépend du climat et du sol. Là où il pleut beaucoup pousse la forêt dense. Là où la saison sèche est longue, la savane domine.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie : Les types de végétation en RDC</strong><br>
+                    • <strong>Forêt dense (forêt équatoriale) :</strong> couvre la cuvette centrale. Arbres géants, lianes, animaux variés. 2ᵉ massif forestier tropical du monde.<br>
+                    • <strong>Savane :</strong> hautes herbes, quelques arbres (baobabs). Nord et Sud du pays.<br>
+                    • <strong>Forêt de montagne :</strong> sur les pentes de l'Est.<br>
+                    • <strong>Mangrove :</strong> sur la côte atlantique.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> Végétation RDC = forêt dense au centre, savanes au nord et au sud. La RDC abrite le 2ᵉ poumon vert de la planète.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 10 : La population de la RDC",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Tu habites peut-être à Kinshasa, une ville de plus de 15 millions d'habitants, où les rues grouillent de monde. Ou peut-être dans un petit village de pêcheurs au bord du fleuve. La RDC est un pays de <strong>contrastes démographiques</strong>.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Imagine un grand tissu coloré. Chaque fil représente un groupe humain différent : des Luba, des Kongo, des Mongo, des Zande, des Pygmées... Tous ces fils tissés ensemble forment le peuple congolais.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>La RDC compte environ 100 millions d'habitants, répartis de façon très inégale sur le territoire.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie :</strong><br>
+                    • <strong>Population totale :</strong> ~100 millions (2025).<br>
+                    • <strong>Densité :</strong> très variable. Très forte à Kinshasa, faible dans la cuvette forestière.<br>
+                    • <strong>Principaux groupes ethniques :</strong> plus de 450 ethnies. 4 grands groupes : Bantous (majoritaires), Soudanais, Nilotiques, Pygmées.<br>
+                    • <strong>Langues nationales :</strong> Lingala, Kikongo, Tshiluba, Swahili. Langue officielle : Français.<br>
+                    • <strong>Villes principales :</strong> Kinshasa, Lubumbashi, Mbuji-Mayi, Kisangani, Kananga.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> RDC = ~100 millions d'habitants. 450 ethnies, 4 langues nationales + le français. Une richesse culturelle immense.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 11 : Les ressources naturelles de la RDC",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Dans le Katanga, on extrait du <strong>cuivre</strong> et du <strong>cobalt</strong>. Dans le Kasaï, des <strong>diamants</strong> brillent dans la terre. La forêt fournit du bois précieux. Le fleuve produit de l'électricité. On appelle la RDC un « <strong>scandale géologique</strong> » tellement son sous-sol est riche.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> Imagine un coffre aux trésors enfoui sous le sol congolais. Il contient de l'or, des diamants, du cuivre, du coltan (utilisé dans les téléphones), et bien d'autres richesses.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>La RDC possède des ressources naturelles exceptionnelles, mais leur exploitation pose aussi des problèmes (guerres, corruption, pauvreté).</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie :</strong><br>
+                    <strong>Principales ressources minières :</strong> cobalt (1ᵉʳ producteur mondial), diamant, cuivre, or, coltan, cassitérite, zinc, manganèse.<br>
+                    <strong>Ressources forestières :</strong> bois tropicaux (ébène, acajou, iroko).<br>
+                    <strong>Ressources hydrauliques :</strong> potentiel hydroélectrique énorme (barrages d'Inga).<br>
+                    <strong>Ressources agricoles :</strong> café, cacao, huile de palme, caoutchouc, manioc, maïs.
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> La RDC = un coffre-fort géologique. Cobalt, diamant, cuivre, coltan, forêt, eau. Ces richesses doivent profiter à tout le peuple.
+                </div>
+            `
+        },
+        {
+            title: "Leçon 12 : Les activités économiques",
+            content: `
+                <div class="scene-box">
+                    🌍 <strong>Situation réelle :</strong> Ta tante cultive le manioc et le vend au marché. Ton oncle travaille dans une mine de cuivre au Katanga. Un cousin est pêcheur sur le lac Kivu. Un autre est chauffeur de taxi à Kinshasa. Chacun exerce une <strong>activité économique</strong>.
+                </div>
+                <div class="image-box">
+                    🖼️ <strong>Image mentale :</strong> L'économie, c'est comme le <strong>sang</strong> qui circule dans le corps du pays. Les agriculteurs, les mineurs, les commerçants, les fonctionnaires sont les organes qui font vivre ce corps.
+                </div>
+                <h3>🔍 Observons</h3>
+                <p>Les activités économiques se classent en trois grands <strong>secteurs</strong>.</p>
+                <div class="definition-box">
+                    <strong>📚 Théorie : Les trois secteurs économiques</strong><br>
+                    • <strong>Secteur primaire :</strong> exploitation directe de la nature. Agriculture, pêche, élevage, exploitation forestière, mines.<br>
+                    • <strong>Secteur secondaire :</strong> transformation des matières premières en produits finis. Industries, usines, artisanat.<br>
+                    • <strong>Secteur tertiaire :</strong> services. Commerce, transport, banques, enseignement, santé, administration.
+                </div>
+                <div class="example-box">
+                    🥭 <strong>Exemple :</strong> La mangue cueillie (primaire) → transformée en jus (secondaire) → vendue au marché (tertiaire).
+                </div>
+                <div class="summary-box">
+                    <strong>📌 Résumé :</strong> 3 secteurs : primaire (produire), secondaire (transformer), tertiaire (vendre et servir). Tous sont importants pour le pays.
+                </div>
+            `
+        },
+        {
+            title: "🏆 QUIZ FINAL – Teste tes connaissances en géographie !",
+            content: `
+                <div id="quizContainer" class="quiz-container">
+                    <h3>📝 Questionnaire de géographie (7ᵉ année)</h3>
+                    <p style="margin-bottom:15px;">Choisis la bonne réponse pour chaque question.</p>
+                    <div id="quizQuestions"></div>
+                    <button id="submitQuiz" class="quiz-btn-submit">✅ Valider mes réponses</button>
+                    <div id="quizResult" class="quiz-result"></div>
+                </div>
+            `
+        }
+    ];
+
+    let currentSlide = 0, isAutoPlaying = false, syncInterval;
+    let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+    const audioPlayer = document.getElementById('audioPlayer');
+    const contentDiv = document.getElementById('content');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const playBtn = document.getElementById('playBtn');
+    const statusDiv = document.getElementById('status');
+    const slideCounterSpan = document.getElementById('slideCounter');
+    const progressFill = document.getElementById('progressFill');
+    const timeDisplay = document.getElementById('timeDisplay');
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const searchNav = document.getElementById('searchNav');
+    const prevResultBtn = document.getElementById('prevResultBtn');
+    const nextResultBtn = document.getElementById('nextResultBtn');
+    const resultCounterSpan = document.getElementById('resultCounter');
+    const quizNavBtn = document.getElementById('quizNavBtn');
+
+    const timeline = [0,90,147,207,265,336,397,452,513,576,645,710,782];
+    const totalDuration = 790;
+
+    function getTextFromHtml(html) {
+        const div = document.createElement('div');
+        div.innerHTML = html;
+        return div.textContent || div.innerText || "";
+    }
+
+    function searchSlides(term) {
+        if (!term.trim()) return [];
+        const lowerTerm = term.toLowerCase();
+        const results = [];
+        slides.forEach((slide, idx) => {
+            if (slide.title.toLowerCase().includes(lowerTerm) ||
+                getTextFromHtml(slide.content).toLowerCase().includes(lowerTerm)) {
+                results.push(idx);
+            }
+        });
+        return results;
+    }
+
+    function highlightInCurrentSlide(term) {
+        if (!term || term.trim() === "") return;
+        const slideContentDiv = document.querySelector('.slide-content');
+        if (!slideContentDiv) return;
+        const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+        const walker = document.createTreeWalker(slideContentDiv, NodeFilter.SHOW_TEXT, null, false);
+        const textNodes = [];
+        while (walker.nextNode()) textNodes.push(walker.currentNode);
+        for (let node of textNodes) {
+            if (node.nodeValue && regex.test(node.nodeValue)) {
+                const span = document.createElement('span');
+                span.innerHTML = node.nodeValue.replace(regex, '<span class="highlight">$1</span>');
+                node.parentNode.replaceChild(span, node);
+            }
+        }
+    }
+
+    function renderQuiz() {
+        const quizDiv = document.getElementById('quizQuestions');
+        if (!quizDiv) return;
+        const questions = [
+            { text: "Qu'étudie la géographie ?", options: ["Les mathématiques", "La Terre, ses paysages et ses habitants", "La grammaire"], correct: 1 },
+            { text: "Où se lève le soleil ?", options: ["À l'Ouest", "Au Nord", "À l'Est"], correct: 2 },
+            { text: "Quelle ligne imaginaire partage la Terre en deux ?", options: ["Le méridien", "L'Équateur", "Le tropique"], correct: 1 },
+            { text: "Combien de continents y a-t-il ?", options: ["5", "6", "7"], correct: 1 },
+            { text: "Quelle est la capitale de la RDC ?", options: ["Lubumbashi", "Goma", "Kinshasa"], correct: 2 },
+            { text: "Quel est le plus haut sommet de la RDC ?", options: ["Le Kilimandjaro", "Le Ruwenzori", "Le Virunga"], correct: 1 },
+            { text: "Quel climat règne au centre de la RDC ?", options: ["Climat désertique", "Climat équatorial", "Climat polaire"], correct: 1 },
+            { text: "Quel est le 2ᵉ plus grand fleuve du monde par son débit ?", options: ["Le Nil", "Le Congo", "Le Niger"], correct: 1 },
+            { text: "Combien d'ethnies environ vit en RDC ?", options: ["450", "100", "10"], correct: 0 },
+            { text: "Dans quel secteur classe-t-on un mineur ?", options: ["Tertiaire", "Secondaire", "Primaire"], correct: 2 }
+        ];
+        let html = '';
+        questions.forEach((q, idx) => {
+            html += `<div class="quiz-question"><p>${idx+1}. ${q.text}</p>`;
+            q.options.forEach((opt, optIdx) => {
+                html += `<label><input type="radio" name="q${idx}" value="${optIdx}"> ${opt}</label>`;
+            });
+            html += `</div>`;
+        });
+        quizDiv.innerHTML = html;
+        const submitBtn = document.getElementById('submitQuiz');
+        if (submitBtn) {
+            submitBtn.onclick = () => {
+                let score = 0;
+                questions.forEach((q, idx) => {
+                    const selected = document.querySelector(`input[name="q${idx}"]:checked`);
+                    if (selected && parseInt(selected.value) === q.correct) score++;
+                });
+                const resultDiv = document.getElementById('quizResult');
+                const pct = Math.round(score/questions.length*100);
+                resultDiv.innerHTML = `<div style="background:#c8e6c9; padding:18px; border-radius:12px;">
+                    🎯 <strong>Ton score : ${score} / ${questions.length} (${pct}%)</strong><br>
+                    ${score === questions.length ? '🌟 Excellent ! Tu connais bien ton pays et le monde !' : score >=7 ? '👍 Bon travail, continue !' : '📖 Relis les leçons, la géographie est passionnante.'}
+                </div>`;
+            };
+        }
+    }
+
+    function renderSlide(index, keepHighlight = true) {
+        const isQuiz = (index === slides.length - 1);
+        contentDiv.innerHTML = `<div class="slide active">
+            <h2 class="slide-title">${slides[index].title}</h2>
+            <div class="slide-content">${slides[index].content}</div>
+        </div>`;
+        if (isQuiz) renderQuiz();
+        slideCounterSpan.textContent = `${index+1}/${slides.length}`;
+        progressFill.style.width = `${((index+1)/slides.length)*100}%`;
+        if (!isAutoPlaying) {
+            prevBtn.disabled = (index === 0);
+            nextBtn.disabled = (index === slides.length-1);
+        }
+        contentDiv.scrollTop = 0;
+        if (keepHighlight && lastSearchTerm && lastSearchTerm.trim() !== "" && !isQuiz) {
+            highlightInCurrentSlide(lastSearchTerm);
+        }
+    }
+
+    function updateResultDisplay() {
+        if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+        searchNav.style.display = 'flex';
+        resultCounterSpan.innerText = `${currentResultIdx+1}/${searchResults.length}`;
+    }
+
+    function goToResult(idx) {
+        if (idx < 0 || idx >= searchResults.length) return;
+        currentResultIdx = idx;
+        currentSlide = searchResults[currentResultIdx];
+        renderSlide(currentSlide, true);
+        updateResultDisplay();
+    }
+
+    function performSearch() {
+        const term = searchInput.value.trim();
+        if (!term) { alert("Entre un mot à rechercher."); return; }
+        if (isAutoPlaying) stopAutoPlay();
+        lastSearchTerm = term;
+        searchResults = searchSlides(term);
+        if (searchResults.length === 0) { alert(`Aucun résultat pour "${term}".`); searchNav.style.display = 'none'; return; }
+        currentResultIdx = 0;
+        goToResult(0);
+    }
+
+    function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+    function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+
+    function nextSlide() {
+        if (currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); clearSearch(); }
+    }
+    function prevSlide() {
+        if (currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); clearSearch(); }
+    }
+    function clearSearch() {
+        if (lastSearchTerm) { lastSearchTerm = ""; searchResults = []; searchNav.style.display = 'none'; searchInput.value = ""; }
+    }
+
+    function updateTimeDisplay() {
+        let t = audioPlayer.currentTime;
+        let mins = Math.floor(t/60).toString().padStart(2,'0');
+        let secs = Math.floor(t%60).toString().padStart(2,'0');
+        let tMins = Math.floor(totalDuration/60).toString().padStart(2,'0');
+        let tSecs = Math.floor(totalDuration%60).toString().padStart(2,'0');
+        timeDisplay.innerText = `${mins}:${secs} / ${tMins}:${tSecs}`;
+        if (!isAutoPlaying) progressFill.style.width = `${(t/totalDuration)*100}%`;
+    }
+
+    function syncSlideFromTime() {
+        if (!isAutoPlaying) return;
+        const t = audioPlayer.currentTime;
+        for (let i = timeline.length-1; i >= 0; i--) {
+            if (t >= timeline[i]) {
+                if (i !== currentSlide) { currentSlide = i; renderSlide(currentSlide, false); }
+                break;
+            }
+        }
+        updateTimeDisplay();
+        if (t >= totalDuration - 1) stopAutoPlay();
+    }
+
+    function startAutoPlay() {
+        isAutoPlaying = true;
+        playBtn.innerText = "⏸ Pause";
+        playBtn.classList.add('stop-btn');
+        statusDiv.innerText = "🔊 Lecture synchronisée en cours...";
+        statusDiv.style.background = "rgba(46,125,50,0.9)";
+        prevBtn.disabled = nextBtn.disabled = true;
+        clearSearch();
+        audioPlayer.play().catch(e => console.log("Lecture bloquée, cliquer sur play"));
+        if (syncInterval) clearInterval(syncInterval);
+        syncInterval = setInterval(syncSlideFromTime, 300);
+    }
+
+    function stopAutoPlay() {
+        isAutoPlaying = false;
+        playBtn.innerText = "▶ Lecture audio";
+        playBtn.classList.remove('stop-btn');
+        statusDiv.innerText = "📖 Mode navigation";
+        statusDiv.style.background = "rgba(0,0,0,0.8)";
+        audioPlayer.pause();
+        if (syncInterval) { clearInterval(syncInterval); syncInterval = null; }
+        prevBtn.disabled = (currentSlide===0);
+        nextBtn.disabled = (currentSlide===slides.length-1);
+    }
+
+    function toggleAutoPlay() { isAutoPlaying ? stopAutoPlay() : startAutoPlay(); }
+    function goToQuiz() { if (isAutoPlaying) stopAutoPlay(); currentSlide = slides.length-1; renderSlide(currentSlide, false); }
+
+    document.addEventListener('keydown', (e) => {
+        if (isAutoPlaying) return;
+        if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+        else if (e.key === 'ArrowRight') { e.preventDefault(); nextSlide(); }
+        else if (e.key === ' ' && document.activeElement !== searchInput) { e.preventDefault(); toggleAutoPlay(); }
+    });
+
+    prevBtn.onclick = prevSlide;
+    nextBtn.onclick = nextSlide;
+    playBtn.onclick = toggleAutoPlay;
+    searchBtn.onclick = performSearch;
+    prevResultBtn.onclick = prevResult;
+    nextResultBtn.onclick = nextResult;
+    quizNavBtn.onclick = goToQuiz;
+    audioPlayer.addEventListener('ended', stopAutoPlay);
+    audioPlayer.addEventListener('timeupdate', () => { if(!isAutoPlaying) updateTimeDisplay(); });
+
+    renderSlide(0, false);
+    updateTimeDisplay();
+</script>
+</body>
+</html>
