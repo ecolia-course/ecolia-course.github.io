@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>Mon tableau - ECOLIA</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(160deg, #1a3a2a 0%, #0d1f14 100%);
+            color: #e8f5e9;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            max-width: 500px;
+            min-height: 100vh;
+            margin: 0 auto;
+            background: rgba(13, 31, 20, 0.95);
+            box-shadow: 0 0 30px rgba(76, 175, 80, 0.3);
+        }
+
+        .header {
+            position: sticky;
+            top: 0;
+            padding: 15px 20px;
+            background: rgba(26, 58, 42, 0.98);
+            backdrop-filter: blur(15px);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 2px solid #4caf50;
+        }
+
+        .back-btn {
+            background: rgba(76, 175, 80, 0.2);
+            border: none;
+            color: #a5d6a7;
+            font-size: 1.2rem;
+            padding: 8px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            background: rgba(76, 175, 80, 0.35);
+        }
+
+        .main-content {
+            padding: 20px;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .page-title h1 {
+            color: #ffd54f;
+            font-size: 1.6rem;
+        }
+
+        .page-title p {
+            color: #a5d6a7;
+            font-size: 0.85rem;
+        }
+
+        /* Cartes de statistiques */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: rgba(76, 175, 80, 0.1);
+            border: 1px solid rgba(76, 175, 80, 0.2);
+            border-radius: 16px;
+            padding: 18px 12px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: #ffd54f;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #a5d6a7;
+            margin-top: 5px;
+        }
+
+        /* Section progression par matière */
+        .section-title {
+            font-size: 1.1rem;
+            color: #ffd54f;
+            margin: 20px 0 12px 0;
+            padding-bottom: 5px;
+            border-bottom: 1px solid rgba(76, 175, 80, 0.3);
+        }
+
+        .progress-item {
+            background: rgba(76, 175, 80, 0.05);
+            border-radius: 12px;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .progress-subject {
+            font-weight: bold;
+            color: #c8e6c9;
+        }
+
+        .progress-count {
+            color: #a5d6a7;
+            font-size: 0.8rem;
+        }
+
+        progress {
+            width: 100%;
+            height: 8px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        progress::-webkit-progress-bar {
+            background-color: rgba(76, 175, 80, 0.2);
+            border-radius: 10px;
+        }
+
+        progress::-webkit-progress-value {
+            background-color: #4caf50;
+            border-radius: 10px;
+        }
+
+        /* Temps par matière */
+        .temps-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(76, 175, 80, 0.05);
+            border-radius: 12px;
+            padding: 10px 15px;
+            margin-bottom: 8px;
+        }
+
+        .temps-subject {
+            color: #c8e6c9;
+        }
+
+        .temps-duree {
+            color: #ffd54f;
+            font-weight: bold;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #a5d6a7;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            border-top: 1px solid rgba(76, 175, 80, 0.15);
+            margin-top: 20px;
+        }
+
+        .refresh-btn {
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            color: #a5d6a7;
+            padding: 8px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .refresh-btn:hover {
+            background: rgba(76, 175, 80, 0.3);
+        }
+
+        .redirect-msg {
+            text-align: center;
+            padding: 50px 20px;
+        }
+
+        .redirect-msg a {
+            color: #4caf50;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <a href="index.html" class="back-btn">← Retour</a>
+            <div>
+                <h2 style="color:#c8e6c9;font-size:1.1rem;">📊 Mon tableau</h2>
+            </div>
+        </div>
+
+        <div id="content">
+            <div class="redirect-msg">⏳ Chargement de vos données...</div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, onAuthStateChanged } from "./firebase-init.js";
+        import { getProgression } from "./progression.js";
+
+        // Formater le temps (secondes -> heures/minutes)
+        function formatTime(seconds) {
+            const heures = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            if (heures > 0) {
+                return `${heures}h ${minutes}min`;
+            }
+            return `${minutes}min`;
+        }
+
+        // Calculer le total de chapitres terminés
+        function calculerTotalChapitres(progression) {
+            let total = 0;
+            if (progression && progression.progression) {
+                for (const matiere in progression.progression) {
+                    const termines = progression.progression[matiere]?.termines || [];
+                    total += termines.length;
+                }
+            }
+            return total;
+        }
+
+        // Calculer le temps total d'étude
+        function calculerTempsTotal(progression) {
+            let total = 0;
+            if (progression && progression.tempsParPage) {
+                for (const page in progression.tempsParPage) {
+                    total += progression.tempsParPage[page];
+                }
+            }
+            return total;
+        }
+
+        // Grouper le temps par matière (à partir des noms de pages)
+        function grouperTempsParMatiere(progression) {
+            const tempsParMatiere = {};
+            if (progression && progression.tempsParPage) {
+                for (const pageId in progression.tempsParPage) {
+                    // Exemple: "math-7e_chapitre1" -> "math-7e"
+                    const matiereId = pageId.split('_')[0];
+                    const duree = progression.tempsParPage[pageId];
+                    if (tempsParMatiere[matiereId]) {
+                        tempsParMatiere[matiereId] += duree;
+                    } else {
+                        tempsParMatiere[matiereId] = duree;
+                    }
+                }
+            }
+            return tempsParMatiere;
+        }
+
+        async function chargerDashboard() {
+            const user = auth.currentUser;
+            if (!user) return;
+
+            const progression = await getProgression();
+            
+            const totalChapitres = calculerTotalChapitres(progression);
+            const tempsTotal = calculerTempsTotal(progression);
+            const tempsParMatiere = grouperTempsParMatiere(progression);
+            
+            // Définir les couleurs pour les matières (optionnel)
+            const matiereNoms = {
+                'math-7e': 'Mathématiques 7e', 'math-8e': 'Mathématiques 8e',
+                'francais-7e': 'Français 7e', 'francais-8e': 'Français 8e',
+                'anglais-7e': 'Anglais 7e', 'anglais-8e': 'Anglais 8e',
+                'svt-7e': 'SVT 7e', 'svt-8e': 'SVT 8e',
+                'physique-7e': 'Physique 7e', 'physique-8e': 'Physique 8e',
+                'chimie-8e': 'Chimie 8e', 'histgeo-7e': 'Histoire-Géo 7e',
+                'math-sc-1ere': 'Maths 1ère Sc', 'physique-sc-1ere': 'Physique 1ère Sc',
+                'chimie-sc-1ere': 'Chimie 1ère Sc', 'svt-sc-1ere': 'SVT 1ère Sc'
+            };
+            
+            function getMatiereNom(matiereId) {
+                return matiereNoms[matiereId] || matiereId;
+            }
+            
+            // Générer l'affichage des matières avec progression
+            let matieresHtml = '';
+            if (progression && progression.progression && Object.keys(progression.progression).length > 0) {
+                for (const [matiereId, data] of Object.entries(progression.progression)) {
+                    const termines = data.termines || [];
+                    // Estimation du nombre total de chapitres (à ajuster selon tes données)
+                    const totalChapitresMatiere = 12; // Valeur par défaut, à adapter
+                    const pourcentage = (termines.length / totalChapitresMatiere) * 100;
+                    
+                    matieresHtml += `
+                        <div class="progress-item">
+                            <div class="progress-header">
+                                <span class="progress-subject">${getMatiereNom(matiereId)}</span>
+                                <span class="progress-count">${termines.length}/${totalChapitresMatiere} chapitres</span>
+                            </div>
+                            <progress value="${termines.length}" max="${totalChapitresMatiere}"></progress>
+                        </div>
+                    `;
+                }
+            } else {
+                matieresHtml = '<div class="empty-state">📭 Aucun chapitre terminé pour le moment.<br>Commence tes cours !</div>';
+            }
+            
+            // Générer l'affichage des temps par matière
+            let tempsHtml = '';
+            if (Object.keys(tempsParMatiere).length > 0) {
+                for (const [matiereId, duree] of Object.entries(tempsParMatiere)) {
+                    tempsHtml += `
+                        <div class="temps-item">
+                            <span class="temps-subject">${getMatiereNom(matiereId)}</span>
+                            <span class="temps-duree">⏱ ${formatTime(duree)}</span>
+                        </div>
+                    `;
+                }
+            } else {
+                tempsHtml = '<div class="empty-state">⏳ Aucun temps d\'étude enregistré.</div>';
+            }
+            
+            const html = `
+                <div class="main-content">
+                    <div class="page-title">
+                        <h1>📊 Mon tableau de bord</h1>
+                        <p>Suis ta progression et ton temps d'étude</p>
+                    </div>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value">${totalChapitres}</div>
+                            <div class="stat-label">chapitres terminés</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${formatTime(tempsTotal)}</div>
+                            <div class="stat-label">temps d'étude total</div>
+                        </div>
+                    </div>
+                    
+                    <div class="section-title">📚 Progression par matière</div>
+                    ${matieresHtml}
+                    
+                    <div class="section-title">⏱ Temps passé par matière</div>
+                    ${tempsHtml}
+                    
+                    <div class="footer">
+                        <button id="refreshBtn" class="refresh-btn">⟳ Actualiser</button>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('content').innerHTML = html;
+            document.getElementById('refreshBtn')?.addEventListener('click', chargerDashboard);
+        }
+        
+        // Vérifier la connexion
+        onAuthStateChanged(auth, (user) => {
+            const container = document.getElementById('content');
+            if (!user) {
+                container.innerHTML = `
+                    <div class="redirect-msg">
+                        🔐 Veuillez vous <a href="index.html" style="color:#4caf50">connecter</a> pour voir votre tableau de bord.
+                    </div>
+                `;
+                return;
+            }
+            chargerDashboard();
+        });
+    </script>
+</body>
+</html>
