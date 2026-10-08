@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Histoire 6e — Préparation EXETAT</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Segoe UI',system-ui,sans-serif;
+       background:linear-gradient(160deg,#3e2723 0%,#5d4037 50%,#2e1b13 100%);
+       min-height:100vh; display:flex; justify-content:center; align-items:center; padding:15px; }
+.container { width:100%; max-width:1400px; background:#fefdf8; border-radius:24px;
+             box-shadow:0 25px 70px rgba(0,0,0,0.35); overflow:hidden;
+             display:flex; flex-direction:column; max-height:95vh; }
+.progress-bar { height:7px; background:#e0c8b8; }
+.progress-fill { height:100%; background:linear-gradient(90deg,#8d6e63,#4e342e); width:0%; transition:width 0.4s; }
+.header { padding:18px 28px; background:#efebe9; border-bottom:2px solid #bcaaa4;
+          display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
+.header h1 { color:#4e342e; font-size:1.3rem; display:flex; align-items:center; gap:10px; }
+.badge { background:#8d6e63; color:white; padding:6px 18px; border-radius:30px; font-weight:bold; }
+.search-container { display:flex; gap:6px; background:white; padding:4px 10px;
+                    border-radius:40px; box-shadow:0 2px 8px rgba(0,0,0,0.08); }
+.search-container input { border:none; padding:10px 16px; border-radius:30px; outline:none;
+                          width:200px; font-size:0.95rem; }
+.search-container button, .quiz-btn { background:#8d6e63; color:white; border:none;
+                                      border-radius:30px; padding:8px 18px; cursor:pointer; font-weight:bold; }
+.quiz-btn { background:#e65100; }
+.search-nav { display:flex; gap:8px; background:#d7ccc8; padding:6px 14px;
+              border-radius:30px; align-items:center; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:1.1rem; color:#4e342e; }
+.content { padding:30px 35px; flex:1; overflow-y:auto; background:#fff; }
+.slide { display:none; animation:fadeSlide 0.5s ease; }
+.slide.active { display:block; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(15px); } to { opacity:1; transform:translateY(0); } }
+.slide-title { color:#4e342e; font-size:1.8rem; border-left:6px solid #8d6e63;
+               padding-left:18px; margin-bottom:20px; }
+.slide-content { color:#3e2723; line-height:1.9; font-size:1.05rem; }
+.slide-content h3 { color:#5d4037; margin:28px 0 14px; font-size:1.3rem; }
+.scene-box { background:#fff8e1; border-left:5px solid #ff8f00; padding:18px 22px;
+             border-radius:12px; margin:18px 0; font-style:italic; }
+.image-box { background:#f0e6dc; padding:18px; border-radius:14px; text-align:center;
+             margin:20px 0; border:1px dashed #8d6e63; }
+.definition-box { background:#efebe9; padding:22px; border-radius:14px; margin:22px 0;
+                  border-left:6px solid #8d6e63; }
+.example-box { background:#fce4ec; padding:18px; border-radius:12px; margin:18px 0;
+               border-left:5px solid #c62828; }
+.summary-box { background:#e1f5fe; padding:16px 20px; border-radius:12px;
+               margin:18px 0; border:2px solid #0277bd; }
+.quiz-container { background:#efebe9; padding:25px; border-radius:20px; margin-top:20px; }
+.quiz-question { background:white; border-radius:12px; padding:18px;
+                 margin-bottom:18px; box-shadow:0 2px 6px rgba(0,0,0,0.04); }
+.quiz-question p { font-weight:bold; margin-bottom:10px; }
+.quiz-question label { display:block; margin:8px 0; cursor:pointer; }
+.quiz-btn-submit { background:#6d4c41; color:white; border:none; padding:14px 28px;
+                   border-radius:40px; font-size:1.05rem; cursor:pointer; margin-top:20px; font-weight:bold; }
+.quiz-result { margin-top:20px; font-weight:bold; padding:16px; border-radius:14px; }
+.controls { padding:18px 28px; background:#fafafa; border-top:1px solid #e0e0e0;
+            display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px; }
+.nav-buttons { display:flex; gap:10px; }
+button { padding:12px 26px; border:none; border-radius:10px; font-size:0.95rem;
+         cursor:pointer; font-weight:500; }
+.nav-btn { background:white; color:#4e342e; border:1px solid #ccc; }
+.nav-btn:disabled { opacity:0.4; cursor:not-allowed; }
+.counter { color:#555; background:white; padding:8px 16px; border-radius:20px; font-weight:500; }
+.highlight { background-color:#fff59d; padding:1px 3px; border-radius:3px; }
+ul, ol { margin-left:25px; }
+li { margin:6px 0; }
+.sources { background:#f5f5f5; padding:14px 18px; border-radius:10px;
+           margin-top:24px; font-size:0.85rem; color:#666; border-left:3px solid #999; }
+.sources strong { color:#333; }
+@media (max-width:768px) {
+    .content { padding:20px; }
+    .slide-title { font-size:1.4rem; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="header">
+        <h1>📜 Histoire · 6ᵉ secondaire</h1>
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Rechercher...">
+                <button id="searchBtn">🔍</button>
+                <button id="quizNavBtn" class="quiz-btn">📝 Quiz</button>
+            </div>
+            <div class="search-nav" id="searchNav" style="display:none;">
+                <button id="prevResultBtn">◀</button>
+                <span id="resultCounter">0/0</span>
+                <button id="nextResultBtn">▶</button>
+            </div>
+            <span class="badge" id="slideCounter">1/12</span>
+        </div>
+    </div>
+    <div class="content" id="content"></div>
+    <div class="controls">
+        <div class="nav-buttons">
+            <button class="nav-btn" id="prevBtn">← Leçon précédente</button>
+            <button class="nav-btn" id="nextBtn">Leçon suivante →</button>
+        </div>
+        <span class="counter" id="timeDisplay">Leçon 1 / 12</span>
+    </div>
+</div>
+
+<script>
+const slides = [
+    {
+        title: "Leçon 1 : Les grandes civilisations anciennes",
+        content: `
+            <div class="scene-box">
+                📜 <strong>Situation réelle :</strong> Tu visites un musée. Tu vois des hiéroglyphes égyptiens, des statues grecques, des pièces romaines. Tu te demandes : comment ces civilisations ont-elles pu construire des pyramides, écrire des lois, inventer la démocratie ?
+            </div>
+            <div class="image-box">
+                🖼️ <strong>Image mentale :</strong> Imagine quatre grandes pyramides au bord du Nil, des temples grecs sur l'Acropole, des routes romaines traversant l'Europe. Chaque civilisation a laissé une empreinte.
+            </div>
+            <div class="definition-box">
+                <strong>📚 Théorie : Les grandes civilisations</strong><br>
+                • <strong>Mésopotamie</strong> (~3500 av. J.-C.) : écriture cunéiforme, premières villes (Ur, Babylone).<br>
+                • <strong>Égypte ancienne</strong> (~3000 av. J.-C.) : pharaons, pyramides, hiéroglyphes.<br>
+                • <strong>Grèce antique</strong> (~800 av. J.-C.) : démocratie, philosophie (Socrate, Platon, Aristote).<br>
+                • <strong>Rome antique</strong> (~500 av. J.-C.) : empire immense, droit romain, ingénierie.<br>
+                • <strong>Civilisations africaines</strong> : Nubie, Ghana, Mali, Grand Zimbabwe.
+            </div>
+            <div class="summary-box">
+                <strong>📌 Résumé :</strong> Mésopotamie, Égypte, Grèce, Rome, Afrique = les grandes civilisations fondatrices. Chacune a apporté à l'humanité.
+            </div>
+            <div class="sources"><strong>Sources :</strong> Programme national d'histoire RDC, UNESCO.</div>
+        `
+    },
+    {
+        title: "Leçon 2 : La traite négrière atlantique",
+        content: `
+            <div class="scene-box">
+                📜 <strong>Situation réelle :</strong> Sur la côte du Kongo, au XVᵉ siècle, des navires européens accostent. Ils viennent chercher de l'or, de l'ivoire, mais aussi des esclaves. Des millions d'Africains seront déportés vers les Amériques. C'est la <strong>traite négrière</strong>.
+            </div>
+            <div class="image-box">
+                🖼️ <strong>Image mentale :</strong> Imagine un triangle dessiné sur l'océan Atlantique : Europe → Afrique (armes, tissus) → Amériques (esclaves) → Europe (sucre, coton, café). C'est le commerce triangulaire.
+            </div>
+            <div class="definition-box">
+                <strong>📚 Théorie :</strong><br>
+                • <strong>Période :</strong> XVᵉ au XIXᵉ siècle.<br>
+                • <strong>Victimes :</strong> plus de 12 millions d'Africains déportés.<br>
+                • <strong>Rôle du Kongo :</strong> royaume chrétien, allié puis victime de la traite portugaise.<br>
+                • <strong>Conséquences :</strong> dépeuplement de l'Afrique, richesses pour l'Europe, esclavage dans les Amériques.<br>
+                • <strong>Abolition :</strong> 1794 (France), 1807 (Royaume-Uni), 1865 (États-Unis).
+            </div>
+            <div class="summary-box">
+                <strong>📌 Résumé :</strong> La traite négrière a déporté 12 M d'Africains pendant 4 siècles. Une des pires tragédies de l'histoire humaine.
+            </div>
+            <div class="sources"><strong>Sources :</strong> Programme national d'histoire RDC, UNESCO.</div>
+        `
+    },
+    {
+        title: "Leçon 3 : La colonisation de l'Afrique",
+        content: `
+            <div class="scene-box">
+                📜 <strong>Situation réelle :</strong> En 1885, à Berlin, les grandes puissances européennes se réunissent. Sur une grande carte d'Afrique, elles tracent des lignes droites pour se partager le continent. Aucun Africain n'est invité. C'est la <strong>conférence de Berlin</strong>.
+            </div>
+            <div class="image-box">
+                🖼️ <strong>Image mentale :</strong> Imagine l'Afrique comme un gâteau. À Berlin, 14 pays européens prennent chacun une part. La France prend l'ouest, la Belgique le Congo, le Royaume-Uni l'est et le sud.
+            </div>
+            <div class="definition-box">
+                <strong>📚 Théorie :</strong><br>
+                • <strong>Conférence de Berlin (1884-1885) :</strong> partage de l'Afrique entre puissances européennes.<br>
+                • <strong>RDC :</strong> attribuée au roi Léopold II de Belgique (État indépendant du Congo, 1885-1908), puis colonie belge (1908-1960).<br>
+                • <strong>Méthodes :</strong> traités forcés, violences, travaux forcés, impôts.<br>
+                • <strong>Résistances :</strong> révolte des Batetela, de Kimpa Vita, de Lumumba plus tard.
+            </div>
+            <div class="example-box">
+                🇨🇩 <strong>Le Congo de Léopold II :</strong> exploitation du caoutchouc et de l'ivoire, 10 millions de morts. Un génocide oublié.
+            </div>
+            <div class="summary-box">
+                <strong>📌 Résumé :</strong> En 1885, Berlin partage l'Afrique. Le Congo devient propriété de Léopold II, puis colonie belge.
+            </div>
+            <div class="sources"><strong>Sources :</strong> Programme national d'histoire RDC, Adam Hochschild.</div>
+        `
+    },
+    {
+        title: "Leçon 4 : La Première Guerre mondiale (1914-1918)",
+        content: `
+            <div class="scene-box">
+                📜 <strong>Situation réelle :</strong> En 1914, un archiduc autrichien est assassiné à Sarajevo. En quelques semaines, l'Europe entière plonge dans une guerre sans précédent. Les Africains y participent aussi, enrôlés par les puissances coloniales.
+            </div>
+            <div class="image-box">
+                🖼️ <strong>Image mentale :</strong> Imagine deux grandes alliances qui se font face : Triple-Entente (France, Royaume-Uni, Russie) contre Triple-Alliance (Allemagne, Autriche-Hongrie, Italie). Un conflit qui embrase le monde.
+            </div>
+            <div class="definition-box">
+                <strong>📚 Théorie :</strong><br>
+                • <strong>Dates :</strong> 28 juillet 1914 → 11 novembre 1918.<br>
+                • <strong>Causes :</strong> nationalismes, rivalités coloniales, course aux armements.<br>
+                • <strong>Bilan :</strong> ~10 millions de morts militaires, 20 millions de civils.<br>
+                • <strong>Conséquences :</strong> effondrement des empires (ottoman, austro-hongrois, russe), traité de Versailles (1919).<br>
+                • <strong>Participation africaine :</strong> plus de 1 million de soldats africains mobilisés.
+            </div>
+            <div class="summary-box">
+                <strong>📌 Résumé :</strong> 1914-1918. Guerre mondiale entre puissances européennes. Traité de Versailles en 1919. Bilan humain désastreux.
+            </div>
+            <div class="sources"><strong>Sources :</strong> Programme national d'histoire RDC.</div>
+        `
+    },
+    {
+        title: "Leçon 5 : La Deuxième Guerre mondiale (1939-1945)",
+        content: `
+            <div class="scene-box">
+                📜 <strong>Situation réelle :</strong> En 1939, l'Allemagne nazie envahit la Pologne. C'est le début du conflit le plus meurtrier de l'histoire. 60 millions de morts. La Shoah. Hiroshima et Nagasaki. Le monde ne sera plus jamais le même.
+            </div>
+            <div class="image-box">
+                🖼️ <strong>Image mentale :</strong> Imagine l'Europe en flammes, l'Asie en guerre, les camps de concentration. Puis, en 1945, l'explosion nucléaire. Le monde réalise l'ampleur de la catastrophe.
+            </div>
+            <div class="definition-box">
+                <strong>📚 Théorie :</strong><br>
+                • <strong>Dates :</strong> 1ᵉʳ septembre 1939 → 2 septembre 1945.<br>
+                • <strong>Camps :</strong> Auschwitz, Dachau, Buchenwald. Génocide des Juifs, des Tziganes.<br>
+                • <strong>Alliances :</strong> Alliés (USA, URSS, Royaume-Uni, France libre) vs Axe (Allemagne, Italie, Japon).<br>
+                • <strong>Conséquences :</strong> création de l'ONU (1945), début de la guerre froide, décolonisation.<br>
+                • <strong>Participations africaines :</strong> soldats congolais, tirailleurs sénégalais, etc.
+            </div>
+            <div class="summary-box">
+                <strong>📌 Résumé :</strong> 1939-1945. 60 M de morts. Shoah. Bombes atomiques. Création de l'ONU.
+            </div>
+            <div class="sources"><strong>Sources :</strong> Programme national d'histoire RDC, ONU.</div>
+        `
+    },
+    {
+        title: "Leçon 6 : L'indépendance de la RDC (1960)",
+        content: `
+            <div class="scene-box">
+                📜 <strong>Situation réelle :</strong> Le 30 juin 1960, à Léopoldville (aujourd'hui Kinshasa), le drapeau belge est baissé, le drapeau congolais hissé. Patrice Lumumba, Premier ministre, prononce un discours mémorable contre la colonisation. Le Congo est <strong>indépendant</strong>.
+            </div>
+            <div class="image-box">
+                🖼️ <strong>Image mentale :</strong> Imagine une foule immense sur la place du Palais du Peuple. Le roi Baudouin regarde, un peu embarrassé. Lumumba, jeune, passionné, dénonce les humiliations subies.
+            </div>
+            <div class="definition-box">
+                <strong>📚 Théorie :</strong><br>
+                • <strong>30 juin 1960 :</strong> proclamation de l'indépendance de la RDC.<br>
+                • <strong>Acteurs majeurs :</strong> Patrice Lumumba, Joseph Kasa-Vubu, Cyrille Adoula, Moïse Tshombe.<br>
+                • <strong>Discours de Lumumba :</strong> dénonce la colonisation belge devant le roi Baudouin.<br>
+                • <strong>Assassinat :</strong> 17 janvier 1961, Lumumba est assassiné au Katanga avec la complicité de la Belgique et des USA.<br>
+                • <strong>Suites :</strong> sécession du Katanga, guerre civile, prise de pouvoir par Mobutu en 1965.
+            </div>
+            <div class="summary-box">
+                <strong>📌 Résumé :</strong> 30 juin 1960, RDC indépendante. Lumumba assassiné en 1961. Le pays traverse des crises profondes.
+            </div>
+            <div class="sources"><strong>Sources :</strong> Programme national d'histoire RDC, ONU.</div>
+        `
+    },
+    {
+        title: "Leçon 7 : Les autres indépendances africaines",
+        content: `
+            <div class="scene-box">
+                📜 <strong>Situation réelle :</strong> De 1957 à 1975, une vague d'indépendances traverse l'Afrique. Le Ghana (1957), la Guinée (1958), la RDC, le Nigeria (1960), l'Angola (1975). Les peuples prennent en main leur destin.
+            </div>
+            <div class="image-box">
+                🖼️ <strong>Image mentale :</strong> Imagine une carte d'Afrique qui, année après année, change de couleur : du rouge colonial au vert de l'indépendance.
+            </div>
+            <div class="definition-box">
+                <strong>📚 Théorie :</strong><br>
+                • <strong>Ghana 1957 :</strong> 1ᵉʳ pays africain indépendant (Kwame Nkrumah).<br>
+                • <strong>Guinée 1958 :</strong> refuse la communauté franco-africaine (Sékou Touré).<br>
+                • <strong>1960 :</strong> « année de l'Afrique » — 17 pays indépendants.<br>
+                • <strong>1962 :</strong> indépendance de l'Algérie après 8 ans de guerre.<br>
+                • <strong>1975 :</strong> indépendances des colonies portugaises (Angola, Mozambique, Guinée-Bissau).
+            </div>
+            <div class="summary-box">
+                <strong>📌 Résumé :</strong> Vague d'indépendances africaines de 1957 à 1975. 1960 = année de l'Afrique.
+            </div>
+            <div class="sources"><strong>Sources :</strong> Programme national d'histoire RDC.</div>
+        `
+    },
+    {
+        title: "Leçon 8 : La guerre froide (1947-1991)",
+        content: `
+            <div class="scene-box">
+                📜 <strong>Situation réelle :</strong> Après 1945, le monde se divise en deux blocs : le bloc de l'Ouest (USA) et le bloc de l'Est (URSS). Berlin est coupée en deux. Des crises éclatent partout (Cuba, Vietnam, Congo). C'est la <strong>guerre froide</strong>.
+            </div>
+            <div class="image-box">
+                🖼️ <strong>Image mentale :</strong> Imagine le monde divisé par un rideau de fer. À l'ouest, le capitalisme. À l'est, le communisme. Aucune confrontation directe, mais une guerre idéologique partout.
+            </div>
+            <div class="definition-box">
+                <strong>📚 Théorie :</strong><br>
+                • <strong>1947 :</strong> début de la guerre froide (doctrine Truman, plan Marshall).<br>
+                • <strong>1949 :</strong> création de l'OTAN.<br>
+                • <strong>1962 :</strong> crise des missiles à Cuba.<br>
+                • <strong>1961 :</strong> construction du mur de Berlin.<br>
+                • <strong>1989 :</strong> chute du mur de Berlin.<br>
+                • <strong>1991 :</strong> dissolution de l'URSS.
+            </div>
+            <div class="summary-box">
+                <strong>📌 Résumé :</strong> 1947-1991. Guerre idéologique USA vs URSS. Fin : chute du mur (1989), dissolution URSS (1991).
+            </div>
+            <div class="sources"><strong>Sources :</strong> Programme national d'histoire RDC.</div>
+        `
+    },
+    {
+        title: "Leçon 9 : L'Afrique post-indépendance — défis et dictatures",
+        content: `
+            <div class="scene-box">
+                📜 <strong>Situation réelle :</strong> Après les indépendances, l'euphorie retombe vite. Coups d'État, dictatures, guerres civiles. En RDC, Mobutu règne 32 ans (1965-1997). Les promesses de développement ne sont pas tenues.
+            </div>
+            <div class="image-box">
+                🖼️ <strong>Image mentale :</strong> Imagine un tableau après l'indépendance : d'un côté, les espoirs (drapeaux, hymnes, universités). De l'autre, les réalités (corruption, dictatures, guerres).
+            </div>
+            <div class="definition-box">
+                <strong>📚 Théorie :</strong><br>
+                • <strong>Mobutu (RDC) :</strong> règne de 1965 à 1997. Zaïrianisation, kleptocratie.<br>
+                • <strong>Dictatures célèbres :</strong> Bokassa (Centrafrique), Amin Dada (Ouganda), Mugabe (Zimbabwe).<br>
+                • <strong>Guerres civiles :</strong> Nigeria-Biafra (1967-70), Congo (1960-65), Angola (1975-2002).<br>
+                • <strong>Causes :</strong> héritage colonial, manque d'unité, ingérences extérieures, richesses mal réparties.
+            </div>
+            <div class="summary-box">
+                <strong>📌 Résumé :</strong> Après les indépendances, l'Afrique connaît dictatures, coups d'État et guerres. Le développement reste un défi.
+            </div>
+            <div class="sources"><strong>Sources :</strong> Programme national d'histoire RDC.</div>
+        `
+    },
+    {
+        title: "Leçon 10 : La RDC contemporaine (1997-2025)",
+        content: `
+            <div class="scene-box">
+                📜 <strong>Situation réelle :</strong> En 1997, Laurent-Désiré Kabila chasse Mobutu. En 2001, il est assassiné. Son fils Joseph prend le pouvoir. Deux guerres terribles ravagent l'Est du pays. En 2018, Félix Tshisekedi est élu. La RDC cherche sa voie.
+            </div>
+            <div class="image-box">
+                🖼️ <strong>Image mentale :</strong> Imagine un chemin semé d'embûches : guerres, pillages, millions de morts, mais aussi espoir, élections, société civile active.
+            </div>
+            <div class="definition-box">
+                <strong>📚 Théorie :</strong><br>
+                • <strong>1997 :</strong> chute de Mobutu, arrivée de L.-D. Kabila.<br>
+                • <strong>1998-2003 :</strong> 2ᵉ guerre du Congo, 5 millions de morts.<br>
+                • <strong>2001 :</strong> assassinat de L.-D. Kabila. Joseph Kabila au pouvoir.<br>
+                • <strong>2006 :</strong> élections démocratiques.<br>
+                • <strong>2018 :</strong> élection de Félix Tshisekedi.<br>
+                • <strong>Défis actuels :</strong> guerre à l'Est (M23), corruption, pauvreté.
+            </div>
+            <div class="summary-box">
+                <strong>📌 Résumé :</strong> RDC de 1997 à 2025 : guerres, assassinats, alternances. Le pays cherche la paix et le développement.
+            </div>
+            <div class="sources"><strong>Sources :</strong> Programme national d'histoire RDC, ONU.</div>
+        `
+    },
+    {
+        title: "Leçon 11 : Le monde depuis 1991 — mondialisation",
+        content: `
+            <div class="scene-box">
+                📜 <strong>Situation réelle :</strong> Tu commandes un vêtement sur internet. Il est fabriqué en Chine, expédié depuis Dubaï, livré à Kinshasa. Le monde est devenu un <strong>village global</strong>. C'est la mondialisation.
+            </div>
+            <div class="image-box">
+                🖼️ <strong>Image mentale :</strong> Imagine une immense toile d'araignée qui relie toutes les villes du monde : échanges, transports, Internet, capitaux. Toutes les parties sont connectées.
+            </div>
+            <div class="definition-box">
+                <strong>📚 Théorie :</strong><br>
+                • <strong>Mondialisation :</strong> intégration des économies et des cultures à l'échelle mondiale.<br>
+                • <strong>Acteurs :</strong> multinationales, ONU, FMI, Banque mondiale, OMC.<br>
+                • <strong>Avantages :</strong> échanges, technologies, ouverture.<br>
+                • <strong>Inconvénients :</strong> inégalités, domination des pays riches, perte des cultures locales.<br>
+                • <strong>Défis :</strong> changement climatique, migrations, terrorismes.
+            </div>
+            <div class="summary-box">
+                <strong>📌 Résumé :</strong> Depuis 1991, le monde est globalisé. Avantages et inconvénients. La RDC doit trouver sa place.
+            </div>
+            <div class="sources"><strong>Sources :</strong> Programme national d'histoire RDC, ONU.</div>
+        `
+    },
+    {
+        title: "🏆 QUIZ FINAL — Teste tes connaissances !",
+        content: `
+            <div class="quiz-container">
+                <h3>📝 Questionnaire d'histoire (6ᵉ secondaire)</h3>
+                <p style="margin-bottom:15px;">Choisis la bonne réponse.</p>
+                <div id="quizQuestions"></div>
+                <button id="submitQuiz" class="quiz-btn-submit">✅ Valider</button>
+                <div id="quizResult" class="quiz-result"></div>
+            </div>
+        `
+    }
+];
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const timeDisplay = document.getElementById('timeDisplay');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+const quizNavBtn = document.getElementById('quizNavBtn');
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim()) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span class="highlight">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderQuiz() {
+    const q = document.getElementById('quizQuestions');
+    if (!q) return;
+    const questions = [
+        { text:"Quelle civilisation a inventé la démocratie ?", options:["Égypte","Grèce","Rome"], correct:1 },
+        { text:"Quand a eu lieu la conférence de Berlin ?", options:["1885","1914","1960"], correct:0 },
+        { text:"Qui a prononcé le discours du 30 juin 1960 ?", options:["Kasa-Vubu","Mobutu","Lumumba"], correct:2 },
+        { text:"Quand la RDC a-t-elle obtenu son indépendance ?", options:["1957","1960","1965"], correct:1 },
+        { text:"Quel roi belge a possédé le Congo en 1885 ?", options:["Baudouin","Léopold II","Albert Ier"], correct:1 },
+        { text:"Quand a eu lieu la Première Guerre mondiale ?", options:["1914-1918","1939-1945","1947-1991"], correct:0 },
+        { text:"Quand a eu lieu la Deuxième Guerre mondiale ?", options:["1914-1918","1939-1945","1989-1991"], correct:1 },
+        { text:"Qui a gouverné la RDC de 1965 à 1997 ?", options:["Lumumba","Mobutu","Kabila"], correct:1 },
+        { text:"Quand est tombé le mur de Berlin ?", options:["1961","1989","1991"], correct:1 },
+        { text:"Quel est le 1ᵉʳ pays africain indépendant ?", options:["Ghana","Guinée","RDC"], correct:0 }
+    ];
+    let html = '';
+    questions.forEach((q,i) => { html += `<div class="quiz-question"><p>${i+1}. ${q.text}</p>`; q.options.forEach((o,k) => { html += `<label><input type="radio" name="q${i}" value="${k}"> ${o}</label>`; }); html += `</div>`; });
+    document.getElementById('quizQuestions').innerHTML = html;
+    document.getElementById('submitQuiz').onclick = () => {
+        let score = 0;
+        questions.forEach((q,i) => { const s = document.querySelector(`input[name="q${i}"]:checked`); if (s && parseInt(s.value) === q.correct) score++; });
+        const pct = Math.round(score/questions.length*100);
+        document.getElementById('quizResult').innerHTML = `<div style="background:#d7ccc8; padding:18px; border-radius:12px;">🎯 <strong>Score : ${score}/${questions.length} (${pct}%)</strong><br>${score === questions.length ? '🌟 Excellent !' : score >= 7 ? '👍 Bon travail !' : '📖 Relis les leçons.'}</div>`;
+    };
+}
+function renderSlide(index, keepHighlight = true) {
+    const isQuiz = (index === slides.length - 1);
+    contentDiv.innerHTML = `<div class="slide active"><h2 class="slide-title">${slides[index].title}</h2><div class="slide-content">${slides[index].content}</div></div>`;
+    if (isQuiz) renderQuiz();
+    slideCounterSpan.textContent = `${index+1}/${slides.length}`;
+    progressFill.style.width = `${((index+1)/slides.length)*100}%`;
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    timeDisplay.textContent = `Leçon ${index+1} / ${slides.length}`;
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm && !isQuiz) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = `${currentResultIdx+1}/${searchResults.length}`;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+quizNavBtn.onclick = () => { currentSlide = slides.length-1; renderSlide(currentSlide, false); };
+searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+</body>
+</html>
