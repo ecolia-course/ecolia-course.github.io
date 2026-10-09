@@ -12,7 +12,6 @@
 <title>ECOLIA</title>
 
 <style>
-/* ========== STYLES ========== */
 * { margin:0; padding:0; box-sizing:border-box; }
 body { font-family:'Segoe UI',Roboto,sans-serif; background:#0d1117; color:#e6f1ff; padding:16px; padding-bottom:80px; }
 
@@ -44,7 +43,7 @@ h1 { color:#00ff88; font-size:22px; margin-bottom:4px; }
 .souscats { display:none; gap:6px; overflow-x:auto; padding-bottom:10px; scrollbar-width:none; margin-bottom:6px; }
 .souscats.active { display:flex; }
 .souscats::-webkit-scrollbar { display:none; }
-.souscat-tab { flex-shrink:0; padding:8px 14px; border-radius:16px; background:#1a2332; color:#8899aa; border:2px solid #2a3444; font-size:12px; cursor:pointer; white-space:nowrap; }
+.souscat-tab { flex-shrink:0; padding:8px 14px; border-radius:16px; background:#1a2332; color:#8899aa; border:1px solid #2a3444; font-size:12px; cursor:pointer; white-space:nowrap; }
 .souscat-tab.active { background:#0099ff; color:#fff; font-weight:bold; border-color:#0099ff; }
 
 .cours { background:#161b22; border-radius:14px; padding:14px; margin-bottom:10px; border:1px solid #21262d; display:flex; align-items:center; gap:12px; }
@@ -116,45 +115,78 @@ h1 { color:#00ff88; font-size:22px; margin-bottom:4px; }
 <div class="niveaux" id="niveaux"></div>
 <div class="souscats" id="souscats"></div>
 <div id="liste"></div>
+
+<!-- ============ INSTALLER L'APPLICATION ============ -->
+<div id="installSection" style="margin-top:30px;padding:20px;background:#161b22;border-radius:14px;border:1px solid #21262d;">
+    <h2 style="color:#00ff88;font-size:18px;margin-bottom:12px;">📲 Installer ECOLIA</h2>
+    <p style="font-size:13px;color:#8b949e;margin-bottom:16px;">
+        Installe l'app sur ton téléphone pour y accéder hors ligne, comme une vraie application.
+    </p>
+
+    <div id="installAndroid" style="display:none;">
+        <a href="https://medscroll.github.io/ECOLIA.apk"
+           style="display:block;text-align:center;padding:16px;background:#00ff88;color:#121212;
+                  text-decoration:none;border-radius:12px;font-weight:bold;font-size:15px;">
+            ⬇️ Télécharger l'APK Android
+        </a>
+        <p style="font-size:11px;color:#666;text-align:center;margin-top:8px;">
+            Version 1.0 — Signée, compatible Android 7+
+        </p>
+    </div>
+
+    <div id="installIos" style="display:none;">
+        <div style="background:#1a2332;border-radius:12px;padding:16px;border-left:4px solid #0099ff;">
+            <p style="font-weight:bold;color:#0099ff;margin-bottom:12px;">📱 Installation sur iPhone / iPad</p>
+            <ol style="font-size:13px;color:#c0c8d0;line-height:1.8;margin-left:20px;">
+                <li>Ouvre cette page dans <strong>Safari</strong> (pas Chrome)</li>
+                <li>Appuie sur le bouton <strong>Partager</strong> <span style="display:inline-block;background:#0099ff;color:#fff;padding:1px 6px;border-radius:4px;font-size:11px;">⬆️</span></li>
+                <li>Fais défiler et choisis <strong>"Sur l'écran d'accueil"</strong></li>
+                <li>Appuie sur <strong>"Ajouter"</strong> en haut à droite</li>
+                <li>L'app apparaît sur ton écran d'accueil ✅</li>
+            </ol>
+        </div>
+        <p style="font-size:11px;color:#666;margin-top:10px;text-align:center;">
+            Aucun compte Apple requis. Gratuit à vie.
+        </p>
+    </div>
+
+    <div id="installWeb" style="display:none;">
+        <p style="font-size:13px;color:#c0c8d0;">
+            Sur ordinateur, tu peux utiliser l'app directement dans ton navigateur. 
+            Sur mobile, ouvre cette page depuis ton téléphone pour l'installer.
+        </p>
+    </div>
+</div>
+
 <p class="progress" id="progress">Chargement...</p>
 
 <script>
-/* ═══════════════════════════════════════════════════════════════
-   ENREGISTREMENT DU SERVICE WORKER
-   ═══════════════════════════════════════════════════════════════ */
+/* ═══════════ SERVICE WORKER ═══════════ */
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
-            .then(reg => console.log('✓ Service Worker enregistré :', reg.scope))
-            .catch(err => console.error('✗ Service Worker échec :', err));
+            .then(reg => console.log('✓ SW enregistré :', reg.scope))
+            .catch(err => console.error('✗ SW échec :', err));
     });
 }
 </script>
 
 <script>
-/* ═══════════════════════════════════════════════════════════════
-   COUCHE DE STOCKAGE — Cache API (remplace Filesystem Capacitor)
-   ═══════════════════════════════════════════════════════════════ */
-
+/* ═══════════ STOCKAGE — CACHE API ═══════════ */
 const CATALOGUE_URL = 'https://ecolia-course.github.io/catalogue.json';
 const BASE_URL = 'https://ecolia-course.github.io/';
 
 const CoursStorage = {
     COURS_CACHE: 'ecolia-cours-v1',
 
-    async _cache() {
-        return await caches.open(this.COURS_CACHE);
-    },
+    async _cache() { return await caches.open(this.COURS_CACHE); },
 
-    // Vérifie si un fichier est déjà en cache
     async exists(filename) {
         const cache = await this._cache();
-        const url = BASE_URL + filename;
-        const found = await cache.match(url, { ignoreSearch: true });
+        const found = await cache.match(BASE_URL + filename, { ignoreSearch: true });
         return !!found;
     },
 
-    // Télécharge un fichier et le met en cache
     async download(url, filename) {
         try {
             const resp = await fetch(url, { cache: 'no-store' });
@@ -168,42 +200,24 @@ const CoursStorage = {
         }
     },
 
-    // Supprime un fichier du cache
     async delete(filename) {
         try {
             const cache = await this._cache();
             await cache.delete(BASE_URL + filename, { ignoreSearch: true });
-        } catch (e) {
-            console.log('Erreur suppression :', e.message);
-        }
+        } catch (e) { console.log('Erreur suppression :', e.message); }
     },
 
-    // URL d'un fichier (identique, le SW sert depuis cache si dispo)
-    getLocalUrl(filename) {
-        return BASE_URL + filename;
-    },
-
-    // Version d'un cours (localStorage)
-    async getVersion(id) {
-        return parseInt(localStorage.getItem('cours_v_' + id) || '0');
-    },
-
-    async setVersion(id, v) {
-        localStorage.setItem('cours_v_' + id, v.toString());
-    }
+    async getVersion(id) { return parseInt(localStorage.getItem('cours_v_' + id) || '0'); },
+    async setVersion(id, v) { localStorage.setItem('cours_v_' + id, v.toString()); }
 };
 
-/* ═══════════════════════════════════════════════════════════════
-   LOGIQUE DE L'APPLICATION
-   ═══════════════════════════════════════════════════════════════ */
-
+/* ═══════════ LOGIQUE APP ═══════════ */
 var CATALOGUE = null;
 var NIVEAU_ACTIVE = null;
 var SOUSCAT_ACTIVE = null;
 var telechargementsEnCours = {};
 var recherche = '';
 
-// ==================== INTRO ====================
 function fermerIntro() {
     document.getElementById('intro').style.display = 'none';
     try { localStorage.setItem('intro_seen', 'true'); } catch(e) {}
@@ -214,7 +228,6 @@ try {
     }
 } catch(e) {}
 
-// ==================== CHARGEMENT ====================
 async function charger() {
     try {
         var cached = localStorage.getItem('catalogue_cache');
@@ -245,7 +258,6 @@ function setProgress(txt, cls) {
     p.className = 'progress ' + (cls || '');
 }
 
-// ==================== AFFICHAGE ====================
 function afficherTout() {
     if (!CATALOGUE || !CATALOGUE.categories) return;
     if (!NIVEAU_ACTIVE) NIVEAU_ACTIVE = CATALOGUE.categories[0].id;
@@ -315,16 +327,12 @@ async function afficherListe() {
     }
     var coursAffichables = [];
     if (niveau.cours && niveau.cours.length > 0) {
-        niveau.cours.forEach(function(c) {
-            if (matchRecherche(c)) coursAffichables.push(c);
-        });
+        niveau.cours.forEach(function(c) { if (matchRecherche(c)) coursAffichables.push(c); });
     }
     if (niveau.sousCategories && niveau.sousCategories.length > 0) {
         niveau.sousCategories.forEach(function(sub) {
             if (SOUSCAT_ACTIVE && sub.id !== SOUSCAT_ACTIVE) return;
-            sub.cours.forEach(function(c) {
-                if (matchRecherche(c)) coursAffichables.push(c);
-            });
+            sub.cours.forEach(function(c) { if (matchRecherche(c)) coursAffichables.push(c); });
         });
     }
     if (coursAffichables.length === 0) {
@@ -419,53 +427,33 @@ async function creerCoursElement(c) {
     return div;
 }
 
-// ==================== RECHERCHE ====================
 function filtrer() {
     recherche = document.getElementById('search').value.toLowerCase().trim();
-    if (recherche) {
-        afficherListeRecherche();
-    } else {
-        afficherListe();
-    }
+    if (recherche) afficherListeRecherche();
+    else afficherListe();
 }
 
 async function afficherListeRecherche() {
     var liste = document.getElementById('liste');
     liste.innerHTML = '';
     var tous = [];
-
     CATALOGUE.categories.forEach(function(cat) {
-        if (cat.cours) {
-            cat.cours.forEach(function(c) {
-                if (matchRecherche(c)) tous.push(c);
-            });
-        }
+        if (cat.cours) cat.cours.forEach(function(c) { if (matchRecherche(c)) tous.push(c); });
         if (cat.sousCategories) {
             cat.sousCategories.forEach(function(sub) {
-                sub.cours.forEach(function(c) {
-                    if (matchRecherche(c)) tous.push(c);
-                });
+                sub.cours.forEach(function(c) { if (matchRecherche(c)) tous.push(c); });
             });
         }
     });
-
-    if (tous.length === 0) {
-        liste.innerHTML = '<p class="empty">Aucun cours trouvé.</p>';
-        return;
-    }
-
+    if (tous.length === 0) { liste.innerHTML = '<p class="empty">Aucun cours trouvé.</p>'; return; }
     for (var i = 0; i < tous.length; i++) {
         var el = await creerCoursElement(tous[i]);
         liste.appendChild(el);
     }
 }
 
-// ==================== TÉLÉCHARGEMENT ====================
 async function telecharger(c) {
-    if (!navigator.onLine) {
-        setProgress('⚠ Pas de connexion', 'err');
-        return;
-    }
+    if (!navigator.onLine) { setProgress('⚠ Pas de connexion', 'err'); return; }
     if (telechargementsEnCours[c.id]) return;
 
     telechargementsEnCours[c.id] = { total: c.fichiers.length, done: 0 };
@@ -475,11 +463,7 @@ async function telecharger(c) {
     for (var i = 0; i < c.fichiers.length; i++) {
         var f = c.fichiers[i];
         var ok = await CoursStorage.download(BASE_URL + f, f);
-        if (ok) {
-            onDownloadDone(f);
-        } else {
-            onDownloadError(f);
-        }
+        if (ok) onDownloadDone(f); else onDownloadError(f);
     }
 }
 
@@ -528,11 +512,42 @@ function getAllCours() {
     return tous;
 }
 
-// ==================== LECTURE / SUPPRESSION ====================
-function ouvrirLocal(c) {
-    CoursStorage.setVersion(c.id, c.version);
-    // Le SW intercepte et sert depuis le cache
-    window.location.href = CoursStorage.getLocalUrl(c.fichiers[0]);
+/* ═══════════ LECTEUR EN PAGE (fix offline) ═══════════ */
+async function ouvrirLocal(c) {
+    const url = BASE_URL + c.fichiers[0];
+    
+    const overlay = document.createElement('div');
+    overlay.id = 'readerOverlay';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#0d1117;display:flex;flex-direction:column;';
+    overlay.innerHTML =
+        '<div style="padding:12px;background:#161b22;border-bottom:1px solid #21262d;display:flex;align-items:center;gap:10px;flex-shrink:0;">' +
+            '<button id="closeReader" style="padding:8px 16px;background:#00ff88;color:#121212;border:none;border-radius:20px;font-weight:bold;cursor:pointer;font-size:14px;">← Retour</button>' +
+            '<span style="font-size:14px;font-weight:bold;color:#e6f1ff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + c.titre + '</span>' +
+        '</div>' +
+        '<iframe id="readerFrame" style="flex:1;border:none;background:#fff;width:100%;" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>';
+    document.body.appendChild(overlay);
+    
+    const frame = overlay.querySelector('#readerFrame');
+    
+    try {
+        const cache = await caches.open(CoursStorage.COURS_CACHE);
+        let resp = await cache.match(url, { ignoreSearch: true });
+        if (!resp) {
+            resp = await fetch(url);
+            if (resp.ok) await cache.put(url, resp.clone());
+        }
+        let html = await resp.text();
+        
+        if (!/<base\s/i.test(html)) {
+            html = html.replace(/<head([^>]*)>/i, '<head$1><base href="' + BASE_URL + '">');
+        }
+        
+        frame.srcdoc = html;
+    } catch(e) {
+        frame.srcdoc = '<html><body style="padding:20px;font-family:sans-serif;"><h2>❌ Contenu indisponible</h2><p>Ce cours n\'est pas en cache. Connecte-toi à internet pour le télécharger.</p></body></html>';
+    }
+    
+    overlay.querySelector('#closeReader').onclick = () => overlay.remove();
 }
 
 function ouvrirEnLigne(c) {
@@ -548,7 +563,6 @@ async function supprimer(c) {
     afficherListe();
 }
 
-// ==================== ÉVÉNEMENTS ====================
 window.addEventListener('online', function() {
     setProgress('✓ Connexion rétablie', 'ok');
     charger();
@@ -558,7 +572,29 @@ window.addEventListener('offline', function() {
     afficherListe();
 });
 
-// Chargement initial
+/* ═══════════ DÉTECTION PLATEFORME INSTALL ═══════════ */
+(function detecterPlateforme() {
+    const ua = navigator.userAgent;
+    const isIOS = /iPhone|iPad|iPod/.test(ua) ||
+                  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const isAndroid = /Android/.test(ua);
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+                        window.navigator.standalone === true;
+
+    if (isStandalone) {
+        document.getElementById('installSection').style.display = 'none';
+        return;
+    }
+
+    if (isAndroid) {
+        document.getElementById('installAndroid').style.display = 'block';
+    } else if (isIOS) {
+        document.getElementById('installIos').style.display = 'block';
+    } else {
+        document.getElementById('installWeb').style.display = 'block';
+    }
+})();
+
 charger();
 </script>
 </body>
