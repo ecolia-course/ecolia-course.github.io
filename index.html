@@ -1,155 +1,565 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>ECOLIA - Secondaire Congolais</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: linear-gradient(160deg, #1a3a2a 0%, #0d1f14 100%); color: #e8f5e9; min-height: 100vh; }
-        .app-container { max-width: 500px; min-height: 100vh; margin: 0 auto; background: rgba(13, 31, 20, 0.95); box-shadow: 0 0 30px rgba(76, 175, 80, 0.3); }
-        .header { position: sticky; top: 0; padding: 20px; background: rgba(26, 58, 42, 0.98); backdrop-filter: blur(15px); display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #4caf50; }
-        .logo { font-size: 1.8rem; font-weight: 800; color: #4caf50; letter-spacing: 1px; }
-        .logo span { color: #ffd54f; }
-        .subtitle { font-size: 0.7rem; color: #a5d6a7; text-align: right; }
-        .hero { text-align: center; padding: 25px 20px 15px; }
-        .hero .emoji-big { font-size: 3rem; display: block; margin-bottom: 12px; }
-        .hero h1 { font-size: 1.4rem; color: #c8e6c9; margin-bottom: 8px; }
-        .section-title { padding: 20px 15px 8px; font-size: 1.1rem; color: #ffd54f; font-weight: 700; display: flex; align-items: center; gap: 8px; border-top: 1px solid rgba(76, 175, 80, 0.15); }
-        .tronc-commun-grid, .sections-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 8px 15px 15px; }
-        .classe-card, .section-card { background: rgba(76, 175, 80, 0.08); border: 1px solid rgba(76, 175, 80, 0.25); border-radius: 14px; padding: 18px 12px; text-align: center; text-decoration: none; color: #e8f5e9; transition: all 0.3s; cursor: pointer; display: block; }
-        .classe-card:hover, .section-card:hover { background: rgba(76, 175, 80, 0.16); transform: translateY(-3px); border-color: #4caf50; }
-        .footer { text-align: center; padding: 15px 20px 25px; border-top: 1px solid rgba(76, 175, 80, 0.15); display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
-        .btn { background: #4caf50; border: none; color: white; padding: 10px 16px; border-radius: 30px; text-decoration: none; display: inline-block; font-size: 0.8rem; cursor: pointer; }
-        .btn-danger { background: #f44336; }
-        .auth-forms { background: rgba(0,0,0,0.5); border-radius: 24px; padding: 20px; margin: 10px 15px; }
-        .auth-forms input { width: 100%; margin: 8px 0; padding: 12px; border-radius: 30px; border: none; background: #2c3e2a; color: white; }
-        .auth-forms button { background: #4caf50; border: none; padding: 10px 20px; border-radius: 30px; margin-top: 10px; cursor: pointer; font-weight: bold; width: 100%; }
-        .toggle-auth { text-align: center; margin-top: 10px; color: #a5d6a7; cursor: pointer; }
-        .hidden { display: none; }
-        #appContent { display: none; }
-        .user-info { display: flex; align-items: center; gap: 10px; }
-        @media (max-width: 380px) { .tronc-commun-grid, .sections-grid { grid-template-columns: 1fr; } }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#00ff88">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ECOLIA">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<title>ECOLIA</title>
+
+<style>
+/* ========== STYLES ========== */
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Segoe UI',Roboto,sans-serif; background:#0d1117; color:#e6f1ff; padding:16px; padding-bottom:80px; }
+
+.intro-overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:#0d1117; z-index:9999; overflow-y:auto; padding:30px 20px; display:flex; justify-content:center; }
+.intro-content { max-width:500px; width:100%; }
+.intro-logo { font-size:64px; text-align:center; margin-bottom:10px; }
+.intro-content h1 { color:#00ff88; text-align:center; font-size:28px; margin-bottom:4px; }
+.intro-sub { color:#888; text-align:center; font-size:14px; margin-bottom:28px; }
+.intro-block { background:#161b22; border-radius:14px; padding:18px; margin-bottom:14px; border:1px solid #21262d; }
+.intro-block h3 { color:#00ccff; font-size:16px; margin-bottom:10px; }
+.intro-block p, .intro-block li { font-size:13px; color:#c0c8d0; line-height:1.6; }
+.intro-block ol, .intro-block ul { margin-left:20px; margin-top:6px; }
+.intro-block li { margin-bottom:4px; }
+.intro-block strong { color:#00ff88; }
+.intro-btn { width:100%; padding:16px; border-radius:12px; border:none; background:#00ff88; color:#121212; font-weight:bold; font-size:16px; margin-top:10px; cursor:pointer; }
+
+.search-bar { position:sticky; top:0; z-index:100; background:#0d1117; padding:8px 0 16px 0; }
+.search-bar input { width:100%; padding:14px 18px; border-radius:14px; border:1px solid #21262d; background:#161b22; color:#fff; font-size:15px; outline:none; }
+.search-bar input:focus { border-color:#00ff88; }
+
+h1 { color:#00ff88; font-size:22px; margin-bottom:4px; }
+.sub { color:#888; font-size:13px; margin-bottom:16px; }
+
+.niveaux { display:flex; gap:8px; overflow-x:auto; padding-bottom:8px; scrollbar-width:none; margin-bottom:4px; }
+.niveaux::-webkit-scrollbar { display:none; }
+.niveau-tab { flex-shrink:0; padding:10px 16px; border-radius:20px; background:#161b22; color:#ccc; border:1px solid #21262d; font-size:13px; cursor:pointer; white-space:nowrap; }
+.niveau-tab.active { background:#00ff88; color:#121212; font-weight:bold; border-color:#00ff88; }
+
+.souscats { display:none; gap:6px; overflow-x:auto; padding-bottom:10px; scrollbar-width:none; margin-bottom:6px; }
+.souscats.active { display:flex; }
+.souscats::-webkit-scrollbar { display:none; }
+.souscat-tab { flex-shrink:0; padding:8px 14px; border-radius:16px; background:#1a2332; color:#8899aa; border:2px solid #2a3444; font-size:12px; cursor:pointer; white-space:nowrap; }
+.souscat-tab.active { background:#0099ff; color:#fff; font-weight:bold; border-color:#0099ff; }
+
+.cours { background:#161b22; border-radius:14px; padding:14px; margin-bottom:10px; border:1px solid #21262d; display:flex; align-items:center; gap:12px; }
+.cours .ico { font-size:32px; flex-shrink:0; }
+.cours .info { flex:1; min-width:0; }
+.cours .titre { font-weight:bold; font-size:15px; margin-bottom:2px; }
+.cours .desc { font-size:12px; color:#8b949e; margin-bottom:4px; }
+.cours .meta { display:flex; gap:10px; font-size:11px; color:#666; }
+.cours .meta .niveau { color:#ffaa00; }
+.cours .etat { font-size:10px; margin-top:4px; }
+.cours .etat.ok { color:#00ff88; }
+.cours .etat.maj { color:#ffaa00; }
+.cours .etat.warn { color:#ff6666; }
+.cours .actions { display:flex; flex-direction:column; gap:4px; flex-shrink:0; }
+.cours button { padding:6px 10px; border-radius:6px; border:none; font-size:11px; font-weight:bold; cursor:pointer; white-space:nowrap; }
+.btn-dl { background:#00ff88; color:#121212; }
+.btn-maj { background:#ffaa00; color:#121212; }
+.btn-lire { background:#0099ff; color:#fff; }
+.btn-ligne { background:#4a4a8a; color:#fff; }
+.btn-supp { background:#3a1a1a; color:#ff6666; padding:6px 8px !important; }
+
+.progress { position:fixed; bottom:0; left:0; right:0; background:#161b22; padding:10px; text-align:center; font-size:11px; color:#8b949e; border-top:1px solid #21262d; }
+.progress.ok { color:#00ff88; }
+.progress.err { color:#ff6666; }
+
+.empty { text-align:center; color:#666; padding:30px; }
+</style>
 </head>
 <body>
-<div class="app-container">
-    <div class="header">
-        <div><div class="logo">ECOL<span>I</span>A</div><div class="subtitle">Le secondaire expliqué</div></div>
-        <div style="font-size:2rem;">📚</div>
-    </div>
 
-    <!-- Zone de connexion/inscription (visible uniquement si déconnecté) -->
-    <div id="authSection">
-        <div class="auth-forms">
-            <h2 id="formTitle">🔐 Connexion</h2>
-            <input type="email" id="email" placeholder="Email">
-            <input type="password" id="password" placeholder="Mot de passe">
-            <button id="submitBtn">Se connecter</button>
-            <div class="toggle-auth" id="toggleAuth">Pas encore de compte ? S'inscrire</div>
+<!-- ============ INTRO ============ -->
+<div id="intro" class="intro-overlay">
+    <div class="intro-content">
+        <div class="intro-logo">🎒</div>
+        <h1>ECOLIA</h1>
+        <p class="intro-sub">Apprendre autrement — RDC</p>
+        <div class="intro-block">
+            <h3>🧠 Notre méthode</h3>
+            <p>Chaque cours suit un ordre validé par la science :</p>
+            <ol>
+                <li><strong>Cas concret</strong> — Un exemple réel.</li>
+                <li><strong>Question</strong> — Pourquoi, comment.</li>
+                <li><strong>Théorie simplifiée</strong> — Explications claires.</li>
+                <li><strong>Pratique</strong> — Application.</li>
+                <li><strong>Quiz</strong> — Teste-toi immédiatement.</li>
+            </ol>
         </div>
-    </div>
-
-    <!-- Contenu principal (visible uniquement si connecté) -->
-    <div id="appContent">
-        <div class="hero">
-            <span class="emoji-big">🎓</span>
-            <h1>Bienvenue sur Ecolia</h1>
-            <p>Des cours simplifiés du programme national congolais.<br>Explications claires • Audio • Quiz</p>
+        <div class="intro-block">
+            <h3>📖 Nos sources</h3>
+            <ul>
+                <li>Programme national RDC — Ministère de l'EPST</li>
+                <li>Fiches EXETAT</li>
+                <li>OpenStax (CC BY)</li>
+            </ul>
+            <p style="margin-top:10px;font-size:12px;color:#888;">Aucune donnée collectée. Aucune publicité. 100% gratuit.</p>
         </div>
-
-        <div class="section-title"><span>🏫</span> Tronc Commun</div>
-        <div class="tronc-commun-grid">
-            <a href="classe.html?classe=7e" class="classe-card"><div>📘</div><h3>7ᵉ année</h3><p>1ère secondaire</p></a>
-            <a href="classe.html?classe=8e" class="classe-card"><div>📙</div><h3>8ᵉ année</h3><p>2ᵉ secondaire</p></a>
-        </div>
-
-        <div class="section-title"><span>🎯</span> Sections (1ʳᵉ à 4ᵉ)</div>
-        <div class="sections-grid">
-            <a href="section.html?section=scientifique" class="section-card"><div>🔬</div><h3>Scientifique</h3><p>Maths-Physique & Bio-Chimie</p></a>
-            <a href="section.html?section=latin-philo" class="section-card"><div>📖</div><h3>Latin-Philo</h3><p>Lettres, Philosophie, Latin</p></a>
-            <a href="section.html?section=commerciale" class="section-card"><div>💼</div><h3>Commerciale</h3><p>Économie, Comptabilité</p></a>
-            <a href="section.html?section=pedagogie" class="section-card"><div>👩‍🏫</div><h3>Pédagogie</h3><p>Psychopédagogie</p></a>
-            <a href="section.html?section=coupe-couture" class="section-card"><div>🧵</div><h3>Coupe & Couture</h3><p>Techniques de coupe</p></a>
-            <a href="section.html?section=mecanique" class="section-card"><div>🔧</div><h3>Mécanique</h3><p>Mécanique générale</p></a>
-            <a href="section.html?section=electricite" class="section-card"><div>⚡</div><h3>Électricité</h3><p>Installations</p></a>
-            <a href="section.html?section=electronique" class="section-card"><div>💻</div><h3>Électronique</h3><p>Commutation & Industriel</p></a>
-        </div>
-
-        <div class="footer">
-            <a href="dashboard.html" class="btn">📊 Mon tableau</a>
-            <a href="leaderboard.html" class="btn">🏆 Classement</a>
-            <button id="logoutBtn" class="btn btn-danger">Déconnexion</button>
-        </div>
+        <button class="intro-btn" onclick="fermerIntro()">C'est parti !</button>
     </div>
 </div>
 
-<script type="module">
-    import { auth, onAuthStateChanged } from "./firebase-init.js";
-    import { inscription, connexion, deconnexion } from "./auth.js";
+<!-- ============ PAGE PRINCIPALE ============ -->
+<h1>🎒 ECOILIA</h1>
+<p class="sub">Programme scolaire RDC — 7e à 4e secondaire</p>
 
-    const authSection = document.getElementById('authSection');
-    const appContent = document.getElementById('appContent');
-    const emailInput = document.getElementById('email');
-    const passwordInput = document.getElementById('password');
-    const submitBtn = document.getElementById('submitBtn');
-    const formTitle = document.getElementById('formTitle');
-    const toggleAuth = document.getElementById('toggleAuth');
-    const logoutBtn = document.getElementById('logoutBtn');
+<div class="search-bar">
+    <input type="text" id="search" placeholder="🔍 Rechercher un cours..." oninput="filtrer()">
+</div>
 
-    let isLoginMode = true;
+<div class="niveaux" id="niveaux"></div>
+<div class="souscats" id="souscats"></div>
+<div id="liste"></div>
+<p class="progress" id="progress">Chargement...</p>
 
-    // Vérifier l'état de connexion
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            authSection.style.display = 'none';
-            appContent.style.display = 'block';
-        } else {
-            authSection.style.display = 'block';
-            appContent.style.display = 'none';
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   ENREGISTREMENT DU SERVICE WORKER
+   ═══════════════════════════════════════════════════════════════ */
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('✓ Service Worker enregistré :', reg.scope))
+            .catch(err => console.error('✗ Service Worker échec :', err));
+    });
+}
+</script>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   COUCHE DE STOCKAGE — Cache API (remplace Filesystem Capacitor)
+   ═══════════════════════════════════════════════════════════════ */
+
+const CATALOGUE_URL = 'https://ecolia-course.github.io/catalogue.json';
+const BASE_URL = 'https://ecolia-course.github.io/';
+
+const CoursStorage = {
+    COURS_CACHE: 'ecolia-cours-v1',
+
+    async _cache() {
+        return await caches.open(this.COURS_CACHE);
+    },
+
+    // Vérifie si un fichier est déjà en cache
+    async exists(filename) {
+        const cache = await this._cache();
+        const url = BASE_URL + filename;
+        const found = await cache.match(url, { ignoreSearch: true });
+        return !!found;
+    },
+
+    // Télécharge un fichier et le met en cache
+    async download(url, filename) {
+        try {
+            const resp = await fetch(url, { cache: 'no-store' });
+            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+            const cache = await this._cache();
+            await cache.put(url, resp.clone());
+            return true;
+        } catch (e) {
+            console.error('Erreur téléchargement ' + filename + ' :', e.message);
+            return false;
+        }
+    },
+
+    // Supprime un fichier du cache
+    async delete(filename) {
+        try {
+            const cache = await this._cache();
+            await cache.delete(BASE_URL + filename, { ignoreSearch: true });
+        } catch (e) {
+            console.log('Erreur suppression :', e.message);
+        }
+    },
+
+    // URL d'un fichier (identique, le SW sert depuis cache si dispo)
+    getLocalUrl(filename) {
+        return BASE_URL + filename;
+    },
+
+    // Version d'un cours (localStorage)
+    async getVersion(id) {
+        return parseInt(localStorage.getItem('cours_v_' + id) || '0');
+    },
+
+    async setVersion(id, v) {
+        localStorage.setItem('cours_v_' + id, v.toString());
+    }
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   LOGIQUE DE L'APPLICATION
+   ═══════════════════════════════════════════════════════════════ */
+
+var CATALOGUE = null;
+var NIVEAU_ACTIVE = null;
+var SOUSCAT_ACTIVE = null;
+var telechargementsEnCours = {};
+var recherche = '';
+
+// ==================== INTRO ====================
+function fermerIntro() {
+    document.getElementById('intro').style.display = 'none';
+    try { localStorage.setItem('intro_seen', 'true'); } catch(e) {}
+}
+try {
+    if (localStorage.getItem('intro_seen') === 'true') {
+        document.getElementById('intro').style.display = 'none';
+    }
+} catch(e) {}
+
+// ==================== CHARGEMENT ====================
+async function charger() {
+    try {
+        var cached = localStorage.getItem('catalogue_cache');
+        if (cached) { CATALOGUE = JSON.parse(cached); afficherTout(); }
+    } catch(e) {}
+
+    if (!navigator.onLine) {
+        setProgress(CATALOGUE ? '⚠ Hors ligne - catalogue en cache' : '⚠ Hors ligne', '');
+        return;
+    }
+
+    setProgress('Chargement...', '');
+    try {
+        var response = await fetch(CATALOGUE_URL + '?t=' + Date.now());
+        var data = await response.json();
+        CATALOGUE = data;
+        try { localStorage.setItem('catalogue_cache', JSON.stringify(data)); } catch(e) {}
+        afficherTout();
+        setProgress('✓ Catalogue à jour', 'ok');
+    } catch(e) {
+        setProgress(CATALOGUE ? '⚠ Hors ligne - cache utilisé' : '⚠ Pas de connexion', 'err');
+    }
+}
+
+function setProgress(txt, cls) {
+    var p = document.getElementById('progress');
+    p.textContent = txt;
+    p.className = 'progress ' + (cls || '');
+}
+
+// ==================== AFFICHAGE ====================
+function afficherTout() {
+    if (!CATALOGUE || !CATALOGUE.categories) return;
+    if (!NIVEAU_ACTIVE) NIVEAU_ACTIVE = CATALOGUE.categories[0].id;
+    afficherNiveaux();
+    afficherSousCats();
+    afficherListe();
+}
+
+function getNiveauActif() {
+    if (!CATALOGUE) return null;
+    for (var i = 0; i < CATALOGUE.categories.length; i++) {
+        if (CATALOGUE.categories[i].id === NIVEAU_ACTIVE) return CATALOGUE.categories[i];
+    }
+    return null;
+}
+
+function afficherNiveaux() {
+    var c = document.getElementById('niveaux');
+    c.innerHTML = '';
+    CATALOGUE.categories.forEach(function(cat) {
+        var t = document.createElement('div');
+        t.className = 'niveau-tab' + (NIVEAU_ACTIVE === cat.id ? ' active' : '');
+        t.textContent = cat.icone + ' ' + cat.nom;
+        t.onclick = function() {
+            NIVEAU_ACTIVE = cat.id;
+            SOUSCAT_ACTIVE = null;
+            afficherNiveaux();
+            afficherSousCats();
+            afficherListe();
+        };
+        c.appendChild(t);
+    });
+}
+
+function afficherSousCats() {
+    var c = document.getElementById('souscats');
+    c.innerHTML = '';
+    var niveau = getNiveauActif();
+    if (!niveau) return;
+    if (!niveau.sousCategories || niveau.sousCategories.length === 0) {
+        c.classList.remove('active');
+        SOUSCAT_ACTIVE = null;
+        return;
+    }
+    if (!SOUSCAT_ACTIVE) SOUSCAT_ACTIVE = niveau.sousCategories[0].id;
+    c.classList.add('active');
+    niveau.sousCategories.forEach(function(sub) {
+        var t = document.createElement('div');
+        t.className = 'souscat-tab' + (SOUSCAT_ACTIVE === sub.id ? ' active' : '');
+        t.textContent = sub.nom;
+        t.onclick = function() {
+            SOUSCAT_ACTIVE = sub.id;
+            afficherSousCats();
+            afficherListe();
+        };
+        c.appendChild(t);
+    });
+}
+
+async function afficherListe() {
+    var liste = document.getElementById('liste');
+    liste.innerHTML = '';
+    var niveau = getNiveauActif();
+    if (!niveau) {
+        liste.innerHTML = '<p class="empty">Aucun niveau trouvé.</p>';
+        return;
+    }
+    var coursAffichables = [];
+    if (niveau.cours && niveau.cours.length > 0) {
+        niveau.cours.forEach(function(c) {
+            if (matchRecherche(c)) coursAffichables.push(c);
+        });
+    }
+    if (niveau.sousCategories && niveau.sousCategories.length > 0) {
+        niveau.sousCategories.forEach(function(sub) {
+            if (SOUSCAT_ACTIVE && sub.id !== SOUSCAT_ACTIVE) return;
+            sub.cours.forEach(function(c) {
+                if (matchRecherche(c)) coursAffichables.push(c);
+            });
+        });
+    }
+    if (coursAffichables.length === 0) {
+        liste.innerHTML = '<p class="empty">Aucun cours disponible.</p>';
+        return;
+    }
+    for (var i = 0; i < coursAffichables.length; i++) {
+        var el = await creerCoursElement(coursAffichables[i]);
+        liste.appendChild(el);
+    }
+}
+
+function matchRecherche(c) {
+    if (!recherche) return true;
+    return c.titre.toLowerCase().indexOf(recherche) !== -1 ||
+           c.description.toLowerCase().indexOf(recherche) !== -1;
+}
+
+async function creerCoursElement(c) {
+    var localV = await CoursStorage.getVersion(c.id);
+    var htmlFile = c.fichiers[0];
+    var dejaLa = await CoursStorage.exists(htmlFile);
+    var telechargement = telechargementsEnCours[c.id];
+    var enCours = !!telechargement;
+    var online = navigator.onLine;
+
+    var etatTexte = '', etatCls = '';
+    if (enCours) {
+        etatTexte = '⏳ ' + telechargement.done + '/' + telechargement.total;
+        etatCls = 'maj';
+    } else if (!dejaLa) {
+        etatTexte = online ? 'Non téléchargé' : '⚠ Hors ligne';
+        etatCls = online ? '' : 'warn';
+    } else if (c.version > localV) {
+        etatTexte = 'Mise à jour dispo';
+        etatCls = 'maj';
+    } else {
+        etatTexte = '✓ Hors ligne';
+        etatCls = 'ok';
+    }
+
+    var div = document.createElement('div');
+    div.className = 'cours';
+    div.innerHTML =
+        '<div class="ico">' + (c.icone || '📖') + '</div>' +
+        '<div class="info">' +
+            '<div class="titre">' + c.titre + '</div>' +
+            '<div class="desc">' + c.description + '</div>' +
+            '<div class="meta"><span class="niveau">' + (c.niveau || '') + '</span></div>' +
+            '<div class="etat ' + etatCls + '">' + etatTexte + '</div>' +
+        '</div>' +
+        '<div class="actions"></div>';
+
+    var actions = div.querySelector('.actions');
+
+    if (dejaLa && !enCours) {
+        var b1 = document.createElement('button');
+        b1.className = 'btn-lire';
+        b1.textContent = '📖 Lire';
+        b1.onclick = function() { ouvrirLocal(c); };
+        actions.appendChild(b1);
+
+        var b2 = document.createElement('button');
+        b2.className = 'btn-supp';
+        b2.textContent = '🗑️';
+        b2.onclick = function() { supprimer(c); };
+        actions.appendChild(b2);
+    }
+
+    if (!dejaLa && online && !enCours) {
+        var b3 = document.createElement('button');
+        b3.className = 'btn-dl';
+        b3.textContent = '☁️ Télécharger';
+        b3.onclick = function() { telecharger(c); };
+        actions.appendChild(b3);
+
+        var b4 = document.createElement('button');
+        b4.className = 'btn-ligne';
+        b4.textContent = '🌐 En ligne';
+        b4.onclick = function() { ouvrirEnLigne(c); };
+        actions.appendChild(b4);
+    }
+
+    if (dejaLa && c.version > localV && online && !enCours) {
+        var b5 = document.createElement('button');
+        b5.className = 'btn-maj';
+        b5.textContent = '🔄 MàJ';
+        b5.onclick = function() { telecharger(c); };
+        actions.appendChild(b5);
+    }
+
+    return div;
+}
+
+// ==================== RECHERCHE ====================
+function filtrer() {
+    recherche = document.getElementById('search').value.toLowerCase().trim();
+    if (recherche) {
+        afficherListeRecherche();
+    } else {
+        afficherListe();
+    }
+}
+
+async function afficherListeRecherche() {
+    var liste = document.getElementById('liste');
+    liste.innerHTML = '';
+    var tous = [];
+
+    CATALOGUE.categories.forEach(function(cat) {
+        if (cat.cours) {
+            cat.cours.forEach(function(c) {
+                if (matchRecherche(c)) tous.push(c);
+            });
+        }
+        if (cat.sousCategories) {
+            cat.sousCategories.forEach(function(sub) {
+                sub.cours.forEach(function(c) {
+                    if (matchRecherche(c)) tous.push(c);
+                });
+            });
         }
     });
 
-    // Basculer entre connexion et inscription
-    toggleAuth.onclick = () => {
-        isLoginMode = !isLoginMode;
-        if (isLoginMode) {
-            formTitle.textContent = '🔐 Connexion';
-            submitBtn.textContent = 'Se connecter';
-            toggleAuth.textContent = 'Pas encore de compte ? S\'inscrire';
-        } else {
-            formTitle.textContent = '📝 Inscription';
-            submitBtn.textContent = 'S\'inscrire';
-            toggleAuth.textContent = 'Déjà un compte ? Se connecter';
-        }
-    };
+    if (tous.length === 0) {
+        liste.innerHTML = '<p class="empty">Aucun cours trouvé.</p>';
+        return;
+    }
 
-    // Soumettre le formulaire
-    submitBtn.onclick = async () => {
-        const email = emailInput.value;
-        const password = passwordInput.value;
-        let result;
-        if (isLoginMode) {
-            result = await connexion(email, password);
-        } else {
-            result = await inscription(email, password);
-        }
-        if (!result.success) {
-            alert('Erreur : ' + result.error);
-        } else if (!isLoginMode) {
-            alert('Inscription réussie ! Connectez-vous maintenant.');
-            isLoginMode = true;
-            formTitle.textContent = '🔐 Connexion';
-            submitBtn.textContent = 'Se connecter';
-            toggleAuth.textContent = 'Pas encore de compte ? S\'inscrire';
-            emailInput.value = '';
-            passwordInput.value = '';
-        }
-    };
+    for (var i = 0; i < tous.length; i++) {
+        var el = await creerCoursElement(tous[i]);
+        liste.appendChild(el);
+    }
+}
 
-    logoutBtn.onclick = async () => {
-        await deconnexion();
-    };
+// ==================== TÉLÉCHARGEMENT ====================
+async function telecharger(c) {
+    if (!navigator.onLine) {
+        setProgress('⚠ Pas de connexion', 'err');
+        return;
+    }
+    if (telechargementsEnCours[c.id]) return;
+
+    telechargementsEnCours[c.id] = { total: c.fichiers.length, done: 0 };
+    setProgress('⏳ ' + c.titre + ' : 0/' + c.fichiers.length, '');
+    afficherListe();
+
+    for (var i = 0; i < c.fichiers.length; i++) {
+        var f = c.fichiers[i];
+        var ok = await CoursStorage.download(BASE_URL + f, f);
+        if (ok) {
+            onDownloadDone(f);
+        } else {
+            onDownloadError(f);
+        }
+    }
+}
+
+function onDownloadDone(filename) {
+    if (!CATALOGUE) return;
+    var tous = getAllCours();
+    tous.forEach(function(c) {
+        if (c.fichiers.indexOf(filename) !== -1 && telechargementsEnCours[c.id]) {
+            var t = telechargementsEnCours[c.id];
+            t.done++;
+            if (t.done >= t.total) {
+                CoursStorage.setVersion(c.id, c.version);
+                delete telechargementsEnCours[c.id];
+                setProgress('✓ ' + c.titre + ' téléchargé', 'ok');
+                afficherListe();
+            } else {
+                setProgress('⏳ ' + c.titre + ' : ' + t.done + '/' + t.total, '');
+                afficherListe();
+            }
+        }
+    });
+}
+
+function onDownloadError(filename) {
+    if (!CATALOGUE) return;
+    var tous = getAllCours();
+    tous.forEach(function(c) {
+        if (c.fichiers.indexOf(filename) !== -1 && telechargementsEnCours[c.id]) {
+            delete telechargementsEnCours[c.id];
+            setProgress('❌ Erreur : ' + filename, 'err');
+            afficherListe();
+        }
+    });
+}
+
+function getAllCours() {
+    var tous = [];
+    CATALOGUE.categories.forEach(function(cat) {
+        if (cat.cours) cat.cours.forEach(function(c) { tous.push(c); });
+        if (cat.sousCategories) {
+            cat.sousCategories.forEach(function(sub) {
+                sub.cours.forEach(function(c) { tous.push(c); });
+            });
+        }
+    });
+    return tous;
+}
+
+// ==================== LECTURE / SUPPRESSION ====================
+function ouvrirLocal(c) {
+    CoursStorage.setVersion(c.id, c.version);
+    // Le SW intercepte et sert depuis le cache
+    window.location.href = CoursStorage.getLocalUrl(c.fichiers[0]);
+}
+
+function ouvrirEnLigne(c) {
+    window.location.href = BASE_URL + c.fichiers[0];
+}
+
+async function supprimer(c) {
+    for (var i = 0; i < c.fichiers.length; i++) {
+        await CoursStorage.delete(c.fichiers[i]);
+    }
+    await CoursStorage.setVersion(c.id, 0);
+    setProgress('🗑️ ' + c.titre + ' supprimé', '');
+    afficherListe();
+}
+
+// ==================== ÉVÉNEMENTS ====================
+window.addEventListener('online', function() {
+    setProgress('✓ Connexion rétablie', 'ok');
+    charger();
+});
+window.addEventListener('offline', function() {
+    setProgress('⚠ Mode hors ligne', '');
+    afficherListe();
+});
+
+// Chargement initial
+charger();
 </script>
 </body>
 </html>
