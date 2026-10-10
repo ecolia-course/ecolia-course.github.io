@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-27JQ5Y9SJT"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-27JQ5Y9SJT', {
+    anonymize_ip: true,
+    cookie_flags: 'SameSite=None;Secure'
+  });
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#00ff88">
@@ -770,6 +780,67 @@ async function verifierBadgePromos() {
 }
 verifierBadgePromos();
 </script>
-    
+    <script>
+/* ═══════════ TRACKING ECOLIA ═══════════ */
+function track(nom, params) {
+    if (typeof gtag === 'function') gtag('event', nom, params || {});
+}
+
+track('ecolia_app_open', {
+    version: '1.0.0',
+    pwa: window.matchMedia('(display-mode: standalone)').matches
+});
+
+var _oldDownload = telecharger;
+telecharger = function(c) {
+    track('ecolia_download', {
+        cours_id: c.id, cours_titre: c.titre,
+        niveau: c.niveau || '', fichiers: c.fichiers.length
+    });
+    return _oldDownload.call(this, c);
+};
+
+var _oldOuvrir = ouvrirLocal;
+ouvrirLocal = function(c) {
+    track('ecolia_open', {
+        cours_id: c.id, cours_titre: c.titre, niveau: c.niveau || ''
+    });
+    return _oldOuvrir.call(this, c);
+};
+
+var _oldSupprimer = supprimer;
+supprimer = function(c) {
+    track('ecolia_delete', { cours_id: c.id });
+    return _oldSupprimer.call(this, c);
+};
+
+var _oldFiltrer = filtrer;
+filtrer = function() {
+    var r = document.getElementById('search').value;
+    if (r && r.length > 2) track('ecolia_search', { search_term: r });
+    return _oldFiltrer.call(this);
+};
+
+if (typeof ouvrirDecouvertes === 'function') {
+    var _oldDecouvrir = ouvrirDecouvertes;
+    ouvrirDecouvertes = function() {
+        track('ecolia_decouvertes');
+        return _oldDecouvrir.call(this);
+    };
+}
+
+window.addEventListener('click', function(e) {
+    var lien = e.target.closest('.promo-lien');
+    if (lien) {
+        var card = lien.closest('.promo-card');
+        var titre = card ? card.querySelector('.promo-titre').textContent : '';
+        track('ecolia_promo_click', { promo: titre });
+    }
+});
+
+window.addEventListener('appinstalled', function() {
+    track('ecolia_pwa_install');
+});
+</script>
 </body>
 </html>
