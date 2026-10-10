@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Géographie — 6e secondaire (EXETAT)</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body {
+    font-family:'Segoe UI',system-ui,sans-serif;
+    background:linear-gradient(160deg,#14442e 0%,#2e7d32 50%,#0b2b1a 100%);
+    display:flex; justify-content:center; align-items:center;
+    padding:8px;
+}
+.container {
+    width:100%; max-width:1400px; background:#fefdf8;
+    border-radius:20px; overflow:hidden;
+    display:flex; flex-direction:column;
+    height:100%; max-height:100vh;
+    box-shadow:0 20px 60px rgba(0,0,0,0.4);
+}
+
+/* BARRE DE PROGRESSION */
+.progress-bar { height:4px; background:#cfe5d6; flex-shrink:0; }
+.progress-fill {
+    height:100%; background:linear-gradient(90deg,#4f9a6b,#1f5c3a);
+    width:0%; transition:width 0.3s;
+}
+
+/* HEADER COMPACT */
+.header {
+    padding:10px 16px; background:#e8f5ec;
+    border-bottom:1px solid #a5cdb2;
+    display:flex; justify-content:space-between; align-items:center;
+    gap:10px; flex-shrink:0;
+}
+.header h1 { color:#1f5c3a; font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box {
+    display:flex; background:white; border-radius:20px;
+    padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06);
+}
+.search-box input {
+    border:none; padding:6px 10px; border-radius:20px;
+    outline:none; width:130px; font-size:0.8rem;
+}
+.search-box button {
+    background:none; border:none; cursor:pointer;
+    padding:4px 8px; font-size:0.85rem; color:#2e7d32;
+}
+.badge {
+    background:#4f9a6b; color:white; padding:4px 10px;
+    border-radius:20px; font-weight:bold; font-size:0.75rem;
+}
+.search-nav {
+    display:none; gap:4px; background:#c8e6d2;
+    padding:2px 8px; border-radius:20px; align-items:center;
+    font-size:0.75rem;
+}
+.search-nav button {
+    background:none; border:none; cursor:pointer;
+    font-size:0.9rem; color:#1f5c3a; padding:2px 4px;
+}
+
+/* CONTENU PLEIN ÉCRAN + AÉRÉ */
+.content {
+    padding:28px 32px; flex:1; overflow-y:auto;
+    background:#fff; scroll-behavior:smooth;
+    line-height:1.85;
+}
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide {
+    from { opacity:0; transform:translateY(8px); }
+    to { opacity:1; transform:translateY(0); }
+}
+
+.slide-title {
+    color:#14442e; font-size:1.5rem; font-weight:700;
+    padding-bottom:12px; margin-bottom:20px;
+    border-bottom:2px solid #4f9a6b;
+}
+.slide-content { color:#10261a; font-size:1rem; }
+
+/* BLOCS PÉDAGOGIQUES */
+.bloc {
+    padding:18px 22px; border-radius:12px;
+    margin:22px 0; line-height:1.85;
+}
+.bloc-label {
+    font-size:0.75rem; font-weight:700;
+    letter-spacing:1.5px; text-transform:uppercase;
+    margin-bottom:8px; opacity:0.7;
+}
+.bloc p, .bloc li { font-size:0.98rem; }
+.bloc h3 {
+    font-size:1.1rem; margin:20px 0 10px;
+    font-weight:600;
+}
+.bloc h3:first-child { margin-top:0; }
+
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+
+.theorie { background:#e8f5ec; border-left:4px solid #4f9a6b; }
+.theorie .bloc-label { color:#1f5c3a; }
+
+.pratique { background:#e8f5e9; border-left:4px solid #43a047; }
+.pratique .bloc-label { color:#1b5e20; }
+
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+
+/* LISTES */
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:#14442e; }
+
+/* QUIZ */
+.quiz-container { padding:22px; background:#e8f5ec; border-radius:16px; }
+.quiz-question {
+    background:white; border-radius:10px; padding:16px;
+    margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05);
+}
+.quiz-question p { font-weight:600; margin-bottom:10px; color:#14442e; }
+.quiz-question label {
+    display:block; padding:8px 10px; margin:4px 0;
+    border-radius:6px; cursor:pointer; transition:background 0.2s;
+}
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit {
+    background:#2f7a4f; color:white; border:none;
+    padding:12px 24px; border-radius:30px; font-size:1rem;
+    cursor:pointer; font-weight:600; margin-top:14px;
+}
+.quiz-result { margin-top:16px; font-weight:600; }
+
+/* SOURCES */
+.sources {
+    background:#f5f5f5; padding:12px 16px; border-radius:10px;
+    margin-top:26px; font-size:0.82rem; color:#666;
+    border-left:3px solid #999; line-height:1.6;
+}
+.sources strong { color:#333; }
+
+/* FOOTER COMPACT */
+.controls {
+    padding:8px 16px; background:#fafafa;
+    border-top:1px solid #e0e0e0;
+    display:flex; justify-content:space-between;
+    align-items:center; gap:8px; flex-shrink:0;
+}
+.nav-btn {
+    background:white; color:#1f5c3a;
+    border:1px solid #ccc; padding:8px 14px;
+    border-radius:8px; font-size:0.82rem;
+    cursor:pointer; font-weight:500;
+}
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+
+/* SCROLLBAR STYLE */
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:#dcefe2; }
+.content::-webkit-scrollbar-thumb { background:#4f9a6b; border-radius:3px; }
+
+/* MOBILE */
+@media (max-width:600px) {
+    body { padding:0; }
+    .container { border-radius:0; max-height:100vh; }
+    .content { padding:20px 18px; }
+    .slide-title { font-size:1.25rem; }
+    .search-box input { width:90px; }
+    .header h1 { font-size:0.85rem; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+    <div class="header">
+        <h1>Géographie · 6e secondaire</h1>
+        <div class="header-right">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Rechercher">
+                <button id="searchBtn">⌕</button>
+            </div>
+            <div class="search-nav" id="searchNav">
+                <button id="prevResultBtn">‹</button>
+                <span id="resultCounter">0/0</span>
+                <button id="nextResultBtn">›</button>
+            </div>
+            <span class="badge" id="slideCounter">1/12</span>
+        </div>
+    </div>
+
+    <div class="content" id="content"></div>
+
+    <div class="controls">
+        <button class="nav-btn" id="prevBtn">← Précédent</button>
+        <span class="counter" id="counter">Leçon 1 / 12</span>
+        <button class="nav-btn" id="nextBtn">Suivant →</button>
+    </div>
+</div>
+
+<script>
+const slides = [
+{
+    title: "Leçon 1 — Le relief de la RDC",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Tu pars de Matadi en train vers Kinshasa, puis tu continues vers l'Est. Les collines du Mayombe laissent place aux plateaux, puis à l'immense cuvette, enfin aux volcans du Kivu. En un voyage, tu as parcouru tous les reliefs de ton pays.</p></div>
+<h3>1. La cuvette centrale et les plaines</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Democratic_Republic_of_the_Congo_(orthographic_projection).svg?width=800" alt="La RDC en Afrique" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Image : Wikimedia Commons (visible avec connexion)</p><p><strong>Cuvette centrale</strong> : grande dépression de 300 à 500 m d'altitude, drainée par le fleuve Congo ; forêt dense et marécages (Équateur, Tshuapa, Mai-Ndombe, Tshopo).</p><p><strong>Plaine côtière</strong> : étroite bande atlantique du Kongo Central (Moanda, Banana).</p></div>
+<h3>2. Les plateaux</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Plateaux Bateke</strong> (Kinshasa, Mai-Ndombe) : sableux, 600 à 800 m.</li><li><strong>Plateaux du Kwango et du Kasaï</strong> : savanes, vers l'Angola.</li><li><strong>Plateaux du Katanga</strong> (Haut-Katanga, Lualaba) : 1 000 à 1 800 m ; Kundelungu, Biano, Marungu, Manono.</li><li><strong>Plateaux du Nord</strong> (Uele, Ituri) : 600 à 1 000 m.</li></ul></div>
+<h3>3. Les montagnes et le Rift</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Monts de Cristal et Mayombe</strong> (Kongo Central, ouest) : collines boisées.</li><li><strong>Monts Mitumba</strong> (Est, du Tanganyika au Maniema) : 1 500 à 3 000 m.</li><li><strong>Rwenzori</strong> (Nord-Kivu) : <strong>Pic Marguerite 5 109 m</strong>, point culminant, glaciers.</li><li><strong>Virunga</strong> (Nord-Kivu) : volcans <strong>Karisimbi 4 507 m</strong> (frontière RDC-Rwanda), <strong>Mikeno 4 437 m</strong>, <strong>Nyiragongo 3 470 m</strong> (actif), <strong>Nyamulagira 3 058 m</strong> (actif).</li><li><strong>Kahuzi (3 308 m) et Biega</strong> (Sud-Kivu).</li></ul><p><strong>Rift occidental</strong> : fossé d'effondrement avec les lacs Tanganyika, Kivu, Édouard, Albert.</p><p><a href="https://www.youtube.com/results?search_query=RDC+relief+volcans+Virunga" target="_blank" rel="noopener">🎥 Recherche : relief de la RDC (TV5Monde / France 24)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Cuvette centrale au milieu, plateaux autour, montagnes et volcans à l'Est (Rift), plaine côtière à l'Ouest. Point culminant : Pic Marguerite, 5 109 m.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national de géographie RDC (EPST), Atlas de la RDC (EPST), UNESCO.</div>
+    `
+},
+{
+    title: "Leçon 2 — Le climat de la RDC",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>À Mbandaka, il pleut presque chaque jour. À Lubumbashi, en juillet, il ne tombe pas une goutte. À Goma, le soir est frais. Même pays, trois ambiances : l'équateur et l'altitude commandent le climat.</p></div>
+<h3>1. Les types de climat</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Köppen-Geiger_Map_AFR_present.svg?width=800" alt="Climats de l'Afrique" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Image : Wikimedia Commons (visible avec connexion)</p><ul><li><strong>Équatorial</strong> (centre : Équateur, Tshopo, Mai-Ndombe) : chaud (25-27 °C), pluies plus de 1 800 mm, quasi toute l'année.</li><li><strong>Tropical humide</strong> (nord et sud : Kinshasa, Kasaï, Kwilu, Haut-Uele) : deux saisons, pluies 1 200 à 1 600 mm.</li><li><strong>Tropical d'altitude</strong> (Katanga, Kivu, Ituri) : plus frais, saison sèche marquée.</li><li><strong>Climat de montagne</strong> (Rwenzori, Virunga) : froid en altitude.</li><li><strong>Climat littoral</strong> (Moanda, Boma) : plus sec et plus frais, influence du courant froid de Benguela.</li></ul></div>
+<h3>2. Les saisons</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Sud de l'équateur</strong> : saison des pluies d'octobre à mai, saison sèche de juin à août.</li><li><strong>Nord de l'équateur</strong> : calendrier inversé.</li><li><strong>Près de l'équateur</strong> : pluies presque toute l'année, deux maxima.</li></ul><p>Le <strong>déplacement du soleil</strong> (équinoxes et solstices) explique l'alternance.</p></div>
+<h3>3. Facteurs du climat</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><p>Position sur l'<strong>équateur</strong>, <strong>altitude</strong>, <strong>continentalité</strong> (éloignement de l'océan) et <strong>courants marins</strong>. La RDC est un pays intertropical : pas d'hiver ni d'été, seulement saison sèche et saison des pluies.</p><p><a href="https://www.youtube.com/results?search_query=climat+RDC+saison+des+pluies" target="_blank" rel="noopener">🎥 Recherche : climat de la RDC (Radio Okapi / France 24)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Équatorial au centre, tropical au nord et au sud, de montagne à l'Est, littoral à l'Ouest. Deux saisons, inversées de part et d'autre de l'équateur.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national de géographie RDC (EPST), UNESCO, OpenStax (CC BY).</div>
+    `
+},
+{
+    title: "Leçon 3 — L'hydrographie de la RDC",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Du pont de Kinshasa, le fleuve semble une mer. Il a parcouru des milliers de kilomètres depuis le Katanga et il recueille l'eau de presque tout le pays. La RDC est le pays du fleuve.</p></div>
+<h3>1. Le fleuve Congo</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Congo_River_basin_map.png?width=800" alt="Bassin du fleuve Congo" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Image : Wikimedia Commons (visible avec connexion)</p><p><strong>4 700 km</strong>, 2e d'Afrique après le Nil, 2e du monde par le débit après l'Amazone. Il coupe l'équateur deux fois.</p><ul><li><strong>Source</strong> : Lualaba (plateau du Katanga).</li><li><strong>Cours</strong> : Lualaba, puis Congo à partir de Kisangani (chutes <strong>Boyoma</strong>), arc autour de la cuvette, <strong>Pool Malebo</strong> (Kinshasa), rapides <strong>Livingstone</strong>, estuaire à Moanda.</li></ul></div>
+<h3>2. Les affluents</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Rive droite</strong> : Lualaba, Lomami, Aruwimi, Itimbiri, Ubangi (et son affluent Uele), Sangha.</li><li><strong>Rive gauche</strong> : Kasaï (avec Sankuru, Kwango, Kwilu, Lulua), Lukenie, Ruki (Tshuapa, Momboyo, Busira), Lulonga, Inkisi.</li></ul></div>
+<h3>3. Les lacs</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Tanganyika</strong> : 2e plus profond du monde (environ 1 470 m), frontière Est.</li><li><strong>Kivu</strong> : volcanique, gaz méthane dissous.</li><li><strong>Albert</strong> et <strong>Édouard</strong> : Rift, riches en poissons.</li><li><strong>Moero</strong> et <strong>Upemba</strong> (Katanga).</li><li><strong>Mai-Ndombe</strong> et <strong>Tumba</strong> (cuvette).</li></ul></div>
+<h3>4. Navigabilité et utilité</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Biefs navigables</strong> : Kisangani-Kinshasa (environ 1 700 km), Kinshasa-Ilebo par le Kasaï, Ubangi, Lualaba (Kindu-Ankoro).</li><li><strong>Obstacles</strong> : chutes Boyoma, rapides Livingstone (Kinshasa-Matadi, contournés par le chemin de fer).</li><li><strong>Utilité</strong> : transport, pêche, eau, <strong>hydroélectricité</strong>, irrigation.</li></ul><p><a href="https://www.youtube.com/results?search_query=fleuve+Congo+Kisangani+Kinshasa" target="_blank" rel="noopener">🎥 Recherche : le fleuve Congo (Radio Okapi / France 24)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le fleuve Congo (4 700 km) collecte presque toutes les rivières du pays. Il est navigable par biefs, coupé par les chutes Boyoma et les rapides Livingstone.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national de géographie RDC (EPST), Atlas de la RDC, UNESCO.</div>
+    `
+},
+{
+    title: "Leçon 4 — La végétation, la faune et les aires protégées",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Sur la route de Beni, tu traverses la forêt. Plus au sud, la savane s'ouvre, puis les hauts plateaux du Katanga. À chaque région son paysage, ses animaux, ses parcs.</p></div>
+<h3>1. Les formations végétales</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Okapi2.jpg?width=800" alt="Okapi" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Image : Wikimedia Commons (visible avec connexion)</p><ul><li><strong>Forêt dense humide</strong> : cuvette centrale (plus de la moitié du territoire), arbres géants (wengé, sapelli, limba, afrormosia).</li><li><strong>Forêt de montagne</strong> : Kivu, Ituri, Rwenzori.</li><li><strong>Forêt claire (miombo)</strong> : Katanga.</li><li><strong>Savane herbeuse et boisée</strong> : Kasaï, Kwango, Kwilu, Uele.</li><li><strong>Prairies d'altitude</strong> : hauts plateaux de l'Est.</li><li><strong>Mangroves</strong> : estuaire du Congo (Moanda).</li><li><strong>Forêts-galeries</strong> le long des rivières.</li></ul></div>
+<h3>2. La faune</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Forêt</strong> : okapi et bonobo (<strong>endémiques</strong> de la RDC), gorille, chimpanzé, éléphant de forêt, paon congolais.</li><li><strong>Montagnes</strong> : gorille de montagne (Virunga), gorille de Grauer (Kahuzi-Biega).</li><li><strong>Savane</strong> : éléphant, buffle, lion, girafe (Garamba), hippopotame.</li></ul></div>
+<h3>3. Les parcs et réserves</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Virunga</strong> (Nord-Kivu, 1925) : plus ancien parc d'Afrique.</li><li><strong>Garamba</strong> (Haut-Uele, 1938).</li><li><strong>Salonga</strong> (Cuvette centrale, 1970) : plus grand parc de forêt tropicale d'Afrique.</li><li><strong>Kahuzi-Biega</strong> (Sud-Kivu, 1970).</li><li><strong>Réserve de faune à okapis</strong> (Ituri, 1992).</li><li><strong>Upemba</strong> et <strong>Kundelungu</strong> (Katanga) ; <strong>Maiko</strong> (Maniema) ; <strong>Lomami</strong> ; <strong>Mangroves</strong> (Kongo Central) ; <strong>Luki</strong> (Mayombe).</li></ul><p>Les <strong>5 sites UNESCO</strong> : Virunga, Garamba, Salonga, Kahuzi-Biega, Okapis.</p><p><a href="https://www.youtube.com/results?search_query=parc+national+Virunga+RDC" target="_blank" rel="noopener">🎥 Recherche : parcs nationaux de la RDC (UNESCO / France 24)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Forêt au centre, savane autour, montagne à l'Est, mangroves à l'Ouest. Okapi et bonobo sont propres à la RDC. Cinq sites inscrits à l'UNESCO.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national de géographie RDC (EPST), UNESCO (Patrimoine mondial), ICCN.</div>
+    `
+},
+{
+    title: "Leçon 5 — La population de la RDC",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Sur la place d'un marché de Goma, des milliers de personnes se pressent. À quelques jours de marche dans la forêt de l'Équateur, des villages sont isolés. La RDC est un pays jeune, mal réparti.</p></div>
+<h3>1. Effectif et structure</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Flag_of_the_Democratic_Republic_of_the_Congo.svg?width=800" alt="Drapeau de la RDC" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Image : Wikimedia Commons (visible avec connexion)</p><ul><li><strong>Environ 100 millions</strong> d'habitants (estimations ONU).</li><li><strong>Très jeune</strong> : la majorité a moins de 25 ans.</li><li><strong>Fécondité élevée</strong> : environ 6 enfants par femme.</li><li><strong>Densité moyenne</strong> : environ 40 hab./km² (source à vérifier).</li></ul></div>
+<h3>2. Répartition inégale</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Fortes densités</strong> : Kinshasa, Kongo Central, Kivu (Nord et Sud), Katanga minier, Kasaï.</li><li><strong>Faibles densités</strong> : cuvette forestière (Équateur, Tshuapa, Mai-Ndombe), Tanganyika, Haut-Uele.</li></ul><p>Causes : fertilité des sols, mines, villes, sécurité, forêt difficile.</p></div>
+<h3>3. Peuples et langues</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Plus de <strong>200 groupes ethniques</strong>, surtout <strong>bantous</strong> ; aussi soudanais, nilotiques, pygmées (Batwa).</li><li><strong>Français</strong> langue officielle ; <strong>langues nationales</strong> : kikongo, lingala, swahili, tshiluba.</li></ul></div>
+<h3>4. Villes et migrations</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Grandes villes</strong> : Kinshasa (plus de 15 millions), Lubumbashi, Mbuji-Mayi, Kananga, Kisangani, Goma, Bukavu, Tshikapa, Kolwezi, Likasi, Mbandaka, Matadi, Boma, Bunia, Kalemie.</li><li><strong>Exode rural</strong> vers les villes ; <strong>déplacements</strong> de populations dus aux conflits dans l'Est.</li><li><strong>Défis</strong> : éducation, santé, emploi, logement.</li></ul><p><a href="https://www.youtube.com/results?search_query=population+RDC+démographie" target="_blank" rel="noopener">🎥 Recherche : population de la RDC (ONU / UNICEF)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Population jeune (environ 100 millions), très inégalement répartie, urbanisation rapide, forte diversité de peuples et de langues.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national de géographie RDC (EPST), ONU (Division de la population), UNICEF.</div>
+    `
+},
+{
+    title: "Leçon 6 — Le découpage administratif de la RDC",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Tu remplis un formulaire : « province d'origine ». Depuis 2015, la RDC compte 26 provinces, plus que l'ancien découpage en 11. Les connaître est un classique de l'EXETAT.</p></div>
+<h3>1. Les 26 provinces et leurs chefs-lieux</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Democratic_Republic_of_the_Congo_-_Location_Map_(2013)_-_COD_-_UNOCHA.svg?width=800" alt="Carte administrative de la RDC" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Image : Wikimedia Commons (visible avec connexion)</p><ul><li><strong>Kinshasa</strong> (ville-province) · <strong>Kongo Central</strong> (Matadi) · <strong>Kwango</strong> (Kenge) · <strong>Kwilu</strong> (Bandundu-ville) · <strong>Mai-Ndombe</strong> (Inongo)</li><li><strong>Kasaï</strong> (Tshikapa) · <strong>Kasaï-Central</strong> (Kananga) · <strong>Kasaï-Oriental</strong> (Mbuji-Mayi) · <strong>Lomami</strong> (Kabinda) · <strong>Sankuru</strong> (Lodja)</li><li><strong>Maniema</strong> (Kindu) · <strong>Sud-Kivu</strong> (Bukavu) · <strong>Nord-Kivu</strong> (Goma) · <strong>Ituri</strong> (Bunia)</li><li><strong>Haut-Uele</strong> (Isiro) · <strong>Bas-Uele</strong> (Buta) · <strong>Tshopo</strong> (Kisangani)</li><li><strong>Nord-Ubangi</strong> (Gbadolite) · <strong>Sud-Ubangi</strong> (Gemena) · <strong>Mongala</strong> (Lisala) · <strong>Équateur</strong> (Mbandaka) · <strong>Tshuapa</strong> (Boende)</li><li><strong>Tanganyika</strong> (Kalemie) · <strong>Haut-Lomami</strong> (Kamina) · <strong>Lualaba</strong> (Kolwezi) · <strong>Haut-Katanga</strong> (Lubumbashi)</li></ul></div>
+<h3>2. Les niveaux administratifs</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><p><strong>Province</strong> → <strong>territoire</strong> (ou ville) → <strong>secteur ou chefferie</strong> (ou commune) → <strong>groupement</strong> → <strong>village</strong>. Le chef-lieu du pays est <strong>Kinshasa</strong>.</p><p><a href="https://www.youtube.com/results?search_query=provinces+RDC+découpage+26" target="_blank" rel="noopener">🎥 Recherche : les 26 provinces de la RDC (Radio Okapi / TV5Monde)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>26 provinces (Kinshasa incluse), chacune avec son chef-lieu. Territoire, secteur ou chefferie, groupement, village : l'échelle administrative.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national de géographie RDC (EPST), Constitution de la RDC (2006), Atlas de la RDC.</div>
+    `
+},
+{
+    title: "Leçon 7 — Les ressources minières de la RDC",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Le cobalt de ton téléphone et le cuivre des câbles viennent peut-être du Katanga. La RDC est un « scandale géologique » : son sous-sol est parmi les plus riches du monde.</p></div>
+<h3>1. Les minerais majeurs</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Cobalt_electrolytic_and_1cm3_cube.jpg?width=800" alt="Cobalt" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Image : Wikimedia Commons (visible avec connexion)</p><ul><li><strong>Cuivre</strong> : Haut-Katanga et Lualaba (Kolwezi, Likasi, Lubumbashi, Tenke-Fungurume).</li><li><strong>Cobalt</strong> : même région ; la RDC produit environ <strong>70 %</strong> du cobalt mondial.</li><li><strong>Diamant</strong> : Kasaï-Oriental (Mbuji-Mayi), Kasaï (Tshikapa), Tshopo.</li><li><strong>Or</strong> : Ituri (Kilo-Moto, Mongbwalu), Sud-Kivu, Maniema.</li><li><strong>Coltan</strong> (tantale) : Nord-Kivu (Rubaya, Masisi), Sud-Kivu, Maniema.</li><li><strong>Cassitérite</strong> (étain) : Nord-Kivu, Sud-Kivu, Maniema, Tanganyika.</li></ul></div>
+<h3>2. Les autres minerais</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Zinc et germanium</strong> : Kipushi (Haut-Katanga).</li><li><strong>Manganèse</strong> : Katanga.</li><li><strong>Uranium</strong> : Shinkolobwe (Haut-Katanga).</li><li><strong>Lithium</strong> : Manono (Tanganyika).</li><li><strong>Charbon</strong> : Luena (Haut-Katanga).</li><li><strong>Fer, bauxite, wolfram</strong> : indices dans plusieurs provinces (source à vérifier).</li></ul></div>
+<h3>3. Hydrocarbures</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Pétrole</strong> : en mer à <strong>Muanda</strong> (Kongo Central) ; indices au lac Albert (Ituri) et en cuvette centrale.</li><li><strong>Gaz méthane</strong> : lac <strong>Kivu</strong>.</li></ul></div>
+<h3>4. Enjeux</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Mines = première source des exportations.</li><li><strong>Entreprises</strong> : Gécamines, Miba, Sakima (publiques), multinationales.</li><li><strong>Défis</strong> : transformation sur place, mines artisanales, conflits liés aux minerais, gouvernance, pollution.</li></ul><p><a href="https://www.youtube.com/results?search_query=mines+cuivre+cobalt+Katanga" target="_blank" rel="noopener">🎥 Recherche : mines du Katanga (France 24 / BBC Afrique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Katanga : cuivre, cobalt, zinc, uranium. Kasaï : diamant. Kivu et Ituri : or, coltan, étain. Muanda : pétrole. Défi : transformer sur place.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national de géographie RDC (EPST), USGS, Radio Okapi, ONU.</div>
+    `
+},
+{
+    title: "Leçon 8 — L'énergie en RDC",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>À Kinshasa, la lumière s'éteint souvent le soir. Pourtant, le fleuve Congo pourrait éclairer l'Afrique entière. L'énergie reste l'un des paradoxes de la RDC.</p></div>
+<h3>1. L'hydroélectricité</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Inga_Dam.jpg?width=800" alt="Barrage d'Inga" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Image : Wikimedia Commons (visible avec connexion)</p><p>Potentiel de l'ordre de <strong>100 000 MW</strong> (source à vérifier), soit une part majeure du potentiel africain.</p><ul><li><strong>Inga I (1972) et II (1982)</strong> : fleuve Congo, Kongo Central ; projet <strong>Grand Inga</strong>.</li><li><strong>Zongo</strong> (Inkisi), <strong>Mwadingusha, Koni, Nzilo, Nseke</strong> (Katanga), <strong>Mobayi-Bongo</strong> (Ubangi), <strong>Ruzizi</strong> (Sud-Kivu), <strong>Katende</strong> (Kasaï).</li></ul></div>
+<h3>2. Autres énergies</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Pétrole</strong> : Muanda, raffinerie SOCIR.</li><li><strong>Gaz méthane</strong> du lac Kivu.</li><li><strong>Charbon</strong> de Luena.</li><li><strong>Solaire</strong> : fort potentiel.</li><li><strong>Bois-énergie et charbon de bois (makala)</strong> : première source domestique, cause de déforestation.</li></ul></div>
+<h3>3. Problèmes</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><p>Moins d'un quart de la population a accès à l'électricité (source à vérifier). Réseaux vétustes, distances, manque d'investissements.</p><p><a href="https://www.youtube.com/results?search_query=barrage+Inga+RDC" target="_blank" rel="noopener">🎥 Recherche : barrage d'Inga (France 24 / Radio Okapi)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Énorme potentiel hydroélectrique (Inga), mais faible accès à l'électricité. Le bois reste l'énergie principale des ménages.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national de géographie RDC (EPST), ONU, Banque mondiale, SNEL.</div>
+    `
+},
+{
+    title: "Leçon 9 — L'agriculture, l'élevage, la pêche et la forêt",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Au marché de Kisangani, une vendeuse aligne manioc, plantain et riz. Pour la majorité des Congolais, la terre est le premier métier. Pourtant, le pays importe encore des aliments.</p></div>
+<h3>1. Cultures vivrières</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Manihot_esculenta_dsc07325.jpg?width=800" alt="Manioc" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Image : Wikimedia Commons (visible avec connexion)</p><ul><li><strong>Manioc</strong> : partout (Kwilu, Kongo Central, Kasaï).</li><li><strong>Maïs</strong> : Katanga, Kasaï.</li><li><strong>Riz</strong> : Équateur, Tshopo, Maniema, Tanganyika.</li><li><strong>Banane plantain</strong> : Équateur, Kivu.</li><li><strong>Arachide, haricot, patate douce, sorgho</strong>.</li></ul></div>
+<h3>2. Cultures de rente</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Café</strong> : Kivu, Ituri, Équateur.</li><li><strong>Cacao</strong> : Équateur, Tshopo, Nord-Kivu (Beni).</li><li><strong>Huile de palme</strong> : Équateur, Kwilu, Kongo Central.</li><li><strong>Caoutchouc</strong> : Équateur, Tshopo.</li><li><strong>Thé et quinquina</strong> : Kivu.</li><li><strong>Canne à sucre</strong> : Kongo Central (Kwilu-Ngongo).</li></ul></div>
+<h3>3. Élevage, pêche, forêt</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Élevage</strong> : bovins, caprins, porcs ; hauts plateaux de l'Est, Ituri, Katanga ; la <strong>mouche tsé-tsé</strong> gêne en forêt.</li><li><strong>Pêche</strong> : lacs Tanganyika, Kivu, Albert, Édouard, Mai-Ndombe, fleuve Congo ; petite pêche maritime à Moanda.</li><li><strong>Forêt</strong> : bois d'œuvre (wengé, sapelli, limba), produits non ligneux.</li></ul></div>
+<h3>4. Problèmes</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><p>Outils rudimentaires, culture sur brûlis, routes de desserte agricole mauvaises, insécurité, manque de crédit et de semences améliorées, faible transformation.</p><p><a href="https://www.youtube.com/results?search_query=agriculture+RDC+manioc" target="_blank" rel="noopener">🎥 Recherche : agriculture en RDC (UNESCO / Radio Okapi)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Manioc et plantain nourrissent le pays ; café, cacao, palmier et caoutchouc sont les cultures de rente. Défis : routes, techniques, sécurité.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national de géographie RDC (EPST), FAO, Radio Okapi.</div>
+    `
+},
+{
+    title: "Leçon 10 — L'industrie et le commerce en RDC",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans ta ville, tu bois une boisson fabriquée localement. Mais beaucoup de produits viennent de l'étranger. L'industrie congolaise existe, mais elle reste fragile.</p></div>
+<h3>1. Les industries</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Flag_of_the_Democratic_Republic_of_the_Congo.svg?width=800" alt="RDC" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Image : Wikimedia Commons (visible avec connexion)</p><ul><li><strong>Industries extractives et métallurgiques</strong> : Katanga (fonderies de Lubumbashi, Likasi, Kolwezi).</li><li><strong>Agroalimentaire</strong> : brasseries (Bralima), minoteries, huileries.</li><li><strong>Matériaux</strong> : cimenteries (Lukala, Kongo Central).</li><li><strong>Autres</strong> : textile, sidérurgie de Maluku, chimie (source à vérifier).</li></ul><p><strong>Foyers</strong> : Kinshasa, Haut-Katanga, Kongo Central.</p></div>
+<h3>2. Le commerce extérieur</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Exportations</strong> : cuivre, cobalt, diamant, or, pétrole, café, bois.</li><li><strong>Importations</strong> : produits pétroliers, aliments, machines, véhicules, médicaments.</li><li><strong>Partenaires</strong> : Chine, Afrique du Sud, Zambie, Belgique, Inde.</li></ul></div>
+<h3>3. Le commerce intérieur et ses freins</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><p>Commerce <strong>informel</strong> important. Freins : transport coûteux, électricité insuffisante, fiscalité, insécurité, faible transformation sur place.</p><p><a href="https://www.youtube.com/results?search_query=économie+RDC+industrie+commerce" target="_blank" rel="noopener">🎥 Recherche : économie de la RDC (France 24 / BBC Afrique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Industrie centrée sur les mines et l'agroalimentaire. Le pays exporte des matières premières et importe des produits finis.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national de géographie RDC (EPST), Banque mondiale, OMC.</div>
+    `
+},
+{
+    title: "Leçon 11 — Les transports et les communications en RDC",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Un camion quitte Kolwezi pour Lubumbashi ; la piste est défoncée. Un bateau part de Kinshasa vers Kisangani pour plusieurs jours. Se déplacer en RDC reste un défi.</p></div>
+<h3>1. Voies fluviales et lacustres</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Congo_River_Kinshasa.jpg?width=800" alt="Fleuve Congo à Kinshasa" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Image : Wikimedia Commons (visible avec connexion)</p><p>Environ <strong>15 000 km</strong> de voies navigables. Ports fluviaux : <strong>Kinshasa, Mbandaka, Kisangani, Kindu, Ilebo, Bumba</strong>. Ports lacustres : <strong>Kalemie, Uvira, Goma, Bukavu</strong>.</p></div>
+<h3>2. Ports maritimes et chemins de fer</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Ports maritimes</strong> : <strong>Matadi</strong> (principal), <strong>Boma</strong>, <strong>Banana</strong> (projet d'eau profonde).</li><li><strong>Rail</strong> : <strong>Matadi-Kinshasa</strong> (1898) ; <strong>SNCC</strong> (Lubumbashi-Ilebo, vers Sakania et Dilolo) ; Kindu-Kalemie, Kabalo-Kamina ; Kisangani-Ubundu.</li></ul></div>
+<h3>3. Routes et air</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Routes</strong> : RN1 (Matadi-Kinshasa-Lubumbashi), RN4 (Kisangani-Bunia) ; réseau souvent en mauvais état.</li><li><strong>Aéroports</strong> : <strong>N'Djili</strong> (Kinshasa), <strong>Luano</strong> (Lubumbashi), <strong>Bangboka</strong> (Kisangani), Goma, Bukavu, Mbuji-Mayi.</li></ul></div>
+<h3>4. Communications</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><p>Téléphonie mobile et internet en forte croissance, surtout en ville. Radio et télévision : médias principaux (Radio Okapi, RTNC).</p></div>
+<h3>5. Corridors vers la mer</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><p>Pour exporter, le Katanga utilise les corridors <strong>Dar es Salaam</strong>, <strong>Durban</strong>, <strong>Beira</strong> et <strong>Lobito</strong>. Cela montre l'<strong>enclavement intérieur</strong> du pays.</p><p><a href="https://www.youtube.com/results?search_query=transport+fleuve+Congo+RDC" target="_blank" rel="noopener">🎥 Recherche : transports en RDC (Radio Okapi / France 24)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Fleuve, rail et routes sont complémentaires mais insuffisants. L'enclavement intérieur reste un frein majeur au développement.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national de géographie RDC (EPST), Banque mondiale, Radio Okapi.</div>
+    `
+},
+{
+    title: "Leçon 12 — L'Afrique : géographie physique et régions",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Tu poses ta main sur un globe : l'Afrique est traversée en son milieu par l'équateur. La RDC est en plein cœur de ce continent.</p></div>
+<h3>1. Situation et chiffres</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Africa_(orthographic_projection).svg?width=800" alt="Carte de l'Afrique" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Image : Wikimedia Commons (visible avec connexion)</p><ul><li><strong>Superficie</strong> : environ 30 millions de km², 2e continent.</li><li><strong>Population</strong> : environ 1,4 milliard d'habitants.</li><li><strong>54 États</strong> reconnus par l'ONU (55 membres de l'Union africaine).</li><li>Bordée par la <strong>Méditerranée, l'Atlantique, l'océan Indien, la mer Rouge</strong>.</li><li>Traversée par l'<strong>équateur</strong> et les <strong>tropiques du Cancer et du Capricorne</strong>.</li></ul></div>
+<h3>2. Relief et eaux</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Montagnes</strong> : Atlas, Hoggar, Tibesti, hauts plateaux éthiopiens, Drakensberg ; <strong>Kilimandjaro 5 895 m</strong> (point culminant), mont Kenya.</li><li><strong>Rift est-africain</strong> et ses lacs.</li><li><strong>Fleuves</strong> : Nil (environ 6 650 km), Congo, Niger, Zambèze, Limpopo, Orange, Sénégal.</li><li><strong>Lacs</strong> : Victoria (le plus grand), Tanganyika, Malawi, Tchad.</li></ul></div>
+<h3>3. Climats et végétation</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><p>Du nord au sud : <strong>méditerranéen</strong>, <strong>désertique</strong> (Sahara, environ 9 millions de km²), <strong>sahélien</strong>, <strong>tropical (savane)</strong>, <strong>équatorial (forêt)</strong>, puis tropical, désertique (Kalahari, Namib) et tempéré (Afrique du Sud).</p></div>
+<h3>4. Les cinq régions</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><p><strong>Afrique du Nord</strong>, <strong>de l'Ouest</strong>, <strong>centrale</strong> (dont la RDC), <strong>de l'Est</strong>, <strong>australe</strong>.</p><p><a href="https://www.youtube.com/results?search_query=Afrique+géographie+continent" target="_blank" rel="noopener">🎥 Recherche : géographie de l'Afrique (TV5Monde / UNESCO)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Continent traversé par l'équateur, aux climats disposés symétriquement. Point culminant : Kilimandjaro ; fleuve le plus long : Nil.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national de géographie RDC (EPST), UNESCO, ONU.</div>
+    `
+},
+{
+    title: "Leçon 13 — Le monde : continents, océans, population",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Vue depuis l'espace, la Terre est surtout bleue. La RDC occupe une petite place sur cette planète de plus de 8 milliards d'habitants.</p></div>
+<h3>1. Continents et océans</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/The_Earth_seen_from_Apollo_17.jpg?width=800" alt="La Terre" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Image : Wikimedia Commons (visible avec connexion)</p><ul><li><strong>Terres émergées</strong> : environ 29 %, <strong>océans</strong> : environ 71 %.</li><li><strong>Océans</strong> : Pacifique (le plus grand), Atlantique, Indien, Austral, Arctique.</li><li><strong>Continents</strong> : Afrique, Amérique, Asie, Europe, Océanie, Antarctique.</li><li><strong>Sommet</strong> : Everest 8 849 m.</li></ul></div>
+<h3>2. Les zones climatiques</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><p><strong>Zone intertropicale</strong> (chaude), <strong>zones tempérées</strong>, <strong>zones polaires</strong>. Elles dépendent de la latitude.</p></div>
+<h3>3. La population mondiale</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Plus de <strong>8 milliards</strong> (depuis 2022).</li><li><strong>Continent le plus peuplé</strong> : Asie.</li><li><strong>Pays les plus peuplés</strong> : Inde et Chine.</li><li>Forte croissance en Afrique ; vieillissement en Europe et en Asie de l'Est.</li></ul></div>
+<h3>4. Inégalités de développement</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Pays développés</strong>, <strong>émergents</strong> (Chine, Inde, Brésil), <strong>moins avancés</strong>.</li><li><strong>IDH</strong> (PNUD) : santé, éducation, revenu.</li><li><strong>Fracture Nord-Sud</strong>.</li></ul><p><a href="https://www.youtube.com/results?search_query=continents+océans+monde" target="_blank" rel="noopener">🎥 Recherche : continents et océans (TV5Monde / UNESCO)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>5 océans, 6 continents, 3 zones climatiques. Plus de 8 milliards d'humains, très inégalement développés.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national de géographie RDC (EPST), ONU, PNUD.</div>
+    `
+},
+{
+    title: "Leçon 14 — La mondialisation et les organisations internationales",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Ton téléphone est assemblé en Asie avec des minerais du Katanga, et vendu partout. Voilà la mondialisation. Des organisations régulent ces échanges.</p></div>
+<h3>1. La mondialisation</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Flag_of_the_African_Union.svg?width=800" alt="Drapeau de l'Union africaine" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Image : Wikimedia Commons (visible avec connexion)</p><ul><li><strong>Définition</strong> : intensification des échanges de biens, capitaux, personnes et informations.</li><li><strong>Moteurs</strong> : transports, internet, firmes multinationales, libre-échange.</li><li><strong>Avantages</strong> : marchés, technologies, emploi. <strong>Limites</strong> : inégalités, dépendance, pollution.</li></ul></div>
+<h3>2. Organisations mondiales</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>ONU</strong> (1945, New York, 193 membres) ; RDC membre depuis le <strong>20 septembre 1960</strong>.</li><li><strong>UNESCO</strong> (Paris), <strong>OMS</strong> (Genève), <strong>UNICEF</strong> (New York), <strong>FAO</strong> (Rome).</li><li><strong>OMC</strong> (1995, Genève), <strong>FMI</strong> et <strong>Banque mondiale</strong> (Washington).</li></ul></div>
+<h3>3. Organisations africaines</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Union africaine</strong> (2002, Addis-Abeba), successeur de l'OUA (1963).</li><li><strong>CEEAC</strong> (1983, Libreville) : Afrique centrale.</li><li><strong>SADC</strong> (Afrique australe) : RDC membre depuis 1997.</li><li><strong>EAC</strong> (Afrique de l'Est) : RDC admise en 2022.</li><li><strong>COMESA</strong> ; <strong>CEPGL</strong> (1976, RDC, Rwanda, Burundi).</li></ul><p><a href="https://www.youtube.com/results?search_query=mondialisation+organisations+internationales" target="_blank" rel="noopener">🎥 Recherche : la mondialisation (TV5Monde / France 24)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La mondialisation relie les économies. L'ONU, l'UA et les groupements régionaux (CEEAC, SADC, EAC, CEPGL) encadrent la coopération.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national de géographie RDC (EPST), ONU, UA, SADC, EAC (sites officiels).</div>
+    `
+},
+{
+    title: "Leçon 15 — L'environnement : problèmes et solutions",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans un village, un paysan défriche. En ville, on cuisine au charbon de bois. Mises bout à bout, ces habitudes menacent la 2e plus grande forêt tropicale du monde.</p></div>
+<h3>1. Les problèmes</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Okapi2.jpg?width=800" alt="Forêt du Congo" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Image : Wikimedia Commons (visible avec connexion)</p><ul><li><strong>Déforestation</strong> : agriculture sur brûlis, makala, exploitation forestière.</li><li><strong>Braconnage</strong> et perte de biodiversité.</li><li><strong>Érosion urbaine</strong> (ravins de Kinshasa), <strong>inondations</strong>, <strong>déchets</strong>.</li><li><strong>Pollution</strong> minière et des eaux.</li><li><strong>Changement climatique</strong> : saisons dérégulées.</li></ul></div>
+<h3>2. Les solutions</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Aires protégées et reboisement.</li><li>Énergies propres (hydro, solaire).</li><li>Gestion communautaire des forêts.</li><li>Assainissement et gestion des déchets.</li></ul></div>
+<h3>3. Accords internationaux</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><p><strong>Rio 1992</strong>, <strong>Kyoto 1997</strong>, <strong>Paris 2015</strong> (COP21). Le bassin du Congo est un <strong>puits de carbone</strong> essentiel.</p><p><a href="https://www.youtube.com/results?search_query=déforestation+bassin+du+Congo" target="_blank" rel="noopener">🎥 Recherche : forêt du bassin du Congo (France 24 / UNESCO)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Déforestation, braconnage, érosion et pollution menacent l'environnement. Protéger la forêt du Congo est un enjeu national et mondial.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national de géographie RDC (EPST), UNESCO, ONU Environnement.</div>
+    `
+},
+{
+    title: "Leçon 16 — Lire et dessiner une carte",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>À l'EXETAT, on te donne une carte et on te demande une distance, des coordonnées, un croquis. Ces techniques s'apprennent et font gagner des points.</p></div>
+<h3>1. Coordonnées géographiques</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/BlankMap-World.svg?width=800" alt="Planisphère" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Image : Wikimedia Commons (visible avec connexion)</p><ul><li><strong>Latitude</strong> : distance à l'équateur (0°), de 0° à 90° nord ou sud ; se lit sur les <strong>parallèles</strong>.</li><li><strong>Longitude</strong> : distance au méridien de <strong>Greenwich</strong> (0°), de 0° à 180° est ou ouest ; se lit sur les <strong>méridiens</strong>.</li></ul><p>La RDC se situe environ entre 5° nord et 13° sud, et entre 12° et 31° est.</p></div>
+<h3>2. L'échelle</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Échelle 1/100 000</strong> : 1 cm = 1 km. <strong>1/200 000</strong> : 1 cm = 2 km. <strong>1/50 000</strong> : 1 cm = 500 m.</li><li><strong>Distance réelle = distance sur la carte × dénominateur</strong> (ex. 4 cm au 1/100 000 = 400 000 cm = 4 km).</li></ul></div>
+<h3>3. Éléments d'une carte et fuseaux</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Titre, légende, échelle, orientation (rose des vents)</strong>.</li><li><strong>Types</strong> : physique, politique, thématique, topographique (courbes de niveau).</li><li><strong>Fuseaux horaires</strong> : 15° de longitude = 1 heure ; la RDC est à <strong>UTC+1</strong> (Ouest : Kinshasa) et <strong>UTC+2</strong> (Est : Lubumbashi).</li></ul></div>
+<h3>4. Réaliser un croquis</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><p>1) Titre. 2) Fond de carte simple. 3) Phénomènes avec couleurs ou symboles. 4) <strong>Légende</strong> claire. 5) Orientation et échelle.</p><p><a href="https://www.youtube.com/results?search_query=lire+une+carte+échelle+coordonnées" target="_blank" rel="noopener">🎥 Recherche : lire une carte (TV5Monde / France 24)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Latitude et longitude situent un lieu ; l'échelle donne les distances ; titre, légende et orientation sont obligatoires sur toute carte ou croquis.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national de géographie RDC (EPST), OpenStax (CC BY), IGN (méthodes).</div>
+    `
+},
+{
+    title: "Évaluation finale — Items EXETAT",
+    content: `
+        <p style="margin-bottom:18px;color:#1f5c3a;font-size:0.95rem;">Cette évaluation regroupe des items tirés des épreuves d'État (EXETAT) des années précédentes. Fais l'exercice dans les conditions du concours : sans notes, en une seule fois.</p>
+
+        <div class="bloc theorie">
+            <div class="bloc-label">Consignes</div>
+            <ul>
+                <li>29 questions à choix multiples.</li>
+                <li>Une seule réponse correcte par question.</li>
+                <li>Pas de retour en arrière sur les questions déjà validées.</li>
+                <li>Durée recommandée : 30 minutes.</li>
+            </ul>
+        </div>
+
+        <div class="quiz-container" id="quizContainer">
+            <h3 style="color:#14442e;margin-bottom:16px;font-size:1.1rem;">Partie 1 — Questions</h3>
+            <div id="quizQuestions"></div>
+            <button id="submitQuiz" class="quiz-btn-submit">Valider mes réponses</button>
+            <div id="quizResult" class="quiz-result"></div>
+        </div>
+    `
+}
+];
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim()) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderQuiz() {
+    const questions = [
+        { text:"Quel grand fleuve traverse la RDC ?", options:["Nil","Congo","Niger"], correct:1 },
+        { text:"Combien de pays voisins la RDC a-t-elle ?", options:["7","9","11"], correct:1 },
+        { text:"Quel est le point culminant de la RDC ?", options:["Pic Marguerite (Rwenzori)","Mont Nyiragongo","Kilimandjaro"], correct:0 },
+        { text:"Quel est le principal port maritime de la RDC ?", options:["Matadi","Kalemie","Kisangani"], correct:0 },
+        { text:"Où exploite-t-on surtout le cuivre et le cobalt ?", options:["Équateur","Katanga","Maniema"], correct:1 },
+        { text:"La RDC est le premier producteur mondial de :", options:["Pétrole","Cobalt","Café"], correct:1 },
+        { text:"Dans quelle province se trouve le site d'Inga ?", options:["Kongo Central","Kasaï","Ituri"], correct:0 },
+        { text:"Quelles sont les 4 langues nationales de la RDC ?", options:["Kikongo, lingala, swahili, tshiluba","Français, anglais, arabe, portugais","Lingala, haoussa, wolof, bambara"], correct:0 },
+        { text:"Quelle est la latitude de l'équateur ?", options:["0°","23°27'","90°"], correct:0 },
+        { text:"Sur une carte au 1/100 000, 1 cm représente :", options:["100 m","1 km","10 km"], correct:1 },
+        { text:"Combien de provinces compte la RDC ?", options:["11","26","31"], correct:1 },
+        { text:"Quel est le chef-lieu de la province du Nord-Kivu ?", options:["Bukavu","Goma","Bunia"], correct:1 },
+        { text:"Le diamant est surtout exploité dans la province de :", options:["Kasaï-Oriental","Kongo Central","Tanganyika"], correct:0 },
+        { text:"Quel lac est le 2e plus profond du monde ?", options:["Kivu","Tanganyika","Albert"], correct:1 },
+        { text:"Quel animal est endémique de la RDC ?", options:["Okapi","Lion","Girafe"], correct:0 },
+        { text:"Quel parc est le plus ancien d'Afrique (1925) ?", options:["Salonga","Virunga","Garamba"], correct:1 },
+        { text:"Les chutes Boyoma se trouvent près de :", options:["Kisangani","Matadi","Kolwezi"], correct:0 },
+        { text:"Le pétrole congolais est extrait surtout à :", options:["Muanda","Mbuji-Mayi","Beni"], correct:0 },
+        { text:"Quel est le point culminant de l'Afrique ?", options:["Mont Kenya","Kilimandjaro","Pic Marguerite"], correct:1 },
+        { text:"Quel est le fleuve le plus long d'Afrique ?", options:["Congo","Nil","Niger"], correct:1 },
+        { text:"Quel est le plus grand océan ?", options:["Atlantique","Indien","Pacifique"], correct:2 },
+        { text:"En quelle année la RDC est-elle devenue membre de l'ONU ?", options:["1945","1960","1997"], correct:1 },
+        { text:"La RDC est membre de la SADC depuis :", options:["1960","1997","2022"], correct:1 },
+        { text:"Quelle organisation a son siège à Addis-Abeba ?", options:["CEEAC","Union africaine","SADC"], correct:1 },
+        { text:"Le makala, c'est :", options:["Le charbon de bois","Un minerai","Un poisson"], correct:0 },
+        { text:"Le chemin de fer Matadi-Kinshasa contourne :", options:["Les rapides Livingstone","Les chutes Boyoma","Le lac Kivu"], correct:0 },
+        { text:"Quel climat domine au centre de la RDC ?", options:["Désertique","Équatorial","Méditerranéen"], correct:1 },
+        { text:"La RDC est à cheval sur :", options:["Le tropique du Cancer","L'équateur","Le tropique du Capricorne"], correct:1 },
+        { text:"Quel minerai est exploité à Shinkolobwe ?", options:["Uranium","Or","Diamant"], correct:0 }
+    ];
+    let html = '';
+    questions.forEach((q,i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o,k) => { html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>'; });
+        html += '</div>';
+    });
+    document.getElementById('quizQuestions').innerHTML = html;
+    document.getElementById('submitQuiz').onclick = () => {
+        let score = 0;
+        questions.forEach((q,i) => {
+            const s = document.querySelector('input[name="q' + i + '"]:checked');
+            if (s && parseInt(s.value) === q.correct) score++;
+        });
+        const pct = Math.round(score/questions.length*100);
+        document.getElementById('quizResult').innerHTML = '<div style="background:#c8e6d2;padding:16px;border-radius:10px;margin-top:14px;">' +
+            '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong><br>' +
+            (score === questions.length ? 'Excellent. Tu maîtrises le programme.' :
+             score >= 7 ? 'Bien. Revoyez les leçons où vous avez échoué.' :
+             'Relis attentivement les leçons avant l\'examen.') + '</div>';
+    };
+}
+function renderSlide(index, keepHighlight = true) {
+    const isQuiz = (index === slides.length - 1);
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    if (isQuiz) renderQuiz();
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm && !isQuiz) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+</body>
+</html>
