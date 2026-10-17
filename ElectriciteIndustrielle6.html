@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Électricité Industrielle — 4e Technique (EXETAT)</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}html,body{height:100%}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:linear-gradient(160deg,#4e2a0c 0%,#ef6c00 50%,#2e1604 100%);display:flex;justify-content:center;align-items:center;padding:8px}
+.container{width:100%;max-width:1400px;background:#fefdf8;border-radius:20px;overflow:hidden;display:flex;flex-direction:column;height:100%;max-height:100vh;box-shadow:0 20px 60px rgba(0,0,0,0.4)}
+.progress-bar{height:4px;background:#fbdcb8;flex-shrink:0}.progress-fill{height:100%;background:linear-gradient(90deg,#f0a15a,#b34a00);width:0%;transition:width 0.3s}
+.header{padding:10px 16px;background:#fff1e0;border-bottom:1px solid #f3c08a;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-shrink:0}
+.header h1{color:#b34a00;font-size:1rem;font-weight:600}
+.header-right{display:flex;gap:6px;align-items:center}
+.search-box{display:flex;background:white;border-radius:20px;padding:2px 4px}
+.search-box input{border:none;padding:6px 10px;border-radius:20px;outline:none;width:130px;font-size:0.8rem}
+.search-box button{background:none;border:none;cursor:pointer;padding:4px 8px;color:#ef6c00}
+.badge{background:#f0a15a;color:white;padding:4px 10px;border-radius:20px;font-weight:bold;font-size:0.75rem}
+.search-nav{display:none;gap:4px;background:#fbdcb8;padding:2px 8px;border-radius:20px;align-items:center;font-size:0.75rem}
+.search-nav button{background:none;border:none;cursor:pointer;color:#b34a00;padding:2px 4px}
+.content{padding:28px 32px;flex:1;overflow-y:auto;background:#fff;line-height:1.85}
+.slide{display:none}.slide.active{display:block}
+.slide-title{color:#4e2a0c;font-size:1.5rem;font-weight:700;padding-bottom:12px;margin-bottom:20px;border-bottom:2px solid #f0a15a}
+.slide-content{color:#331a07;font-size:1rem}
+.bloc{padding:18px 22px;border-radius:12px;margin:22px 0}
+.bloc-label{font-size:0.75rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;opacity:0.7}
+.bloc p,.bloc li{font-size:0.98rem}
+.bloc h3{font-size:1.1rem;margin:20px 0 10px;font-weight:600}
+.bloc h3:first-child{margin-top:0}
+.cas{background:#fff8e1;border-left:4px solid #ff8f00}.cas .bloc-label{color:#e65100}
+.theorie{background:#fff1e0;border-left:4px solid #f0a15a}.theorie .bloc-label{color:#b34a00}
+.exemple{background:#fce4ec;border-left:4px solid #c62828}.exemple .bloc-label{color:#b71c1c}
+.resume{background:#e1f5fe;border:2px solid #0277bd}.resume .bloc-label{color:#01579b}
+.bloc ul,.bloc ol{margin-left:22px;margin-top:8px}.bloc li{margin-bottom:8px}.bloc strong{color:#4e2a0c}
+.quiz-container{padding:22px;background:#fff1e0;border-radius:16px}
+.quiz-question{background:white;border-radius:10px;padding:16px;margin-bottom:14px}
+.quiz-question p{font-weight:600;margin-bottom:10px;color:#4e2a0c}
+.quiz-question label{display:block;padding:8px 10px;margin:4px 0;border-radius:6px;cursor:pointer}
+.quiz-question input{margin-right:8px}
+.quiz-btn-submit{background:#c9650a;color:white;border:none;padding:12px 24px;border-radius:30px;font-size:1rem;cursor:pointer;font-weight:600;margin-top:14px}
+.quiz-result{margin-top:16px;font-weight:600}
+.sources{background:#f5f5f5;padding:12px 16px;border-radius:10px;margin-top:26px;font-size:0.82rem;color:#666;border-left:3px solid #999}
+.controls{padding:8px 16px;background:#fafafa;border-top:1px solid #e0e0e0;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.nav-btn{background:white;color:#b34a00;border:1px solid #ccc;padding:8px 14px;border-radius:8px;font-size:0.82rem;cursor:pointer}
+.nav-btn:disabled{opacity:0.35;cursor:not-allowed}
+.counter{font-size:0.78rem;color:#666}
+@media (max-width:600px){body{padding:0}.container{border-radius:0}.content{padding:20px 18px}.slide-title{font-size:1.25rem}}
+</style></head><body>
+<div class="container">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="header"><h1>Électricité Industrielle · 4e Technique</h1><div class="header-right">
+<div class="search-box"><input type="text" id="searchInput" placeholder="Rechercher"><button id="searchBtn">⌕</button></div>
+<div class="search-nav" id="searchNav"><button id="prevResultBtn">‹</button><span id="resultCounter">0/0</span><button id="nextResultBtn">›</button></div>
+<span class="badge" id="slideCounter">1/9</span></div></div>
+<div class="content" id="content"></div>
+<div class="controls"><button class="nav-btn" id="prevBtn">← Précédent</button><span class="counter" id="counter">Leçon 1 / 9</span><button class="nav-btn" id="nextBtn">Suivant →</button></div>
+</div>
+<script>
+const slides=[
+{title:"Leçon 1 — Notions fondamentales d'électricité",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans un atelier d'électricité à Kinshasa, un apprenti doit comprendre les grandeurs électriques de base : tension, courant, résistance. Sans elles, impossible de dimensionner un circuit.</p></div>
+<h3>1. Les grandeurs électriques</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Tension (U)</strong> : différence de potentiel, en volts (V).</li><li><strong>Courant (I)</strong> : débit de charges, en ampères (A).</li><li><strong>Résistance (R)</strong> : opposition au passage du courant, en ohms (Ω).</li><li><strong>Puissance (P)</strong> : P = U × I, en watts (W).</li><li><strong>Énergie (E)</strong> : E = P × t, en wattheures (Wh) ou kilowattheures (kWh).</li></ul></div>
+<h3>2. La loi d'Ohm</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Formule</strong> : U = R × I.</li><li><strong>Déductions</strong> : I = U / R ; R = U / I.</li><li><strong>Application</strong> : une résistance de 10 Ω traversée par un courant de 2 A → U = 20 V.</li></ul></div>
+<h3>3. Courant continu et alternatif</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Courant continu (DC)</strong> : sens constant, ex. pile, batterie.</li><li><strong>Courant alternatif (AC)</strong> : sens variable, ex. réseau SNEL, 220 V / 50 Hz en RDC.</li><li><strong>Fréquence</strong> : 50 Hz en RDC.</li><li><strong>Valeur efficace</strong> : tension mesurée par le voltmètre AC.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Lampe 220 V / 100 W</strong> : I = P / U = 100 / 220 ≈ 0,45 A.</li><li><strong>Résistance chauffante 220 V / 1 000 W</strong> : R = U² / P = 48 400 / 1 000 = 48,4 Ω.</li><li><strong>Compteur d'énergie</strong> : 1 kWh = 1 000 Wh.</li></ul><p><a href="https://www.youtube.com/results?search_query=notions+fondamentales+électricité+tension+courant+résistance" target="_blank" rel="noopener">🎥 Recherche : notions d'électricité</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Les grandeurs électriques sont : tension (V), courant (A), résistance (Ω), puissance (W), énergie (Wh). La loi d'Ohm U = R × I est fondamentale. En RDC, le réseau est en 220 V / 50 Hz AC.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques Électricité Industrielle 4e Technique (manuels-scolaires-rdc.com, 2025).<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT, SNEL.</div>
+`},
+{title:"Leçon 2 — Les circuits électriques",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans une maison de Kinshasa, plusieurs lampes sont branchées. En série, si une lampe grille, tout s'éteint. En dérivation, chacune fonctionne indépendamment. Comprendre les circuits est essentiel.</p></div>
+<h3>1. Circuit série</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Définition</strong> : les récepteurs sont branchés l'un après l'autre.</li><li><strong>Intensité</strong> : identique en tout point (I = I1 = I2).</li><li><strong>Tension</strong> : se répartit (U = U1 + U2).</li><li><strong>Résistance équivalente</strong> : Réq = R1 + R2.</li><li><strong>Inconvénient</strong> : si un élément grille, tout s'arrête.</li></ul></div>
+<h3>2. Circuit en dérivation (parallèle)</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Définition</strong> : les récepteurs sont branchés en parallèle.</li><li><strong>Intensité</strong> : se répartit (I = I1 + I2).</li><li><strong>Tension</strong> : identique aux bornes de chaque récepteur (U = U1 = U2).</li><li><strong>Résistance équivalente</strong> : 1/Réq = 1/R1 + 1/R2.</li><li><strong>Avantage</strong> : chaque récepteur est indépendant.</li></ul></div>
+<h3>3. Les circuits mixtes</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Définition</strong> : combinaison de série et de dérivation.</li><li><strong>Méthode</strong> : réduire par étapes en calculant les résistances équivalentes.</li><li><strong>Application</strong> : installations domestiques réelles.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Série</strong> : 2 résistances de 10 Ω → Réq = 20 Ω.</li><li><strong>Parallèle</strong> : 2 résistances de 10 Ω → Réq = 5 Ω.</li><li><strong>Mixte</strong> : (10 Ω + 10 Ω) en série, puis en parallèle avec 20 Ω → 10 Ω.</li><li><strong>Installation domestique</strong> : les prises sont en parallèle, chacune alimentée en 220 V.</li></ul><p><a href="https://www.youtube.com/results?search_query=circuits+électriques+série+dérivation" target="_blank" rel="noopener">🎥 Recherche : les circuits électriques</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>En série, l'intensité est la même et les tensions s'additionnent. En parallèle, la tension est la même et les intensités s'additionnent. En France, les installations domestiques sont en parallèle.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques Électricité Industrielle 4e Technique (2025).</div>
+`},
+{title:"Leçon 3 — Les appareils de mesure",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans un atelier de Lubumbashi, un électricien mesure la tension, l'intensité et la résistance d'un circuit. Il utilise un multimètre. Ces mesures sont essentielles pour diagnostiquer une panne.</p></div>
+<h3>1. Le multimètre</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Multimètre</strong> : appareil qui mesure tension, intensité, résistance.</li><li><strong>Voltmètre</strong> : mesure la tension (V).</li><li><strong>Ampèremètre</strong> : mesure l'intensité (A).</li><li><strong>Ohmmètre</strong> : mesure la résistance (Ω).</li><li><strong>Pince ampèremétrique</strong> : mesure l'intensité sans couper le circuit.</li></ul></div>
+<h3>2. Le branchement</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Voltmètre</strong> : en parallèle (dérivation) avec le récepteur.</li><li><strong>Ampèremètre</strong> : en série dans le circuit.</li><li><strong>Ohmmètre</strong> : sur un circuit hors tension.</li><li><strong>Calibre</strong> : choisir le calibre adapté (AC/DC, valeur).</li><li><strong>Sécurité</strong> : vérifier l'absence de tension avant de mesurer la résistance.</li></ul></div>
+<h3>3. Les autres appareils</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Oscilloscope</strong> : visualise les signaux.</li><li><strong>Wattmètre</strong> : mesure la puissance.</li><li><strong>Compteur d'énergie</strong> : mesure la consommation.</li><li><strong>Testeur de continuité</strong> : vérifie un circuit.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Mesurer une tension</strong> : voltmètre en parallèle, calibre 250 V AC.</li><li><strong>Mesurer une intensité</strong> : ampèremètre en série, calibre 10 A.</li><li><strong>Mesurer une résistance</strong> : ohmmètre, circuit hors tension.</li><li><strong>Diagnostiquer une panne</strong> : vérifier la continuité, la tension, la résistance.</li></ul><p><a href="https://www.youtube.com/results?search_query=appareils+mesure+électrique+multimètre" target="_blank" rel="noopener">🎥 Recherche : les appareils de mesure</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le multimètre regroupe voltmètre, ampèremètre et ohmmètre. Le voltmètre se branche en parallèle, l'ampèremètre en série. L'ohmmètre mesure hors tension. La pince ampèremétrique permet une mesure sans coupure.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques Électricité Industrielle 4e Technique (2025).</div>
+`},
+{title:"Leçon 4 — Les composants électroniques",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans un atelier de Kisangani, un technicien répare une radio. Il identifie les résistances, condensateurs, diodes, transistors. Chaque composant a un rôle précis dans le circuit.</p></div>
+<h3>1. Les composants passifs</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Résistance</strong> : limite le courant. Code couleur : noir (0), brun (1), rouge (2)...</li><li><strong>Condensateur</strong> : stocke l'énergie, en farads (F).</li><li><strong>Bobine (inductance)</strong> : stocke l'énergie magnétique, en henrys (H).</li><li><strong>Transformateur</strong> : modifie la tension alternative.</li></ul></div>
+<h3>2. Les composants actifs</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Diode</strong> : laisse passer le courant dans un seul sens.</li><li><strong>Transistor</strong> : amplifie ou commute.</li><li><strong>Thyristor</strong> : interrupteur électronique.</li><li><strong>Circuit intégré</strong> : regroupe plusieurs composants.</li></ul></div>
+<h3>3. Les composants de puissance</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Contacteur</strong> : commande un circuit de puissance.</li><li><strong>Disjoncteur</strong> : protège contre les surintensités.</li><li><strong>Fusible</strong> : fond en cas de surintensité.</li><li><strong>Relais thermique</strong> : protège les moteurs.</li><li><strong>Sectionneur</strong> : isole un circuit.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Résistance</strong> : code couleur rouge-rouge-brun = 220 Ω ± 5 %.</li><li><strong>Diode</strong> : repérer l'anode (A) et la cathode (K).</li><li><strong>Transistor</strong> : NPN ou PNP, base, collecteur, émetteur.</li><li><strong>Disjoncteur</strong> : calibre selon la section des conducteurs.</li></ul><p><a href="https://www.youtube.com/results?search_query=composants+électroniques+résistance+diode+transistor" target="_blank" rel="noopener">🎥 Recherche : les composants électroniques</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Les composants passifs (résistance, condensateur, bobine, transformateur) et actifs (diode, transistor) constituent les circuits. Les composants de puissance (contacteur, disjoncteur, fusible, relais) protègent et commandent.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques Électricité Industrielle 4e Technique (2025).</div>
+`},
+{title:"Leçon 5 — Les machines électriques",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans une usine de Kinshasa, plusieurs moteurs électriques entraînent des machines. Le technicien doit connaître leur fonctionnement, leur démarrage, leur protection.</p></div>
+<h3>1. Les moteurs électriques</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Moteur à courant continu (DC)</strong> : utilisé en petite puissance.</li><li><strong>Moteur asynchrone (AC)</strong> : le plus répandu en industrie.</li><li><strong>Moteur synchrone</strong> : vitesse constante.</li><li><strong>Moteur monophasé</strong> : pour le domestique.</li><li><strong>Moteur triphasé</strong> : pour l'industrie.</li></ul></div>
+<h3>2. Le démarrage des moteurs</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Démarrage direct</strong> : simple, appel de courant élevé.</li><li><strong>Démarrage étoile-triangle</strong> : réduit le courant de démarrage.</li><li><strong>Démarrage par résistance</strong> : progressif.</li><li><strong>Démarrage par variateur</strong> : progressif et contrôlé.</li></ul></div>
+<h3>3. La protection des moteurs</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Relais thermique</strong> : protège contre les surcharges.</li><li><strong>Disjoncteur moteur</strong> : protège contre les courts-circuits.</li><li><strong>Fusibles</strong> : protection simple.</li><li><strong>Sonde thermique</strong> : mesure la température.</li><li><strong>Contacteur</strong> : commande le moteur.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Moteur triphasé 380 V / 5 kW</strong> : courant nominal ≈ 10 A.</li><li><strong>Démarrage étoile-triangle</strong> : courant divisé par 3.</li><li><strong>Relais thermique</strong> : réglé à 10 A.</li><li><strong>Protection</strong> : disjoncteur magnétothermique 16 A.</li></ul><p><a href="https://www.youtube.com/results?search_query=moteurs+électriques+démarrage+protection" target="_blank" rel="noopener">🎥 Recherche : les machines électriques</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Les moteurs électriques sont DC ou AC, monophasés ou triphasés. Le démarrage peut être direct, étoile-triangle, par résistance ou variateur. La protection utilise relais thermique, disjoncteur, fusibles.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques Électricité Industrielle 4e Technique (2025).</div>
+`},
+{title:"Leçon 6 — Les schémas électriques",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Pour installer une lampe avec interrupteur, un électricien de Kinshasa dessine d'abord un schéma. Le schéma est le plan de l'installation. Sans lui, aucune installation fiable.</p></div>
+<h3>1. Les symboles normalisés</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Ligne</strong> : trait plein (conducteur).</li><li><strong>Interrupteur</strong> : symbole normalisé.</li><li><strong>Prise</strong> : symbole normalisé.</li><li><strong>Lampe</strong> : cercle avec croix.</li><li><strong>Moteur</strong> : cercle avec M.</li><li><strong>Contact</strong> : trait ouvert/fermé.</li><li><strong>Disjoncteur</strong> : symbole avec arc.</li></ul></div>
+<h3>2. Les schémas électriques</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Schéma unifilaire</strong> : une seule ligne pour plusieurs conducteurs.</li><li><strong>Schéma multifilaire</strong> : chaque conducteur représenté.</li><li><strong>Schéma de principe</strong> : fonctionnement logique.</li><li><strong>Schéma de montage</strong> : disposition physique.</li><li><strong>Schéma de câblage</strong> : connexions détaillées.</li></ul></div>
+<h3>3. La lecture d'un schéma</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Repérer</strong> l'alimentation (phase, neutre, terre).</li><li><strong>Identifier</strong> les protections (disjoncteur, fusible).</li><li><strong>Suivre</strong> les circuits (éclairage, prises, moteurs).</li><li><strong>Comprendre</strong> le fonctionnement (interrupteurs, contacteurs).</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p><strong>Schéma d'une lampe avec interrupteur</strong></p><ul><li>Phase → disjoncteur → interrupteur → lampe → neutre.</li><li>Terre → boîtier métallique.</li><li>Interrupteur unipolaire, calibre 10 A.</li><li>Lampe 220 V / 60 W.</li></ul><p><a href="https://www.youtube.com/results?search_query=schémas+électriques+symboles+normalisés" target="_blank" rel="noopener">🎥 Recherche : les schémas électriques</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Les schémas électriques utilisent des symboles normalisés. Unifilaire, multifilaire, de principe, de montage, de câblage. La lecture suit l'alimentation, les protections, les circuits, le fonctionnement.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques Électricité Industrielle 4e Technique (2025).</div>
+`},
+{title:"Leçon 7 — Les installations électriques domestiques",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans une maison de Matadi, un électricien doit installer l'électricité : tableau, disjoncteurs, prises, éclairage. Le respect des normes est essentiel pour la sécurité.</p></div>
+<h3>1. Le tableau électrique</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Tableau</strong> : répartit l'électricité dans la maison.</li><li><strong>Disjoncteur d'abonné</strong> : protège l'installation.</li><li><strong>Disjoncteurs divisionnaires</strong> : un par circuit.</li><li><strong>Interrupteur différentiel</strong> : protège les personnes.</li><li><strong>Parafoudre</strong> : protège contre la foudre.</li></ul></div>
+<h3>2. Les circuits domestiques</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Circuit éclairage</strong> : 1,5 mm² pour 8 points lumineux.</li><li><strong>Circuit prises</strong> : 2,5 mm² pour 6 prises.</li><li><strong>Circuit cuisine</strong> : 6 mm² pour les gros appareils.</li><li><strong>Circuit chauffe-eau</strong> : 4 mm² dédié.</li><li><strong>Circuit lave-linge</strong> : 2,5 mm² dédié.</li></ul></div>
+<h3>3. Les règles de sécurité</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Section des conducteurs</strong> : adaptée au courant.</li><li><strong>Mise à la terre</strong> : obligatoire.</li><li><strong>Protection différentielle</strong> : 30 mA.</li><li><strong>Distances de sécurité</strong> : par rapport à l'eau.</li><li><strong>Normes</strong> : respect des normes en vigueur (NF C 15-100).</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p><strong>Installation d'une maison 3 pièces</strong></p><ul><li>Disjoncteur d'abonné : 40 A.</li><li>Circuits : éclairage (10 A), prises (16 A), cuisine (20 A), chauffe-eau (20 A).</li><li>Différentiel 30 mA.</li><li>Conducteurs : 1,5 mm² pour l'éclairage, 2,5 mm² pour les prises.</li><li>Mise à la terre : piquet + conducteur vert/jaune.</li></ul><p><a href="https://www.youtube.com/results?search_query=installation+électrique+domestique+tableau+disjoncteur" target="_blank" rel="noopener">🎥 Recherche : les installations domestiques</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Une installation domestique comprend un tableau, des disjoncteurs, des interrupteurs différentiels et des circuits dédiés (éclairage, prises, cuisine, chauffe-eau). La mise à la terre et la protection différentielle sont obligatoires.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques Électricité Industrielle 4e Technique (2025).</div>
+`},
+{title:"Leçon 8 — La sécurité électrique",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Un ouvrier de Kinshasa est électrocuté en travaillant sur une ligne sans couper le courant. Il est sauvé par ses collègues. La sécurité électrique sauve des vies. Voici les règles à respecter.</p></div>
+<h3>1. Les dangers de l'électricité</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Électrisation</strong> : passage du courant dans le corps.</li><li><strong>Électrocution</strong> : électrisation mortelle.</li><li><strong>Brûlures</strong> : internes et externes.</li><li><strong>Incendie</strong> : court-circuit, surcharge.</li><li><strong>Explosion</strong> : atmosphère explosive + étincelle.</li></ul></div>
+<h3>2. Les règles de sécurité</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Consignation</strong> : couper, vérifier l'absence de tension, baliser.</li><li><strong>Équipements de protection individuelle</strong> : gants isolants, casque, lunettes, chaussures de sécurité, vêtements isolants.</li><li><strong>Outils isolés</strong> : 1 000 V.</li><li><strong>Ne jamais travailler seul</strong> : en binôme.</li><li><strong>Vérification d'absence de tension (VAT)</strong> : obligatoire.</li><li><strong>Balisage</strong> : signaler la zone de travail.</li><li><strong>Habilitation</strong> : formation et autorisation.</li></ul></div>
+<h3>3. Les premiers secours</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>1.</strong> Couper le courant ou éloigner la victime avec un objet isolant.</li><li><strong>2.</strong> Appeler les secours.</li><li><strong>3.</strong> Vérifier la conscience, la respiration.</li><li><strong>4.</strong> Pratiquer la RCP si nécessaire.</li><li><strong>5.</strong> Ne jamais toucher la victime avant la coupure.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Avant toute intervention</strong> : consignation.</li><li><strong>VAT</strong> : vérifier l'absence de tension.</li><li><strong>EPI</strong> : gants isolants, casque, chaussures.</li><li><strong>Binôme</strong> : ne jamais travailler seul.</li><li><strong>Après intervention</strong> : retirer le balisage, remettre sous tension.</li></ul><p><a href="https://www.youtube.com/results?search_query=sécurité+électrique+consignation+EPI+premiers+secours" target="_blank" rel="noopener">🎥 Recherche : la sécurité électrique</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Les dangers de l'électricité sont l'électrisation, l'électrocution, les brûlures, l'incendie. Les règles : consignation, EPI, outils isolés, binôme, VAT, balisage, habilitation. Les premiers secours : couper, appeler, RCP.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques Électricité Industrielle 4e Technique (2025) ; INRS.</div>
+`},
+{title:"Évaluation finale — Items EXETAT",content:`
+<p style="margin-bottom:18px;color:#b34a00;font-size:0.95rem;">Évaluation type EXETAT.</p>
+<div class="bloc theorie"><div class="bloc-label">Consignes</div><ul><li>15 questions à choix multiples.</li><li>Durée recommandée : 15 minutes.</li></ul></div>
+<div class="quiz-container" id="quizContainer"><div id="quizQuestions"></div><button id="submitQuiz" class="quiz-btn-submit">Valider mes réponses</button><div id="quizResult" class="quiz-result"></div></div>
+`}];
+
+let currentSlide=0,lastSearchTerm="",searchResults=[],currentResultIdx=-1;
+const contentDiv=document.getElementById('content'),prevBtn=document.getElementById('prevBtn'),nextBtn=document.getElementById('nextBtn'),slideCounterSpan=document.getElementById('slideCounter'),progressFill=document.getElementById('progressFill'),counterSpan=document.getElementById('counter'),searchInput=document.getElementById('searchInput'),searchBtn=document.getElementById('searchBtn'),searchNav=document.getElementById('searchNav'),prevResultBtn=document.getElementById('prevResultBtn'),nextResultBtn=document.getElementById('nextResultBtn'),resultCounterSpan=document.getElementById('resultCounter');
+function getTextFromHtml(html){const d=document.createElement('div');d.innerHTML=html;return d.textContent||'';}
+function searchSlides(term){if(!term.trim())return[];const l=term.toLowerCase();const r=[];slides.forEach((s,i)=>{if(s.title.toLowerCase().includes(l)||getTextFromHtml(s.content).toLowerCase().includes(l))r.push(i);});return r;}
+function highlightInCurrentSlide(term){if(!term)return;const sc=document.querySelector('.slide-content');if(!sc)return;const regex=new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`,'gi');const walker=document.createTreeWalker(sc,NodeFilter.SHOW_TEXT,null,false);const nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);for(let n of nodes){if(n.nodeValue&&regex.test(n.nodeValue)){const sp=document.createElement('span');sp.innerHTML=n.nodeValue.replace(regex,'<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');n.parentNode.replaceChild(sp,n);}}}
+function renderQuiz(){
+const questions=[
+{text:"Quelle est l'unité de la tension ?",options:["Le volt","L'ampère","L'ohm"],correct:0},
+{text:"Quelle est l'unité du courant ?",options:["L'ampère","Le volt","Le watt"],correct:0},
+{text:"Que dit la loi d'Ohm ?",options:["U = R × I","U = R / I","U = I / R"],correct:0},
+{text:"Quelle est la fréquence du réseau en RDC ?",options:["50 Hz","60 Hz","100 Hz"],correct:0},
+{text:"Dans un circuit série, l'intensité est :",options:["La même partout","Différente partout","Nulle"],correct:0},
+{text:"Dans un circuit en parallèle, la tension est :",options:["La même aux bornes","Différente","Nulle"],correct:0},
+{text:"Comment branche-t-on un voltmètre ?",options:["En parallèle","En série","En court-circuit"],correct:0},
+{text:"Comment branche-t-on un ampèremètre ?",options:["En série","En parallèle","En court-circuit"],correct:0},
+{text:"Quel composant laisse passer le courant dans un seul sens ?",options:["La diode","La résistance","Le condensateur"],correct:0},
+{text:"Quel appareil protège contre les surcharges ?",options:["Le relais thermique","Le fusible","La bobine"],correct:0},
+{text:"Quel moteur est le plus utilisé en industrie ?",options:["Le moteur asynchrone","Le moteur synchrone","Le moteur DC"],correct:0},
+{text:"Quel démarrage réduit le courant de démarrage ?",options:["Étoile-triangle","Direct","Manuel"],correct:0},
+{text:"Quel symbole représente une lampe sur un schéma ?",options:["Un cercle avec croix","Un trait","Un carré"],correct:0},
+{text:"Quelle section pour un circuit éclairage ?",options:["1,5 mm²","2,5 mm²","6 mm²"],correct:0},
+{text:"Quelle est la première règle de sécurité électrique ?",options:["Consigner le circuit","Travailler seul","Travailler sans protection"],correct:0}];
+let html='';questions.forEach((q,i)=>{html+='<div class="quiz-question"><p>'+(i+1)+'. '+q.text+'</p>';q.options.forEach((o,k)=>{html+='<label><input type="radio" name="q'+i+'" value="'+k+'"> '+o+'</label>';});html+='</div>';});
+document.getElementById('quizQuestions').innerHTML=html;
+document.getElementById('submitQuiz').onclick=()=>{let score=0;questions.forEach((q,i)=>{const s=document.querySelector('input[name="q'+i+'"]:checked');if(s&&parseInt(s.value)===q.correct)score++;});const pct=Math.round(score/questions.length*100);document.getElementById('quizResult').innerHTML='<div style="background:#fbdcb8;padding:16px;border-radius:10px;margin-top:14px;"><strong>Score : '+score+'/'+questions.length+' ('+pct+'%)</strong><br>'+(score===questions.length?'Excellent.':score>=10?'Bien.':'Relis les leçons.')+'</div>';};
+}
+function renderSlide(index,keepHighlight=true){const isQuiz=(index===slides.length-1);contentDiv.innerHTML='<div class="slide active"><h2 class="slide-title">'+slides[index].title+'</h2><div class="slide-content">'+slides[index].content+'</div></div>';if(isQuiz)renderQuiz();slideCounterSpan.textContent=(index+1)+'/'+slides.length;progressFill.style.width=((index+1)/slides.length*100)+'%';prevBtn.disabled=(index===0);nextBtn.disabled=(index===slides.length-1);counterSpan.textContent='Leçon '+(index+1)+' / '+slides.length;contentDiv.scrollTop=0;if(keepHighlight&&lastSearchTerm&&!isQuiz)highlightInCurrentSlide(lastSearchTerm);}
+function updateResultDisplay(){if(searchResults.length===0){searchNav.style.display='none';return;}searchNav.style.display='flex';resultCounterSpan.textContent=(currentResultIdx+1)+'/'+searchResults.length;}
+function goToResult(idx){if(idx<0||idx>=searchResults.length)return;currentResultIdx=idx;currentSlide=searchResults[currentResultIdx];renderSlide(currentSlide,true);updateResultDisplay();}
+function performSearch(){const term=searchInput.value.trim();if(!term)return;lastSearchTerm=term;searchResults=searchSlides(term);if(searchResults.length===0){searchNav.style.display='none';return;}currentResultIdx=0;goToResult(0);}
+function nextResult(){if(searchResults.length)goToResult((currentResultIdx+1)%searchResults.length);}
+function prevResult(){if(searchResults.length)goToResult((currentResultIdx-1+searchResults.length)%searchResults.length);}
+function nextSlide(){if(currentSlide<slides.length-1){currentSlide++;renderSlide(currentSlide,true);}}
+function prevSlide(){if(currentSlide>0){currentSlide--;renderSlide(currentSlide,true);}}
+prevBtn.onclick=prevSlide;nextBtn.onclick=nextSlide;searchBtn.onclick=performSearch;prevResultBtn.onclick=prevResult;nextResultBtn.onclick=nextResult;
+searchInput.addEventListener('keydown',e=>{if(e.key==='Enter')performSearch();});
+renderSlide(0,false);
+</script></body></html>
