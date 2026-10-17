@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Documentation Commerciale — 4e Commerciale (EXETAT)</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body {
+    font-family:'Segoe UI',system-ui,sans-serif;
+    background:linear-gradient(160deg,#0d2b4f 0%,#1565c0 50%,#07172e 100%);
+    display:flex; justify-content:center; align-items:center;
+    padding:8px;
+}
+.container {
+    width:100%; max-width:1400px; background:#fefdf8;
+    border-radius:20px; overflow:hidden;
+    display:flex; flex-direction:column;
+    height:100%; max-height:100vh;
+    box-shadow:0 20px 60px rgba(0,0,0,0.4);
+}
+.progress-bar { height:4px; background:#cfdff5; flex-shrink:0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,#5b8fd0,#12437a); width:0%; transition:width 0.3s; }
+.header { padding:10px 16px; background:#e8f0fb; border-bottom:1px solid #a9c3e8; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+.header h1 { color:#12437a; font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box { display:flex; background:white; border-radius:20px; padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.search-box input { border:none; padding:6px 10px; border-radius:20px; outline:none; width:130px; font-size:0.8rem; }
+.search-box button { background:none; border:none; cursor:pointer; padding:4px 8px; font-size:0.85rem; color:#1565c0; }
+.badge { background:#5b8fd0; color:white; padding:4px 10px; border-radius:20px; font-weight:bold; font-size:0.75rem; }
+.search-nav { display:none; gap:4px; background:#cfdff5; padding:2px 8px; border-radius:20px; align-items:center; font-size:0.75rem; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:0.9rem; color:#12437a; padding:2px 4px; }
+.content { padding:28px 32px; flex:1; overflow-y:auto; background:#fff; scroll-behavior:smooth; line-height:1.85; }
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.slide-title { color:#0d2b4f; font-size:1.5rem; font-weight:700; padding-bottom:12px; margin-bottom:20px; border-bottom:2px solid #5b8fd0; }
+.slide-content { color:#0a1c35; font-size:1rem; }
+.bloc { padding:18px 22px; border-radius:12px; margin:22px 0; line-height:1.85; }
+.bloc-label { font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; opacity:0.7; }
+.bloc p, .bloc li { font-size:0.98rem; }
+.bloc h3 { font-size:1.1rem; margin:20px 0 10px; font-weight:600; }
+.bloc h3:first-child { margin-top:0; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:#e8f0fb; border-left:4px solid #5b8fd0; }
+.theorie .bloc-label { color:#12437a; }
+.pratique { background:#e8f5e9; border-left:4px solid #43a047; }
+.pratique .bloc-label { color:#1b5e20; }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:#0d2b4f; }
+.quiz-container { padding:22px; background:#e8f0fb; border-radius:16px; }
+.quiz-question { background:white; border-radius:10px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.quiz-question p { font-weight:600; margin-bottom:10px; color:#0d2b4f; }
+.quiz-question label { display:block; padding:8px 10px; margin:4px 0; border-radius:6px; cursor:pointer; transition:background 0.2s; }
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit { background:#2a67b0; color:white; border:none; padding:12px 24px; border-radius:30px; font-size:1rem; cursor:pointer; font-weight:600; margin-top:14px; }
+.quiz-result { margin-top:16px; font-weight:600; }
+.sources { background:#f5f5f5; padding:12px 16px; border-radius:10px; margin-top:26px; font-size:0.82rem; color:#666; border-left:3px solid #999; line-height:1.6; }
+.sources strong { color:#333; }
+.controls { padding:8px 16px; background:#fafafa; border-top:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0; }
+.nav-btn { background:white; color:#12437a; border:1px solid #ccc; padding:8px 14px; border-radius:8px; font-size:0.82rem; cursor:pointer; font-weight:500; }
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:#dde8f7; }
+.content::-webkit-scrollbar-thumb { background:#5b8fd0; border-radius:3px; }
+@media (max-width:600px) { body { padding:0; } .container { border-radius:0; max-height:100vh; } .content { padding:20px 18px; } .slide-title { font-size:1.25rem; } .search-box input { width:90px; } .header h1 { font-size:0.85rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="header">
+        <h1>Documentation Commerciale · 4e Commerciale</h1>
+        <div class="header-right">
+            <div class="search-box"><input type="text" id="searchInput" placeholder="Rechercher"><button id="searchBtn">⌕</button></div>
+            <div class="search-nav" id="searchNav"><button id="prevResultBtn">‹</button><span id="resultCounter">0/0</span><button id="nextResultBtn">›</button></div>
+            <span class="badge" id="slideCounter">1/11</span>
+        </div>
+    </div>
+    <div class="content" id="content"></div>
+    <div class="controls">
+        <button class="nav-btn" id="prevBtn">← Précédent</button>
+        <span class="counter" id="counter">Leçon 1 / 11</span>
+        <button class="nav-btn" id="nextBtn">Suivant →</button>
+    </div>
+</div>
+<script>
+const slides = [
+{
+    title: "Leçon 1 — Introduction à la documentation commerciale",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans une entreprise de Kinshasa, le service commercial reçoit une commande d'un client de Lubumbashi. Du bon de commande jusqu'au paiement, en passant par la facture, le bon de livraison et la lettre de voiture, une dizaine de documents sont échangés. Sans leur maîtrise, les opérations commerciales deviennent chaotiques. La documentation commerciale est la colonne vertébrale de toute transaction.</p></div>
+<h3>1. Définition et rôle</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Documentation commerciale</strong> : ensemble des documents écrits qui accompagnent et matérialisent les opérations commerciales d'une entreprise.</li><li><strong>Rôle juridique</strong> : preuve des transactions, base des litiges, obligations fiscales et comptables.</li><li><strong>Rôle économique</strong> : traçabilité des biens et services, gestion des flux, information des partenaires.</li><li><strong>Rôle administratif</strong> : classement, archivage, contrôle interne.</li></ul></div>
+<h3>2. Les grandes familles de documents</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Documents relatifs à la commande</strong> : bon de commande, accusé de réception, lettre de commande.</li><li><strong>Documents relatifs à la livraison</strong> : bon de livraison, bordereau d'expédition, lettre de voiture.</li><li><strong>Documents relatifs à la facturation</strong> : facture, note de débit, note de crédit, avoir.</li><li><strong>Documents relatifs au paiement</strong> : lettre de change, billet à ordre, chèque, reçu.</li><li><strong>Documents relatifs au transport</strong> : lettre de voiture, connaissement, LTA.</li><li><strong>Documents douaniers</strong> : déclaration en détail, certificat d'origine.</li></ul></div>
+<h3>3. Le circuit commercial type</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>1.</strong> Le client passe une <strong>commande</strong> (bon de commande).</li><li><strong>2.</strong> Le fournisseur <strong>confirme</strong> (accusé de réception).</li><li><strong>3.</strong> Il prépare la <strong>livraison</strong> (bon de livraison).</li><li><strong>4.</strong> Le transporteur achemine la marchandise (lettre de voiture, connaissement).</li><li><strong>5.</strong> Le fournisseur émet la <strong>facture</strong>.</li><li><strong>6.</strong> Le client paie (chèque, virement, effet).</li><li><strong>7.</strong> Le fournisseur délivre un <strong>reçu</strong> ou une <strong>quittance</strong>.</li></ul></div>
+<h3>4. Applications en RDC</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Commerce de Kinshasa</strong> : un grossiste en produits alimentaires utilise le bon de commande, le bon de livraison et la facture pour approvisionner les détaillants.</li><li><strong>Import-export à Matadi</strong> : les documents douaniers (déclaration en détail, certificat d'origine) accompagnent les marchandises à l'entrée et à la sortie du territoire.</li><li><strong>Transport fluvial Kinshasa-Kisangani</strong> : la lettre de voiture fluviale et le connaissement fluvial encadrent les expéditions.</li></ul><p><a href="https://www.youtube.com/results?search_query=documentation+commerciale+documents+circuit+commercial" target="_blank" rel="noopener">🎥 Recherche : la documentation commerciale (chaînes de cours de gestion)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La documentation commerciale regroupe l'ensemble des documents qui matérialisent les opérations commerciales. Elle joue un rôle juridique, économique et administratif. Le circuit type comprend : commande, confirmation, livraison, transport, facturation, paiement, reçu.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques officielles — Documentation Commerciale, 4e CG (manuels-scolaires-rdc.com, 2025) ; Curriculum de Commerciale et Gestion (MEPST/DIPROMAD, 2023).<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT, LTA.</div>
+    `
+},
+{
+    title: "Leçon 2 — Les documents relatifs à la commande",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>À Kinshasa, un client appelle une entreprise pour commander 50 cartons de biscuits. Avant la livraison, tout doit être formalisé par écrit : c'est le bon de commande. Sans ce document, aucune réclamation n'est possible. Il est la preuve de la volonté d'achat.</p></div>
+<h3>1. Le bon de commande</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Définition</strong> : document par lequel le client exprime sa volonté d'acheter des biens ou services dans des conditions déterminées.</li><li><strong>Mentions obligatoires</strong> : date, coordonnées du client et du fournisseur, désignation des produits, quantités, prix, délai de livraison, conditions de paiement.</li><li><strong>Valeur juridique</strong> : preuve de la commande, il engage les deux parties.</li><li><strong>Numérotation</strong> : chaque bon de commande porte un numéro unique pour la traçabilité.</li></ul></div>
+<h3>2. La lettre de commande</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Définition</strong> : version épistolaire du bon de commande, utilisée pour des commandes complexes ou personnalisées.</li><li><strong>Structure</strong> : en-tête, objet, référence, corps (désignation, quantité, prix), formule de politesse, signature.</li><li><strong>Avantage</strong> : permet d'expliquer les besoins spécifiques et les conditions particulières.</li></ul></div>
+<h3>3. L'accusé de réception de la commande</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Définition</strong> : document par lequel le fournisseur confirme au client la réception et l'acceptation de la commande.</li><li><strong>Mentions</strong> : numéro du bon de commande, date de réception, quantités confirmées, prix, délai de livraison.</li><li><strong>Utilité</strong> : informe le client que sa commande est prise en compte, permet d'éviter les malentendus.</li><li><strong>Variante</strong> : avis de réception, accusé de commande.</li></ul></div>
+<h3>4. Exemples concrets</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Bon de commande n°2025-0125</strong> du 15 mars 2025. Client : Sarl Kanyinda, 123 avenue de la Paix, Kinshasa. Fournisseur : Sucrière de Kwilu-Ngongo. Objet : 50 cartons de biscuits × 25 000 FC = 1 250 000 FC. Livraison sous 7 jours. Paiement à 30 jours.</li><li><strong>Accusé de réception</strong> du 16 mars 2025 : « Nous confirmons votre commande n°2025-0125 pour 50 cartons de biscuits. Livraison prévue le 22 mars 2025. »</li><li><strong>Lettre de commande</strong> : utilisée par un particulier qui commande un meuble sur mesure à un menuisier de Lubumbashi, avec des dimensions précises et un délai de fabrication.</li></ul><p><a href="https://www.youtube.com/results?search_query=bon+de+commande+accusé+réception+lettre+commande" target="_blank" rel="noopener">🎥 Recherche : les documents de commande (chaînes de cours de gestion)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le bon de commande est le document par lequel le client exprime sa volonté d'acheter. La lettre de commande est sa forme épistolaire. L'accusé de réception confirme la commande. Tous portent des mentions obligatoires pour éviter les litiges.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques officielles — Documentation Commerciale, 4e CG (manuels-scolaires-rdc.com, 2025).</div>
+    `
+},
+{
+    title: "Leçon 3 — Les documents relatifs à la livraison",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Une entreprise de Kinshasa expédie 200 sacs de farine à un client de Matadi. Avant de partir, le magasinier prépare un bon de livraison en trois exemplaires : l'un pour le client, l'un pour le transporteur, l'un pour la comptabilité. Sans ce document, impossible de prouver que la marchandise a quitté le magasin.</p></div>
+<h3>1. Le bon de livraison</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Définition</strong> : document qui accompagne la marchandise livrée et atteste la conformité de la livraison avec la commande.</li><li><strong>Mentions obligatoires</strong> : numéro, date, référence de la commande, désignation des produits, quantités livrées, signatures (livreur, réceptionnaire).</li><li><strong>Nombre d'exemplaires</strong> : généralement en 3 ou 4 exemplaires (client, fournisseur, comptabilité, transporteur).</li><li><strong>Valeur juridique</strong> : preuve de la livraison, base de la facturation.</li></ul></div>
+<h3>2. Le bordereau d'expédition</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Définition</strong> : document interne qui liste les marchandises expédiées.</li><li><strong>Utilité</strong> : contrôle interne des sorties de stock, préparation de la facturation.</li><li><strong>Mentions</strong> : numéro, date, destination, liste des articles, quantités, poids, valeur.</li></ul></div>
+<h3>3. La lettre de voiture</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Définition</strong> : document de transport qui matérialise le contrat entre l'expéditeur et le transporteur.</li><li><strong>Mentions</strong> : coordonnées de l'expéditeur, du destinataire, du transporteur, lieu de chargement, lieu de déchargement, nature de la marchandise, poids, frais de transport.</li><li><strong>Fonctions</strong> : preuve du contrat de transport, document d'accompagnement, justificatif comptable.</li><li><strong>Transport routier</strong> : lettre de voiture routière.</li><li><strong>Transport fluvial</strong> : lettre de voiture fluviale (utilisée sur le fleuve Congo).</li></ul></div>
+<h3>4. Le connaissement maritime</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Définition</strong> : document de transport maritime émis par le transporteur (compagnie maritime).</li><li><strong>Mentions</strong> : coordonnées des parties, navire, port de chargement, port de destination, description de la marchandise, poids, nombre de colis, fret.</li><li><strong>Fonctions</strong> : reçu de la marchandise, contrat de transport, titre de propriété.</li><li><strong>Connaissement au port de Matadi</strong> : document clé pour le dédouanement des marchandises importées.</li><li><strong>LTA (Lettre de Transport Aérien)</strong> : document équivalent pour le transport aérien (aéroport de Ndjili).</li></ul><p><a href="https://www.youtube.com/results?search_query=bon+livraison+lettre+voiture+connaissement+maritime" target="_blank" rel="noopener">🎥 Recherche : les documents de livraison (chaînes de cours de gestion)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le bon de livraison atteste la livraison au client. Le bordereau d'expédition liste les marchandises sorties du magasin. La lettre de voiture matérialise le contrat de transport. Le connaissement maritime est le titre de propriété de la marchandise sur mer. La LTA est son équivalent aérien.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques officielles — Documentation Commerciale, 4e CG (manuels-scolaires-rdc.com, 2025) ; Curriculum de Commerciale et Gestion (MEPST/DIPROMAD, 2023).</div>
+    `
+},
+{
+    title: "Leçon 4 — La facture et les documents de facturation",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Après avoir livré 50 cartons de biscuits au client Kanyinda, l'entreprise de Kinshasa émet une facture. Celle-ci doit comporter la TVA, la remise commerciale, l'escompte de caisse et le net à payer. Une facture mal rédigée entraîne des litiges et des redressements fiscaux. Sa maîtrise est essentielle.</p></div>
+<h3>1. La facture : définition et mentions obligatoires</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Facture</strong> : document commercial qui récapitule les biens vendus ou les services rendus, avec leur prix, et réclame le paiement.</li><li><strong>Mentions obligatoires</strong> : nom et coordonnées du vendeur et de l'acheteur, NIF, date, numéro, désignation, quantités, prix unitaires, taux de TVA, total HT, TVA, TTC.</li><li><strong>Valeur juridique</strong> : preuve de la vente, base de la comptabilité, pièce justificative.</li><li><strong>Numérotation continue</strong> : obligatoire, sans trou ni doublon.</li><li><strong>Facture normalisée</strong> : émise par les entreprises assujetties à la TVA via une machine certifiée DGI.</li></ul></div>
+<h3>2. Les réductions commerciales et financières</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Remise</strong> : réduction accordée sur le prix de vente (client fidèle, grosse quantité).</li><li><strong>Rabais</strong> : réduction pour un défaut de qualité ou un retard.</li><li><strong>Ristourne</strong> : réduction périodique calculée sur le chiffre d'affaires annuel.</li><li><strong>Escompte</strong> : réduction accordée pour paiement comptant.</li><li><strong>Port</strong> : frais de transport facturés au client (port dû, port payé, port forfaitaire).</li></ul></div>
+<h3>3. Le calcul sur facture</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>1.</strong> Calculer le montant brut (quantité × prix unitaire).</li><li><strong>2.</strong> Déduire la remise, le rabais, la ristourne (réductions commerciales).</li><li><strong>3.</strong> Obtenir le net commercial.</li><li><strong>4.</strong> Ajouter les frais de port, emballages, etc.</li><li><strong>5.</strong> Déduire l'escompte de caisse (réduction financière).</li><li><strong>6.</strong> Obtenir le net financier.</li><li><strong>7.</strong> Ajouter la TVA (16 %).</li><li><strong>8.</strong> Obtenir le net à payer TTC.</li></ul></div>
+<h3>4. Exemple de calcul complet</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p><strong>Facture n°2025-045</strong></p><ul><li>50 cartons de biscuits × 25 000 FC = 1 250 000 FC (brut).</li><li>Remise 5 % = 62 500 FC → net commercial = 1 187 500 FC.</li><li>Escompte 2 % = 23 750 FC → net financier = 1 163 750 FC.</li><li>TVA 16 % = 186 200 FC.</li><li><strong>Net à payer TTC</strong> = 1 349 950 FC.</li></ul><p><a href="https://www.youtube.com/results?search_query=facture+mentions+obligatoires+calcul+remise+escompte+TVA" target="_blank" rel="noopener">🎥 Recherche : la facture et son calcul (chaînes de cours de gestion)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La facture récapitule les biens vendus et réclame le paiement. Elle porte des mentions obligatoires (NIF, TVA, numérotation). Les réductions commerciales (remise, rabais, ristourne) et financières (escompte) se déduisent successivement. Le calcul aboutit au net à payer TTC.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques officielles — Documentation Commerciale, 4e CG (manuels-scolaires-rdc.com, 2025) ; DGI — Facture normalisée (dgi.gouv.cd).</div>
+    `
+},
+{
+    title: "Leçon 5 — Les notes de débit et de crédit (avoirs)",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Un client de Goma reçoit 50 cartons de biscuits, mais 5 sont avariés. Il réclame un avoir. Le fournisseur émet une note de crédit pour corriger la facture initiale. Ces documents correctifs sont essentiels pour rectifier les erreurs et ajuster les comptes.</p></div>
+<h3>1. La note de débit</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Définition</strong> : document par lequel le fournisseur augmente le montant dû par le client (ou le client augmente la somme due au fournisseur).</li><li><strong>Causes</strong> : oubli de facturation, erreur de prix, frais supplémentaires (port, emballage), intérêts de retard.</li><li><strong>Effet comptable</strong> : augmentation de la créance du fournisseur ou de la dette du client.</li><li><strong>Mentions</strong> : référence de la facture initiale, motif, montant, TVA.</li></ul></div>
+<h3>2. La note de crédit (avoir)</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Définition</strong> : document par lequel le fournisseur réduit le montant dû par le client (ou le client réduit la somme due au fournisseur).</li><li><strong>Causes</strong> : retour de marchandises, erreur de facturation, remise oubliée, marchandises non conformes.</li><li><strong>Effet comptable</strong> : réduction de la créance du fournisseur ou de la dette du client.</li><li><strong>Forme</strong> : souvent de couleur rouge pour la distinguer visuellement.</li><li><strong>Terme synonyme</strong> : avoir.</li></ul></div>
+<h3>3. La procédure de retour de marchandises</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>1.</strong> Le client constate le défaut ou la non-conformité.</li><li><strong>2.</strong> Il contacte le fournisseur et retourne les marchandises (bon de retour).</li><li><strong>3.</strong> Le fournisseur émet une note de crédit (avoir).</li><li><strong>4.</strong> La facture initiale est corrigée ou compensée.</li><li><strong>5.</strong> Le client peut obtenir un remboursement ou un avoir sur ses prochaines commandes.</li></ul></div>
+<h3>4. Exemple concret</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p><strong>Facture initiale n°2025-045</strong> : 50 cartons de biscuits, 1 349 950 FC TTC.</p><p><strong>Note de crédit n°2025-046</strong> : retour de 5 cartons avariés.</p><ul><li>5 cartons × 25 000 FC = 125 000 FC.</li><li>Remise 5 % = 6 250 FC → net commercial = 118 750 FC.</li><li>TVA 16 % = 19 000 FC.</li><li><strong>Avoir TTC</strong> = 137 750 FC.</li><li><strong>Nouveau montant dû</strong> = 1 349 950 − 137 750 = 1 212 200 FC.</li></ul><p><a href="https://www.youtube.com/results?search_query=note+débit+note+crédit+avoir+facture" target="_blank" rel="noopener">🎥 Recherche : les notes de débit et de crédit (chaînes de cours de gestion)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La note de débit augmente le montant dû par le client. La note de crédit (avoir) le diminue. Elles corrigent les erreurs, les retours de marchandises ou les oublis. Le calcul de l'avoir suit la même logique que celui de la facture (remise, TVA).</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques officielles — Documentation Commerciale, 4e CG (manuels-scolaires-rdc.com, 2025).</div>
+    `
+},
+{
+    title: "Leçon 6 — Les effets de commerce",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Un fournisseur de Kinshasa vend à crédit 90 jours à un client de Lubumbashi. Pour sécuriser le paiement, il exige une lettre de change. Le client l'accepte et s'engage à payer à échéance. Les effets de commerce sont des titres négociables qui garantissent les transactions à crédit.</p></div>
+<h3>1. La lettre de change (traite)</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Définition</strong> : écrit par lequel le <strong>tireur</strong> (créancier) donne ordre au <strong>tiré</strong> (débiteur) de payer une somme à une échéance déterminée au <strong>bénéficiaire</strong>.</li><li><strong>Trois parties</strong> : tireur (celui qui émet), tiré (celui qui doit payer), bénéficiaire (celui qui reçoit).</li><li><strong>Mentions obligatoires</strong> : date, lieu, somme, échéance, noms des parties, signature du tireur.</li><li><strong>Acceptation</strong> : le tiré signe la traite, s'engageant à payer à échéance.</li><li><strong>Endossement</strong> : le bénéficiaire peut transférer la traite à un tiers en la signant au dos.</li></ul></div>
+<h3>2. Le billet à ordre</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Définition</strong> : écrit par lequel le <strong>souscripteur</strong> (débiteur) s'engage à payer une somme au <strong>bénéficiaire</strong> (créancier) à une échéance déterminée.</li><li><strong>Deux parties seulement</strong> : souscripteur et bénéficiaire.</li><li><strong>Différence avec la traite</strong> : dans la traite, c'est le créancier qui émet ; dans le billet à ordre, c'est le débiteur.</li><li><strong>Usage</strong> : très utilisé dans le commerce de gros.</li></ul></div>
+<h3>3. Le chèque</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Définition</strong> : ordre de paiement donné par le <strong>tireur</strong> à sa banque de payer une somme au <strong>bénéficiaire</strong>.</li><li><strong>Mentions</strong> : numéro, date, lieu, montant en chiffres et en lettres, nom du bénéficiaire, signature.</li><li><strong>Types</strong> : chèque barré (non encaissable en espèces), chèque visé (garanti par la banque), chèque certifié.</li><li><strong>Délai de validité</strong> : 1 an à compter de la date d'émission (OHADA).</li><li><strong>Sanctions</strong> : chèque sans provision, opposition abusive, falsification.</li></ul></div>
+<h3>4. Les autres titres de paiement</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Billet à ordre à ordre</strong> : engagement du débiteur.</li><li><strong>Warrant</strong> : titre de gage sur des marchandises déposées dans un magasin général.</li><li><strong>Virement bancaire</strong> : ordre donné à la banque de transférer des fonds d'un compte à un autre.</li><li><strong>Carte bancaire</strong> : moyen de paiement électronique.</li><li><strong>Mobile Money</strong> : M-Pesa, Orange Money, Airtel Money, très utilisés en RDC pour les paiements de proximité.</li></ul><p><a href="https://www.youtube.com/results?search_query=lettre+change+billet+ordre+chèque+effets+commerce" target="_blank" rel="noopener">🎥 Recherche : les effets de commerce (chaînes de cours de gestion)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Les effets de commerce sont des titres négociables qui garantissent les transactions à crédit. La lettre de change implique trois parties (tireur, tiré, bénéficiaire). Le billet à ordre n'en implique que deux. Le chèque est un ordre de paiement donné à la banque. Les moyens modernes (Mobile Money) se développent en RDC.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques officielles — Documentation Commerciale, 4e CG (manuels-scolaires-rdc.com, 2025) ; OHADA — Acte uniforme sur les instruments de paiement.</div>
+    `
+},
+{
+    title: "Leçon 7 — Les documents douaniers et le commerce international",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Au port de Matadi, un importateur doit dédouaner un conteneur de marchandises en provenance de Chine. Il prépare plusieurs documents : déclaration en détail, certificat d'origine, facture commerciale, liste de colisage, connaissement maritime. Sans ces documents, la marchandise reste bloquée. Le commerce international exige une documentation rigoureuse.</p></div>
+<h3>1. Les documents douaniers essentiels</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Déclaration en détail</strong> : document principal déposé auprès de la DGDA pour le dédouanement.</li><li><strong>Facture commerciale</strong> : émise par le vendeur, indique la valeur de la marchandise, la devise, les Incoterms.</li><li><strong>Liste de colisage (packing list)</strong> : détail des colis, poids, dimensions.</li><li><strong>Certificat d'origine</strong> : atteste le pays de fabrication (délivré par la FEC ou la chambre de commerce).</li><li><strong>Connaissement maritime (B/L)</strong> : titre de propriété de la marchandise.</li><li><strong>Certificat phytosanitaire</strong> : pour les produits agricoles.</li><li><strong>Certificat sanitaire</strong> : pour les produits alimentaires et pharmaceutiques.</li></ul></div>
+<h3>2. Les Incoterms</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Définition</strong> : International Commercial Terms, règles internationales qui définissent les obligations des acheteurs et vendeurs dans le commerce international.</li><li><strong>EXW</strong> (Ex Works) : marchandise disponible à l'usine du vendeur.</li><li><strong>FOB</strong> (Free On Board) : le vendeur livre la marchandise à bord du navire.</li><li><strong>CIF</strong> (Cost, Insurance, Freight) : le vendeur paie le coût, l'assurance et le fret jusqu'au port de destination.</li><li><strong>DDP</strong> (Delivered Duty Paid) : le vendeur livre la marchandise dédouanée à l'arrivée.</li><li><strong>En RDC</strong> : les importations de Matadi utilisent souvent les Incoterms CIF ou FOB.</li></ul></div>
+<h3>3. Les documents bancaires internationaux</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Crédit documentaire (L/C)</strong> : engagement de la banque de payer à condition que les documents soient conformes.</li><li><strong>Remise documentaire</strong> : la banque remet les documents au paiement ou à l'acceptation.</li><li><strong>Avantage</strong> : sécurise les transactions internationales.</li><li><strong>Inconvénient</strong> : formalisme lourd, coûteux.</li></ul></div>
+<h3>4. Exemples concrets de dédouanement</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Importation de riz au port de Matadi</strong> : facture commerciale du Vietnam, connaissement maritime, certificat d'origine, certificat phytosanitaire, déclaration en détail à la DGDA. Paiement du droit de douane, de la TVA et de l'OCC.</li><li><strong>Exportation de café congolais vers la Belgique</strong> : facture commerciale, certificat d'origine, certificat phytosanitaire, déclaration d'exportation. La RDC perçoit des droits à l'exportation.</li><li><strong>Commerce transfrontalier à Kasumbalesa</strong> : échange RDC-Zambie, documents simplifiés pour les petits commerçants.</li></ul><p><a href="https://www.youtube.com/results?search_query=documents+douaniers+incoterms+commerce+international+RDC" target="_blank" rel="noopener">🎥 Recherche : les documents douaniers (chaînes de cours de gestion)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le commerce international exige une documentation rigoureuse : déclaration en détail, facture commerciale, liste de colisage, certificat d'origine, connaissement. Les Incoterms définissent les obligations des parties. Le crédit documentaire sécurise les transactions internationales. Les ports de Matadi et les postes frontaliers de Kasumbalesa sont les points d'entrée clés de la RDC.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques officielles — Documentation Commerciale, 4e CG (manuels-scolaires-rdc.com, 2025) ; DGDA — Code des douanes (douanes.gouv.cd) ; Chambre de Commerce Internationale — Incoterms 2020.</div>
+    `
+},
+{
+    title: "Leçon 8 — Le classement et l'archivage des documents",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans une entreprise de Kinshasa, un client réclame une facture de 2023. Sans un classement méthodique, le service commercial ne peut pas la retrouver. L'archivage est une obligation légale : les documents commerciaux doivent être conservés pendant 10 ans (Code de commerce). Comment organiser un classement efficace ?</p></div>
+<h3>1. Les méthodes de classement</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Classement alphabétique</strong> : par ordre alphabétique des noms de clients ou de fournisseurs.</li><li><strong>Classement numérique</strong> : par numéro de document (facture, bon de commande).</li><li><strong>Classement chronologique</strong> : par date (le plus courant pour les factures).</li><li><strong>Classement géographique</strong> : par région, ville ou province.</li><li><strong>Classement thématique</strong> : par type d'opération (achats, ventes, banque).</li><li><strong>Classement mixte</strong> : combinaison de plusieurs critères.</li></ul></div>
+<h3>2. Les supports de classement</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Chemises et dossiers suspendus</strong> : pour les documents papier.</li><li><strong>Boîtes d'archives</strong> : pour la conservation longue durée.</li><li><strong>Classeurs à levier</strong> : pour les documents reliés.</li><li><strong>Armoires de bureau</strong> : pour les documents en cours.</li><li><strong>Numérisation et archivage électronique</strong> : GED (Gestion Électronique des Documents).</li><li><strong>Cloud et serveurs</strong> : sauvegarde dématérialisée.</li></ul></div>
+<h3>3. Les règles d'archivage</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Durée légale</strong> : 10 ans pour les documents comptables (Code de commerce OHADA, article 7).</li><li><strong>Conservation</strong> : locaux secs, à l'abri de la poussière, du feu et de l'humidité.</li><li><strong>Sécurité</strong> : accès restreint, protection contre les vols.</li><li><strong>Tri périodique</strong> : élimination des documents après expiration.</li><li><strong>Destruction</strong> : par broyage ou incinération, sous contrôle.</li></ul></div>
+<h3>4. L'archivage électronique</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Avantages</strong> : gain de place, recherche rapide, sauvegarde automatique, accès à distance.</li><li><strong>Inconvénients</strong> : coût du matériel, dépendance à l'électricité, risque de piratage.</li><li><strong>Bonne pratique</strong> : sauvegarde régulière sur disque externe et cloud.</li><li><strong>Cas RDC</strong> : les grandes entreprises de Kinshasa numérisent progressivement leurs archives, tandis que les PME restent majoritairement sur papier.</li><li><strong>Recommandation</strong> : conserver les originaux papier pour les documents à valeur juridique forte (factures, contrats, effets de commerce).</li></ul><p><a href="https://www.youtube.com/results?search_query=classement+archivage+documents+commerciaux+GED" target="_blank" rel="noopener">🎥 Recherche : le classement et l'archivage (chaînes de cours de gestion)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le classement peut être alphabétique, numérique, chronologique, géographique ou thématique. Les supports sont papier (chemises, boîtes, classeurs) ou électroniques (GED, cloud). La durée légale de conservation est de 10 ans. L'archivage électronique gagne du terrain mais ne remplace pas toujours l'original papier.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques officielles — Documentation Commerciale, 4e CG (manuels-scolaires-rdc.com, 2025) ; OHADA — Acte uniforme relatif au droit commercial général.</div>
+    `
+},
+{
+    title: "Leçon 9 — La documentation commerciale et les circuits logistiques en RDC",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Un commerçant de Kinshasa veut acheter du café à Bukavu. Le transport se fait par route (via Goma) ou par fleuve (via Kisangani). Chaque itinéraire implique des documents spécifiques et des coûts différents. La maîtrise des circuits logistiques est essentielle pour optimiser les transactions.</p></div>
+<h3>1. Les grands circuits logistiques en RDC</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Corridor de Matadi</strong> : Matadi-Kinshasa, principale porte d'entrée des importations. Distance : environ 360 km.</li><li><strong>Corridor de Kasumbalesa</strong> : Lubumbashi-Kasumbalesa (frontière zambienne), pour les exportations minières du Katanga.</li><li><strong>Corridor de Goma</strong> : Goma-Kinshasa, important pour l'Est du pays.</li><li><strong>Corridor fluvial</strong> : Kinshasa-Kisangani-Kindu, sur le fleuve Congo. Longueur : plus de 1 700 km.</li><li><strong>Corridor ferroviaire</strong> : Lubumbashi-Ilebo-Kananga, pour le transport des minerais.</li><li><strong>Corridor aérien</strong> : Kinshasa-Lubumbashi, Goma, Kisangani (aéroport de Ndjili).</li></ul></div>
+<h3>2. Les documents par mode de transport</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Transport routier</strong> : lettre de voiture routière, bordereau de livraison, bon de sortie.</li><li><strong>Transport fluvial</strong> : lettre de voiture fluviale, connaissement fluvial, manifeste de cargaison.</li><li><strong>Transport ferroviaire</strong> : lettre de voiture ferroviaire (SNCC).</li><li><strong>Transport aérien</strong> : LTA (Lettre de Transport Aérien).</li><li><strong>Transport maritime</strong> : connaissement maritime (B/L).</li></ul></div>
+<h3>3. Les coûts et délais de transport</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Corridor Matadi-Kinshasa</strong> : 2 à 3 jours par camion.</li><li><strong>Corridor Kasumbalesa-Lubumbashi</strong> : 1 jour par camion.</li><li><strong>Corridor fluvial Kinshasa-Kisangani</strong> : 7 à 15 jours selon le niveau d'eau.</li><li><strong>Transport aérien</strong> : quelques heures, mais coût élevé.</li><li><strong>Facteurs de coût</strong> : distance, poids, mode de transport, frais de douane, taxes locales.</li></ul></div>
+<h3>4. Exemples de circuits complets</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Importation de riz asiatique</strong> : navire jusqu'au port de Matadi (connaissement maritime), dédouanement (déclaration en détail), transport routier Matadi-Kinshasa (lettre de voiture routière), livraison aux grossistes (bon de livraison), facturation.</li><li><strong>Exportation de cuivre vers la Chine</strong> : production à Kolwezi, transport routier ou ferroviaire jusqu'à Kasumbalesa (lettre de voiture), traversée Zambie, chargement au port de Dar es Salaam ou Durban (connaissement maritime).</li><li><strong>Commerce fluvial de Kinshasa à Kisangani</strong> : chargement au port de Kinshasa, lettre de voiture fluviale, traversée du fleuve Congo, livraison au port de Kisangani, distribution aux commerçants locaux.</li></ul><p><a href="https://www.youtube.com/results?search_query=circuits+logistiques+RDC+corridors+transport+documents" target="_blank" rel="noopener">🎥 Recherche : les circuits logistiques en RDC (chaînes de cours de gestion)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La RDC dispose de plusieurs corridors logistiques : Matadi, Kasumbalesa, Goma, fluvial Kinshasa-Kisangani, ferroviaire et aérien. Chaque mode de transport a ses documents spécifiques : lettre de voiture (routier, fluvial, ferroviaire), connaissement (maritime), LTA (aérien). Les coûts et délais varient selon le corridor.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques officielles — Documentation Commerciale, 4e CG (manuels-scolaires-rdc.com, 2025) ; FEC — Fédération des Entreprises du Congo ; DGDA.</div>
+    `
+},
+{
+    title: "Leçon 10 — La documentation commerciale et la digitalisation en RDC",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>À Kinshasa, une PME adopte la facture électronique certifiée DGI, le paiement par Mobile Money et l'archivage numérique. La digitalisation transforme les pratiques documentaires. Mais elle pose de nouveaux défis : formation, électricité, sécurité des données. Comment réussir cette transition ?</p></div>
+<h3>1. Les documents électroniques et leur valeur juridique</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Facture électronique certifiée</strong> : émise via une machine fiscale agréée par la DGI, elle est numérotée et transmise en temps réel à l'administration.</li><li><strong>Signature électronique</strong> : équivalent juridique de la signature manuscrite, encadrée par la loi sur les transactions électroniques en RDC.</li><li><strong>Archivage électronique</strong> : valeur probante reconnue à condition de garantir l'intégrité, la confidentialité et la traçabilité.</li><li><strong>Blockchain</strong> : technologie émergente pour sécuriser la traçabilité des documents.</li></ul></div>
+<h3>2. Les avantages de la digitalisation</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Gain de temps</strong> : suppression des déplacements, traitement automatisé.</li><li><strong>Réduction des coûts</strong> : moins de papier, d'encre, de stockage physique.</li><li><strong>Traçabilité</strong> : historisation des opérations, contrôle facilité.</li><li><strong>Conformité fiscale</strong> : la facture électronique normalisée est exigée par la DGI.</li><li><strong>Accès à distance</strong> : les documents sont disponibles partout.</li></ul></div>
+<h3>3. Les défis de la digitalisation en RDC</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Électricité</strong> : coupures fréquentes, coût des groupes électrogènes.</li><li><strong>Connectivité</strong> : Internet limité dans certaines zones rurales.</li><li><strong>Formation</strong> : personnel peu formé aux outils numériques.</li><li><strong>Sécurité</strong> : risque de piratage, de vol de données, de fraude.</li><li><strong>Coût</strong> : investissement initial en matériel et logiciel.</li></ul></div>
+<h3>4. Exemples d'application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Facture normalisée DGI</strong> : depuis 2023, les entreprises de Kinshasa doivent utiliser des machines fiscales certifiées pour émettre leurs factures.</li><li><strong>Mobile Money</strong> : M-Pesa, Orange Money, Airtel Money permettent les paiements de proximité.</li><li><strong>Plateforme GUCE</strong> : Guichet Unique de Création d'Entreprise, qui permet la création d'entreprise en ligne.</li><li><strong>SYDONIA</strong> : système informatique de dédouanement utilisé par la DGDA.</li><li><strong>E-tax</strong> : plateforme de télédéclaration et télépaiement des impôts à la DGI.</li></ul><p><a href="https://www.youtube.com/results?search_query=digitalisation+documentation+commerciale+RDC+facture+électronique" target="_blank" rel="noopener">🎥 Recherche : la digitalisation de la documentation (chaînes de cours de gestion)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La digitalisation transforme la documentation commerciale : facture électronique, signature numérique, archivage électronique. Elle offre des gains de temps, de coûts et de traçabilité. Mais elle fait face à des défis : électricité, connectivité, formation, sécurité. Les plateformes E-tax, SYDONIA et GUCE sont des exemples d'application en RDC.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques officielles — Documentation Commerciale, 4e CG (manuels-scolaires-rdc.com, 2025) ; DGI — Facture normalisée (dgi.gouv.cd) ; DGDA — SYDONIA (douanes.gouv.cd).</div>
+    `
+},
+{
+    title: "Évaluation finale — Items EXETAT",
+    content: `
+        <p style="margin-bottom:18px;color:#12437a;font-size:0.95rem;">Cette évaluation regroupe des items de type EXETAT. Fais l'exercice dans les conditions du concours : sans notes, en une seule fois.</p>
+        <div class="bloc theorie">
+            <div class="bloc-label">Consignes</div>
+            <ul>
+                <li>35 questions à choix multiples.</li>
+                <li>Une seule réponse correcte par question.</li>
+                <li>Pas de retour en arrière sur les questions déjà validées.</li>
+                <li>Durée recommandée : 35 minutes.</li>
+            </ul>
+        </div>
+        <div class="quiz-container" id="quizContainer">
+            <h3 style="color:#0d2b4f;margin-bottom:16px;font-size:1.1rem;">Partie 1 — Questions</h3>
+            <div id="quizQuestions"></div>
+            <button id="submitQuiz" class="quiz-btn-submit">Valider mes réponses</button>
+            <div id="quizResult" class="quiz-result"></div>
+        </div>
+    `
+}
+];
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim()) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderQuiz() {
+    const questions = [
+        { text:"Quel document exprime la volonté d'achat du client ?", options:["Le bon de commande","La facture","Le bon de livraison"], correct:0 },
+        { text:"Quel document confirme au client que sa commande est prise en compte ?", options:["L'accusé de réception","La facture","Le bordereau d'expédition"], correct:0 },
+        { text:"Quel document accompagne la marchandise livrée au client ?", options:["Le bon de livraison","La facture","Le bon de commande"], correct:0 },
+        { text:"Quel document liste les marchandises expédiées en interne ?", options:["Le bordereau d'expédition","La facture","Le connaissement"], correct:0 },
+        { text:"Quel document matérialise le contrat de transport routier ?", options:["La lettre de voiture","La facture","Le bon de livraison"], correct:0 },
+        { text:"Quel document est un titre de propriété de la marchandise sur mer ?", options:["Le connaissement maritime","La lettre de voiture","La facture"], correct:0 },
+        { text:"Quel est l'équivalent aérien du connaissement maritime ?", options:["La LTA","Le bon de commande","La facture"], correct:0 },
+        { text:"Que récapitule la facture ?", options:["Les biens vendus et leur prix","Les stocks","La paie"], correct:0 },
+        { text:"Quelle mention obligatoire doit figurer sur une facture ?", options:["Le NIF","Le numéro de sécurité sociale","Le diplôme"], correct:0 },
+        { text:"Quel est le taux normal de la TVA en RDC ?", options:["16 %","18 %","20 %"], correct:0 },
+        { text:"Quelle réduction est accordée pour paiement comptant ?", options:["L'escompte","La remise","Le rabais"], correct:0 },
+        { text:"Quelle réduction est accordée pour un défaut de qualité ?", options:["Le rabais","La remise","La ristourne"], correct:0 },
+        { text:"Quelle réduction est calculée sur le chiffre d'affaires annuel ?", options:["La ristourne","La remise","L'escompte"], correct:0 },
+        { text:"Que fait une note de débit ?", options:["Elle augmente le montant dû par le client","Elle le diminue","Elle l'annule"], correct:0 },
+        { text:"Que fait une note de crédit ?", options:["Elle diminue le montant dû par le client","Elle l'augmente","Elle l'annule"], correct:0 },
+        { text:"Quel est l'autre nom de la note de crédit ?", options:["Avoir","Débit","Quittance"], correct:0 },
+        { text:"Quelles sont les trois parties d'une lettre de change ?", options:["Tireur, tiré, bénéficiaire","Vendeur, acheteur, banque","Client, fournisseur, transporteur"], correct:0 },
+        { text:"Qui émet une lettre de change ?", options:["Le créancier","Le débiteur","La banque"], correct:0 },
+        { text:"Qui émet un billet à ordre ?", options:["Le débiteur","Le créancier","La banque"], correct:0 },
+        { text:"Quelle est la durée de validité d'un chèque ?", options:["1 an","6 mois","3 mois"], correct:0 },
+        { text:"Quel est le principal document déposé à la DGDA pour le dédouanement ?", options:["La déclaration en détail","La facture commerciale","Le certificat d'origine"], correct:0 },
+        { text:"Que signifie CIF en Incoterms ?", options:["Cost, Insurance, Freight","Cost, Interest, Free","Cash, Insurance, Freight"], correct:0 },
+        { text:"Quel Incoterm signifie que la marchandise est disponible à l'usine ?", options:["EXW","FOB","CIF"], correct:0 },
+        { text:"Quel document atteste le pays de fabrication ?", options:["Le certificat d'origine","Le certificat phytosanitaire","La facture commerciale"], correct:0 },
+        { text:"Quel est le principal port maritime de la RDC ?", options:["Matadi","Boma","Banana"], correct:0 },
+        { text:"Quel poste frontalier relie la RDC à la Zambie ?", options:["Kasumbalesa","Goma","Bunia"], correct:0 },
+        { text:"Quel est le plus long corridor fluvial de la RDC ?", options:["Kinshasa-Kisangani","Kinshasa-Matadi","Lubumbashi-Kasumbalesa"], correct:0 },
+        { text:"Combien de temps dure le trajet fluvial Kinshasa-Kisangani ?", options:["7 à 15 jours","1 à 2 jours","1 mois"], correct:0 },
+        { text:"Quelle est la durée légale de conservation des documents commerciaux ?", options:["10 ans","5 ans","2 ans"], correct:0 },
+        { text:"Quel type de classement utilise les noms de clients ?", options:["Alphabétique","Numérique","Chronologique"], correct:0 },
+        { text:"Quel type de classement utilise les dates ?", options:["Chronologique","Alphabétique","Thématique"], correct:0 },
+        { text:"Que signifie GED ?", options:["Gestion Électronique des Documents","Gestion des Entreprises Dématérialisées","Groupe d'Experts Documentaires"], correct:0 },
+        { text:"Quel organisme délivre la facture normalisée en RDC ?", options:["La DGI","La DGDA","La DGRAD"], correct:0 },
+        { text:"Quel système informatique utilise la DGDA pour le dédouanement ?", options:["SYDONIA","E-tax","GUCE"], correct:0 },
+        { text:"Quelle plateforme permet la création d'entreprise en ligne en RDC ?", options:["Le GUCE","SYDONIA","E-tax"], correct:0 }
+    ];
+    let html = '';
+    questions.forEach((q,i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o,k) => { html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>'; });
+        html += '</div>';
+    });
+    document.getElementById('quizQuestions').innerHTML = html;
+    document.getElementById('submitQuiz').onclick = () => {
+        let score = 0;
+        questions.forEach((q,i) => {
+            const s = document.querySelector('input[name="q' + i + '"]:checked');
+            if (s && parseInt(s.value) === q.correct) score++;
+        });
+        const pct = Math.round(score/questions.length*100);
+        document.getElementById('quizResult').innerHTML = '<div style="background:#cfdff5;padding:16px;border-radius:10px;margin-top:14px;"><strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong><br>' + (score === questions.length ? 'Excellent. Tu maîtrises le programme.' : score >= 24 ? 'Bien. Revoyez les leçons où vous avez échoué.' : 'Relis attentivement les leçons avant l\'examen.') + '</div>';
+    };
+}
+function renderSlide(index, keepHighlight = true) {
+    const isQuiz = (index === slides.length - 1);
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    if (isQuiz) renderQuiz();
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm && !isQuiz) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+</body>
+</html>
