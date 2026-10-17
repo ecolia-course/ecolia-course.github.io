@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Animation sociale — 4e Sociale (EXETAT)</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:linear-gradient(160deg,#4a1010 0%,#b71c1c 50%,#2b0a0a 100%); display:flex; justify-content:center; align-items:center; padding:8px; }
+.container { width:100%; max-width:1400px; background:#fefdf8; border-radius:20px; overflow:hidden; display:flex; flex-direction:column; height:100%; max-height:100vh; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.progress-bar { height:4px; background:#f0d3d0; flex-shrink:0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,#d9706a,#8e1b1b); width:0%; transition:width 0.3s; }
+.header { padding:10px 16px; background:#fbeaea; border-bottom:1px solid #e8a9a5; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+.header h1 { color:#8e1b1b; font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box { display:flex; background:white; border-radius:20px; padding:2px 4px; }
+.search-box input { border:none; padding:6px 10px; border-radius:20px; outline:none; width:130px; font-size:0.8rem; }
+.search-box button { background:none; border:none; cursor:pointer; padding:4px 8px; font-size:0.85rem; color:#b71c1c; }
+.badge { background:#d9706a; color:white; padding:4px 10px; border-radius:20px; font-weight:bold; font-size:0.75rem; }
+.search-nav { display:none; gap:4px; background:#f3cdcb; padding:2px 8px; border-radius:20px; align-items:center; font-size:0.75rem; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:0.9rem; color:#8e1b1b; padding:2px 4px; }
+.content { padding:28px 32px; flex:1; overflow-y:auto; background:#fff; line-height:1.85; }
+.slide { display:none; } .slide.active { display:block; }
+.slide-title { color:#4a1010; font-size:1.5rem; font-weight:700; padding-bottom:12px; margin-bottom:20px; border-bottom:2px solid #d9706a; }
+.slide-content { color:#2a0d0d; font-size:1rem; }
+.bloc { padding:18px 22px; border-radius:12px; margin:22px 0; }
+.bloc-label { font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; opacity:0.7; }
+.bloc p, .bloc li { font-size:0.98rem; }
+.bloc h3 { font-size:1.1rem; margin:20px 0 10px; font-weight:600; }
+.bloc h3:first-child { margin-top:0; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; } .cas .bloc-label { color:#e65100; }
+.theorie { background:#fbeaea; border-left:4px solid #d9706a; } .theorie .bloc-label { color:#8e1b1b; }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; } .exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; } .resume .bloc-label { color:#01579b; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; } .bloc li { margin-bottom:8px; } .bloc strong { color:#4a1010; }
+.quiz-container { padding:22px; background:#fbeaea; border-radius:16px; }
+.quiz-question { background:white; border-radius:10px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.quiz-question p { font-weight:600; margin-bottom:10px; color:#4a1010; }
+.quiz-question label { display:block; padding:8px 10px; margin:4px 0; border-radius:6px; cursor:pointer; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit { background:#a62a2a; color:white; border:none; padding:12px 24px; border-radius:30px; font-size:1rem; cursor:pointer; font-weight:600; margin-top:14px; }
+.quiz-result { margin-top:16px; font-weight:600; }
+.sources { background:#f5f5f5; padding:12px 16px; border-radius:10px; margin-top:26px; font-size:0.82rem; color:#666; border-left:3px solid #999; }
+.sources strong { color:#333; }
+.controls { padding:8px 16px; background:#fafafa; border-top:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; gap:8px; }
+.nav-btn { background:white; color:#8e1b1b; border:1px solid #ccc; padding:8px 14px; border-radius:8px; font-size:0.82rem; cursor:pointer; }
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+@media (max-width:600px) { body { padding:0; } .container { border-radius:0; } .content { padding:20px 18px; } .slide-title { font-size:1.25rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="header">
+        <h1>Animation sociale · 4e Sociale</h1>
+        <div class="header-right">
+            <div class="search-box"><input type="text" id="searchInput" placeholder="Rechercher"><button id="searchBtn">⌕</button></div>
+            <div class="search-nav" id="searchNav"><button id="prevResultBtn">‹</button><span id="resultCounter">0/0</span><button id="nextResultBtn">›</button></div>
+            <span class="badge" id="slideCounter">1/9</span>
+        </div>
+    </div>
+    <div class="content" id="content"></div>
+    <div class="controls">
+        <button class="nav-btn" id="prevBtn">← Précédent</button>
+        <span class="counter" id="counter">Leçon 1 / 9</span>
+        <button class="nav-btn" id="nextBtn">Suivant →</button>
+    </div>
+</div>
+<script>
+const slides = [
+{title:"Leçon 1 — Introduction à l'animation sociale",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans un quartier populaire de Kinshasa, un animateur social organise des activités pour les jeunes désœuvrés. Il crée une troupe de théâtre, un club de sport, un atelier de couture. Peu à peu, les jeunes retrouvent confiance et s'insèrent. C'est le rôle de l'animation sociale.</p></div>
+<h3>1. Définition et objet</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Animation sociale</strong> : ensemble des actions qui visent à favoriser la participation, l'expression et l'organisation des groupes sociaux.</li><li><strong>Objectif</strong> : créer du lien social, favoriser l'autonomie, lutter contre l'exclusion.</li><li><strong>Publics</strong> : jeunes, femmes, personnes âgées, handicapés, populations marginalisées.</li><li><strong>Lieux</strong> : quartiers, centres sociaux, maisons de jeunes, associations.</li></ul></div>
+<h3>2. Les principes de l'animation sociale</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Participation</strong> : les personnes sont actrices, pas seulement bénéficiaires.</li><li><strong>Respect</strong> : des personnes, de leur culture, de leur rythme.</li><li><strong>Écoute active</strong> : comprendre les besoins exprimés.</li><li><strong>Non-jugement</strong> : accueillir sans juger.</li><li><strong>Confidentialité</strong> : respecter la vie privée.</li></ul></div>
+<h3>3. Les domaines d'intervention</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Socio-culturel</strong> : activités culturelles, sportives, artistiques.</li><li><strong>Socio-éducatif</strong> : alphabétisation, soutien scolaire.</li><li><strong>Socio-économique</strong> : insertion professionnelle, activités génératrices de revenus.</li><li><strong>Socio-sanitaire</strong> : prévention, éducation à la santé.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Maison de jeunes à Kinshasa</strong> : activités sportives, culturelles, formation.</li><li><strong>Centre social à Lubumbashi</strong> : accueil, écoute, orientation.</li><li><strong>Association des femmes à Mbandaka</strong> : alphabétisation, activités génératrices de revenus.</li><li><strong>Club de jeunes à Goma</strong> : sensibilisation sur le VIH, sport, théâtre.</li></ul><p><a href="https://www.youtube.com/results?search_query=animation+sociale+définition+principes" target="_blank" rel="noopener">🎥 Recherche : l'animation sociale</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>L'animation sociale favorise la participation et l'organisation des groupes. Ses principes : participation, respect, écoute active, non-jugement, confidentialité. Ses domaines : socio-culturel, socio-éducatif, socio-économique, socio-sanitaire.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national d'Animation Sociale (RDC) ; Fiches pédagogiques 2025.<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT.</div>
+`},
+{title:"Leçon 2 — L'animateur social : profil et compétences",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans un centre social de Matadi, un animateur accueille une femme en détresse. Il l'écoute, l'oriente vers les services compétents, la suit. Ses compétences techniques et humaines font la différence.</p></div>
+<h3>1. Profil de l'animateur</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Formation</strong> : diplôme en animation sociale, travail social ou sciences sociales.</li><li><strong>Qualités humaines</strong> : empathie, patience, écoute, respect, neutralité.</li><li><strong>Qualités professionnelles</strong> : sens de l'organisation, créativité, esprit d'équipe.</li><li><strong>Connaissances</strong> : animation de groupe, dynamique de groupe, législation sociale.</li></ul></div>
+<h3>2. Les compétences de l'animateur</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Animer un groupe</strong> : préparer, lancer, réguler, conclure une réunion.</li><li><strong>Écouter et communiquer</strong> : écoute active, reformulation, feedback.</li><li><strong>Gérer un projet</strong> : diagnostic, planification, suivi, évaluation.</li><li><strong>Médiation</strong> : gérer les conflits, négocier.</li><li><strong>Documentation</strong> : rapports, comptes rendus, dossiers.</li></ul></div>
+<h3>3. Les fonctions de l'animateur</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Accueil</strong> : recevoir, écouter, orienter.</li><li><strong>Animation</strong> : organiser des activités.</li><li><strong>Formation</strong> : renforcer les capacités.</li><li><strong>Médiation</strong> : résoudre les conflits.</li><li><strong>Plaidoyer</strong> : défendre les droits des usagers.</li><li><strong>Coordination</strong> : travailler en réseau.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Accueil d'un jeune en difficulté</strong> : écoute, diagnostic, orientation.</li><li><strong>Organisation d'une activité culturelle</strong> : préparation, mobilisation, animation.</li><li><strong>Médiation d'un conflit familial</strong> : écoute des parties, négociation.</li><li><strong>Suivi d'une famille</strong> : visite à domicile, accompagnement.</li></ul><p><a href="https://www.youtube.com/results?search_query=animateur+social+profil+compétences" target="_blank" rel="noopener">🎥 Recherche : le profil de l'animateur</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>L'animateur social est un professionnel de la relation et de l'organisation. Il a des qualités humaines (empathie, patience, écoute) et techniques (animation, gestion, médiation). Ses fonctions : accueil, animation, formation, médiation, plaidoyer, coordination.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national d'Animation Sociale (RDC).</div>
+`},
+{title:"Leçon 3 — La dynamique de groupe",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans un club de jeunes de Goma, un groupe est en crise : les membres ne s'écoutent plus, certains veulent partir. L'animateur intervient : il reformule, régule, aide le groupe à retrouver un fonctionnement sain. La dynamique de groupe s'apprend.</p></div>
+<h3>1. Les étapes de la vie d'un groupe</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Formation</strong> : découverte, prudence, dépendance au leader.</li><li><strong>Tempête</strong> : conflits, tensions, recherche de place.</li><li><strong>Normalisation</strong> : règles communes, cohésion.</li><li><strong>Performance</strong> : le groupe travaille efficacement.</li><li><strong>Séparation</strong> : fin du groupe, bilan.</li></ul></div>
+<h3>2. Les rôles dans un groupe</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Leader</strong> : oriente le groupe.</li><li><strong>Facilitateur</strong> : aide à la communication.</li><li><strong>Harmoniseur</strong> : apaisé les tensions.</li><li><strong>Contestataire</strong> : exprime les désaccords.</li><li><strong>Observateur</strong> : prend du recul.</li><li><strong>Bouffon</strong> : détend l'atmosphère.</li><li><strong>Bouc émissaire</strong> : supporte les tensions du groupe.</li></ul></div>
+<h3>3. La conduite d'une réunion</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Préparation</strong> : objectifs, ordre du jour, lieu, invitations.</li><li><strong>Ouverture</strong> : accueil, rappel des objectifs.</li><li><strong>Animation</strong> : tour de table, discussion, régulation.</li><li><strong>Synthèse</strong> : décisions, plan d'action.</li><li><strong>Clôture</strong> : remerciements, date de la prochaine réunion.</li><li><strong>Compte rendu</strong> : document écrit.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Réunion d'une association</strong> : ordre du jour, tour de table, décisions, compte rendu.</li><li><strong>Gestion d'un conflit</strong> : écoute des parties, reformulation, recherche de solutions communes.</li><li><strong>Animation d'un atelier</strong> : sous-groupes, restitution, synthèse.</li><li><strong>Évaluation d'un groupe</strong> : auto-évaluation, feedback collectif.</li></ul><p><a href="https://www.youtube.com/results?search_query=dynamique+groupe+étapes+rôles+animation" target="_blank" rel="noopener">🎥 Recherche : la dynamique de groupe</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Un groupe évolue en 5 étapes : formation, tempête, normalisation, performance, séparation. Les rôles sont multiples (leader, facilitateur, bouc émissaire...). La conduite d'une réunion suit 6 étapes, du compte rendu à la clôture.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national d'Animation Sociale (RDC) ; Kurt Lewin — Dynamique de groupe.</div>
+`},
+{title:"Leçon 4 — Les techniques d'animation",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans un centre de formation à Kisangani, l'animateur prépare une session sur l'hygiène. Il utilise des jeux de rôle, des images, des travaux de groupe. Les participants s'impliquent activement. Les techniques d'animation rendent l'apprentissage vivant.</p></div>
+<h3>1. Les techniques classiques</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Exposé</strong> : présentation par l'animateur.</li><li><strong>Discussion</strong> : échange entre participants.</li><li><strong>Brainstorming</strong> : production d'idées en groupe.</li><li><strong>Étude de cas</strong> : analyse d'une situation réelle.</li><li><strong>Jeu de rôle</strong> : simulation d'une situation.</li><li><strong>Travail en sous-groupes</strong> : division en petits groupes.</li></ul></div>
+<h3>2. Les techniques participatives</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Théâtre participatif</strong> : forum, jeu théâtral.</li><li><strong>Photo-langage</strong> : discussion à partir d'images.</li><li><strong>Méthode ABC</strong> : Abris-Bus-Colline, débat mobile.</li><li><strong>World Café</strong> : discussion en tables tournantes.</li><li><strong>Fishbowl</strong> : discussion en cercle avec observateurs.</li><li><strong>Débat mouvant</strong> : les participants se déplacent selon leur opinion.</li></ul></div>
+<h3>3. Le choix des techniques</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Objectifs</strong> : informer, former, sensibiliser, décider.</li><li><strong>Public</strong> : âge, niveau, culture, taille du groupe.</li><li><strong>Temps</strong> : durée disponible.</li><li><strong>Matériel</strong> : disponible ou à prévoir.</li><li><strong>Lieu</strong> : salle, plein air.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Sensibilisation sur le paludisme</strong> : théâtre participatif + moustiquaire.</li><li><strong>Formation en alphabétisation</strong> : méthode active, images, jeux.</li><li><strong>Réunion communautaire</strong> : brainstorming + vote.</li><li><strong>Atelier de planification</strong> : travail en sous-groupes + restitution.</li></ul><p><a href="https://www.youtube.com/results?search_query=techniques+animation+jeu+rôle+brainstorming" target="_blank" rel="noopener">🎥 Recherche : les techniques d'animation</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Les techniques classiques (exposé, discussion, brainstorming, étude de cas, jeu de rôle) et participatives (théâtre forum, photo-langage, World Café) s'adaptent au public, aux objectifs, au temps et au matériel.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national d'Animation Sociale (RDC).</div>
+`},
+{title:"Leçon 5 — L'écoute active et la communication",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans un centre d'accueil de Kinshasa, une femme victime de violences vient parler. L'animatrice l'écoute sans l'interrompre, reformule, ne juge pas. Cette écoute active crée la confiance et permet d'aider efficacement.</p></div>
+<h3>1. Définition de l'écoute active</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Écoute active</strong> : technique de communication qui consiste à écouter pleinement l'autre, à reformuler, à questionner.</li><li><strong>Objectif</strong> : comprendre le message, créer la confiance, aider l'autre à s'exprimer.</li><li><strong>Attitudes</strong> : disponibilité, attention, respect, non-jugement.</li></ul></div>
+<h3>2. Les techniques de l'écoute active</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Reformulation</strong> : répéter avec ses propres mots.</li><li><strong>Reflet</strong> : refléter les émotions perçues.</li><li><strong>Questionnement ouvert</strong> : questions commençant par « comment », « quoi », « pourquoi ».</li><li><strong>Silence</strong> : laisser un espace à l'autre.</li><li><strong>Signes d'attention</strong> : hochement de tête, regard, « hum ».</li><li><strong>Empathie</strong> : se mettre à la place de l'autre sans se confondre.</li></ul></div>
+<h3>3. Les obstacles à la communication</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Jugement</strong> : critiquer, moraliser.</li><li><strong>Interruption</strong> : couper la parole.</li><li><strong>Minimisation</strong> : banaliser les problèmes.</li><li><strong>Conseils prématurés</strong> : donner des solutions avant d'avoir compris.</li><li><strong>Interprétation</strong> : projeter ses propres idées.</li><li><strong>Distraction</strong> : téléphone, environnement bruyant.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Accueil d'une personne en difficulté</strong> : écoute active, reformulation, orientation.</li><li><strong>Médiation d'un conflit</strong> : écoute des deux parties, reformulation neutre.</li><li><strong>Entretien individuel</strong> : questions ouvertes, empathie, confidentialité.</li><li><strong>Animation d'un groupe</strong> : favoriser l'expression de chacun.</li></ul><p><a href="https://www.youtube.com/results?search_query=écoute+active+communication+reformulation+empathie" target="_blank" rel="noopener">🎥 Recherche : l'écoute active</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>L'écoute active est une technique de communication basée sur la reformulation, le reflet, le questionnement ouvert, le silence et l'empathie. Les obstacles sont le jugement, l'interruption, la minimisation. Elle crée la confiance et facilite l'aide.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national d'Animation Sociale (RDC) ; Carl Rogers — Écoute active.</div>
+`},
+{title:"Leçon 6 — L'animation socio-culturelle",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans un quartier de Lubumbashi, une maison de jeunes propose du théâtre, du sport, de la musique, de la danse. Ces activités attirent les jeunes, les occupent sainement, développent leurs talents. C'est l'animation socio-culturelle.</p></div>
+<h3>1. Définition et objectifs</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Animation socio-culturelle</strong> : ensemble d'activités qui favorisent l'expression, la créativité et la participation culturelle.</li><li><strong>Objectifs</strong> : épanouissement, lien social, prévention, développement des talents.</li><li><strong>Publics</strong> : enfants, jeunes, adultes, personnes âgées.</li></ul></div>
+<h3>2. Les activités socio-culturelles</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Activités artistiques</strong> : théâtre, danse, musique, arts plastiques.</li><li><strong>Activités sportives</strong> : football, basket, athlétisme.</li><li><strong>Activités ludiques</strong> : jeux, concours, sorties.</li><li><strong>Activités culturelles</strong> : lecture, cinéma, expositions.</li><li><strong>Activités éducatives</strong> : ateliers, conférences, débats.</li></ul></div>
+<h3>3. L'organisation d'une activité</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Conception</strong> : objectifs, public, contenu.</li><li><strong>Planification</strong> : date, lieu, budget, matériel.</li><li><strong>Communication</strong> : affiches, réseaux sociaux, bouche-à-oreille.</li><li><strong>Réalisation</strong> : animation, gestion du groupe.</li><li><strong>Évaluation</strong> : bilan, satisfaction, leçons.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Festival culturel</strong> : organisation, mobilisation, programmation.</li><li><strong>Tournoi sportif</strong> : inscriptions, arbitrage, remise des prix.</li><li><strong>Atelier d'arts plastiques</strong> : matériel, encadrement, exposition.</li><li><strong>Club de lecture</strong> : séances régulières, échanges.</li><li><strong>Sortie éducative</strong> : musée, parc, entreprise.</li></ul><p><a href="https://www.youtube.com/results?search_query=animation+socio-culturelle+activités+organisation" target="_blank" rel="noopener">🎥 Recherche : l'animation socio-culturelle</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>L'animation socio-culturelle favorise l'expression et la créativité. Les activités sont artistiques, sportives, ludiques, culturelles, éducatives. L'organisation suit : conception, planification, communication, réalisation, évaluation.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national d'Animation Sociale (RDC).</div>
+`},
+{title:"Leçon 7 — L'animation en milieu ouvert",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans les rues de Kinshasa, des enfants vivent en situation de rue. Une équipe d'animateurs va à leur rencontre, dans la rue, sans les forcer. Peu à peu, elle crée la confiance et propose des alternatives. C'est l'animation en milieu ouvert.</p></div>
+<h3>1. Définition</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Animation en milieu ouvert</strong> : action éducative et sociale menée là où vivent les personnes (rue, quartier, village).</li><li><strong>Objectif</strong> : aller vers les publics qui ne fréquentent pas les structures classiques.</li><li><strong>Publics</strong> : enfants de la rue, jeunes en rupture, familles isolées.</li><li><strong>Méthode</strong> : présence régulière, écoute, création de lien, accompagnement progressif.</li></ul></div>
+<h3>2. Le travail de rue</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Présence</strong> : être là, régulièrement, sans imposer.</li><li><strong>Contact</strong> : approche respectueuse, sans jugement.</li><li><strong>Relation</strong> : création d'un lien de confiance progressif.</li><li><strong>Accompagnement</strong> : orientation vers les services, soutien.</li><li><strong>Plaidoyer</strong> : défense des droits des personnes.</li></ul></div>
+<h3>3. Les structures d'accueil</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Centres d'accueil de jour</strong> : lieu de repos, hygiène, activités.</li><li><strong>Centres d'hébergement</strong> : accueil de nuit, repas.</li><li><strong>Foyers d'hébergement</strong> : séjour de longue durée.</li><li><strong>Structures de réinsertion</strong> : formation, accompagnement vers l'autonomie.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Travail de rue avec les enfants</strong> : présence régulière, écoute, orientation.</li><li><strong>Centre d'accueil de jour</strong> : hygiène, repas, activités éducatives.</li><li><strong>Réinsertion familiale</strong> : médiation, accompagnement.</li><li><strong>Réinsertion scolaire ou professionnelle</strong> : alphabétisation, formation.</li><li><strong>En RDC</strong> : plusieurs ONG travaillent avec les enfants de la rue à Kinshasa, Lubumbashi, Kisangani.</li></ul><p><a href="https://www.youtube.com/results?search_query=animation+milieu+ouvert+travail+rue+enfants" target="_blank" rel="noopener">🎥 Recherche : l'animation en milieu ouvert</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>L'animation en milieu ouvert va vers les publics qui ne fréquentent pas les structures. Le travail de rue repose sur la présence, le contact, la relation et l'accompagnement. Les structures d'accueil offrent hébergement, hygiène, réinsertion.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national d'Animation Sociale (RDC) ; UNICEF — Enfants de la rue.</div>
+`},
+{title:"Leçon 8 — L'animation et l'intervention sociale",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans une commune de Kinshasa, une famille est en grande difficulté : logement insalubre, enfants non scolarisés, revenus précaires. Une assistante sociale intervient : diagnostic, plan d'aide, accompagnement. L'intervention sociale aide à sortir de l'exclusion.</p></div>
+<h3>1. L'intervention sociale</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Intervention sociale</strong> : action professionnelle visant à aider des personnes, des familles ou des groupes en difficulté.</li><li><strong>Objectifs</strong> : résoudre les problèmes, restaurer l'autonomie, prévenir l'exclusion.</li><li><strong>Principes</strong> : respect, non-jugement, confidentialité, participation.</li></ul></div>
+<h3>2. La démarche d'intervention</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>1. Accueil</strong> : écoute de la demande.</li><li><strong>2. Diagnostic social</strong> : analyse de la situation.</li><li><strong>3. Plan d'aide</strong> : objectifs, actions, partenaires.</li><li><strong>4. Mise en œuvre</strong> : accompagnement des démarches.</li><li><strong>5. Évaluation</strong> : mesure des résultats.</li><li><strong>6. Suivi</strong> : accompagnement dans la durée.</li></ul></div>
+<h3>3. Les partenaires de l'intervention</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Services sociaux</strong> : centres sociaux, services de l'État.</li><li><strong>Écoles</strong> : scolarisation, cantines.</li><li><strong>Structures de santé</strong> : soins, prévention.</li><li><strong>Associations</strong> : hébergement, formation, aide alimentaire.</li><li><strong>Justice</strong> : protection de l'enfance, violences.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Famille en difficulté</strong> : diagnostic, plan d'aide, suivi.</li><li><strong>Enfant en danger</strong> : signalement, protection, orientation.</li><li><strong>Personne âgée isolée</strong> : visite, aide à domicile, lien social.</li><li><strong>Personne handicapée</strong> : accompagnement, insertion.</li></ul><p><a href="https://www.youtube.com/results?search_query=intervention+sociale+démarche+travail+social" target="_blank" rel="noopener">🎥 Recherche : l'intervention sociale</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>L'intervention sociale aide les personnes en difficulté. La démarche comprend 6 étapes : accueil, diagnostic, plan d'aide, mise en œuvre, évaluation, suivi. Les partenaires sont les services sociaux, écoles, structures de santé, associations et justice.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national d'Animation Sociale (RDC).</div>
+`},
+{title:"Évaluation finale — Items EXETAT",content:`
+<p style="margin-bottom:18px;color:#8e1b1b;font-size:0.95rem;">Cette évaluation regroupe des items de type EXETAT. Fais l'exercice dans les conditions du concours : sans notes, en une seule fois.</p>
+<div class="bloc theorie"><div class="bloc-label">Consignes</div><ul><li>20 questions à choix multiples.</li><li>Une seule réponse correcte par question.</li><li>Durée recommandée : 20 minutes.</li></ul></div>
+<div class="quiz-container" id="quizContainer"><h3 style="color:#4a1010;margin-bottom:16px;font-size:1.1rem;">Partie 1 — Questions</h3><div id="quizQuestions"></div><button id="submitQuiz" class="quiz-btn-submit">Valider mes réponses</button><div id="quizResult" class="quiz-result"></div></div>
+`}];
+
+let currentSlide=0,lastSearchTerm="",searchResults=[],currentResultIdx=-1;
+const contentDiv=document.getElementById('content'),prevBtn=document.getElementById('prevBtn'),nextBtn=document.getElementById('nextBtn'),slideCounterSpan=document.getElementById('slideCounter'),progressFill=document.getElementById('progressFill'),counterSpan=document.getElementById('counter'),searchInput=document.getElementById('searchInput'),searchBtn=document.getElementById('searchBtn'),searchNav=document.getElementById('searchNav'),prevResultBtn=document.getElementById('prevResultBtn'),nextResultBtn=document.getElementById('nextResultBtn'),resultCounterSpan=document.getElementById('resultCounter');
+function getTextFromHtml(html){const d=document.createElement('div');d.innerHTML=html;return d.textContent||'';}
+function searchSlides(term){if(!term.trim())return[];const l=term.toLowerCase();const r=[];slides.forEach((s,i)=>{if(s.title.toLowerCase().includes(l)||getTextFromHtml(s.content).toLowerCase().includes(l))r.push(i);});return r;}
+function highlightInCurrentSlide(term){if(!term)return;const sc=document.querySelector('.slide-content');if(!sc)return;const regex=new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`,'gi');const walker=document.createTreeWalker(sc,NodeFilter.SHOW_TEXT,null,false);const nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);for(let n of nodes){if(n.nodeValue&&regex.test(n.nodeValue)){const sp=document.createElement('span');sp.innerHTML=n.nodeValue.replace(regex,'<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');n.parentNode.replaceChild(sp,n);}}}
+function renderQuiz(){
+const questions=[
+{text:"Qu'est-ce que l'animation sociale ?",options:["Favoriser la participation et l'organisation des groupes","Imposer des activités","Divertir uniquement"],correct:0},
+{text:"Quel est le principe clé de l'animation sociale ?",options:["La participation","La rentabilité","La compétition"],correct:0},
+{text:"Quelle est la première qualité de l'animateur ?",options:["L'écoute","La force","L'autorité"],correct:0},
+{text:"Combien d'étapes dans la vie d'un groupe ?",options:["5","3","10"],correct:0},
+{text:"Quelle étape est marquée par les conflits ?",options:["La tempête","La formation","La performance"],correct:0},
+{text:"Quel rôle apaise les tensions ?",options:["L'harmoniseur","Le leader","Le contestataire"],correct:0},
+{text:"Quelle technique produit des idées en groupe ?",options:["Le brainstorming","L'exposé","Le cours magistral"],correct:0},
+{text:"Quelle technique simule une situation ?",options:["Le jeu de rôle","La discussion","Le brainstorming"],correct:0},
+{text:"Qu'est-ce que l'écoute active ?",options:["Écouter pleinement et reformuler","Écouter en silence","Interrompre"],correct:0},
+{text:"Quel est un obstacle à la communication ?",options:["Le jugement","L'empathie","L'écoute"],correct:0},
+{text:"Quel est l'objectif de l'animation socio-culturelle ?",options:["Expression, créativité, lien social","Rentabilité","Compétition"],correct:0},
+{text:"Quelle activité est socio-culturelle ?",options:["Le théâtre","La vente","Le commerce"],correct:0},
+{text:"Qu'est-ce que l'animation en milieu ouvert ?",options:["Aller vers les publics là où ils vivent","Attendre au centre","Exclure"],correct:0},
+{text:"Quel est le principe du travail de rue ?",options:["Présence régulière sans imposer","Forcer le contact","Punir"],correct:0},
+{text:"Quel est le public de l'animation en milieu ouvert ?",options:["Enfants de la rue, jeunes en rupture","Cadres d'entreprise","Fonctionnaires"],correct:0},
+{text:"Quelle est la première étape de l'intervention sociale ?",options:["L'accueil","Le diagnostic","Le plan d'aide"],correct:0},
+{text:"Quels sont les partenaires de l'intervention sociale ?",options:["Services sociaux, écoles, santé, associations, justice","Uniquement les médecins","Uniquement la police"],correct:0},
+{text:"Quel est le principe de confidentialité ?",options:["Ne pas divulguer la vie privée","Tout dire","Publier"],correct:0},
+{text:"Quel est l'objectif de la conduite d'une réunion ?",options:["Prendre des décisions collectives","Imposer un point de vue","Éviter la parole"],correct:0},
+{text:"Pourquoi évaluer une activité d'animation ?",options:["Mesurer les résultats et s'améliorer","Pour rien","Pour remplir un dossier"],correct:0}];
+let html='';questions.forEach((q,i)=>{html+='<div class="quiz-question"><p>'+(i+1)+'. '+q.text+'</p>';q.options.forEach((o,k)=>{html+='<label><input type="radio" name="q'+i+'" value="'+k+'"> '+o+'</label>';});html+='</div>';});
+document.getElementById('quizQuestions').innerHTML=html;
+document.getElementById('submitQuiz').onclick=()=>{let score=0;questions.forEach((q,i)=>{const s=document.querySelector('input[name="q'+i+'"]:checked');if(s&&parseInt(s.value)===q.correct)score++;});const pct=Math.round(score/questions.length*100);document.getElementById('quizResult').innerHTML='<div style="background:#f3cdcb;padding:16px;border-radius:10px;margin-top:14px;"><strong>Score : '+score+'/'+questions.length+' ('+pct+'%)</strong><br>'+(score===questions.length?'Excellent.':score>=14?'Bien.':'Relis les leçons.')+'</div>';};
+}
+function renderSlide(index,keepHighlight=true){const isQuiz=(index===slides.length-1);contentDiv.innerHTML='<div class="slide active"><h2 class="slide-title">'+slides[index].title+'</h2><div class="slide-content">'+slides[index].content+'</div></div>';if(isQuiz)renderQuiz();slideCounterSpan.textContent=(index+1)+'/'+slides.length;progressFill.style.width=((index+1)/slides.length*100)+'%';prevBtn.disabled=(index===0);nextBtn.disabled=(index===slides.length-1);counterSpan.textContent='Leçon '+(index+1)+' / '+slides.length;contentDiv.scrollTop=0;if(keepHighlight&&lastSearchTerm&&!isQuiz)highlightInCurrentSlide(lastSearchTerm);}
+function updateResultDisplay(){if(searchResults.length===0){searchNav.style.display='none';return;}searchNav.style.display='flex';resultCounterSpan.textContent=(currentResultIdx+1)+'/'+searchResults.length;}
+function goToResult(idx){if(idx<0||idx>=searchResults.length)return;currentResultIdx=idx;currentSlide=searchResults[currentResultIdx];renderSlide(currentSlide,true);updateResultDisplay();}
+function performSearch(){const term=searchInput.value.trim();if(!term)return;lastSearchTerm=term;searchResults=searchSlides(term);if(searchResults.length===0){searchNav.style.display='none';return;}currentResultIdx=0;goToResult(0);}
+function nextResult(){if(searchResults.length)goToResult((currentResultIdx+1)%searchResults.length);}
+function prevResult(){if(searchResults.length)goToResult((currentResultIdx-1+searchResults.length)%searchResults.length);}
+function nextSlide(){if(currentSlide<slides.length-1){currentSlide++;renderSlide(currentSlide,true);}}
+function prevSlide(){if(currentSlide>0){currentSlide--;renderSlide(currentSlide,true);}}
+prevBtn.onclick=prevSlide;nextBtn.onclick=nextSlide;searchBtn.onclick=performSearch;prevResultBtn.onclick=prevResult;nextResultBtn.onclick=nextResult;
+searchInput.addEventListener('keydown',e=>{if(e.key==='Enter')performSearch();});
+renderSlide(0,false);
+</script>
+</body>
+</html>
