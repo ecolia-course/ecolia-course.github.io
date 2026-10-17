@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Pédagogie générale — 4e secondaire (EXETAT)</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body {
+    font-family:'Segoe UI',system-ui,sans-serif;
+    background:linear-gradient(160deg,#4e2a0c 0%,#ef6c00 50%,#2e1604 100%);
+    display:flex; justify-content:center; align-items:center;
+    padding:8px;
+}
+.container {
+    width:100%; max-width:1400px; background:#fefdf8;
+    border-radius:20px; overflow:hidden;
+    display:flex; flex-direction:column;
+    height:100%; max-height:100vh;
+    box-shadow:0 20px 60px rgba(0,0,0,0.4);
+}
+.progress-bar { height:4px; background:#fbdcb8; flex-shrink:0; }
+.progress-fill {
+    height:100%; background:linear-gradient(90deg,#f0a15a,#b34a00);
+    width:0%; transition:width 0.3s;
+}
+.header {
+    padding:10px 16px; background:#fff1e0;
+    border-bottom:1px solid #f3c08a;
+    display:flex; justify-content:space-between; align-items:center;
+    gap:10px; flex-shrink:0;
+}
+.header h1 { color:#b34a00; font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box {
+    display:flex; background:white; border-radius:20px;
+    padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06);
+}
+.search-box input {
+    border:none; padding:6px 10px; border-radius:20px;
+    outline:none; width:130px; font-size:0.8rem;
+}
+.search-box button {
+    background:none; border:none; cursor:pointer;
+    padding:4px 8px; font-size:0.85rem; color:#ef6c00;
+}
+.badge {
+    background:#f0a15a; color:white; padding:4px 10px;
+    border-radius:20px; font-weight:bold; font-size:0.75rem;
+}
+.search-nav {
+    display:none; gap:4px; background:#fbdcb8;
+    padding:2px 8px; border-radius:20px; align-items:center;
+    font-size:0.75rem;
+}
+.search-nav button {
+    background:none; border:none; cursor:pointer;
+    font-size:0.9rem; color:#b34a00; padding:2px 4px;
+}
+.content {
+    padding:28px 32px; flex:1; overflow-y:auto;
+    background:#fff; scroll-behavior:smooth;
+    line-height:1.85;
+}
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide {
+    from { opacity:0; transform:translateY(8px); }
+    to { opacity:1; transform:translateY(0); }
+}
+.slide-title {
+    color:#4e2a0c; font-size:1.5rem; font-weight:700;
+    padding-bottom:12px; margin-bottom:20px;
+    border-bottom:2px solid #f0a15a;
+}
+.slide-content { color:#331a07; font-size:1rem; }
+.bloc {
+    padding:18px 22px; border-radius:12px;
+    margin:22px 0; line-height:1.85;
+}
+.bloc-label {
+    font-size:0.75rem; font-weight:700;
+    letter-spacing:1.5px; text-transform:uppercase;
+    margin-bottom:8px; opacity:0.7;
+}
+.bloc p, .bloc li { font-size:0.98rem; }
+.bloc h3 {
+    font-size:1.1rem; margin:20px 0 10px;
+    font-weight:600;
+}
+.bloc h3:first-child { margin-top:0; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:#fff1e0; border-left:4px solid #f0a15a; }
+.theorie .bloc-label { color:#b34a00; }
+.pratique { background:#e8f5e9; border-left:4px solid #43a047; }
+.pratique .bloc-label { color:#1b5e20; }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:#4e2a0c; }
+.quiz-container { padding:22px; background:#fff1e0; border-radius:16px; }
+.quiz-question {
+    background:white; border-radius:10px; padding:16px;
+    margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05);
+}
+.quiz-question p { font-weight:600; margin-bottom:10px; color:#4e2a0c; }
+.quiz-question label {
+    display:block; padding:8px 10px; margin:4px 0;
+    border-radius:6px; cursor:pointer; transition:background 0.2s;
+}
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit {
+    background:#c9650a; color:white; border:none;
+    padding:12px 24px; border-radius:30px; font-size:1rem;
+    cursor:pointer; font-weight:600; margin-top:14px;
+}
+.quiz-result { margin-top:16px; font-weight:600; }
+.sources {
+    background:#f5f5f5; padding:12px 16px; border-radius:10px;
+    margin-top:26px; font-size:0.82rem; color:#666;
+    border-left:3px solid #999; line-height:1.6;
+}
+.sources strong { color:#333; }
+.controls {
+    padding:8px 16px; background:#fafafa;
+    border-top:1px solid #e0e0e0;
+    display:flex; justify-content:space-between;
+    align-items:center; gap:8px; flex-shrink:0;
+}
+.nav-btn {
+    background:white; color:#b34a00;
+    border:1px solid #ccc; padding:8px 14px;
+    border-radius:8px; font-size:0.82rem;
+    cursor:pointer; font-weight:500;
+}
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:#fdebd6; }
+.content::-webkit-scrollbar-thumb { background:#f0a15a; border-radius:3px; }
+@media (max-width:600px) {
+    body { padding:0; }
+    .container { border-radius:0; max-height:100vh; }
+    .content { padding:20px 18px; }
+    .slide-title { font-size:1.25rem; }
+    .search-box input { width:90px; }
+    .header h1 { font-size:0.85rem; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+    <div class="header">
+        <h1>Pédagogie générale · 4e secondaire</h1>
+        <div class="header-right">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Rechercher">
+                <button id="searchBtn">⌕</button>
+            </div>
+            <div class="search-nav" id="searchNav">
+                <button id="prevResultBtn">‹</button>
+                <span id="resultCounter">0/0</span>
+                <button id="nextResultBtn">›</button>
+            </div>
+            <span class="badge" id="slideCounter">1/11</span>
+        </div>
+    </div>
+
+    <div class="content" id="content"></div>
+
+    <div class="controls">
+        <button class="nav-btn" id="prevBtn">← Précédent</button>
+        <span class="counter" id="counter">Leçon 1 / 11</span>
+        <button class="nav-btn" id="nextBtn">Suivant →</button>
+    </div>
+</div>
+
+<script>
+const slides = [
+{
+    title: "Leçon 1 — La pédagogie : définition, objet et courants",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>À l'Institut de Mbandaka, un élève-maître se demande : « Qu'est-ce que la pédagogie, au juste ? Est-ce un art ou une science ? » Son professeur lui répond que la pédagogie est à la fois art, science, philosophie et technique. Voici pourquoi.</p></div>
+<h3>1. Définition et objet</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Pédagogie</strong> : art et science de l'éducation. Elle est aussi philosophie et technique.</li><li><strong>Science</strong> : elle a un objet (l'éducation) et des méthodes rigoureuses.</li><li><strong>Art</strong> : elle exige un don, un talent inné, une aisance dans la communication.</li><li><strong>Philosophie</strong> : elle détermine la finalité de l'éducation.</li><li><strong>Technique</strong> : elle cherche les moyens et méthodes pour réussir l'œuvre éducative.</li></ul></div>
+<h3>2. Les courants pédagogiques traditionnels</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Pédagogie appliquée</strong> : étudie les disciplines particulières et l'application des résultats.</li><li><strong>Pédagogie expérimentale</strong> : étudie les faits pédagogiques par des procédés expérimentaux (Binet en France, Buyse en Belgique).</li><li><strong>Pédagogie comparée</strong> : compare les systèmes éducatifs (fondateur : Marc-Antoine Jullien de Paris).</li><li><strong>Pédagogie empirique</strong> : basée sur l'expérience vulgaire, non scientifique.</li><li><strong>Pédagogie directive</strong> : l'enseignant commande et contrôle (partisan : Rabelais).</li><li><strong>Pédagogie libertaire</strong> : centrée sur la liberté (fondateur : Jean-Jacques Rousseau).</li></ul></div>
+<h3>3. Les courants modernes</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Pédagogie rénovée</strong> : prend en compte l'équilibre entre l'enfant et son milieu (Claparède, Binet, Decroly, Montessori, Piaget).</li><li><strong>Pédagogie non directive</strong> : centrée sur la liberté de l'apprenant (Carl Rogers).</li><li><strong>Pédagogie par objectifs (PPO)</strong> : formulation d'objectifs opérationnels.</li><li><strong>Pédagogie par compétences (APC)</strong> : mobilisation des savoirs en situation.</li><li><strong>Pédagogie d'intégration</strong> : intégration des acquis dans des situations complexes.</li></ul></div>
+<h3>4. Les grands pédagogues</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Socrate</strong> (470-399 av. J.-C.) : méthode interrogative (maïeutique).</li><li><strong>Montaigne</strong> (1533-1592) : « Mieux vaut une tête bien faite qu'une tête bien pleine. »</li><li><strong>Rabelais</strong> (1494-1553) : « Mieux vaut une tête bien pleine qu'une tête bien faite. »</li><li><strong>Comenius</strong> (1592-1670) : père de la didactique, érige la pédagogie en science autonome.</li><li><strong>Rousseau</strong> (1712-1778) : père du pédocentrisme (l'enfant au centre de l'éducation).</li><li><strong>Claparède</strong> : « Discat a puero magister » (que le maître apprenne de l'enfant).</li></ul><p><a href="https://www.youtube.com/results?search_query=pédagogie+définition+objet+courants+pédagogiques" target="_blank" rel="noopener">🎥 Recherche : introduction à la pédagogie (chaînes de cours de pédagogie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La pédagogie est à la fois art, science, philosophie et technique. Son objet est l'éducation. Les courants traditionnels (appliquée, expérimentale, comparée) et modernes (rénovée, non directive, PPO, APC) structurent la réflexion pédagogique.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national de Pédagogie (2009), Cours de Pédagogie Générale 6ème PEDA (Prof. Fiston EKANGA MOTINGA), Manuel de Pédagogie Générale 4ème année (manuels-scolaires-rdc.com, 2025).<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT, HPR, PPO, APC.</div>
+    `
+},
+{
+    title: "Leçon 2 — Histoire de l'enseignement au Congo",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans un cours d'histoire de l'éducation, ton professeur te demande : « Comment l'école congolaise a-t-elle évolué de l'État indépendant du Congo à nos jours ? » Tu dois retracer les grandes étapes.</p></div>
+<h3>1. L'éducation à l'époque de l'EIC (1885-1908)</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Genèse</strong> : premières écoles fondées par les missions religieuses.</li><li><strong>Objectifs</strong> : formation d'une main-d'œuvre auxiliaire et évangélisation.</li><li><strong>Caractéristiques</strong> : écoles de colonies scolaires, centrées sur l'instruction religieuse et les travaux manuels.</li><li><strong>Limites</strong> : accès très limité, absence de politique éducative structurée.</li></ul></div>
+<h3>2. L'enseignement sous la colonisation belge (1908-1960)</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Partenariat État-Missions</strong> : l'État confie l'enseignement aux missions catholiques et protestantes.</li><li><strong>Distinction</strong> : écoles pour indigènes et écoles pour Européens.</li><li><strong>Réforme de 1948</strong> : structuration de l'enseignement, développement de l'enseignement technique et professionnel.</li><li><strong>Écoles de métiers</strong> : créées au Katanga et à Léopoldville pour soutenir l'économie industrielle.</li><li><strong>Limites</strong> : enseignement élitiste, peu adapté aux réalités congolaises.</li></ul></div>
+<h3>3. L'école congolaise post-indépendance (1960-1990)</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Réforme de 1961</strong> : unification du système éducatif, programme unique.</li><li><strong>Nationalisation des universités</strong> : création de l'UNAZA (Université nationale du Zaïre).</li><li><strong>Zaïrianisation</strong> (1974-1977) : adaptation des programmes aux réalités nationales.</li><li><strong>Explosion démographique scolaire</strong> : augmentation massive des effectifs.</li><li><strong>Création de l'IPN</strong> (Institut pédagogique national) en 1961.</li></ul></div>
+<h3>4. Les réformes actuelles et la gratuité (1990-2025)</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>États généraux de l'éducation</strong> (1992) : diagnostic du système et propositions de réforme.</li><li><strong>Loi-cadre n° 14/004 du 11 février 2014</strong> : fondement juridique de l'enseignement national.</li><li><strong>Gratuité de l'enseignement primaire</strong> (2019) : mesure phare du gouvernement.</li><li><strong>Humanités Pédagogiques Rénovées (HPR)</strong> : réforme de la formation initiale des enseignants du primaire.</li><li><strong>Défis actuels</strong> : financement, qualité des infrastructures, formation des maîtres.</li></ul><p><a href="https://www.youtube.com/results?search_query=histoire+de+l'enseignement+au+Congo+EIC+colonisation+indépendance" target="_blank" rel="noopener">🎥 Recherche : histoire de l'enseignement au Congo (chaînes de cours de pédagogie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>L'enseignement au Congo a évolué de l'EIC (écoles missionnaires) à la colonisation belge (partenariat État-Missions), puis à l'école post-indépendance (unification, zaïrianisation) et enfin aux réformes actuelles (gratuité, HPR).</p></div>
+<div class="sources"><strong>Sources :</strong> Manuel de Pédagogie Générale 4ème année (manuels-scolaires-rdc.com, 2025), Cours de Pédagogie Générale 6ème PEDA (Prof. Fiston EKANGA MOTINGA), Programme national de Pédagogie (2009).</div>
+    `
+},
+{
+    title: "Leçon 3 — Limites et anomalies de l'éducation",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>À Kinshasa, un enseignant constate que certains élèves n'apprennent pas malgré ses efforts. Il se demande : « Quelles sont les limites de l'action éducative ? » La réponse se trouve dans l'étude des limites et anomalies de l'éducation.</p></div>
+<h3>1. Les facteurs limitant l'action éducative</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Héritage biologique</strong> : prédisposition génétique, capacités intellectuelles.</li><li><strong>Influence du milieu</strong> : conditions socio-économiques précaires, environnement familial.</li><li><strong>Liberté de l'enfant</strong> : l'apprenant peut refuser ou accepter l'influence éducative.</li><li><strong>Autorité du maître</strong> : tension entre l'offre éducative et l'acceptation par l'élève.</li><li><strong>Attitude du maître</strong> : ne pas briser la volonté de l'enfant, mais guider sa liberté vers l'adhésion volontaire.</li></ul></div>
+<h3>2. Les anomalies physiologiques et sensorielles</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Troubles de la vision</strong> : myopie, hypermétropie, astigmatisme.</li><li><strong>Troubles de l'audition</strong> : surdité partielle ou totale.</li><li><strong>Troubles de la parole</strong> : bégaiement, dyslexie.</li><li><strong>Stratégies pédagogiques</strong> : placement optimal de l'élève en classe, collaboration avec les services de santé scolaire.</li></ul></div>
+<h3>3. Les anomalies psychologiques et caractérielles</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Instabilité émotionnelle</strong> : sautes d'humeur, impulsivité.</li><li><strong>Blocages affectifs</strong> : peur, anxiété, manque de confiance.</li><li><strong>Troubles du comportement</strong> : agressivité, inhibition, opposition.</li><li><strong>Rôle de l'enseignant</strong> : dépistage précoce, médiation, orientation vers des psychologues ou structures spécialisées.</li></ul></div>
+<h3>4. Exemple d'application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p>Dans une école de Mbuji-Mayi, un élève myope est placé au premier rang. L'enseignant collabore avec l'infirmière scolaire pour lui faire porter des lunettes. Résultat : l'élève participe mieux et ses résultats s'améliorent.</p><p><a href="https://www.youtube.com/results?search_query=limites+anomalies+éducation+troubles+apprentissage" target="_blank" rel="noopener">🎥 Recherche : limites et anomalies de l'éducation (chaînes de cours de pédagogie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>L'éducation a des limites : héritage biologique, milieu, liberté de l'enfant. Les anomalies peuvent être physiologiques (vision, audition, parole) ou psychologiques (émotionnelles, comportementales). L'enseignant doit dépister et adapter sa pédagogie.</p></div>
+<div class="sources"><strong>Sources :</strong> Manuel de Pédagogie Générale 4ème année (manuels-scolaires-rdc.com, 2025), Cours de Pédagogie Générale 6ème PEDA (Prof. Fiston EKANGA MOTINGA).</div>
+    `
+},
+{
+    title: "Leçon 4 — Formes traditionnelles et nouvelles de l'éducation",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans un village de l'Équateur, un ancien enseigne aux jeunes les techniques de pêche et les rites du clan. À Kinshasa, une école moderne dispense des cours théoriques. Deux formes d'éducation : traditionnelle et nouvelle.</p></div>
+<h3>1. Caractéristiques de l'éducation traditionnelle africaine</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Oralité</strong> : transmission par la parole, les contes, les proverbes.</li><li><strong>Collectivité</strong> : l'enfant appartient au clan, à la communauté.</li><li><strong>Pragmatisme</strong> : apprentissage des métiers et des mœurs par imitation.</li><li><strong>Rites d'initiation</strong> : passage à l'âge adulte, intégration sociale.</li><li><strong>Objectif</strong> : intégration immédiate dans la société.</li></ul></div>
+<h3>2. Caractéristiques de l'éducation nouvelle et scolaire</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Écrit</strong> : transmission par l'écrit, les manuels, les programmes codifiés.</li><li><strong>Théorique</strong> : savoirs abstraits, scientifiques.</li><li><strong>Individualisante</strong> : l'élève est évalué individuellement.</li><li><strong>Certifications</strong> : diplômes, grades, examens.</li><li><strong>Vocation</strong> : ouvrir l'esprit sur l'universel et la science.</li><li><strong>Limite</strong> : parfois déconnectée du milieu de vie de l'enfant.</li></ul></div>
+<h3>3. Comparaison critique</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Rôle du maître</strong> : initiateur (traditionnel) vs enseignant (moderne).</li><li><strong>Discipline</strong> : conformisme social vs règlement intérieur.</li><li><strong>Méthodes</strong> : observation directe vs abstraction.</li><li><strong>Forces</strong> : solidarité et respect des aînés (traditionnel) ; ouverture universelle (moderne).</li><li><strong>Faiblesses</strong> : fermeture au monde (traditionnel) ; déconnexion du milieu (moderne).</li></ul></div>
+<h3>4. Synthèse pour une pédagogie adaptée</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p>L'école congolaise moderne peut récupérer les valeurs de solidarité et de respect des aînés propres à la tradition, tout en maintenant les exigences académiques modernes. C'est la recherche d'une <strong>pédagogie inculturée</strong>, pertinente pour le développement national.</p><p><a href="https://www.youtube.com/results?search_query=éducation+traditionnelle+africaine+éducation+nouvelle+comparaison" target="_blank" rel="noopener">🎥 Recherche : formes traditionnelles et nouvelles de l'éducation (chaînes de cours de pédagogie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>L'éducation traditionnelle est orale, collective et pragmatique. L'éducation moderne est écrite, théorique et individualisante. La synthèse propose une pédagogie inculturée qui allie les valeurs traditionnelles aux exigences modernes.</p></div>
+<div class="sources"><strong>Sources :</strong> Manuel de Pédagogie Générale 4ème année (manuels-scolaires-rdc.com, 2025), Cours de Pédagogie Générale 6ème PEDA (Prof. Fiston EKANGA MOTINGA).</div>
+    `
+},
+{
+    title: "Leçon 5 — La dissertation pédagogique",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>À l'EXETAT, on te propose le sujet : « L'enseignant doit-il être un modèle pour ses élèves ? » Tu dois rédiger une dissertation pédagogique. Sans méthode, on se perd.</p></div>
+<h3>1. Nature et objectifs</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Dissertation pédagogique</strong> : épreuve qui mesure la maturité professionnelle du finaliste.</li><li><strong>Objectif</strong> : traiter un problème éducatif en mobilisant des connaissances théoriques et une réflexion personnelle.</li><li><strong>Attentes</strong> : clarté de l'argumentation, précision du vocabulaire psychopédagogique, cohérence de la pensée.</li></ul></div>
+<h3>2. Méthode en 5 étapes</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ol><li><strong>Analyse du sujet</strong> : identifier les mots-clés, cerner la problématique, éviter le hors-sujet.</li><li><strong>Recherche des idées</strong> : mobiliser les connaissances (auteurs, théories, exemples).</li><li><strong>Élaboration du plan</strong> : plan dialectique (thèse/antithèse/synthèse), thématique ou analytique.</li><li><strong>Rédaction</strong> : introduction (accroche, problématique, annonce du plan), développement (2-3 parties), conclusion.</li><li><strong>Relecture</strong> : vérifier la cohérence, l'orthographe, la présentation.</li></ol></div>
+<h3>3. Structure du devoir</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Introduction</strong> : accroche (citation, fait d'actualité), définition des termes, problématique, annonce du plan.</li><li><strong>Développement</strong> : 2 ou 3 parties, chacune avec 2-3 paragraphes argumentés et des exemples concrets.</li><li><strong>Transition</strong> entre les parties.</li><li><strong>Conclusion</strong> : synthèse, réponse à la problématique, ouverture.</li></ul></div>
+<h3>4. Exemple de sujet et plan</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p>Sujet : « L'enseignant doit-il être un modèle pour ses élèves ? »</p><ul><li><strong>Thèse</strong> : oui, l'enseignant est un modèle de comportement, de savoir et de valeurs.</li><li><strong>Antithèse</strong> : non, l'enseignant est un professionnel, pas un saint ; il peut avoir ses faiblesses.</li><li><strong>Synthèse</strong> : l'enseignant doit être un modèle professionnel, mais reste un être humain perfectible.</li></ul><p><a href="https://www.youtube.com/results?search_query=dissertation+pédagogique+méthode+plan" target="_blank" rel="noopener">🎥 Recherche : la dissertation pédagogique (chaînes de cours de pédagogie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La dissertation pédagogique est un devoir argumenté sur un problème éducatif. Méthode : analyse du sujet, recherche des idées, plan, rédaction, relecture. Structure : introduction, développement, conclusion.</p></div>
+<div class="sources"><strong>Sources :</strong> Manuel de Pédagogie Générale 4ème année (manuels-scolaires-rdc.com, 2025), Cours de Pédagogie Générale 6ème PEDA (Prof. Fiston EKANGA MOTINGA).</div>
+    `
+},
+{
+    title: "Leçon 6 — La législation scolaire",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>À l'ouverture d'une école à Kinshasa, le directeur doit connaître les textes légaux qui régissent l'enseignement. La législation scolaire est le cadre juridique de sa profession.</p></div>
+<h3>1. Notion et sources</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Législation scolaire</strong> : ensemble des lois et règlements qui organisent l'enseignement.</li><li><strong>Sources</strong> : Constitution, loi-cadre de l'enseignement, arrêtés ministériels, instructions officielles.</li><li><strong>Textes de référence</strong> : Loi-cadre n° 14/004 du 11 février 2014, recueil des instructions administratives.</li></ul></div>
+<h3>2. La Loi-cadre n° 14/004 du 11 février 2014</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Finalité</strong> : définir les principes fondamentaux de l'enseignement national.</li><li><strong>Structure</strong> : enseignement maternel, primaire, secondaire, supérieur et universitaire.</li><li><strong>Droits et devoirs</strong> : de l'État, des enseignants, des parents et des élèves.</li><li><strong>Conditions d'ouverture d'une école</strong> : autorisation préalable, respect des normes.</li><li><strong>Gratuité</strong> : enseignement primaire gratuit dans les établissements publics.</li></ul></div>
+<h3>3. Les textes d'application</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Arrêtés ministériels</strong> : organisation des examens, calendrier scolaire.</li><li><strong>Instructions officielles</strong> : directives pédagogiques et administratives.</li><li><strong>Recueil des instructions administratives</strong> : compilation des textes en vigueur.</li></ul></div>
+<h3>4. Exemple d'application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p>Un directeur veut ouvrir une école primaire à Kisangani. Il doit obtenir une autorisation du ministère, respecter les normes d'infrastructure et appliquer la gratuité. Sans ces conditions, l'école est illégale.</p><p><a href="https://www.youtube.com/results?search_query=législation+scolaire+RDC+loi+cadre+2014" target="_blank" rel="noopener">🎥 Recherche : la législation scolaire (chaînes de cours de pédagogie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La législation scolaire est le cadre juridique de l'enseignement. La Loi-cadre n° 14/004 du 11 février 2014 définit la finalité, la structure, les droits et devoirs, et les conditions d'ouverture d'une école.</p></div>
+<div class="sources"><strong>Sources :</strong> Loi-cadre n° 14/004 du 11 février 2014, Cours de Pédagogie Générale 6ème PEDA (Prof. Fiston EKANGA MOTINGA).</div>
+    `
+},
+{
+    title: "Leçon 7 — La déontologie de l'enseignant",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Un enseignant de Lubumbashi arrive en retard, utilise son téléphone en classe et manque de respect à ses élèves. Ses collègues lui rappellent la déontologie de la profession. Que signifie ce terme ?</p></div>
+<h3>1. Notion de déontologie</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Déontologie</strong> : ensemble des règles et devoirs qui régissent une profession.</li><li><strong>Déontologie de l'enseignant</strong> : règles de conduite professionnelle dans l'exercice du métier.</li><li><strong>Fondement</strong> : éthique professionnelle, respect de l'élève, de la société et de l'institution.</li></ul></div>
+<h3>2. Les exigences de la déontologie</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Ponctualité et assiduité</strong> : être présent et à l'heure.</li><li><strong>Respect des élèves</strong> : ne pas humilier, ne pas frapper, ne pas discriminer.</li><li><strong>Confidentialité</strong> : ne pas divulguer les informations personnelles des élèves.</li><li><strong>Neutralité</strong> : ne pas imposer ses opinions politiques ou religieuses.</li><li><strong>Dignité</strong> : adopter une tenue correcte, un langage poli.</li><li><strong>Formation continue</strong> : actualiser ses connaissances.</li></ul></div>
+<h3>3. Les conseils pratiques</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Signer un acte d'engagement</strong> : chaque enseignant s'engage à respecter le code de bonne conduite.</li><li><strong>Éviter les conflits d'intérêts</strong> : ne pas collecter des frais illégaux.</li><li><strong>Collaborer avec les collègues</strong> : esprit d'équipe, respect de la hiérarchie.</li><li><strong>Communiquer avec les parents</strong> : dialogue constructif.</li></ul></div>
+<h3>4. Exemple d'application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p>Un enseignant de Kinshasa reçoit un cadeau d'un parent pour favoriser son enfant. La déontologie lui interdit d'accepter : c'est une forme de corruption. Il doit refuser et expliquer pourquoi.</p><p><a href="https://www.youtube.com/results?search_query=déontologie+enseignant+RDC+éthique+professionnelle" target="_blank" rel="noopener">🎥 Recherche : la déontologie de l'enseignant (chaînes de cours de pédagogie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La déontologie est l'ensemble des règles et devoirs de la profession enseignante. Elle exige ponctualité, respect des élèves, confidentialité, neutralité et dignité. L'enseignant signe un acte d'engagement.</p></div>
+<div class="sources"><strong>Sources :</strong> Cours de Pédagogie Générale 6ème PEDA (Prof. Fiston EKANGA MOTINGA), Référentiel des compétences des enseignants (LEST/RDC).</div>
+    `
+},
+{
+    title: "Leçon 8 — L'organisation scolaire",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans une école de Matadi, le directeur organise l'année scolaire : calendrier, emploi du temps, répartition des classes. Comment fonctionne une école ? C'est l'objet de l'organisation scolaire.</p></div>
+<h3>1. Organisation administrative</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Hiérarchie scolaire</strong> : ministre → province éducationnelle → sous-division → école.</li><li><strong>Tâches du chef d'établissement</strong> : direction, gestion du personnel, relations avec les parents.</li><li><strong>Documents administratifs</strong> : registre matricule, livre de caisse, correspondance.</li><li><strong>Régime de gestion</strong> : école publique ou privée (conventionnée ou non).</li></ul></div>
+<h3>2. Organisation pédagogique</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Tâches pédagogiques</strong> : du chef d'établissement, de l'enseignant et de l'élève.</li><li><strong>Documents pédagogiques</strong> : fiche de préparation, journal de classe, prévision des matières, cahier de textes.</li><li><strong>Documents du chef d'établissement</strong> : registre de présence, rapports d'inspection.</li><li><strong>Documents de l'élève</strong> : cahiers, bulletins, carnet de notes.</li></ul></div>
+<h3>3. Les points d'organisation</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Classe unique</strong> : un seul enseignant pour plusieurs niveaux.</li><li><strong>Classe par degré</strong> : regroupement de deux niveaux (ex. 1re et 2e).</li><li><strong>Classe mixte</strong> : garçons et filles ensemble.</li><li><strong>Classe à effectif pléthorique</strong> : défi des grandes villes comme Kinshasa ou Lubumbashi.</li></ul></div>
+<h3>4. Exemple d'application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p>À Kwilu, une école rurale pratique la classe à degré unique : le maître enseigne aux 1re et 2e années dans la même salle. Il adapte son emploi du temps pour alterner les activités.</p><p><a href="https://www.youtube.com/results?search_query=organisation+scolaire+RDC+classe+unique+degré" target="_blank" rel="noopener">🎥 Recherche : l'organisation scolaire (chaînes de cours de pédagogie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>L'organisation scolaire comprend l'administration (hiérarchie, documents) et la pédagogie (fiches, journaux, bulletins). Les points d'organisation : classe unique, par degré, mixte, pléthorique.</p></div>
+<div class="sources"><strong>Sources :</strong> Cours de Pédagogie Générale 6ème PEDA (Prof. Fiston EKANGA MOTINGA), Manuel de Pédagogie Générale 4ème année (manuels-scolaires-rdc.com, 2025).</div>
+    `
+},
+{
+    title: "Leçon 9 — Les innovations pédagogiques",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>À Kinshasa, une école applique la pédagogie par compétences (APC). Les élèves travaillent en groupes sur des situations-problèmes concrètes. Le directeur explique que c'est une innovation pédagogique. Que signifie ce terme ?</p></div>
+<h3>1. La pédagogie par objectifs (PPO)</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Définition</strong> : approche qui définit des objectifs opérationnels précis et mesurables.</li><li><strong>Importance</strong> : clarté des intentions, évaluation facilitée.</li><li><strong>Formulation d'un objectif opérationnel</strong> : verbe d'action (définir, citer, expliquer) + contenu + condition + critère de réussite.</li><li><strong>Exemple</strong> : « À la fin de la leçon, l'élève sera capable de citer les trois pouvoirs de l'État. »</li></ul></div>
+<h3>2. La pédagogie par compétences (APC)</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Définition</strong> : approche centrée sur la mobilisation des savoirs en situation.</li><li><strong>Importance</strong> : prépare l'élève à résoudre des problèmes réels.</li><li><strong>Compétences de base</strong> : lire, écrire, calculer, communiquer, résoudre des problèmes.</li><li><strong>Critiques</strong> : difficulté d'évaluation, manque de formation des enseignants.</li></ul></div>
+<h3>3. La pédagogie d'intégration</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Définition</strong> : intégration des acquis dans des situations complexes.</li><li><strong>Objectif</strong> : donner du sens aux apprentissages.</li><li><strong>Démarche</strong> : situations-problèmes, projets, travaux pratiques.</li></ul></div>
+<h3>4. L'éducation pour tous et l'éducation à la vie</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Éducation pour tous (EPT)</strong> : objectif international d'accès à l'éducation pour tous les enfants.</li><li><strong>Éducation à la vie</strong> : préparation à la vie adulte (santé, citoyenneté, environnement).</li><li><strong>Éducation à la santé et à l'environnement</strong> : hygiène, prévention, développement durable.</li><li><strong>Éducation à la citoyenneté</strong> : droits et devoirs, démocratie, paix.</li></ul><p><a href="https://www.youtube.com/results?search_query=innovations+pédagogiques+PPO+APC+éducation+pour+tous" target="_blank" rel="noopener">🎥 Recherche : les innovations pédagogiques (chaînes de cours de pédagogie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Les innovations pédagogiques incluent la PPO (objectifs opérationnels), l'APC (compétences en situation), la pédagogie d'intégration, l'éducation pour tous, l'éducation à la vie, à la santé, à l'environnement et à la citoyenneté.</p></div>
+<div class="sources"><strong>Sources :</strong> Cours de Pédagogie Générale 6ème PEDA (Prof. Fiston EKANGA MOTINGA), Programme national de Pédagogie (2009).</div>
+    `
+},
+{
+    title: "Évaluation finale — Items EXETAT",
+    content: `
+        <p style="margin-bottom:18px;color:#b34a00;font-size:0.95rem;">Cette évaluation regroupe des items de type EXETAT. Fais l'exercice dans les conditions du concours : sans notes, en une seule fois.</p>
+
+        <div class="bloc theorie">
+            <div class="bloc-label">Consignes</div>
+            <ul>
+                <li>30 questions à choix multiples.</li>
+                <li>Une seule réponse correcte par question.</li>
+                <li>Pas de retour en arrière sur les questions déjà validées.</li>
+                <li>Durée recommandée : 30 minutes.</li>
+            </ul>
+        </div>
+
+        <div class="quiz-container" id="quizContainer">
+            <h3 style="color:#4e2a0c;margin-bottom:16px;font-size:1.1rem;">Partie 1 — Questions</h3>
+            <div id="quizQuestions"></div>
+            <button id="submitQuiz" class="quiz-btn-submit">Valider mes réponses</button>
+            <div id="quizResult" class="quiz-result"></div>
+        </div>
+    `
+}
+];
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim()) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderQuiz() {
+    const questions = [
+        { text:"La pédagogie est à la fois :", options:["Art et science","Science et technique","Art, science, philosophie et technique"], correct:2 },
+        { text:"Quel est l'objet de la pédagogie ?", options:["L'enfant","L'éducation","L'école"], correct:1 },
+        { text:"Qui est le père de la didactique ?", options:["Comenius","Rousseau","Montaigne"], correct:0 },
+        { text:"Qui a dit « Mieux vaut une tête bien faite qu'une tête bien pleine » ?", options:["Montaigne","Rabelais","Comenius"], correct:0 },
+        { text:"Qui a dit « Mieux vaut une tête bien pleine qu'une tête bien faite » ?", options:["Montaigne","Rabelais","Comenius"], correct:1 },
+        { text:"Qui est le père du pédocentrisme ?", options:["Comenius","Rousseau","Claparède"], correct:1 },
+        { text:"Que signifie « Discat a puero magister » ?", options:["Que le maître apprenne de l'enfant","Que l'enfant obéisse au maître","Que le maître enseigne à l'enfant"], correct:0 },
+        { text:"Quel est le fondateur de la pédagogie comparée ?", options:["Binet","Buyse","Marc-Antoine Jullien de Paris"], correct:2 },
+        { text:"Quand a été créé l'IPN (Institut pédagogique national) ?", options:["1960","1961","1965"], correct:1 },
+        { text:"Quelle réforme a unifié le système éducatif congolais ?", options:["Réforme de 1948","Réforme de 1961","Zaïrianisation"], correct:1 },
+        { text:"Quelle est la loi-cadre de l'enseignement national en RDC ?", options:["Loi n° 86/005","Loi n° 14/004 du 11 février 2014","Loi n° 007/2002"], correct:1 },
+        { text:"Quand la gratuité de l'enseignement primaire a-t-elle été instaurée ?", options:["2014","2019","2020"], correct:1 },
+        { text:"Qu'est-ce que la déontologie ?", options:["L'ensemble des règles et devoirs d'une profession","La science de l'éducation","L'art d'enseigner"], correct:0 },
+        { text:"Que doit faire un enseignant face à un élève myope ?", options:["Le placer au premier rang","L'ignorer","Le punir"], correct:0 },
+        { text:"Qu'est-ce qu'une classe à degré unique ?", options:["Un seul niveau","Deux niveaux dans la même salle","Trois niveaux"], correct:1 },
+        { text:"Que signifie PPO ?", options:["Pédagogie Par Objectifs","Pédagogie Par Compétences","Programme Pédagogique Officiel"], correct:0 },
+        { text:"Que signifie APC ?", options:["Approche Par Compétences","Approche Pédagogique Classique","Association des Parents"], correct:0 },
+        { text:"Quel est le rôle du chef d'établissement ?", options:["Diriger l'école","Enseigner uniquement","Surveiller les élèves"], correct:0 },
+        { text:"Qu'est-ce que l'éducation traditionnelle africaine ?", options:["Écrite et théorique","Orale et collective","Individuelle et scientifique"], correct:1 },
+        { text:"Qu'est-ce que l'éducation moderne ?", options:["Orale et pragmatique","Écrite et théorique","Collective et rituelle"], correct:1 },
+        { text:"Qu'est-ce que la pédagogie inculturée ?", options:["Une pédagogie adaptée au milieu","Une pédagogie importée","Une pédagogie traditionnelle pure"], correct:0 },
+        { text:"Quel trouble empêche un élève de bien voir au tableau ?", options:["La myopie","Le bégaiement","La dyslexie"], correct:0 },
+        { text:"Que fait l'enseignant face à un trouble psychologique ?", options:["Il le signale aux spécialistes","Il ignore","Il punit"], correct:0 },
+        { text:"Quelle est la première étape de la dissertation pédagogique ?", options:["Rédaction","Analyse du sujet","Relecture"], correct:1 },
+        { text:"Quel plan convient pour un sujet à discuter ?", options:["Plan dialectique","Plan thématique","Plan analytique"], correct:0 },
+        { text:"Que doit contenir l'introduction d'une dissertation ?", options:["Accroche, problématique, annonce du plan","Conclusion","Développement"], correct:0 },
+        { text:"Qu'est-ce que l'éducation à la citoyenneté ?", options:["Apprendre les droits et devoirs","Apprendre à lire","Apprendre à calculer"], correct:0 },
+        { text:"Quel est l'objectif de l'éducation pour tous ?", options:["Accès à l'éducation pour tous les enfants","Former des élites","Réduire les effectifs"], correct:0 },
+        { text:"Quelle est la devise de Claparède ?", options:["Discat a puero magister","Sapere aude","Cogito ergo sum"], correct:0 },
+        { text:"Qui a jeté les bases de la méthode interrogative ?", options:["Socrate","Platon","Aristote"], correct:0 }
+    ];
+    let html = '';
+    questions.forEach((q,i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o,k) => { html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>'; });
+        html += '</div>';
+    });
+    document.getElementById('quizQuestions').innerHTML = html;
+    document.getElementById('submitQuiz').onclick = () => {
+        let score = 0;
+        questions.forEach((q,i) => {
+            const s = document.querySelector('input[name="q' + i + '"]:checked');
+            if (s && parseInt(s.value) === q.correct) score++;
+        });
+        const pct = Math.round(score/questions.length*100);
+        document.getElementById('quizResult').innerHTML = '<div style="background:#fbdcb8;padding:16px;border-radius:10px;margin-top:14px;">' +
+            '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong><br>' +
+            (score === questions.length ? 'Excellent. Tu maîtrises le programme.' :
+             score >= 21 ? 'Bien. Revoyez les leçons où vous avez échoué.' :
+             'Relis attentivement les leçons avant l\'examen.') + '</div>';
+    };
+}
+function renderSlide(index, keepHighlight = true) {
+    const isQuiz = (index === slides.length - 1);
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    if (isQuiz) renderQuiz();
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm && !isQuiz) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+</body>
+</html>
