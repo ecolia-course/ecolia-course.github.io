@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Comptabilité — 4e secondaire (EXETAT)</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body {
+    font-family:'Segoe UI',system-ui,sans-serif;
+    background:linear-gradient(160deg,#0d2b4f 0%,#1565c0 50%,#07172e 100%);
+    display:flex; justify-content:center; align-items:center;
+    padding:8px;
+}
+.container {
+    width:100%; max-width:1400px; background:#fefdf8;
+    border-radius:20px; overflow:hidden;
+    display:flex; flex-direction:column;
+    height:100%; max-height:100vh;
+    box-shadow:0 20px 60px rgba(0,0,0,0.4);
+}
+.progress-bar { height:4px; background:#cfdff5; flex-shrink:0; }
+.progress-fill {
+    height:100%; background:linear-gradient(90deg,#5b8fd0,#12437a);
+    width:0%; transition:width 0.3s;
+}
+.header {
+    padding:10px 16px; background:#e8f0fb;
+    border-bottom:1px solid #a9c3e8;
+    display:flex; justify-content:space-between; align-items:center;
+    gap:10px; flex-shrink:0;
+}
+.header h1 { color:#12437a; font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box {
+    display:flex; background:white; border-radius:20px;
+    padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06);
+}
+.search-box input {
+    border:none; padding:6px 10px; border-radius:20px;
+    outline:none; width:130px; font-size:0.8rem;
+}
+.search-box button {
+    background:none; border:none; cursor:pointer;
+    padding:4px 8px; font-size:0.85rem; color:#1565c0;
+}
+.badge {
+    background:#5b8fd0; color:white; padding:4px 10px;
+    border-radius:20px; font-weight:bold; font-size:0.75rem;
+}
+.search-nav {
+    display:none; gap:4px; background:#cfdff5;
+    padding:2px 8px; border-radius:20px; align-items:center;
+    font-size:0.75rem;
+}
+.search-nav button {
+    background:none; border:none; cursor:pointer;
+    font-size:0.9rem; color:#12437a; padding:2px 4px;
+}
+.content {
+    padding:28px 32px; flex:1; overflow-y:auto;
+    background:#fff; scroll-behavior:smooth;
+    line-height:1.85;
+}
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide {
+    from { opacity:0; transform:translateY(8px); }
+    to { opacity:1; transform:translateY(0); }
+}
+.slide-title {
+    color:#0d2b4f; font-size:1.5rem; font-weight:700;
+    padding-bottom:12px; margin-bottom:20px;
+    border-bottom:2px solid #5b8fd0;
+}
+.slide-content { color:#0a1c35; font-size:1rem; }
+.bloc {
+    padding:18px 22px; border-radius:12px;
+    margin:22px 0; line-height:1.85;
+}
+.bloc-label {
+    font-size:0.75rem; font-weight:700;
+    letter-spacing:1.5px; text-transform:uppercase;
+    margin-bottom:8px; opacity:0.7;
+}
+.bloc p, .bloc li { font-size:0.98rem; }
+.bloc h3 {
+    font-size:1.1rem; margin:20px 0 10px;
+    font-weight:600;
+}
+.bloc h3:first-child { margin-top:0; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:#e8f0fb; border-left:4px solid #5b8fd0; }
+.theorie .bloc-label { color:#12437a; }
+.pratique { background:#e8f5e9; border-left:4px solid #43a047; }
+.pratique .bloc-label { color:#1b5e20; }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:#0d2b4f; }
+.quiz-container { padding:22px; background:#e8f0fb; border-radius:16px; }
+.quiz-question {
+    background:white; border-radius:10px; padding:16px;
+    margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05);
+}
+.quiz-question p { font-weight:600; margin-bottom:10px; color:#0d2b4f; }
+.quiz-question label {
+    display:block; padding:8px 10px; margin:4px 0;
+    border-radius:6px; cursor:pointer; transition:background 0.2s;
+}
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit {
+    background:#2a67b0; color:white; border:none;
+    padding:12px 24px; border-radius:30px; font-size:1rem;
+    cursor:pointer; font-weight:600; margin-top:14px;
+}
+.quiz-result { margin-top:16px; font-weight:600; }
+.sources {
+    background:#f5f5f5; padding:12px 16px; border-radius:10px;
+    margin-top:26px; font-size:0.82rem; color:#666;
+    border-left:3px solid #999; line-height:1.6;
+}
+.sources strong { color:#333; }
+.controls {
+    padding:8px 16px; background:#fafafa;
+    border-top:1px solid #e0e0e0;
+    display:flex; justify-content:space-between;
+    align-items:center; gap:8px; flex-shrink:0;
+}
+.nav-btn {
+    background:white; color:#12437a;
+    border:1px solid #ccc; padding:8px 14px;
+    border-radius:8px; font-size:0.82rem;
+    cursor:pointer; font-weight:500;
+}
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:#dde8f7; }
+.content::-webkit-scrollbar-thumb { background:#5b8fd0; border-radius:3px; }
+@media (max-width:600px) {
+    body { padding:0; }
+    .container { border-radius:0; max-height:100vh; }
+    .content { padding:20px 18px; }
+    .slide-title { font-size:1.25rem; }
+    .search-box input { width:90px; }
+    .header h1 { font-size:0.85rem; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+    <div class="header">
+        <h1>Comptabilité · 4e secondaire</h1>
+        <div class="header-right">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Rechercher">
+                <button id="searchBtn">⌕</button>
+            </div>
+            <div class="search-nav" id="searchNav">
+                <button id="prevResultBtn">‹</button>
+                <span id="resultCounter">0/0</span>
+                <button id="nextResultBtn">›</button>
+            </div>
+            <span class="badge" id="slideCounter">1/9</span>
+        </div>
+    </div>
+
+    <div class="content" id="content"></div>
+
+    <div class="controls">
+        <button class="nav-btn" id="prevBtn">← Précédent</button>
+        <span class="counter" id="counter">Leçon 1 / 9</span>
+        <button class="nav-btn" id="nextBtn">Suivant →</button>
+    </div>
+</div>
+
+<script>
+const slides = [
+{
+    title: "Leçon 1 — Les pièces justificatives et la note d'imputation",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Au service comptabilité de la société LESUEUR à Kinshasa, un stagiaire reçoit une facture d'achat, un reçu de caisse et un bordereau de banque. Avant de les enregistrer, il doit vérifier leur authenticité et préparer une note d'imputation. Sans pièces valides, aucune écriture n'est possible.</p></div>
+<h3>1. Définition et importance des pièces justificatives</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Pièce justificative</strong> : document original qui prouve l'existence d'une opération comptable (facture, reçu, chèque, bordereau).</li><li><strong>Importance</strong> : elle garantit la réalité, la date et le montant de l'opération ; elle sert de preuve en cas de contrôle fiscal ou de litige.</li><li><strong>Obligation légale</strong> : l'article 15 de l'Acte uniforme OHADA impose la conservation des pièces justificatives.</li><li><strong>Catégories</strong> : pièces de base (factures, reçus) et pièces auxiliaires (bons de commande, bordereaux).</li></ul></div>
+<h3>2. Le traitement des pièces</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Contrôle</strong> : vérifier l'originalité, l'exactitude des montants, la conformité de la TVA et la signature des responsables.</li><li><strong>Classement</strong> : trier par nature (achat, vente, banque, caisse) et par date.</li><li><strong>Pré-comptabilisation</strong> : inscrire sur la pièce les codes des comptes à débiter et à créditer.</li><li><strong>Note d'imputation</strong> : document interne qui indique les comptes débités et crédités pour chaque opération.</li></ul></div>
+<h3>3. Application au cas LESUEUR</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p>Facture n°013 du 5 mars 2018 : achat de 5 cartons de piles à 15 130 FC, remise 2 % (1 513 FC), net commercial 74 137 FC, TVA 16 % (11 862 FC), net à payer 85 999 FC.</p><ul><li><strong>Comptes débités</strong> : 601 (Achats de marchandises) 74 137 ; 445 (TVA récupérable) 11 862.</li><li><strong>Compte crédité</strong> : 401 (Fournisseurs) 85 999.</li><li><strong>Note d'imputation</strong> : D 601 et 445 / C 401.</li></ul><p><a href="https://www.youtube.com/results?search_query=pièces+justificatives+note+d'imputation+comptabilité+OHADA" target="_blank" rel="noopener">🎥 Recherche : pièces justificatives et note d'imputation (chaînes de cours de comptabilité)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Les pièces justificatives prouvent les opérations. On les contrôle, on les classe et on prépare une note d'imputation qui indique les comptes à débiter et à créditer.</p></div>
+<div class="sources"><strong>Sources :</strong> Curriculum de Commerciale et Gestion, 6e année (MEPST/DIPROMAD, 2023), Fonction 1, compétence 1.1.2.<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT, OHADA, TVA.</div>
+    `
+},
+{
+    title: "Leçon 2 — Les livres comptables : journaux, grand-livre, balance",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Le comptable de la société LESUEUR a enregistré toutes les factures du mois. Il doit maintenant reporter les écritures dans le grand-livre et établir la balance. Sans cette étape, impossible de produire les états financiers.</p></div>
+<h3>1. Les livres comptables obligatoires</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Livre-journal</strong> : enregistrement chronologique de toutes les opérations, écriture par écriture.</li><li><strong>Grand-livre</strong> : regroupement des écritures par compte (601, 401, 521, etc.).</li><li><strong>Balance générale</strong> : tableau récapitulatif des soldes de tous les comptes (à 4 ou 6 colonnes).</li><li><strong>Journaux auxiliaires</strong> : journaux spécialisés (achats, ventes, banque, caisse, paie).</li><li><strong>Grands livres auxiliaires</strong> : détail des comptes de tiers (fournisseurs, clients).</li></ul></div>
+<h3>2. Le principe de la partie double</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Toute opération affecte <strong>au moins deux comptes</strong> : un débit et un crédit d'égal montant.</li><li><strong>Débit</strong> : emplois (actif qui augmente, charges).</li><li><strong>Crédit</strong> : ressources (passif qui augmente, produits).</li><li><strong>Vérification</strong> : total débit = total crédit à chaque écriture.</li></ul></div>
+<h3>3. Application au cas LESUEUR</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p>Écriture d'achat du 5 mars 2018 :</p><ul><li>Débit 601 Achats de marchandises : 74 137</li><li>Débit 445 TVA récupérable : 11 862</li><li>Crédit 401 Fournisseurs : 85 999</li></ul><p>Dans le grand-livre, le compte 401 est crédité de 85 999. Dans la balance, le solde créditeur du 401 est 85 999, équilibré par les soldes débiteurs de 601 et 445.</p><p><a href="https://www.youtube.com/results?search_query=livres+comptables+journal+grand+livre+balance+partie+double" target="_blank" rel="noopener">🎥 Recherche : les livres comptables (chaînes de cours de comptabilité)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le journal enregistre chronologiquement, le grand-livre regroupe par compte, la balance récapitule les soldes. La partie double exige que débit = crédit à chaque écriture.</p></div>
+<div class="sources"><strong>Sources :</strong> Curriculum de Commerciale et Gestion, 6e année (MEPST/DIPROMAD, 2023), Fonction 1, compétence 1.1.9.<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT, OHADA.</div>
+    `
+},
+{
+    title: "Leçon 3 — L'inventaire physique et les fiches de stock",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>À la fin de l'exercice, le magasinier de LESUEUR compte les cartons de piles et de savon restants. Le comptable doit vérifier que les fiches de stock correspondent aux quantités physiques. C'est l'inventaire.</p></div>
+<h3>1. L'inventaire physique</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Inventaire</strong> : comptage physique des biens en stock à une date donnée.</li><li><strong>Fiche d'inventaire</strong> : document qui liste les articles, quantités et valeurs.</li><li><strong>Objectif</strong> : vérifier la concordance entre stock comptable et stock réel.</li><li><strong>Écarts</strong> : manquants (vol, perte) ou excédents (erreur d'enregistrement).</li></ul></div>
+<h3>2. La gestion des stocks</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Fiche de stock</strong> : enregistre les entrées, sorties et le solde en quantité et en valeur.</li><li><strong>Méthodes de valorisation</strong> : CUMP (coût unitaire moyen pondéré), FIFO (premier entré, premier sorti), LIFO (dernier entré, premier sorti).</li><li><strong>Inventaire permanent</strong> : stock mis à jour à chaque mouvement.</li><li><strong>Inventaire intermittent</strong> : comptage périodique (fin de mois, fin d'année).</li></ul></div>
+<h3>3. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p>Stock initial de piles : 10 cartons à 15 000 FC. Achat de 5 cartons à 15 130 FC. Sortie de 8 cartons. Le CUMP = (10 × 15 000 + 5 × 15 130) / 15 = 15 043 FC. Le stock final de 7 cartons est valorisé à 7 × 15 043 = 105 301 FC.</p><p><a href="https://www.youtube.com/results?search_query=inventaire+physique+fiche+de+stock+CUMP+comptabilité" target="_blank" rel="noopener">🎥 Recherche : inventaire et gestion des stocks (chaînes de cours de comptabilité)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>L'inventaire physique vérifie le stock réel. La fiche de stock suit les entrées/sorties. La valorisation utilise le CUMP, FIFO ou LIFO.</p></div>
+<div class="sources"><strong>Sources :</strong> Curriculum de Commerciale et Gestion, 6e année (MEPST/DIPROMAD, 2023), Fonction 1, compétence 1.2.1.<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT, CUMP.</div>
+    `
+},
+{
+    title: "Leçon 4 — Les amortissements et les dépréciations",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>La camionnette de livraison de LESUEUR a coûté 20 000 000 FC. Elle perd de la valeur chaque année. Le comptable doit enregistrer cette perte : c'est l'amortissement. De même, certaines créances clients ne seront jamais payées : c'est la dépréciation.</p></div>
+<h3>1. Les amortissements</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Amortissement</strong> : constatation comptable de la perte de valeur d'une immobilisation due à l'usure ou au temps.</li><li><strong>Immobilisation amortissable</strong> : bâtiment, matériel, véhicule, mobilier.</li><li><strong>Immobilisation non amortissable</strong> : terrain, fonds commercial.</li><li><strong>Modes</strong> : linéaire (annuité constante), dégressif (annuité décroissante).</li><li><strong>Formule linéaire</strong> : annuité = (valeur d'acquisition − valeur résiduelle) / durée d'utilisation.</li></ul></div>
+<h3>2. Les dépréciations et provisions</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Dépréciation</strong> : perte de valeur probable d'un actif (créance, stock, titre).</li><li><strong>Provision</strong> : constatation comptable de cette perte probable.</li><li><strong>Créances douteuses</strong> : clients qui ne paient pas.</li><li><strong>Écriture</strong> : D 681 (Dotations aux provisions) / C 491 (Provisions pour dépréciation des clients).</li></ul></div>
+<h3>3. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p>Camionnette : 20 000 000 FC, durée 5 ans, valeur résiduelle 0. Annuité linéaire = 20 000 000 / 5 = 4 000 000 FC par an. Écriture : D 681 Amortissements 4 000 000 / C 2815 Amortissements du matériel de transport 4 000 000.</p><p><a href="https://www.youtube.com/results?search_query=amortissement+linéaire+dégressif+dépréciation+comptabilité" target="_blank" rel="noopener">🎥 Recherche : amortissements et dépréciations (chaînes de cours de comptabilité)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>L'amortissement constate la perte de valeur des immobilisations (linéaire ou dégressif). La dépréciation constate la perte probable de valeur des créances ou stocks. Les deux se traduisent par des provisions.</p></div>
+<div class="sources"><strong>Sources :</strong> Curriculum de Commerciale et Gestion, 6e année (MEPST/DIPROMAD, 2023), Fonction 1, compétence 1.2.1.<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT, OHADA.</div>
+    `
+},
+{
+    title: "Leçon 5 — Les états financiers : bilan, compte de résultat et TAFIRE",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>À la fin de l'exercice, le comptable de LESUEUR doit présenter les états financiers au directeur. Il prépare le bilan, le compte de résultat et le TAFIRE. Ces documents résument la situation financière de l'entreprise.</p></div>
+<h3>1. Le bilan</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Bilan</strong> : photographie du patrimoine de l'entreprise à une date donnée.</li><li><strong>Actif</strong> : ce que possède l'entreprise (immobilisations, stocks, créances, trésorerie).</li><li><strong>Passif</strong> : ce que doit l'entreprise (capitaux propres, dettes).</li><li><strong>Équilibre</strong> : Total Actif = Total Passif.</li><li>Le bilan est structuré par <strong>grandes masses</strong> : actif immobilisé, actif circulant, trésorerie-actif.</li></ul></div>
+<h3>2. Le compte de résultat</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Compte de résultat</strong> : document qui retrace les charges et les produits de l'exercice.</li><li><strong>Produits</strong> : ventes, prestations, produits financiers.</li><li><strong>Charges</strong> : achats, salaires, loyers, impôts.</li><li><strong>Résultat</strong> : Produits − Charges = Bénéfice (si positif) ou Perte (si négatif).</li><li>Il permet de calculer le <strong>chiffre d'affaires</strong> et la <strong>rentabilité</strong>.</li></ul></div>
+<h3>3. Le TAFIRE</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>TAFIRE</strong> (Tableau Financier des Ressources et Emplois) : explique la variation de la trésorerie entre deux exercices.</li><li><strong>Ressources</strong> : augmentation des capitaux propres, emprunts, cessions d'actifs.</li><li><strong>Emplois</strong> : acquisitions d'immobilisations, remboursements d'emprunts, distributions de dividendes.</li><li><strong>Variation de trésorerie</strong> : Ressources − Emplois.</li></ul></div>
+<h3>4. Application simplifiée</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p>Une entreprise a réalisé un chiffre d'affaires de 50 000 000 FC, avec des charges de 42 000 000 FC. Résultat = 8 000 000 FC (bénéfice).</p><p><a href="https://www.youtube.com/results?search_query=bilan+compte+de+résultat+TAFIRE+SYSCOHADA" target="_blank" rel="noopener">🎥 Recherche : les états financiers (chaînes de cours de comptabilité)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le bilan photographie le patrimoine (Actif = Passif). Le compte de résultat calcule le bénéfice ou la perte. Le TAFIRE explique la variation de trésorerie.</p></div>
+<div class="sources"><strong>Sources :</strong> Curriculum de Commerciale et Gestion, 6e année (MEPST/DIPROMAD, 2023), Fonction 1, compétence 1.3.3.<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT, OHADA, TAFIRE.</div>
+    `
+},
+{
+    title: "Leçon 6 — La comptabilité analytique : coûts et prix de revient",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>La société LESUEUR produit du savon et veut connaître le coût de fabrication de chaque carton. Pour fixer son prix de vente et calculer sa marge, elle a besoin de la comptabilité analytique.</p></div>
+<h3>1. Objet de la comptabilité analytique</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Comptabilité analytique</strong> : branche de la comptabilité qui calcule les coûts et détermine le prix de revient.</li><li><strong>Objectif</strong> : connaître le coût de chaque produit, service ou commande.</li><li><strong>Différence avec la comptabilité générale</strong> : la générale enregistre les opérations globales, l'analytique détaille par produit.</li><li><strong>CAE</strong> : Comptabilité Analytique d'Exploitation.</li></ul></div>
+<h3>2. Les différents coûts</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Coût d'achat</strong> : prix d'achat + frais accessoires (transport, douane).</li><li><strong>Coût de production</strong> : coût d'achat des matières + main-d'œuvre + frais de fabrication.</li><li><strong>Coût de distribution</strong> : frais de vente (publicité, livraison).</li><li><strong>Prix de revient</strong> : coût de production + coût de distribution.</li><li><strong>Marge</strong> : Prix de vente − Prix de revient.</li></ul></div>
+<h3>3. Les charges directes et indirectes</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Charges directes</strong> : affectables immédiatement à un produit (matières premières, main-d'œuvre directe).</li><li><strong>Charges indirectes</strong> : concernent plusieurs produits ; nécessitent une répartition (loyer, électricité, entretien).</li><li><strong>Répartition</strong> : méthode des sections homogènes (centres d'analyse).</li><li><strong>Unité d'œuvre</strong> : unité qui mesure l'activité d'un centre (heure-machine, kg de matière).</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p>Production de 1 000 cartons de savon : matières premières 2 000 000 FC (charges directes), main-d'œuvre 800 000 FC (directes), frais généraux 400 000 FC (indirects à répartir). Coût de production = 3 200 000 FC, soit 3 200 FC par carton. Si le prix de vente est de 4 000 FC, la marge est de 800 FC par carton.</p><p><a href="https://www.youtube.com/results?search_query=comptabilité+analytique+coûts+prix+de+revient+charges+indirectes" target="_blank" rel="noopener">🎥 Recherche : comptabilité analytique (chaînes de cours de comptabilité)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La comptabilité analytique calcule les coûts (achat, production, distribution) et le prix de revient. Les charges directes s'affectent, les indirectes se répartissent. La marge = prix de vente − prix de revient.</p></div>
+<div class="sources"><strong>Sources :</strong> Curriculum de Commerciale et Gestion, 6e année (MEPST/DIPROMAD, 2023), Fonction 1, comptabilité analytique.<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT, CAE.</div>
+    `
+},
+{
+    title: "Leçon 7 — L'analyse financière : fonds de roulement et équilibre bilantaire",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Le directeur de LESUEUR demande au comptable si l'entreprise est financièrement équilibrée. Le comptable calcule le fonds de roulement, le besoin en fonds de roulement et la trésorerie.</p></div>
+<h3>1. Le fonds de roulement (FR)</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Fonds de roulement</strong> : ressources stables − emplois stables.</li><li><strong>Ressources stables</strong> : capitaux propres + dettes à long terme.</li><li><strong>Emplois stables</strong> : actif immobilisé.</li><li><strong>FR positif</strong> : l'entreprise dispose de ressources à long terme pour financer son cycle d'exploitation.</li><li><strong>FR négatif</strong> : situation dangereuse (financement des immobilisations par des dettes à court terme).</li></ul></div>
+<h3>2. Le besoin en fonds de roulement (BFR)</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>BFR</strong> : actif circulant (hors trésorerie) − passif circulant (hors trésorerie).</li><li><strong>Actif circulant</strong> : stocks + créances clients.</li><li><strong>Passif circulant</strong> : dettes fournisseurs + dettes fiscales.</li><li><strong>BFR positif</strong> : besoin de financement du cycle d'exploitation.</li></ul></div>
+<h3>3. La trésorerie nette</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Trésorerie nette (TN) = FR − BFR</strong>.</li><li><strong>TN positive</strong> : l'entreprise a de la trésorerie disponible.</li><li><strong>TN négative</strong> : l'entreprise est en tension de trésorerie (risque de cessation de paiement).</li><li><strong>Ratios d'analyse</strong> : autonomie financière, liquidité, rentabilité.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p>Ressources stables : 1 110 900 FC. Emplois stables : 800 000 FC. FR = 310 900 FC. Actif circulant : 500 000 FC. Passif circulant : 400 000 FC. BFR = 100 000 FC. TN = 310 900 − 100 000 = 210 900 FC. L'entreprise est équilibrée.</p><p><a href="https://www.youtube.com/results?search_query=fonds+de+roulement+BFR+trésorerie+analyse+financière" target="_blank" rel="noopener">🎥 Recherche : analyse financière (chaînes de cours de comptabilité)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>FR = ressources stables − emplois stables. BFR = actif circulant − passif circulant. TN = FR − BFR. Ces trois indicateurs mesurent l'équilibre financier de l'entreprise.</p></div>
+<div class="sources"><strong>Sources :</strong> Curriculum de Commerciale et Gestion, 6e année (MEPST/DIPROMAD, 2023).<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT, FR, BFR, TN.</div>
+    `
+},
+{
+    title: "Leçon 8 — Les mathématiques financières : intérêts composés et annuités",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>La société LESUEUR veut placer 5 000 000 FC à la banque pendant 5 ans à un taux de 8 %. Le comptable doit calculer la valeur acquise et la valeur actuelle. C'est l'objet des mathématiques financières.</p></div>
+<h3>1. Les intérêts composés</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Intérêts composés</strong> : les intérêts de chaque période s'ajoutent au capital et produisent eux-mêmes des intérêts.</li><li><strong>Valeur acquise (Vn)</strong> : Vn = V0 × (1 + i)<sup>n</sup>.</li><li><strong>Valeur actuelle (V0)</strong> : V0 = Vn / (1 + i)<sup>n</sup>.</li><li><strong>V0</strong> : capital initial ; <strong>i</strong> : taux d'intérêt par période ; <strong>n</strong> : nombre de périodes.</li></ul></div>
+<h3>2. Les annuités</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Annuité</strong> : suite de versements égaux effectués à intervalles réguliers.</li><li><strong>Valeur acquise d'une suite de versements</strong> : Vn = a × [(1 + i)<sup>n</sup> − 1] / i.</li><li><strong>Valeur actuelle d'une suite de versements</strong> : V0 = a × [1 − (1 + i)<sup>−n</sup>] / i.</li><li><strong>a</strong> : montant de l'annuité.</li><li><strong>Applications</strong> : remboursement d'emprunt, épargne, retraite.</li></ul></div>
+<h3>3. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p>Placement de 5 000 000 FC à 8 % pendant 5 ans : V5 = 5 000 000 × (1,08)<sup>5</sup> = 5 000 000 × 1,4693 = 7 346 500 FC.</p><p>Versement annuel de 1 000 000 FC à 8 % pendant 5 ans : V5 = 1 000 000 × [(1,08)<sup>5</sup> − 1] / 0,08 = 1 000 000 × 5,8666 = 5 866 600 FC.</p><p><a href="https://www.youtube.com/results?search_query=intérêts+composés+annuités+mathématiques+financières" target="_blank" rel="noopener">🎥 Recherche : mathématiques financières (chaînes de cours de comptabilité)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Valeur acquise : Vn = V0 × (1 + i)<sup>n</sup>. Valeur actuelle : V0 = Vn / (1 + i)<sup>n</sup>. Annuités : Vn = a × [(1 + i)<sup>n</sup> − 1] / i.</p></div>
+<div class="sources"><strong>Sources :</strong> Curriculum de Commerciale et Gestion, 6e année (MEPST/DIPROMAD, 2023), Fonction 4, compétence 4.2.2.<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT.</div>
+    `
+},
+{
+    title: "Évaluation finale — Items EXETAT",
+    content: `
+        <p style="margin-bottom:18px;color:#12437a;font-size:0.95rem;">Cette évaluation regroupe des items de type EXETAT. Fais l'exercice dans les conditions du concours : sans notes, en une seule fois.</p>
+
+        <div class="bloc theorie">
+            <div class="bloc-label">Consignes</div>
+            <ul>
+                <li>35 questions à choix multiples.</li>
+                <li>Une seule réponse correcte par question.</li>
+                <li>Pas de retour en arrière sur les questions déjà validées.</li>
+                <li>Durée recommandée : 35 minutes.</li>
+            </ul>
+        </div>
+
+        <div class="quiz-container" id="quizContainer">
+            <h3 style="color:#0d2b4f;margin-bottom:16px;font-size:1.1rem;">Partie 1 — Questions</h3>
+            <div id="quizQuestions"></div>
+            <button id="submitQuiz" class="quiz-btn-submit">Valider mes réponses</button>
+            <div id="quizResult" class="quiz-result"></div>
+        </div>
+    `
+}
+];
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim()) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderQuiz() {
+    const questions = [
+        { text:"Quel document prouve l'existence d'une opération comptable ?", options:["La note d'imputation","La pièce justificative","Le bilan"], correct:1 },
+        { text:"Que doit indiquer une note d'imputation ?", options:["Les comptes à débiter et à créditer","Le chiffre d'affaires","Le résultat net"], correct:0 },
+        { text:"Quel livre comptable enregistre les opérations de manière chronologique ?", options:["Le grand-livre","Le journal","La balance"], correct:1 },
+        { text:"Que signifie le principe de la partie double ?", options:["Débit = Crédit","Actif = Passif","Produits = Charges"], correct:0 },
+        { text:"Où regroupe-t-on les écritures par compte ?", options:["Dans le journal","Dans le grand-livre","Dans la balance"], correct:1 },
+        { text:"Quel document récapitule les soldes de tous les comptes ?", options:["La balance","Le journal","Le grand-livre"], correct:0 },
+        { text:"Quel est l'objectif de l'inventaire physique ?", options:["Vérifier le stock réel","Calculer le bénéfice","Remplir la TVA"], correct:0 },
+        { text:"Quelle méthode de valorisation des stocks utilise le coût moyen pondéré ?", options:["FIFO","CUMP","LIFO"], correct:1 },
+        { text:"Que constate l'amortissement ?", options:["La perte de valeur d'une immobilisation","La perte de valeur d'un stock","La perte de valeur d'une créance"], correct:0 },
+        { text:"Quelle est la formule de l'amortissement linéaire ?", options:["Valeur / durée","Valeur × durée","Valeur + durée"], correct:0 },
+        { text:"Que constate une dépréciation ?", options:["La perte probable de valeur d'un actif","La perte de valeur d'une immobilisation","La hausse du chiffre d'affaires"], correct:0 },
+        { text:"Quel document présente le patrimoine de l'entreprise à une date donnée ?", options:["Le compte de résultat","Le bilan","Le TAFIRE"], correct:1 },
+        { text:"Que calcule le compte de résultat ?", options:["Le bénéfice ou la perte","Le patrimoine","La trésorerie"], correct:0 },
+        { text:"Quel est l'équilibre du bilan ?", options:["Actif = Passif","Produits = Charges","Débit = Crédit"], correct:0 },
+        { text:"Que signifie TAFIRE ?", options:["Tableau Financier des Ressources et Emplois","Tableau Analytique des Flux","Tableau des Finances"], correct:0 },
+        { text:"Quel document explique la variation de trésorerie ?", options:["Le bilan","Le compte de résultat","Le TAFIRE"], correct:2 },
+        { text:"Que calcule la comptabilité analytique ?", options:["Les coûts et prix de revient","Le bilan","Le TAFIRE"], correct:0 },
+        { text:"Quelle est la différence entre charges directes et indirectes ?", options:["Les directes s'affectent, les indirectes se répartissent","Les directes se répartissent, les indirectes s'affectent","Aucune différence"], correct:0 },
+        { text:"Que représente le prix de revient ?", options:["Coût de production + coût de distribution","Coût d'achat uniquement","Prix de vente"], correct:0 },
+        { text:"Comment calcule-t-on la marge ?", options:["Prix de vente − Prix de revient","Prix de vente + Prix de revient","Coût de production − Coût d'achat"], correct:0 },
+        { text:"Que mesure le fonds de roulement ?", options:["Ressources stables − Emplois stables","Actif circulant − Passif circulant","Trésorerie nette"], correct:0 },
+        { text:"Que mesure le besoin en fonds de roulement ?", options:["Actif circulant − Passif circulant","Ressources stables − Emplois stables","FR − TN"], correct:0 },
+        { text:"Comment calcule-t-on la trésorerie nette ?", options:["FR − BFR","FR + BFR","BFR − FR"], correct:0 },
+        { text:"Que signifie un FR positif ?", options:["L'entreprise est équilibrée","L'entreprise est en faillite","L'entreprise n'a pas de dettes"], correct:0 },
+        { text:"Que mesure le ratio d'autonomie financière ?", options:["La capacité de l'entreprise à s'autofinancer","Sa rentabilité","Sa trésorerie"], correct:0 },
+        { text:"Quelle est la formule de la valeur acquise à intérêts composés ?", options:["Vn = V0 × (1 + i)ⁿ","Vn = V0 + i","Vn = V0 × i × n"], correct:0 },
+        { text:"Quelle est la formule de la valeur actuelle ?", options:["V0 = Vn / (1 + i)ⁿ","V0 = Vn × (1 + i)ⁿ","V0 = Vn + i"], correct:0 },
+        { text:"Qu'est-ce qu'une annuité ?", options:["Une suite de versements égaux","Un intérêt simple","Un impôt"], correct:0 },
+        { text:"Quelle est la formule de la valeur acquise d'une suite de versements ?", options:["a × [(1 + i)ⁿ − 1] / i","a × (1 + i)ⁿ","a × i × n"], correct:0 },
+        { text:"Quel est le taux de TVA en RDC ?", options:["16 %","18 %","20 %"], correct:0 },
+        { text:"Quel référentiel comptable est applicable en RDC depuis 2012 ?", options:["SYSCOHADA","PCG français","IFRS uniquement"], correct:0 },
+        { text:"Que signifie OHADA ?", options:["Organisation pour l'Harmonisation en Afrique du Droit des Affaires","Office des Habitations","Organisation Humanitaire"], correct:0 },
+        { text:"Quel document liste les articles, quantités et valeurs en stock ?", options:["La fiche d'inventaire","Le bilan","Le journal"], correct:0 },
+        { text:"Quel est le rôle du grand-livre auxiliaire ?", options:["Détailler les comptes de tiers","Enregistrer chronologiquement","Calculer le résultat"], correct:0 },
+        { text:"Que se passe-t-il si le total débit ≠ total crédit ?", options:["Il y a une erreur comptable","C'est normal","Le bilan est faux"], correct:0 }
+    ];
+    let html = '';
+    questions.forEach((q,i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o,k) => { html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>'; });
+        html += '</div>';
+    });
+    document.getElementById('quizQuestions').innerHTML = html;
+    document.getElementById('submitQuiz').onclick = () => {
+        let score = 0;
+        questions.forEach((q,i) => {
+            const s = document.querySelector('input[name="q' + i + '"]:checked');
+            if (s && parseInt(s.value) === q.correct) score++;
+        });
+        const pct = Math.round(score/questions.length*100);
+        document.getElementById('quizResult').innerHTML = '<div style="background:#cfdff5;padding:16px;border-radius:10px;margin-top:14px;">' +
+            '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong><br>' +
+            (score === questions.length ? 'Excellent. Tu maîtrises le programme.' :
+             score >= 24 ? 'Bien. Revoyez les leçons où vous avez échoué.' :
+             'Relis attentivement les leçons avant l\'examen.') + '</div>';
+    };
+}
+function renderSlide(index, keepHighlight = true) {
+    const isQuiz = (index === slides.length - 1);
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    if (isQuiz) renderQuiz();
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm && !isQuiz) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+</body>
+</html>
