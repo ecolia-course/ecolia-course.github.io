@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Développement communautaire — 4e Sociale (EXETAT)</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:linear-gradient(160deg,#4e2a0c 0%,#ef6c00 50%,#2e1604 100%); display:flex; justify-content:center; align-items:center; padding:8px; }
+.container { width:100%; max-width:1400px; background:#fefdf8; border-radius:20px; overflow:hidden; display:flex; flex-direction:column; height:100%; max-height:100vh; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.progress-bar { height:4px; background:#fbdcb8; flex-shrink:0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,#f0a15a,#b34a00); width:0%; transition:width 0.3s; }
+.header { padding:10px 16px; background:#fff1e0; border-bottom:1px solid #f3c08a; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+.header h1 { color:#b34a00; font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box { display:flex; background:white; border-radius:20px; padding:2px 4px; }
+.search-box input { border:none; padding:6px 10px; border-radius:20px; outline:none; width:130px; font-size:0.8rem; }
+.search-box button { background:none; border:none; cursor:pointer; padding:4px 8px; font-size:0.85rem; color:#ef6c00; }
+.badge { background:#f0a15a; color:white; padding:4px 10px; border-radius:20px; font-weight:bold; font-size:0.75rem; }
+.search-nav { display:none; gap:4px; background:#fbdcb8; padding:2px 8px; border-radius:20px; align-items:center; font-size:0.75rem; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:0.9rem; color:#b34a00; padding:2px 4px; }
+.content { padding:28px 32px; flex:1; overflow-y:auto; background:#fff; line-height:1.85; }
+.slide { display:none; } .slide.active { display:block; }
+.slide-title { color:#4e2a0c; font-size:1.5rem; font-weight:700; padding-bottom:12px; margin-bottom:20px; border-bottom:2px solid #f0a15a; }
+.slide-content { color:#331a07; font-size:1rem; }
+.bloc { padding:18px 22px; border-radius:12px; margin:22px 0; line-height:1.85; }
+.bloc-label { font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; opacity:0.7; }
+.bloc p, .bloc li { font-size:0.98rem; }
+.bloc h3 { font-size:1.1rem; margin:20px 0 10px; font-weight:600; }
+.bloc h3:first-child { margin-top:0; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; } .cas .bloc-label { color:#e65100; }
+.theorie { background:#fff1e0; border-left:4px solid #f0a15a; } .theorie .bloc-label { color:#b34a00; }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; } .exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; } .resume .bloc-label { color:#01579b; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; } .bloc li { margin-bottom:8px; } .bloc strong { color:#4e2a0c; }
+.quiz-container { padding:22px; background:#fff1e0; border-radius:16px; }
+.quiz-question { background:white; border-radius:10px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.quiz-question p { font-weight:600; margin-bottom:10px; color:#4e2a0c; }
+.quiz-question label { display:block; padding:8px 10px; margin:4px 0; border-radius:6px; cursor:pointer; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit { background:#c9650a; color:white; border:none; padding:12px 24px; border-radius:30px; font-size:1rem; cursor:pointer; font-weight:600; margin-top:14px; }
+.quiz-result { margin-top:16px; font-weight:600; }
+.sources { background:#f5f5f5; padding:12px 16px; border-radius:10px; margin-top:26px; font-size:0.82rem; color:#666; border-left:3px solid #999; }
+.sources strong { color:#333; }
+.controls { padding:8px 16px; background:#fafafa; border-top:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; gap:8px; }
+.nav-btn { background:white; color:#b34a00; border:1px solid #ccc; padding:8px 14px; border-radius:8px; font-size:0.82rem; cursor:pointer; }
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+@media (max-width:600px) { body { padding:0; } .container { border-radius:0; } .content { padding:20px 18px; } .slide-title { font-size:1.25rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="header">
+        <h1>Développement communautaire · 4e Sociale</h1>
+        <div class="header-right">
+            <div class="search-box"><input type="text" id="searchInput" placeholder="Rechercher"><button id="searchBtn">⌕</button></div>
+            <div class="search-nav" id="searchNav"><button id="prevResultBtn">‹</button><span id="resultCounter">0/0</span><button id="nextResultBtn">›</button></div>
+            <span class="badge" id="slideCounter">1/9</span>
+        </div>
+    </div>
+    <div class="content" id="content"></div>
+    <div class="controls">
+        <button class="nav-btn" id="prevBtn">← Précédent</button>
+        <span class="counter" id="counter">Leçon 1 / 9</span>
+        <button class="nav-btn" id="nextBtn">Suivant →</button>
+    </div>
+</div>
+<script>
+const slides = [
+{title:"Leçon 1 — Introduction au développement communautaire",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans un village du Kongo-Central, les habitants manquent d'eau potable. Une ONG locale organise une réunion : les villageois identifient le problème, proposent des solutions, creusent un puits ensemble. C'est le développement communautaire : la communauté elle-même prend en main son développement.</p></div>
+<h3>1. Définition et principes</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Développement communautaire</strong> : processus par lequel les membres d'une communauté s'organisent pour améliorer leurs conditions de vie, avec l'appui de professionnels.</li><li><strong>Principes</strong> : participation, autonomie, empowerment, durabilité, respect des cultures locales.</li><li><strong>Acteurs</strong> : communauté, animateur social, ONG, État, partenaires.</li><li><strong>Objectifs</strong> : réduire la pauvreté, améliorer la santé, l'éducation, les infrastructures.</li></ul></div>
+<h3>2. Les étapes de la démarche communautaire</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>1. Diagnostic communautaire</strong> : identifier les problèmes et les ressources.</li><li><strong>2. Mobilisation</strong> : sensibiliser, motiver, organiser.</li><li><strong>3. Planification</strong> : définir les priorités, les objectifs, les activités.</li><li><strong>4. Exécution</strong> : réaliser les actions avec la communauté.</li><li><strong>5. Suivi-évaluation</strong> : mesurer les résultats, ajuster.</li></ul></div>
+<h3>3. Applications en RDC</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Santé communautaire</strong> : les relais communautaires font la promotion de la vaccination.</li><li><strong>Agriculture</strong> : les coopératives villageoises améliorent les rendements.</li><li><strong>Eau et assainissement</strong> : comités de gestion des points d'eau.</li><li><strong>Éducation</strong> : construction d'écoles avec les parents d'élèves.</li></ul><p><a href="https://www.youtube.com/results?search_query=développement+communautaire+participation+empowerment" target="_blank" rel="noopener">🎥 Recherche : le développement communautaire</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le développement communautaire est un processus participatif où la communauté s'organise pour améliorer ses conditions de vie. Les 5 étapes sont : diagnostic, mobilisation, planification, exécution, suivi-évaluation. La participation est le principe clé.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national de Développement Communautaire (RDC) ; Fiches pédagogiques officielles 2025.<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT.</div>
+`},
+{title:"Leçon 2 — Le diagnostic communautaire",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Un animateur social arrive dans un village du Kasaï. Avant d'agir, il doit comprendre la situation : quels sont les problèmes prioritaires ? Quelles sont les ressources disponibles ? Le diagnostic communautaire est la première étape de toute action de développement.</p></div>
+<h3>1. Définition et objectifs</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Diagnostic communautaire</strong> : démarche participative qui permet d'identifier les problèmes, les besoins, les ressources et les priorités d'une communauté.</li><li><strong>Objectifs</strong> : comprendre la réalité locale, impliquer la communauté, planifier les actions.</li><li><strong>Principes</strong> : participation, écoute, respect, objectivité.</li></ul></div>
+<h3>2. Les outils du diagnostic</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Observation directe</strong> : visite du milieu, relevé des infrastructures.</li><li><strong>Entretiens</strong> : avec les leaders, les femmes, les jeunes, les autorités.</li><li><strong>Focus group</strong> : discussion de groupe sur un thème.</li><li><strong>Cartographie participative</strong> : dessin du village par les habitants.</li><li><strong>Calendrier saisonnier</strong> : activités selon les saisons.</li><li><strong>Transect</strong> : parcours du village avec observation.</li><li><strong>Classement par paires</strong> : hiérarchisation des problèmes.</li></ul></div>
+<h3>3. Les étapes du diagnostic</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Préparation</strong> : informer, obtenir l'accord des autorités.</li><li><strong>Collecte des données</strong> : outils participatifs.</li><li><strong>Analyse</strong> : identifier les causes, les conséquences.</li><li><strong>Hiérarchisation</strong> : classer les problèmes par priorité.</li><li><strong>Restitution</strong> : présenter les résultats à la communauté.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p>Dans un village du Kongo-Central, le diagnostic révèle :</p><ul><li>Manque d'eau potable (problème prioritaire 1).</li><li>École délabrée (priorité 2).</li><li>Absence de centre de santé (priorité 3).</li><li>Ressources : main-d'œuvre, sable, pierres, quelques fonds.</li><li>Plan d'action : creuser un puits communautaire en premier.</li></ul><p><a href="https://www.youtube.com/results?search_query=diagnostic+communautaire+outils+participatifs" target="_blank" rel="noopener">🎥 Recherche : le diagnostic communautaire</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le diagnostic communautaire identifie les problèmes, les besoins et les ressources. Les outils participatifs incluent l'observation, les entretiens, la cartographie, le transect. Les étapes sont : préparation, collecte, analyse, hiérarchisation, restitution.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national de Développement Communautaire (RDC).</div>
+`},
+{title:"Leçon 3 — La mobilisation et la participation communautaire",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans un quartier de Kinshasa, les habitants veulent construire un marché. L'animateur social organise des réunions, sensibilise les commerçants, mobilise les ressources. Sans la mobilisation de tous, le projet échouerait. La participation est la clé du succès.</p></div>
+<h3>1. La mobilisation communautaire</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Mobilisation</strong> : processus qui amène une communauté à s'organiser et à agir pour son développement.</li><li><strong>Objectifs</strong> : susciter l'adhésion, l'engagement, la participation active.</li><li><strong>Techniques</strong> : causeries, réunions, théâtre participatif, porte-à-porte, médias locaux.</li><li><strong>Acteurs clés</strong> : leaders locaux, femmes, jeunes, autorités traditionnelles et administratives.</li></ul></div>
+<h3>2. La participation communautaire</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Participation</strong> : implication active des membres de la communauté dans l'analyse, la planification, la mise en œuvre et l'évaluation des actions.</li><li><strong>Niveaux</strong> : information, consultation, concertation, co-décision, autogestion.</li><li><strong>Facteurs de réussite</strong> : confiance, communication, transparence, respect des cultures.</li><li><strong>Obstacles</strong> : méfiance, divisions, intérêts personnels, paternalisme.</li></ul></div>
+<h3>3. L'approche participative</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Approche bottom-up</strong> : part du bas (communauté) vers le haut (autorités).</li><li><strong>Approche top-down</strong> : imposée par le haut, souvent inefficace.</li><li><strong>Empowerment</strong> : renforcement des capacités de la communauté à décider par elle-même.</li><li><strong>Gestion communautaire</strong> : la communauté gère elle-même ses projets.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Construction d'une école</strong> : les parents apportent main-d'œuvre, matériaux, fonds.</li><li><strong>Point d'eau</strong> : un comité de gestion est créé, formé, suivi.</li><li><strong>Santé</strong> : les relais communautaires sensibilisent, orientent, accompagnent.</li><li><strong>Coopérative agricole</strong> : les membres mutualisent leurs ressources et partagent les bénéfices.</li></ul><p><a href="https://www.youtube.com/results?search_query=mobilisation+participation+communautaire+empowerment" target="_blank" rel="noopener">🎥 Recherche : la mobilisation communautaire</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La mobilisation amène la communauté à s'organiser. La participation est l'implication active à tous les niveaux. L'approche participative (bottom-up) et l'empowerment renforcent l'autonomie communautaire. La confiance et la transparence sont essentielles.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national de Développement Communautaire (RDC) ; OMS — Promotion de la santé.</div>
+`},
+{title:"Leçon 4 — La planification et la gestion des projets communautaires",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Après le diagnostic, une communauté du Kwilu décide de construire un centre de santé. Il faut planifier : définir les objectifs, le budget, le calendrier, les responsabilités. Sans planification, le projet s'enlise.</p></div>
+<h3>1. La planification</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Planification</strong> : processus qui définit les objectifs, les activités, les ressources et le calendrier d'un projet.</li><li><strong>Étapes</strong> : identification du problème → objectifs → activités → ressources → calendrier → responsables.</li><li><strong>Outils</strong> : cadre logique, diagramme de Gantt, budget.</li></ul></div>
+<h3>2. Le cycle du projet</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>1. Identification</strong> : problème, besoins, priorités.</li><li><strong>2. Formulation</strong> : objectifs, activités, budget, planning.</li><li><strong>3. Financement</strong> : recherche de fonds (communauté, ONG, État).</li><li><strong>4. Exécution</strong> : réalisation des activités.</li><li><strong>5. Suivi-évaluation</strong> : mesure des résultats, ajustements.</li><li><strong>6. Pérennisation</strong> : durabilité du projet.</li></ul></div>
+<h3>3. Le suivi et l'évaluation</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Suivi</strong> : activité continue qui vérifie l'avancement du projet.</li><li><strong>Évaluation</strong> : mesure des résultats et de l'impact.</li><li><strong>Indicateurs</strong> : quantitatifs (nombre de bénéficiaires) et qualitatifs (satisfaction).</li><li><strong>Critères</strong> : pertinence, efficacité, efficience, impact, durabilité.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p><strong>Projet : construction d'un centre de santé au Kwilu</strong></p><ul><li>Objectif : construire un centre de santé fonctionnel en 12 mois.</li><li>Activités : mobilisation des fonds, achat des matériaux, construction, équipement.</li><li>Budget : 50 000 000 FC (communauté : 20 %, ONG : 60 %, État : 20 %).</li><li>Calendrier : 12 mois (Gantt).</li><li>Suivi : réunion mensuelle du comité de gestion.</li></ul><p><a href="https://www.youtube.com/results?search_query=planification+projet+communautaire+cycle+suivi" target="_blank" rel="noopener">🎥 Recherche : la planification des projets communautaires</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La planification définit objectifs, activités, ressources, calendrier. Le cycle du projet comprend 6 étapes : identification, formulation, financement, exécution, suivi-évaluation, pérennisation. Le suivi et l'évaluation mesurent les résultats avec des indicateurs.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national de Développement Communautaire (RDC) ; PNUD — Gestion du cycle de projet.</div>
+`},
+{title:"Leçon 5 — Le rôle de l'animateur social en développement communautaire",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans un quartier de Matadi, un animateur social travaille avec les jeunes pour créer une association sportive. Il n'agit pas à leur place : il les aide à s'organiser, à prendre des décisions, à gérer leur projet. C'est le rôle de l'animateur.</p></div>
+<h3>1. Définition et rôle de l'animateur</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Animateur social</strong> : professionnel qui accompagne une communauté dans son développement.</li><li><strong>Rôle</strong> : catalyseur, facilitateur, formateur, médiateur.</li><li><strong>Posture</strong> : ne pas faire à la place de la communauté, mais avec elle.</li><li><strong>Qualités</strong> : écoute, patience, respect, neutralité, créativité.</li></ul></div>
+<h3>2. Les fonctions de l'animateur</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Animation</strong> : organiser des activités, susciter la participation.</li><li><strong>Formation</strong> : renforcer les capacités de la communauté.</li><li><strong>Médiation</strong> : résoudre les conflits.</li><li><strong>Coordination</strong> : mettre en relation les acteurs.</li><li><strong>Évaluation</strong> : mesurer l'impact des actions.</li></ul></div>
+<h3>3. Les techniques d'animation</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Causerie éducative</strong> : discussion sur un thème.</li><li><strong>Théâtre participatif</strong> : jeu de rôle, forum.</li><li><strong>Atelier</strong> : travail pratique en groupe.</li><li><strong>Méthode active</strong> : apprentissage par l'action.</li><li><strong>Visite d'échange</strong> : entre communautés.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Animation d'un comité de santé</strong> : réunion mensuelle, formation des relais.</li><li><strong>Appui à une coopérative agricole</strong> : gestion, comptabilité simple, commercialisation.</li><li><strong>Accompagnement des femmes</strong> : alphabétisation, activités génératrices de revenus.</li><li><strong>Sensibilisation sur le VIH</strong> : causeries, dépistage volontaire.</li></ul><p><a href="https://www.youtube.com/results?search_query=animateur+social+rôle+techniques+animation" target="_blank" rel="noopener">🎥 Recherche : le rôle de l'animateur social</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>L'animateur social est un facilitateur qui accompagne la communauté sans faire à sa place. Ses fonctions : animation, formation, médiation, coordination, évaluation. Ses techniques : causerie, théâtre participatif, atelier, méthode active, visite d'échange.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national de Développement Communautaire (RDC).</div>
+`},
+{title:"Leçon 6 — Le genre et le développement communautaire",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans un village du Maniema, une ONG forme des femmes à la gestion d'une coopérative. Elles prennent des décisions, gèrent l'argent, améliorent leurs revenus. L'intégration du genre dans le développement est une priorité en RDC.</p></div>
+<h3>1. Notions de genre</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Sexe</strong> : différence biologique entre homme et femme.</li><li><strong>Genre</strong> : construction sociale des rôles, des responsabilités et des attentes attribués aux hommes et aux femmes.</li><li><strong>Égalité de genre</strong> : même droit, même accès aux ressources et aux opportunités.</li><li><strong>Équité</strong> : traitement équitable tenant compte des différences.</li><li><strong>Violence basée sur le genre (VBG)</strong> : viol, violences conjugales, mariage précoce.</li></ul></div>
+<h3>2. Le genre dans le développement</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Intégration du genre</strong> : prise en compte des besoins spécifiques des femmes et des hommes dans les projets.</li><li><strong>Autonomisation des femmes</strong> : accès à l'éducation, à la santé, aux revenus, à la décision.</li><li><strong>Indicateurs</strong> : taux de scolarisation des filles, participation des femmes aux instances, revenus.</li></ul></div>
+<h3>3. Le contexte congolais</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Défis</strong> : mariage précoce, violences, accès limité à l'éducation, faible représentation politique.</li><li><strong>Avancées</strong> : lois sur les violences sexuelles, quota de 30 % dans les institutions, scolarisation des filles.</li><li><strong>Acteurs</strong> : ministère du Genre, ONG, agences des Nations Unies (UNFPA, ONU Femmes).</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Coopérative des femmes maraîchères</strong> : formation, accès au crédit, commercialisation.</li><li><strong>Alphabétisation des femmes</strong> : lecture, écriture, calcul.</li><li><strong>Sensibilisation sur les VBG</strong> : campagne, écoute, orientation vers les services.</li><li><strong>Promotion du leadership féminin</strong> : école des leaders, réseautage.</li></ul><p><a href="https://www.youtube.com/results?search_query=genre+développement+communautaire+autonomisation+femmes" target="_blank" rel="noopener">🎥 Recherche : le genre dans le développement</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le genre est une construction sociale, distincte du sexe biologique. L'égalité et l'équité de genre visent à corriger les inégalités. L'autonomisation des femmes est essentielle au développement. En RDC, des avancées existent mais les défis restent nombreux.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national de Développement Communautaire (RDC) ; ONU Femmes ; UNFPA.</div>
+`},
+{title:"Leçon 7 — Les approches et méthodes participatives",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans un village de l'Ituri, l'animateur utilise une méthode participative : les villageois dessinent eux-mêmes la carte de leur village, identifient les problèmes, proposent des solutions. Cette approche, plus longue, est beaucoup plus efficace que les méthodes directives.</p></div>
+<h3>1. Les approches participatives</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Approche participative</strong> : implique activement la communauté dans l'analyse et la prise de décision.</li><li><strong>MARP</strong> (Méthode Active de Recherche et de Planification Participative) : outils visuels et participatifs.</li><li><strong>Méthode accélérée de recherche participative (MARP)</strong> : adaptée aux zones rurales.</li><li><strong>Approche AAA</strong> (Apprentissage et Action) : cycles d'action-réflexion.</li></ul></div>
+<h3>2. Les outils participatifs</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Cartographie participative</strong> : carte dessinée par les habitants.</li><li><strong>Transect</strong> : parcours du village avec observation.</li><li><strong>Calendrier saisonnier</strong> : activités selon les saisons.</li><li><strong>Classement par paires</strong> : hiérarchisation des problèmes.</li><li><strong>Diagramme de Venn</strong> : relations entre acteurs.</li><li><strong>Arbre à problèmes</strong> : causes et conséquences.</li><li><strong>Matrice de préférence</strong> : choix entre options.</li></ul></div>
+<h3>3. Avantages et limites</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Avantages</strong> : appropriation, durabilité, respect des savoirs locaux, meilleure décision.</li><li><strong>Limites</strong> : temps, coût, dynamiques de pouvoir, instrumentalisations.</li><li><strong>Précaution</strong> : ne pas créer de fausses attentes, respecter les rythmes locaux.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Diagnostic participatif dans un village</strong> : cartographie, transect, calendrier saisonnier.</li><li><strong>Planification d'un projet agricole</strong> : classement par paires des priorités.</li><li><strong>Analyse des parties prenantes</strong> : diagramme de Venn.</li><li><strong>Suivi communautaire</strong> : réunion mensuelle, tableau de bord simplifié.</li></ul><p><a href="https://www.youtube.com/results?search_query=méthodes+participatives+MARP+diagnostic+communautaire" target="_blank" rel="noopener">🎥 Recherche : les méthodes participatives</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Les approches participatives (MARP, AAA) impliquent la communauté. Les outils incluent cartographie, transect, calendrier, classement, diagramme de Venn, arbre à problèmes. Avantages : appropriation, durabilité. Limites : temps, coût, dynamiques de pouvoir.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national de Développement Communautaire (RDC) ; FAO — MARP.</div>
+`},
+{title:"Leçon 8 — Le développement durable et communautaire",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans un village de l'Équateur, une communauté exploite la forêt pour le bois. Rapidement, les ressources s'épuisent. Un projet de développement durable propose une exploitation raisonnée et la plantation d'arbres. Développement et environnement doivent aller ensemble.</p></div>
+<h3>1. Le développement durable</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Développement durable</strong> : développement qui répond aux besoins du présent sans compromettre ceux des générations futures (rapport Brundtland, 1987).</li><li><strong>3 piliers</strong> : économique, social, environnemental.</li><li><strong>17 ODD</strong> : Objectifs de Développement Durable (ONU, 2015), à atteindre en 2030.</li><li><strong>Principe de précaution</strong> : éviter les risques irréversibles.</li></ul></div>
+<h3>2. Le développement communautaire durable</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Gestion durable des ressources</strong> : eau, forêts, sols, pêche.</li><li><strong>Énergies renouvelables</strong> : solaire, hydroélectricité, biomasse.</li><li><strong>Agriculture durable</strong> : agroécologie, compostage, rotation des cultures.</li><li><strong>Assainissement</strong> : gestion des déchets, latrines améliorées.</li><li><strong>Éducation environnementale</strong> : sensibilisation, formation.</li></ul></div>
+<h3>3. Les enjeux en RDC</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Déforestation</strong> : bassin du Congo, deuxième poumon vert mondial.</li><li><strong>Pollution minière</strong> : Lualaba, Haut-Katanga.</li><li><strong>Changement climatique</strong> : sécheresses, inondations.</li><li><strong>Gestion des déchets</strong> : Kinshasa, Lubumbashi.</li><li><strong>Accès à l'énergie</strong> : seulement 20 % de la population a accès à l'électricité.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Réforestation communautaire</strong> : plantation d'arbres, gestion des forêts.</li><li><strong>Foyers améliorés</strong> : réduction de la consommation de bois.</li><li><strong>Jardin communautaire</strong> : maraîchage durable.</li><li><strong>Électrification solaire</strong> : panneaux photovoltaïques dans les villages.</li><li><strong>Assainissement</strong> : latrines, gestion des déchets.</li></ul><p><a href="https://www.youtube.com/results?search_query=développement+durable+communautaire+ODD+RDC" target="_blank" rel="noopener">🎥 Recherche : le développement durable</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le développement durable concilie économie, social et environnement. Les 17 ODD guident les actions. En RDC, les enjeux sont la déforestation, la pollution minière, le changement climatique. Les solutions : reforestation, énergies renouvelables, agriculture durable.</p></div>
+<div class="sources"><strong>Sources :</strong> ONU — Objectifs de Développement Durable ; Programme national de Développement Communautaire (RDC).</div>
+`},
+{title:"Évaluation finale — Items EXETAT",content:`
+<p style="margin-bottom:18px;color:#b34a00;font-size:0.95rem;">Cette évaluation regroupe des items de type EXETAT. Fais l'exercice dans les conditions du concours : sans notes, en une seule fois.</p>
+<div class="bloc theorie"><div class="bloc-label">Consignes</div><ul><li>20 questions à choix multiples.</li><li>Une seule réponse correcte par question.</li><li>Durée recommandée : 20 minutes.</li></ul></div>
+<div class="quiz-container" id="quizContainer"><h3 style="color:#4e2a0c;margin-bottom:16px;font-size:1.1rem;">Partie 1 — Questions</h3><div id="quizQuestions"></div><button id="submitQuiz" class="quiz-btn-submit">Valider mes réponses</button><div id="quizResult" class="quiz-result"></div></div>
+`}];
+
+let currentSlide=0,lastSearchTerm="",searchResults=[],currentResultIdx=-1;
+const contentDiv=document.getElementById('content'),prevBtn=document.getElementById('prevBtn'),nextBtn=document.getElementById('nextBtn'),slideCounterSpan=document.getElementById('slideCounter'),progressFill=document.getElementById('progressFill'),counterSpan=document.getElementById('counter'),searchInput=document.getElementById('searchInput'),searchBtn=document.getElementById('searchBtn'),searchNav=document.getElementById('searchNav'),prevResultBtn=document.getElementById('prevResultBtn'),nextResultBtn=document.getElementById('nextResultBtn'),resultCounterSpan=document.getElementById('resultCounter');
+function getTextFromHtml(html){const d=document.createElement('div');d.innerHTML=html;return d.textContent||'';}
+function searchSlides(term){if(!term.trim())return[];const l=term.toLowerCase();const r=[];slides.forEach((s,i)=>{if(s.title.toLowerCase().includes(l)||getTextFromHtml(s.content).toLowerCase().includes(l))r.push(i);});return r;}
+function highlightInCurrentSlide(term){if(!term)return;const sc=document.querySelector('.slide-content');if(!sc)return;const regex=new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`,'gi');const walker=document.createTreeWalker(sc,NodeFilter.SHOW_TEXT,null,false);const nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);for(let n of nodes){if(n.nodeValue&&regex.test(n.nodeValue)){const sp=document.createElement('span');sp.innerHTML=n.nodeValue.replace(regex,'<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');n.parentNode.replaceChild(sp,n);}}}
+function renderQuiz(){
+const questions=[
+{text:"Qu'est-ce que le développement communautaire ?",options:["Un processus participatif d'amélioration des conditions de vie","Un projet imposé par l'État","Une action individuelle"],correct:0},
+{text:"Quelle est la première étape de la démarche communautaire ?",options:["Le diagnostic communautaire","La mobilisation","L'exécution"],correct:0},
+{text:"Quel outil permet de dessiner le village par les habitants ?",options:["La cartographie participative","Le questionnaire","L'observation"],correct:0},
+{text:"Qu'est-ce que l'empowerment ?",options:["Le renforcement des capacités de la communauté","Le pouvoir de l'animateur","La prise de décision par l'État"],correct:0},
+{text:"Quel est le rôle de l'animateur social ?",options:["Faciliter, former, accompagner","Décider à la place de la communauté","Imposer des solutions"],correct:0},
+{text:"Combien d'étapes compte le cycle du projet ?",options:["6","3","10"],correct:0},
+{text:"Qu'est-ce que le genre ?",options:["Une construction sociale des rôles","Une différence biologique","Une maladie"],correct:0},
+{text:"Quelle est la différence entre sexe et genre ?",options:["Le sexe est biologique, le genre est social","Aucune","Le genre est biologique"],correct:0},
+{text:"Que signifie MARP ?",options:["Méthode Active de Recherche et de Planification Participative","Méthode d'Analyse Rapide","Méthode Agricole"],correct:0},
+{text:"Quel outil hiérarchise les problèmes ?",options:["Le classement par paires","Le diagramme de Venn","Le calendrier saisonnier"],correct:0},
+{text:"Quand a été publié le rapport Brundtland ?",options:["1987","1992","2000"],correct:0},
+{text:"Combien d'ODD ont été adoptés par l'ONU ?",options:["17","8","10"],correct:0},
+{text:"Quels sont les 3 piliers du développement durable ?",options:["Économique, social, environnemental","Politique, social, culturel","Économique, militaire, culturel"],correct:0},
+{text:"Quelle est la principale menace environnementale en RDC ?",options:["La déforestation","La désertification","Les tsunamis"],correct:0},
+{text:"Quel pourcentage de la population a accès à l'électricité en RDC ?",options:["Environ 20 %","50 %","80 %"],correct:0},
+{text:"Qu'est-ce que l'approche bottom-up ?",options:["Du bas vers le haut","Du haut vers le bas","Horizontal"],correct:0},
+{text:"Quel est le rôle du suivi-évaluation ?",options:["Mesurer les résultats et ajuster","Remplacer la planification","Décider seul"],correct:0},
+{text:"Quel est l'objectif de l'autonomisation des femmes ?",options:["Leur donner accès aux ressources et à la décision","Les exclure","Les isoler"],correct:0},
+{text:"Quel outil montre les relations entre acteurs ?",options:["Le diagramme de Venn","Le transect","Le calendrier"],correct:0},
+{text:"Qu'est-ce que la pérennisation d'un projet ?",options:["Sa durabilité après le départ des partenaires","Son arrêt","Sa reprise par l'État"],correct:0}];
+let html='';questions.forEach((q,i)=>{html+='<div class="quiz-question"><p>'+(i+1)+'. '+q.text+'</p>';q.options.forEach((o,k)=>{html+='<label><input type="radio" name="q'+i+'" value="'+k+'"> '+o+'</label>';});html+='</div>';});
+document.getElementById('quizQuestions').innerHTML=html;
+document.getElementById('submitQuiz').onclick=()=>{let score=0;questions.forEach((q,i)=>{const s=document.querySelector('input[name="q'+i+'"]:checked');if(s&&parseInt(s.value)===q.correct)score++;});const pct=Math.round(score/questions.length*100);document.getElementById('quizResult').innerHTML='<div style="background:#fbdcb8;padding:16px;border-radius:10px;margin-top:14px;"><strong>Score : '+score+'/'+questions.length+' ('+pct+'%)</strong><br>'+(score===questions.length?'Excellent.':score>=14?'Bien.':'Relis les leçons.')+'</div>';};
+}
+function renderSlide(index,keepHighlight=true){const isQuiz=(index===slides.length-1);contentDiv.innerHTML='<div class="slide active"><h2 class="slide-title">'+slides[index].title+'</h2><div class="slide-content">'+slides[index].content+'</div></div>';if(isQuiz)renderQuiz();slideCounterSpan.textContent=(index+1)+'/'+slides.length;progressFill.style.width=((index+1)/slides.length*100)+'%';prevBtn.disabled=(index===0);nextBtn.disabled=(index===slides.length-1);counterSpan.textContent='Leçon '+(index+1)+' / '+slides.length;contentDiv.scrollTop=0;if(keepHighlight&&lastSearchTerm&&!isQuiz)highlightInCurrentSlide(lastSearchTerm);}
+function updateResultDisplay(){if(searchResults.length===0){searchNav.style.display='none';return;}searchNav.style.display='flex';resultCounterSpan.textContent=(currentResultIdx+1)+'/'+searchResults.length;}
+function goToResult(idx){if(idx<0||idx>=searchResults.length)return;currentResultIdx=idx;currentSlide=searchResults[currentResultIdx];renderSlide(currentSlide,true);updateResultDisplay();}
+function performSearch(){const term=searchInput.value.trim();if(!term)return;lastSearchTerm=term;searchResults=searchSlides(term);if(searchResults.length===0){searchNav.style.display='none';return;}currentResultIdx=0;goToResult(0);}
+function nextResult(){if(searchResults.length)goToResult((currentResultIdx+1)%searchResults.length);}
+function prevResult(){if(searchResults.length)goToResult((currentResultIdx-1+searchResults.length)%searchResults.length);}
+function nextSlide(){if(currentSlide<slides.length-1){currentSlide++;renderSlide(currentSlide,true);}}
+function prevSlide(){if(currentSlide>0){currentSlide--;renderSlide(currentSlide,true);}}
+prevBtn.onclick=prevSlide;nextBtn.onclick=nextSlide;searchBtn.onclick=performSearch;prevResultBtn.onclick=prevResult;nextResultBtn.onclick=nextResult;
+searchInput.addEventListener('keydown',e=>{if(e.key==='Enter')performSearch();});
+renderSlide(0,false);
+</script>
+</body>
+</html>
