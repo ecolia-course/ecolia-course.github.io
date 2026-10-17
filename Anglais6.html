@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Anglais — 4e secondaire (EXETAT)</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body {
+    font-family:'Segoe UI',system-ui,sans-serif;
+    background:linear-gradient(160deg,#0d2b4f 0%,#1565c0 50%,#07172e 100%);
+    display:flex; justify-content:center; align-items:center;
+    padding:8px;
+}
+.container {
+    width:100%; max-width:1400px; background:#fefdf8;
+    border-radius:20px; overflow:hidden;
+    display:flex; flex-direction:column;
+    height:100%; max-height:100vh;
+    box-shadow:0 20px 60px rgba(0,0,0,0.4);
+}
+.progress-bar { height:4px; background:#cfdff5; flex-shrink:0; }
+.progress-fill {
+    height:100%; background:linear-gradient(90deg,#5b8fd0,#12437a);
+    width:0%; transition:width 0.3s;
+}
+.header {
+    padding:10px 16px; background:#e8f0fb;
+    border-bottom:1px solid #a9c3e8;
+    display:flex; justify-content:space-between; align-items:center;
+    gap:10px; flex-shrink:0;
+}
+.header h1 { color:#12437a; font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box {
+    display:flex; background:white; border-radius:20px;
+    padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06);
+}
+.search-box input {
+    border:none; padding:6px 10px; border-radius:20px;
+    outline:none; width:130px; font-size:0.8rem;
+}
+.search-box button {
+    background:none; border:none; cursor:pointer;
+    padding:4px 8px; font-size:0.85rem; color:#1565c0;
+}
+.badge {
+    background:#5b8fd0; color:white; padding:4px 10px;
+    border-radius:20px; font-weight:bold; font-size:0.75rem;
+}
+.search-nav {
+    display:none; gap:4px; background:#cfdff5;
+    padding:2px 8px; border-radius:20px; align-items:center;
+    font-size:0.75rem;
+}
+.search-nav button {
+    background:none; border:none; cursor:pointer;
+    font-size:0.9rem; color:#12437a; padding:2px 4px;
+}
+.content {
+    padding:28px 32px; flex:1; overflow-y:auto;
+    background:#fff; scroll-behavior:smooth;
+    line-height:1.85;
+}
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide {
+    from { opacity:0; transform:translateY(8px); }
+    to { opacity:1; transform:translateY(0); }
+}
+.slide-title {
+    color:#0d2b4f; font-size:1.5rem; font-weight:700;
+    padding-bottom:12px; margin-bottom:20px;
+    border-bottom:2px solid #5b8fd0;
+}
+.slide-content { color:#0a1c35; font-size:1rem; }
+.bloc {
+    padding:18px 22px; border-radius:12px;
+    margin:22px 0; line-height:1.85;
+}
+.bloc-label {
+    font-size:0.75rem; font-weight:700;
+    letter-spacing:1.5px; text-transform:uppercase;
+    margin-bottom:8px; opacity:0.7;
+}
+.bloc p, .bloc li { font-size:0.98rem; }
+.bloc h3 {
+    font-size:1.1rem; margin:20px 0 10px;
+    font-weight:600;
+}
+.bloc h3:first-child { margin-top:0; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:#e8f0fb; border-left:4px solid #5b8fd0; }
+.theorie .bloc-label { color:#12437a; }
+.pratique { background:#e8f5e9; border-left:4px solid #43a047; }
+.pratique .bloc-label { color:#1b5e20; }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:#0d2b4f; }
+table { width:100%; border-collapse:collapse; margin:12px 0; }
+th, td { padding:8px; border:1px solid #a9c3e8; text-align:left; font-size:0.9rem; }
+th { background:#cfdff5; color:#12437a; font-weight:600; }
+tr:nth-child(even) { background:#f5f9ff; }
+.quiz-container { padding:22px; background:#e8f0fb; border-radius:16px; }
+.quiz-question {
+    background:white; border-radius:10px; padding:16px;
+    margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05);
+}
+.quiz-question p { font-weight:600; margin-bottom:10px; color:#0d2b4f; }
+.quiz-question label {
+    display:block; padding:8px 10px; margin:4px 0;
+    border-radius:6px; cursor:pointer; transition:background 0.2s;
+}
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit {
+    background:#2a67b0; color:white; border:none;
+    padding:12px 24px; border-radius:30px; font-size:1rem;
+    cursor:pointer; font-weight:600; margin-top:14px;
+}
+.quiz-result { margin-top:16px; font-weight:600; }
+.sources {
+    background:#f5f5f5; padding:12px 16px; border-radius:10px;
+    margin-top:26px; font-size:0.82rem; color:#666;
+    border-left:3px solid #999; line-height:1.6;
+}
+.sources strong { color:#333; }
+.controls {
+    padding:8px 16px; background:#fafafa;
+    border-top:1px solid #e0e0e0;
+    display:flex; justify-content:space-between;
+    align-items:center; gap:8px; flex-shrink:0;
+}
+.nav-btn {
+    background:white; color:#12437a;
+    border:1px solid #ccc; padding:8px 14px;
+    border-radius:8px; font-size:0.82rem;
+    cursor:pointer; font-weight:500;
+}
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:#dde8f7; }
+.content::-webkit-scrollbar-thumb { background:#5b8fd0; border-radius:3px; }
+@media (max-width:600px) {
+    body { padding:0; }
+    .container { border-radius:0; max-height:100vh; }
+    .content { padding:20px 18px; }
+    .slide-title { font-size:1.25rem; }
+    .search-box input { width:90px; }
+    .header h1 { font-size:0.85rem; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+    <div class="header">
+        <h1>Anglais · 4e secondaire</h1>
+        <div class="header-right">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search">
+                <button id="searchBtn">⌕</button>
+            </div>
+            <div class="search-nav" id="searchNav">
+                <button id="prevResultBtn">‹</button>
+                <span id="resultCounter">0/0</span>
+                <button id="nextResultBtn">›</button>
+            </div>
+            <span class="badge" id="slideCounter">1/13</span>
+        </div>
+    </div>
+
+    <div class="content" id="content"></div>
+
+    <div class="controls">
+        <button class="nav-btn" id="prevBtn">← Previous</button>
+        <span class="counter" id="counter">Lesson 1 / 13</span>
+        <button class="nav-btn" id="nextBtn">Next →</button>
+    </div>
+</div>
+
+<script>
+const slides = [
+{
+    title: "Lesson 1 — Tenses: Present Simple, Present Continuous, Present Perfect",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>In a secondary school in Kinshasa, a student is preparing for the English section of the EXETAT. The teacher asks: "How do you describe your daily routine? What are you doing right now? Have you ever visited another country?" These questions use three different present tenses. Mastering them is essential for the exam.</p></div>
+<h3>1. Present Simple</h3>
+<div class="bloc theorie"><div class="bloc-label">Grammar</div><ul><li><strong>Form</strong>: Subject + base verb (+ s/es for he/she/it).</li><li><strong>Use</strong>: habits, routines, general truths, permanent states.</li><li><strong>Examples</strong>: I <strong>go</strong> to school every day. She <strong>works</strong> in a hospital. Water <strong>boils</strong> at 100 °C.</li><li><strong>Negative</strong>: do/does + not + base verb. He <strong>does not</strong> like coffee.</li><li><strong>Question</strong>: Do/Does + subject + base verb. <strong>Do</strong> you speak English?</li></ul></div>
+<h3>2. Present Continuous</h3>
+<div class="bloc theorie"><div class="bloc-label">Grammar</div><ul><li><strong>Form</strong>: Subject + am/is/are + verb-ing.</li><li><strong>Use</strong>: actions happening now, temporary situations, future arrangements.</li><li><strong>Examples</strong>: I <strong>am studying</strong> for the EXETAT. She <strong>is reading</strong> a book. They <strong>are playing</strong> football.</li><li><strong>Negative</strong>: am/is/are + not + verb-ing. He <strong>is not sleeping</strong>.</li><li><strong>Question</strong>: Am/Is/Are + subject + verb-ing. <strong>Are</strong> you listening?</li></ul></div>
+<h3>3. Present Perfect</h3>
+<div class="bloc theorie"><div class="bloc-label">Grammar</div><ul><li><strong>Form</strong>: Subject + have/has + past participle.</li><li><strong>Use</strong>: past actions with present relevance, experiences, actions that started in the past and continue.</li><li><strong>Examples</strong>: I <strong>have visited</strong> Lubumbashi. She <strong>has finished</strong> her homework. They <strong>have lived</strong> here since 2020.</li><li><strong>Time markers</strong>: already, yet, just, ever, never, since, for.</li><li><strong>Negative</strong>: have/has + not + past participle. He <strong>has not arrived</strong> yet.</li></ul></div>
+<h3>4. Practice — EXETAT style</h3>
+<div class="bloc exemple"><div class="bloc-label">Exercise</div><p><strong>Choose the correct answer:</strong></p><ol><li>She ___ to church every Sunday. (go / goes / is going / has gone) → <strong>goes</strong></li><li>Look! The children ___ in the yard. (play / plays / are playing / have played) → <strong>are playing</strong></li><li>I ___ this film three times. (see / saw / have seen / am seeing) → <strong>have seen</strong></li><li>He ___ in Kinshasa since 2015. (lives / lived / has lived / is living) → <strong>has lived</strong></li><li>Water ___ at 100 degrees Celsius. (boil / boils / is boiling / has boiled) → <strong>boils</strong></li></ol><p><a href="https://www.youtube.com/results?search_query=present+simple+continuous+perfect+english+grammar" target="_blank" rel="noopener">🎥 Search: Present tenses (English grammar channels)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">Key points</div><p>Present Simple = habits and general truths. Present Continuous = actions happening now. Present Perfect = past actions with present relevance. Pay attention to time markers: every day (simple), now (continuous), since/for/already/yet (perfect).</p></div>
+<div class="sources"><strong>Sources:</strong> Programme National d'Anglais, Enseignement Secondaire Général (EDIDEPS, 2007) ; Enjoy English Book 3 (3ème/4ème Humanités) ; EXETAT items (2014-2020).<br><strong>Abbreviations:</strong> MEPST, DIPROMAD, EXETAT, HEC.</div>
+    `
+},
+{
+    title: "Lesson 2 — Past Tenses: Past Simple, Past Continuous, Past Perfect",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>A student in Lubumbashi tells a story about his weekend: "Yesterday, I went to the market. While I was walking, I met an old friend. He told me he had just returned from South Africa." This story uses three past tenses. Let's learn how to use them correctly.</p></div>
+<h3>1. Past Simple</h3>
+<div class="bloc theorie"><div class="bloc-label">Grammar</div><ul><li><strong>Form</strong>: Subject + verb-ed (regular) or irregular past form.</li><li><strong>Use</strong>: completed actions in the past, past habits, sequences of events.</li><li><strong>Examples</strong>: I <strong>visited</strong> my grandmother yesterday. She <strong>went</strong> to school in 2010. They <strong>played</strong> football last Saturday.</li><li><strong>Time markers</strong>: yesterday, last week, in 1990, ago, then.</li><li><strong>Negative</strong>: did + not + base verb. He <strong>did not come</strong>.</li></ul></div>
+<h3>2. Past Continuous</h3>
+<div class="bloc theorie"><div class="bloc-label">Grammar</div><ul><li><strong>Form</strong>: Subject + was/were + verb-ing.</li><li><strong>Use</strong>: actions in progress at a specific past moment, interrupted actions, background description.</li><li><strong>Examples</strong>: I <strong>was reading</strong> when he called. They <strong>were playing</strong> while she was cooking.</li><li><strong>Time markers</strong>: while, when, at 8 o'clock yesterday.</li><li><strong>Negative</strong>: was/were + not + verb-ing.</li></ul></div>
+<h3>3. Past Perfect</h3>
+<div class="bloc theorie"><div class="bloc-label">Grammar</div><ul><li><strong>Form</strong>: Subject + had + past participle.</li><li><strong>Use</strong>: an action completed before another past action.</li><li><strong>Examples</strong>: When I arrived, she <strong>had already left</strong>. He told me he <strong>had finished</strong> the work.</li><li><strong>Time markers</strong>: already, before, after, by the time.</li><li><strong>Negative</strong>: had + not + past participle.</li></ul></div>
+<h3>4. Practice — EXETAT style</h3>
+<div class="bloc exemple"><div class="bloc-label">Exercise</div><p><strong>Choose the correct answer:</strong></p><ol><li>I ___ TV when the phone rang. (watch / watched / was watching / had watched) → <strong>was watching</strong></li><li>She ___ her homework before she went out. (finish / finished / was finishing / had finished) → <strong>had finished</strong></li><li>They ___ to Goma last year. (go / went / were going / had gone) → <strong>went</strong></li><li>While I ___ in the garden, it started to rain. (work / worked / was working / had worked) → <strong>was working</strong></li><li>He told me that he ___ the book. (read / reads / was reading / had read) → <strong>had read</strong></li></ol><p><a href="https://www.youtube.com/results?search_query=past+simple+continuous+perfect+english+grammar" target="_blank" rel="noopener">🎥 Search: Past tenses (English grammar channels)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">Key points</div><p>Past Simple = completed actions. Past Continuous = actions in progress. Past Perfect = actions completed before another past action. Time markers: yesterday (simple), while/when (continuous), already/before (perfect).</p></div>
+<div class="sources"><strong>Sources:</strong> Programme National d'Anglais (EDIDEPS, 2007) ; Enjoy English Book 3 ; EXETAT items.</div>
+    `
+},
+{
+    title: "Lesson 3 — Future Tenses: Will, Going to, Present Continuous for Future",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>In a career guidance class in Kinshasa, students discuss their plans: "I will study medicine." "I am going to apply for a scholarship." "I am meeting the director tomorrow." Three ways to express the future. Which one should you use?</p></div>
+<h3>1. Will + base verb</h3>
+<div class="bloc theorie"><div class="bloc-label">Grammar</div><ul><li><strong>Form</strong>: Subject + will + base verb.</li><li><strong>Use</strong>: spontaneous decisions, predictions, promises, offers.</li><li><strong>Examples</strong>: I <strong>will help</strong> you. It <strong>will rain</strong> tomorrow. She <strong>will be</strong> 20 next year.</li><li><strong>Negative</strong>: will + not (won't). He <strong>won't come</strong>.</li><li><strong>Question</strong>: Will + subject + base verb. <strong>Will</strong> you come?</li></ul></div>
+<h3>2. Going to</h3>
+<div class="bloc theorie"><div class="bloc-label">Grammar</div><ul><li><strong>Form</strong>: Subject + am/is/are + going to + base verb.</li><li><strong>Use</strong>: plans, intentions, predictions based on evidence.</li><li><strong>Examples</strong>: I <strong>am going to study</strong> law. Look at those clouds! It <strong>is going to rain</strong>.</li><li><strong>Negative</strong>: am/is/are + not + going to + verb.</li><li><strong>Question</strong>: Am/Is/Are + subject + going to + verb.</li></ul></div>
+<h3>3. Present Continuous for Future</h3>
+<div class="bloc theorie"><div class="bloc-label">Grammar</div><ul><li><strong>Form</strong>: Subject + am/is/are + verb-ing.</li><li><strong>Use</strong>: fixed arrangements, appointments.</li><li><strong>Examples</strong>: I <strong>am meeting</strong> the doctor tomorrow at 10. They <strong>are flying</strong> to Lubumbashi next week.</li><li><strong>Time markers</strong>: tomorrow, next week, on Monday, at 5 PM.</li><li>Distinguish from Present Continuous for now: "I am meeting" (future arrangement) vs "I am meeting him now" (in progress).</li></ul></div>
+<h3>4. Practice — EXETAT style</h3>
+<div class="bloc exemple"><div class="bloc-label">Exercise</div><p><strong>Choose the correct answer:</strong></p><ol><li>I think it ___ tomorrow. (rains / will rain / is going to rain / is raining) → <strong>will rain</strong></li><li>She ___ her aunt next Sunday. (visits / will visit / is visiting / visited) → <strong>is visiting</strong></li><li>Look at the sky! It ___ . (rains / will rain / is going to rain / rained) → <strong>is going to rain</strong></li><li>I promise I ___ you with your homework. (help / will help / am going to help / helped) → <strong>will help</strong></li><li>We ___ a party next week. (have / will have / are having / had) → <strong>are having</strong></li></ol><p><a href="https://www.youtube.com/results?search_query=future+tenses+will+going+to+present+continuous" target="_blank" rel="noopener">🎥 Search: Future tenses (English grammar channels)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">Key points</div><p>Will = spontaneous decisions and predictions. Going to = plans and evidence-based predictions. Present Continuous = fixed arrangements. Pay attention to time markers.</p></div>
+<div class="sources"><strong>Sources:</strong> Programme National d'Anglais (EDIDEPS, 2007) ; Enjoy English Book 3 ; EXETAT items.</div>
+    `
+},
+{
+    title: "Lesson 4 — Relative Pronouns: Who, Whom, Whose, Which, That",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>In an EXETAT exercise, a student reads: "The boy ___ briefcase is on the table has gone home." The correct answer is "whose." Many students choose "who" or "whom" and lose marks. Let's master relative pronouns.</p></div>
+<h3>1. Who and Whom</h3>
+<div class="bloc theorie"><div class="bloc-label">Grammar</div><ul><li><strong>Who</strong>: subject pronoun for people. The man <strong>who</strong> called you is my uncle.</li><li><strong>Whom</strong>: object pronoun for people. The woman <strong>whom</strong> I met is a doctor.</li><li>In modern English, "who" is often used instead of "whom" in informal contexts.</li><li>Preposition + whom: To <strong>whom</strong> should I address the letter?</li></ul></div>
+<h3>2. Whose</h3>
+<div class="bloc theorie"><div class="bloc-label">Grammar</div><ul><li><strong>Whose</strong>: possessive relative pronoun for people and things.</li><li>Examples: The boy <strong>whose</strong> briefcase is on the table has gone home. The woman <strong>whose</strong> car was stolen called the police.</li><li>Strategy: [Person] + [possessed object] = <strong>whose</strong>. Always.</li><li>Compare: The man <strong>who</strong> came is my father. (subject) / The man <strong>whose</strong> son is sick is worried. (possessive)</li></ul></div>
+<h3>3. Which and That</h3>
+<div class="bloc theorie"><div class="bloc-label">Grammar</div><ul><li><strong>Which</strong>: for things and animals. The book <strong>which</strong> I bought is interesting.</li><li><strong>That</strong>: for people and things in defining clauses. The house <strong>that</strong> Jack built is old.</li><li>Defining vs Non-defining: Defining clauses give essential information (no commas). Non-defining clauses give extra information (between commas).</li><li>In non-defining clauses, use "who" or "which," never "that."</li></ul></div>
+<h3>4. Practice — EXETAT style</h3>
+<div class="bloc exemple"><div class="bloc-label">Exercise</div><p><strong>Choose the correct answer:</strong></p><ol><li>The boy ___ briefcase is on the table has gone home. (who / whom / whose / which) → <strong>whose</strong></li><li>The woman ___ I met yesterday is my aunt. (who / whom / whose / which) → <strong>whom</strong></li><li>The book ___ you gave me is excellent. (who / whom / whose / which) → <strong>which</strong></li><li>The man ___ called you is my uncle. (who / whom / whose / which) → <strong>who</strong></li><li>This is the house ___ Jack built. (who / whom / whose / that) → <strong>that</strong></li></ol><p><a href="https://www.youtube.com/results?search_query=relative+pronouns+who+whom+whose+which+that" target="_blank" rel="noopener">🎥 Search: Relative pronouns (English grammar channels)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">Key points</div><p>Who = subject (people). Whom = object (people). Whose = possessive (people and things). Which = things and animals. That = defining clauses. Strategy for EXETAT: [Person] + [possessed object] = whose.</p></div>
+<div class="sources"><strong>Sources:</strong> Programme National d'Anglais (EDIDEPS, 2007) ; EXETAT items 2015 (Item 295) ; Enjoy English Book 3.</div>
+    `
+},
+{
+    title: "Lesson 5 — Question Tags and Short Answers",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>In a conversation at a market in Kinshasa, a seller asks: "You want to buy this cloth, don't you?" The customer replies: "Yes, I do." The seller used a question tag. EXETAT often tests this structure.</p></div>
+<h3>1. Question Tags</h3>
+<div class="bloc theorie"><div class="bloc-label">Grammar</div><ul><li><strong>Definition</strong>: A short question at the end of a statement to ask for confirmation.</li><li><strong>Rule 1</strong>: If the statement is affirmative, the tag is negative. You are a student, <strong>aren't you</strong>?</li><li><strong>Rule 2</strong>: If the statement is negative, the tag is affirmative. She isn't here, <strong>is she</strong>?</li><li><strong>Rule 3</strong>: Use the auxiliary of the statement. He has finished, <strong>hasn't he</strong>?</li><li><strong>Rule 4</strong>: No auxiliary? Use do/does/did. You speak English, <strong>don't you</strong>?</li></ul></div>
+<h3>2. Special Cases</h3>
+<div class="bloc theorie"><div class="bloc-label">Grammar</div><ul><li>I am → aren't I? (irregular). I am right, <strong>aren't I</strong>?</li><li>Let's → shall we? Let's go, <strong>shall we</strong>?</li><li>Imperatives → will you? Open the door, <strong>will you</strong>?</li><li>There is → isn't there? There is a problem, <strong>isn't there</strong>?</li><li>Nothing/nobody → affirmative tag. Nothing happened, <strong>did it</strong>?</li></ul></div>
+<h3>3. Short Answers</h3>
+<div class="bloc theorie"><div class="bloc-label">Grammar</div><ul><li>Short answers use the auxiliary, not just yes/no.</li><li>"Do you like coffee?" → <strong>Yes, I do.</strong> / <strong>No, I don't.</strong></li><li>"Have you seen him?" → <strong>Yes, I have.</strong> / <strong>No, I haven't.</strong></li><li>"Will she come?" → <strong>Yes, she will.</strong> / <strong>No, she won't.</strong></li><li>Never answer just "Yes" or "No" in EXETAT multiple-choice questions.</li></ul></div>
+<h3>4. Practice — EXETAT style</h3>
+<div class="bloc exemple"><div class="bloc-label">Exercise</div><p><strong>Choose the correct answer:</strong></p><ol><li>Advertising has existed since the early times, ___ ? (doesn't it / has it / hasn't it / is it) → <strong>hasn't it</strong> (EXETAT 2014, Item 296)</li><li>You are a student, ___ ? (are you / aren't you / do you / don't you) → <strong>aren't you</strong></li><li>She doesn't like fish, ___ ? (does she / doesn't she / is she / isn't she) → <strong>does she</strong></li><li>Let's go to the market, ___ ? (will we / shall we / do we / don't we) → <strong>shall we</strong></li><li>Open the window, ___ ? (will you / shall you / do you / don't you) → <strong>will you</strong></li></ol><p><a href="https://www.youtube.com/results?search_query=question+tags+english+grammar" target="_blank" rel="noopener">🎥 Search: Question tags (English grammar channels)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">Key points</div><p>Affirmative statement → negative tag. Negative statement → affirmative tag. Use the auxiliary. No auxiliary → use do/does/did. Short answers use the auxiliary. EXETAT strategy: copy the auxiliary, add "not," and you're done.</p></div>
+<div class="sources"><strong>Sources:</strong> Programme National d'Anglais (EDIDEPS, 2007) ; EXETAT items 2014 (Item 296) ; Enjoy English Book 3.</div>
+    `
+},
+{
+    title: "Lesson 6 — Prepositions and Phrasal Verbs",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>A student in Kinshasa writes: "I am good in English." The teacher corrects: "I am good at English." Prepositions are a common source of errors for French-speaking students. Let's master them.</p></div>
+<h3>1. Common Prepositions</h3>
+<div class="bloc theorie"><div class="bloc-label">Grammar</div><ul><li><strong>At</strong>: at school, at home, at 5 o'clock, good at.</li><li><strong>In</strong>: in Kinshasa, in 2020, in the morning, interested in.</li><li><strong>On</strong>: on Monday, on the table, on the wall, depend on.</li><li><strong>For</strong>: for two hours, wait for, look for.</li><li><strong>Since</strong>: since 2015, since Monday (with present perfect).</li><li><strong>During</strong>: during the holidays, during the exam.</li></ul></div>
+<h3>2. Prepositions after Adjectives</h3>
+<div class="bloc theorie"><div class="bloc-label">Grammar</div><ul><li>Good/Bad <strong>at</strong>: He is good at mathematics.</li><li>Interested <strong>in</strong>: She is interested in biology.</li><li>Afraid <strong>of</strong>: I am afraid of snakes.</li><li>Proud <strong>of</strong>: They are proud of their son.</li><li>Famous <strong>for</strong>: Kinshasa is famous for its music.</li><li>Similar <strong>to</strong>: This book is similar to that one.</li></ul></div>
+<h3>3. Phrasal Verbs</h3>
+<div class="bloc theorie"><div class="bloc-label">Grammar</div><ul><li><strong>Look for</strong> = search. I am looking for my pen.</li><li><strong>Look after</strong> = take care of. She looks after her grandmother.</li><li><strong>Give up</strong> = stop. He gave up smoking.</li><li><strong>Put on</strong> = wear. Put on your shoes.</li><li><strong>Take off</strong> = remove. Take off your hat.</li><li><strong>Turn on/off</strong> = switch on/off. Turn on the light.</li></ul></div>
+<h3>4. Practice — EXETAT style</h3>
+<div class="bloc exemple"><div class="bloc-label">Exercise</div><p><strong>Choose the correct answer:</strong></p><ol><li>I like him very much because he is good ___ English. (in / at / on / for) → <strong>at</strong> (EXETAT 2016, Item 297)</li><li>She is interested ___ learning French. (at / in / on / for) → <strong>in</strong></li><li>I have lived here ___ 2015. (for / since / during / at) → <strong>since</strong></li><li>He is afraid ___ dogs. (at / of / on / for) → <strong>of</strong></li><li>Please look ___ my bag while I am away. (for / after / at / on) → <strong>after</strong></li></ol><p><a href="https://www.youtube.com/results?search_query=prepositions+phrasal+verbs+english+grammar" target="_blank" rel="noopener">🎥 Search: Prepositions and phrasal verbs (English grammar channels)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">Key points</div><p>Prepositions after adjectives: good at, interested in, afraid of, proud of, famous for. Phrasal verbs: look for (search), look after (care), give up (stop), put on (wear), take off (remove). EXETAT strategy: Good/Bad + AT + [subject].</p></div>
+<div class="sources"><strong>Sources:</strong> Programme National d'Anglais (EDIDEPS, 2007) ; EXETAT items 2016 (Item 297) ; Enjoy English Book 3.</div>
+    `
+},
+{
+    title: "Lesson 7 — Passive Voice and Reported Speech",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>A journalist in Kinshasa writes: "The bridge was built in 2010." A student reports: "The teacher said that the exam had been postponed." These structures — passive voice and reported speech — are essential for formal English.</p></div>
+<h3>1. Passive Voice</h3>
+<div class="bloc theorie"><div class="bloc-label">Grammar</div><ul><li><strong>Form</strong>: Subject + be + past participle (+ by + agent).</li><li><strong>Use</strong>: when the action is more important than the agent, or the agent is unknown.</li><li><strong>Examples</strong>: The letter <strong>was written</strong> by John. English <strong>is spoken</strong> in many countries.</li><li><strong>Tenses</strong>: Present: is/are + PP. Past: was/were + PP. Present Perfect: has/have been + PP. Future: will be + PP.</li><li><strong>Active to Passive</strong>: The teacher corrects the papers → The papers <strong>are corrected</strong> by the teacher.</li></ul></div>
+<h3>2. Reported Speech</h3>
+<div class="bloc theorie"><div class="bloc-label">Grammar</div><ul><li><strong>Direct</strong>: He said, "I am tired." → <strong>Reported</strong>: He said that he <strong>was</strong> tired.</li><li><strong>Backshift</strong>: Present → Past. Past → Past Perfect. Will → Would. Can → Could. May → Might.</li><li><strong>Time changes</strong>: now → then. today → that day. tomorrow → the next day. yesterday → the day before.</li><li><strong>Questions</strong>: He asked, "Where do you live?" → He asked where I <strong>lived</strong>.</li><li><strong>Commands</strong>: She said, "Close the door." → She told me <strong>to close</strong> the door.</li></ul></div>
+<h3>3. Practice — EXETAT style</h3>
+<div class="bloc exemple"><div class="bloc-label">Exercise</div><p><strong>Choose the correct answer:</strong></p><ol><li>The bridge ___ in 2010. (built / was built / has built / is building) → <strong>was built</strong></li><li>He said that he ___ the book. (read / reads / was reading / had read) → <strong>had read</strong></li><li>English ___ all over the world. (speaks / is spoken / spoke / has spoken) → <strong>is spoken</strong></li><li>She asked me where I ___ . (live / lives / lived / am living) → <strong>lived</strong></li><li>The teacher told us ___ quiet. (be / to be / being / been) → <strong>to be</strong></li></ol><p><a href="https://www.youtube.com/results?search_query=passive+voice+reported+speech+english+grammar" target="_blank" rel="noopener">🎥 Search: Passive voice and reported speech (English grammar channels)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">Key points</div><p>Passive: be + past participle. Reported speech: backshift tenses (Present → Past, Past → Past Perfect). Time changes: now → then, today → that day. Questions become statements. Commands use "to + verb."</p></div>
+<div class="sources"><strong>Sources:</strong> Programme National d'Anglais (EDIDEPS, 2007) ; Enjoy English Book 3 ; EXETAT items.</div>
+    `
+},
+{
+    title: "Lesson 8 — Vocabulary: Commercial Activities and Shopping",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>In a market in Kinshasa, a customer asks: "How much is this cloth?" The seller replies: "It costs 20,000 FC. It's cheap." This dialogue uses vocabulary from the commercial activities theme, one of the topics in the 4th year English program.</p></div>
+<h3>1. The Trader and the Customer</h3>
+<div class="bloc theorie"><div class="bloc-label">Vocabulary</div><table><tr><th>English</th><th>French</th></tr><tr><td>Stall</td><td>Étal</td></tr><tr><td>Seller</td><td>Vendeur</td></tr><tr><td>Customer</td><td>Client</td></tr><tr><td>Bargain</td><td>Marchander</td></tr><tr><td>Receipt</td><td>Reçu</td></tr><tr><td>Cheap / Expensive</td><td>Bon marché / Cher</td></tr><tr><td>At half price</td><td>À moitié prix</td></tr><tr><td>To make a list</td><td>Faire une liste</td></tr></table></div>
+<h3>2. Shopping Expressions</h3>
+<div class="bloc theorie"><div class="bloc-label">Vocabulary</div><ul><li><strong>How much is this?</strong> = Combien coûte ceci ?</li><li><strong>I would like to buy…</strong> = Je voudrais acheter…</li><li><strong>Can I try it on?</strong> = Puis-je l'essayer ?</li><li><strong>Do you have this in another size?</strong> = Avez-vous ceci dans une autre taille ?</li><li><strong>I'll take it.</strong> = Je le prends.</li><li><strong>Here is your change.</strong> = Voici votre monnaie.</li></ul></div>
+<h3>3. Tools and Occupations</h3>
+<div class="bloc theorie"><div class="bloc-label">Vocabulary</div><table><tr><th>Tool</th><th>Occupation</th><th>Use</th></tr><tr><td>Saw</td><td>Carpenter</td><td>To cut wood</td></tr><tr><td>Hammer</td><td>Carpenter</td><td>To drive nails</td></tr><tr><td>Screwdriver</td><td>Electrician</td><td>To repair appliances</td></tr><tr><td>Wrench</td><td>Mechanic</td><td>To tighten bolts</td></tr><tr><td>Blowlamp</td><td>Mechanic</td><td>To heat metal</td></tr></table></div>
+<h3>4. Practice — EXETAT style</h3>
+<div class="bloc exemple"><div class="bloc-label">Exercise</div><p><strong>Match the words with their meanings:</strong></p><ol><li>Stall → <strong>a small shop in a market</strong></li><li>Bargain → <strong>to negotiate a price</strong></li><li>Receipt → <strong>a paper proving payment</strong></li><li>Saw → <strong>a tool to cut wood</strong></li><li>Wrench → <strong>a tool to tighten bolts</strong></li></ol><p><strong>Complete the dialogue:</strong></p><ul><li>A: Good morning. How much is this cloth?</li><li>B: It ___ 15,000 FC.</li><li>A: That's too ___. Can you reduce the price?</li><li>B: I can give it to you at ___ price: 12,000 FC.</li><li>A: Fine. I'll ___ it.</li></ul><p><a href="https://www.youtube.com/results?search_query=english+vocabulary+shopping+commercial+activities" target="_blank" rel="noopener">🎥 Search: Shopping vocabulary (English learning channels)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">Key points</div><p>Know the vocabulary of commercial activities: stall, seller, customer, bargain, receipt, cheap, expensive. Know shopping expressions: How much is this? I would like to buy… Know tools and occupations: saw/carpenter, screwdriver/electrician, wrench/mechanic.</p></div>
+<div class="sources"><strong>Sources:</strong> Programme National d'Anglais (EDIDEPS, 2007), 4e Humanités, Thème 1: Commercial Activities ; EXETAT items (tools and occupations) ; Enjoy English Book 3.</div>
+    `
+},
+{
+    title: "Lesson 9 — Reading Comprehension Strategies",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>In the EXETAT, you will read a text and answer questions. The text may be about tourism in DRC, energy production, or health. You need strategies to find the right answers quickly and accurately.</p></div>
+<h3>1. Types of Questions</h3>
+<div class="bloc theorie"><div class="bloc-label">Strategies</div><ul><li><strong>Main idea</strong>: What is the text about? Look at the first and last sentences of each paragraph.</li><li><strong>Specific detail</strong>: Find a fact in the text. Scan for keywords.</li><li><strong>Vocabulary in context</strong>: What does this word mean? Look at the surrounding words.</li><li><strong>Inference</strong>: What can you conclude? Read between the lines.</li><li><strong>Matching</strong>: Match words in column A with meanings in column B.</li></ul></div>
+<h3>2. Step-by-Step Method</h3>
+<div class="bloc theorie"><div class="bloc-label">Strategies</div><ol><li><strong>Read the questions first</strong> to know what to look for.</li><li><strong>Skim the text</strong> quickly to get the general idea.</li><li><strong>Scan for keywords</strong> related to each question.</li><li><strong>Read the relevant paragraph</strong> carefully.</li><li><strong>Choose the best answer</strong> and verify it in the text.</li></ol></div>
+<h3>3. Example Text</h3>
+<div class="bloc exemple"><div class="bloc-label">Example</div><p><strong>Text</strong>: The Democratic Republic of Congo (DRC) is endowed with a huge tourism potential but this is presently untapped despite the existence of the Tourism Ministry, the National Office of Tourism, and other bodies. Among the main tourist attractions of the DRC are national parks, museums, botanical and zoological gardens, and historical sites.</p><p><strong>Question 1</strong>: What is the main idea of the text? → <strong>The DRC has tourism potential but it is not fully exploited.</strong></p><p><strong>Question 2</strong>: Which of the following is NOT a tourist attraction mentioned? (A. national parks B. museums C. airports D. historical sites) → <strong>C. airports</strong></p><p><strong>Question 3</strong>: The word "untapped" means: (A. exploited B. not exploited C. destroyed D. developed) → <strong>B. not exploited</strong></p><p><a href="https://www.youtube.com/results?search_query=reading+comprehension+strategies+EXETAT" target="_blank" rel="noopener">🎥 Search: Reading comprehension strategies (English learning channels)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">Key points</div><p>Read questions first. Skim then scan. Look for main idea in first/last sentences. For vocabulary, use context. For matching, associate words and meanings. Practice with EXETAT past papers.</p></div>
+<div class="sources"><strong>Sources:</strong> EXETAT items (tourism, energy, tools) ; Programme National d'Anglais (EDIDEPS, 2007) ; Enjoy English Book 3.</div>
+    `
+},
+{
+    title: "Lesson 10 — Essay Writing: Structure and Argumentation",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Starting from the 2030 session, finalists in DRC will have to write an essay in English as part of the EXETAT. This lesson prepares you for this new requirement. You will learn to structure an argumentative essay.</p></div>
+<h3>1. Essay Structure</h3>
+<div class="bloc theorie"><div class="bloc-label">Writing</div><ul><li><strong>Introduction</strong>: Hook (attention-grabber), background, thesis statement (your main argument).</li><li><strong>Body paragraphs</strong>: Each paragraph presents one argument with examples and evidence.</li><li><strong>Counter-argument</strong>: Acknowledge the opposite view and refute it.</li><li><strong>Conclusion</strong>: Restate thesis, summarize arguments, final thought.</li><li>Use linking words: <strong>Firstly, Moreover, However, Therefore, In conclusion</strong>.</li></ul></div>
+<h3>2. Types of Essays</h3>
+<div class="bloc theorie"><div class="bloc-label">Writing</div><ul><li><strong>Opinion essay</strong>: "Do you agree or disagree?"</li><li><strong>Advantage/Disadvantage essay</strong>: "What are the pros and cons?"</li><li><strong>Problem/Solution essay</strong>: "What are the causes and solutions?"</li><li><strong>Narrative essay</strong>: Tell a story (less common in EXETAT).</li></ul></div>
+<h3>3. Useful Expressions</h3>
+<div class="bloc theorie"><div class="bloc-label">Writing</div><ul><li><strong>Introduction</strong>: It is often said that… / In recent years… / This essay will discuss…</li><li><strong>Body</strong>: First of all… / Secondly… / Moreover… / For example… / In addition…</li><li><strong>Counter-argument</strong>: On the other hand… / However… / Nevertheless… / Some people argue that…</li><li><strong>Conclusion</strong>: To sum up… / In conclusion… / All things considered…</li></ul></div>
+<h3>4. Practice — EXETAT style</h3>
+<div class="bloc exemple"><div class="bloc-label">Exercise</div><p><strong>Write a short essay (150-200 words) on the following topic:</strong></p><p>"Should students learn English from primary school? Discuss."</p><p><strong>Sample outline:</strong></p><ul><li><strong>Introduction</strong>: English is the language of international communication. This essay argues that learning English from primary school is beneficial.</li><li><strong>Argument 1</strong>: Young children learn languages more easily (critical period hypothesis).</li><li><strong>Argument 2</strong>: Early English gives access to more opportunities (scholarships, jobs).</li><li><strong>Counter-argument</strong>: Some say it overloads the curriculum. However, English can be taught through play and songs.</li><li><strong>Conclusion</strong>: Learning English early is an investment for the future.</li></ul><p><a href="https://www.youtube.com/results?search_query=essay+writing+english+argumentative" target="_blank" rel="noopener">🎥 Search: Essay writing (English learning channels)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">Key points</div><p>Essay structure: Introduction (thesis), Body (arguments + examples), Counter-argument, Conclusion. Use linking words. Practice with EXETAT-style topics. From 2030, an English essay will be part of the EXETAT.</p></div>
+<div class="sources"><strong>Sources:</strong> Ministère de l'EPST — Réforme de l'EXETAT (2025) ; Programme National d'Anglais (EDIDEPS, 2007) ; Enjoy English Book 3.</div>
+    `
+},
+{
+    title: "Lesson 11 — Oral English: Presentation and the EXETAT Oral Exam",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Starting from the 2026 session, an oral English test will be introduced in the EXETAT for all humanities tracks. This test will assess your ability to speak English. This lesson prepares you for this new exam.</p></div>
+<h3>1. The EXETAT Oral Exam</h3>
+<div class="bloc theorie"><div class="bloc-label">Oral</div><ul><li><strong>Introduced</strong>: Starting from the 2026 session (hors-session), for all 4th year humanities students.</li><li><strong>Weight</strong>: 8 points in agricultural options, 4 points in pedagogical options (other options to be confirmed).</li><li><strong>Format</strong>: Presentation, conversation, or reading aloud.</li><li><strong>Duration</strong>: A few minutes per student.</li><li><strong>Objectives</strong>: Assess pronunciation, fluency, vocabulary, and ability to communicate.</li></ul></div>
+<h3>2. Self-Presentation</h3>
+<div class="bloc theorie"><div class="bloc-label">Oral</div><ul><li><strong>Name and age</strong>: My name is… I am… years old.</li><li><strong>School</strong>: I am a student at… I am in my final year of humanities.</li><li><strong>Family</strong>: I live with my parents / I have… brothers and sisters.</li><li><strong>Interests</strong>: I am interested in… I enjoy…</li><li><strong>Future plans</strong>: After my diploma, I would like to…</li><li><strong>Practise</strong>: Record yourself, listen, improve. Use audios and videos.</li></ul></div>
+<h3>3. Common Topics for Conversation</h3>
+<div class="bloc theorie"><div class="bloc-label">Oral</div><ul><li>Your daily routine.</li><li>Your favourite subject and why.</li><li>Your future career.</li><li>The importance of English in your life.</li><li>Your country (DRC): geography, culture, challenges.</li><li>Health (HIV/AIDS, malaria, nutrition).</li><li>Commercial activities (buying and selling).</li></ul></div>
+<h3>4. Practice — Oral Exercise</h3>
+<div class="bloc exemple"><div class="bloc-label">Exercise</div><p><strong>Prepare and practise the following:</strong></p><ol><li>Introduce yourself in 1 minute.</li><li>Describe your daily routine.</li><li>Explain why English is important for your future.</li><li>Describe a typical market scene in your town.</li><li>Talk about the importance of protecting the environment.</li></ol><p><strong>Tips</strong>: Speak slowly and clearly. Don't be afraid of mistakes. Use simple sentences. Practise with a friend.</p><p><a href="https://www.youtube.com/results?search_query=english+oral+presentation+practice+EXETAT" target="_blank" rel="noopener">🎥 Search: Oral English practice (English learning channels)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">Key points</div><p>From 2026, an oral English test will be part of the EXETAT. Prepare a self-presentation, practise common conversation topics, and speak slowly and clearly. Use audios and videos to improve your pronunciation.</p></div>
+<div class="sources"><strong>Sources:</strong> Ministère de l'EPST — Introduction de l'oral d'anglais à l'EXETAT 2026 ; Programme National d'Anglais (EDIDEPS, 2007).</div>
+    `
+},
+{
+    title: "Évaluation finale — EXETAT Items",
+    content: `
+        <p style="margin-bottom:18px;color:#12437a;font-size:0.95rem;">This final evaluation brings together EXETAT-style items. Do the exercise under exam conditions: without notes, in one sitting.</p>
+
+        <div class="bloc theorie">
+            <div class="bloc-label">Instructions</div>
+            <ul>
+                <li>35 multiple-choice questions.</li>
+                <li>One correct answer per question.</li>
+                <li>No going back to previous questions.</li>
+                <li>Recommended time: 35 minutes.</li>
+            </ul>
+        </div>
+
+        <div class="quiz-container" id="quizContainer">
+            <h3 style="color:#0d2b4f;margin-bottom:16px;font-size:1.1rem;">Part 1 — Questions</h3>
+            <div id="quizQuestions"></div>
+            <button id="submitQuiz" class="quiz-btn-submit">Check my answers</button>
+            <div id="quizResult" class="quiz-result"></div>
+        </div>
+    `
+}
+];
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim()) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderQuiz() {
+    const questions = [
+        { text:"She ___ to church every Sunday.", options:["go","goes","is going"], correct:1 },
+        { text:"Look! The children ___ in the yard.", options:["play","plays","are playing"], correct:2 },
+        { text:"I ___ this film three times.", options:["see","saw","have seen"], correct:2 },
+        { text:"He ___ in Kinshasa since 2015.", options:["lives","lived","has lived"], correct:2 },
+        { text:"Water ___ at 100 degrees Celsius.", options:["boil","boils","is boiling"], correct:1 },
+        { text:"I ___ TV when the phone rang.", options:["watch","watched","was watching"], correct:2 },
+        { text:"She ___ her homework before she went out.", options:["finish","finished","had finished"], correct:2 },
+        { text:"They ___ to Goma last year.", options:["go","went","were going"], correct:1 },
+        { text:"While I ___ in the garden, it started to rain.", options:["work","worked","was working"], correct:2 },
+        { text:"He told me that he ___ the book.", options:["read","reads","had read"], correct:2 },
+        { text:"I think it ___ tomorrow.", options:["rains","will rain","is going to rain"], correct:1 },
+        { text:"She ___ her aunt next Sunday.", options:["visits","will visit","is visiting"], correct:2 },
+        { text:"Look at the sky! It ___ .", options:["rains","will rain","is going to rain"], correct:2 },
+        { text:"I promise I ___ you with your homework.", options:["help","will help","am going to help"], correct:1 },
+        { text:"We ___ a party next week.", options:["have","will have","are having"], correct:2 },
+        { text:"The boy ___ briefcase is on the table has gone home.", options:["who","whom","whose"], correct:2 },
+        { text:"The woman ___ I met yesterday is my aunt.", options:["who","whom","whose"], correct:1 },
+        { text:"The book ___ you gave me is excellent.", options:["who","whom","which"], correct:2 },
+        { text:"The man ___ called you is my uncle.", options:["who","whom","whose"], correct:0 },
+        { text:"This is the house ___ Jack built.", options:["who","whom","that"], correct:2 },
+        { text:"Advertising has existed since the early times, ___ ?", options:["doesn't it","has it","hasn't it"], correct:2 },
+        { text:"You are a student, ___ ?", options:["are you","aren't you","do you"], correct:1 },
+        { text:"She doesn't like fish, ___ ?", options:["does she","doesn't she","is she"], correct:0 },
+        { text:"Let's go to the market, ___ ?", options:["will we","shall we","do we"], correct:1 },
+        { text:"I like him very much because he is good ___ English.", options:["in","at","on"], correct:1 },
+        { text:"She is interested ___ learning French.", options:["at","in","on"], correct:1 },
+        { text:"I have lived here ___ 2015.", options:["for","since","during"], correct:1 },
+        { text:"He is afraid ___ dogs.", options:["at","of","on"], correct:1 },
+        { text:"Please look ___ my bag while I am away.", options:["for","after","at"], correct:1 },
+        { text:"The bridge ___ in 2010.", options:["built","was built","has built"], correct:1 },
+        { text:"He said that he ___ the book.", options:["read","reads","had read"], correct:2 },
+        { text:"English ___ all over the world.", options:["speaks","is spoken","spoke"], correct:1 },
+        { text:"She asked me where I ___ .", options:["live","lives","lived"], correct:2 },
+        { text:"The teacher told us ___ quiet.", options:["be","to be","being"], correct:1 },
+        { text:"How much ___ this cloth?", options:["is","are","cost"], correct:0 }
+    ];
+    let html = '';
+    questions.forEach((q,i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o,k) => { html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>'; });
+        html += '</div>';
+    });
+    document.getElementById('quizQuestions').innerHTML = html;
+    document.getElementById('submitQuiz').onclick = () => {
+        let score = 0;
+        questions.forEach((q,i) => {
+            const s = document.querySelector('input[name="q' + i + '"]:checked');
+            if (s && parseInt(s.value) === q.correct) score++;
+        });
+        const pct = Math.round(score/questions.length*100);
+        document.getElementById('quizResult').innerHTML = '<div style="background:#cfdff5;padding:16px;border-radius:10px;margin-top:14px;">' +
+            '<strong>Score: ' + score + '/' + questions.length + ' (' + pct + '%)</strong><br>' +
+            (score === questions.length ? 'Excellent. You master the programme.' :
+             score >= 21 ? 'Good. Review the lessons where you failed.' :
+             'Read the lessons carefully before the exam.') + '</div>';
+    };
+}
+function renderSlide(index, keepHighlight = true) {
+    const isQuiz = (index === slides.length - 1);
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    if (isQuiz) renderQuiz();
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Lesson ' + (index+1) + ' / ' + slides.length;
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm && !isQuiz) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+</body>
+</html>
