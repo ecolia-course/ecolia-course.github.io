@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Psychologie — 4e secondaire (EXETAT)</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body {
+    font-family:'Segoe UI',system-ui,sans-serif;
+    background:linear-gradient(160deg,#4e2a0c 0%,#ef6c00 50%,#2e1604 100%);
+    display:flex; justify-content:center; align-items:center;
+    padding:8px;
+}
+.container {
+    width:100%; max-width:1400px; background:#fefdf8;
+    border-radius:20px; overflow:hidden;
+    display:flex; flex-direction:column;
+    height:100%; max-height:100vh;
+    box-shadow:0 20px 60px rgba(0,0,0,0.4);
+}
+.progress-bar { height:4px; background:#fbdcb8; flex-shrink:0; }
+.progress-fill {
+    height:100%; background:linear-gradient(90deg,#f0a15a,#b34a00);
+    width:0%; transition:width 0.3s;
+}
+.header {
+    padding:10px 16px; background:#fff1e0;
+    border-bottom:1px solid #f3c08a;
+    display:flex; justify-content:space-between; align-items:center;
+    gap:10px; flex-shrink:0;
+}
+.header h1 { color:#b34a00; font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box {
+    display:flex; background:white; border-radius:20px;
+    padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06);
+}
+.search-box input {
+    border:none; padding:6px 10px; border-radius:20px;
+    outline:none; width:130px; font-size:0.8rem;
+}
+.search-box button {
+    background:none; border:none; cursor:pointer;
+    padding:4px 8px; font-size:0.85rem; color:#ef6c00;
+}
+.badge {
+    background:#f0a15a; color:white; padding:4px 10px;
+    border-radius:20px; font-weight:bold; font-size:0.75rem;
+}
+.search-nav {
+    display:none; gap:4px; background:#fbdcb8;
+    padding:2px 8px; border-radius:20px; align-items:center;
+    font-size:0.75rem;
+}
+.search-nav button {
+    background:none; border:none; cursor:pointer;
+    font-size:0.9rem; color:#b34a00; padding:2px 4px;
+}
+.content {
+    padding:28px 32px; flex:1; overflow-y:auto;
+    background:#fff; scroll-behavior:smooth;
+    line-height:1.85;
+}
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide {
+    from { opacity:0; transform:translateY(8px); }
+    to { opacity:1; transform:translateY(0); }
+}
+.slide-title {
+    color:#4e2a0c; font-size:1.5rem; font-weight:700;
+    padding-bottom:12px; margin-bottom:20px;
+    border-bottom:2px solid #f0a15a;
+}
+.slide-content { color:#331a07; font-size:1rem; }
+.bloc {
+    padding:18px 22px; border-radius:12px;
+    margin:22px 0; line-height:1.85;
+}
+.bloc-label {
+    font-size:0.75rem; font-weight:700;
+    letter-spacing:1.5px; text-transform:uppercase;
+    margin-bottom:8px; opacity:0.7;
+}
+.bloc p, .bloc li { font-size:0.98rem; }
+.bloc h3 {
+    font-size:1.1rem; margin:20px 0 10px;
+    font-weight:600;
+}
+.bloc h3:first-child { margin-top:0; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:#fff1e0; border-left:4px solid #f0a15a; }
+.theorie .bloc-label { color:#b34a00; }
+.pratique { background:#e8f5e9; border-left:4px solid #43a047; }
+.pratique .bloc-label { color:#1b5e20; }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:#4e2a0c; }
+.quiz-container { padding:22px; background:#fff1e0; border-radius:16px; }
+.quiz-question {
+    background:white; border-radius:10px; padding:16px;
+    margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05);
+}
+.quiz-question p { font-weight:600; margin-bottom:10px; color:#4e2a0c; }
+.quiz-question label {
+    display:block; padding:8px 10px; margin:4px 0;
+    border-radius:6px; cursor:pointer; transition:background 0.2s;
+}
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit {
+    background:#c9650a; color:white; border:none;
+    padding:12px 24px; border-radius:30px; font-size:1rem;
+    cursor:pointer; font-weight:600; margin-top:14px;
+}
+.quiz-result { margin-top:16px; font-weight:600; }
+.sources {
+    background:#f5f5f5; padding:12px 16px; border-radius:10px;
+    margin-top:26px; font-size:0.82rem; color:#666;
+    border-left:3px solid #999; line-height:1.6;
+}
+.sources strong { color:#333; }
+.controls {
+    padding:8px 16px; background:#fafafa;
+    border-top:1px solid #e0e0e0;
+    display:flex; justify-content:space-between;
+    align-items:center; gap:8px; flex-shrink:0;
+}
+.nav-btn {
+    background:white; color:#b34a00;
+    border:1px solid #ccc; padding:8px 14px;
+    border-radius:8px; font-size:0.82rem;
+    cursor:pointer; font-weight:500;
+}
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:#fdebd6; }
+.content::-webkit-scrollbar-thumb { background:#f0a15a; border-radius:3px; }
+@media (max-width:600px) {
+    body { padding:0; }
+    .container { border-radius:0; max-height:100vh; }
+    .content { padding:20px 18px; }
+    .slide-title { font-size:1.25rem; }
+    .search-box input { width:90px; }
+    .header h1 { font-size:0.85rem; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+    <div class="header">
+        <h1>Psychologie · 4e secondaire</h1>
+        <div class="header-right">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Rechercher">
+                <button id="searchBtn">⌕</button>
+            </div>
+            <div class="search-nav" id="searchNav">
+                <button id="prevResultBtn">‹</button>
+                <span id="resultCounter">0/0</span>
+                <button id="nextResultBtn">›</button>
+            </div>
+            <span class="badge" id="slideCounter">1/11</span>
+        </div>
+    </div>
+
+    <div class="content" id="content"></div>
+
+    <div class="controls">
+        <button class="nav-btn" id="prevBtn">← Précédent</button>
+        <span class="counter" id="counter">Leçon 1 / 11</span>
+        <button class="nav-btn" id="nextBtn">Suivant →</button>
+    </div>
+</div>
+
+<script>
+const slides = [
+{
+    title: "Leçon 1 — Introduction à la psychologie : définition, objet et méthodes",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans une salle de classe à Kinshasa, deux élèves se disputent : « Pourquoi Mbuyi est-il si agressif ? » L'un dit : « C'est son caractère. » L'autre répond : « Non, c'est parce qu'il a faim. » Pour trancher, il faut la science qui étudie le comportement humain : la psychologie.</p></div>
+<h3>1. Définition et objet de la psychologie</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Psychologie</strong> : science qui étudie le comportement humain et animal.</li><li><strong>Objet</strong> : le comportement, les processus mentaux, les émotions, la personnalité.</li><li><strong>Étymologie</strong> : du grec <em>psyché</em> (âme) et <em>logos</em> (science, discours).</li><li><strong>Science</strong> : elle utilise des méthodes rigoureuses : observation, expérimentation, tests, entretiens.</li></ul></div>
+<h3>2. Les sortes de psychologie</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Psychologie générale</strong> : étudie le comportement de l'adulte normal.</li><li><strong>Psychologie de l'enfant et de l'adolescent</strong> : étudie l'évolution du comportement de la conception à la maturité (4e H.P.).</li><li><strong>Psychologie différentielle</strong> : étudie les différences entre individus ou groupes (sexe, culture, milieu).</li><li><strong>Psychologie sociale</strong> : étudie le comportement de l'individu en groupe.</li><li><strong>Psychologie pédagogique</strong> : étudie l'application des lois psychologiques à l'éducation.</li><li><strong>Psychologie pathologique</strong> : étudie les troubles mentaux et du comportement.</li></ul></div>
+<h3>3. Les méthodes de la psychologie</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Observation</strong> : méthode fondamentale, étudie le comportement dans son milieu naturel.</li><li><strong>Expérimentation</strong> : provoque un comportement dans des conditions contrôlées.</li><li><strong>Entretien</strong> : dialogue structuré pour recueillir des informations.</li><li><strong>Questionnaire</strong> : série de questions écrites.</li><li><strong>Tests psychologiques</strong> : épreuves standardisées (intelligence, personnalité, aptitudes).</li><li><strong>Étude de cas</strong> : analyse approfondie d'un individu ou d'un groupe.</li></ul></div>
+<h3>4. Relation avec les autres sciences</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Psychologie et physiologie</strong> : interdépendance entre la vie mentale et la vie organique. Ex. : un accident cérébral peut entraîner des troubles psychiques.</li><li><strong>Psychologie et sociologie</strong> : l'individu est influencé par la société.</li><li><strong>Psychologie et pédagogie</strong> : la pédagogie applique les lois psychologiques à l'éducation.</li><li><strong>Psychologie et philosophie</strong> : la philosophie s'interroge sur la nature de l'homme, la psychologie l'étudie scientifiquement.</li></ul><p><a href="https://www.youtube.com/results?search_query=psychologie+définition+objet+méthodes" target="_blank" rel="noopener">🎥 Recherche : introduction à la psychologie (chaînes de cours de psychologie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La psychologie est la science du comportement humain et animal. Elle se divise en plusieurs branches (générale, de l'enfant, différentielle, sociale, pédagogique, pathologique). Ses méthodes sont l'observation, l'expérimentation, l'entretien, les tests et l'étude de cas.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme National de Psychopédagogie (2009), Manuel de Psychologie Générale 4ème année (manuels-scolaires-rdc.com, 2025), Synthèse Psycho-Pédagogique 2025 (Christian ANIGULE KANGOYANGALA & Christian MBOLIGIE UMBAWO).<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT, HP.</div>
+    `
+},
+{
+    title: "Leçon 2 — La personnalité et les tempéraments",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans une classe de 4e pédagogique à Mbandaka, trois élèves réagissent différemment à une mauvaise note : Kola se met en colère, Mado pleure, Tshibangu reste calme. Trois personnalités, trois tempéraments. Comment les comprendre ?</p></div>
+<h3>1. Définition de la personnalité</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Personnalité</strong> : organisation dynamique des traits physiques, intellectuels, affectifs et sociaux qui caractérisent un individu.</li><li><strong>Caractère</strong> : ensemble des dispositions affectives et morales acquises.</li><li><strong>Tempérament</strong> : ensemble des dispositions innées, liées à la constitution biologique.</li><li><strong>Traits</strong> : caractéristiques stables qui distinguent les individus.</li></ul></div>
+<h3>2. Les quatre tempéraments</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Nerveux (mélancolique)</strong> : sensible, émotif, introverti, vite fatigué.</li><li><strong>Sanguin</strong> : gai, optimiste, sociable, réactif.</li><li><strong>Bilieux (colérique)</strong> : impulsif, énergique, colérique, actif.</li><li><strong>Flegmatique</strong> : calme, lent, réfléchi, peu expressif.</li></ul></div>
+<h3>3. Les facteurs de la personnalité</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Hérédité</strong> : prédispositions génétiques, tempérament de base.</li><li><strong>Milieu</strong> : famille, école, société, culture.</li><li><strong>Éducation</strong> : formation reçue, valeurs transmises.</li><li><strong>Expériences personnelles</strong> : succès, échecs, traumatismes.</li></ul></div>
+<h3>4. Les troubles de la personnalité</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Instabilité émotionnelle</strong> : sautes d'humeur fréquentes.</li><li><strong>Personnalité paranoïaque</strong> : méfiance excessive.</li><li><strong>Personnalité schizoïde</strong> : retrait social, froideur affective.</li><li><strong>Rôle de l'enseignant</strong> : observer, dépister, orienter vers un psychologue.</li></ul><p><a href="https://www.youtube.com/results?search_query=personnalité+tempéraments+psychologie" target="_blank" rel="noopener">🎥 Recherche : la personnalité et les tempéraments (chaînes de cours de psychologie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La personnalité est l'organisation dynamique des traits d'un individu. Les quatre tempéraments sont : nerveux, sanguin, bilieux, flegmatique. Elle est influencée par l'hérédité, le milieu, l'éducation et les expériences.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme National de Psychopédagogie (2009), Manuel de Psychologie Générale 4ème année (manuels-scolaires-rdc.com, 2025).</div>
+    `
+},
+{
+    title: "Leçon 3 — La sensation et la perception",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans la cour de l'école, tu entends un bruit. Est-ce un moteur ou un tambour ? Tu tournes la tête et tu vois un camion. Ce que tu as d'abord ressenti (le son) et ce que tu as reconnu (un camion) sont deux processus différents : la sensation et la perception.</p></div>
+<h3>1. La sensation</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Sensation</strong> : processus par lequel un organe des sens reçoit un stimulus et le transmet au cerveau.</li><li><strong>Seuil absolu</strong> : intensité minimale d'un stimulus pour être perçu.</li><li><strong>Seuil différentiel</strong> : plus petite différence perceptible entre deux stimuli.</li><li><strong>Adaptation sensorielle</strong> : diminution de la sensibilité après une exposition prolongée.</li></ul></div>
+<h3>2. Les organes des sens</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Vue</strong> : récepteurs dans la rétine (cônes et bâtonnets).</li><li><strong>Ouïe</strong> : récepteurs dans l'oreille interne (cellules ciliées).</li><li><strong>Odorat</strong> : récepteurs dans la muqueuse nasale.</li><li><strong>Goût</strong> : récepteurs dans les papilles gustatives.</li><li><strong>Toucher</strong> : récepteurs dans la peau (chaud, froid, pression, douleur).</li></ul></div>
+<h3>3. La perception</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Perception</strong> : interprétation des sensations par le cerveau.</li><li><strong>Lois de la perception</strong> : proximité, similitude, continuité, fermeture, figure-fond.</li><li><strong>Illusions d'optique</strong> : erreurs de perception (Müller-Lyer, Ponzo).</li><li><strong>Perception et apprentissage</strong> : la perception est influencée par l'expérience, les attentes, la culture.</li></ul></div>
+<h3>4. Applications pédagogiques</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Clarté du tableau</strong> : écrire gros et lisiblement.</li><li><strong>Attention aux élèves malvoyants ou malentendants</strong> : placement au premier rang.</li><li><strong>Utilisation de supports visuels</strong> : images, schémas, cartes.</li><li><strong>Éviter la surcharge sensorielle</strong> : trop de stimuli nuisent à la perception.</li></ul><p><a href="https://www.youtube.com/results?search_query=sensation+perception+psychologie+lois" target="_blank" rel="noopener">🎥 Recherche : la sensation et la perception (chaînes de cours de psychologie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La sensation est la réception d'un stimulus par un organe des sens. La perception est son interprétation par le cerveau. Les lois de la perception (proximité, similitude, etc.) et les illusions montrent que percevoir n'est pas simplement voir.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme National de Psychopédagogie (2009), Manuel de Psychologie Générale 4ème année (manuels-scolaires-rdc.com, 2025).</div>
+    `
+},
+{
+    title: "Leçon 4 — La mémoire et l'imagination",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Pour l'EXETAT, tu dois mémoriser une liste de dates. Tu utilises une technique : tu associes chaque date à une image. C'est la mémoire et l'imagination qui travaillent ensemble.</p></div>
+<h3>1. La mémoire</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Mémoire</strong> : capacité à encoder, stocker et restituer des informations.</li><li><strong>Mémoire sensorielle</strong> : très brève (fraction de seconde).</li><li><strong>Mémoire à court terme</strong> : limitée (7 ± 2 éléments), durée de quelques secondes à minutes.</li><li><strong>Mémoire à long terme</strong> : illimitée, durée variable (jours, années).</li><li><strong>Types</strong> : mémoire procédurale (habiletés), épisodique (événements), sémantique (connaissances).</li></ul></div>
+<h3>2. Les lois de la mémoire</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Loi de la répétition</strong> : plus on répète, mieux on retient.</li><li><strong>Loi de l'association</strong> : on retient mieux ce qui est lié à du connu.</li><li><strong>Loi de la primauté</strong> : on retient mieux le début.</li><li><strong>Loi de la récence</strong> : on retient mieux la fin.</li><li><strong>Courbe de l'oubli</strong> (Ebbinghaus) : l'oubli est rapide au début, puis ralentit.</li></ul></div>
+<h3>3. L'imagination</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Imagination</strong> : capacité à se représenter des objets ou situations non présents.</li><li><strong>Imagination reproductive</strong> : se rappeler des images déjà vues.</li><li><strong>Imagination créatrice</strong> : produire des images nouvelles (invention, art).</li><li><strong>Rôle dans l'apprentissage</strong> : visualiser, anticiper, résoudre des problèmes.</li></ul></div>
+<h3>4. Applications pédagogiques</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Techniques de mémorisation</strong> : répétition espacée, association, images mentales.</li><li><strong>Exercices d'imagination</strong> : rédaction de récits, résolution de problèmes.</li><li><strong>Respect des limites</strong> : ne pas surcharger la mémoire à court terme.</li><li><strong>Encouragement de la créativité</strong> : valoriser les productions originales.</li></ul><p><a href="https://www.youtube.com/results?search_query=mémoire+imagination+psychologie+lois" target="_blank" rel="noopener">🎥 Recherche : mémoire et imagination (chaînes de cours de psychologie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La mémoire encode, stocke et restitue les informations. Elle obéit à des lois (répétition, association, primauté, récence) et à la courbe de l'oubli. L'imagination permet de se représenter et de créer. Les deux sont essentielles à l'apprentissage.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme National de Psychopédagogie (2009), Manuel de Psychologie Générale 4ème année (manuels-scolaires-rdc.com, 2025).</div>
+    `
+},
+{
+    title: "Leçon 5 — La motivation et les besoins humains",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans une école de Lubumbashi, certains élèves travaillent dur pour réussir, d'autres semblent indifférents. Pourquoi ? La réponse se trouve dans la motivation et les besoins humains.</p></div>
+<h3>1. Définition de la motivation</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Motivation</strong> : ensemble des facteurs qui poussent un individu à agir dans une direction donnée.</li><li><strong>Motivation intrinsèque</strong> : vient de l'intérêt personnel, du plaisir d'apprendre.</li><li><strong>Motivation extrinsèque</strong> : vient de récompenses ou de pressions extérieures (notes, félicitations, punitions).</li><li><strong>Besoin</strong> : état de manque qui pousse à l'action.</li></ul></div>
+<h3>2. La pyramide de Maslow</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Besoins physiologiques</strong> : faim, soif, sommeil, respiration.</li><li><strong>Besoins de sécurité</strong> : protection, stabilité, absence de danger.</li><li><strong>Besoins d'appartenance</strong> : amour, amitié, appartenance à un groupe.</li><li><strong>Besoins d'estime</strong> : reconnaissance, respect, confiance en soi.</li><li><strong>Besoins d'accomplissement</strong> : réalisation de soi, dépassement.</li></ul></div>
+<h3>3. Motivation et apprentissage</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Rôle de l'enseignant</strong> : susciter l'intérêt, donner du sens aux apprentissages.</li><li><strong>Feedback</strong> : les retours réguliers renforcent la motivation.</li><li><strong>Objectifs clairs</strong> : des buts atteignables augmentent la persévérance.</li><li><strong>Valorisation des réussites</strong> : célébrer les progrès.</li><li><strong>Différenciation</strong> : adapter les tâches au niveau de chaque élève.</li></ul></div>
+<h3>4. Applications en classe</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li>Un élève démotivé à Kinshasa : l'enseignant découvre qu'il a faim (besoin physiologique non satisfait). Il le signale au service social.</li><li>Un élève doué mais paresseux : l'enseignant lui confie une responsabilité (besoin d'estime).</li><li>Une classe apathique : l'enseignant utilise des exemples concrets et des activités interactives.</li></ul><p><a href="https://www.youtube.com/results?search_query=motivation+besoins+Maslow+psychologie" target="_blank" rel="noopener">🎥 Recherche : la motivation et les besoins (chaînes de cours de psychologie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La motivation est l'ensemble des facteurs qui poussent à agir. Elle peut être intrinsèque ou extrinsèque. La pyramide de Maslow classe les besoins en cinq niveaux. L'enseignant doit créer les conditions de la motivation.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme National de Psychopédagogie (2009), Manuel de Psychologie Générale 4ème année (manuels-scolaires-rdc.com, 2025).</div>
+    `
+},
+{
+    title: "Leçon 6 — Les émotions et les sentiments",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Lors d'un match de football inter-classes, tu ressens une joie intense quand ton équipe gagne, et une grande tristesse quand elle perd. Ces réactions sont des émotions. Les sentiments, eux, sont plus durables : l'amour pour ta famille, l'amitié pour un camarade.</p></div>
+<h3>1. Définition des émotions et des sentiments</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Émotion</strong> : réaction affective intense et brève, déclenchée par un stimulus.</li><li><strong>Sentiment</strong> : état affectif durable et moins intense.</li><li><strong>Passion</strong> : sentiment intense et envahissant.</li><li><strong>Humeur</strong> : état affectif général et prolongé.</li></ul></div>
+<h3>2. Les émotions fondamentales</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Joie</strong> : satisfaction, plaisir.</li><li><strong>Tristesse</strong> : perte, déception.</li><li><strong>Colère</strong> : frustration, injustice.</li><li><strong>Peur</strong> : danger réel ou imaginaire.</li><li><strong>Surprise</strong> : événement inattendu.</li><li><strong>Dégoût</strong> : rejet, répulsion.</li></ul></div>
+<h3>3. Les composantes de l'émotion</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Composante physiologique</strong> : accélération du cœur, transpiration.</li><li><strong>Composante cognitive</strong> : interprétation de la situation.</li><li><strong>Composante comportementale</strong> : expression faciale, gestes, fuite ou attaque.</li><li><strong>Composante subjective</strong> : ressenti personnel.</li></ul></div>
+<h3>4. Gestion des émotions en classe</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Reconnaître ses émotions</strong> : nommer ce que l'on ressent.</li><li><strong>Accepter les émotions des élèves</strong> : ne pas minimiser ou punir les larmes.</li><li><strong>Apprendre à se calmer</strong> : respiration, retrait temporaire, parole.</li><li><strong>Développer l'empathie</strong> : se mettre à la place de l'autre.</li></ul><p><a href="https://www.youtube.com/results?search_query=émotions+sentiments+psychologie+gestion" target="_blank" rel="noopener">🎥 Recherche : les émotions et les sentiments (chaînes de cours de psychologie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Les émotions sont des réactions affectives brèves et intenses (joie, tristesse, colère, peur). Les sentiments sont plus durables. L'enseignant doit aider les élèves à reconnaître et à gérer leurs émotions.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme National de Psychopédagogie (2009), Manuel de Psychologie Générale 4ème année (manuels-scolaires-rdc.com, 2025).</div>
+    `
+},
+{
+    title: "Leçon 7 — La psychologie de l'enfant et de l'adolescent",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans une école primaire de Kisangani, un enfant de 7 ans ne comprend pas encore la notion de conservation (il pense qu'un verre large contient plus d'eau qu'un verre étroit). Une adolescente de 15 ans, elle, raisonne de manière abstraite. Pourquoi cette différence ? Piaget et Wallon l'expliquent.</p></div>
+<h3>1. Les stades du développement selon Piaget</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Stade sensori-moteur</strong> (0-2 ans) : intelligence pratique, réflexes, coordination.</li><li><strong>Stade pré-opératoire</strong> (2-7 ans) : pensée symbolique, égocentrisme, pas de conservation.</li><li><strong>Stade des opérations concrètes</strong> (7-11 ans) : conservation, classification, sériation, opérations logiques sur le concret.</li><li><strong>Stade des opérations formelles</strong> (11-15 ans et plus) : pensée abstraite, hypothético-déductive, raisonnement scientifique.</li></ul></div>
+<h3>2. Les stades selon Wallon</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Stade impulsif-émotionnel</strong> (0-1 an) : réactions impulsives, premières émotions.</li><li><strong>Stade sensori-moteur et projectif</strong> (1-3 ans) : exploration du monde, marche, langage.</li><li><strong>Stade du personnalisme</strong> (3-6 ans) : affirmation de soi, opposition, crise.</li><li><strong>Stade catégoriel</strong> (6-11 ans) : connaissance du monde, catégories.</li><li><strong>Stade de l'adolescence</strong> (11-18 ans) : puberté, crise d'identité, insertion sociale.</li></ul></div>
+<h3>3. L'adolescence : caractéristiques</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Développement physique</strong> : puberté, croissance rapide.</li><li><strong>Développement cognitif</strong> : pensée formelle, esprit critique.</li><li><strong>Développement affectif</strong> : recherche d'identité, instabilité émotionnelle.</li><li><strong>Développement social</strong> : importance du groupe de pairs, conflits avec les parents.</li></ul></div>
+<h3>4. Applications pédagogiques</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Adapter l'enseignement au stade</strong> : concret pour les jeunes enfants, abstrait pour les adolescents.</li><li><strong>Comprendre les crises</strong> : opposition, repli, besoin d'autonomie.</li><li><strong>Accompagner sans juger</strong> : écoute active, respect des différences.</li><li><strong>Collaboration avec les parents</strong> : dialogue constructif.</li></ul><p><a href="https://www.youtube.com/results?search_query=psychologie+enfant+adolescent+Piaget+Wallon+stades" target="_blank" rel="noopener">🎥 Recherche : la psychologie de l'enfant et de l'adolescent (chaînes de cours de psychologie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Piaget distingue quatre stades : sensori-moteur, pré-opératoire, opérations concrètes, opérations formelles. Wallon insiste sur l'émotion et la socialisation. L'adolescence est marquée par la puberté, la crise d'identité et l'importance du groupe.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme National de Psychopédagogie (2009), Manuel de Psychologie du Développement 4ème année (manuels-scolaires-rdc.com, 2025).</div>
+    `
+},
+{
+    title: "Leçon 8 — La psychologie sociale et relationnelle",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans une classe de Kinshasa, un élève timide se transforme en meneur lorsqu'il est dans son groupe d'amis. Pourquoi ? Parce que le comportement change selon le contexte social. C'est l'objet de la psychologie sociale.</p></div>
+<h3>1. Définition et objet</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Psychologie sociale</strong> : étude du comportement de l'individu en groupe et des relations entre individus.</li><li><strong>Objet</strong> : influence sociale, relations interpersonnelles, attitudes, préjugés, conformisme.</li></ul></div>
+<h3>2. Les phénomènes sociaux</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Conformisme</strong> : tendance à adopter les opinions du groupe.</li><li><strong>Influence sociale</strong> : les autres modifient nos comportements.</li><li><strong>Préjugés</strong> : opinions préconçues sur un groupe.</li><li><strong>Stéréotypes</strong> : images figées d'un groupe.</li><li><strong>Attitudes</strong> : dispositions à réagir de manière favorable ou défavorable.</li></ul></div>
+<h3>3. La communication interpersonnelle</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Communication verbale</strong> : paroles, mots.</li><li><strong>Communication non verbale</strong> : gestes, mimiques, posture, regard.</li><li><strong>Écoute active</strong> : reformuler, questionner, manifester son attention.</li><li><strong>Obstacles</strong> : jugements, interruptions, préjugés.</li></ul></div>
+<h3>4. Applications en milieu scolaire</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Gérer les conflits</strong> : médiation, dialogue, respect des différences.</li><li><strong>Favoriser la coopération</strong> : travaux de groupe, projets collectifs.</li><li><strong>Lutter contre les préjugés</strong> : éducation à la tolérance, ouverture à l'autre.</li><li><strong>Développer les compétences sociales</strong> : respect, écoute, empathie.</li></ul><p><a href="https://www.youtube.com/results?search_query=psychologie+sociale+relationnelle+communication" target="_blank" rel="noopener">🎥 Recherche : la psychologie sociale (chaînes de cours de psychologie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La psychologie sociale étudie le comportement en groupe. Elle s'intéresse au conformisme, aux préjugés, aux attitudes et à la communication. L'enseignant doit favoriser la coopération et lutter contre les préjugés.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme National de Psychopédagogie (2009), Manuel de Psychologie Générale 4ème année (manuels-scolaires-rdc.com, 2025).</div>
+    `
+},
+{
+    title: "Leçon 9 — La psychologie appliquée à l'enseignement",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>À l'Institut de Kinshasa, un élève a des difficultés en mathématiques. L'enseignant doit comprendre pourquoi : problème de motivation ? trouble de l'apprentissage ? manque de prérequis ? C'est la psychologie appliquée à l'enseignement qui lui donne les outils.</p></div>
+<h3>1. La psychologie de l'apprentissage</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Apprentissage</strong> : modification durable du comportement résultant de l'expérience.</li><li><strong>Conditionnement classique</strong> (Pavlov) : association stimulus-réponse.</li><li><strong>Conditionnement opérant</strong> (Skinner) : renforcement positif ou négatif.</li><li><strong>Apprentissage social</strong> (Bandura) : imitation de modèles.</li><li><strong>Constructivisme</strong> (Piaget) : l'élève construit ses connaissances.</li><li><strong>Socioconstructivisme</strong> (Vygotsky) : rôle des interactions sociales.</li></ul></div>
+<h3>2. Les troubles de l'apprentissage</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Dyslexie</strong> : difficulté à lire.</li><li><strong>Dyscalculie</strong> : difficulté en mathématiques.</li><li><strong>Dysgraphie</strong> : difficulté à écrire.</li><li><strong>Déficit d'attention</strong> : difficulté à se concentrer.</li><li><strong>Rôle de l'enseignant</strong> : dépister, adapter, orienter vers des spécialistes.</li></ul></div>
+<h3>3. L'orientation scolaire et professionnelle</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Objectif</strong> : aider l'élève à choisir une filière adaptée à ses aptitudes et intérêts.</li><li><strong>Outils</strong> : tests d'aptitudes, d'intérêts, entretiens.</li><li><strong>Rôle de l'enseignant</strong> : observer, conseiller, orienter.</li><li><strong>Facteurs</strong> : résultats scolaires, personnalité, milieu socio-économique.</li></ul></div>
+<h3>4. Applications</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Un élève en échec</strong> : l'enseignant cherche les causes (motivation, méthode, trouble).</li><li><strong>Un élève doué</strong> : l'enseignant propose des activités enrichissantes.</li><li><strong>Un élève en difficulté sociale</strong> : l'enseignant crée un climat de confiance.</li><li><strong>Un élève qui triche</strong> : l'enseignant s'interroge sur les causes (peur de l'échec, pression familiale).</li></ul><p><a href="https://www.youtube.com/results?search_query=psychologie+appliquée+enseignement+apprentissage+troubles" target="_blank" rel="noopener">🎥 Recherche : la psychologie appliquée à l'enseignement (chaînes de cours de psychologie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La psychologie de l'apprentissage étudie comment l'élève apprend (conditionnement, constructivisme, socioconstructivisme). Les troubles de l'apprentissage (dyslexie, dyscalculie, etc.) doivent être dépistés et pris en charge. L'orientation scolaire aide l'élève à choisir sa voie.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme National de Psychopédagogie (2009), Manuel de Psychologie Appliquée 4ème année (manuels-scolaires-rdc.com, 2025).</div>
+    `
+},
+{
+    title: "Leçon 10 — Méthodologie de la dissertation psychologique",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>À l'EXETAT, on te propose le sujet : « L'intelligence est-elle innée ou acquise ? » Tu dois rédiger une dissertation psychologique. Voici la méthode.</p></div>
+<h3>1. Nature et objectifs</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Dissertation psychologique</strong> : épreuve qui mesure la capacité à argumenter sur un problème psychologique.</li><li><strong>Objectif</strong> : mobiliser des théories, des auteurs et des exemples pour défendre une position.</li><li><strong>Attentes</strong> : clarté, rigueur, vocabulaire psychologique précis.</li></ul></div>
+<h3>2. Méthode en 5 étapes</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ol><li><strong>Analyse du sujet</strong> : identifier les mots-clés, la problématique.</li><li><strong>Recherche des idées</strong> : mobiliser les connaissances (auteurs, théories, exemples).</li><li><strong>Élaboration du plan</strong> : dialectique (thèse/antithèse/synthèse), thématique ou analytique.</li><li><strong>Rédaction</strong> : introduction, développement, conclusion.</li><li><strong>Relecture</strong> : vérifier la cohérence et l'orthographe.</li></ol></div>
+<h3>3. Structure du devoir</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Introduction</strong> : accroche, définition des termes, problématique, annonce du plan.</li><li><strong>Développement</strong> : 2 ou 3 parties, chacune avec 2-3 paragraphes argumentés et des exemples.</li><li><strong>Transition</strong> entre les parties.</li><li><strong>Conclusion</strong> : synthèse, réponse à la problématique, ouverture.</li></ul></div>
+<h3>4. Exemple de sujet et plan</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p>Sujet : « L'intelligence est-elle innée ou acquise ? »</p><ul><li><strong>Thèse</strong> : l'intelligence est en partie innée (facteurs génétiques, QI).</li><li><strong>Antithèse</strong> : l'intelligence est acquise par l'éducation et l'environnement.</li><li><strong>Synthèse</strong> : l'intelligence résulte de l'interaction entre l'inné et l'acquis.</li></ul><p><a href="https://www.youtube.com/results?search_query=dissertation+psychologique+méthode+plan" target="_blank" rel="noopener">🎥 Recherche : la dissertation psychologique (chaînes de cours de psychologie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La dissertation psychologique argumente sur un problème de psychologie. Méthode : analyse du sujet, recherche des idées, plan, rédaction, relecture. Structure : introduction, développement, conclusion.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme National de Psychopédagogie (2009), Manuel de Psychologie Générale 4ème année (manuels-scolaires-rdc.com, 2025).</div>
+    `
+},
+{
+    title: "Évaluation finale — Items EXETAT",
+    content: `
+        <p style="margin-bottom:18px;color:#b34a00;font-size:0.95rem;">Cette évaluation regroupe des items de type EXETAT. Fais l'exercice dans les conditions du concours : sans notes, en une seule fois.</p>
+
+        <div class="bloc theorie">
+            <div class="bloc-label">Consignes</div>
+            <ul>
+                <li>30 questions à choix multiples.</li>
+                <li>Une seule réponse correcte par question.</li>
+                <li>Pas de retour en arrière sur les questions déjà validées.</li>
+                <li>Durée recommandée : 30 minutes.</li>
+            </ul>
+        </div>
+
+        <div class="quiz-container" id="quizContainer">
+            <h3 style="color:#4e2a0c;margin-bottom:16px;font-size:1.1rem;">Partie 1 — Questions</h3>
+            <div id="quizQuestions"></div>
+            <button id="submitQuiz" class="quiz-btn-submit">Valider mes réponses</button>
+            <div id="quizResult" class="quiz-result"></div>
+        </div>
+    `
+}
+];
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim()) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderQuiz() {
+    const questions = [
+        { text:"Quelle science étudie le comportement humain et animal ?", options:["La sociologie","La psychologie","La philosophie"], correct:1 },
+        { text:"Quelle branche étudie le comportement de l'adulte normal ?", options:["Psychologie générale","Psychologie pathologique","Psychologie sociale"], correct:0 },
+        { text:"Quelle méthode consiste à observer le comportement dans son milieu naturel ?", options:["L'expérimentation","L'observation","Le test"], correct:1 },
+        { text:"Qu'est-ce que le tempérament ?", options:["Un trait acquis","Une disposition innée","Un trouble mental"], correct:1 },
+        { text:"Quel tempérament est impulsif et colérique ?", options:["Sanguin","Bilieux","Flegmatique"], correct:1 },
+        { text:"Qu'est-ce que la sensation ?", options:["L'interprétation d'un stimulus","La réception d'un stimulus","La mémoire d'un stimulus"], correct:1 },
+        { text:"Qu'est-ce que la perception ?", options:["La réception d'un stimulus","L'interprétation d'une sensation","L'oubli d'une information"], correct:1 },
+        { text:"Quelle loi de la perception regroupe les éléments proches ?", options:["Loi de proximité","Loi de similitude","Loi de fermeture"], correct:0 },
+        { text:"Quelle est la capacité de la mémoire à court terme ?", options:["3 éléments","7 ± 2 éléments","20 éléments"], correct:1 },
+        { text:"Quelle loi de la mémoire dit qu'on retient mieux le début ?", options:["Loi de récence","Loi de primauté","Loi de répétition"], correct:1 },
+        { text:"Que signifie la courbe de l'oubli d'Ebbinghaus ?", options:["L'oubli est rapide au début","L'oubli est lent au début","On n'oublie jamais"], correct:0 },
+        { text:"Qu'est-ce que l'imagination créatrice ?", options:["Se rappeler des images vues","Produire des images nouvelles","Oublier des images"], correct:1 },
+        { text:"Qu'est-ce que la motivation intrinsèque ?", options:["Vient de récompenses externes","Vient de l'intérêt personnel","Vient de la peur"], correct:1 },
+        { text:"Selon Maslow, quel besoin est à la base de la pyramide ?", options:["Besoins d'estime","Besoins physiologiques","Besoins d'accomplissement"], correct:1 },
+        { text:"Qu'est-ce qu'une émotion ?", options:["Un état affectif durable","Une réaction affective brève et intense","Un trouble mental"], correct:1 },
+        { text:"Quelle est la composante physiologique de l'émotion ?", options:["L'interprétation","L'accélération du cœur","Le ressenti personnel"], correct:1 },
+        { text:"Quel stade de Piaget correspond à la pensée abstraite ?", options:["Stade sensori-moteur","Stade pré-opératoire","Stade des opérations formelles"], correct:2 },
+        { text:"À quel âge l'enfant acquiert-il la conservation selon Piaget ?", options:["0-2 ans","7-11 ans","11-15 ans"], correct:1 },
+        { text:"Qu'est-ce que le conformisme ?", options:["Adopter les opinions du groupe","Résister au groupe","Ignorer le groupe"], correct:0 },
+        { text:"Qu'est-ce que l'écoute active ?", options:["Écouter passivement","Reformuler et questionner","Interrompre"], correct:1 },
+        { text:"Qu'est-ce que l'apprentissage ?", options:["Une modification durable du comportement","Une réaction instinctive","Un trouble mental"], correct:0 },
+        { text:"Qui a développé le conditionnement opérant ?", options:["Pavlov","Skinner","Bandura"], correct:1 },
+        { text:"Qu'est-ce que la dyslexie ?", options:["Difficulté en mathématiques","Difficulté à lire","Difficulté à écrire"], correct:1 },
+        { text:"Quel est le rôle de l'enseignant face à un trouble d'apprentissage ?", options:["Punir l'élève","Dépister et orienter","Ignorer"], correct:1 },
+        { text:"Quelle est la première étape de la dissertation psychologique ?", options:["Rédaction","Analyse du sujet","Relecture"], correct:1 },
+        { text:"Quel plan convient pour discuter un sujet ?", options:["Plan dialectique","Plan thématique","Plan narratif"], correct:0 },
+        { text:"Que doit contenir l'introduction ?", options:["Accroche, problématique, annonce du plan","Conclusion","Développement"], correct:0 },
+        { text:"Qui a étudié le développement de l'intelligence ?", options:["Piaget","Wallon","Skinner"], correct:0 },
+        { text:"Qui a insisté sur l'émotion et la socialisation ?", options:["Piaget","Wallon","Bandura"], correct:1 },
+        { text:"Quel est l'objet de la psychologie sociale ?", options:["Le comportement en groupe","Le comportement animal","Le développement de l'enfant"], correct:0 }
+    ];
+    let html = '';
+    questions.forEach((q,i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o,k) => { html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>'; });
+        html += '</div>';
+    });
+    document.getElementById('quizQuestions').innerHTML = html;
+    document.getElementById('submitQuiz').onclick = () => {
+        let score = 0;
+        questions.forEach((q,i) => {
+            const s = document.querySelector('input[name="q' + i + '"]:checked');
+            if (s && parseInt(s.value) === q.correct) score++;
+        });
+        const pct = Math.round(score/questions.length*100);
+        document.getElementById('quizResult').innerHTML = '<div style="background:#fbdcb8;padding:16px;border-radius:10px;margin-top:14px;">' +
+            '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong><br>' +
+            (score === questions.length ? 'Excellent. Tu maîtrises le programme.' :
+             score >= 21 ? 'Bien. Revoyez les leçons où vous avez échoué.' :
+             'Relis attentivement les leçons avant l\'examen.') + '</div>';
+    };
+}
+function renderSlide(index, keepHighlight = true) {
+    const isQuiz = (index === slides.length - 1);
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    if (isQuiz) renderQuiz();
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm && !isQuiz) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+</body>
+</html>
