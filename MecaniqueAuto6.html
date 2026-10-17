@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Mécanique Automobile — 4e Technique (EXETAT)</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}html,body{height:100%}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:linear-gradient(160deg,#0d2b4f 0%,#1565c0 50%,#07172e 100%);display:flex;justify-content:center;align-items:center;padding:8px}
+.container{width:100%;max-width:1400px;background:#fefdf8;border-radius:20px;overflow:hidden;display:flex;flex-direction:column;height:100%;max-height:100vh;box-shadow:0 20px 60px rgba(0,0,0,0.4)}
+.progress-bar{height:4px;background:#cfdff5;flex-shrink:0}.progress-fill{height:100%;background:linear-gradient(90deg,#5b8fd0,#12437a);width:0%;transition:width 0.3s}
+.header{padding:10px 16px;background:#e8f0fb;border-bottom:1px solid #a9c3e8;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-shrink:0}
+.header h1{color:#12437a;font-size:1rem;font-weight:600}
+.header-right{display:flex;gap:6px;align-items:center}
+.search-box{display:flex;background:white;border-radius:20px;padding:2px 4px}
+.search-box input{border:none;padding:6px 10px;border-radius:20px;outline:none;width:130px;font-size:0.8rem}
+.search-box button{background:none;border:none;cursor:pointer;padding:4px 8px;color:#1565c0}
+.badge{background:#5b8fd0;color:white;padding:4px 10px;border-radius:20px;font-weight:bold;font-size:0.75rem}
+.search-nav{display:none;gap:4px;background:#cfdff5;padding:2px 8px;border-radius:20px;align-items:center;font-size:0.75rem}
+.search-nav button{background:none;border:none;cursor:pointer;color:#12437a;padding:2px 4px}
+.content{padding:28px 32px;flex:1;overflow-y:auto;background:#fff;line-height:1.85}
+.slide{display:none}.slide.active{display:block}
+.slide-title{color:#0d2b4f;font-size:1.5rem;font-weight:700;padding-bottom:12px;margin-bottom:20px;border-bottom:2px solid #5b8fd0}
+.slide-content{color:#0a1c35;font-size:1rem}
+.bloc{padding:18px 22px;border-radius:12px;margin:22px 0}
+.bloc-label{font-size:0.75rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;opacity:0.7}
+.bloc p,.bloc li{font-size:0.98rem}
+.bloc h3{font-size:1.1rem;margin:20px 0 10px;font-weight:600}
+.bloc h3:first-child{margin-top:0}
+.cas{background:#fff8e1;border-left:4px solid #ff8f00}.cas .bloc-label{color:#e65100}
+.theorie{background:#e8f0fb;border-left:4px solid #5b8fd0}.theorie .bloc-label{color:#12437a}
+.exemple{background:#fce4ec;border-left:4px solid #c62828}.exemple .bloc-label{color:#b71c1c}
+.resume{background:#e1f5fe;border:2px solid #0277bd}.resume .bloc-label{color:#01579b}
+.bloc ul,.bloc ol{margin-left:22px;margin-top:8px}.bloc li{margin-bottom:8px}.bloc strong{color:#0d2b4f}
+.quiz-container{padding:22px;background:#e8f0fb;border-radius:16px}
+.quiz-question{background:white;border-radius:10px;padding:16px;margin-bottom:14px}
+.quiz-question p{font-weight:600;margin-bottom:10px;color:#0d2b4f}
+.quiz-question label{display:block;padding:8px 10px;margin:4px 0;border-radius:6px;cursor:pointer}
+.quiz-question input{margin-right:8px}
+.quiz-btn-submit{background:#2a67b0;color:white;border:none;padding:12px 24px;border-radius:30px;font-size:1rem;cursor:pointer;font-weight:600;margin-top:14px}
+.quiz-result{margin-top:16px;font-weight:600}
+.sources{background:#f5f5f5;padding:12px 16px;border-radius:10px;margin-top:26px;font-size:0.82rem;color:#666;border-left:3px solid #999}
+.controls{padding:8px 16px;background:#fafafa;border-top:1px solid #e0e0e0;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.nav-btn{background:white;color:#12437a;border:1px solid #ccc;padding:8px 14px;border-radius:8px;font-size:0.82rem;cursor:pointer}
+.nav-btn:disabled{opacity:0.35;cursor:not-allowed}
+.counter{font-size:0.78rem;color:#666}
+@media (max-width:600px){body{padding:0}.container{border-radius:0}.content{padding:20px 18px}.slide-title{font-size:1.25rem}}
+</style></head><body>
+<div class="container">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="header"><h1>Mécanique Automobile · 4e Technique</h1><div class="header-right">
+<div class="search-box"><input type="text" id="searchInput" placeholder="Rechercher"><button id="searchBtn">⌕</button></div>
+<div class="search-nav" id="searchNav"><button id="prevResultBtn">‹</button><span id="resultCounter">0/0</span><button id="nextResultBtn">›</button></div>
+<span class="badge" id="slideCounter">1/9</span></div></div>
+<div class="content" id="content"></div>
+<div class="controls"><button class="nav-btn" id="prevBtn">← Précédent</button><span class="counter" id="counter">Leçon 1 / 9</span><button class="nav-btn" id="nextBtn">Suivant →</button></div>
+</div>
+<script>
+const slides=[
+{title:"Leçon 1 — Les organes du moteur à explosion",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans un garage de Kinshasa, un mécanicien démonte un moteur de voiture. Il identifie les pistons, la culasse, le vilebrequin, les soupapes. Comprendre le moteur est la base du métier.</p></div>
+<h3>1. Les organes fixes</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Bloc-moteur</strong> : partie centrale, contient les cylindres.</li><li><strong>Culasse</strong> : ferme le haut des cylindres.</li><li><strong>Carter</strong> : réserve d'huile, ferme le bas.</li><li><strong>Joint de culasse</strong> : assure l'étanchéité.</li></ul></div>
+<h3>2. Les organes mobiles</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Piston</strong> : coulisse dans le cylindre.</li><li><strong>Bielle</strong> : relie le piston au vilebrequin.</li><li><strong>Vilebrequin</strong> : transforme le mouvement linéaire en rotation.</li><li><strong>Volant moteur</strong> : régularise la rotation.</li><li><strong>Arbre à cames</strong> : commande les soupapes.</li><li><strong>Soupapes</strong> : admission et échappement.</li></ul></div>
+<h3>3. Les systèmes annexes</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Lubrification</strong> : huile, pompe, filtre.</li><li><strong>Refroidissement</strong> : eau, radiateur, pompe, thermostat.</li><li><strong>Alimentation</strong> : carburant, pompe, filtre.</li><li><strong>Allumage</strong> : bougies, bobine (moteur essence).</li><li><strong>Distribution</strong> : courroie ou chaîne.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p><strong>Moteur 4 temps</strong></p><ul><li>Admission : le piston descend, soupape d'admission ouverte.</li><li>Compression : le piston monte, soupapes fermées.</li><li>Combustion : explosion, piston poussé vers le bas.</li><li>Échappement : le piston remonte, soupape d'échappement ouverte.</li></ul><p><a href="https://www.youtube.com/results?search_query=moteur+explosion+organes+4+temps" target="_blank" rel="noopener">🎥 Recherche : les organes du moteur</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le moteur comprend des organes fixes (bloc, culasse, carter), mobiles (piston, bielle, vilebrequin, arbre à cames) et des systèmes annexes (lubrification, refroidissement, alimentation, allumage).</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques Technologie Automobile 4e Technique (manuels-scolaires-rdc.com, 2025).<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT.</div>
+`},
+{title:"Leçon 2 — Le circuit de lubrification",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Un moteur sans huile chauffe et se grippe. Le circuit de lubrification est vital. Il réduit les frottements, refroidit, nettoie et protège contre la corrosion.</p></div>
+<h3>1. Rôle de la lubrification</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Réduire les frottements</strong> entre les pièces.</li><li><strong>Refroidir</strong> les zones chaudes.</li><li><strong>Nettoyer</strong> les impuretés.</li><li><strong>Protéger</strong> contre la corrosion.</li><li><strong>Étanchéifier</strong> les jeux.</li></ul></div>
+<h3>2. Les organes du circuit</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Carter</strong> : réserve d'huile.</li><li><strong>Crépine</strong> : filtre grossier.</li><li><strong>Pompe à huile</strong> : met l'huile sous pression.</li><li><strong>Filtre à huile</strong> : retient les impuretés.</li><li><strong>Manocontact</strong> : témoin de pression au tableau de bord.</li><li><strong>Jauge</strong> : niveau d'huile.</li></ul></div>
+<h3>3. Types d'huile</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Huile minérale</strong> : basique.</li><li><strong>Huile synthétique</strong> : performante.</li><li><strong>Huile semi-synthétique</strong> : intermédiaire.</li><li><strong>Viscosité</strong> : 5W40, 10W40, 15W40 (indice SAE).</li><li><strong>Changement</strong> : tous les 5 000 à 15 000 km selon l'huile.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Vidange</strong> : chauffer le moteur, vidanger, remplacer le filtre, remplir d'huile neuve, vérifier le niveau.</li><li><strong>Contrôle du niveau</strong> : moteur froid, jauge entre min et max.</li><li><strong>Témoin d'huile allumé</strong> : manque de pression → arrêt immédiat du moteur.</li></ul><p><a href="https://www.youtube.com/results?search_query=lubrification+moteur+huile+vidange" target="_blank" rel="noopener">🎥 Recherche : le circuit de lubrification</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le circuit de lubrification comprend carter, pompe, filtre, manocontact, jauge. Il réduit les frottements, refroidit, nettoie, protège. Le changement d'huile se fait tous les 5 000 à 15 000 km.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques Technologie Automobile 4e Technique (2025).</div>
+`},
+{title:"Leçon 3 — Le circuit de refroidissement",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Une voiture chauffe en pleine circulation à Kinshasa. Le voyant de température s'allume. Le moteur risque la surchauffe. Le circuit de refroidissement régule la température.</p></div>
+<h3>1. Rôle du refroidissement</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Maintenir</strong> la température optimale du moteur (85-95 °C).</li><li><strong>Évacuer</strong> la chaleur produite par la combustion.</li><li><strong>Éviter</strong> la surchauffe et la casse.</li><li><strong>Réchauffer</strong> rapidement le moteur au démarrage.</li></ul></div>
+<h3>2. Les organes du circuit</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Radiateur</strong> : échangeur de chaleur.</li><li><strong>Pompe à eau</strong> : fait circuler le liquide.</li><li><strong>Thermostat</strong> : régule la circulation.</li><li><strong>Ventilateur</strong> : force l'air à travers le radiateur.</li><li><strong>Vase d'expansion</strong> : réserve de liquide.</li><li><strong>Durites</strong> : conduites.</li><li><strong>Liquide de refroidissement</strong> : eau + antigel.</li></ul></div>
+<h3>3. Le liquide de refroidissement</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Eau</strong> : insuffisante seule (gel, corrosion).</li><li><strong>Antigel</strong> : abaisse le point de congélation, élève le point d'ébullition.</li><li><strong>Mélange</strong> : 50 % eau + 50 % antigel.</li><li><strong>Contrôle</strong> : niveau entre min et max, moteur froid.</li><li><strong>Vidange</strong> : tous les 2 à 5 ans.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p><strong>Panne de refroidissement</strong></p><ul><li>Symptôme : température élevée, voyant allumé.</li><li>Cause possible : fuite, thermostat bloqué, ventilateur en panne.</li><li>Conduite à tenir : s'arrêter, laisser refroidir, ne pas ouvrir le bouchon à chaud, vérifier le niveau.</li></ul><p><a href="https://www.youtube.com/results?search_query=refroidissement+moteur+radiateur+thermostat" target="_blank" rel="noopener">🎥 Recherche : le circuit de refroidissement</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le circuit de refroidissement maintient la température du moteur. Il comprend radiateur, pompe, thermostat, ventilateur, vase d'expansion, durites. Le liquide est un mélange eau + antigel.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques Technologie Automobile 4e Technique (2025).</div>
+`},
+{title:"Leçon 4 — Le circuit d'alimentation en carburant",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Une voiture cale en pleine route. Le mécanicien vérifie : pompe à essence, filtre, carburateur ou injection. Le circuit d'alimentation est en cause. Il faut le diagnostiquer.</p></div>
+<h3>1. Les types d'alimentation</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Carburateur</strong> : ancien système, mélange air-essence.</li><li><strong>Injection indirecte</strong> : injecteurs dans le collecteur d'admission.</li><li><strong>Injection directe</strong> : injecteurs dans la chambre de combustion.</li><li><strong>Diesel</strong> : injection haute pression.</li></ul></div>
+<h3>2. Les organes du circuit</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Réservoir</strong> : stockage du carburant.</li><li><strong>Pompe à carburant</strong> : envoie le carburant.</li><li><strong>Filtre à carburant</strong> : retient les impuretés.</li><li><strong>Carburateur ou injecteurs</strong> : dosage du carburant.</li><li><strong>Pompe d'accélération</strong> : pour les reprises.</li><li><strong>Filtre à air</strong> : purifie l'air admis.</li></ul></div>
+<h3>3. Le diagnostic des pannes</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Le moteur ne démarre pas</strong> : pompe, filtre bouché, absence d'allumage.</li><li><strong>Le moteur cale</strong> : carburateur sale, injecteurs encrassés.</li><li><strong>Consommation excessive</strong> : richesse trop élevée, filtre à air bouché.</li><li><strong>Ratés d'allumage</strong> : bougies, injecteurs.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Vidange du filtre</strong> : tous les 20 000 à 30 000 km.</li><li><strong>Nettoyage des injecteurs</strong> : tous les 30 000 km.</li><li><strong>Contrôle du filtre à air</strong> : tous les 10 000 km.</li><li><strong>Diagnostic électronique</strong> : avec une valise de diagnostic.</li></ul><p><a href="https://www.youtube.com/results?search_query=alimentation+carburant+injection+filtre" target="_blank" rel="noopener">🎥 Recherche : le circuit d'alimentation</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le circuit d'alimentation comprend réservoir, pompe, filtre, carburateur ou injecteurs, filtre à air. Les types : carburateur, injection indirecte, injection directe, diesel. Le diagnostic identifie les pannes.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques Technologie Automobile 4e Technique (2025).</div>
+`},
+{title:"Leçon 5 — Le circuit d'allumage",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Une voiture essence ne démarre pas. Le mécanicien vérifie les bougies, la bobine, la batterie. Le circuit d'allumage produit l'étincelle qui enflamme le mélange.</p></div>
+<h3>1. Rôle de l'allumage</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Produire</strong> l'étincelle électrique.</li><li><strong>Enflammer</strong> le mélange air-essence.</li><li><strong>Au bon moment</strong> : juste avant la fin de la compression.</li><li><strong>Au bon endroit</strong> : dans la chambre de combustion.</li></ul></div>
+<h3>2. Les organes du circuit</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Batterie</strong> : fournit le courant.</li><li><strong>Bobine</strong> : transforme le 12 V en 20 000 V.</li><li><strong>Allumeur</strong> : distribue le courant (moteur ancien).</li><li><strong>Bougies</strong> : produisent l'étincelle.</li><li><strong>Faisceau d'allumage</strong> : câbles HT.</li><li><strong>Capteur PMH</strong> : repère la position du vilebrequin.</li><li><strong>Calculateur</strong> : gère l'allumage (moteur moderne).</li></ul></div>
+<h3>3. Les bougies</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Écartement</strong> : 0,6 à 1 mm selon le moteur.</li><li><strong>Changement</strong> : tous les 20 000 à 60 000 km.</li><li><strong>Usure</strong> : électrodes rongées, dépôts.</li><li><strong>Symptômes</strong> : ratés, démarrage difficile, consommation élevée.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Vérification des bougies</strong> : démonter, examiner la couleur.</li><li><strong>Couleur normale</strong> : brun clair.</li><li><strong>Noir</strong> : richesse trop élevée.</li><li><strong>Blanc</strong> : mélange trop pauvre, risque de surchauffe.</li></ul><p><a href="https://www.youtube.com/results?search_query=allumage+bougies+bobine+étincelle" target="_blank" rel="noopener">🎥 Recherche : le circuit d'allumage</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le circuit d'allumage produit l'étincelle qui enflamme le mélange. Il comprend batterie, bobine, allumeur, bougies, faisceau. Le contrôle des bougies est un diagnostic courant.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques Technologie Automobile 4e Technique (2025).</div>
+`},
+{title:"Leçon 6 — La transmission",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>La puissance du moteur doit être transmise aux roues. L'embrayage, la boîte de vitesses, l'arbre de transmission, le différentiel forment la chaîne cinématique.</p></div>
+<h3>1. L'embrayage</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Rôle</strong> : relier ou séparer le moteur de la boîte de vitesses.</li><li><strong>Composants</strong> : disque, plateau presseur, butée.</li><li><strong>Commande</strong> : pédale, câble ou hydraulique.</li><li><strong>Usure</strong> : patinage, point mort difficile.</li></ul></div>
+<h3>2. La boîte de vitesses</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Rôle</strong> : adapter la vitesse du moteur aux roues.</li><li><strong>Manuelle</strong> : 5 ou 6 rapports + marche arrière.</li><li><strong>Automatique</strong> : rapports changés automatiquement.</li><li><strong>Commande</strong> : levier de vitesses, tringlerie.</li></ul></div>
+<h3>3. La transmission et le pont</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Arbre de transmission</strong> : transmet le mouvement aux roues.</li><li><strong>Cardan</strong> : joint universel.</li><li><strong>Différentiel</strong> : permet aux roues de tourner à des vitesses différentes.</li><li><strong>Transmission avant</strong> : traction avant (la plupart des voitures).</li><li><strong>Transmission arrière</strong> : propulsion arrière (camions, 4×4).</li><li><strong>Transmission intégrale</strong> : 4 roues motrices.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Patinage</strong> : disque d'embrayage usé → remplacement.</li><li><strong>Difficulté de passage</strong> : tringlerie, synchros.</li><li><strong>Bruit de transmission</strong> : cardan, roulement.</li><li><strong>Vidange de boîte</strong> : tous les 60 000 à 100 000 km.</li></ul><p><a href="https://www.youtube.com/results?search_query=transmission+embrayage+boîte+vitesses" target="_blank" rel="noopener">🎥 Recherche : la transmission</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La transmission comprend embrayage, boîte de vitesses, arbre de transmission, différentiel. L'embrayage relie ou sépare le moteur de la boîte. Le différentiel permet aux roues de tourner à des vitesses différentes.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques Technologie Automobile 4e Technique (2025).</div>
+`},
+{title:"Leçon 7 — Le système de freinage",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Une voiture de Kinshasa freine mal. Le mécanicien vérifie les plaquettes, les disques, le liquide de frein. Le système de freinage est vital pour la sécurité.</p></div>
+<h3>1. Le freinage hydraulique</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Principe</strong> : transmission de la force par un liquide incompressible.</li><li><strong>Pédale</strong> : actionne le maître-cylindre.</li><li><strong>Maître-cylindre</strong> : met le liquide sous pression.</li><li><strong>Liquide de frein</strong> : DOT 3, DOT 4, DOT 5.</li><li><strong>Flexibles et tuyaux</strong> : conduits.</li><li><strong>Cylindres de roue ou étriers</strong> : actionnent les freins.</li></ul></div>
+<h3>2. Les types de freins</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Frein à tambour</strong> : ancien, mâchoires + tambour.</li><li><strong>Frein à disque</strong> : moderne, plaquettes + disque.</li><li><strong>Frein à main</strong> : mécanique, sur les roues arrière.</li><li><strong>ABS</strong> : antiblocage des roues.</li><li><strong>Frein moteur</strong> : rétrogradage.</li></ul></div>
+<h3>3. L'entretien du freinage</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Plaquettes</strong> : vérifier l'usure, changer tous les 30 000 à 60 000 km.</li><li><strong>Disques</strong> : vérifier l'épaisseur, changer si usés.</li><li><strong>Liquide</strong> : changer tous les 2 ans.</li><li><strong>Purge</strong> : éliminer l'air du circuit.</li><li><strong>Frein à main</strong> : régler la course.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Frein mou</strong> : air dans le circuit, manque de liquide → purge.</li><li><strong>Bruit au freinage</strong> : plaquettes usées → remplacement.</li><li><strong>Vibrations</strong> : disques voilés → rectification ou remplacement.</li><li><strong>Frein qui reste serré</strong> : étrier grippé.</li></ul><p><a href="https://www.youtube.com/results?search_query=freinage+plaquettes+disques+liquide+purge" target="_blank" rel="noopener">🎥 Recherche : le système de freinage</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le freinage hydraulique transmet la force par un liquide. Les freins sont à tambour ou à disque, avec ABS sur les véhicules modernes. L'entretien comprend plaquettes, disques, liquide et purge.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques Technologie Automobile 4e Technique (2025).</div>
+`},
+{title:"Leçon 8 — L'entretien et le diagnostic des pannes",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans un garage de Lubumbashi, un client se plaint : sa voiture consomme trop, démarre mal, fait du bruit. Le mécanicien mène un diagnostic méthodique : écoute, observation, tests, essais.</p></div>
+<h3>1. L'entretien préventif</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Vidange moteur</strong> : tous les 5 000 à 15 000 km.</li><li><strong>Filtres</strong> : huile, air, carburant, habitacle.</li><li><strong>Bougies</strong> : tous les 20 000 à 60 000 km.</li><li><strong>Courroie de distribution</strong> : tous les 60 000 à 120 000 km.</li><li><strong>Freins</strong> : plaquettes, disques, liquide.</li><li><strong>Pneus</strong> : pression, usure, permutation.</li><li><strong>Batterie</strong> : contrôle, remplacement tous les 4-5 ans.</li></ul></div>
+<h3>2. Le diagnostic des pannes</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Écouter</strong> le client (symptômes, circonstances).</li><li><strong>Observer</strong> : niveau des liquides, état des pièces.</li><li><strong>Questionner</strong> : quand ? comment ? depuis quand ?</li><li><strong>Tester</strong> : batterie, alternateur, compression.</li><li><strong>Essayer</strong> : route, freinage, accélération.</li><li><strong>Diagnostic électronique</strong> : valise OBD.</li></ul></div>
+<h3>3. Les pannes fréquentes</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Démarrage difficile</strong> : batterie, démarreur, bougies, carburant.</li><li><strong>Consommation excessive</strong> : filtre à air, injecteurs, richesse.</li><li><strong>Surchauffe</strong> : refroidissement, thermostat, ventilateur.</li><li><strong>Bruit anormal</strong> : moteur, transmission, suspension.</li><li><strong>Fumée</strong> : bleue (huile), noire (richesse), blanche (eau).</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p><strong>Méthode de diagnostic</strong></p><ul><li>1. Écouter le client.</li><li>2. Observer le véhicule.</li><li>3. Formuler des hypothèses.</li><li>4. Tester chaque hypothèse.</li><li>5. Identifier la cause.</li><li>6. Réparer et vérifier.</li></ul><p><a href="https://www.youtube.com/results?search_query=entretien+diagnostic+pannes+automobile" target="_blank" rel="noopener">🎥 Recherche : l'entretien et le diagnostic</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>L'entretien préventif comprend vidange, filtres, bougies, courroie, freins, pneus, batterie. Le diagnostic suit : écouter, observer, questionner, tester, essayer. Les pannes fréquentes concernent démarrage, consommation, surchauffe, bruits, fumées.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques Technologie Automobile 4e Technique (2025).</div>
+`},
+{title:"Évaluation finale — Items EXETAT",content:`
+<p style="margin-bottom:18px;color:#12437a;font-size:0.95rem;">Évaluation type EXETAT.</p>
+<div class="bloc theorie"><div class="bloc-label">Consignes</div><ul><li>15 questions à choix multiples.</li><li>Durée recommandée : 15 minutes.</li></ul></div>
+<div class="quiz-container" id="quizContainer"><div id="quizQuestions"></div><button id="submitQuiz" class="quiz-btn-submit">Valider mes réponses</button><div id="quizResult" class="quiz-result"></div></div>
+`}];
+
+let currentSlide=0,lastSearchTerm="",searchResults=[],currentResultIdx=-1;
+const contentDiv=document.getElementById('content'),prevBtn=document.getElementById('prevBtn'),nextBtn=document.getElementById('nextBtn'),slideCounterSpan=document.getElementById('slideCounter'),progressFill=document.getElementById('progressFill'),counterSpan=document.getElementById('counter'),searchInput=document.getElementById('searchInput'),searchBtn=document.getElementById('searchBtn'),searchNav=document.getElementById('searchNav'),prevResultBtn=document.getElementById('prevResultBtn'),nextResultBtn=document.getElementById('nextResultBtn'),resultCounterSpan=document.getElementById('resultCounter');
+function getTextFromHtml(html){const d=document.createElement('div');d.innerHTML=html;return d.textContent||'';}
+function searchSlides(term){if(!term.trim())return[];const l=term.toLowerCase();const r=[];slides.forEach((s,i)=>{if(s.title.toLowerCase().includes(l)||getTextFromHtml(s.content).toLowerCase().includes(l))r.push(i);});return r;}
+function highlightInCurrentSlide(term){if(!term)return;const sc=document.querySelector('.slide-content');if(!sc)return;const regex=new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`,'gi');const walker=document.createTreeWalker(sc,NodeFilter.SHOW_TEXT,null,false);const nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);for(let n of nodes){if(n.nodeValue&&regex.test(n.nodeValue)){const sp=document.createElement('span');sp.innerHTML=n.nodeValue.replace(regex,'<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');n.parentNode.replaceChild(sp,n);}}}
+function renderQuiz(){
+const questions=[
+{text:"Quel organe transforme le mouvement linéaire en rotation ?",options:["Le vilebrequin","Le piston","La bielle"],correct:0},
+{text:"Quel organe commande les soupapes ?",options:["L'arbre à cames","Le vilebrequin","Le volant"],correct:0},
+{text:"Quel système protège le moteur de la surchauffe ?",options:["Le refroidissement","La lubrification","L'allumage"],correct:0},
+{text:"Quelle est la température optimale du moteur ?",options:["85-95 °C","150 °C","30 °C"],correct:0},
+{text:"Quel élément régule la circulation du liquide ?",options:["Le thermostat","Le radiateur","La pompe"],correct:0},
+{text:"Quel circuit produit l'étincelle ?",options:["L'allumage","L'alimentation","Le refroidissement"],correct:0},
+{text:"Quel élément transforme le 12 V en 20 000 V ?",options:["La bobine","La batterie","Les bougies"],correct:0},
+{text:"Quel élément relie le moteur à la boîte de vitesses ?",options:["L'embrayage","Le différentiel","Le cardan"],correct:0},
+{text:"Quel élément permet aux roues de tourner à des vitesses différentes ?",options:["Le différentiel","L'embrayage","L'arbre"],correct:0},
+{text:"Quel type de frein est moderne ?",options:["À disque","À tambour","À main"],correct:0},
+{text:"Quel liquide est utilisé dans le circuit de freinage ?",options:["DOT 4","Huile moteur","Eau"],correct:0},
+{text:"Que signifie ABS ?",options:["Antiblocage des roues","Anti-bruit","Anti-vibration"],correct:0},
+{text:"Quel filtre retient les impuretés du carburant ?",options:["Le filtre à carburant","Le filtre à huile","Le filtre à air"],correct:0},
+{text:"Quand changer le filtre à huile ?",options:["À chaque vidange","Tous les 100 000 km","Jamais"],correct:0},
+{text:"Que faire si le voyant d'huile s'allume ?",options:["Arrêter immédiatement le moteur","Continuer à rouler","Accélérer"],correct:0}];
+let html='';questions.forEach((q,i)=>{html+='<div class="quiz-question"><p>'+(i+1)+'. '+q.text+'</p>';q.options.forEach((o,k)=>{html+='<label><input type="radio" name="q'+i+'" value="'+k+'"> '+o+'</label>';});html+='</div>';});
+document.getElementById('quizQuestions').innerHTML=html;
+document.getElementById('submitQuiz').onclick=()=>{let score=0;questions.forEach((q,i)=>{const s=document.querySelector('input[name="q'+i+'"]:checked');if(s&&parseInt(s.value)===q.correct)score++;});const pct=Math.round(score/questions.length*100);document.getElementById('quizResult').innerHTML='<div style="background:#cfdff5;padding:16px;border-radius:10px;margin-top:14px;"><strong>Score : '+score+'/'+questions.length+' ('+pct+'%)</strong><br>'+(score===questions.length?'Excellent.':score>=10?'Bien.':'Relis les leçons.')+'</div>';};
+}
+function renderSlide(index,keepHighlight=true){const isQuiz=(index===slides.length-1);contentDiv.innerHTML='<div class="slide active"><h2 class="slide-title">'+slides[index].title+'</h2><div class="slide-content">'+slides[index].content+'</div></div>';if(isQuiz)renderQuiz();slideCounterSpan.textContent=(index+1)+'/'+slides.length;progressFill.style.width=((index+1)/slides.length*100)+'%';prevBtn.disabled=(index===0);nextBtn.disabled=(index===slides.length-1);counterSpan.textContent='Leçon '+(index+1)+' / '+slides.length;contentDiv.scrollTop=0;if(keepHighlight&&lastSearchTerm&&!isQuiz)highlightInCurrentSlide(lastSearchTerm);}
+function updateResultDisplay(){if(searchResults.length===0){searchNav.style.display='none';return;}searchNav.style.display='flex';resultCounterSpan.textContent=(currentResultIdx+1)+'/'+searchResults.length;}
+function goToResult(idx){if(idx<0||idx>=searchResults.length)return;currentResultIdx=idx;currentSlide=searchResults[currentResultIdx];renderSlide(currentSlide,true);updateResultDisplay();}
+function performSearch(){const term=searchInput.value.trim();if(!term)return;lastSearchTerm=term;searchResults=searchSlides(term);if(searchResults.length===0){searchNav.style.display='none';return;}currentResultIdx=0;goToResult(0);}
+function nextResult(){if(searchResults.length)goToResult((currentResultIdx+1)%searchResults.length);}
+function prevResult(){if(searchResults.length)goToResult((currentResultIdx-1+searchResults.length)%searchResults.length);}
+function nextSlide(){if(currentSlide<slides.length-1){currentSlide++;renderSlide(currentSlide,true);}}
+function prevSlide(){if(currentSlide>0){currentSlide--;renderSlide(currentSlide,true);}}
+prevBtn.onclick=prevSlide;nextBtn.onclick=nextSlide;searchBtn.onclick=performSearch;prevResultBtn.onclick=prevResult;nextResultBtn.onclick=nextResult;
+searchInput.addEventListener('keydown',e=>{if(e.key==='Enter')performSearch();});
+renderSlide(0,false);
+</script></body></html>
