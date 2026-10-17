@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Coupe et Couture — 4e Technique (EXETAT)</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}html,body{height:100%}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:linear-gradient(160deg,#4a1010 0%,#b71c1c 50%,#2b0a0a 100%);display:flex;justify-content:center;align-items:center;padding:8px}
+.container{width:100%;max-width:1400px;background:#fefdf8;border-radius:20px;overflow:hidden;display:flex;flex-direction:column;height:100%;max-height:100vh;box-shadow:0 20px 60px rgba(0,0,0,0.4)}
+.progress-bar{height:4px;background:#f0d3d0;flex-shrink:0}
+.progress-fill{height:100%;background:linear-gradient(90deg,#d9706a,#8e1b1b);width:0%;transition:width 0.3s}
+.header{padding:10px 16px;background:#fbeaea;border-bottom:1px solid #e8a9a5;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-shrink:0}
+.header h1{color:#8e1b1b;font-size:1rem;font-weight:600}
+.header-right{display:flex;gap:6px;align-items:center}
+.search-box{display:flex;background:white;border-radius:20px;padding:2px 4px}
+.search-box input{border:none;padding:6px 10px;border-radius:20px;outline:none;width:130px;font-size:0.8rem}
+.search-box button{background:none;border:none;cursor:pointer;padding:4px 8px;color:#b71c1c}
+.badge{background:#d9706a;color:white;padding:4px 10px;border-radius:20px;font-weight:bold;font-size:0.75rem}
+.search-nav{display:none;gap:4px;background:#f3cdcb;padding:2px 8px;border-radius:20px;align-items:center;font-size:0.75rem}
+.search-nav button{background:none;border:none;cursor:pointer;color:#8e1b1b;padding:2px 4px}
+.content{padding:28px 32px;flex:1;overflow-y:auto;background:#fff;line-height:1.85}
+.slide{display:none}.slide.active{display:block}
+.slide-title{color:#4a1010;font-size:1.5rem;font-weight:700;padding-bottom:12px;margin-bottom:20px;border-bottom:2px solid #d9706a}
+.slide-content{color:#2a0d0d;font-size:1rem}
+.bloc{padding:18px 22px;border-radius:12px;margin:22px 0}
+.bloc-label{font-size:0.75rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;opacity:0.7}
+.bloc p,.bloc li{font-size:0.98rem}
+.bloc h3{font-size:1.1rem;margin:20px 0 10px;font-weight:600}
+.bloc h3:first-child{margin-top:0}
+.cas{background:#fff8e1;border-left:4px solid #ff8f00}.cas .bloc-label{color:#e65100}
+.theorie{background:#fbeaea;border-left:4px solid #d9706a}.theorie .bloc-label{color:#8e1b1b}
+.exemple{background:#fce4ec;border-left:4px solid #c62828}.exemple .bloc-label{color:#b71c1c}
+.resume{background:#e1f5fe;border:2px solid #0277bd}.resume .bloc-label{color:#01579b}
+.bloc ul,.bloc ol{margin-left:22px;margin-top:8px}.bloc li{margin-bottom:8px}.bloc strong{color:#4a1010}
+.quiz-container{padding:22px;background:#fbeaea;border-radius:16px}
+.quiz-question{background:white;border-radius:10px;padding:16px;margin-bottom:14px}
+.quiz-question p{font-weight:600;margin-bottom:10px;color:#4a1010}
+.quiz-question label{display:block;padding:8px 10px;margin:4px 0;border-radius:6px;cursor:pointer}
+.quiz-question input{margin-right:8px}
+.quiz-btn-submit{background:#a62a2a;color:white;border:none;padding:12px 24px;border-radius:30px;font-size:1rem;cursor:pointer;font-weight:600;margin-top:14px}
+.quiz-result{margin-top:16px;font-weight:600}
+.sources{background:#f5f5f5;padding:12px 16px;border-radius:10px;margin-top:26px;font-size:0.82rem;color:#666;border-left:3px solid #999}
+.controls{padding:8px 16px;background:#fafafa;border-top:1px solid #e0e0e0;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.nav-btn{background:white;color:#8e1b1b;border:1px solid #ccc;padding:8px 14px;border-radius:8px;font-size:0.82rem;cursor:pointer}
+.nav-btn:disabled{opacity:0.35;cursor:not-allowed}
+.counter{font-size:0.78rem;color:#666}
+@media (max-width:600px){body{padding:0}.container{border-radius:0}.content{padding:20px 18px}.slide-title{font-size:1.25rem}}
+</style></head><body>
+<div class="container">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="header"><h1>Coupe et Couture · 4e Technique</h1><div class="header-right">
+<div class="search-box"><input type="text" id="searchInput" placeholder="Rechercher"><button id="searchBtn">⌕</button></div>
+<div class="search-nav" id="searchNav"><button id="prevResultBtn">‹</button><span id="resultCounter">0/0</span><button id="nextResultBtn">›</button></div>
+<span class="badge" id="slideCounter">1/9</span></div></div>
+<div class="content" id="content"></div>
+<div class="controls"><button class="nav-btn" id="prevBtn">← Précédent</button><span class="counter" id="counter">Leçon 1 / 9</span><button class="nav-btn" id="nextBtn">Suivant →</button></div>
+</div>
+<script>
+const slides=[
+{title:"Leçon 1 — Le matériel de coupe et de couture",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans un atelier de couture à Kinshasa, une apprentie découvre les outils : mètre ruban, ciseaux, craie tailleur, épingles, machine à coudre. Chaque outil a sa fonction. Sans eux, impossible de couper et coudre correctement.</p></div>
+<h3>1. Le matériel de mesure</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Mètre ruban</strong> : souple, gradué en cm, pour prendre les mesures.</li><li><strong>Règle graduée</strong> : pour tracer les lignes droites.</li><li><strong>Équerre</strong> : pour les angles droits.</li><li><strong>Pistolet de couturière</strong> : pour mesurer les ourlets.</li></ul></div>
+<h3>2. Le matériel de coupe</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Ciseaux de tailleur</strong> : grands, pour couper le tissu.</li><li><strong>Ciseaux de broderie</strong> : petits, pour les finitions.</li><li><strong>Craie tailleur</strong> : pour marquer le tissu.</li><li><strong>Épingles</strong> : pour maintenir le patron.</li><li><strong>Patron</strong> : gabarit en papier ou carton.</li></ul></div>
+<h3>3. Le matériel de couture</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Machine à coudre</strong> : mécanique ou électrique.</li><li><strong>Fil</strong> : assorti au tissu.</li><li><strong>Aiguilles</strong> : main ou machine.</li><li><strong>Dé à coudre</strong> : pour pousser l'aiguille.</li><li><strong>Fer à repasser</strong> : pour les coutures.</li><li><strong>Boutons, fermetures, dentelles</strong> : accessoires.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Prendre les mesures</strong> : tour de poitrine, tour de taille, tour de hanches, longueur.</li><li><strong>Marquer le tissu</strong> : à la craie tailleur, sur l'envers.</li><li><strong>Maintenir le patron</strong> : avec des épingles.</li><li><strong>Couper</strong> : avec les grands ciseaux, sans lever le tissu.</li></ul><p><a href="https://www.youtube.com/results?search_query=matériel+coupe+couture+ciseaux+mètre" target="_blank" rel="noopener">🎥 Recherche : le matériel de couture</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le matériel se classe en 3 catégories : mesure (mètre, règle, équerre), coupe (ciseaux, craie, épingles) et couture (machine, fil, aiguilles). Chaque outil a une fonction précise.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques Coupe-Couture 4e Technique (manuels-scolaires-rdc.com, 2025).<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT.</div>
+`},
+{title:"Leçon 2 — La prise des mesures",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans un atelier de Lubumbashi, une cliente veut une robe sur mesure. La couturière prend ses mesures : tour de poitrine, tour de taille, tour de hanches, longueur. Une erreur de mesure = une robe ratée.</p></div>
+<h3>1. Les mesures principales</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Tour de poitrine</strong> : au niveau le plus fort.</li><li><strong>Tour de taille</strong> : au creux de la taille.</li><li><strong>Tour de hanches</strong> : au niveau le plus fort.</li><li><strong>Longueur dos</strong> : de la nuque à la taille.</li><li><strong>Longueur devant</strong> : de l'épaule à la taille.</li><li><strong>Longueur jupe/robe</strong> : de la taille au genou/cheville.</li></ul></div>
+<h3>2. Les mesures complémentaires</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Tour de cou</strong>, <strong>tour de bras</strong>, <strong>tour de poignet</strong>.</li><li><strong>Longueur de manche</strong> : de l'épaule au poignet.</li><li><strong>Largeur d'épaule</strong> : d'une épaule à l'autre.</li><li><strong>Hauteur poitrine</strong> : de l'épaule au mamelon.</li><li><strong>Écart poitrine</strong> : entre les deux mamelons.</li></ul></div>
+<h3>3. Règles à respecter</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Prendre les mesures sur un vêtement léger.</li><li>Le client debout, droit, détendu.</li><li>Mètre ruban bien ajusté, ni trop serré ni trop lâche.</li><li>Noter les mesures sur une fiche.</li><li>Ajouter les aises (marges) selon le vêtement.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p><strong>Fiche de mesures — Robe</strong></p><ul><li>Tour de poitrine : 92 cm.</li><li>Tour de taille : 74 cm.</li><li>Tour de hanches : 98 cm.</li><li>Longueur dos : 40 cm.</li><li>Longueur robe : 100 cm.</li><li>Longueur manche : 58 cm.</li></ul><p><a href="https://www.youtube.com/results?search_query=prise+mesures+coupe+couture+robe" target="_blank" rel="noopener">🎥 Recherche : la prise des mesures</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La prise des mesures est essentielle en couture. On mesure tours (poitrine, taille, hanches), longueurs (dos, devant, robe) et largeurs (épaule). Bien noter sur une fiche et ajouter les aises.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques Coupe-Couture 4e Technique (2025).</div>
+`},
+{title:"Leçon 3 — Le patron : tracé et adaptation",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Une couturière de Kinshasa prépare une jupe droite. Elle trace le patron sur papier, en suivant les mesures de la cliente. Le patron est le plan du vêtement : sans lui, pas de coupe précise.</p></div>
+<h3>1. Le patron</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Patron</strong> : gabarit en papier ou carton représentant les pièces du vêtement.</li><li><strong>Patron industriel</strong> : standardisé, tailles normalisées.</li><li><strong>Patron sur mesure</strong> : adapté aux mesures individuelles.</li><li><strong>Pièces principales</strong> : devant, dos, manche, col, ceinture.</li></ul></div>
+<h3>2. Le tracé du patron</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>1.</strong> Tracer un rectangle de base (largeur = 1/4 ou 1/2 tour, hauteur = longueur).</li><li><strong>2.</strong> Placer les lignes de poitrine, taille, hanches.</li><li><strong>3.</strong> Tracer l'encolure, l'emmanchure, les pinces.</li><li><strong>4.</strong> Ajouter les valeurs de couture (1-1,5 cm).</li><li><strong>5.</strong> Vérifier les mesures.</li></ul></div>
+<h3>3. L'adaptation du patron</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Modifier la longueur</strong> : couper et allonger/raccourcir.</li><li><strong>Modifier la largeur</strong> : élargir/rétrécir au niveau des pinces.</li><li><strong>Adapter aux morphologies</strong> : forte poitrine, hanches larges, dos voûté.</li><li><strong>Vérifier</strong> sur le corps ou sur mannequin.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p><strong>Patron d'une jupe droite</strong></p><ul><li>Mesures : tour de taille 74, tour de hanches 98, longueur 60.</li><li>Rectangle de base : 1/4 tour de hanches = 24,5 cm + aises.</li><li>Longueur : 60 cm + ourlet.</li><li>Pince de taille : 3 cm de chaque côté.</li><li>Valeur de couture : 1,5 cm tout autour.</li></ul><p><a href="https://www.youtube.com/results?search_query=patron+coupe+couture+tracé+adaptation" target="_blank" rel="noopener">🎥 Recherche : le patron de couture</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le patron est le gabarit du vêtement. Le tracé suit 5 étapes : rectangle de base, lignes de repère, encolure/emmanchure, valeurs de couture, vérification. L'adaptation permet d'ajuster aux morphologies.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques Coupe-Couture 4e Technique (2025).</div>
+`},
+{title:"Leçon 4 — La coupe du tissu",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Avant de couper un tissu wax de 2 mètres, une couturière de Kinshasa vérifie le sens du droit fil, dispose les pièces du patron, épingle et coupe. Une coupe ratée = du tissu perdu.</p></div>
+<h3>1. La préparation du tissu</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Vérification</strong> : défauts, taches, largeur, longueur.</li><li><strong>Repassage</strong> : pour enlever les plis.</li><li><strong>Droit fil</strong> : sens des fils du tissu, à respecter.</li><li><strong>Endroit/envers</strong> : repérer pour bien placer le patron.</li><li><strong>Lisière</strong> : bord du tissu, ne pas couper.</li></ul></div>
+<h3>2. La disposition du patron</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Sens du droit fil</strong> : flèches du patron parallèles à la lisière.</li><li><strong>Économie de tissu</strong> : disposition optimale des pièces.</li><li><strong>Épinglage</strong> : épingles perpendiculaires au bord.</li><li><strong>Vérification</strong> : toutes les pièces sont présentes.</li></ul></div>
+<h3>3. La coupe</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Ciseaux de tailleur</strong> : grands, bien affûtés.</li><li><strong>Coupe franche</strong> : sans lever le tissu.</li><li><strong>Valeurs de couture</strong> : respecter les marges tracées.</li><li><strong>Crans</strong> : petites entailles aux repères (taille, poitrine).</li><li><strong>Marquage</strong> : pinces, repères, à la craie.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Tissu uni</strong> : pas de contrainte de sens, disposition optimale.</li><li><strong>Tissu à motifs</strong> : respecter le sens du motif.</li><li><strong>Tissu à carreaux</strong> : faire coïncider les carreaux aux coutures.</li><li><strong>Tissu rayé</strong> : aligner les rayures.</li><li><strong>Velours</strong> : respecter le sens du poil.</li></ul><p><a href="https://www.youtube.com/results?search_query=coupe+tissu+droit+fil+patron" target="_blank" rel="noopener">🎥 Recherche : la coupe du tissu</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La coupe du tissu suit 3 phases : préparation (vérification, repassage), disposition du patron (droit fil, épinglage) et coupe (ciseaux, valeurs, crans). Respecter le sens du droit fil et des motifs.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques Coupe-Couture 4e Technique (2025).</div>
+`},
+{title:"Leçon 5 — Les points de couture à la main",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans un atelier de Kisangani, une apprentie apprend les points de base : point devant, point arrière, point de bâti. Avant de maîtriser la machine, il faut savoir coudre à la main.</p></div>
+<h3>1. Les points de bâti</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Point devant</strong> : petits points réguliers, pour maintenir temporairement.</li><li><strong>Point de bâti</strong> : plus longs, pour assembler avant la couture définitive.</li><li><strong>Point arrière</strong> : solide, pour arrêter un fil ou coudre un bouton.</li><li><strong>Faufil</strong> : point long, temporaire.</li></ul></div>
+<h3>2. Les points définitifs</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Point de côté</strong> : solide, pour assembler deux tissus.</li><li><strong>Point de surjet</strong> : pour empêcher l'effilochage.</li><li><strong>Point de bourdon</strong> : décoratif et solide.</li><li><strong>Point de chausson</strong> : pour les ourlets invisibles.</li><li><strong>Point de croix</strong> : décoratif.</li></ul></div>
+<h3>3. Les finitions</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Ourlet</strong> : replier le bord et coudre.</li><li><strong>Boutonnière</strong> : fente pour passer le bouton.</li><li><strong>Bouton</strong> : fixation solide.</li><li><strong>Crochet/agrafe</strong> : fermeture.</li><li><strong>Passepoil</strong> : garniture décorative.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Ourlet invisible</strong> : point de chausson, fil assorti.</li><li><strong>Boutonnière</strong> : tracée, coupée, cousue au point de bourdon.</li><li><strong>Pose de bouton</strong> : point arrière, 4 trous, fil solide.</li><li><strong>Surjet</strong> : bords des tissus qui s'effilochent.</li></ul><p><a href="https://www.youtube.com/results?search_query=points+couture+main+bâti+surjet+ourlet" target="_blank" rel="noopener">🎥 Recherche : les points de couture</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Les points de bâti (devant, bâti, faufil) sont temporaires. Les points définitifs (côté, surjet, bourdon, chausson) sont solides. Les finitions : ourlet, boutonnière, bouton, crochet, passepoil.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques Coupe-Couture 4e Technique (2025).</div>
+`},
+{title:"Leçon 6 — La machine à coudre : utilisation et entretien",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans un atelier de Kinshasa, une couturière utilise une machine à coudre électrique. Elle enfile le fil, règle la tension, coud droit. Un mauvais réglage = points irréguliers. Maîtriser la machine est indispensable.</p></div>
+<h3>1. Les parties de la machine</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Bras et plateau</strong> : support du tissu.</li><li><strong>Aiguille</strong> : pique le tissu.</li><li><strong>Pied-de-biche</strong> : maintient le tissu.</li><li><strong>Canette</strong> : fil inférieur.</li><li><strong>Volant</strong> : entraîne le mécanisme.</li><li><strong>Pédale</strong> : commande la vitesse.</li><li><strong>Régulateur de points</strong> : longueur du point.</li><li><strong>Régulateur de tension</strong> : tension du fil.</li></ul></div>
+<h3>2. L'enfilage et le réglage</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Enfilage</strong> : bobine → guide-fil → régulateur → aiguille.</li><li><strong>Canette</strong> : remplie régulièrement, bien placée.</li><li><strong>Tension</strong> : ni trop serrée, ni trop lâche.</li><li><strong>Longueur du point</strong> : 2-3 mm en général.</li><li><strong>Essai</strong> : coudre un morceau d'essai avant le vrai tissu.</li></ul></div>
+<h3>3. L'entretien de la machine</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Nettoyage</strong> : enlever les peluches avec un pinceau.</li><li><strong>Huilage</strong> : quelques gouttes d'huile spéciale.</li><li><strong>Changement d'aiguille</strong> : régulier, selon l'usage.</li><li><strong>Révision</strong> : par un technicien au moins 1 fois par an.</li><li><strong>Rangement</strong> : sous housse, à l'abri de la poussière.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p><strong>Problèmes courants</strong></p><ul><li><strong>Points irréguliers</strong> : mauvais réglage de la tension.</li><li><strong>Fil qui casse</strong> : enfilage incorrect, aiguille usée.</li><li><strong>Aiguille cassée</strong> : mauvais alignement, tissu trop épais.</li><li><strong>Machine qui saute des points</strong> : aiguille usée, mauvaise qualité du fil.</li></ul><p><a href="https://www.youtube.com/results?search_query=machine+à+coudre+utilisation+entretien+réglage" target="_blank" rel="noopener">🎥 Recherche : la machine à coudre</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La machine à coudre a plusieurs parties (aiguille, canette, pied-de-biche, régulateurs). L'enfilage, le réglage de la tension et la longueur du point sont essentiels. L'entretien régulier (nettoyage, huilage, changement d'aiguille) prolonge sa durée de vie.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques Coupe-Couture 4e Technique (2025).</div>
+`},
+{title:"Leçon 7 — La confection d'un vêtement simple",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Une couturière de Lubumbashi reçoit une commande : une jupe droite pour une cliente. Elle suit les étapes : prise de mesures, patron, coupe, assemblage, finitions. Chaque étape compte.</p></div>
+<h3>1. Les étapes de la confection</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>1. Prise des mesures</strong> et fiche.</li><li><strong>2. Choix du tissu</strong> et du fil.</li><li><strong>3. Tracé du patron</strong> adapté.</li><li><strong>4. Coupe du tissu</strong>.</li><li><strong>5. Bâti</strong> (assemblage temporaire).</li><li><strong>6. Essayage</strong> et ajustements.</li><li><strong>7. Couture définitive</strong>.</li><li><strong>8. Finitions</strong> (ourlet, boutonnière, repassage).</li></ul></div>
+<h3>2. L'assemblage d'une jupe droite</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Pinces</strong> : devant et dos, cousues en premier.</li><li><strong>Côtés</strong> : devant + dos, épinglés, bâtis, cousus.</li><li><strong>Fermeture</strong> : glissière ou boutonnière.</li><li><strong>Ceinture</strong> : montée et cousue.</li><li><strong>Ourlet</strong> : bas de la jupe.</li><li><strong>Repassage</strong> : à chaque étape.</li></ul></div>
+<h3>3. Les finitions</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Surjet</strong> : bords intérieurs.</li><li><strong>Ourlet invisible</strong> : point de chausson.</li><li><strong>Boutonnière</strong> : nette et solide.</li><li><strong>Bouton</strong> : bien fixé.</li><li><strong>Repassage final</strong> : pour un rendu impeccable.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p><strong>Confection d'une jupe droite</strong></p><ul><li>Mesures : taille 74, hanches 98, longueur 60.</li><li>Tissu : 1,20 m de coton.</li><li>Patron : 2 pièces (devant, dos) + ceinture.</li><li>Assemblage : pinces, côtés, fermeture, ceinture, ourlet.</li><li>Finitions : surjet, ourlet, repassage.</li></ul><p><a href="https://www.youtube.com/results?search_query=confection+jupe+couture+étapes" target="_blank" rel="noopener">🎥 Recherche : la confection d'un vêtement</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La confection suit 8 étapes : mesures, tissu, patron, coupe, bâti, essayage, couture, finitions. L'assemblage d'une jupe comprend pinces, côtés, fermeture, ceinture, ourlet. Le repassage est essentiel à chaque étape.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques Coupe-Couture 4e Technique (2025).</div>
+`},
+{title:"Leçon 8 — Le stylisme et la création de modèles",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>À Kinshasa, une jeune styliste crée une collection inspirée des tissus wax. Elle dessine, cherche les couleurs, choisit les tissus, réalise les prototypes. Le stylisme est la création de mode.</p></div>
+<h3>1. Le stylisme</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Stylisme</strong> : art de créer des modèles de vêtements.</li><li><strong>Créateur de mode (styliste)</strong> : imagine et dessine les modèles.</li><li><strong>Modéliste</strong> : traduit le dessin en patron.</li><li><strong>Couturier</strong> : réalise le vêtement.</li><li><strong>Collections</strong> : printemps/été, automne/hiver.</li></ul></div>
+<h3>2. Les étapes de la création</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>1. Inspiration</strong> : thème, couleurs, matières.</li><li><strong>2. Recherche</strong> : documentation, tendances.</li><li><strong>3. Croquis</strong> : dessin du modèle.</li><li><strong>4. Choix des tissus</strong>.</li><li><strong>5. Patronnage</strong> : du dessin au patron.</li><li><strong>6. Prototype</strong> : réalisation d'un premier exemplaire.</li><li><strong>7. Retouches</strong>.</li><li><strong>8. Présentation</strong> : défilé, lookbook.</li></ul></div>
+<h3>3. Les tendances et la mode africaine</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Wax</strong> : tissu emblématique, motifs colorés.</li><li><strong>Kitenge</strong> : tissu d'Afrique centrale.</li><li><strong>Pagne</strong> : tissu traditionnel.</li><li><strong>Bazin</strong> : tissu brodé, riche.</li><li><strong>Créateurs congolais</strong> : collectionneurs, défilés à Kinshasa (Kinshasa Fashion Week).</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Création d'une robe</strong> : inspiration wax, coupe évasée, ceinture marquée.</li><li><strong>Collection</strong> : 5 modèles autour d'un thème.</li><li><strong>Défilé</strong> : présentation publique, photos, réseaux sociaux.</li><li><strong>Commercialisation</strong> : boutique, en ligne, sur commande.</li></ul><p><a href="https://www.youtube.com/results?search_query=stylisme+mode+africaine+wax+création" target="_blank" rel="noopener">🎥 Recherche : le stylisme</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le stylisme crée des modèles de vêtements. Les 8 étapes : inspiration, recherche, croquis, tissus, patronnage, prototype, retouches, présentation. La mode africaine utilise le wax, le kitenge, le bazin.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques Coupe-Couture 4e Technique (2025).</div>
+`},
+{title:"Évaluation finale — Items EXETAT",content:`
+<p style="margin-bottom:18px;color:#8e1b1b;font-size:0.95rem;">Évaluation type EXETAT.</p>
+<div class="bloc theorie"><div class="bloc-label">Consignes</div><ul><li>15 questions à choix multiples.</li><li>Durée recommandée : 15 minutes.</li></ul></div>
+<div class="quiz-container" id="quizContainer"><div id="quizQuestions"></div><button id="submitQuiz" class="quiz-btn-submit">Valider mes réponses</button><div id="quizResult" class="quiz-result"></div></div>
+`}];
+
+let currentSlide=0,lastSearchTerm="",searchResults=[],currentResultIdx=-1;
+const contentDiv=document.getElementById('content'),prevBtn=document.getElementById('prevBtn'),nextBtn=document.getElementById('nextBtn'),slideCounterSpan=document.getElementById('slideCounter'),progressFill=document.getElementById('progressFill'),counterSpan=document.getElementById('counter'),searchInput=document.getElementById('searchInput'),searchBtn=document.getElementById('searchBtn'),searchNav=document.getElementById('searchNav'),prevResultBtn=document.getElementById('prevResultBtn'),nextResultBtn=document.getElementById('nextResultBtn'),resultCounterSpan=document.getElementById('resultCounter');
+function getTextFromHtml(html){const d=document.createElement('div');d.innerHTML=html;return d.textContent||'';}
+function searchSlides(term){if(!term.trim())return[];const l=term.toLowerCase();const r=[];slides.forEach((s,i)=>{if(s.title.toLowerCase().includes(l)||getTextFromHtml(s.content).toLowerCase().includes(l))r.push(i);});return r;}
+function highlightInCurrentSlide(term){if(!term)return;const sc=document.querySelector('.slide-content');if(!sc)return;const regex=new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`,'gi');const walker=document.createTreeWalker(sc,NodeFilter.SHOW_TEXT,null,false);const nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);for(let n of nodes){if(n.nodeValue&&regex.test(n.nodeValue)){const sp=document.createElement('span');sp.innerHTML=n.nodeValue.replace(regex,'<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');n.parentNode.replaceChild(sp,n);}}}
+function renderQuiz(){
+const questions=[
+{text:"Quel outil sert à prendre les mesures ?",options:["Le mètre ruban","Les ciseaux","La craie"],correct:0},
+{text:"Quel outil sert à marquer le tissu ?",options:["La craie tailleur","Le fil","L'aiguille"],correct:0},
+{text:"Où prend-on le tour de poitrine ?",options:["Au niveau le plus fort","Au creux de la taille","Au niveau des hanches"],correct:0},
+{text:"Quelle est la hauteur d'une valeur de couture standard ?",options:["1 à 1,5 cm","5 cm","0,1 cm"],correct:0},
+{text:"Qu'est-ce que le droit fil ?",options:["Le sens des fils du tissu","Le bord du tissu","Le milieu du tissu"],correct:0},
+{text:"Que faut-il respecter pour un tissu à carreaux ?",options:["La coïncidence des carreaux aux coutures","Aucune contrainte","Le sens du poil"],correct:0},
+{text:"Quel point est temporaire ?",options:["Le point de bâti","Le point de côté","Le point de chausson"],correct:0},
+{text:"Quel point est utilisé pour les ourlets invisibles ?",options:["Le point de chausson","Le point de bâti","Le point de croix"],correct:0},
+{text:"Quel est le point utilisé pour empêcher l'effilochage ?",options:["Le point de surjet","Le point de bâti","Le point de croix"],correct:0},
+{text:"Quel élément de la machine maintient le tissu ?",options:["Le pied-de-biche","La canette","Le volant"],correct:0},
+{text:"Que faire si les points sont irréguliers ?",options:["Régler la tension","Changer le tissu","Arrêter la machine"],correct:0},
+{text:"Combien d'étapes dans la confection d'un vêtement ?",options:["8","3","15"],correct:0},
+{text:"Quel est le premier assemblage d'une jupe ?",options:["Les pinces","La ceinture","L'ourlet"],correct:0},
+{text:"Qu'est-ce qu'un styliste ?",options:["Un créateur de modèles","Un couturier","Un modéliste"],correct:0},
+{text:"Quel tissu est emblématique de la mode africaine ?",options:["Le wax","Le lin","Le jean"],correct:0}];
+let html='';questions.forEach((q,i)=>{html+='<div class="quiz-question"><p>'+(i+1)+'. '+q.text+'</p>';q.options.forEach((o,k)=>{html+='<label><input type="radio" name="q'+i+'" value="'+k+'"> '+o+'</label>';});html+='</div>';});
+document.getElementById('quizQuestions').innerHTML=html;
+document.getElementById('submitQuiz').onclick=()=>{let score=0;questions.forEach((q,i)=>{const s=document.querySelector('input[name="q'+i+'"]:checked');if(s&&parseInt(s.value)===q.correct)score++;});const pct=Math.round(score/questions.length*100);document.getElementById('quizResult').innerHTML='<div style="background:#f3cdcb;padding:16px;border-radius:10px;margin-top:14px;"><strong>Score : '+score+'/'+questions.length+' ('+pct+'%)</strong><br>'+(score===questions.length?'Excellent.':score>=10?'Bien.':'Relis les leçons.')+'</div>';};
+}
+function renderSlide(index,keepHighlight=true){const isQuiz=(index===slides.length-1);contentDiv.innerHTML='<div class="slide active"><h2 class="slide-title">'+slides[index].title+'</h2><div class="slide-content">'+slides[index].content+'</div></div>';if(isQuiz)renderQuiz();slideCounterSpan.textContent=(index+1)+'/'+slides.length;progressFill.style.width=((index+1)/slides.length*100)+'%';prevBtn.disabled=(index===0);nextBtn.disabled=(index===slides.length-1);counterSpan.textContent='Leçon '+(index+1)+' / '+slides.length;contentDiv.scrollTop=0;if(keepHighlight&&lastSearchTerm&&!isQuiz)highlightInCurrentSlide(lastSearchTerm);}
+function updateResultDisplay(){if(searchResults.length===0){searchNav.style.display='none';return;}searchNav.style.display='flex';resultCounterSpan.textContent=(currentResultIdx+1)+'/'+searchResults.length;}
+function goToResult(idx){if(idx<0||idx>=searchResults.length)return;currentResultIdx=idx;currentSlide=searchResults[currentResultIdx];renderSlide(currentSlide,true);updateResultDisplay();}
+function performSearch(){const term=searchInput.value.trim();if(!term)return;lastSearchTerm=term;searchResults=searchSlides(term);if(searchResults.length===0){searchNav.style.display='none';return;}currentResultIdx=0;goToResult(0);}
+function nextResult(){if(searchResults.length)goToResult((currentResultIdx+1)%searchResults.length);}
+function prevResult(){if(searchResults.length)goToResult((currentResultIdx-1+searchResults.length)%searchResults.length);}
+function nextSlide(){if(currentSlide<slides.length-1){currentSlide++;renderSlide(currentSlide,true);}}
+function prevSlide(){if(currentSlide>0){currentSlide--;renderSlide(currentSlide,true);}}
+prevBtn.onclick=prevSlide;nextBtn.onclick=nextSlide;searchBtn.onclick=performSearch;prevResultBtn.onclick=prevResult;nextResultBtn.onclick=nextResult;
+searchInput.addEventListener('keydown',e=>{if(e.key==='Enter')performSearch();});
+renderSlide(0,false);
+</script></body></html>
