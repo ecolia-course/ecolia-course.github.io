@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Étude de cas et méthodes participatives — 4e Sociale (EXETAT)</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:linear-gradient(160deg,#0d3b3a 0%,#00897b 50%,#04211f 100%); display:flex; justify-content:center; align-items:center; padding:8px; }
+.container { width:100%; max-width:1400px; background:#fefdf8; border-radius:20px; overflow:hidden; display:flex; flex-direction:column; height:100%; max-height:100vh; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.progress-bar { height:4px; background:#b2dfdb; flex-shrink:0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,#4db6ac,#004d40); width:0%; transition:width 0.3s; }
+.header { padding:10px 16px; background:#e0f2f1; border-bottom:1px solid #80cbc4; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+.header h1 { color:#004d40; font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box { display:flex; background:white; border-radius:20px; padding:2px 4px; }
+.search-box input { border:none; padding:6px 10px; border-radius:20px; outline:none; width:130px; font-size:0.8rem; }
+.search-box button { background:none; border:none; cursor:pointer; padding:4px 8px; font-size:0.85rem; color:#00695c; }
+.badge { background:#00897b; color:white; padding:4px 10px; border-radius:20px; font-weight:bold; font-size:0.75rem; }
+.search-nav { display:none; gap:4px; background:#b2dfdb; padding:2px 8px; border-radius:20px; align-items:center; font-size:0.75rem; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:0.9rem; color:#004d40; padding:2px 4px; }
+.content { padding:28px 32px; flex:1; overflow-y:auto; background:#fff; line-height:1.85; }
+.slide { display:none; } .slide.active { display:block; }
+.slide-title { color:#004d40; font-size:1.5rem; font-weight:700; padding-bottom:12px; margin-bottom:20px; border-bottom:2px solid #00897b; }
+.slide-content { color:#04211f; font-size:1rem; }
+.bloc { padding:18px 22px; border-radius:12px; margin:22px 0; }
+.bloc-label { font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; opacity:0.7; }
+.bloc p, .bloc li { font-size:0.98rem; }
+.bloc h3 { font-size:1.1rem; margin:20px 0 10px; font-weight:600; }
+.bloc h3:first-child { margin-top:0; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; } .cas .bloc-label { color:#e65100; }
+.theorie { background:#e0f2f1; border-left:4px solid #00897b; } .theorie .bloc-label { color:#004d40; }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; } .exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; } .resume .bloc-label { color:#01579b; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; } .bloc li { margin-bottom:8px; } .bloc strong { color:#004d40; }
+.quiz-container { padding:22px; background:#e0f2f1; border-radius:16px; }
+.quiz-question { background:white; border-radius:10px; padding:16px; margin-bottom:14px; }
+.quiz-question p { font-weight:600; margin-bottom:10px; color:#004d40; }
+.quiz-question label { display:block; padding:8px 10px; margin:4px 0; border-radius:6px; cursor:pointer; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit { background:#00695c; color:white; border:none; padding:12px 24px; border-radius:30px; font-size:1rem; cursor:pointer; font-weight:600; margin-top:14px; }
+.quiz-result { margin-top:16px; font-weight:600; }
+.sources { background:#f5f5f5; padding:12px 16px; border-radius:10px; margin-top:26px; font-size:0.82rem; color:#666; border-left:3px solid #999; }
+.sources strong { color:#333; }
+.controls { padding:8px 16px; background:#fafafa; border-top:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; gap:8px; }
+.nav-btn { background:white; color:#004d40; border:1px solid #ccc; padding:8px 14px; border-radius:8px; font-size:0.82rem; cursor:pointer; }
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+@media (max-width:600px) { body { padding:0; } .container { border-radius:0; } .content { padding:20px 18px; } .slide-title { font-size:1.25rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="header">
+        <h1>Étude de cas et méthodes participatives · 4e Sociale</h1>
+        <div class="header-right">
+            <div class="search-box"><input type="text" id="searchInput" placeholder="Rechercher"><button id="searchBtn">⌕</button></div>
+            <div class="search-nav" id="searchNav"><button id="prevResultBtn">‹</button><span id="resultCounter">0/0</span><button id="nextResultBtn">›</button></div>
+            <span class="badge" id="slideCounter">1/9</span>
+        </div>
+    </div>
+    <div class="content" id="content"></div>
+    <div class="controls">
+        <button class="nav-btn" id="prevBtn">← Précédent</button>
+        <span class="counter" id="counter">Leçon 1 / 9</span>
+        <button class="nav-btn" id="nextBtn">Suivant →</button>
+    </div>
+</div>
+<script>
+const slides = [
+{title:"Leçon 1 — Introduction à l'étude de cas",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans une école de Kinshasa, on te présente le cas d'une famille en difficulté : père alcoolique, mère malade, trois enfants non scolarisés. Ton travail : analyser la situation, proposer un plan d'intervention. C'est l'étude de cas.</p></div>
+<h3>1. Définition</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Étude de cas</strong> : méthode d'analyse approfondie d'une situation réelle ou fictive, individuelle ou collective.</li><li><strong>Objectif</strong> : comprendre une situation complexe, identifier les problèmes, proposer des solutions.</li><li><strong>Usage</strong> : formation, recherche, intervention sociale.</li></ul></div>
+<h3>2. Les étapes de l'étude de cas</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>1. Présentation du cas</strong> : description de la situation.</li><li><strong>2. Collecte des données</strong> : entretiens, observations, documents.</li><li><strong>3. Analyse</strong> : identification des problèmes, des causes, des conséquences.</li><li><strong>4. Hypothèses</strong> : pistes de compréhension.</li><li><strong>5. Plan d'intervention</strong> : objectifs, actions, partenaires.</li><li><strong>6. Évaluation</strong> : résultats attendus.</li></ul></div>
+<h3>3. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p><strong>Cas : la famille Mukendi à Kinshasa</strong></p><ul><li><strong>Situation</strong> : père alcoolique, mère malade, 3 enfants non scolarisés.</li><li><strong>Problèmes</strong> : alcoolisme, santé, pauvreté, déscolarisation.</li><li><strong>Analyse</strong> : alcoolisme → violence, pauvreté → déscolarisation.</li><li><strong>Plan</strong> : orientation vers un centre de désintoxication, soins pour la mère, inscription à l'école, aide alimentaire.</li><li><strong>Partenaires</strong> : centre social, école, hôpital, ONG.</li></ul><p><a href="https://www.youtube.com/results?search_query=étude+de+cas+méthode+analyse+travail+social" target="_blank" rel="noopener">🎥 Recherche : l'étude de cas</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>L'étude de cas analyse en profondeur une situation complexe. Les 6 étapes sont : présentation, collecte, analyse, hypothèses, plan d'intervention, évaluation. Elle est utilisée en formation et en intervention sociale.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national d'Animation Sociale (RDC) ; Fiches pédagogiques 2025.<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT.</div>
+`},
+{title:"Leçon 2 — La méthode du diagnostic social",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Une assistante sociale reçoit une famille en difficulté à Kinshasa. Avant de proposer une aide, elle doit comprendre : quelle est la situation ? Quels sont les besoins ? Quelles sont les ressources ? Le diagnostic social est la base de toute intervention.</p></div>
+<h3>1. Définition</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Diagnostic social</strong> : analyse globale d'une situation individuelle ou familiale pour identifier les problèmes et les besoins.</li><li><strong>Objectif</strong> : comprendre avant d'agir.</li><li><strong>Principes</strong> : respect, écoute, confidentialité, non-jugement.</li></ul></div>
+<h3>2. Les composantes du diagnostic</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Données personnelles</strong> : identité, âge, état civil, santé.</li><li><strong>Situation familiale</strong> : composition, relations, logement.</li><li><strong>Situation économique</strong> : revenus, emploi, dettes.</li><li><strong>Situation sociale</strong> : scolarisation, relations sociales, soutien.</li><li><strong>Problèmes identifiés</strong> : difficultés, besoins prioritaires.</li><li><strong>Ressources</strong> : personnelles, familiales, institutionnelles.</li></ul></div>
+<h3>3. Les outils du diagnostic</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Entretien</strong> : écoute active, questionnement.</li><li><strong>Visite à domicile</strong> : observation du cadre de vie.</li><li><strong>Enquête sociale</strong> : recueil de données auprès de l'entourage.</li><li><strong>Documents</strong> : certificats, attestations, dossiers.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p><strong>Diagnostic social de la famille Mukendi</strong></p><ul><li>Personnes : père 45 ans (alcoolique), mère 38 ans (malade), 3 enfants (7, 10, 13 ans).</li><li>Logement : 2 pièces insalubres, quartier populaire.</li><li>Revenus : irréguliers (petit commerce de la mère).</li><li>Problèmes : alcoolisme, maladie, pauvreté, déscolarisation.</li><li>Ressources : voisins solidaires, église, ONG locale.</li><li>Priorités : santé de la mère, scolarisation des enfants, aide au père.</li></ul><p><a href="https://www.youtube.com/results?search_query=diagnostic+social+travail+social+outils" target="_blank" rel="noopener">🎥 Recherche : le diagnostic social</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le diagnostic social analyse une situation pour identifier problèmes et besoins. Il comprend : données personnelles, familiales, économiques, sociales, problèmes et ressources. Les outils : entretien, visite à domicile, enquête, documents.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national d'Animation Sociale (RDC).</div>
+`},
+{title:"Leçon 3 — Le plan d'intervention sociale",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Après le diagnostic, l'assistante sociale prépare un plan d'intervention pour la famille Mukendi. Elle fixe des objectifs, des actions, des partenaires, un calendrier. Sans plan, l'intervention serait désordonnée.</p></div>
+<h3>1. Définition</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Plan d'intervention</strong> : ensemble structuré des actions à mener pour résoudre les problèmes identifiés.</li><li><strong>Objectif</strong> : fixer un cap, mobiliser les ressources, coordonner les partenaires.</li><li><strong>Principes</strong> : participation de la personne, réalisme, progressivité.</li></ul></div>
+<h3>2. Les composantes du plan</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Objectifs</strong> : généraux et spécifiques, mesurables.</li><li><strong>Actions</strong> : concrètes, adaptées.</li><li><strong>Responsables</strong> : qui fait quoi.</li><li><strong>Partenaires</strong> : institutions, ONG, famille.</li><li><strong>Calendrier</strong> : étapes et délais.</li><li><strong>Budget</strong> : estimation des coûts.</li><li><strong>Indicateurs</strong> : mesure des résultats.</li></ul></div>
+<h3>3. La négociation avec la personne</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Contrat d'aide</strong> : accord entre l'usager et le travailleur social.</li><li><strong>Participation</strong> : la personne est actrice de son plan.</li><li><strong>Réalisme</strong> : objectifs atteignables.</li><li><strong>Réajustement</strong> : le plan peut évoluer.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p><strong>Plan d'intervention famille Mukendi</strong></p><ul><li>Objectif 1 : soigner la mère dans un délai de 1 mois → hôpital, ONG santé.</li><li>Objectif 2 : scolariser les 3 enfants à la rentrée → école, ONG éducation.</li><li>Objectif 3 : accompagner le père vers une prise en charge → centre de désintoxication.</li><li>Objectif 4 : améliorer les revenus → microcrédit, formation.</li><li>Suivi : visite mensuelle, réunion trimestrielle.</li></ul><p><a href="https://www.youtube.com/results?search_query=plan+intervention+sociale+objectifs+actions" target="_blank" rel="noopener">🎥 Recherche : le plan d'intervention sociale</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le plan d'intervention structure les actions à mener. Il comprend : objectifs, actions, responsables, partenaires, calendrier, budget, indicateurs. La personne est actrice de son plan via un contrat d'aide.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national d'Animation Sociale (RDC).</div>
+`},
+{title:"Leçon 4 — La méthode des cas en travail social",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans un centre social de Lubumbashi, une équipe analyse le cas d'un jeune délinquant. Chacun donne son point de vue, l'équipe confronte les hypothèses, propose des pistes. C'est la méthode des cas en travail social.</p></div>
+<h3>1. Définition</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Méthode des cas</strong> : démarche d'analyse collective d'une situation.</li><li><strong>Objectif</strong> : comprendre, confronter les points de vue, proposer des solutions.</li><li><strong>Usage</strong> : formation, supervision d'équipe, intervention.</li></ul></div>
+<h3>2. Les étapes</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>1. Présentation du cas</strong> : exposé des faits par le travailleur social référent.</li><li><strong>2. Questions de clarification</strong> : les participants posent des questions.</li><li><strong>3. Analyse</strong> : identification des problèmes, des causes, des ressources.</li><li><strong>4. Hypothèses</strong> : pistes de compréhension.</li><li><strong>5. Propositions</strong> : actions possibles.</li><li><strong>6. Synthèse</strong> : plan d'action retenu.</li></ul></div>
+<h3>3. Les règles de la méthode</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Confidentialité</strong> : anonymat des personnes.</li><li><strong>Écoute</strong> : respect des points de vue.</li><li><strong>Non-jugement</strong> : pas de critique personnelle.</li><li><strong>Objectivité</strong> : faits, pas d'interprétation.</li><li><strong>Synthèse</strong> : décision collégiale.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p><strong>Cas d'un jeune délinquant</strong></p><ul><li>Présentation : jeune de 16 ans, vols répétés, famille monoparentale.</li><li>Questions : scolarité ? Amis ? Antécédents ?</li><li>Analyse : absence du père, pauvreté, échec scolaire, influence du groupe.</li><li>Hypothèses : besoin de reconnaissance, manque de repères.</li><li>Propositions : accompagnement éducatif, formation professionnelle, médiation familiale.</li><li>Synthèse : plan d'action pluridisciplinaire.</li></ul><p><a href="https://www.youtube.com/results?search_query=méthode+des+cas+travail+social+analyse" target="_blank" rel="noopener">🎥 Recherche : la méthode des cas</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La méthode des cas analyse collectivement une situation. Les 6 étapes : présentation, questions, analyse, hypothèses, propositions, synthèse. Les règles : confidentialité, écoute, non-jugement, objectivité, synthèse collégiale.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national d'Animation Sociale (RDC).</div>
+`},
+{title:"Leçon 5 — Les méthodes participatives : MARP et outils",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans un village du Kwango, une équipe utilise la MARP (Méthode Active de Recherche et de Planification Participative). Les villageois dessinent la carte du village, classent les problèmes, proposent des solutions. Ces outils rendent la communauté actrice de son développement.</p></div>
+<h3>1. La MARP</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>MARP</strong> : méthode active de recherche et de planification participative.</li><li><strong>Objectif</strong> : faire participer la communauté à l'analyse et à la planification.</li><li><strong>Principes</strong> : participation, visualisation, apprentissage mutuel, flexibilité.</li></ul></div>
+<h3>2. Les outils de la MARP</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Cartographie participative</strong> : dessin du village.</li><li><strong>Transect</strong> : parcours commenté.</li><li><strong>Calendrier saisonnier</strong> : activités selon les saisons.</li><li><strong>Classement par paires</strong> : hiérarchisation des problèmes.</li><li><strong>Diagramme de Venn</strong> : relations entre acteurs.</li><li><strong>Arbre à problèmes</strong> : causes et conséquences.</li><li><strong>Matrice de préférence</strong> : choix entre options.</li><li><strong>Focus group</strong> : discussion de groupe.</li></ul></div>
+<h3>3. Les étapes de la MARP</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Préparation</strong> : informer, obtenir l'accord.</li><li><strong>Collecte</strong> : utilisation des outils.</li><li><strong>Analyse</strong> : synthèse des données.</li><li><strong>Planification</strong> : priorisation des actions.</li><li><strong>Restitution</strong> : présentation à la communauté.</li><li><strong>Mise en œuvre</strong> : réalisation des actions.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p><strong>MARP dans un village du Kwango</strong></p><ul><li>Cartographie : maison, école, puits, champs.</li><li>Transect : sol, cultures, problèmes.</li><li>Calendrier : saison sèche, saison des pluies, activités.</li><li>Classement par paires : eau > santé > école > route.</li><li>Plan : creuser un puits, former des relais de santé.</li></ul><p><a href="https://www.youtube.com/results?search_query=MARP+méthodes+participatives+outils" target="_blank" rel="noopener">🎥 Recherche : la MARP</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La MARP est une méthode participative de recherche et de planification. Ses outils : cartographie, transect, calendrier, classement par paires, Venn, arbre à problèmes, focus group. Ses étapes : préparation, collecte, analyse, planification, restitution, mise en œuvre.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national d'Animation Sociale (RDC) ; FAO — MARP.</div>
+`},
+{title:"Leçon 6 — Le suivi-évaluation des actions sociales",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Un projet d'alphabétisation des femmes à Kinshasa est lancé. Après 6 mois, il faut mesurer les résultats : combien de femmes ont appris à lire ? Sont-elles satisfaites ? Le suivi-évaluation permet de vérifier l'efficacité et d'ajuster.</p></div>
+<h3>1. Définition</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Suivi</strong> : activité continue qui vérifie l'avancement du projet.</li><li><strong>Évaluation</strong> : analyse périodique des résultats et de l'impact.</li><li><strong>Objectifs</strong> : mesurer l'efficacité, ajuster, rendre compte.</li></ul></div>
+<h3>2. Les indicateurs</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Indicateurs quantitatifs</strong> : nombre de bénéficiaires, taux de réussite.</li><li><strong>Indicateurs qualitatifs</strong> : satisfaction, qualité perçue.</li><li><strong>Critères</strong> : pertinence, efficacité, efficience, impact, durabilité.</li></ul></div>
+<h3>3. Les outils du suivi-évaluation</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Fiche de suivi</strong> : enregistrement régulier.</li><li><strong>Rapport d'activités</strong> : synthèse périodique.</li><li><strong>Enquête de satisfaction</strong> : recueil d'avis.</li><li><strong>Réunion de bilan</strong> : analyse collective.</li><li><strong>Tableau de bord</strong> : visualisation des indicateurs.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p><strong>Suivi-évaluation d'un projet d'alphabétisation</strong></p><ul><li>Indicateurs : 100 femmes inscrites, 80 assidues, 60 alphabétisées.</li><li>Qualitatif : témoignages, satisfaction.</li><li>Critères : pertinence (oui), efficacité (bien), efficience (moyenne), impact (positif), durabilité (à renforcer).</li><li>Décisions : renforcer la formation des animatrices, créer un suivi post-alphabétisation.</li></ul><p><a href="https://www.youtube.com/results?search_query=suivi+évaluation+projet+social+indicateurs" target="_blank" rel="noopener">🎥 Recherche : le suivi-évaluation</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le suivi-évaluation mesure l'avancement et les résultats d'un projet. Les indicateurs sont quantitatifs et qualitatifs. Les critères : pertinence, efficacité, efficience, impact, durabilité. Les outils : fiche de suivi, rapport, enquête, réunion de bilan, tableau de bord.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national d'Animation Sociale (RDC) ; PNUD.</div>
+`},
+{title:"Leçon 7 — La rédaction du rapport social",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Après six mois d'accompagnement, l'assistante sociale rédige un rapport sur la famille Mukendi. Le rapport est transmis au chef de service, aux partenaires. Il doit être clair, factuel, structuré. C'est un outil professionnel essentiel.</p></div>
+<h3>1. Définition et objectifs</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Rapport social</strong> : document écrit qui rend compte d'une situation, d'une intervention ou d'un projet.</li><li><strong>Objectifs</strong> : informer, documenter, transmettre, décider.</li><li><strong>Qualités</strong> : clarté, précision, objectivité, confidentialité.</li></ul></div>
+<h3>2. La structure du rapport</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>En-tête</strong> : émetteur, destinataire, date, objet.</li><li><strong>Introduction</strong> : contexte, motif du rapport.</li><li><strong>Présentation de la situation</strong> : données factuelles.</li><li><strong>Analyse</strong> : problèmes, causes, besoins.</li><li><strong>Actions menées</strong> : interventions réalisées.</li><li><strong>Résultats</strong> : effets observés.</li><li><strong>Perspectives</strong> : suites à donner.</li><li><strong>Conclusion</strong> : synthèse.</li><li><strong>Signature</strong>.</li></ul></div>
+<h3>3. Les règles de rédaction</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Style impersonnel</strong> : pas de « je ».</li><li><strong>Faits, pas d'opinions</strong>.</li><li><strong>Respect de la confidentialité</strong> : anonymat si nécessaire.</li><li><strong>Précision</strong> : dates, lieux, chiffres.</li><li><strong>Structure claire</strong> : titres, paragraphes.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p><strong>Rapport social — Famille Mukendi</strong></p><ul><li>Objet : suivi de la famille Mukendi après 6 mois.</li><li>Situation : famille de 5 personnes, père alcoolique, mère soignée, 3 enfants scolarisés.</li><li>Actions : orientation santé, scolarisation, accompagnement du père.</li><li>Résultats : mère guérie, enfants à l'école, père en sevrage.</li><li>Perspectives : poursuivre l'accompagnement, aider à trouver un emploi.</li></ul><p><a href="https://www.youtube.com/results?search_query=rapport+social+rédaction+travail+social" target="_blank" rel="noopener">🎥 Recherche : la rédaction du rapport social</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le rapport social rend compte d'une situation ou d'une intervention. Sa structure : en-tête, introduction, situation, analyse, actions, résultats, perspectives, conclusion. Les règles : style impersonnel, faits, confidentialité, précision.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national d'Animation Sociale (RDC).</div>
+`},
+{title:"Évaluation finale — Items EXETAT",content:`
+<p style="margin-bottom:18px;color:#004d40;font-size:0.95rem;">Cette évaluation regroupe des items de type EXETAT. Fais l'exercice dans les conditions du concours : sans notes, en une seule fois.</p>
+<div class="bloc theorie"><div class="bloc-label">Consignes</div><ul><li>20 questions à choix multiples.</li><li>Une seule réponse correcte par question.</li><li>Durée recommandée : 20 minutes.</li></ul></div>
+<div class="quiz-container" id="quizContainer"><h3 style="color:#004d40;margin-bottom:16px;font-size:1.1rem;">Partie 1 — Questions</h3><div id="quizQuestions"></div><button id="submitQuiz" class="quiz-btn-submit">Valider mes réponses</button><div id="quizResult" class="quiz-result"></div></div>
+`}];
+
+let currentSlide=0,lastSearchTerm="",searchResults=[],currentResultIdx=-1;
+const contentDiv=document.getElementById('content'),prevBtn=document.getElementById('prevBtn'),nextBtn=document.getElementById('nextBtn'),slideCounterSpan=document.getElementById('slideCounter'),progressFill=document.getElementById('progressFill'),counterSpan=document.getElementById('counter'),searchInput=document.getElementById('searchInput'),searchBtn=document.getElementById('searchBtn'),searchNav=document.getElementById('searchNav'),prevResultBtn=document.getElementById('prevResultBtn'),nextResultBtn=document.getElementById('nextResultBtn'),resultCounterSpan=document.getElementById('resultCounter');
+function getTextFromHtml(html){const d=document.createElement('div');d.innerHTML=html;return d.textContent||'';}
+function searchSlides(term){if(!term.trim())return[];const l=term.toLowerCase();const r=[];slides.forEach((s,i)=>{if(s.title.toLowerCase().includes(l)||getTextFromHtml(s.content).toLowerCase().includes(l))r.push(i);});return r;}
+function highlightInCurrentSlide(term){if(!term)return;const sc=document.querySelector('.slide-content');if(!sc)return;const regex=new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`,'gi');const walker=document.createTreeWalker(sc,NodeFilter.SHOW_TEXT,null,false);const nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);for(let n of nodes){if(n.nodeValue&&regex.test(n.nodeValue)){const sp=document.createElement('span');sp.innerHTML=n.nodeValue.replace(regex,'<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');n.parentNode.replaceChild(sp,n);}}}
+function renderQuiz(){
+const questions=[
+{text:"Qu'est-ce que l'étude de cas ?",options:["Analyse approfondie d'une situation","Un exercice de mathématiques","Une enquête statistique"],correct:0},
+{text:"Combien d'étapes dans l'étude de cas ?",options:["6","3","10"],correct:0},
+{text:"Qu'est-ce qu'un diagnostic social ?",options:["Analyse d'une situation pour identifier les problèmes","Un diagnostic médical","Un bilan financier"],correct:0},
+{text:"Quel outil permet d'observer le cadre de vie ?",options:["La visite à domicile","L'entretien","Le questionnaire"],correct:0},
+{text:"Qu'est-ce qu'un plan d'intervention ?",options:["Ensemble structuré des actions à mener","Une liste de courses","Un emploi du temps"],correct:0},
+{text:"Qu'est-ce qu'un contrat d'aide ?",options:["Accord entre l'usager et le travailleur social","Un contrat de travail","Un bail"],correct:0},
+{text:"Quelle est la première étape de la méthode des cas ?",options:["Présentation du cas","Analyse","Synthèse"],correct:0},
+{text:"Quelle règle s'applique à la méthode des cas ?",options:["Confidentialité","Publicité","Anonymat total"],correct:0},
+{text:"Que signifie MARP ?",options:["Méthode Active de Recherche et de Planification Participative","Méthode d'Analyse Rapide","Méthode Agricole"],correct:0},
+{text:"Quel outil hiérarchise les problèmes ?",options:["Le classement par paires","Le diagramme de Venn","Le calendrier"],correct:0},
+{text:"Quel outil montre les relations entre acteurs ?",options:["Le diagramme de Venn","Le transect","Le calendrier"],correct:0},
+{text:"Qu'est-ce que le suivi ?",options:["Vérification continue de l'avancement","Évaluation finale","Planification"],correct:0},
+{text:"Qu'est-ce qu'un indicateur quantitatif ?",options:["Nombre de bénéficiaires","Satisfaction","Qualité perçue"],correct:0},
+{text:"Quel critère évalue la pertinence ?",options:["Le projet répond-il au besoin ?","Le projet est-il rentable ?","Le projet est-il rapide ?"],correct:0},
+{text:"Quelle est la structure d'un rapport social ?",options:["En-tête, introduction, situation, analyse, actions, résultats, perspectives","Introduction, développement, conclusion","Aucune structure"],correct:0},
+{text:"Quel style adopter dans un rapport social ?",options:["Impersonnel","Personnel","Humoristique"],correct:0},
+{text:"Quel principe respecter dans le rapport ?",options:["Confidentialité","Publicité","Anonymat total"],correct:0},
+{text:"Pourquoi évaluer un projet social ?",options:["Mesurer les résultats et ajuster","Pour rien","Pour remplir un dossier"],correct:0},
+{text:"Quel est le rôle du travailleur social ?",options:["Accompagner les personnes en difficulté","Décider à leur place","Les juger"],correct:0},
+{text:"Quel est l'objectif de l'étude de cas en formation ?",options:["Développer l'analyse et la réflexion","Mémoriser des faits","Apprendre par cœur"],correct:0}];
+let html='';questions.forEach((q,i)=>{html+='<div class="quiz-question"><p>'+(i+1)+'. '+q.text+'</p>';q.options.forEach((o,k)=>{html+='<label><input type="radio" name="q'+i+'" value="'+k+'"> '+o+'</label>';});html+='</div>';});
+document.getElementById('quizQuestions').innerHTML=html;
+document.getElementById('submitQuiz').onclick=()=>{let score=0;questions.forEach((q,i)=>{const s=document.querySelector('input[name="q'+i+'"]:checked');if(s&&parseInt(s.value)===q.correct)score++;});const pct=Math.round(score/questions.length*100);document.getElementById('quizResult').innerHTML='<div style="background:#b2dfdb;padding:16px;border-radius:10px;margin-top:14px;"><strong>Score : '+score+'/'+questions.length+' ('+pct+'%)</strong><br>'+(score===questions.length?'Excellent.':score>=14?'Bien.':'Relis les leçons.')+'</div>';};
+}
+function renderSlide(index,keepHighlight=true){const isQuiz=(index===slides.length-1);contentDiv.innerHTML='<div class="slide active"><h2 class="slide-title">'+slides[index].title+'</h2><div class="slide-content">'+slides[index].content+'</div></div>';if(isQuiz)renderQuiz();slideCounterSpan.textContent=(index+1)+'/'+slides.length;progressFill.style.width=((index+1)/slides.length*100)+'%';prevBtn.disabled=(index===0);nextBtn.disabled=(index===slides.length-1);counterSpan.textContent='Leçon '+(index+1)+' / '+slides.length;contentDiv.scrollTop=0;if(keepHighlight&&lastSearchTerm&&!isQuiz)highlightInCurrentSlide(lastSearchTerm);}
+function updateResultDisplay(){if(searchResults.length===0){searchNav.style.display='none';return;}searchNav.style.display='flex';resultCounterSpan.textContent=(currentResultIdx+1)+'/'+searchResults.length;}
+function goToResult(idx){if(idx<0||idx>=searchResults.length)return;currentResultIdx=idx;currentSlide=searchResults[currentResultIdx];renderSlide(currentSlide,true);updateResultDisplay();}
+function performSearch(){const term=searchInput.value.trim();if(!term)return;lastSearchTerm=term;searchResults=searchSlides(term);if(searchResults.length===0){searchNav.style.display='none';return;}currentResultIdx=0;goToResult(0);}
+function nextResult(){if(searchResults.length)goToResult((currentResultIdx+1)%searchResults.length);}
+function prevResult(){if(searchResults.length)goToResult((currentResultIdx-1+searchResults.length)%searchResults.length);}
+function nextSlide(){if(currentSlide<slides.length-1){currentSlide++;renderSlide(currentSlide,true);}}
+function prevSlide(){if(currentSlide>0){currentSlide--;renderSlide(currentSlide,true);}}
+prevBtn.onclick=prevSlide;nextBtn.onclick=nextSlide;searchBtn.onclick=performSearch;prevResultBtn.onclick=prevResult;nextResultBtn.onclick=nextResult;
+searchInput.addEventListener('keydown',e=>{if(e.key==='Enter')performSearch();});
+renderSlide(0,false);
+</script>
+</body>
+</html>
