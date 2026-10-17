@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Organisation des Entreprises — 4e Commerciale (EXETAT)</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body {
+    font-family:'Segoe UI',system-ui,sans-serif;
+    background:linear-gradient(160deg,#0d2b4f 0%,#1565c0 50%,#07172e 100%);
+    display:flex; justify-content:center; align-items:center;
+    padding:8px;
+}
+.container {
+    width:100%; max-width:1400px; background:#fefdf8;
+    border-radius:20px; overflow:hidden;
+    display:flex; flex-direction:column;
+    height:100%; max-height:100vh;
+    box-shadow:0 20px 60px rgba(0,0,0,0.4);
+}
+.progress-bar { height:4px; background:#cfdff5; flex-shrink:0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,#5b8fd0,#12437a); width:0%; transition:width 0.3s; }
+.header { padding:10px 16px; background:#e8f0fb; border-bottom:1px solid #a9c3e8; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+.header h1 { color:#12437a; font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box { display:flex; background:white; border-radius:20px; padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.search-box input { border:none; padding:6px 10px; border-radius:20px; outline:none; width:130px; font-size:0.8rem; }
+.search-box button { background:none; border:none; cursor:pointer; padding:4px 8px; font-size:0.85rem; color:#1565c0; }
+.badge { background:#5b8fd0; color:white; padding:4px 10px; border-radius:20px; font-weight:bold; font-size:0.75rem; }
+.search-nav { display:none; gap:4px; background:#cfdff5; padding:2px 8px; border-radius:20px; align-items:center; font-size:0.75rem; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:0.9rem; color:#12437a; padding:2px 4px; }
+.content { padding:28px 32px; flex:1; overflow-y:auto; background:#fff; scroll-behavior:smooth; line-height:1.85; }
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.slide-title { color:#0d2b4f; font-size:1.5rem; font-weight:700; padding-bottom:12px; margin-bottom:20px; border-bottom:2px solid #5b8fd0; }
+.slide-content { color:#0a1c35; font-size:1rem; }
+.bloc { padding:18px 22px; border-radius:12px; margin:22px 0; line-height:1.85; }
+.bloc-label { font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; opacity:0.7; }
+.bloc p, .bloc li { font-size:0.98rem; }
+.bloc h3 { font-size:1.1rem; margin:20px 0 10px; font-weight:600; }
+.bloc h3:first-child { margin-top:0; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:#e8f0fb; border-left:4px solid #5b8fd0; }
+.theorie .bloc-label { color:#12437a; }
+.pratique { background:#e8f5e9; border-left:4px solid #43a047; }
+.pratique .bloc-label { color:#1b5e20; }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:#0d2b4f; }
+.quiz-container { padding:22px; background:#e8f0fb; border-radius:16px; }
+.quiz-question { background:white; border-radius:10px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.quiz-question p { font-weight:600; margin-bottom:10px; color:#0d2b4f; }
+.quiz-question label { display:block; padding:8px 10px; margin:4px 0; border-radius:6px; cursor:pointer; transition:background 0.2s; }
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit { background:#2a67b0; color:white; border:none; padding:12px 24px; border-radius:30px; font-size:1rem; cursor:pointer; font-weight:600; margin-top:14px; }
+.quiz-result { margin-top:16px; font-weight:600; }
+.sources { background:#f5f5f5; padding:12px 16px; border-radius:10px; margin-top:26px; font-size:0.82rem; color:#666; border-left:3px solid #999; line-height:1.6; }
+.sources strong { color:#333; }
+.controls { padding:8px 16px; background:#fafafa; border-top:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0; }
+.nav-btn { background:white; color:#12437a; border:1px solid #ccc; padding:8px 14px; border-radius:8px; font-size:0.82rem; cursor:pointer; font-weight:500; }
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:#dde8f7; }
+.content::-webkit-scrollbar-thumb { background:#5b8fd0; border-radius:3px; }
+@media (max-width:600px) { body { padding:0; } .container { border-radius:0; max-height:100vh; } .content { padding:20px 18px; } .slide-title { font-size:1.25rem; } .search-box input { width:90px; } .header h1 { font-size:0.85rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="header">
+        <h1>Organisation des Entreprises · 4e Commerciale</h1>
+        <div class="header-right">
+            <div class="search-box"><input type="text" id="searchInput" placeholder="Rechercher"><button id="searchBtn">⌕</button></div>
+            <div class="search-nav" id="searchNav"><button id="prevResultBtn">‹</button><span id="resultCounter">0/0</span><button id="nextResultBtn">›</button></div>
+            <span class="badge" id="slideCounter">1/11</span>
+        </div>
+    </div>
+    <div class="content" id="content"></div>
+    <div class="controls">
+        <button class="nav-btn" id="prevBtn">← Précédent</button>
+        <span class="counter" id="counter">Leçon 1 / 11</span>
+        <button class="nav-btn" id="nextBtn">Suivant →</button>
+    </div>
+</div>
+<script>
+const slides = [
+{
+    title: "Leçon 1 — L'entreprise : définition, caractéristiques et formes juridiques",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>À Kinshasa, deux amis veulent créer une petite entreprise de vente de beignets. Ils hésitent : faut-il créer une entreprise individuelle ou une SARL ? Chaque forme a ses avantages et ses obligations. Comprendre la définition et les formes juridiques de l'entreprise est la première étape de tout projet entrepreneurial.</p></div>
+<h3>1. Définition et caractéristiques de l'entreprise</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Entreprise</strong> : unité économique autonome combinant des facteurs de production (travail, capital, ressources) pour créer des biens ou des services destinés à la vente sur un marché[reference:0].</li><li><strong>Finalités</strong> : économique (réaliser un profit), sociale (créer des emplois), sociétale (responsabilité sociétale des entreprises, RSE)[reference:1].</li><li><strong>Exemples congolais</strong> : la Gécamines, la SNEL, les PME familiales de Kinshasa.</li><li><strong>Objectif terminal</strong> : l'élève doit être capable de décrire l'entreprise comme un système de fonctions interdépendantes (administrative, commerciale, financière, technique)[reference:2].</li></ul></div>
+<h3>2. Classification des entreprises en RDC</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Selon la taille</strong> : Très Petite Entreprise (TPE), Petite et Moyenne Entreprise (PME), Grande Entreprise.</li><li><strong>Selon le secteur</strong> : primaire (agriculture, mines, comme la Gécamines à Lubumbashi), secondaire (industrie, comme la cimenterie de Lukala), tertiaire (services, comme les banques de Kinshasa)[reference:3].</li><li><strong>Selon le statut juridique</strong> : entreprise individuelle, société commerciale, coopérative, entreprise publique.</li></ul></div>
+<h3>3. Les formes juridiques selon le droit OHADA</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Établissement</strong> (entreprise individuelle) : une seule personne, responsabilité illimitée.</li><li><strong>SARL</strong> (Société à Responsabilité Limitée) : responsabilité limitée aux apports, capital minimum libre.</li><li><strong>SA</strong> (Société Anonyme) : capital divisé en actions, adaptée aux grandes entreprises.</li><li><strong>Le cadre légal OHADA</strong> régit les structures juridiques des affaires en RDC[reference:4].</li></ul></div>
+<h3>4. L'environnement de l'entreprise</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Micro-environnement</strong> : clients, fournisseurs, concurrents, partenaires.</li><li><strong>Macro-environnement</strong> : État, culture, technologie, économie.</li><li><strong>Cas concret</strong> : une boulangerie de Kinshasa dépend de ses fournisseurs de farine, de ses clients, de la DGI (impôts) et de la SNEL (électricité)[reference:5].</li></ul><p><a href="https://www.youtube.com/results?search_query=entreprise+définition+classification+formes+juridiques+OHADA+RDC" target="_blank" rel="noopener">🎥 Recherche : l'entreprise et ses formes (chaînes de cours de gestion)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>L'entreprise est une unité économique combinant des facteurs de production. Elle se classe par taille, par secteur et par statut juridique. Le droit OHADA distingue l'établissement, la SARL et la SA. L'entreprise interagit avec son micro et macro-environnement.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques officielles — Organisation des Entreprises, 4e CG (manuels-scolaires-rdc.com, 2025)[reference:6] ; Curriculum de Commerciale et Gestion (MEPST/DIPROMAD, 2023).<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT, OHADA, SARL, SA, PME, RSE.</div>
+    `
+},
+{
+    title: "Leçon 2 — Les structures organisationnelles et l'organigramme",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Au service de l'organisation des entreprises à Lubumbashi, une élève doit lire l'organigramme d'une banque de la Gombe pour identifier à qui s'adresser. Sans cette compétence, impossible de circuler dans l'entreprise ou de comprendre les flux décisionnels.</p></div>
+<h3>1. Principes d'organisation et de hiérarchie</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Division du travail</strong> : spécialisation des tâches pour accroître l'efficacité.</li><li><strong>Unité de commandement</strong> : chaque employé ne reçoit d'ordres que d'un seul chef.</li><li><strong>Éventail de subordination</strong> : nombre de subordonnés qu'un chef peut encadrer efficacement.</li><li><strong>Délégation d'autorité</strong> : transfert d'une partie du pouvoir de décision[reference:7].</li></ul></div>
+<h3>2. La structure hiérarchique et fonctionnelle</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Structure hiérarchique (linéaire)</strong> : de type militaire, autorité du supérieur sur tous les subordonnés.</li><li><strong>Structure fonctionnelle</strong> : spécialisation par métier ; autorité du directeur RH sur le personnel de réception, par exemple.</li><li><strong>Dans un grand hôtel</strong> : distinction entre autorité hiérarchique du Directeur Général et autorité fonctionnelle du Directeur RH[reference:8].</li></ul></div>
+<h3>3. L'organigramme : lecture et conception</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Organigramme</strong> : représentation graphique de la structure de l'entreprise.</li><li><strong>Types</strong> : hiérarchique, fonctionnel, divisionnel, matriciel.</li><li><strong>Lecture</strong> : identifier les niveaux de responsabilité, les liaisons fonctionnelles, les liens d'autorité.</li><li><strong>Conception</strong> : dessiner un organigramme simple d'une PME congolaise[reference:9].</li></ul></div>
+<h3>4. Les structures divisionnelles et matricielles</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Structure divisionnelle</strong> : par produit ou par région géographique.</li><li><strong>Structure matricielle</strong> : croisement de deux lignes d'autorité (fonctionnelle et projet).</li><li><strong>Cas congolais</strong> : les banques nationales disposant d'agences provinciales, comme la Trust Merchant Bank, illustrent la décentralisation des décisions tout en maintenant une cohérence nationale[reference:10].</li></ul><p><a href="https://www.youtube.com/results?search_query=structure+organisationnelle+organigramme+entreprise+hiérarchique" target="_blank" rel="noopener">🎥 Recherche : les structures organisationnelles (chaînes de cours de gestion)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>L'organisation repose sur la division du travail, l'unité de commandement et la délégation. La structure peut être hiérarchique ou fonctionnelle. L'organigramme est l'outil de lecture et de conception des structures. Les structures divisionnelles et matricielles s'appliquent aux grandes entreprises.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques officielles — Organisation des Entreprises, 4e CG (manuels-scolaires-rdc.com, 2025)[reference:11] ; Curriculum de Commerciale et Gestion (MEPST/DIPROMAD, 2023).</div>
+    `
+},
+{
+    title: "Leçon 3 — Les grandes fonctions de l'entreprise",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans une usine de transformation de manioc à Kinshasa, le directeur général fixe les objectifs, les RH gèrent les employés, le service commercial vend la farine, la finance contrôle les flux et la technique assure la production. Cinq fonctions interdépendantes. Si l'une s'arrête, tout l'organisme s'arrête.</p></div>
+<h3>1. La fonction administrative et de direction</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Rôle</strong> : fixer les objectifs et contrôler les résultats.</li><li><strong>Management stratégique</strong> : décisions à long terme (implantation, gamme de produits).</li><li><strong>Management opérationnel</strong> : décisions quotidiennes (planning, coordination).</li><li><strong>Circulation de l'information</strong> : les décisions de la Direction Générale redescendent vers la base opérationnelle[reference:12].</li></ul></div>
+<h3>2. La fonction ressources humaines (RH)</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Recrutement</strong> : recherche et sélection des candidats.</li><li><strong>Gestion de la paie</strong> : rémunération, cotisations sociales.</li><li><strong>Formation</strong> : développement des compétences.</li><li><strong>Gestion des présences et congés</strong>.</li><li><strong>Respect du règlement d'entreprise</strong> : discipline, hygiène et sécurité[reference:13].</li></ul></div>
+<h3>3. La fonction commerciale et marketing</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Vente des produits et services</strong>.</li><li><strong>Relation client</strong> : le service d'accueil (front office) est le point d'entrée des prospects.</li><li><strong>Marketing</strong> : étude de marché, stratégie 4P (Produit, Prix, Place, Promotion).</li><li><strong>Lien organique</strong> : l'accueil est le vecteur premier de l'image de marque définie par le marketing[reference:14].</li></ul></div>
+<h3>4. Les fonctions financière et technique</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Finance</strong> : gestion des flux monétaires, trésorerie, budget, relations bancaires.</li><li><strong>Technique</strong> : production, maintenance, qualité, approvisionnement.</li><li><strong>Interaction</strong> : l'hôtesse d'accueil oriente les fournisseurs (facturation) ou les techniciens de maintenance vers les services compétents[reference:15].</li></ul><p><a href="https://www.youtube.com/results?search_query=fonctions+entreprise+administrative+RH+commerciale+financière+technique" target="_blank" rel="noopener">🎥 Recherche : les fonctions de l'entreprise (chaînes de cours de gestion)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>L'entreprise est un système de cinq fonctions interdépendantes : administrative, ressources humaines, commerciale, financière et technique. Chacune a un rôle précis et contribue à la performance globale de l'organisation.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques officielles — Organisation des Entreprises, 4e CG (manuels-scolaires-rdc.com, 2025)[reference:16] ; Curriculum de Commerciale et Gestion (MEPST/DIPROMAD, 2023).</div>
+    `
+},
+{
+    title: "Leçon 4 — La gestion des ressources humaines : recrutement et administration du personnel",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>La SNEL à Kinshasa lance une campagne de recrutement pour cinq postes de techniciens. Le service RH doit définir les postes, publier l'offre, recevoir les dossiers, sélectionner les candidats et les intégrer. Sans ce processus, impossible de recruter les bonnes personnes au bon poste.</p></div>
+<h3>1. Le processus de recrutement</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Définition du poste</strong> : missions, compétences requises, profil.</li><li><strong>Publication de l'offre</strong> : affichage interne, presse, médias sociaux, ONEM.</li><li><strong>Réception des candidatures</strong> : lettre de motivation, CV, diplômes.</li><li><strong>Sélection</strong> : présélection sur dossier, tests écrits, entretiens.</li><li><strong>Intégration</strong> : accueil, présentation de l'entreprise, formation d'accueil.</li></ul></div>
+<h3>2. Le plan de formation</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Objectif</strong> : adapter les compétences des employés aux évolutions du métier.</li><li><strong>Étapes</strong> : identification des besoins, conception, réalisation, évaluation.</li><li><strong>Exemples</strong> : formation à la sécurité minière à Kolwezi, formation à la comptabilité OHADA à Kinshasa.</li><li><strong>Gestion de carrière</strong> : promotions, mobilité interne, reconversion.</li></ul></div>
+<h3>3. Sécurité et hygiène au travail</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Obligations de l'employeur</strong> : fournir un environnement de travail sûr.</li><li><strong>Équipements de protection individuelle (EPI)</strong> : casques, gants, chaussures de sécurité.</li><li><strong>Prévention des accidents</strong> : signalisation, formation, inspections.</li><li><strong>Rôle du salarié</strong> : respecter les consignes de sécurité.</li></ul></div>
+<h3>4. Les relations avec les partenaires sociaux</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Syndicats</strong> : défense des intérêts des travailleurs.</li><li><strong>Négociation collective</strong> : discussion des salaires, conditions de travail, avantages sociaux.</li><li><strong>Dialogue social</strong> : prévention et résolution des conflits.</li><li><strong>Cas RDC</strong> : la Confédération des Syndicats du Congo négocie avec les employeurs sur le salaire minimum et les conditions de travail[reference:17].</li></ul><p><a href="https://www.youtube.com/results?search_query=gestion+ressources+humaines+recrutement+formation+paie+RDC" target="_blank" rel="noopener">🎥 Recherche : la gestion des ressources humaines (chaînes de cours de gestion)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La GRH gère le recrutement, la formation, la paie, la sécurité et les relations sociales. Le processus de recrutement comprend la définition du poste, la publication, la sélection et l'intégration. Le dialogue social est essentiel pour la paix sociale dans l'entreprise.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques officielles — Organisation des Entreprises, 4e CG (manuels-scolaires-rdc.com, 2025)[reference:18] ; Curriculum de Commerciale et Gestion (MEPST/DIPROMAD, 2023).</div>
+    `
+},
+{
+    title: "Leçon 5 — La gestion commerciale et le marketing",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Une entreprise de Kinshasa fabrique des jus naturels à base de fruits locaux. Comment fixer le prix ? Où vendre ? Comment se faire connaître ? Le marketing mix (les 4P) est l'outil qui répond à toutes ces questions.</p></div>
+<h3>1. Le marketing mix : les 4P</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Produit (Product)</strong> : qualité, conditionnement, marque, garantie. Exemple local : analyser le conditionnement d'une bière locale (Primus, Skol)[reference:19].</li><li><strong>Prix (Price)</strong> : stratégie de tarification, remises, crédits. Exemple : les micro-tarifs des unités de téléphonie mobile.</li><li><strong>Place (Distribution)</strong> : canaux de distribution, points de vente, logistique. Exemple : le circuit d'approvisionnement du pain à Kinshasa.</li><li><strong>Promotion (Publicité)</strong> : publicité, promotion des ventes, relations publiques, marketing digital[reference:20].</li></ul></div>
+<h3>2. L'étude de marché</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Définition</strong> : collecte et analyse d'informations sur le marché.</li><li><strong>Offre</strong> : concurrents, produits existants, prix pratiqués.</li><li><strong>Demande</strong> : besoins des consommateurs, pouvoir d'achat, habitudes d'achat.</li><li><strong>Environnement</strong> : réglementation, tendances, technologie.</li><li><strong>Analyse SWOT</strong> : Forces, Faiblesses, Opportunités, Menaces.</li></ul></div>
+<h3>3. La politique d'achat et gestion des stocks</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Fonction approvisionnement</strong> : acheter les bonnes quantités, au bon moment, au bon prix.</li><li><strong>Gestion des stocks</strong> : éviter les ruptures et les surstocks.</li><li><strong>Méthode ABC</strong> : classer les articles selon leur importance (A : forte valeur, B : moyenne, C : faible valeur)[reference:21].</li><li><strong>Stock de sécurité</strong> : quantité minimale pour éviter la rupture.</li><li><strong>Taux de rotation</strong> : nombre de fois que le stock est renouvelé dans l'année.</li></ul></div>
+<h3>4. La relation client et la fidélisation</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Accueil client</strong> : le front office est le premier contact.</li><li><strong>Écoute active</strong> : comprendre les besoins du client.</li><li><strong>Traitement des réclamations</strong> : répondre rapidement et efficacement.</li><li><strong>Fidélisation</strong> : programmes de fidélité, service après-vente, suivi personnalisé.</li></ul><p><a href="https://www.youtube.com/results?search_query=marketing+mix+4P+gestion+commerciale+étude+marché" target="_blank" rel="noopener">🎥 Recherche : la gestion commerciale et le marketing (chaînes de cours de gestion)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le marketing mix (4P) est l'outil central de la gestion commerciale. L'étude de marché permet de connaître l'offre et la demande. La gestion des stocks utilise la méthode ABC. La relation client et la fidélisation sont essentielles pour la pérennité de l'entreprise.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques officielles — Organisation des Entreprises, 4e CG (manuels-scolaires-rdc.com, 2025)[reference:22] ; Curriculum de Commerciale et Gestion (MEPST/DIPROMAD, 2023).</div>
+    `
+},
+{
+    title: "Leçon 6 — L'analyse et la gestion financière",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Le directeur d'une PME de Matadi consulte le comptable : « Notre trésorerie est tendue. Comment savoir si l'entreprise est en bonne santé financière ? » Le comptable prépare le bilan fonctionnel et calcule le fonds de roulement, le besoin en fonds de roulement et la trésorerie nette.</p></div>
+<h3>1. Le bilan fonctionnel</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Bilan</strong> : photographie du patrimoine de l'entreprise à une date donnée.</li><li><strong>Actif</strong> : ce que possède l'entreprise (immobilisations, stocks, créances, trésorerie).</li><li><strong>Passif</strong> : ce que doit l'entreprise (capitaux propres, dettes).</li><li><strong>Équilibre</strong> : Total Actif = Total Passif.</li><li><strong>Bilan fonctionnel</strong> : reclassement des postes selon leur fonction (emplois stables, actif circulant, trésorerie)[reference:23].</li></ul></div>
+<h3>2. Les grands équilibres financiers</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Fonds de roulement (FR)</strong> : ressources stables − emplois stables. FR positif = marge de sécurité financière[reference:24].</li><li><strong>Besoin en fonds de roulement (BFR)</strong> : actif circulant (hors trésorerie) − passif circulant (hors trésorerie).</li><li><strong>Trésorerie nette (TN)</strong> : FR − BFR. TN positive = trésorerie disponible ; TN négative = tension de trésorerie.</li></ul></div>
+<h3>3. Les Soldes Intermédiaires de Gestion (SIG)</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Marge commerciale</strong> : ventes de marchandises − coût d'achat des marchandises vendues.</li><li><strong>Valeur ajoutée</strong> : production − consommations intermédiaires.</li><li><strong>Excédent brut d'exploitation (EBE)</strong> : valeur ajoutée − charges de personnel − impôts et taxes.</li><li><strong>Résultat d'exploitation</strong> : EBE − amortissements et provisions.</li><li><strong>Résultat net</strong> : résultat d'exploitation + résultat financier + résultat exceptionnel − impôt.</li></ul></div>
+<h3>4. La capacité d'autofinancement (CAF)</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>CAF</strong> : ressource interne dégagée par l'entreprise pour financer ses investissements et rembourser ses dettes.</li><li><strong>Calcul simplifié</strong> : résultat net + amortissements + provisions − reprises.</li><li><strong>Interprétation</strong> : une CAF positive et croissante est un signe de bonne santé financière.</li><li><strong>Cas pratique</strong> : pour une boutique de quartier à Kinshasa, le bilan est présenté comme la photographie de ce qu'elle possède (stock, caisse) et de ce qu'elle doit (dettes fournisseurs)[reference:25].</li></ul><p><a href="https://www.youtube.com/results?search_query=analyse+financière+bilan+fonctionnel+FR+BFR+SIG+CAF" target="_blank" rel="noopener">🎥 Recherche : l'analyse financière (chaînes de cours de gestion)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le bilan fonctionnel permet de calculer le FR, le BFR et la TN. Les SIG décomposent la formation du résultat. La CAF mesure la capacité de l'entreprise à financer ses investissements par ses propres ressources.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques officielles — Organisation des Entreprises, 4e CG (manuels-scolaires-rdc.com, 2025)[reference:26] ; Curriculum de Commerciale et Gestion (MEPST/DIPROMAD, 2023).</div>
+    `
+},
+{
+    title: "Leçon 7 — L'organisation administrative du bureau",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans une banque de Kinshasa, l'hôtesse d'accueil doit aménager son poste de travail, gérer les appels téléphoniques, commander des fournitures et organiser l'agenda de son directeur. Ces tâches relèvent de l'organisation administrative du bureau.</p></div>
+<h3>1. L'aménagement et l'ergonomie du poste</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Agencement rationnel</strong> du bureau de réception (banque d'accueil).</li><li><strong>Ergonomie posturale</strong> : position assise correcte, écran à hauteur des yeux, clavier à portée.</li><li><strong>Disposition des outils</strong> : minimiser la fatigue et maximiser la disponibilité envers le client[reference:27].</li></ul></div>
+<h3>2. Les outils de communication et de bureautique</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Standard téléphonique</strong> : répondre, transférer, prendre un message.</li><li><strong>Ordinateur et logiciels</strong> : traitement de texte, tableur, logiciels de réservation (PMS).</li><li><strong>Équipements multifonctions</strong> : scanner, imprimante, photocopieur.</li><li><strong>Maintenance de premier niveau</strong> : changer les cartouches, vérifier les connexions[reference:28].</li></ul></div>
+<h3>3. La gestion des imprimés et fournitures</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Gestion des stocks de bureau</strong> : papier, encre, fiches clients.</li><li><strong>Bons de commande internes</strong> : demande de réapprovisionnement auprès du service achats.</li><li><strong>Inventaires périodiques</strong> : éviter les ruptures de stock.</li><li><strong>Classement</strong> : rangement des documents selon un ordre logique (alphabétique, chronologique, thématique)[reference:29].</li></ul></div>
+<h3>4. L'organisation des réunions et de l'agenda</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Agenda électronique</strong> : planification des rendez-vous.</li><li><strong>Préparation des salles</strong> : disposition, équipement, rafraîchissements.</li><li><strong>Accueil des participants</strong> : orientation, badge, émargement.</li><li><strong>Comptes rendus simples</strong> : résumé des décisions et des actions à entreprendre.</li><li><strong>Cas concret</strong> : l'hôtesse de l'hôtel Béatrice à Goma gère l'agenda de la directrice et prépare les réunions mensuelles[reference:30].</li></ul><p><a href="https://www.youtube.com/results?search_query=organisation+administrative+bureau+accueil+ergonomie+classement" target="_blank" rel="noopener">🎥 Recherche : l'organisation administrative du bureau (chaînes de cours de gestion)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>L'organisation du bureau comprend l'aménagement ergonomique, la maîtrise des outils bureautiques, la gestion des fournitures et l'organisation des réunions. Ces compétences sont essentielles pour tout poste administratif.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques officielles — Organisation des Entreprises, 4e CG (manuels-scolaires-rdc.com, 2025)[reference:31] ; Manuel d'Organisation des Entreprises, option Hôtesse d'Accueil (manuels-scolaires-rdc.com, 2025)[reference:32].</div>
+    `
+},
+{
+    title: "Leçon 8 — La gestion des relations avec les partenaires et les techniques de négociation",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Le directeur d'une entreprise de Lubumbashi doit négocier un contrat de fourniture de matières premières avec un partenaire sud-africain. Il prépare sa négociation, anticipe les objections, propose des compromis. La négociation est un art qui s'apprend.</p></div>
+<h3>1. Les partenaires de l'entreprise</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Fournisseurs</strong> : matières premières, équipements, services.</li><li><strong>Clients</strong> : particuliers, entreprises, administrations.</li><li><strong>Banques</strong> : financement, gestion des comptes, crédits.</li><li><strong>État</strong> : impôts, réglementation, douanes.</li><li><strong>Partenaires sociaux</strong> : syndicats, comité d'entreprise.</li><li><strong>Actionnaires</strong> : apporteurs de capitaux.</li></ul></div>
+<h3>2. La négociation commerciale</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Préparation</strong> : connaître ses objectifs, ses limites, les besoins de l'autre partie.</li><li><strong>Ouverture</strong> : créer un climat de confiance.</li><li><strong>Découverte</strong> : poser des questions, écouter activement.</li><li><strong>Argumentation</strong> : présenter les avantages de sa proposition.</li><li><strong>Traitement des objections</strong> : reformuler, répondre, proposer des solutions.</li><li><strong>Concession</strong> : donner un peu pour obtenir plus.</li><li><strong>Conclusion</strong> : formaliser l'accord par écrit[reference:33].</li></ul></div>
+<h3>3. Les techniques de relations publiques</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Relations publiques</strong> : ensemble des actions visant à créer et maintenir une bonne image de l'entreprise.</li><li><strong>Outils</strong> : communiqués de presse, événements, sponsoring, mécénat.</li><li><strong>Lobbying</strong> : influence sur les décideurs politiques et économiques.</li><li><strong>Gestion de crise</strong> : communication en cas d'incident.</li></ul></div>
+<h3>4. Les relations avec les partenaires sociaux</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Négociation collective</strong> : discussion entre employeurs et syndicats sur les salaires et conditions de travail.</li><li><strong>Dialogue social</strong> : prévention et résolution des conflits.</li><li><strong>Rôle du délégué syndical</strong> : représenter les travailleurs, présenter les revendications.</li><li><strong>Cas RDC</strong> : la Confédération des Syndicats du Congo a négocié l'augmentation du salaire minimum interprofessionnel garanti (SMIG)[reference:34].</li></ul><p><a href="https://www.youtube.com/results?search_query=négociation+commerciale+relations+publiques+partenaires+sociaux" target="_blank" rel="noopener">🎥 Recherche : la négociation et les relations avec les partenaires (chaînes de cours de gestion)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>L'entreprise entretient des relations avec de multiples partenaires : fournisseurs, clients, banques, État, syndicats, actionnaires. La négociation commerciale suit un processus structuré. Les relations publiques visent à construire une image positive. Le dialogue social est essentiel pour la paix sociale.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques officielles — Organisation des Entreprises, 4e CG (manuels-scolaires-rdc.com, 2025)[reference:35] ; Curriculum de Commerciale et Gestion (MEPST/DIPROMAD, 2023).</div>
+    `
+},
+{
+    title: "Leçon 9 — La création d'entreprise et le plan d'affaires",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans le cadre du cours d'Organisation des Entreprises, une élève de 4e Commerciale à Mbuji-Mayi doit élaborer un mini-projet de création d'une micro-entreprise. Elle doit définir l'idée, étudier le marché, prévoir les besoins financiers et présenter un plan d'affaires simple. C'est l'aboutissement de tout le cours.</p></div>
+<h3>1. De l'idée au projet</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Idée de projet</strong> : détecter un besoin non satisfait ou mal satisfait sur le marché.</li><li><strong>Étude de faisabilité</strong> : vérifier que le projet est techniquement, économiquement et financièrement réalisable.</li><li><strong>Analyse de l'environnement</strong> : concurrence, réglementation, fournisseurs, clients[reference:36].</li><li><strong>Étude de marché simplifiée</strong> : identifier la clientèle cible, estimer la demande, analyser les concurrents.</li></ul></div>
+<h3>2. Les composantes du plan d'affaires</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Présentation du projet</strong> : description de l'activité, des produits ou services.</li><li><strong>Étude de marché</strong> : offre, demande, concurrence, stratégie marketing (4P).</li><li><strong>Plan de production</strong> : processus, équipements, fournisseurs, localisation.</li><li><strong>Plan organisationnel</strong> : structure, ressources humaines, organigramme.</li><li><strong>Plan financier</strong> : investissements, besoins en fonds de roulement, prévisions de recettes et de dépenses, seuil de rentabilité.</li><li><strong>Calendrier de réalisation</strong> : étapes et délais.</li></ul></div>
+<h3>3. Les formalités juridiques de création en RDC</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Guichet unique de création d'entreprise (GUCE)</strong> : permet d'accomplir toutes les formalités en un seul lieu.</li><li><strong>Statuts</strong> : rédaction des statuts de la société (SARL, SA).</li><li><strong>Immatriculation au RCCM</strong> : Registre du Commerce et du Crédit Mobilier.</li><li><strong>Obtention du numéro d'impôt</strong> : identification fiscale auprès de la DGI.</li><li><strong>Déclaration à la CNSS</strong> : sécurité sociale des travailleurs.</li></ul></div>
+<h3>4. Exemple de mini-projet</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Idée</strong> : production et vente de savon artisanal à base d'huile de palme à Mbuji-Mayi.</li><li><strong>Marché</strong> : ménages du quartier, boutiques, marchés.</li><li><strong>Production</strong> : huile de palme, soude, moules, main-d'œuvre familiale.</li><li><strong>Investissement de départ</strong> : 500 000 FC (matériel + matières premières).</li><li><strong>Prévisions</strong> : production de 100 savons par semaine, prix de vente 1 000 FC l'unité.</li><li><strong>Seuil de rentabilité</strong> : couvrir les coûts fixes et variables dès le 3e mois.</li></ul><p><a href="https://www.youtube.com/results?search_query=création+entreprise+plan+affaires+RDC+GUCE" target="_blank" rel="noopener">🎥 Recherche : la création d'entreprise et le plan d'affaires (chaînes de cours de gestion)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La création d'entreprise part d'une idée, passe par une étude de faisabilité et aboutit à un plan d'affaires structuré. En RDC, le GUCE facilite les formalités de création. Le plan financier (investissements, prévisions, seuil de rentabilité) est le cœur du projet.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques officielles — Organisation des Entreprises, 4e CG (manuels-scolaires-rdc.com, 2025)[reference:37] ; Curriculum de Commerciale et Gestion (MEPST/DIPROMAD, 2023).</div>
+    `
+},
+{
+    title: "Leçon 10 — De la praxis à la théorie : l'organisation appliquée au contexte congolais",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans une école de Kinshasa, un enseignant d'Organisation des Entreprises demande à ses élèves d'analyser une PME locale : une boulangerie du quartier. Les élèves doivent décrire sa structure, ses fonctions, son marketing, sa santé financière. C'est l'application concrète de tout le cours.</p></div>
+<h3>1. L'approche systémique de l'entreprise</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Vision holistique</strong> : l'entreprise est un système où toutes les fonctions sont interdépendantes[reference:38].</li><li><strong>Approche active et inductive</strong> : partir de l'observation concrète pour construire le savoir[reference:39].</li><li><strong>Études de cas contextualisées</strong> : analyser des entreprises congolaises réelles ou fictives mais réalistes (banque de la Gombe, cimenterie du Kongo Central)[reference:40].</li></ul></div>
+<h3>2. La pédagogie de projet</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Projets simulés</strong> : création d'une micro-entreprise en groupe.</li><li><strong>Compétences transversales</strong> : mobilisées tout au long de l'année[reference:41].</li><li><strong>Travail de fin d'année</strong> : mini-dossier d'analyse d'une PME locale (analyse SWOT, structure, diagnostic financier de base)[reference:42].</li></ul></div>
+<h3>3. L'ancrage dans les réalités congolaises</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Formalisation de l'informel</strong> : structurer les activités économiques familiales ou informelles grâce aux outils de gestion (comptabilité, marketing, gestion des stocks)[reference:43].</li><li><strong>Valorisation des ressources locales</strong> : appliquer le marketing mix pour valoriser le maïs du Kasaï, gérer la logistique du poisson du fleuve Congo depuis Mbandaka[reference:44].</li><li><strong>Adaptation au marché du travail</strong> : former des techniciens polyvalents capables de s'intégrer dans les grandes entreprises ou les PME[reference:45].</li></ul></div>
+<h3>4. Exemples d'application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Analyse d'une boulangerie de Kinshasa</strong> : structure (patron, ouvriers, vendeurs), fonctions (production, vente, comptabilité), marketing (prix, distribution, promotion), finance (FR, BFR, TN).</li><li><strong>Étude de la Compagnie Sucrière de Kwilu-Ngongo</strong> : application du marketing mix (4P) dans une entreprise agro-industrielle[reference:46].</li><li><strong>Ateliers de couture à Goma</strong> : analyse des stratégies marketing et de la concurrence[reference:47].</li></ul><p><a href="https://www.youtube.com/results?search_query=organisation+entreprise+contexte+congolais+analyse+PME" target="_blank" rel="noopener">🎥 Recherche : l'organisation appliquée au contexte congolais (chaînes de cours de gestion)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>L'organisation des entreprises s'apprend par l'observation du terrain et l'analyse de cas concrets. La pédagogie de projet et l'ancrage dans les réalités congolaises permettent de relier la théorie à la pratique. L'élève devient un acteur capable d'analyser et de structurer les activités économiques locales.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques officielles — Organisation des Entreprises, 4e CG (manuels-scolaires-rdc.com, 2025)[reference:48] ; Curriculum de Commerciale et Gestion (MEPST/DIPROMAD, 2023).</div>
+    `
+},
+{
+    title: "Évaluation finale — Items EXETAT",
+    content: `
+        <p style="margin-bottom:18px;color:#12437a;font-size:0.95rem;">Cette évaluation regroupe des items de type EXETAT. Fais l'exercice dans les conditions du concours : sans notes, en une seule fois.</p>
+        <div class="bloc theorie">
+            <div class="bloc-label">Consignes</div>
+            <ul>
+                <li>35 questions à choix multiples.</li>
+                <li>Une seule réponse correcte par question.</li>
+                <li>Pas de retour en arrière sur les questions déjà validées.</li>
+                <li>Durée recommandée : 35 minutes.</li>
+            </ul>
+        </div>
+        <div class="quiz-container" id="quizContainer">
+            <h3 style="color:#0d2b4f;margin-bottom:16px;font-size:1.1rem;">Partie 1 — Questions</h3>
+            <div id="quizQuestions"></div>
+            <button id="submitQuiz" class="quiz-btn-submit">Valider mes réponses</button>
+            <div id="quizResult" class="quiz-result"></div>
+        </div>
+    `
+}
+];
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim()) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderQuiz() {
+    const questions = [
+        { text:"Qu'est-ce qu'une entreprise ?", options:["Une unité économique autonome combinant des facteurs de production","Une association sans but lucratif","Une administration publique"], correct:0 },
+        { text:"Quelles sont les finalités de l'entreprise ?", options:["Économique, sociale et sociétale","Politique et culturelle","Religieuse et sportive"], correct:0 },
+        { text:"Quelle est la forme juridique d'une entreprise à responsabilité limitée ?", options:["L'établissement","La SARL","La coopérative"], correct:1 },
+        { text:"Quel référentiel régit le droit des affaires en RDC ?", options:["Le Code civil français","Le droit OHADA","La common law"], correct:1 },
+        { text:"Qu'est-ce que l'unité de commandement ?", options:["Chaque employé ne reçoit d'ordres que d'un seul chef","Plusieurs chefs pour un employé","Aucun chef"], correct:0 },
+        { text:"Que représente un organigramme ?", options:["La structure graphique de l'entreprise","Le chiffre d'affaires","La liste des clients"], correct:0 },
+        { text:"Quelle structure organisationnelle croise deux lignes d'autorité ?", options:["Hiérarchique","Fonctionnelle","Matricielle"], correct:2 },
+        { text:"Quelle fonction de l'entreprise fixe les objectifs et contrôle les résultats ?", options:["Administrative","Commerciale","Technique"], correct:0 },
+        { text:"Quelle fonction gère le recrutement et la formation ?", options:["Financière","Ressources humaines","Technique"], correct:1 },
+        { text:"Quel est le point d'entrée des prospects dans une entreprise ?", options:["Le service d'accueil (front office)","Le service technique","La comptabilité"], correct:0 },
+        { text:"Quelle est la première étape du processus de recrutement ?", options:["La définition du poste","L'entretien","L'intégration"], correct:0 },
+        { text:"Que protège un équipement de protection individuelle (EPI) ?", options:["La santé et la sécurité du travailleur","Le matériel informatique","Les documents confidentiels"], correct:0 },
+        { text:"Que signifie le P de « Place » dans le marketing mix ?", options:["Le prix","La distribution","La promotion"], correct:1 },
+        { text:"Que signifie le P de « Promotion » dans le marketing mix ?", options:["La publicité et la communication","Le produit","Le prix"], correct:0 },
+        { text:"Quelle méthode classe les stocks par importance (A, B, C) ?", options:["La méthode ABC","La méthode FIFO","La méthode LIFO"], correct:0 },
+        { text:"Qu'est-ce que le fonds de roulement ?", options:["Ressources stables − emplois stables","Actif circulant − passif circulant","Trésorerie nette"], correct:0 },
+        { text:"Comment calcule-t-on la trésorerie nette ?", options:["FR − BFR","FR + BFR","BFR − FR"], correct:0 },
+        { text:"Que mesure la capacité d'autofinancement (CAF) ?", options:["La ressource interne dégagée par l'entreprise","Le chiffre d'affaires","Le nombre d'employés"], correct:0 },
+        { text:"Quel est l'objectif de l'ergonomie du poste de travail ?", options:["Minimiser la fatigue et maximiser la disponibilité","Augmenter le nombre d'heures","Réduire les salaires"], correct:0 },
+        { text:"Que permet un bon classement des documents ?", options:["Retrouver rapidement l'information","Gagner de la place","Éviter les impôts"], correct:0 },
+        { text:"Quelle est la première étape d'une négociation commerciale ?", options:["La préparation","L'ouverture","La conclusion"], correct:0 },
+        { text:"Quel est le rôle des relations publiques ?", options:["Créer et maintenir une bonne image de l'entreprise","Augmenter les ventes immédiatement","Recruter du personnel"], correct:0 },
+        { text:"Que signifie GUCE ?", options:["Guichet Unique de Création d'Entreprise","Groupement des Usines du Congo","Gestion des Unités Commerciales"], correct:0 },
+        { text:"Où s'immatricule une entreprise en RDC ?", options:["Au RCCM (Registre du Commerce et du Crédit Mobilier)","À la DGI","À la CNSS"], correct:0 },
+        { text:"Quel est l'objectif du travail de fin d'année en Organisation des Entreprises ?", options:["Produire un mini-dossier d'analyse d'une PME locale","Rédiger un roman","Construire un bâtiment"], correct:0 },
+        { text:"Quelle est la vision de l'entreprise selon l'approche systémique ?", options:["Un système de fonctions interdépendantes","Une seule fonction","Une association"], correct:0 },
+        { text:"Quel est l'intérêt d'étudier le marketing mix dans une entreprise congolaise ?", options:["Comprendre comment valoriser les produits locaux","Importer des produits étrangers","Licencier du personnel"], correct:0 },
+        { text:"Quel est le rôle du service RH dans la gestion des présences ?", options:["Suivre les absences et les congés","Fixer les salaires","Recruter les clients"], correct:0 },
+        { text:"Qu'est-ce que le dialogue social ?", options:["La négociation entre employeurs et syndicats","Une conversation informelle","Un discours politique"], correct:0 },
+        { text:"Quelle est la première étape de la création d'entreprise ?", options:["L'idée de projet","Le financement","L'immatriculation"], correct:0 },
+        { text:"Que contient le plan financier d'un projet ?", options:["Investissements et prévisions de recettes et dépenses","Le nom des employés","Le plan de la ville"], correct:0 },
+        { text:"Quel est le rôle du service commercial dans une entreprise ?", options:["Vendre les produits et gérer la relation client","Produire les biens","Recruter le personnel"], correct:0 },
+        { text:"Quel est l'objectif de la méthode ABC dans la gestion des stocks ?", options:["Classer les articles par importance","Calculer la paie","Mesurer la satisfaction client"], correct:0 },
+        { text:"Quelle est la différence entre structure hiérarchique et fonctionnelle ?", options:["La hiérarchique est de type militaire, la fonctionnelle est spécialisée","La hiérarchique est spécialisée, la fonctionnelle est militaire","Aucune différence"], correct:0 },
+        { text:"Quel est l'objectif principal de l'Organisation des Entreprises en 4e Commerciale ?", options:["Comprendre l'entreprise comme un système et participer à sa gestion","Créer une entreprise internationale","Remplacer le directeur"], correct:0 }
+    ];
+    let html = '';
+    questions.forEach((q,i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o,k) => { html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>'; });
+        html += '</div>';
+    });
+    document.getElementById('quizQuestions').innerHTML = html;
+    document.getElementById('submitQuiz').onclick = () => {
+        let score = 0;
+        questions.forEach((q,i) => {
+            const s = document.querySelector('input[name="q' + i + '"]:checked');
+            if (s && parseInt(s.value) === q.correct) score++;
+        });
+        const pct = Math.round(score/questions.length*100);
+        document.getElementById('quizResult').innerHTML = '<div style="background:#cfdff5;padding:16px;border-radius:10px;margin-top:14px;"><strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong><br>' + (score === questions.length ? 'Excellent. Tu maîtrises le programme.' : score >= 24 ? 'Bien. Revoyez les leçons où vous avez échoué.' : 'Relis attentivement les leçons avant l\'examen.') + '</div>';
+    };
+}
+function renderSlide(index, keepHighlight = true) {
+    const isQuiz = (index === slides.length - 1);
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    if (isQuiz) renderQuiz();
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm && !isQuiz) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+</body>
+</html>
