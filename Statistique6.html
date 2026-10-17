@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Statistique — 4e Commerciale (EXETAT)</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body {
+    font-family:'Segoe UI',system-ui,sans-serif;
+    background:linear-gradient(160deg,#0d2b4f 0%,#1565c0 50%,#07172e 100%);
+    display:flex; justify-content:center; align-items:center;
+    padding:8px;
+}
+.container {
+    width:100%; max-width:1400px; background:#fefdf8;
+    border-radius:20px; overflow:hidden;
+    display:flex; flex-direction:column;
+    height:100%; max-height:100vh;
+    box-shadow:0 20px 60px rgba(0,0,0,0.4);
+}
+.progress-bar { height:4px; background:#cfdff5; flex-shrink:0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,#5b8fd0,#12437a); width:0%; transition:width 0.3s; }
+.header { padding:10px 16px; background:#e8f0fb; border-bottom:1px solid #a9c3e8; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+.header h1 { color:#12437a; font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box { display:flex; background:white; border-radius:20px; padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.search-box input { border:none; padding:6px 10px; border-radius:20px; outline:none; width:130px; font-size:0.8rem; }
+.search-box button { background:none; border:none; cursor:pointer; padding:4px 8px; font-size:0.85rem; color:#1565c0; }
+.badge { background:#5b8fd0; color:white; padding:4px 10px; border-radius:20px; font-weight:bold; font-size:0.75rem; }
+.search-nav { display:none; gap:4px; background:#cfdff5; padding:2px 8px; border-radius:20px; align-items:center; font-size:0.75rem; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:0.9rem; color:#12437a; padding:2px 4px; }
+.content { padding:28px 32px; flex:1; overflow-y:auto; background:#fff; scroll-behavior:smooth; line-height:1.85; }
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.slide-title { color:#0d2b4f; font-size:1.5rem; font-weight:700; padding-bottom:12px; margin-bottom:20px; border-bottom:2px solid #5b8fd0; }
+.slide-content { color:#0a1c35; font-size:1rem; }
+.bloc { padding:18px 22px; border-radius:12px; margin:22px 0; line-height:1.85; }
+.bloc-label { font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; opacity:0.7; }
+.bloc p, .bloc li { font-size:0.98rem; }
+.bloc h3 { font-size:1.1rem; margin:20px 0 10px; font-weight:600; }
+.bloc h3:first-child { margin-top:0; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:#e8f0fb; border-left:4px solid #5b8fd0; }
+.theorie .bloc-label { color:#12437a; }
+.pratique { background:#e8f5e9; border-left:4px solid #43a047; }
+.pratique .bloc-label { color:#1b5e20; }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:#0d2b4f; }
+.quiz-container { padding:22px; background:#e8f0fb; border-radius:16px; }
+.quiz-question { background:white; border-radius:10px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.quiz-question p { font-weight:600; margin-bottom:10px; color:#0d2b4f; }
+.quiz-question label { display:block; padding:8px 10px; margin:4px 0; border-radius:6px; cursor:pointer; transition:background 0.2s; }
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit { background:#2a67b0; color:white; border:none; padding:12px 24px; border-radius:30px; font-size:1rem; cursor:pointer; font-weight:600; margin-top:14px; }
+.quiz-result { margin-top:16px; font-weight:600; }
+.sources { background:#f5f5f5; padding:12px 16px; border-radius:10px; margin-top:26px; font-size:0.82rem; color:#666; border-left:3px solid #999; line-height:1.6; }
+.sources strong { color:#333; }
+.controls { padding:8px 16px; background:#fafafa; border-top:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0; }
+.nav-btn { background:white; color:#12437a; border:1px solid #ccc; padding:8px 14px; border-radius:8px; font-size:0.82rem; cursor:pointer; font-weight:500; }
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:#dde8f7; }
+.content::-webkit-scrollbar-thumb { background:#5b8fd0; border-radius:3px; }
+@media (max-width:600px) { body { padding:0; } .container { border-radius:0; max-height:100vh; } .content { padding:20px 18px; } .slide-title { font-size:1.25rem; } .search-box input { width:90px; } .header h1 { font-size:0.85rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="header">
+        <h1>Statistique · 4e Commerciale</h1>
+        <div class="header-right">
+            <div class="search-box"><input type="text" id="searchInput" placeholder="Rechercher"><button id="searchBtn">⌕</button></div>
+            <div class="search-nav" id="searchNav"><button id="prevResultBtn">‹</button><span id="resultCounter">0/0</span><button id="nextResultBtn">›</button></div>
+            <span class="badge" id="slideCounter">1/11</span>
+        </div>
+    </div>
+    <div class="content" id="content"></div>
+    <div class="controls">
+        <button class="nav-btn" id="prevBtn">← Précédent</button>
+        <span class="counter" id="counter">Leçon 1 / 11</span>
+        <button class="nav-btn" id="nextBtn">Suivant →</button>
+    </div>
+</div>
+<script>
+const slides = [
+{
+    title: "Leçon 1 — Introduction à la statistique : définitions et vocabulaire",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans un marché de Kinshasa, un commerçant veut savoir combien de sacs de riz il vend en moyenne par jour, et si ses ventes varient beaucoup. Pour répondre, il doit collecter des données, les organiser et les analyser. C'est le rôle de la statistique, outil indispensable du gestionnaire.</p></div>
+<h3>1. Définition et objet de la statistique</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Statistique</strong> : science qui a pour objet la collecte, l'organisation, l'analyse, la présentation et l'interprétation des données.</li><li><strong>Objectif</strong> : décrire un ensemble d'observations (statistique descriptive) et/ou en tirer des conclusions sur une population (statistique inférentielle).</li><li><strong>Statistique descriptive</strong> : résume et décrit les données collectées.</li><li><strong>Statistique inférentielle</strong> : généralise les résultats de l'échantillon à la population.</li></ul></div>
+<h3>2. Le vocabulaire de base</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Population</strong> : ensemble de tous les individus ou objets étudiés (ex. tous les élèves d'une école).</li><li><strong>Échantillon</strong> : sous-ensemble de la population (ex. 100 élèves tirés au sort).</li><li><strong>Individu (ou unité statistique)</strong> : élément de la population.</li><li><strong>Caractère (ou variable)</strong> : propriété étudiée (sexe, âge, revenu).</li><li><strong>Modalité</strong> : valeur prise par le caractère (masculin/féminin, 12 ans, 50 000 FC).</li></ul></div>
+<h3>3. Types de caractères statistiques</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Caractère qualitatif</strong> : non mesurable (sexe, état civil, profession).</li><li><strong>Caractère quantitatif discret</strong> : valeurs isolées (nombre d'enfants, nombre de visites).</li><li><strong>Caractère quantitatif continu</strong> : valeurs dans un intervalle (taille, poids, revenu).</li><li><strong>Séries statistiques</strong> : classement des modalités et de leurs effectifs.</li></ul></div>
+<h3>4. Applications en gestion</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Une entreprise de Kinshasa</strong> étudie les ventes mensuelles de ses 50 magasins pour ajuster ses stocks.</li><li><strong>Une banque de Lubumbashi</strong> analyse la répartition de ses clients par âge et par type de compte.</li><li><strong>Une PME de Matadi</strong> mesure la satisfaction de ses 200 clients pour améliorer son service.</li><li><strong>Le gouvernement</strong> utilise les statistiques pour planifier le budget, l'éducation et la santé.</li></ul><p><a href="https://www.youtube.com/results?search_query=introduction+statistique+définition+vocabulaire" target="_blank" rel="noopener">🎥 Recherche : introduction à la statistique (chaînes de cours de statistique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La statistique collecte, organise, analyse et interprète des données. Population, échantillon, individu, caractère et modalité sont les concepts de base. Un caractère peut être qualitatif, quantitatif discret ou quantitatif continu.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques officielles — Statistique, 4e CG (manuels-scolaires-rdc.com, 2025) ; Curriculum de Commerciale et Gestion (MEPST/DIPROMAD, 2023).<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT.</div>
+    `
+},
+{
+    title: "Leçon 2 — La collecte et l'organisation des données",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Une entreprise de Kinshasa veut connaître les habitudes d'achat de ses clients. Elle prépare un questionnaire, le distribue à 200 clients, puis dépouille les réponses. Comment organiser ces données pour qu'elles soient exploitables ? La collecte et l'organisation sont la première étape de toute étude statistique.</p></div>
+<h3>1. Les techniques de collecte</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Enquête</strong> : recueil d'informations auprès d'un échantillon (questionnaire, entretien).</li><li><strong>Observation directe</strong> : constat sur le terrain (comptage des clients dans un magasin).</li><li><strong>Source documentaire</strong> : exploitation de registres, fichiers, rapports existants.</li><li><strong>Expérimentation</strong> : mesure de l'effet d'une variable contrôlée.</li></ul></div>
+<h3>2. Le questionnaire</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Questions fermées</strong> : réponses préétablies (oui/non, cases à cocher).</li><li><strong>Questions ouvertes</strong> : réponses libres.</li><li><strong>Questions à choix multiple</strong> : plusieurs réponses possibles.</li><li><strong>Pré-test</strong> : essai du questionnaire sur un petit échantillon avant diffusion.</li><li><strong>Anonymat</strong> : garantit la sincérité des réponses.</li></ul></div>
+<h3>3. Le dépouillement et le tableau statistique</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Dépouillement</strong> : comptage des réponses, saisie des données.</li><li><strong>Tableau statistique</strong> : présentation des modalités et de leurs effectifs.</li><li><strong>Effectif (ni)</strong> : nombre d'individus pour une modalité.</li><li><strong>Effectif total (N)</strong> : somme de tous les effectifs.</li><li><strong>Fréquence (fi)</strong> : fi = ni / N.</li><li><strong>Fréquence en pourcentage</strong> : fi × 100.</li></ul></div>
+<h3>4. Exemple complet</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p>Une enquête auprès de 200 clients d'un magasin de Kinshasa révèle leur satisfaction :</p><ul><li>Très satisfaits : 60 clients → fréquence = 60/200 = 0,30 = 30 %.</li><li>Satisfaits : 90 clients → 45 %.</li><li>Peu satisfaits : 30 clients → 15 %.</li><li>Insatisfaits : 20 clients → 10 %.</li><li>Total : 200 clients → 100 %.</li></ul><p><a href="https://www.youtube.com/results?search_query=collecte+organisation+données+statistiques+enquête" target="_blank" rel="noopener">🎥 Recherche : la collecte des données (chaînes de cours de statistique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La collecte utilise l'enquête, l'observation, les sources documentaires ou l'expérimentation. Le questionnaire peut comporter des questions fermées, ouvertes ou à choix multiple. Le dépouillement aboutit à un tableau statistique avec effectifs et fréquences.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques officielles — Statistique, 4e CG (manuels-scolaires-rdc.com, 2025).</div>
+    `
+},
+{
+    title: "Leçon 3 — Les tableaux et les graphiques statistiques",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans une entreprise de Lubumbashi, le directeur demande au stagiaire de présenter les ventes mensuelles sous forme visuelle. Un tableau est utile, mais un graphique est plus parlant. Diagramme en bâtons, histogramme, courbe, camembert : chaque type a sa fonction. Les tableaux et graphiques transforment les chiffres en informations.</p></div>
+<h3>1. Les types de tableaux</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Tableau à simple entrée</strong> : une seule variable (ex. répartition par sexe).</li><li><strong>Tableau à double entrée</strong> : deux variables croisées (ex. sexe × niveau d'étude).</li><li><strong>Tableau de fréquences</strong> : effectifs et fréquences.</li><li><strong>Tableau à classes</strong> : regroupement par intervalles pour les caractères continus.</li></ul></div>
+<h3>2. Les représentations graphiques</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Diagramme en bâtons</strong> : pour les caractères qualitatifs et discrets.</li><li><strong>Histogramme</strong> : pour les caractères continus (classes).</li><li><strong>Polygone des effectifs</strong> : courbe reliant les milieux de classes.</li><li><strong>Diagramme circulaire (camembert)</strong> : pour montrer la part de chaque modalité dans le total.</li><li><strong>Courbe d'évolution</strong> : pour suivre une variable dans le temps.</li><li><strong>Diagramme en boîte</strong> : pour visualiser la dispersion.</li></ul></div>
+<h3>3. Le regroupement en classes</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Étendue</strong> : différence entre la valeur maximale et la valeur minimale.</li><li><strong>Nombre de classes (k)</strong> : souvent entre 5 et 15 ; une règle empirique utilise k ≈ √N.</li><li><strong>Amplitude de classe (a)</strong> : a = étendue / k.</li><li><strong>Centre de classe</strong> : moyenne des bornes inférieure et supérieure.</li></ul></div>
+<h3>4. Exemple concret</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p>Revenus mensuels (en milliers de FC) de 50 employés d'une entreprise de Kinshasa : étendue de 200 à 900, soit 700.</p><ul><li>Nombre de classes : k ≈ √50 ≈ 7.</li><li>Amplitude : a = 700 / 7 = 100.</li><li>Classes : [200 ; 300[, [300 ; 400[, ..., [800 ; 900[.</li><li>Centre de la 1re classe : (200 + 300) / 2 = 250.</li></ul><p><a href="https://www.youtube.com/results?search_query=tableaux+graphiques+statistiques+histogramme+camembert" target="_blank" rel="noopener">🎥 Recherche : les tableaux et graphiques (chaînes de cours de statistique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le tableau statistique présente les données brutes. Les graphiques (bâtons, histogramme, camembert, courbe) facilitent la lecture. Le regroupement en classes s'utilise pour les caractères continus. L'amplitude de classe = étendue / nombre de classes.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques officielles — Statistique, 4e CG (manuels-scolaires-rdc.com, 2025).</div>
+    `
+},
+{
+    title: "Leçon 4 — Les mesures de tendance centrale",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>À Kinshasa, le directeur d'une entreprise veut connaître le salaire « typique » de ses employés. Certains gagnent peu, d'autres beaucoup. Doit-il utiliser la moyenne, la médiane ou le mode ? Chaque mesure de tendance centrale raconte une partie de l'histoire.</p></div>
+<h3>1. La moyenne arithmétique</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Définition</strong> : somme des valeurs divisée par le nombre d'observations.</li><li><strong>Moyenne simple</strong> : x̄ = (x1 + x2 + ... + xn) / n.</li><li><strong>Moyenne pondérée</strong> : x̄ = Σ (xi × ni) / N.</li><li><strong>Propriété</strong> : sensible aux valeurs extrêmes.</li></ul></div>
+<h3>2. La médiane</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Définition</strong> : valeur qui partage la série en deux parties égales.</li><li><strong>Calcul</strong> : on range les valeurs par ordre croissant, puis :</li><li>Si n est impair : médiane = valeur de rang (n+1)/2.</li><li>Si n est pair : médiane = moyenne des valeurs de rang n/2 et n/2 + 1.</li><li><strong>Propriété</strong> : peu sensible aux valeurs extrêmes.</li></ul></div>
+<h3>3. Le mode</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Définition</strong> : valeur ou classe la plus fréquente.</li><li><strong>Série unimodale</strong> : un seul mode.</li><li><strong>Série bimodale ou plurimodale</strong> : plusieurs modes.</li><li><strong>Utilité</strong> : utile pour les caractères qualitatifs.</li></ul></div>
+<h3>4. Exemple comparatif</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p>Salaires mensuels (en milliers de FC) de 7 employés : 100, 120, 150, 150, 200, 250, 800.</p><ul><li><strong>Moyenne</strong> : (100 + 120 + 150 + 150 + 200 + 250 + 800) / 7 = 1 770 / 7 ≈ 253 milliers.</li><li><strong>Médiane</strong> : 4e valeur = 150 milliers.</li><li><strong>Mode</strong> : 150 (apparaît 2 fois).</li><li><strong>Interprétation</strong> : la moyenne est tirée vers le haut par le salaire de 800, tandis que la médiane et le mode reflètent mieux la réalité des employés.</li></ul><p><a href="https://www.youtube.com/results?search_query=moyenne+médiane+mode+tendance+centrale" target="_blank" rel="noopener">🎥 Recherche : les mesures de tendance centrale (chaînes de cours de statistique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La moyenne arithmétique est la somme des valeurs divisée par l'effectif. La médiane partage la série en deux. Le mode est la valeur la plus fréquente. La moyenne est sensible aux extrêmes, la médiane et le mode le sont moins.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques officielles — Statistique, 4e CG (manuels-scolaires-rdc.com, 2025).</div>
+    `
+},
+{
+    title: "Leçon 5 — Les mesures de dispersion",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Deux entreprises de Kinshasa ont le même salaire moyen : 250 000 FC. Mais dans la première, tous les employés gagnent entre 240 000 et 260 000 FC. Dans la seconde, certains gagnent 100 000 FC et d'autres 500 000 FC. La dispersion est très différente. Les mesures de dispersion révèlent ces inégalités.</p></div>
+<h3>1. L'étendue</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Définition</strong> : différence entre la valeur maximale et la valeur minimale.</li><li><strong>Formule</strong> : E = xmax − xmin.</li><li><strong>Limite</strong> : ne tient compte que des extrêmes.</li></ul></div>
+<h3>2. La variance</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Définition</strong> : moyenne des carrés des écarts à la moyenne.</li><li><strong>Formule</strong> : V = Σ ni (xi − x̄)² / N.</li><li><strong>Formule pratique</strong> : V = Σ ni xi² / N − (x̄)².</li><li><strong>Propriété</strong> : exprimée en unités au carré, difficile à interpréter directement.</li></ul></div>
+<h3>3. L'écart-type</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Définition</strong> : racine carrée de la variance.</li><li><strong>Formule</strong> : σ = √V.</li><li><strong>Utilité</strong> : exprimé dans la même unité que la variable, il est interprétable.</li><li><strong>Interprétation</strong> : plus σ est grand, plus les valeurs sont dispersées.</li></ul></div>
+<h3>4. Exemple complet</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p>Salaires mensuels (en milliers de FC) : 100, 120, 150, 150, 200, 250, 800. Moyenne = 253.</p><ul><li>Étendue = 800 − 100 = 700.</li><li>Variance : Σ(xi − x̄)² = (100−253)² + ... + (800−253)² ≈ 405 429 / 7 ≈ 57 918.</li><li>Écart-type = √57 918 ≈ 240,7 milliers FC.</li><li><strong>Interprétation</strong> : la dispersion est très forte, ce qui confirme l'inégalité des salaires.</li></ul><p><a href="https://www.youtube.com/results?search_query=variance+écart-type+étendue+dispersion" target="_blank" rel="noopener">🎥 Recherche : les mesures de dispersion (chaînes de cours de statistique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>L'étendue est la différence entre le maximum et le minimum. La variance est la moyenne des carrés des écarts à la moyenne. L'écart-type est la racine carrée de la variance. Plus l'écart-type est grand, plus les valeurs sont dispersées.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques officielles — Statistique, 4e CG (manuels-scolaires-rdc.com, 2025).</div>
+    `
+},
+{
+    title: "Leçon 6 — L'analyse combinatoire : arrangements, permutations, combinaisons",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans une entreprise de Kinshasa, 10 candidats postulent pour 3 postes différents (directeur, comptable, commercial). De combien de façons peut-on pourvoir ces postes ? Un autre cas : combien de façons de tirer 3 cartes d'un jeu de 52 ? L'analyse combinatoire répond à ces questions.</p></div>
+<h3>1. La factorielle</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Factorielle n</strong> : n! = n × (n−1) × ... × 2 × 1.</li><li><strong>Exemples</strong> : 3! = 6 ; 5! = 120 ; 10! = 3 628 800.</li><li><strong>Convention</strong> : 0! = 1.</li></ul></div>
+<h3>2. Les arrangements</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Définition</strong> : choix ordonné de k éléments parmi n, sans répétition.</li><li><strong>Formule</strong> : A(n, k) = n! / (n−k)!.</li><li><strong>Exemple</strong> : pourvoir 3 postes parmi 10 candidats : A(10, 3) = 10! / 7! = 720.</li><li><strong>Avec répétition</strong> : n^k (ex. code à 3 chiffres : 10³ = 1 000).</li></ul></div>
+<h3>3. Les permutations</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Définition</strong> : arrangement où l'on utilise tous les éléments (k = n).</li><li><strong>Formule</strong> : P(n) = n!.</li><li><strong>Exemple</strong> : ranger 4 livres sur une étagère : P(4) = 24 façons.</li><li><strong>Permutations avec éléments identiques</strong> : P = n! / (n1! × n2! × ...).</li></ul></div>
+<h3>4. Les combinaisons</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Définition</strong> : choix non ordonné de k éléments parmi n.</li><li><strong>Formule</strong> : C(n, k) = n! / [k! × (n−k)!].</li><li><strong>Exemple</strong> : tirer 3 cartes d'un jeu de 52 : C(52, 3) = 22 100.</li><li><strong>Propriété</strong> : C(n, k) = C(n, n−k).</li><li><strong>Triangle de Pascal</strong> : construction des coefficients binomiaux.</li></ul><p><a href="https://www.youtube.com/results?search_query=analyse+combinatoire+arrangements+combinaisons+permutations" target="_blank" rel="noopener">🎥 Recherche : l'analyse combinatoire (chaînes de cours de statistique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La factorielle n! = n × (n−1) × ... × 1. Les arrangements A(n, k) = n! / (n−k)!. Les permutations P(n) = n!. Les combinaisons C(n, k) = n! / [k! × (n−k)!]. Ces formules sont utilisées pour compter les possibilités en gestion et en probabilités.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques officielles — Statistique, 4e CG (manuels-scolaires-rdc.com, 2025).</div>
+    `
+},
+{
+    title: "Leçon 7 — Les probabilités : définitions et axiomes",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Un assureur de Kinshasa doit estimer le risque qu'un client ait un accident. Une entreprise veut connaître la probabilité qu'une machine tombe en panne. Les probabilités quantifient l'incertitude, outil précieux pour la décision en gestion.</p></div>
+<h3>1. Vocabulaire des probabilités</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Expérience aléatoire</strong> : expérience dont le résultat est incertain (lancer de dé, tirage au sort).</li><li><strong>Univers (Ω)</strong> : ensemble de tous les résultats possibles.</li><li><strong>Événement</strong> : partie de l'univers (A, B, ...).</li><li><strong>Événement élémentaire</strong> : un seul résultat.</li><li><strong>Événement certain</strong> : l'univers entier. <strong>Événement impossible</strong> : ensemble vide.</li><li><strong>Événements incompatibles</strong> : A ∩ B = ∅.</li></ul></div>
+<h3>2. Axiomes et propriétés</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Probabilité</strong> : nombre P(A) compris entre 0 et 1.</li><li><strong>P(Ω) = 1</strong> et <strong>P(∅) = 0</strong>.</li><li><strong>Équiprobabilité</strong> : si tous les résultats ont la même chance, P(A) = nombre de cas favorables / nombre de cas possibles.</li><li><strong>P(A ∪ B) = P(A) + P(B) − P(A ∩ B)</strong>.</li><li><strong>Événements incompatibles</strong> : P(A ∪ B) = P(A) + P(B).</li><li><strong>Événement contraire</strong> : P(Ā) = 1 − P(A).</li></ul></div>
+<h3>3. Probabilités conditionnelles</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Définition</strong> : P(A|B) = P(A ∩ B) / P(B), si P(B) > 0.</li><li><strong>Événements indépendants</strong> : P(A ∩ B) = P(A) × P(B).</li><li><strong>Formule des probabilités totales</strong> : P(B) = Σ P(Ai) × P(B|Ai).</li><li><strong>Théorème de Bayes</strong> : P(A|B) = P(B|A) × P(A) / P(B).</li></ul></div>
+<h3>4. Exemples en gestion</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Contrôle qualité</strong> : dans un lot de 100 pièces, 5 sont défectueuses. La probabilité de tirer une pièce défectueuse est 5/100 = 0,05.</li><li><strong>Assurance</strong> : la probabilité qu'un client ait un accident dans l'année est 0,02. La prime est calculée en conséquence.</li><li><strong>Gestion des stocks</strong> : la probabilité qu'une demande dépasse le stock prévu est utilisée pour dimensionner le stock de sécurité.</li><li><strong>Markéting</strong> : la probabilité qu'un client réponde à une campagne publicitaire guide le budget marketing.</li></ul><p><a href="https://www.youtube.com/results?search_query=probabilités+définition+axiomes+conditionnelles" target="_blank" rel="noopener">🎥 Recherche : les probabilités (chaînes de cours de statistique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La probabilité mesure la chance qu'un événement se produise. Elle est comprise entre 0 et 1. P(A ∪ B) = P(A) + P(B) − P(A ∩ B). La probabilité conditionnelle mesure la probabilité d'un événement sachant qu'un autre s'est produit. Les événements indépendants vérifient P(A ∩ B) = P(A) × P(B).</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques officielles — Statistique, 4e CG (manuels-scolaires-rdc.com, 2025).</div>
+    `
+},
+{
+    title: "Leçon 8 — Les probabilités conditionnelles et l'indépendance",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans une entreprise de Kinshasa, on sait que 60 % des clients sont des hommes et 40 % des femmes. Parmi les hommes, 30 % achètent le produit A ; parmi les femmes, 50 % l'achètent. Quelle est la probabilité qu'un client choisi au hasard achète le produit A ? C'est un problème de probabilités conditionnelles et totales.</p></div>
+<h3>1. Rappel des probabilités conditionnelles</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>P(A|B)</strong> : probabilité de A sachant que B est réalisé.</li><li><strong>Formule</strong> : P(A|B) = P(A ∩ B) / P(B).</li><li><strong>Produit</strong> : P(A ∩ B) = P(A|B) × P(B) = P(B|A) × P(A).</li><li><strong>Arbre de probabilités</strong> : représentation graphique des probabilités conditionnelles.</li></ul></div>
+<h3>2. La formule des probabilités totales</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Principe</strong> : si (A1, A2, ..., An) forment une partition de l'univers, alors :</li><li><strong>P(B) = Σ P(Ai) × P(B|Ai)</strong>.</li><li><strong>Utilité</strong> : calculer la probabilité d'un événement à partir de plusieurs scénarios.</li><li><strong>Exemple</strong> : probabilité qu'un client achète, selon qu'il soit homme ou femme.</li></ul></div>
+<h3>3. L'indépendance</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Deux événements A et B sont indépendants</strong> si P(A ∩ B) = P(A) × P(B).</li><li>Équivalent : P(A|B) = P(A).</li><li><strong>Attention</strong> : incompatibles (A ∩ B = ∅) ≠ indépendants.</li><li><strong>Application</strong> : deux machines qui tombent en panne indépendamment l'une de l'autre.</li></ul></div>
+<h3>4. Exemple complet</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p>Dans une entreprise de Kinshasa :</p><ul><li>P(Homme) = 0,60 ; P(Femme) = 0,40.</li><li>P(Achat | Homme) = 0,30 ; P(Achat | Femme) = 0,50.</li><li>P(Achat) = P(H) × P(Achat|H) + P(F) × P(Achat|F).</li><li>P(Achat) = 0,60 × 0,30 + 0,40 × 0,50 = 0,18 + 0,20 = <strong>0,38</strong>.</li><li>La probabilité qu'un client choisi au hasard achète est de 38 %.</li></ul><p><a href="https://www.youtube.com/results?search_query=probabilités+conditionnelles+indépendance+probabilités+totales" target="_blank" rel="noopener">🎥 Recherche : les probabilités conditionnelles (chaînes de cours de statistique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>P(A|B) = P(A ∩ B) / P(B). P(A ∩ B) = P(A|B) × P(B). La formule des probabilités totales permet de calculer P(B) à partir d'une partition. Deux événements sont indépendants si P(A ∩ B) = P(A) × P(B). Ne pas confondre incompatibilité et indépendance.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques officielles — Statistique, 4e CG (manuels-scolaires-rdc.com, 2025).</div>
+    `
+},
+{
+    title: "Leçon 9 — Les applications de la statistique à la gestion",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Une entreprise de Kinshasa utilise la statistique pour : prévoir ses ventes, gérer ses stocks, contrôler la qualité, analyser la satisfaction client. La statistique n'est pas qu'une discipline théorique : c'est un outil quotidien du gestionnaire. Voyons ses applications concrètes.</p></div>
+<h3>1. La prévision des ventes</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Analyse des séries chronologiques</strong> : évolution des ventes dans le temps.</li><li><strong>Tendance</strong> : direction générale de l'évolution.</li><li><strong>Variations saisonnières</strong> : fluctuations périodiques (ex. ventes de boissons en saison chaude).</li><li><strong>Moyennes mobiles</strong> : lissage des séries pour dégager la tendance.</li><li><strong>Utilité</strong> : ajuster les approvisionnements et la production.</li></ul></div>
+<h3>2. La gestion des stocks</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Stock moyen</strong> : (stock initial + stock final) / 2.</li><li><strong>Taux de rotation</strong> : coût des ventes / stock moyen.</li><li><strong>Stock de sécurité</strong> : niveau minimal pour éviter la rupture.</li><li><strong>Loi de la demande</strong> : la distribution des demandes guide le stock de sécurité.</li><li><strong>Méthode ABC</strong> : classe les articles par importance (A, B, C).</li></ul></div>
+<h3>3. Le contrôle qualité</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Échantillonnage</strong> : prélever un échantillon d'un lot de production.</li><li><strong>Cartes de contrôle</strong> : surveiller la production dans le temps.</li><li><strong>Taux de défauts</strong> : proportion de pièces défectueuses.</li><li><strong>Lois de probabilité</strong> : loi binomiale pour l'acceptation ou le rejet d'un lot.</li></ul></div>
+<h3>4. Le sondage et l'analyse de satisfaction</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Enquête de satisfaction</strong> : interroger un échantillon de clients (ex. 200 sur 5 000).</li><li><strong>Marge d'erreur</strong> : intervalle de confiance autour de la moyenne.</li><li><strong>Test d'hypothèse</strong> : vérifier si un changement a un effet significatif.</li><li><strong>Segmentation</strong> : identifier des groupes de clients aux comportements similaires.</li><li><strong>Exemple RDC</strong> : les banques de Kinshasa analysent la satisfaction de leurs clients pour améliorer leurs services.</li></ul><p><a href="https://www.youtube.com/results?search_query=statistique+appliquée+gestion+entreprise+prévision+stocks+qualité" target="_blank" rel="noopener">🎥 Recherche : la statistique appliquée à la gestion (chaînes de cours de statistique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La statistique sert à prévoir les ventes (séries chronologiques, moyennes mobiles), gérer les stocks (stock moyen, rotation, méthode ABC), contrôler la qualité (échantillonnage, cartes de contrôle) et analyser la satisfaction client (sondage, segmentation). C'est un outil quotidien du gestionnaire.</p></div>
+<div class="sources"><strong>Sources :</strong> Fiches pédagogiques officielles — Statistique, 4e CG (manuels-scolaires-rdc.com, 2025) ; Curriculum de Commerciale et Gestion (MEPST/DIPROMAD, 2023).</div>
+    `
+},
+{
+    title: "Leçon 10 — La statistique et les probabilités dans le contexte congolais",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>De la REGIDESO qui analyse la consommation d'eau, à la SNEL qui prévoit la demande d'électricité, en passant par les banques qui évaluent le risque de crédit, la statistique et les probabilités sont partout dans l'économie congolaise. Comment les appliquer concrètement au développement ?</p></div>
+<h3>1. Les statistiques nationales en RDC</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>INS</strong> (Institut National de la Statistique) : collecte et publie les statistiques officielles.</li><li><strong>BCC</strong> (Banque Centrale du Congo) : statistiques monétaires et financières.</li><li><strong>Enquêtes</strong> : EDS (Enquête Démographique et de Santé), EDS-RDC.</li><li><strong>Recensement</strong> : dénombrement de la population pour la planification.</li><li><strong>Indice des prix à la consommation (IPC)</strong> : mesure l'inflation.</li></ul></div>
+<h3>2. Les applications sectorielles</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Santé</strong> : taux de mortalité, prévalence des maladies, statistiques hospitalières.</li><li><strong>Agriculture</strong> : rendement par hectare, production annuelle.</li><li><strong>Éducation</strong> : taux de scolarisation, taux de réussite à l'EXETAT.</li><li><strong>Commerce</strong> : balance commerciale, prix des matières premières.</li><li><strong>Énergie</strong> : prévision de la demande, gestion du réseau Inga.</li></ul></div>
+<h3>3. Le rôle de la statistique dans le développement</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Planification</strong> : allocation des ressources selon les besoins réels.</li><li><strong>Suivi-évaluation</strong> : mesurer l'impact des politiques publiques.</li><li><strong>Lutte contre la pauvreté</strong> : identification des zones et populations vulnérables.</li><li><strong>Attraction des investissements</strong> : données fiables pour rassurer les investisseurs.</li></ul></div>
+<h3>4. Exemples concrets</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Une banque de Kinshasa</strong> utilise des modèles statistiques pour évaluer le risque de crédit de ses clients.</li><li><strong>Une entreprise minière du Katanga</strong> analyse la production et les coûts par méthode statistique.</li><li><strong>Le Programme Élargi de Vaccination (PEV)</strong> utilise des données pour cibler les campagnes.</li><li><strong>La REGIDESO</strong> prévoit la consommation d'eau à Kinshasa pour dimensionner ses infrastructures.</li><li><strong>L'INS</strong> publie les enquêtes 1-2-3 (emploi, secteur informel, consommation des ménages) pour orienter les politiques publiques.</li></ul><p><a href="https://www.youtube.com/results?search_query=statistique+probabilités+RDC+développement+INS+BCC" target="_blank" rel="noopener">🎥 Recherche : la statistique en RDC (chaînes de cours de statistique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>L'INS et la BCC produisent les statistiques nationales en RDC. La statistique et les probabilités s'appliquent à la santé, l'agriculture, l'éducation, le commerce et l'énergie. Elles servent à la planification, au suivi-évaluation et à la lutte contre la pauvreté.</p></div>
+<div class="sources"><strong>Sources :</strong> Institut National de la Statistique (RDC) ; Banque Centrale du Congo ; Fiches pédagogiques officielles — Statistique, 4e CG (manuels-scolaires-rdc.com, 2025).</div>
+    `
+},
+{
+    title: "Évaluation finale — Items EXETAT",
+    content: `
+        <p style="margin-bottom:18px;color:#12437a;font-size:0.95rem;">Cette évaluation regroupe des items de type EXETAT. Fais l'exercice dans les conditions du concours : sans notes, en une seule fois.</p>
+        <div class="bloc theorie">
+            <div class="bloc-label">Consignes</div>
+            <ul>
+                <li>35 questions à choix multiples.</li>
+                <li>Une seule réponse correcte par question.</li>
+                <li>Pas de retour en arrière sur les questions déjà validées.</li>
+                <li>Durée recommandée : 35 minutes.</li>
+            </ul>
+        </div>
+        <div class="quiz-container" id="quizContainer">
+            <h3 style="color:#0d2b4f;margin-bottom:16px;font-size:1.1rem;">Partie 1 — Questions</h3>
+            <div id="quizQuestions"></div>
+            <button id="submitQuiz" class="quiz-btn-submit">Valider mes réponses</button>
+            <div id="quizResult" class="quiz-result"></div>
+        </div>
+    `
+}
+];
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim()) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderQuiz() {
+    const questions = [
+        { text:"Quelle science collecte, organise, analyse et interprète les données ?", options:["La statistique","La comptabilité","La gestion"], correct:0 },
+        { text:"Qu'est-ce qu'une population en statistique ?", options:["L'ensemble des individus étudiés","Un sous-ensemble","Un individu"], correct:0 },
+        { text:"Qu'est-ce qu'un échantillon ?", options:["Un sous-ensemble de la population","Toute la population","Un individu"], correct:0 },
+        { text:"Comment appelle-t-on la propriété étudiée ?", options:["Le caractère","La modalité","L'effectif"], correct:0 },
+        { text:"Un caractère quantitatif continu prend :", options:["Des valeurs dans un intervalle","Des valeurs isolées","Des valeurs qualitatives"], correct:0 },
+        { text:"Quelle est la première étape d'une étude statistique ?", options:["La collecte des données","L'analyse","La conclusion"], correct:0 },
+        { text:"Quel outil de collecte utilise des questions préétablies ?", options:["Le questionnaire","L'observation","L'expérimentation"], correct:0 },
+        { text:"Qu'est-ce qu'un effectif ?", options:["Le nombre d'individus pour une modalité","La fréquence","Le total"], correct:0 },
+        { text:"Comment calcule-t-on la fréquence ?", options:["fi = ni / N","fi = N / ni","fi = ni × N"], correct:0 },
+        { text:"Quel graphique utilise des barres pour représenter des caractères qualitatifs ?", options:["Diagramme en bâtons","Histogramme","Courbe"], correct:0 },
+        { text:"Quel graphique représente la part de chaque modalité dans le total ?", options:["Diagramme circulaire (camembert)","Histogramme","Diagramme en bâtons"], correct:0 },
+        { text:"Comment calcule-t-on l'amplitude de classe ?", options:["Étendue / nombre de classes","Nombre de classes / étendue","Étendue × nombre de classes"], correct:0 },
+        { text:"Quelle mesure de tendance centrale est sensible aux valeurs extrêmes ?", options:["La moyenne","La médiane","Le mode"], correct:0 },
+        { text:"Quelle mesure partage la série en deux parties égales ?", options:["La médiane","La moyenne","Le mode"], correct:0 },
+        { text:"Quelle mesure est la valeur la plus fréquente ?", options:["Le mode","La médiane","La moyenne"], correct:0 },
+        { text:"Quelle mesure de dispersion est la différence entre le max et le min ?", options:["L'étendue","La variance","L'écart-type"], correct:0 },
+        { text:"Quelle est la formule de la variance ?", options:["Σ ni (xi − x̄)² / N","Σ ni xi / N","Σ xi / N"], correct:0 },
+        { text:"Que vaut 5! ?", options:["120","25","5"], correct:0 },
+        { text:"Quelle est la formule des arrangements ?", options:["A(n,k) = n! / (n−k)!","A(n,k) = n! / k!","A(n,k) = n! / [k!(n−k)!]"], correct:0 },
+        { text:"Quelle est la formule des combinaisons ?", options:["C(n,k) = n! / [k!(n−k)!]","C(n,k) = n! / (n−k)!","C(n,k) = n! / k!"], correct:0 },
+        { text:"Combien de façons de ranger 4 livres sur une étagère ?", options:["24","16","4"], correct:0 },
+        { text:"Quelle est la probabilité d'obtenir un 6 avec un dé équilibré ?", options:["1/6","1/3","1/2"], correct:0 },
+        { text:"Que vaut P(Ω) ?", options:["1","0","0,5"], correct:0 },
+        { text:"Que vaut P(Ā) ?", options:["1 − P(A)","P(A)","0"], correct:0 },
+        { text:"Quelle est la formule de P(A ∪ B) ?", options:["P(A) + P(B) − P(A ∩ B)","P(A) + P(B)","P(A) × P(B)"], correct:0 },
+        { text:"Deux événements sont incompatibles si :", options:["A ∩ B = ∅","P(A ∩ B) = 0,5","A = B"], correct:0 },
+        { text:"Que vaut P(A|B) ?", options:["P(A ∩ B) / P(B)","P(A) × P(B)","P(A) + P(B)"], correct:0 },
+        { text:"Deux événements A et B sont indépendants si :", options:["P(A ∩ B) = P(A) × P(B)","P(A ∩ B) = 0","P(A) = P(B)"], correct:0 },
+        { text:"Que signifie P(Achat|Homme) = 0,30 ?", options:["Probabilité d'achat sachant que le client est un homme","Probabilité que le client soit un homme","Probabilité d'être un homme et d'acheter"], correct:0 },
+        { text:"Quel est le rôle de l'INS en RDC ?", options:["Produire les statistiques officielles","Collecter les impôts","Gérer les banques"], correct:0 },
+        { text:"Quelle institution publie les statistiques monétaires en RDC ?", options:["La BCC","L'INS","La DGI"], correct:0 },
+        { text:"Que mesure l'Indice des Prix à la Consommation (IPC) ?", options:["L'inflation","Le chômage","La croissance"], correct:0 },
+        { text:"Comment appelle-t-on la méthode qui classe les stocks par importance (A, B, C) ?", options:["Méthode ABC","Méthode FIFO","Méthode LIFO"], correct:0 },
+        { text:"Quel est l'objectif d'un sondage de satisfaction client ?", options:["Mesurer la qualité perçue pour améliorer le service","Augmenter les prix","Réduire le personnel"], correct:0 },
+        { text:"Pourquoi la statistique est-elle importante pour la gestion en RDC ?", options:["Elle aide à prévoir les ventes, gérer les stocks et contrôler la qualité","Elle remplace la comptabilité","Elle remplace la direction"], correct:0 }
+    ];
+    let html = '';
+    questions.forEach((q,i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o,k) => { html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>'; });
+        html += '</div>';
+    });
+    document.getElementById('quizQuestions').innerHTML = html;
+    document.getElementById('submitQuiz').onclick = () => {
+        let score = 0;
+        questions.forEach((q,i) => {
+            const s = document.querySelector('input[name="q' + i + '"]:checked');
+            if (s && parseInt(s.value) === q.correct) score++;
+        });
+        const pct = Math.round(score/questions.length*100);
+        document.getElementById('quizResult').innerHTML = '<div style="background:#cfdff5;padding:16px;border-radius:10px;margin-top:14px;"><strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong><br>' + (score === questions.length ? 'Excellent. Tu maîtrises le programme.' : score >= 24 ? 'Bien. Revoyez les leçons où vous avez échoué.' : 'Relis attentivement les leçons avant l\'examen.') + '</div>';
+    };
+}
+function renderSlide(index, keepHighlight = true) {
+    const isQuiz = (index === slides.length - 1);
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    if (isQuiz) renderQuiz();
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm && !isQuiz) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+</body>
+</html>
