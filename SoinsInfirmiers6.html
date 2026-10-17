@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Soins infirmiers — 4e Médicale (EXETAT)</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:linear-gradient(160deg,#0b3a3a 0%,#00796b 50%,#062626 100%); display:flex; justify-content:center; align-items:center; padding:8px; }
+.container { width:100%; max-width:1400px; background:#fefdf8; border-radius:20px; overflow:hidden; display:flex; flex-direction:column; height:100%; max-height:100vh; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.progress-bar { height:4px; background:#c5e6e3; flex-shrink:0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,#4db6ac,#00574b); width:0%; transition:width 0.3s; }
+.header { padding:10px 16px; background:#e0f2f1; border-bottom:1px solid #80cbc4; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+.header h1 { color:#00574b; font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box { display:flex; background:white; border-radius:20px; padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.search-box input { border:none; padding:6px 10px; border-radius:20px; outline:none; width:130px; font-size:0.8rem; }
+.search-box button { background:none; border:none; cursor:pointer; padding:4px 8px; font-size:0.85rem; color:#00796b; }
+.badge { background:#4db6ac; color:white; padding:4px 10px; border-radius:20px; font-weight:bold; font-size:0.75rem; }
+.search-nav { display:none; gap:4px; background:#b2dfdb; padding:2px 8px; border-radius:20px; align-items:center; font-size:0.75rem; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:0.9rem; color:#00574b; padding:2px 4px; }
+.content { padding:28px 32px; flex:1; overflow-y:auto; background:#fff; scroll-behavior:smooth; line-height:1.85; }
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.slide-title { color:#0b3a3a; font-size:1.5rem; font-weight:700; padding-bottom:12px; margin-bottom:20px; border-bottom:2px solid #4db6ac; }
+.slide-content { color:#0a2b2b; font-size:1rem; }
+.bloc { padding:18px 22px; border-radius:12px; margin:22px 0; line-height:1.85; }
+.bloc-label { font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; opacity:0.7; }
+.bloc p, .bloc li { font-size:0.98rem; }
+.bloc h3 { font-size:1.1rem; margin:20px 0 10px; font-weight:600; }
+.bloc h3:first-child { margin-top:0; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:#e0f2f1; border-left:4px solid #4db6ac; }
+.theorie .bloc-label { color:#00574b; }
+.pratique { background:#e8f5e9; border-left:4px solid #43a047; }
+.pratique .bloc-label { color:#1b5e20; }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:#0b3a3a; }
+.quiz-container { padding:22px; background:#e0f2f1; border-radius:16px; }
+.quiz-question { background:white; border-radius:10px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.quiz-question p { font-weight:600; margin-bottom:10px; color:#0b3a3a; }
+.quiz-question label { display:block; padding:8px 10px; margin:4px 0; border-radius:6px; cursor:pointer; transition:background 0.2s; }
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit { background:#26897d; color:white; border:none; padding:12px 24px; border-radius:30px; font-size:1rem; cursor:pointer; font-weight:600; margin-top:14px; }
+.quiz-result { margin-top:16px; font-weight:600; }
+.sources { background:#f5f5f5; padding:12px 16px; border-radius:10px; margin-top:26px; font-size:0.82rem; color:#666; border-left:3px solid #999; line-height:1.6; }
+.sources strong { color:#333; }
+.controls { padding:8px 16px; background:#fafafa; border-top:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0; }
+.nav-btn { background:white; color:#00574b; border:1px solid #ccc; padding:8px 14px; border-radius:8px; font-size:0.82rem; cursor:pointer; font-weight:500; }
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:#d5ecea; }
+.content::-webkit-scrollbar-thumb { background:#4db6ac; border-radius:3px; }
+@media (max-width:600px) { body { padding:0; } .container { border-radius:0; max-height:100vh; } .content { padding:20px 18px; } .slide-title { font-size:1.25rem; } .search-box input { width:90px; } .header h1 { font-size:0.85rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="header">
+        <h1>Soins infirmiers · 4e Médicale</h1>
+        <div class="header-right">
+            <div class="search-box"><input type="text" id="searchInput" placeholder="Rechercher"><button id="searchBtn">⌕</button></div>
+            <div class="search-nav" id="searchNav"><button id="prevResultBtn">‹</button><span id="resultCounter">0/0</span><button id="nextResultBtn">›</button></div>
+            <span class="badge" id="slideCounter">1/11</span>
+        </div>
+    </div>
+    <div class="content" id="content"></div>
+    <div class="controls">
+        <button class="nav-btn" id="prevBtn">← Précédent</button>
+        <span class="counter" id="counter">Leçon 1 / 11</span>
+        <button class="nav-btn" id="nextBtn">Suivant →</button>
+    </div>
+</div>
+<script>
+const slides = [
+{
+    title: "Leçon 1 — Le métier d'infirmier : rôle, déontologie et cadre légal en RDC",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>À l'hôpital général de référence de Kinshasa, une jeune infirmière prend son service. Elle doit accueillir les patients, prendre les constantes, administrer les traitements prescrits et rassurer les familles. Le métier d'infirmier est exigeant : il demande des compétences techniques, une éthique solide et une grande humanité.</p></div>
+<h3>1. Définition et rôle de l'infirmier</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Infirmier</strong> : professionnel de santé qui prodigue des soins aux malades, sous prescription médicale ou en application de son rôle propre.</li><li><strong>Rôle propre</strong> : soins d'hygiène, confort, surveillance, éducation du patient, prévention.</li><li><strong>Rôle sur prescription</strong> : administration des médicaments, pansements, injections.</li><li><strong>Rôle relationnel</strong> : écoute, réconfort, information du patient et de la famille.</li><li><strong>Rôle éducatif</strong> : éducation à la santé, prévention des maladies.</li></ul></div>
+<h3>2. La déontologie infirmière</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Respect de la vie</strong> : l'infirmier protège la santé et la vie de tout être humain.</li><li><strong>Respect de la personne</strong> : dignité, intimité, religion, opinions.</li><li><strong>Secret professionnel</strong> : ne pas divulguer les informations médicales d'un patient.</li><li><strong>Compétence et formation continue</strong> : actualiser ses connaissances.</li><li><strong>Non-discrimination</strong> : soins égaux pour tous, sans distinction.</li><li><strong>Solidarité professionnelle</strong> : respect envers les collègues et les autres professionnels de santé.</li></ul></div>
+<h3>3. Le cadre légal en RDC</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Code de santé publique</strong> : cadre légal des professions de santé en RDC.</li><li><strong>Ordonnance-loi n° 80-025 du 5 mars 1980</strong> : organisation de la médecine en RDC.</li><li><strong>Ordre des infirmiers</strong> : structure professionnelle qui encadre la profession.</li><li><strong>Formation</strong> : diplôme d'État en soins infirmiers (4 ans).</li><li><strong>Structure hiérarchique hospitalière</strong> : médecin-chef, infirmier-chef, infirmier, aides-soignants.</li></ul></div>
+<h3>4. Les qualités de l'infirmier</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Compétences techniques</strong> : maîtriser les gestes (injections, pansements, prise de constantes).</li><li><strong>Qualités humaines</strong> : empathie, patience, écoute, calme.</li><li><strong>Rigueur</strong> : respect des protocoles, propreté, hygiène.</li><li><strong>Endurance physique et morale</strong> : travail en horaires décalés, pression.</li><li><strong>Esprit d'équipe</strong> : collaboration avec les médecins et les autres soignants.</li></ul><p><a href="https://www.youtube.com/results?search_query=métier+infirmier+déontologie+RDC+rôle+propre" target="_blank" rel="noopener">🎥 Recherche : le métier d'infirmier (chaînes de cours de soins infirmiers)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>L'infirmier a un rôle propre, un rôle sur prescription, un rôle relationnel et un rôle éducatif. Sa déontologie repose sur le respect de la vie, le secret professionnel et la compétence. En RDC, le cadre légal est fixé par le Code de santé publique et l'Ordre des infirmiers.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme réformé de Soins Infirmiers, Ministère de la Santé (RDC), Fiches pédagogiques officielles 2025.<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT, MSP.</div>
+    `
+},
+{
+    title: "Leçon 2 — L'hygiène hospitalière et la prévention des infections",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans une salle d'hospitalisation de l'hôpital de Lubumbashi, plusieurs patients présentent des infections nosocomiales. Le comité d'hygiène se réunit : que s'est-il passé ? Une mauvaise hygiène des mains, des pansements mal renouvelés, un matériel mal stérilisé. L'hygiène hospitalière est vitale.</p></div>
+<h3>1. Définition et importance</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Hygiène hospitalière</strong> : ensemble des mesures pour prévenir les infections dans les établissements de soins.</li><li><strong>Infection nosocomiale</strong> : infection contractée à l'hôpital, absente à l'admission.</li><li><strong>Importance</strong> : protéger les patients, le personnel et les visiteurs.</li><li><strong>Agents</strong> : bactéries, virus, champignons, parasites.</li></ul></div>
+<h3>2. L'hygiène des mains</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Lavage simple</strong> : eau + savon, 30 secondes, friction des mains et avant-bras.</li><li><strong>Friction hydro-alcoolique</strong> : solution hydro-alcoolique, 20-30 secondes, mains sèches.</li><li><strong>Lavage chirurgical</strong> : 5 minutes, pour le bloc opératoire.</li><li><strong>5 indications de l'OMS</strong> : avant contact patient, avant geste aseptique, après risque d'exposition, après contact patient, après contact environnement.</li></ul></div>
+<h3>3. La stérilisation et la désinfection</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Stérilisation</strong> : élimination de tous les micro-organismes (autoclave à 121 °C pendant 15-20 min).</li><li><strong>Désinfection</strong> : élimination des germes pathogènes sur un objet.</li><li><strong>Antisepsie</strong> : désinfection de la peau et des muqueuses.</li><li><strong>Nettoyage</strong> : étape préalable à toute désinfection (eau + détergent).</li></ul></div>
+<h3>4. Autres mesures d'hygiène</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Port des gants</strong> : pour tout contact avec les liquides biologiques.</li><li><strong>Port du masque</strong> : pour prévenir les infections respiratoires.</li><li><strong>Blouse</strong> : propre, changée régulièrement.</li><li><strong>Gestion des déchets</strong> : tri (DASRI, déchets ménagers, objets piquants).</li><li><strong>Aération des salles</strong> : plusieurs fois par jour.</li><li><strong>Nettoyage des surfaces</strong> : quotidien avec désinfectant.</li><li><strong>Contrôle des visiteurs</strong> : limitation, information sur les mesures d'hygiène.</li></ul><p><a href="https://www.youtube.com/results?search_query=hygiène+hospitalière+lave+des+mains+infection+nosocomiale" target="_blank" rel="noopener">🎥 Recherche : l'hygiène hospitalière (chaînes de cours de soins infirmiers)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>L'hygiène hospitalière prévient les infections nosocomiales. Le lavage des mains suit les 5 indications de l'OMS. La stérilisation élimine tous les germes ; la désinfection élimine les pathogènes. Les mesures comprennent aussi les gants, le masque, la gestion des déchets et le nettoyage.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme réformé de Soins Infirmiers, Ministère de la Santé (RDC) ; OMS — Hygiène des mains.</div>
+    `
+},
+{
+    title: "Leçon 3 — La prise des constantes vitales",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Un patient arrive aux urgences de l'hôpital de Kisangani. L'infirmière doit immédiatement prendre ses constantes : température, pouls, respiration, tension artérielle. Ces mesures orientent le diagnostic du médecin et guident la prise en charge. Une infirmière ne peut pas se tromper.</p></div>
+<h3>1. La température corporelle</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Normale</strong> : 36,5 °C à 37,5 °C.</li><li><strong>Voies de prise</strong> : buccale, axillaire, rectale, tympanique.</li><li><strong>Fièvre</strong> : > 38 °C. <strong>Hyperthermie</strong> : > 40 °C.</li><li><strong>Hypothermie</strong> : < 35 °C.</li></ul></div>
+<h3>2. Le pouls</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Normale adulte</strong> : 60 à 100 battements/minute.</li><li><strong>Tachycardie</strong> : > 100 bpm. <strong>Bradycardie</strong> : < 60 bpm.</li><li><strong>Sites</strong> : radial (le plus utilisé), carotidien, fémoral, pédieux.</li><li><strong>Caractéristiques</strong> : fréquence, régularité, amplitude.</li></ul></div>
+<h3>3. La respiration</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Normale adulte</strong> : 12 à 20 cycles/minute.</li><li><strong>Polypnée</strong> : > 20 cycles/min. <strong>Bradypnée</strong> : < 12 cycles/min.</li><li><strong>Dyspnée</strong> : difficulté respiratoire. <strong>Apnée</strong> : arrêt respiratoire.</li><li><strong>Observer</strong> : amplitude, régularité, bruits (sifflements, râles).</li></ul></div>
+<h3>4. La tension artérielle</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Normale adulte</strong> : 120/80 mmHg.</li><li><strong>Hypertension</strong> : ≥ 140/90 mmHg.</li><li><strong>Hypotension</strong> : < 90/60 mmHg.</li><li><strong>Matériel</strong> : tensiomètre (à mercure, anéroïde, électronique) + stéthoscope.</li></ul></div>
+<h3>5. Application pratique</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p>Un patient arrive avec : température 39,5 °C, pouls 110/min, respiration 24/min, tension 150/95 mmHg. L'infirmière note :</p><ul><li>Fièvre (39,5 °C).</li><li>Tachycardie (110/min).</li><li>Polypnée (24/min).</li><li>Hypertension (150/95).</li><li>Ces signes évoquent une infection associée à une hypertension. L'infirmière alerte immédiatement le médecin.</li></ul><p><a href="https://www.youtube.com/results?search_query=constantes+vitales+température+pouls+tension+artérielle" target="_blank" rel="noopener">🎥 Recherche : la prise des constantes vitales (chaînes de cours de soins infirmiers)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Les constantes vitales sont : température (36,5-37,5 °C), pouls (60-100 bpm), respiration (12-20 cycles/min) et tension artérielle (120/80 mmHg). Toute anomalie doit être signalée au médecin. Les mesures sont notées dans le dossier du patient.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme réformé de Soins Infirmiers, Ministère de la Santé (RDC).</div>
+    `
+},
+{
+    title: "Leçon 4 — L'administration des médicaments",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Au service de pédiatrie de l'hôpital de Matadi, une infirmière doit administrer un sirop à un enfant. Elle vérifie 5 fois : le bon patient, le bon médicament, la bonne dose, la bonne voie, le bon moment. Une erreur peut être fatale. La règle des « 5 B » est fondamentale.</p></div>
+<h3>1. La règle des 5 B</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Bon patient</strong> : vérifier l'identité du patient.</li><li><strong>Bon médicament</strong> : vérifier le nom, la date de péremption, l'intégrité de l'emballage.</li><li><strong>Bonne dose</strong> : calculer précisément la dose prescrite.</li><li><strong>Bonne voie</strong> : orale, injectable, rectale, cutanée, respiratoire.</li><li><strong>Bon moment</strong> : respecter les horaires prescrits (matin, midi, soir, coucher).</li></ul></div>
+<h3>2. Les voies d'administration</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Voie orale</strong> : comprimés, sirops, gélules. Avantage : simple. Inconvénient : action lente.</li><li><strong>Voie injectable</strong> : intraveineuse (IV), intramusculaire (IM), sous-cutanée (SC), intradermique (ID).</li><li><strong>Voie rectale</strong> : suppositoires, lavements.</li><li><strong>Voie cutanée</strong> : pommades, crèmes, patchs.</li><li><strong>Voie respiratoire</strong> : inhalation, aérosol.</li><li><strong>Voie sublinguale</strong> : sous la langue.</li></ul></div>
+<h3>3. Les règles de sécurité</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Vérification de la prescription</strong> : médicale, écrite, datée, signée.</li><li><strong>Hygiène des mains</strong> : avant et après chaque administration.</li><li><strong>Matériel stérile</strong> : pour toute injection.</li><li><strong>Surveillance</strong> : observer la réaction du patient (allergie, effets secondaires).</li><li><strong>Traçabilité</strong> : noter l'heure, la dose et la voie dans le dossier.</li><li><strong>Élimination des déchets</strong> : aiguilles dans le collecteur prévu, jamais dans la poubelle ordinaire.</li></ul></div>
+<h3>4. Application pratique</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p>Un patient doit recevoir 500 mg de paracétamol toutes les 6 heures par voie orale. L'infirmière :</p><ul><li>Vérifie l'identité du patient (bracelet).</li><li>Prend la boîte de paracétamol 500 mg.</li><li>Vérifie la date de péremption.</li><li>Administre le comprimé avec un verre d'eau.</li><li>Note l'heure (8h, 14h, 20h, 2h) dans le dossier.</li><li>Surveille la baisse de la fièvre et l'absence d'allergie.</li></ul><p><a href="https://www.youtube.com/results?search_query=administration+médicaments+5B+voies+injection" target="_blank" rel="noopener">🎥 Recherche : l'administration des médicaments (chaînes de cours de soins infirmiers)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La règle des 5 B (bon patient, bon médicament, bonne dose, bonne voie, bon moment) est le fondement de l'administration des médicaments. Les voies sont multiples : orale, injectable, rectale, cutanée, respiratoire. La traçabilité et la surveillance sont indispensables.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme réformé de Soins Infirmiers, Ministère de la Santé (RDC) ; OMS — Bon usage des médicaments.</div>
+    `
+},
+{
+    title: "Leçon 5 — Les pansements et la cicatrisation",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>À l'hôpital de Goma, un patient présente une plaie infectée au pied. L'infirmière doit nettoyer, désinfecter, panser et surveiller la cicatrisation. Sans un pansement correct, la plaie peut s'aggraver et entraîner une septicémie.</p></div>
+<h3>1. Les types de plaies</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Plaie aiguë</strong> : récente (coupure, brûlure, morsure).</li><li><strong>Plaie chronique</strong> : évolue depuis longtemps (ulcère, escarre, plaie diabétique).</li><li><strong>Plaie propre</strong> : sans infection, sans corps étranger.</li><li><strong>Plaie contaminée</strong> : présence de germes.</li><li><strong>Plaie infectée</strong> : rougeur, chaleur, douleur, pus.</li></ul></div>
+<h3>2. Les phases de la cicatrisation</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Phase inflammatoire</strong> (J0-J3) : nettoyage, saignement, arrivée des globules blancs.</li><li><strong>Phase de détersion</strong> (J3-J7) : élimination des tissus morts.</li><li><strong>Phase de bourgeonnement</strong> (J5-J21) : formation du nouveau tissu.</li><li><strong>Phase de maturation</strong> (J21-1 an) : consolidation, formation de la cicatrice.</li></ul></div>
+<h3>3. La technique du pansement</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>1.</strong> Préparer le matériel : compresses stériles, antiseptique, sérum physiologique, gants stériles, sparadrap.</li><li><strong>2.</strong> Hygiène des mains, port des gants.</li><li><strong>3.</strong> Retirer l'ancien pansement avec précaution.</li><li><strong>4.</strong> Nettoyer la plaie avec du sérum physiologique, du centre vers la périphérie.</li><li><strong>5.</strong> Désinfecter avec un antiseptique (Bétadine, chlorhexidine).</li><li><strong>6.</strong> Appliquer une compresse stérile.</li><li><strong>7.</strong> Fixer avec du sparadrap ou une bande.</li><li><strong>8.</strong> Éliminer les déchets dans le collecteur DASRI.</li><li><strong>9.</strong> Noter dans le dossier : aspect de la plaie, taille, odeur, exsudat.</li></ul></div>
+<h3>4. Les signes d'infection</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Rougeur</strong> autour de la plaie.</li><li><strong>Chaleur</strong> locale.</li><li><strong>Douleur</strong> augmentée.</li><li><strong>Œdème</strong> (gonflement).</li><li><strong>Pus</strong> ou exsudat malodorant.</li><li><strong>Fièvre</strong> générale.</li><li>En présence de ces signes, l'infirmière prévient immédiatement le médecin.</li></ul><p><a href="https://www.youtube.com/results?search_query=pansement+cicatrisation+plaie+infection+soins+infirmiers" target="_blank" rel="noopener">🎥 Recherche : les pansements et la cicatrisation (chaînes de cours de soins infirmiers)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Les plaies peuvent être aiguës ou chroniques, propres ou infectées. La cicatrisation passe par 4 phases : inflammatoire, détersion, bourgeonnement, maturation. La technique du pansement suit 9 étapes. Les signes d'infection (rougeur, chaleur, douleur, pus, fièvre) doivent alerter.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme réformé de Soins Infirmiers, Ministère de la Santé (RDC).</div>
+    `
+},
+{
+    title: "Leçon 6 — La surveillance du patient et la transmission des informations",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans un service de médecine interne à Kinshasa, l'infirmière fait sa ronde toutes les 2 heures. Elle observe, note et transmet : tel patient a vomi, tel autre a fait une chute, tel autre refuse de manger. Ces observations permettent au médecin d'adapter la prise en charge. La transmission est au cœur du soin.</p></div>
+<h3>1. Les principes de la surveillance</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Surveillance régulière</strong> : à intervalles fixes (toutes les heures, 2 heures, 4 heures).</li><li><strong>Surveillance continue</strong> : pour les patients graves (monitoring).</li><li><strong>Observation</strong> : état général, conscience, douleur, alimentation, élimination.</li><li><strong>Réactivité</strong> : adapter la fréquence selon l'état du patient.</li></ul></div>
+<h3>2. Les éléments à surveiller</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>État de conscience</strong> : éveillé, somnolent, confus, coma.</li><li><strong>Douleur</strong> : localisation, intensité (échelle 0 à 10), type.</li><li><strong>Élimination</strong> : urines (quantité, couleur), selles (fréquence, aspect).</li><li><strong>Alimentation et hydratation</strong> : apports, refus, vomissements.</li><li><strong>Peau</strong> : couleur, chaleur, plaies, escarres.</li><li><strong>Mobilité</strong> : autonomie, chutes, paralysie.</li></ul></div>
+<h3>3. La transmission des informations</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Transmission orale</strong> : entre équipes, lors du changement de service (relève).</li><li><strong>Transmission écrite</strong> : dossier du patient, cahier de liaison, fiche de surveillance.</li><li><strong>Informatisée</strong> : dossier électronique du patient (dans les hôpitaux modernes).</li><li><strong>Règle d'or</strong> : transmettre les faits, pas les jugements.</li></ul></div>
+<h3>4. Application pratique</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p>L'infirmière note à 14h : « Patient M. K., 45 ans, agité depuis 13h, température 38,8 °C, a refusé de manger, urines foncées. » Elle transmet oralement à l'équipe de l'après-midi :</p><ul><li>Patient agité.</li><li>Fièvre 38,8 °C.</li><li>Refus alimentaire.</li><li>Urines foncées (possible déshydratation).</li><li>Le médecin est prévenu pour réévaluation.</li></ul><p><a href="https://www.youtube.com/results?search_query=surveillance+patient+transmission+soins+infirmiers" target="_blank" rel="noopener">🎥 Recherche : la surveillance du patient (chaînes de cours de soins infirmiers)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La surveillance peut être régulière ou continue. Les éléments à surveiller sont : conscience, douleur, élimination, alimentation, peau, mobilité. La transmission se fait oralement, par écrit ou par informatique. On transmet des faits, jamais des jugements.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme réformé de Soins Infirmiers, Ministère de la Santé (RDC).</div>
+    `
+},
+{
+    title: "Leçon 7 — L'urgence vitale et les premiers secours",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Sur la route de Kinshasa, un accident vient de se produire. Une victime est inconsciente, ne respire plus. Un passant formé aux premiers secours commence immédiatement la réanimation cardio-pulmonaire (RCP). Chaque seconde compte : le cerveau ne survit que 3 minutes sans oxygène.</p></div>
+<h3>1. L'évaluation de la victime</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Sécurité</strong> : sécuriser les lieux avant d'intervenir.</li><li><strong>Conscience</strong> : appeler la victime, la secouer doucement.</li><li><strong>Respiration</strong> : basculer la tête, vérifier le souffle (10 secondes).</li><li><strong>Circulation</strong> : prendre le pouls carotidien (5-10 secondes).</li><li><strong>Alerte</strong> : appeler les secours (SAMU, 112, pompiers).</li></ul></div>
+<h3>2. La réanimation cardio-pulmonaire (RCP)</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Position</strong> : victime allongée sur le dos, sur plan dur.</li><li><strong>Compressions thoraciques</strong> : 30 compressions à 100-120/min, 5-6 cm de profondeur.</li><li><strong>Ventilations</strong> : 2 insufflations.</li><li><strong>Cycle</strong> : 30 compressions + 2 ventilations, répéter.</li><li><strong>Défibrillateur</strong> : utiliser dès que disponible.</li></ul></div>
+<h3>3. Les autres urgences</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Hémorragie</strong> : comprimer la plaie avec un tissu propre, surélever le membre.</li><li><strong>Étouffement</strong> : manœuvre de Heimlich (compressions abdominales).</li><li><strong>Brûlure</strong> : refroidir avec de l'eau, ne pas percer les cloques.</li><li><strong>Fracture</strong> : immobiliser, ne pas déplacer la victime.</li><li><strong>Intoxication</strong> : ne pas faire vomir, appeler le centre antipoison.</li><li><strong>Convulsions</strong> : protéger la tête, ne rien mettre dans la bouche.</li></ul></div>
+<h3>4. Application pratique</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p>Un enfant de 5 ans s'étouffe avec une cacahuète à Kinshasa.</p><ul><li><strong>Si l'enfant tousse</strong> : l'encourager à tousser.</li><li><strong>Si l'enfant ne respire plus</strong> : 5 tapes dans le dos + 5 compressions abdominales (Heimlich adaptée).</li><li><strong>Si l'enfant perd connaissance</strong> : commencer la RCP, appeler les secours.</li></ul><p><a href="https://www.youtube.com/results?search_query=premiers+secours+RCP+réanimation+urgences+vitales" target="_blank" rel="noopener">🎥 Recherche : les premiers secours (chaînes de cours de soins infirmiers)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>L'évaluation de la victime suit : sécurité, conscience, respiration, circulation, alerte. La RCP alterne 30 compressions et 2 ventilations. Les autres urgences (hémorragie, étouffement, brûlure, fracture, intoxication, convulsions) nécessitent des gestes spécifiques.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme réformé de Soins Infirmiers, Ministère de la Santé (RDC) ; Croix-Rouge RDC ; OMS.</div>
+    `
+},
+{
+    title: "Leçon 8 — La santé maternelle et infantile",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Au centre de santé de Mbandaka, une femme enceinte vient pour sa consultation prénatale. L'infirmière vérifie son poids, sa tension, la hauteur utérine, les mouvements du bébé. Elle l'informe sur l'alimentation, les vaccins, les signes de danger. La santé maternelle et infantile sauve des vies.</p></div>
+<h3>1. La consultation prénatale (CPN)</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Fréquence</strong> : au moins 4 consultations (OMS recommande 8).</li><li><strong>1re consultation</strong> : avant 12 semaines (dépistage, bilan, conseils).</li><li><strong>Examens</strong> : poids, tension, hauteur utérine, mouvements fœtaux, analyse d'urine.</li><li><strong>Vaccination</strong> : VAT (tétanos).</li><li><strong>Suppémentation</strong> : fer + acide folique.</li><li><strong>Prévention du paludisme</strong> : moustiquaire imprégnée, TPI (traitement préventif intermittent).</li></ul></div>
+<h3>2. L'accouchement</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Signes de travail</strong> : contractions régulières, rupture de la poche des eaux, douleurs lombaires.</li><li><strong>Phases</strong> : dilatation, expulsion, délivrance.</li><li><strong>Surveillance</strong> : pouls, tension, saignement, état du nouveau-né.</li><li><strong>Partogramme</strong> : outil de suivi du travail.</li><li><strong>Accouchement à risque</strong> : hémorragie, éclampsie, dystocie, infection.</li></ul></div>
+<h3>3. Le nouveau-né</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Évaluation APGAR</strong> : à 1 min et 5 min (cœur, respiration, tonus, réflexes, couleur).</li><li><strong>Soins immédiats</strong> : sécher, couvrir, couper le cordon, mettre au sein.</li><li><strong>Allaitement maternel</strong> : exclusif jusqu'à 6 mois.</li><li><strong>Vaccination</strong> : BCG, polio, DTC (selon le calendrier PEV).</li><li><strong>Surveillance</strong> : poids, température, ictère, cordon.</li></ul></div>
+<h3>4. Les signes de danger</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Grossesse</strong> : saignement, fièvre, maux de tête violents, œdème du visage, diminution des mouvements du bébé.</li><li><strong>Accouchement</strong> : saignement abondant, contractions inefficaces, pouls rapide.</li><li><strong>Nouveau-né</strong> : refus de téter, hypothermie, détresse respiratoire, ictère précoce.</li><li><strong>Enfant</strong> : diarrhée, vomissements, fièvre, difficultés respiratoires.</li><li>Devant ces signes, il faut évacuer immédiatement vers un hôpital de référence.</li></ul><p><a href="https://www.youtube.com/results?search_query=santé+maternelle+infantile+CPN+accouchement+allaitement" target="_blank" rel="noopener">🎥 Recherche : la santé maternelle et infantile (chaînes de cours de soins infirmiers)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La CPN comprend au moins 4 consultations avec examens, vaccination et supplémentation. L'accouchement suit 3 phases. Le nouveau-né est évalué par le score d'APGAR. L'allaitement maternel est exclusif jusqu'à 6 mois. Les signes de danger doivent alerter immédiatement.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme réformé de Soins Infirmiers, Ministère de la Santé (RDC) ; OMS — Santé maternelle et infantile.</div>
+    `
+},
+{
+    title: "Leçon 9 — Les soins palliatifs et l'accompagnement en fin de vie",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>À l'hôpital de Kinshasa, une patiente atteinte d'un cancer à un stade avancé est hospitalisée. L'équipe soignante ne peut plus guérir, mais elle peut soulager la douleur, apaiser l'angoisse, accompagner la famille. C'est le sens des soins palliatifs.</p></div>
+<h3>1. Définition et principes</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Soins palliatifs</strong> : soins actifs et continus visant à soulager la douleur et les symptômes, sans chercher à guérir.</li><li><strong>Objectif</strong> : améliorer la qualité de vie jusqu'à la fin.</li><li><strong>Principes</strong> : respect de la vie, soulagement de la douleur, accompagnement de la famille, respect des croyances.</li><li><strong>Équipe</strong> : médecin, infirmier, psychologue, assistant social, aumônier.</li></ul></div>
+<h3>2. Le soulagement de la douleur</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Évaluation</strong> : échelle EVA (0 à 10), échelle des visages pour les enfants.</li><li><strong>Antalgiques</strong> : palier 1 (paracétamol, AINS), palier 2 (codéine), palier 3 (morphine).</li><li><strong>Administration</strong> : à horaires fixes, avant que la douleur ne réapparaisse.</li><li><strong>Effets secondaires</strong> : constipation, nausées, somnolence.</li><li><strong>Autres méthodes</strong> : relaxation, massage, présence rassurante.</li></ul></div>
+<h3>3. L'accompagnement du patient et de la famille</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Écoute</strong> : laisser le patient parler de sa peur, de ses regrets, de ses souhaits.</li><li><strong>Présence</strong> : ne pas laisser le patient seul s'il ne le souhaite pas.</li><li><strong>Respect des croyances</strong> : prière, rites, présence d'un aumônier.</li><li><strong>Information</strong> : dire la vérité avec tact, sans brutalité.</li><li><strong>Soutien de la famille</strong> : accueil, écoute, information, répit.</li><li><strong>Deuil</strong> : accompagner la famille après le décès.</li></ul></div>
+<h3>4. L'éthique en fin de vie</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Acharnement thérapeutique</strong> : à éviter. Ne pas prolonger la souffrance inutilement.</li><li><strong>Euthanasie</strong> : interdite dans la plupart des pays, dont la RDC.</li><li><strong>Soins palliatifs</strong> : proposer jusqu'au bout.</li><li><strong>Directives anticipées</strong> : respecter les souhaits du patient s'il les a exprimés.</li><li><strong>Dignité</strong> : préserver la pudeur, l'hygiène, le confort du patient.</li></ul><p><a href="https://www.youtube.com/results?search_query=soins+palliatifs+douleur+accompagnement+fin+de+vie" target="_blank" rel="noopener">🎥 Recherche : les soins palliatifs (chaînes de cours de soins infirmiers)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Les soins palliatifs soulagent la douleur et accompagnent le patient en fin de vie. Le soulagement suit les 3 paliers d'antalgiques. L'accompagnement du patient et de sa famille est essentiel. L'éthique interdit l'acharnement thérapeutique et l'euthanasie, mais exige le respect de la dignité.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme réformé de Soins Infirmiers, Ministère de la Santé (RDC) ; OMS — Soins palliatifs.</div>
+    `
+},
+{
+    title: "Évaluation finale — Items EXETAT",
+    content: `
+        <p style="margin-bottom:18px;color:#00574b;font-size:0.95rem;">Cette évaluation regroupe des items de type EXETAT. Fais l'exercice dans les conditions du concours : sans notes, en une seule fois.</p>
+        <div class="bloc theorie">
+            <div class="bloc-label">Consignes</div>
+            <ul>
+                <li>30 questions à choix multiples.</li>
+                <li>Une seule réponse correcte par question.</li>
+                <li>Pas de retour en arrière sur les questions déjà validées.</li>
+                <li>Durée recommandée : 30 minutes.</li>
+            </ul>
+        </div>
+        <div class="quiz-container" id="quizContainer">
+            <h3 style="color:#0b3a3a;margin-bottom:16px;font-size:1.1rem;">Partie 1 — Questions</h3>
+            <div id="quizQuestions"></div>
+            <button id="submitQuiz" class="quiz-btn-submit">Valider mes réponses</button>
+            <div id="quizResult" class="quiz-result"></div>
+        </div>
+    `
+}
+];
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim()) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderQuiz() {
+    const questions = [
+        { text:"Quel est le rôle propre de l'infirmier ?", options:["Soins d'hygiène, confort, surveillance, éducation","Prescription médicale","Chirurgie"], correct:0 },
+        { text:"Que signifie secret professionnel ?", options:["Ne pas divulguer les informations médicales","Ne pas parler aux patients","Ne pas écrire dans le dossier"], correct:0 },
+        { text:"Quel document fixe le cadre légal des professions de santé en RDC ?", options:["Le Code de santé publique","Le Code du travail","Le Code civil"], correct:0 },
+        { text:"Quelle est la durée du lavage simple des mains ?", options:["30 secondes","5 minutes","10 secondes"], correct:0 },
+        { text:"Combien d'indications de l'OMS pour l'hygiène des mains ?", options:["5","3","10"], correct:0 },
+        { text:"Quelle est la température normale du corps humain ?", options:["36,5 à 37,5 °C","35 à 36 °C","38 à 39 °C"], correct:0 },
+        { text:"Quel est le pouls normal de l'adulte ?", options:["60 à 100 bpm","40 à 60 bpm","100 à 120 bpm"], correct:0 },
+        { text:"Quelle est la fréquence respiratoire normale de l'adulte ?", options:["12 à 20 cycles/min","5 à 10 cycles/min","20 à 30 cycles/min"], correct:0 },
+        { text:"Quelle est la tension artérielle normale de l'adulte ?", options:["120/80 mmHg","90/60 mmHg","150/95 mmHg"], correct:0 },
+        { text:"Quelle est la règle des 5 B ?", options:["Bon patient, bon médicament, bonne dose, bonne voie, bon moment","Bon diagnostic, bonne ordonnance","Bon infirmier, bon patient"], correct:0 },
+        { text:"Quelle est la voie d'administration la plus rapide ?", options:["Intraveineuse","Orale","Rectale"], correct:0 },
+        { text:"Combien de phases dans la cicatrisation ?", options:["4","2","6"], correct:0 },
+        { text:"Quelle phase de cicatrisation correspond à la formation du nouveau tissu ?", options:["Bourgeonnement","Inflammatoire","Détersion"], correct:0 },
+        { text:"Quels sont les signes d'infection d'une plaie ?", options:["Rougeur, chaleur, douleur, pus, fièvre","Pâleur, froideur","Absence de douleur"], correct:0 },
+        { text:"Combien de compressions thoraciques dans un cycle de RCP ?", options:["30","15","10"], correct:0 },
+        { text:"Quelle est la manœuvre pour l'étouffement ?", options:["Heimlich","Valsalva","Trendelenburg"], correct:0 },
+        { text:"Que faire en cas de brûlure ?", options:["Refroidir avec de l'eau","Percer les cloques","Mettre du beurre"], correct:0 },
+        { text:"Combien de consultations prénatales au minimum selon l'OMS ?", options:["4 à 8","1","12"], correct:0 },
+        { text:"Que signifie APGAR ?", options:["Cœur, respiration, tonus, réflexes, couleur","Âge, poids, taille","Alimentation, pleurs, sommeil"], correct:0 },
+        { text:"Jusqu'à quel âge l'allaitement maternel exclusif ?", options:["6 mois","3 mois","12 mois"], correct:0 },
+        { text:"Quel signe de danger pendant la grossesse ?", options:["Saignement, maux de tête violents, œdème","Poids stable","Appétit normal"], correct:0 },
+        { text:"Que sont les soins palliatifs ?", options:["Soins de soulagement sans guérison","Soins chirurgicaux","Soins de réanimation"], correct:0 },
+        { text:"Quelle échelle évalue la douleur chez l'adulte ?", options:["EVA","Glasgow","APGAR"], correct:0 },
+        { text:"Que faire face à l'acharnement thérapeutique ?", options:["L'éviter","Le systématiser","L'encourager"], correct:0 },
+        { text:"Quelle est la première étape devant une victime ?", options:["Sécuriser les lieux","Commencer la RCP","Alerter"], correct:0 },
+        { text:"Quel est le rythme des compressions thoraciques ?", options:["100-120/min","60-80/min","50/min"], correct:0 },
+        { text:"Comment appelle-t-on une infection contractée à l'hôpital ?", options:["Infection nosocomiale","Infection virale","Infection opportuniste"], correct:0 },
+        { text:"Quel équipement protège contre les infections respiratoires ?", options:["Le masque","Les lunettes","Les gants uniquement"], correct:0 },
+        { text:"Quelles sont les 3 phases de l'accouchement ?", options:["Dilatation, expulsion, délivrance","Contraction, repos, fin","Début, milieu, fin"], correct:0 },
+        { text:"Que signifie TPI dans la grossesse ?", options:["Traitement préventif intermittent","Test prénatal initial","Tension prénatale"], correct:0 }
+    ];
+    let html = '';
+    questions.forEach((q,i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o,k) => { html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>'; });
+        html += '</div>';
+    });
+    document.getElementById('quizQuestions').innerHTML = html;
+    document.getElementById('submitQuiz').onclick = () => {
+        let score = 0;
+        questions.forEach((q,i) => {
+            const s = document.querySelector('input[name="q' + i + '"]:checked');
+            if (s && parseInt(s.value) === q.correct) score++;
+        });
+        const pct = Math.round(score/questions.length*100);
+        document.getElementById('quizResult').innerHTML = '<div style="background:#b2dfdb;padding:16px;border-radius:10px;margin-top:14px;"><strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong><br>' + (score === questions.length ? 'Excellent. Tu maîtrises le programme.' : score >= 21 ? 'Bien. Revoyez les leçons où vous avez échoué.' : 'Relis attentivement les leçons avant l\'examen.') + '</div>';
+    };
+}
+function renderSlide(index, keepHighlight = true) {
+    const isQuiz = (index === slides.length - 1);
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    if (isQuiz) renderQuiz();
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm && !isQuiz) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+</body>
+</html>
