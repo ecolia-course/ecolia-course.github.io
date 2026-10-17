@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Biologie — 4e secondaire (EXETAT)</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body {
+    font-family:'Segoe UI',system-ui,sans-serif;
+    background:linear-gradient(160deg,#0d3b3a 0%,#00897b 50%,#04211f 100%);
+    display:flex; justify-content:center; align-items:center;
+    padding:8px;
+}
+.container {
+    width:100%; max-width:1400px; background:#fefdf8;
+    border-radius:20px; overflow:hidden;
+    display:flex; flex-direction:column;
+    height:100%; max-height:100vh;
+    box-shadow:0 20px 60px rgba(0,0,0,0.4);
+}
+
+/* BARRE DE PROGRESSION */
+.progress-bar { height:4px; background:#b2dfdb; flex-shrink:0; }
+.progress-fill {
+height:100%; background:linear-gradient(90deg,#4db6ac,#004d40);
+width:0%; transition:width 0.3s;
+}
+
+/* HEADER COMPACT */
+.header {
+padding:10px 16px; background:#e0f2f1;
+border-bottom:1px solid #80cbc4;
+display:flex; justify-content:space-between; align-items:center;
+gap:10px; flex-shrink:0;
+}
+.header h1 { color:#004d40; font-size:1rem; font-weight:600; border-bottom:2px solid #00897b; padding-bottom:2px; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box {
+display:flex; background:white; border-radius:20px;
+padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06);
+}
+.search-box input {
+border:none; padding:6px 10px; border-radius:20px;
+outline:none; width:130px; font-size:0.8rem;
+}
+.search-box button {
+background:none; border:none; cursor:pointer;
+padding:4px 8px; font-size:0.85rem; color:#00695c;
+}
+.badge {
+background:#00897b; color:white; padding:4px 10px;
+border-radius:20px; font-weight:bold; font-size:0.75rem;
+}
+.search-nav {
+display:none; gap:4px; background:#b2dfdb;
+padding:2px 8px; border-radius:20px; align-items:center;
+font-size:0.75rem;
+}
+.search-nav button {
+background:none; border:none; cursor:pointer;
+font-size:0.9rem; color:#004d40; padding:2px 4px;
+}
+
+/* CONTENU PLEIN ÉCRAN + AÉRÉ */
+.content {
+padding:28px 32px; flex:1; overflow-y:auto;
+background:#fff; scroll-behavior:smooth;
+line-height:1.85;
+}
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide {
+from { opacity:0; transform:translateY(8px); }
+to { opacity:1; transform:translateY(0); }
+}
+
+.slide-title {
+color:#004d40; font-size:1.5rem; font-weight:700;
+padding-bottom:12px; margin-bottom:20px;
+border-bottom:2px solid #00897b;
+}
+.slide-content { color:#04211f; font-size:1rem; }
+
+/* BLOCS PÉDAGOGIQUES */
+.bloc {
+padding:18px 22px; border-radius:12px;
+margin:22px 0; line-height:1.85;
+}
+.bloc-label {
+font-size:0.75rem; font-weight:700;
+letter-spacing:1.5px; text-transform:uppercase;
+margin-bottom:8px; opacity:0.7;
+}
+.bloc p, .bloc li { font-size:0.98rem; }
+.bloc h3 {
+font-size:1.1rem; margin:20px 0 10px;
+font-weight:600;
+}
+.bloc h3:first-child { margin-top:0; }
+
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+
+.theorie { background:#e0f2f1; border-left:4px solid #00897b; }
+.theorie .bloc-label { color:#004d40; }
+
+.pratique { background:#e8f5e9; border-left:4px solid #2e7d32; }
+.pratique .bloc-label { color:#1b5e20; }
+
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+
+/* LISTES */
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:#004d40; }
+
+/* QUIZ */
+.quiz-container { padding:22px; background:#e0f2f1; border-radius:16px; }
+.quiz-question {
+background:white; border-radius:10px; padding:16px;
+margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05);
+}
+.quiz-question p { font-weight:600; margin-bottom:10px; color:#004d40; }
+.quiz-question label {
+display:block; padding:8px 10px; margin:4px 0;
+border-radius:6px; cursor:pointer; transition:background 0.2s;
+}
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit {
+background:#00695c; color:white; border:none;
+padding:12px 24px; border-radius:30px; font-size:1rem;
+cursor:pointer; font-weight:600; margin-top:14px;
+}
+.quiz-result { margin-top:16px; font-weight:600; }
+
+/* SOURCES */
+.sources {
+background:#f5f5f5; padding:12px 16px; border-radius:10px;
+margin-top:26px; font-size:0.82rem; color:#666;
+border-left:3px solid #999; line-height:1.6;
+}
+.sources strong { color:#333; }
+
+/* FOOTER COMPACT */
+.controls {
+padding:8px 16px; background:#fafafa;
+border-top:1px solid #e0e0e0;
+display:flex; justify-content:space-between;
+align-items:center; gap:8px; flex-shrink:0;
+}
+.nav-btn {
+background:white; color:#004d40;
+border:1px solid #ccc; padding:8px 14px;
+border-radius:8px; font-size:0.82rem;
+cursor:pointer; font-weight:500;
+}
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+
+/* SCROLLBAR STYLE */
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:#d0ece8; }
+.content::-webkit-scrollbar-thumb { background:#00897b; border-radius:3px; }
+
+/* MOBILE */
+@media (max-width:600px) {
+body { padding:0; }
+.container { border-radius:0; max-height:100vh; }
+.content { padding:20px 18px; }
+.slide-title { font-size:1.25rem; }
+.search-box input { width:90px; }
+.header h1 { font-size:0.85rem; }
+}
+</style>
+
+</head>
+<body>
+<div class="container">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+</div>
+
+<script>
+const slides = [
+{
+    title: "Leçon 1 — La cellule : ultrastructure et fonctions",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Au laboratoire de l'Institut supérieur de Kisangani, un étudiant observe une feuille d'Elaeis au microscope. Il découvre des compartiments minuscules : noyau, chloroplastes, vacuoles. Tous les êtres vivants sont faits de cellules, mais leurs cellules ne se ressemblent pas. Comment s'organisent-elles ?</p></div>
+<h3>1. La théorie cellulaire</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Animal_Cell.svg?width=700" alt="Ultrastructure d'une cellule animale" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><ul><li><strong>Cellule</strong> : plus petite unité vivante capable de se reproduire.</li><li><strong>Théorie cellulaire</strong> (Schleiden, Schwann, Virchow, XIXe s.) : tout être vivant est fait de cellules ; la cellule est l'unité de structure et de fonction ; toute cellule vient d'une autre cellule (<em>Omnis cellula e cellula</em>).</li><li><strong>Procaryote</strong> : sans noyau (bactéries) ; <strong>eucaryote</strong> : avec noyau (animal, végétal, champignon, protiste).</li></ul></div>
+<h3>2. Ultrastructure de la cellule eucaryote</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Membrane plasmique</strong> : bicouche lipidique + protéines ; contrôle les échanges.</li><li><strong>Cytoplasme</strong> : hyaloplasme + organites.</li><li><strong>Noyau</strong> : enveloppe nucléaire, nucléoplasme, nucléole, chromatine (ADN).</li><li><strong>Mitochondries</strong> : respiration cellulaire, production d'ATP.</li><li><strong>Chloroplastes</strong> (végétaux) : photosynthèse, contiennent la chlorophylle.</li><li><strong>Ribosomes</strong> : synthèse des protéines.</li><li><strong>Réticulum endoplasmique</strong> (lisse et rugueux), <strong>appareil de Golgi</strong>, <strong>lysosomes</strong>, <strong>vacuoles</strong>, <strong>cytosquelette</strong>.</li><li><strong>Paroi cellulosique</strong> chez les végétaux uniquement.</li></ul></div>
+<h3>3. Différences animal/végétal et applications</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Cellule animale</strong> : pas de paroi, pas de chloroplastes, petites vacuoles, centrosome.</li><li><strong>Cellule végétale</strong> : paroi cellulosique, chloroplastes, grande vacuole centrale, pas de centrosome.</li><li><strong>Applications en RDC</strong> : au laboratoire de Lubumbashi, on cultive des cellules pour tester des médicaments ; à Kinshasa, l'analyse cellulaire du sang détecte le paludisme.</li><li><strong>Cellules souches</strong> : espoir thérapeutique (recherche à l'UNIKIN).</li></ul><p><a href="https://www.youtube.com/results?search_query=cellule+ultrastructure+organites+biologie+terminale" target="_blank" rel="noopener">🎥 Recherche : la cellule et ses organites (chaînes de cours de biologie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La cellule est l'unité de base du vivant. Elle possède un noyau, un cytoplasme et de nombreux organites spécialisés. Cellule animale et cellule végétale diffèrent par la paroi, les chloroplastes et les vacuoles.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Biologie, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice BIO6.1.<br><strong>Sigles :</strong> MEPST : Ministère de l'Enseignement primaire, secondaire et technique ; DIPROMAD : Direction des programmes scolaires et matériel didactique ; EXETAT : Examen d'État ; HSC : Humanités scientifiques.</div>
+    `
+},
+{
+    title: "Leçon 2 — Échanges membranaires et transport cellulaire",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>À l'hôpital de Goma, on perfuse un patient déshydraté avec du sérum physiologique. Pourquoi l'eau entre-t-elle dans les cellules sans que le sel ne les fasse éclater ? La réponse est dans les échanges membranaires.</p></div>
+<h3>1. Structure de la membrane plasmique</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Cell_membrane_detailed_diagram_en.svg?width=700" alt="Structure de la membrane plasmique" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><ul><li><strong>Modèle de la mosaïque fluide</strong> (Singer et Nicolson, 1972).</li><li><strong>Bicouche lipidique</strong> : phospholipides avec têtes hydrophiles et queues hydrophobes.</li><li><strong>Protéines</strong> : intégrées ou périphériques (transport, récepteurs, enzymes).</li><li><strong>Cholestérol</strong> : rigidité et fluidité.</li><li><strong>Glycocalyx</strong> : reconnaissance cellulaire.</li><li>La membrane est <strong>sélectivement perméable</strong>.</li></ul></div>
+<h3>2. Transport à travers la membrane</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Transport passif</strong> (sans énergie) : <strong>diffusion simple</strong> (O<sub>2</sub>, CO<sub>2</sub>), <strong>diffusion facilitée</strong> (glucose via protéines), <strong>osmose</strong> (eau).</li><li><strong>Transport actif</strong> (avec ATP) : <strong>pompe Na<sup>+</sup>/K<sup>+</sup></strong>, endocytose, exocytose.</li><li><strong>Osmose</strong> : passage de l'eau du milieu hypotonique vers le milieu hypertonique.</li><li><strong>Hémolyse</strong> : éclatement des globules rouges en milieu hypotonique.</li><li><strong>Plasmolyse</strong> : décollement de la membrane végétale en milieu hypertonique.</li></ul></div>
+<h3>3. Applications en RDC</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Sérum physiologique à 0,9 %</strong> : isotonique au plasma, utilisé à l'hôpital de Kinshasa.</li><li><strong>Conservation des aliments</strong> : le sel et le sucre créent un milieu hypertonique qui déshydrate les microbes.</li><li><strong>Dialyse rénale</strong> : à l'hôpital de Lubumbashi, elle utilise l'osmose et la diffusion pour filtrer le sang.</li><li><strong>Absorption intestinale</strong> : les villosités de l'intestin absorbent l'eau et les nutriments.</li><li><strong>Absorption racinaire</strong> : les poils absorbants des plantes de Kwilu puisent l'eau du sol.</li></ul><p><a href="https://www.youtube.com/results?search_query=membrane+plasmique+transport+cellulaire+biologie+terminale" target="_blank" rel="noopener">🎥 Recherche : transport membranaire (chaînes de cours de biologie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La membrane plasmique est une mosaïque fluide sélectivement perméable. Les échanges se font par transport passif (diffusion, osmose) ou actif (pompe Na<sup>+</sup>/K<sup>+</sup>). L'osmose est essentielle en médecine et en agroalimentaire.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Biologie, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice BIO6.2.<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT, HSC.</div>
+    `
+},
+{
+    title: "Leçon 3 — Métabolisme cellulaire : respiration et photosynthèse",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans les rizières de Mbandaka, les plants de riz captent la lumière du soleil et fabriquent leur matière. La nuit, ils respirent comme nous. Ces deux processus opposés — photosynthèse et respiration — font tourner la biosphère.</p></div>
+<h3>1. La photosynthèse</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Photosynthesis_en.svg?width=700" alt="Schéma de la photosynthèse" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><ul><li><strong>Équation globale</strong> : 6CO<sub>2</sub> + 6H<sub>2</sub>O + lumière → C<sub>6</sub>H<sub>12</sub>O<sub>6</sub> + 6O<sub>2</sub>.</li><li>Se déroule dans les <strong>chloroplastes</strong> (thylakoïdes et stroma).</li><li><strong>Phase photochimique</strong> (lumière) : photolyse de l'eau, production d'ATP et de NADPH, libération d'O<sub>2</sub>.</li><li><strong>Phase chimique</strong> (cycle de Calvin) : fixation du CO<sub>2</sub>, synthèse du glucose.</li><li>Pigments : <strong>chlorophylle a et b</strong>, caroténoïdes.</li></ul></div>
+<h3>2. La respiration cellulaire</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Équation globale</strong> : C<sub>6</sub>H<sub>12</sub>O<sub>6</sub> + 6O<sub>2</sub> → 6CO<sub>2</sub> + 6H<sub>2</sub>O + énergie (ATP).</li><li><strong>Glycolyse</strong> (cytoplasme) : glucose → 2 pyruvates + 2 ATP.</li><li><strong>Cycle de Krebs</strong> (matrice mitochondriale) : production de NADH, FADH<sub>2</sub>.</li><li><strong>Chaîne respiratoire</strong> (crête mitochondriale) : production massive d'ATP (≈ 36 ATP au total).</li><li><strong>Fermentation</strong> (sans O<sub>2</sub>) : alcoolique (levures) ou lactique (muscles).</li></ul></div>
+<h3>3. Comparaison et applications</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Photosynthèse</strong> : anabolisme, consomme CO<sub>2</sub>, libère O<sub>2</sub>, stocke l'énergie.</li><li><strong>Respiration</strong> : catabolisme, consomme O<sub>2</sub>, libère CO<sub>2</sub>, libère l'énergie.</li><li><strong>Applications RDC</strong> : fermentation du manioc à Kinshasa, brassage de la bière à Lubumbashi, production de bioéthanol à Kwilu.</li><li><strong>Forets du bassin du Congo</strong> : poumon vert de la planète, elles absorbent le CO<sub>2</sub> et produisent de l'O<sub>2</sub>.</li></ul><p><a href="https://www.youtube.com/results?search_query=photosynthèse+respiration+cellulaire+biologie+terminale" target="_blank" rel="noopener">🎥 Recherche : photosynthèse et respiration (chaînes de cours de biologie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La photosynthèse (chloroplastes) fabrique du glucose à partir de CO<sub>2</sub>, d'eau et de lumière. La respiration (mitochondries) libère l'énergie du glucose en ATP. Ces deux processus complémentaires font fonctionner la biosphère.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Biologie, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice BIO6.3.<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT, HSC.</div>
+    `
+},
+{
+    title: "Leçon 4 — La division cellulaire : mitose",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Après une blessure à Kisangani, ta peau se répare en quelques jours. Des millions de cellules se sont divisées pour combler la plaie. Ce mécanisme s'appelle la mitose. Comment se déroule-t-il ?</p></div>
+<h3>1. Le cycle cellulaire</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Mitosis_diagram.svg?width=700" alt="Les étapes de la mitose" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><ul><li><strong>Interphase</strong> : phase de croissance et de réplication de l'ADN (G<sub>1</sub>, S, G<sub>2</sub>).</li><li><strong>Mitose</strong> : division du noyau en 4 phases.</li><li><strong>Cytodiagnèse</strong> : division du cytoplasme.</li><li>La mitose produit <strong>2 cellules filles identiques</strong> à la cellule mère (même nombre de chromosomes : 2n).</li></ul></div>
+<h3>2. Les phases de la mitose</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Prophase</strong> : condensation des chromosomes, disparition de l'enveloppe nucléaire, formation du fuseau.</li><li><strong>Métaphase</strong> : alignement des chromosomes sur la plaque équatoriale.</li><li><strong>Anaphase</strong> : séparation des chromatides sœurs vers les pôles opposés.</li><li><strong>Télophase</strong> : reconstitution des noyaux, décondensation des chromosomes.</li><li>Chez l'Homme : 46 chromosomes (23 paires).</li></ul></div>
+<h3>3. Rôles et applications</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Croissance</strong> : multiplication des cellules d'un organisme.</li><li><strong>Réparation</strong> : cicatrisation des plaies, renouvellement de l'épiderme, des globules rouges.</li><li><strong>Reproduction asexuée</strong> chez certains organismes (bouturage, marcottage).</li><li><strong>Cancer</strong> : mitose non contrôlée, prolifération anarchique des cellules.</li><li><strong>Applications en RDC</strong> : culture cellulaire à Kinshasa, recherche sur le cancer du col de l'utérus, chimio-thérapie à Lubumbashi.</li></ul><p><a href="https://www.youtube.com/results?search_query=mitose+division+cellulaire+biologie+terminale" target="_blank" rel="noopener">🎥 Recherche : la mitose (chaînes de cours de biologie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La mitose est une division conforme qui produit 2 cellules filles identiques (2n). Elle comporte 4 phases : prophase, métaphase, anaphase, télophase. Elle assure la croissance, la réparation et le renouvellement cellulaire.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Biologie, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice BIO6.4.<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT, HSC.</div>
+    `
+},
+{
+    title: "Leçon 5 — La méiose et la reproduction sexuée",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans une famille de Kinshasa, cinq enfants se ressemblent mais sont tous différents. Pourquoi ? Parce que la méiose, qui fabrique les gamètes, produit des cellules génétiquement uniques. Chaque enfant est un mélange unique de ses parents.</p></div>
+<h3>1. Définition et rôles de la méiose</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Méiose</strong> : division cellulaire qui produit 4 cellules <strong>haploïdes</strong> (n) à partir d'une cellule diploïde (2n).</li><li>Elle se déroule dans les <strong>organes reproducteurs</strong> (testicules, ovaires).</li><li><strong>Rôles</strong> : réduire le nombre de chromosomes (n), produire des gamètes, créer la diversité génétique.</li><li>Deux divisions successives : <strong>méiose I</strong> (réductionnelle) et <strong>méiose II</strong> (équationnelle).</li></ul></div>
+<h3>2. Les étapes de la méiose</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Prophase I</strong> : appariement des chromosomes homologues, <strong>crossing-over</strong> (échange de segments).</li><li><strong>Métaphase I</strong> : alignement des paires de chromosomes homologues.</li><li><strong>Anaphase I</strong> : séparation des chromosomes homologues.</li><li><strong>Télophase I</strong> : formation de 2 cellules haploïdes.</li><li><strong>Méiose II</strong> : séparation des chromatides sœurs, formation de 4 cellules haploïdes.</li></ul></div>
+<h3>3. Sources de diversité et applications</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Crossing-over</strong> : échange de segments entre chromosomes homologues.</li><li><strong>Répartition indépendante</strong> des chromosomes homologues.</li><li><strong>Fécondation</strong> : rencontre aléatoire des gamètes.</li><li>Chez l'Homme : 2<sup>23</sup> combinaisons possibles par gamète.</li><li><strong>Applications</strong> : sélection des plantes à Kisangani, amélioration des races bovines à Mbandaka, diagnostic des anomalies chromosomiques à Kinshasa.</li></ul><p><a href="https://www.youtube.com/results?search_query=méiose+reproduction+sexuée+biologie+terminale" target="_blank" rel="noopener">🎥 Recherche : la méiose (chaînes de cours de biologie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La méiose produit 4 cellules haploïdes (n) à partir d'une cellule diploïde (2n). Elle comporte deux divisions et crée la diversité génétique par crossing-over et répartition indépendante. Elle est à la base de la reproduction sexuée.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Biologie, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice BIO6.5.<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT, HSC.</div>
+    `
+},
+{
+    title: "Leçon 6 — La génétique mendélienne",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Au jardin de Kwilu, un agronome croise deux plants de pois : l'un à fleurs rouges, l'autre à fleurs blanches. À sa grande surprise, tous les plants de la première génération ont des fleurs rouges. Les travaux de Mendel expliquent ce résultat.</p></div>
+<h3>1. Mendel et ses expériences</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Punnett_square_mendel_flowers.svg?width=700" alt="Échiquier de croisement (Punnett)" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><ul><li><strong>Gregor Mendel</strong> (1822-1884), moine autrichien, père de la génétique.</li><li>Expériences sur le pois cultivé (<em>Pisum sativum</em>) : 7 caractères étudiés.</li><li>Méthode rigoureuse : lignées pures, croisements contrôlés, comptage statistique.</li><li><strong>Caractère</strong> : trait observable (couleur, taille). <strong>Allèle</strong> : version d'un gène.</li></ul></div>
+<h3>2. Les lois de Mendel</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>1<sup>re</sup> loi</strong> (uniformité des hybrides F<sub>1</sub>) : le croisement de deux lignées pures donne une F<sub>1</sub> uniforme. L'allèle dominant masque l'allèle récessif.</li><li><strong>2<sup>e</sup> loi</strong> (ségrégation) : en F<sub>2</sub>, les caractères réapparaissent dans un rapport 3:1 (phénotypes) ou 1:2:1 (génotypes).</li><li><strong>3<sup>e</sup> loi</strong> (indépendance des caractères) : les caractères se transmettent indépendamment (si gènes sur chromosomes différents).</li><li><strong>Échiquier de Punnett</strong> : tableau pour prévoir les génotypes et phénotypes des descendants.</li></ul></div>
+<h3>3. Applications</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Amélioration des plantes</strong> : sélection du maïs, du manioc et du riz à Mbandaka et Kisangani.</li><li><strong>Élevage</strong> : sélection des bovins et volailles à Kinshasa.</li><li><strong>Conseil génétique</strong> : prévision du risque de maladies héréditaires (drépanocytose à Lubumbashi).</li><li><strong>Groupes sanguins</strong> : transmission selon les lois de Mendel.</li></ul><p><a href="https://www.youtube.com/results?search_query=génétique+mendélienne+lois+Mendel+biologie+terminale" target="_blank" rel="noopener">🎥 Recherche : génétique mendélienne (chaînes de cours de biologie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Mendel a établi les lois de l'hérédité : uniformité F<sub>1</sub>, ségrégation 3:1 en F<sub>2</sub>, indépendance des caractères. Dominance, récessivité et échiquier de Punnett permettent de prévoir les croisements.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Biologie, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice BIO6.6.<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT, HSC.</div>
+    `
+},
+{
+    title: "Leçon 7 — Bases chromosomiques de l'hérédité",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans une maternité de Lubumbashi, un bébé naît avec des traits de sa mère et de son père. Comment les informations héréditaires sont-elles transmises ? Le support est le chromosome, qui porte les gènes.</p></div>
+<h3>1. Les chromosomes</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Karyotype_(2634837243).jpg?width=700" alt="Caryotype humain" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><ul><li><strong>Chromosome</strong> : structure d'ADN et de protéines (histones), visible en mitose.</li><li><strong>Chromatide</strong> : moitié du chromosome après réplication ; reliée par un <strong>centromère</strong>.</li><li><strong>Gène</strong> : segment d'ADN codant une protéine ou un caractère.</li><li><strong>Locus</strong> : emplacement d'un gène sur le chromosome.</li><li><strong>Caryotype</strong> : ensemble des chromosomes d'une cellule, classés par taille.</li></ul></div>
+<h3>2. Chromosomes sexuels et autosomes</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>L'Homme a <strong>46 chromosomes</strong> = 23 paires.</li><li><strong>22 paires d'autosomes</strong> + <strong>1 paire de chromosomes sexuels</strong>.</li><li><strong>Femme</strong> : XX ; <strong>Homme</strong> : XY.</li><li>Le sexe de l'enfant dépend du spermatozoïde (X ou Y).</li><li><strong>Gène lié au sexe</strong> : porté par X ou Y (hémophilie, daltonisme).</li></ul></div>
+<h3>3. Anomalies chromosomiques</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Trisomie 21</strong> (Down) : 3 chromosomes 21 au lieu de 2.</li><li><strong>Syndrome de Turner</strong> : XO (femme sans second X).</li><li><strong>Syndrome de Klinefelter</strong> : XXY.</li><li><strong>Diagnostic prénatal</strong> : échographie, amniocentèse, caryotype fœtal.</li><li><strong>Applications en RDC</strong> : conseil génétique à Kinshasa, dépistage à Lubumbashi.</li></ul><p><a href="https://www.youtube.com/results?search_query=chromosomes+caryotype+hérédité+biologie+terminale" target="_blank" rel="noopener">🎥 Recherche : chromosomes et hérédité (chaînes de cours de biologie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Les chromosomes portent les gènes, unités de l'hérédité. L'Homme a 46 chromosomes dont 2 sexuels (XX ou XY). Les anomalies chromosomiques (trisomie 21, Turner, Klinefelter) sont détectables par caryotype.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Biologie, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice BIO6.7.<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT, HSC.</div>
+    `
+},
+{
+    title: "Leçon 8 — L'ADN : structure et réplication",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans un laboratoire de police scientifique à Kinshasa, on analyse une trace de sang pour identifier un suspect. La technique utilise l'ADN, molécule qui contient toute l'information génétique d'un individu. Comment est-elle structurée ?</p></div>
+<h3>1. Structure de l'ADN</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/DNA_double_helix_horizontal.png?width=700" alt="Double hélice d'ADN" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><ul><li><strong>ADN</strong> (acide désoxyribonucléique) : support de l'information génétique.</li><li><strong>Nucléotide</strong> = phosphate + désoxyribose + base azotée.</li><li><strong>4 bases</strong> : Adénine (A), Thymine (T), Guanine (G), Cytosine (C).</li><li><strong>Appariement</strong> : A-T et G-C (règle de Chargaff).</li><li><strong>Double hélice</strong> (Watson et Crick, 1953) : deux brins antiparallèles enroulés en spirale.</li><li>Liaisons : <strong>phosphodiester</strong> (squelette) et <strong>hydrogène</strong> (entre bases).</li></ul></div>
+<h3>2. La réplication de l'ADN</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Semi-conservative</strong> (Meselson et Stahl, 1958) : chaque nouveau brin garde un brin parental.</li><li><strong>Ouverture</strong> de la double hélice par l'<strong>hélicase</strong>.</li><li><strong>Synthèse</strong> par l'<strong>ADN polymérase</strong>, dans le sens 5' → 3'.</li><li>Brin <strong>directeur</strong> (continu) et brin <strong>retardé</strong> (fragments d'Okazaki).</li><li><strong>Ligase</strong> : relie les fragments.</li><li>Résultat : 2 molécules d'ADN identiques.</li></ul></div>
+<h3>3. Applications</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Tests de paternité</strong> : comparaison des profils ADN.</li><li><strong>Enquêtes policières</strong> : identification des criminels à Kinshasa.</li><li><strong>Diagnostic des maladies génétiques</strong> : drépanocytose, mucoviscidose.</li><li><strong>Biotechnologies</strong> : OGM, thérapie génique.</li><li><strong>Paléogénétique</strong> : étude de l'ADN ancien des populations congolaises.</li></ul><p><a href="https://www.youtube.com/results?search_query=ADN+structure+réplication+biologie+terminale" target="_blank" rel="noopener">🎥 Recherche : structure et réplication de l'ADN (chaînes de cours de biologie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>L'ADN est une double hélice de nucléotides (A-T, G-C). Sa réplication est semi-conservative et fait intervenir hélicase, ADN polymérase et ligase. C'est la base des tests de paternité et du diagnostic génétique.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Biologie, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice BIO6.8.<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT, HSC.</div>
+    `
+},
+{
+    title: "Leçon 9 — Synthèse des protéines : transcription et traduction",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans une usine de Kinshasa, on produit des enzymes pour l'industrie agroalimentaire. Ces enzymes sont des protéines. Comment une cellule fabrique-t-elle une protéine à partir de l'information contenue dans l'ADN ?</p></div>
+<h3>1. Du gène à la protéine</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Transcription_and_translation.svg?width=700" alt="Transcription et traduction" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><ul><li><strong>Dogme central</strong> (Crick) : ADN → ARN → Protéine.</li><li><strong>Gène</strong> : séquence d'ADN codant une protéine.</li><li><strong>ARN messager</strong> (ARNm) : copie transitoire du gène.</li><li><strong>Code génétique</strong> : triplet de bases (codon) → 1 acide aminé ; 64 codons pour 20 acides aminés.</li></ul></div>
+<h3>2. Transcription et traduction</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Transcription</strong> (noyau) : l'ARN polymérase copie le brin d'ADN en ARNm. Chez les eucaryotes, l'ARNm subit une <strong>maturation</strong> (épissage) avant de sortir.</li><li><strong>Traduction</strong> (ribosomes) : l'ARNm est lu codon par codon ; les ARNt apportent les acides aminés correspondants.</li><li><strong>Initiation</strong> : codon AUG (méthionine).</li><li><strong>Élongation</strong> : formation de la chaîne polypeptidique.</li><li><strong>Terminaison</strong> : codons stop (UAA, UAG, UGA).</li></ul></div>
+<h3>3. Applications</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Drépanocytose</strong> : une seule base modifiée (GAG → GTG) change un acide aminé et déforme l'hémoglobine. Fréquente en RDC.</li><li><strong>Antibiotiques</strong> : ils bloquent la traduction des bactéries.</li><li><strong>Biotechnologies</strong> : production d'insuline humaine par des bactéries génétiquement modifiées.</li><li><strong>Vaccins</strong> : synthèse d'antigènes par génie génétique.</li></ul><p><a href="https://www.youtube.com/results?search_query=synthèse+protéines+transcription+traduction+biologie+terminale" target="_blank" rel="noopener">🎥 Recherche : synthèse des protéines (chaînes de cours de biologie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>L'information génétique circule de l'ADN à l'ARNm (transcription) puis à la protéine (traduction). Le code génétique est universel : 64 codons pour 20 acides aminés. Une mutation peut modifier la protéine produite.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Biologie, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice BIO6.9.<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT, HSC.</div>
+    `
+},
+{
+    title: "Leçon 10 — Mutations et anomalies génétiques",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>À l'hôpital de Lubumbashi, un enfant naît avec une drépanocytose sévère. Ses parents, pourtant en bonne santé, sont porteurs sains. Une seule lettre modifiée dans l'ADN suffit à changer la vie. C'est une mutation.</p></div>
+<h3>1. Les mutations</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Point_mutation.svg?width=700" alt="Types de mutations ponctuelles" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><ul><li><strong>Mutation</strong> : modification de la séquence de l'ADN.</li><li><strong>Ponctuelle</strong> : substitution, insertion, délétion d'une base.</li><li><strong>Chromosomique</strong> : modification du nombre ou de la structure des chromosomes.</li><li><strong>Spontanée</strong> (erreur de réplication) ou <strong>induite</strong> (UV, rayons X, produits chimiques, virus).</li><li><strong>Effets</strong> : neutre, bénéfique ou délétère.</li></ul></div>
+<h3>2. Principales anomalies génétiques</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Drépanocytose</strong> : mutation du gène de l'hémoglobine (HbS). Fréquente en Afrique centrale, y compris en RDC.</li><li><strong>Mucoviscidose</strong> : atteinte des poumons et du pancréas.</li><li><strong>Hémophilie</strong> : défaut de coagulation, liée au chromosome X.</li><li><strong>Daltonisme</strong> : difficulté à distinguer les couleurs, liée au chromosome X.</li><li><strong>Trisomie 21</strong> : anomalie chromosomique (3 chromosomes 21).</li></ul></div>
+<h3>3. Prévention et conseil génétique</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Dépistage</strong> : test de falciformation à Kinshasa.</li><li><strong>Conseil génétique</strong> : information des couples à risque.</li><li><strong>Éviter les facteurs mutagènes</strong> : rayons X, tabac, alcool, pesticides.</li><li><strong>Thérapie génique</strong> : remplacer le gène défectueux (recherche en cours).</li><li><strong>Prévention en RDC</strong> : campagnes de sensibilisation, centres de dépistage à Kinshasa, Lubumbashi, Kisangani.</li></ul><p><a href="https://www.youtube.com/results?search_query=mutations+anomalies+génétiques+biologie+terminale" target="_blank" rel="noopener">🎥 Recherche : mutations génétiques (chaînes de cours de biologie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Une mutation est une modification de l'ADN, ponctuelle ou chromosomique. Elle peut être neutre, bénéfique ou délétère. La drépanocytose et l'hémophilie sont fréquentes. Le dépistage et le conseil génétique permettent de prévenir.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Biologie, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice BIO6.10.<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT, HSC.</div>
+    `
+},
+{
+    title: "Leçon 11 — Génétique humaine et groupes sanguins",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>À la banque de sang de Kinshasa, une transfusion est urgente. Le donneur est O−, le receveur A+. Le médecin doit vérifier la compatibilité. Les groupes sanguins obéissent aux lois de la génétique.</p></div>
+<h3>1. Les groupes sanguins ABO</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Système ABO</strong> : trois allèles A, B, O.</li><li><strong>A et B</strong> sont codominants ; <strong>O</strong> est récessif.</li><li><strong>Génotypes</strong> : AA ou AO (A), BB ou BO (B), AB, OO.</li><li><strong>Antigènes</strong> sur les globules rouges, <strong>anticorps</strong> dans le plasma.</li><li><strong>Transfusion</strong> : donner du sang compatible (O− = donneur universel, AB+ = receveur universel).</li></ul></div>
+<h3>2. Le facteur rhésus</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Rh+</strong> (dominant) : antigène D présent.</li><li><strong>Rh−</strong> (récessif) : antigène D absent.</li><li><strong>Maladie hémolytique du nouveau-né</strong> : mère Rh− et fœtus Rh+ → anticorps maternels attaquent le fœtus.</li><li><strong>Prévention</strong> : injection d'anti-D à la mère.</li><li><strong>Applications en RDC</strong> : dépistage du rhésus à la maternité.</li></ul></div>
+<h3>3. Autres applications de la génétique humaine</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Empreintes génétiques</strong> : identification des personnes (police, immigration).</li><li><strong>Tests de paternité</strong> : comparaison des profils ADN.</li><li><strong>Diagnostic prénatal</strong> : dépistage des anomalies (amniocentèse).</li><li><strong>Arbres généalogiques</strong> : transmission des maladies héréditaires.</li><li><strong>Drépanocytose</strong> : dépistage néonatal systématique recommandé en RDC.</li></ul><p><a href="https://www.youtube.com/results?search_query=groupes+sanguins+génétique+humaine+biologie+terminale" target="_blank" rel="noopener">🎥 Recherche : génétique humaine et groupes sanguins (chaînes de cours de biologie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le système ABO comporte 3 allèles (A, B, O) ; A et B sont codominants, O est récessif. Le facteur rhésus est déterminé par l'antigène D. La transfusion et la grossesse nécessitent une compatibilité. Les empreintes génétiques identifient les individus.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Biologie, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice BIO6.11.<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT, HSC.</div>
+    `
+},
+{
+    title: "Leçon 12 — Biotechnologie et génie génétique",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>À Kinshasa, un laboratoire produit de l'insuline humaine grâce à des bactéries génétiquement modifiées. Cette insuline soigne les diabétiques. Le génie génétique transforme la médecine et l'agriculture.</p></div>
+<h3>1. Les outils du génie génétique</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Recombinant_DNA_formation.svg?width=700" alt="Formation d'ADN recombinant" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><ul><li><strong>Enzymes de restriction</strong> : découpent l'ADN à des sites précis.</li><li><strong>ADN ligase</strong> : recolle les fragments.</li><li><strong>Vecteurs</strong> : plasmides, virus, qui transportent le gène.</li><li><strong>ADN recombinant</strong> : molécule d'ADN formée de fragments d'origines différentes.</li><li><strong>PCR</strong> (réaction de polymérisation en chaîne) : amplification d'un fragment d'ADN.</li></ul></div>
+<h3>2. Applications médicales et agricoles</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Insuline humaine</strong> : produite par <em>E. coli</em> génétiquement modifiée.</li><li><strong>Vaccins recombinants</strong> : hépatite B, HPV.</li><li><strong>Thérapie génique</strong> : correction de gènes défectueux.</li><li><strong>OGM</strong> : plantes résistantes aux insectes, à la sécheresse, enrichies en vitamines.</li><li><strong>Diagnostic</strong> : tests PCR pour le VIH, la tuberculose, la COVID-19.</li></ul></div>
+<h3>3. Enjeux éthiques et applications en RDC</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Débats éthiques</strong> : OGM, clonage, modification du génome humain.</li><li><strong>Biosécurité</strong> : encadrement des manipulations génétiques.</li><li><strong>Applications en RDC</strong> : dépistage du VIH par PCR à Kinshasa, recherche sur le manioc résistant à la mosaïque à Mbandaka.</li><li><strong>Perspectives</strong> : banques de gènes, médecine personnalisée, agriculture durable.</li></ul><p><a href="https://www.youtube.com/results?search_query=biotechnologie+génie+génétique+biologie+terminale" target="_blank" rel="noopener">🎥 Recherche : biotechnologie et génie génétique (chaînes de cours de biologie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le génie génétique utilise enzymes de restriction, ligase, vecteurs et PCR. Il permet de produire insuline, vaccins, OGM. Les applications en RDC concernent le diagnostic (VIH, tuberculose) et l'agriculture. Les enjeux éthiques sont importants.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Biologie, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice BIO6.12.<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT, HSC.</div>
+    `
+},
+{
+    title: "Leçon 13 — L'évolution : théories et preuves",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans les forêts de la Salonga, on trouve des bonobos, nos plus proches parents vivants. Pourquoi partageons-nous 98 % de notre ADN avec eux ? La théorie de l'évolution explique cette parenté.</p></div>
+<h3>1. Les théories de l'évolution</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Lamarck</strong> (1809) : transformation par usage et non-usage, transmission des caractères acquis. Théorie abandonnée.</li><li><strong>Darwin</strong> (1859, <em>L'Origine des espèces</em>) : sélection naturelle, lutte pour la vie, survie des mieux adaptés.</li><li><strong>Néo-darwinisme</strong> : synthèse moderne (génétique + Darwin) ; mutations + sélection + dérive génétique.</li><li><strong>Mutations</strong> : source de variabilité ; <strong>sélection naturelle</strong> : filtre les variants.</li></ul></div>
+<h3>2. Les preuves de l'évolution</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Darwin's_finches.svg?width=700" alt="Pinsons de Darwin" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><ul><li><strong>Paléontologiques</strong> : fossiles montrant des formes intermédiaires (archéoptéryx).</li><li><strong>Anatomiques</strong> : organes homologues (même structure, fonctions différentes) et analogues (même fonction, structures différentes).</li><li><strong>Embryologiques</strong> : ressemblances des embryons de vertébrés.</li><li><strong>Biogéographiques</strong> : répartition des espèces (pinsons des Galápagos).</li><li><strong>Moléculaires</strong> : comparaison des séquences d'ADN et de protéines.</li></ul></div>
+<h3>3. Évolution et RDC</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Bonobo</strong> (<em>Pan paniscus</em>) : espèce endémique de la RDC, protégée dans le parc de la Salonga.</li><li><strong>Gorille des montagnes</strong> : dans le parc des Virunga, espèce menacée.</li><li><strong>Okapi</strong> : espèce endémique de la forêt d'Ituri.</li><li><strong>Biodiversité</strong> : la RDC abrite 5 % de la biodiversité mondiale.</li><li><strong>Menaces</strong> : braconnage, déforestation, changement climatique.</li></ul><p><a href="https://www.youtube.com/results?search_query=théorie+évolution+Darwin+preuves+biologie+terminale" target="_blank" rel="noopener">🎥 Recherche : l'évolution (chaînes de cours de biologie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Lamarck proposait la transformation par usage, Darwin la sélection naturelle. Les preuves de l'évolution sont paléontologiques, anatomiques, embryologiques, biogéographiques et moléculaires. La RDC abrite des espèces uniques (bonobo, okapi).</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Biologie, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice BIO6.13.<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT, HSC.</div>
+    `
+},
+{
+    title: "Leçon 14 — Systématique et classification des êtres vivants",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans le parc de Virunga, un guide identifie un gorille, un lion, un buffle, un oiseau et un papillon. Chacun a un nom scientifique. Comment les biologistes classent-ils la diversité du vivant ?</p></div>
+<h3>1. La systématique et la nomenclature</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Systématique</strong> : science de la classification des êtres vivants.</li><li><strong>Carl von Linné</strong> (1707-1778) : classification binomiale (genre + espèce).</li><li><strong>Nomenclature binominale</strong> : <em>Homo sapiens</em>, <em>Pan paniscus</em>, <em>Gorilla beringei</em>.</li><li><strong>Catégories</strong> : espèce, genre, famille, ordre, classe, embranchement, règne, domaine.</li><li><strong>Taxonomie</strong> : regroupe les organismes selon leurs ressemblances et leur parenté évolutive.</li></ul></div>
+<h3>2. Les cinq règnes (ou six)</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Monères</strong> (bactéries) : procaryotes.</li><li><strong>Protistes</strong> (algues, protozoaires) : eucaryotes unicellulaires.</li><li><strong>Champignons</strong> (levures, moisissures, champignons) : hétérotrophes, paroi chitineuse.</li><li><strong>Végétaux</strong> : autotrophes, paroi cellulosique.</li><li><strong>Animaux</strong> : hétérotrophes, mobiles.</li><li><strong>Classification phylogénétique</strong> moderne basée sur l'ADN.</li></ul></div>
+<h3>3. Applications en RDC</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Parc de Virunga</strong> : gorilles, éléphants, hippopotames.</li><li><strong>Parc de la Salonga</strong> : bonobos, okapis, léopards.</li><li><strong>Herbiers de Kisangani</strong> : collections de plantes pour la recherche.</li><li><strong>Inventaires fauniques</strong> : recensement des espèces menacées.</li><li><strong>Espèces endémiques</strong> : okapi, bonobo, paon du Congo.</li></ul><p><a href="https://www.youtube.com/results?search_query=classification+êtres+vivants+systématique+biologie+terminale" target="_blank" rel="noopener">🎥 Recherche : classification des êtres vivants (chaînes de cours de biologie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La systématique classe les êtres vivants selon leur parenté. Linné a établi la nomenclature binominale. Les cinq règnes sont : monères, protistes, champignons, végétaux, animaux. La RDC abrite de nombreuses espèces endémiques.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Biologie, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice BIO6.14.<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT, HSC.</div>
+    `
+},
+{
+    title: "Leçon 15 — Écologie : écosystèmes et facteurs",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans la forêt du bassin du Congo, arbres, singes, oiseaux, insectes, sol et climat forment un ensemble en équilibre. Si un élément disparaît, tout est perturbé. L'écologie étudie ces relations.</p></div>
+<h3>1. Notions d'écologie</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Food_web.svg?width=700" alt="Réseau trophique" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><ul><li><strong>Écologie</strong> : science qui étudie les relations entre les êtres vivants et leur milieu.</li><li><strong>Écosystème</strong> = biocénose (êtres vivants) + biotope (milieu).</li><li><strong>Biosphère</strong> : ensemble des écosystèmes de la Terre.</li><li><strong>Habitat</strong> : lieu de vie d'une espèce ; <strong>niche écologique</strong> : rôle de l'espèce.</li></ul></div>
+<h3>2. Les facteurs écologiques</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Facteurs abiotiques</strong> : lumière, température, humidité, pH, sol, vent, eau.</li><li><strong>Facteurs biotiques</strong> : prédation, compétition, symbiose, parasitisme, commensalisme.</li><li><strong>Facteurs anthropiques</strong> : déforestation, pollution, urbanisation.</li><li>Les êtres vivants s'adaptent à ces facteurs.</li></ul></div>
+<h3>3. Relations trophiques et applications</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Producteurs</strong> : plantes vertes (autotrophes).</li><li><strong>Consommateurs</strong> : herbivores (1<sup>er</sup> ordre), carnivores (2<sup>e</sup> ordre), etc.</li><li><strong>Décomposeurs</strong> : bactéries et champignons.</li><li><strong>Chaîne alimentaire</strong> : maïs → souris → serpent → aigle.</li><li><strong>Applications RDC</strong> : agriculture à Mbandaka, pêche au lac Tanganyika, gestion des parcs de Virunga et de la Salonga.</li></ul><p><a href="https://www.youtube.com/results?search_query=écologie+écosystème+facteurs+biologie+terminale" target="_blank" rel="noopener">🎥 Recherche : écologie et écosystèmes (chaînes de cours de biologie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Un écosystème réunit biocénose et biotope. Les facteurs écologiques sont abiotiques, biotiques et anthropiques. Les relations trophiques (producteurs, consommateurs, décomposeurs) forment des chaînes et des réseaux alimentaires.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Biologie, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice BIO6.15.<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT, HSC.</div>
+    `
+},
+{
+    title: "Leçon 16 — Cycles biogéochimiques",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans les forêts du bassin du Congo, l'azote de l'air devient protéine dans les feuilles, puis retourne dans le sol. Le carbone circule entre l'air, les plantes, les animaux et les sols. Ces cycles sont indispensables à la vie.</p></div>
+<h3>1. Le cycle du carbone</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Carbon_cycle-cute_diagram.svg?width=700" alt="Cycle du carbone" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><ul><li><strong>Photosynthèse</strong> : fixation du CO<sub>2</sub> atmosphérique par les plantes.</li><li><strong>Respiration</strong> : rejet de CO<sub>2</sub> par les êtres vivants.</li><li><strong>Décomposition</strong> : libération du carbone organique par les microbes.</li><li><strong>Combustion</strong> : rejet de CO<sub>2</sub> (usines, voitures, feux de brousse).</li><li><strong>Effet de serre</strong> : accumulation de CO<sub>2</sub> et réchauffement climatique.</li></ul></div>
+<h3>2. Cycle de l'azote</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Fixation</strong> : N<sub>2</sub> → NH<sub>3</sub> par les bactéries (Rhizobium, Azotobacter).</li><li><strong>Nitrification</strong> : NH<sub>3</sub> → NO<sub>2</sub><sup>−</sup> → NO<sub>3</sub><sup>−</sup>.</li><li><strong>Assimilation</strong> : absorption des nitrates par les plantes.</li><li><strong>Dénitrification</strong> : NO<sub>3</sub><sup>−</sup> → N<sub>2</sub> par les bactéries.</li><li><strong>Rôle en agriculture</strong> : les légumineuses enrichissent le sol en azote (haricots, soja à Kwilu).</li></ul></div>
+<h3>3. Autres cycles et applications</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Cycle de l'eau</strong> : évaporation, condensation, précipitation, infiltration.</li><li><strong>Cycle du phosphore</strong> : sédimentaire, lent.</li><li><strong>Cycle de l'oxygène</strong> : photosynthèse et respiration.</li><li><strong>Applications RDC</strong> : fertilisation des sols à Mbandaka, gestion des forêts, lutte contre l'érosion à Kinshasa.</li></ul><p><a href="https://www.youtube.com/results?search_query=cycles+biogéochimiques+carbone+azote+biologie+terminale" target="_blank" rel="noopener">🎥 Recherche : cycles biogéochimiques (chaînes de cours de biologie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Les cycles biogéochimiques (carbone, azote, eau, phosphore) assurent le recyclage des éléments dans la biosphère. Le carbone circule par photosynthèse, respiration, décomposition, combustion. L'azote est fixé par les bactéries.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Biologie, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice BIO6.16.<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT, HSC.</div>
+    `
+},
+{
+    title: "Leçon 17 — Dynamique des populations",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans le lac Tanganyika, les pêcheurs constatent une diminution des captures. La population de poissons baisse. Comment évolue une population ? Quels facteurs influencent sa taille ?</p></div>
+<h3>1. Caractéristiques d'une population</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Population</strong> : ensemble d'individus de la même espèce vivant dans un même milieu.</li><li><strong>Densité</strong> : nombre d'individus par unité de surface ou de volume.</li><li><strong>Natality</strong> (taux de naissance) et <strong>mortalité</strong>.</li><li><strong>Immigration</strong> et <strong>émigration</strong>.</li><li><strong>Structure</strong> : âge, sexe, répartition spatiale.</li></ul></div>
+<h3>2. Croissance et régulation</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Croissance exponentielle</strong> : en milieu illimité (courbe en J).</li><li><strong>Croissance logistique</strong> : en milieu limité, plafonnée par la <strong>capacité biotique</strong> K (courbe en S).</li><li><strong>Facteurs limitants</strong> : nourriture, espace, prédateurs, maladies.</li><li><strong>Résistance du milieu</strong> : freine la croissance.</li><li><strong>Cycles</strong> : fluctuations saisonnières.</li></ul></div>
+<h3>3. Applications en RDC</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Pêche au lac Tanganyika</strong> : surexploitation, baisse des captures.</li><li><strong>Agriculture</strong> : rotation des cultures pour préserver la fertilité.</li><li><strong>Élevage</strong> : gestion des troupeaux à Mbandaka et Kinshasa.</li><li><strong>Protection des espèces</strong> : bonobos de la Salonga, gorilles des Virunga.</li><li><strong>Démographie humaine</strong> : la RDC dépasse 100 millions d'habitants ; croissance rapide, urbanisation de Kinshasa.</li></ul><p><a href="https://www.youtube.com/results?search_query=dynamique+populations+écologie+biologie+terminale" target="_blank" rel="noopener">🎥 Recherche : dynamique des populations (chaînes de cours de biologie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Une population évolue selon natalité, mortalité, immigration et émigration. Sa croissance peut être exponentielle ou logistique. La capacité biotique et les facteurs limitants régulent la taille. En RDC, la pêche et l'agriculture dépendent de cette dynamique.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Biologie, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice BIO6.17.<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT, HSC.</div>
+    `
+},
+{
+    title: "Leçon 18 — Biodiversité en RDC",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>La RDC est l'un des pays les plus riches en biodiversité au monde. Ses forêts abritent des bonobos, des okapis, des gorilles, des milliers d'espèces de plantes. Mais cette richesse est menacée. Comment la protéger ?</p></div>
+<h3>1. La biodiversité</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Tropical_rainforest_biome.svg?width=700" alt="Répartition de la forêt tropicale humide" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><ul><li><strong>Biodiversité</strong> : diversité des gènes, des espèces et des écosystèmes.</li><li>Trois niveaux : <strong>génétique</strong>, <strong>spécifique</strong>, <strong>écosystémique</strong>.</li><li>La RDC abrite plus de 400 espèces de mammifères, 1 000 espèces d'oiseaux, 10 000 espèces de plantes.</li><li><strong>Points chauds</strong> : forêt du bassin du Congo, Virunga, Salonga, Ituri.</li></ul></div>
+<h3>2. Menaces sur la biodiversité</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Déforestation</strong> : agriculture itinérante, exploitation du bois, charbon de bois.</li><li><strong>Braconnage</strong> : éléphants, gorilles, bonobos, rhinocéros.</li><li><strong>Pollution</strong> : rejets industriels, plastiques.</li><li><strong>Changement climatique</strong> : modification des écosystèmes.</li><li><strong>Espèces invasives</strong> : déséquilibre des milieux.</li></ul></div>
+<h3>3. Conservation et développement durable</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Aires protégées</strong> : Virunga (créé en 1925, premier parc national d'Afrique), Salonga, Kahuzi-Biega, Garamba, Upemba.</li><li><strong>UNESCO</strong> : plusieurs sites congolais classés au patrimoine mondial.</li><li><strong>Lois</strong> : Code forestier, Code de l'environnement, interdiction du braconnage.</li><li><strong>ONG</strong> : WWF, WCS, ICCN.</li><li><strong>Développement durable</strong> : concilier protection et besoins des populations locales (écotourisme, agriculture durable).</li></ul><p><a href="https://www.youtube.com/results?search_query=biodiversité+RDC+conservation+biologie+terminale" target="_blank" rel="noopener">🎥 Recherche : biodiversité en RDC (chaînes de cours de biologie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La RDC est un pays méga-divers. La biodiversité est menacée par la déforestation, le braconnage et la pollution. Les aires protégées (Virunga, Salonga) et les lois environnementales assurent sa conservation. Le développement durable est la clé.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Biologie, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice BIO6.18.<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT, HSC.</div>
+    `
+},
+{
+    title: "Leçon 19 — Reproduction humaine : appareils génitaux",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>À la maternité de Kinshasa, un couple attend son premier enfant. Pour comprendre la grossesse, il faut connaître les organes de la reproduction et leur fonctionnement. C'est l'objet de cette leçon.</p></div>
+<h3>1. Appareil génital masculin</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Male_reproductive_system_en.svg?width=700" alt="Appareil reproducteur masculin" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><ul><li><strong>Testicules</strong> : production des spermatozoïdes (spermatogenèse) et de la testostérone.</li><li><strong>Épididyme</strong> : maturation des spermatozoïdes.</li><li><strong>Canal déférent</strong> : transport des spermatozoïdes.</li><li><strong>Vésicules séminales</strong> et <strong>prostate</strong> : sécrétion du liquide séminal.</li><li><strong>Pénis</strong> : organe de copulation.</li><li>Spermatogenèse : continue, à partir de la puberté, 2n → n.</li></ul></div>
+<h3>2. Appareil génital féminin</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Ovaires</strong> : production des ovules (ovogenèse) et des œstrogènes et progestérone.</li><li><strong>Trompes de Fallope</strong> : lieu de la fécondation.</li><li><strong>Utérus</strong> : nidation et développement du fœtus.</li><li><strong>Vagin</strong> : organe de copulation et voie d'accouchement.</li><li><strong>Vulve</strong> : organes externes.</li><li>Ovogenèse : cyclique, un ovule par cycle (28 jours environ).</li></ul></div>
+<h3>3. Puberté et hygiène</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Puberté</strong> : période de maturation sexuelle (10-16 ans).</li><li><strong>Caractères sexuels secondaires</strong> : voix, pilosité, développement mammaire.</li><li><strong>Hygiène</strong> : lavage quotidien, sous-vêtements propres, protection contre les IST.</li><li><strong>IST</strong> : VIH, syphilis, gonorrhée, chlamydia ; prévention par préservatif et dépistage.</li><li><strong>Planification familiale</strong> : espacement des naissances à Kinshasa.</li></ul><p><a href="https://www.youtube.com/results?search_query=reproduction+humaine+appareils+génitaux+biologie+terminale" target="_blank" rel="noopener">🎥 Recherche : reproduction humaine (chaînes de cours de biologie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>L'appareil masculin produit les spermatozoïdes (testicules) ; l'appareil féminin produit les ovules (ovaires). La fécondation a lieu dans les trompes. La puberté marque le début de la reproduction. L'hygiène et la prévention des IST sont essentielles.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Biologie, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice BIO6.19.<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT, HSC.</div>
+    `
+},
+{
+    title: "Leçon 20 — Fécondation et développement embryonnaire",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Neuf mois après la conception, un bébé naît à l'hôpital de Lubumbashi. Comment une seule cellule — l'œuf fécondé — devient-elle un être humain complet ? Le développement embryonnaire est une merveille de la nature.</p></div>
+<h3>1. La fécondation</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Fécondation</strong> : rencontre d'un spermatozoïde (n) et d'un ovule (n) → zygote (2n).</li><li>Lieu : <strong>trompe de Fallope</strong> (tiers supérieur).</li><li><strong>Réaction acrosomique</strong> : le spermatozoïde traverse la zone pellucide.</li><li><strong>Fusion des noyaux</strong> : formation du zygote.</li><li>Détermination du sexe : XX (fille) ou XY (garçon).</li></ul></div>
+<h3>2. Le développement embryonnaire</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Segmentation</strong> : divisions successives du zygote → morula → blastocyste.</li><li><strong>Nidation</strong> : implantation dans l'endomètre (6-7 jours).</li><li><strong>Gastrulation</strong> : formation des trois feuillets (ectoderme, mésoderme, endoderme).</li><li><strong>Organogenèse</strong> : formation des organes.</li><li><strong>Périodes</strong> : embryon (0-8 semaines), fœtus (9 semaines à la naissance).</li><li><strong>Annexes</strong> : placenta, cordon ombilical, amnios, allantoïde.</li></ul></div>
+<h3>3. Grossesse, accouchement et santé</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Durée</strong> : 9 mois (39 semaines environ).</li><li><strong>Accouchement</strong> : travail (contractions), expulsion, délivrance.</li><li><strong>Suivi prénatal</strong> : consultations, échographies, vaccins, fer et acide folique.</li><li><strong>Risques</strong> : grossesse précoce, paludisme, anémie, VIH.</li><li><strong>Applications RDC</strong> : maternités de Kinshasa, Lubumbashi, Kisangani ; sensibilisation à la planification familiale.</li></ul><p><a href="https://www.youtube.com/results?search_query=fécondation+développement+embryonnaire+biologie+terminale" target="_blank" rel="noopener">🎥 Recherche : fécondation et développement embryonnaire (chaînes de cours de biologie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La fécondation (spermatozoïde + ovule) donne un zygote (2n). Le développement passe par segmentation, nidation, gastrulation et organogenèse. La grossesse dure 9 mois. Le suivi prénatal est essentiel pour la santé de la mère et de l'enfant.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Biologie, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice BIO6.20.<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT, HSC.</div>
+    `
+},
+{
+    title: "Leçon 21 — Régulation hormonale et cycle menstruel",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans une école de Kinshasa, une jeune fille note ses règles sur un calendrier. Tous les 28 jours environ, son cycle recommence. Ce rythme est contrôlé par des hormones. Comment fonctionne cette régulation ?</p></div>
+<h3>1. Le cycle menstruel</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/MenstrualCycle_fr.svg?width=700" alt="Cycle menstruel et variations hormonales" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><ul><li><strong>Cycle</strong> : 28 jours en moyenne (21-35 jours).</li><li><strong>Phase folliculaire</strong> (J1-J13) : croissance du follicule, sécrétion d'œstrogènes.</li><li><strong>Ovulation</strong> (J14) : libération de l'ovule.</li><li><strong>Phase lutéale</strong> (J15-J28) : corps jaune, sécrétion de progestérone.</li><li><strong>Menstruation</strong> : élimination de l'endomètre si pas de fécondation.</li></ul></div>
+<h3>2. Régulation hormonale</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Hypothalamus</strong> : sécrète GnRH.</li><li><strong>Hypophyse</strong> : sécrète FSH et LH.</li><li><strong>FSH</strong> : stimule la croissance folliculaire.</li><li><strong>LH</strong> : déclenche l'ovulation.</li><li><strong>Œstrogènes</strong> (ovaires) : développement de l'endomètre.</li><li><strong>Progestérone</strong> (corps jaune) : maintient l'endomètre.</li><li><strong>Rétrocontrôle</strong> : négatif ou positif selon la phase.</li></ul></div>
+<h3>3. Applications médicales</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Contraception hormonale</strong> : pilule, implant, injection.</li><li><strong>Pilule du lendemain</strong> : contraception d'urgence.</li><li><strong>Traitement de l'infertilité</strong> : stimulation ovarienne.</li><li><strong>Ménopause</strong> : arrêt des cycles (45-55 ans).</li><li><strong>Applications RDC</strong> : planification familiale à Kinshasa, sensibilisation dans les écoles.</li></ul><p><a href="https://www.youtube.com/results?search_query=cycle+menstruel+régulation+hormonale+biologie+terminale" target="_blank" rel="noopener">🎥 Recherche : cycle menstruel et hormones (chaînes de cours de biologie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le cycle menstruel dure 28 jours : phase folliculaire, ovulation, phase lutéale, menstruation. Il est régulé par GnRH, FSH, LH, œstrogènes et progestérone. La connaissance du cycle permet la contraception et le traitement de l'infertilité.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Biologie, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice BIO6.21.<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT, HSC.</div>
+    `
+},
+{
+    title: "Leçon 22 — Le système nerveux : organisation et fonctionnement",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Au marché de Matadi, tu retires brusquement ta main d'une casserole brûlante. Ce réflexe rapide est commandé par ton système nerveux. Comment le message nerveux circule-t-il dans le corps ?</p></div>
+<h3>1. Organisation du système nerveux</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Neuron.svg?width=700" alt="Structure d'un neurone" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><ul><li><strong>Système nerveux central</strong> (SNC) : encéphale + moelle épinière.</li><li><strong>Système nerveux périphérique</strong> (SNP) : nerfs crâniens et rachidiens.</li><li><strong>Système nerveux autonome</strong> : sympathique et parasympathique.</li><li><strong>Neurone</strong> : cellule nerveuse (corps cellulaire, dendrites, axone).</li><li><strong>Nerf</strong> : faisceau d'axones.</li></ul></div>
+<h3>2. Le message nerveux</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Potentiel de repos</strong> : −70 mV (intérieur négatif).</li><li><strong>Potentiel d'action</strong> : dépolarisation puis repolarisation.</li><li><strong>Loi du tout ou rien</strong> : le message est soit émis, soit non.</li><li><strong>Synapse</strong> : zone de contact entre deux neurones ; libération de <strong>neurotransmetteurs</strong> (acétylcholine, dopamine, sérotonine).</li><li><strong>Myéline</strong> : accélère la conduction.</li></ul></div>
+<h3>3. Réflexe et santé</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Arc réflexe</strong> : récepteur → neurone sensitif → moelle épinière → neurone moteur → muscle.</li><li><strong>Réflexe myotatique</strong> : contraction automatique.</li><li><strong>Maladies</strong> : épilepsie, Alzheimer, Parkinson, méningite.</li><li><strong>Drogues</strong> : perturbent les synapses (cannabis, cocaïne).</li><li><strong>Applications RDC</strong> : campagnes de vaccination contre la méningite, sensibilisation aux dangers des drogues à Kinshasa.</li></ul><p><a href="https://www.youtube.com/results?search_query=système+nerveux+neurone+synapse+biologie+terminale" target="_blank" rel="noopener">🎥 Recherche : le système nerveux (chaînes de cours de biologie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le système nerveux comprend le SNC (encéphale, moelle) et le SNP (nerfs). Le neurone transmet le message nerveux par potentiel d'action. La synapse libère des neurotransmetteurs. L'arc réflexe permet une réponse rapide.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Biologie, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice BIO6.22.<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT, HSC.</div>
+    `
+},
+{
+    title: "Leçon 23 — Immunologie : défenses de l'organisme",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>À Kinshasa, un enfant vacciné contre la rougeole ne tombe plus malade. Son organisme a appris à se défendre. Le système immunitaire protège contre les microbes. Comment fonctionne-t-il ?</p></div>
+<h3>1. Les défenses de l'organisme</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Immune_Response.svg?width=700" alt="Réponse immunitaire" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><ul><li><strong>Immunité innée</strong> (non spécifique) : barrières naturelles (peau, muqueuses), phagocytose, inflammation, fièvre.</li><li><strong>Immunité acquise</strong> (spécifique) : réponse humorale (anticorps) et cellulaire (lymphocytes T).</li><li><strong>Antigène</strong> : molécule étrangère qui déclenche la réponse immunitaire.</li><li><strong>Anticorps</strong> : protéine produite par les lymphocytes B.</li></ul></div>
+<h3>2. Immunité humorale et cellulaire</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Lymphocytes B</strong> : produisent des anticorps spécifiques.</li><li><strong>Lymphocytes T auxiliaires</strong> (CD4) : coordonnent la réponse.</li><li><strong>Lymphocytes T cytotoxiques</strong> (CD8) : détruisent les cellules infectées.</li><li><strong>Mémoire immunitaire</strong> : réponse plus rapide lors d'un second contact.</li><li><strong>Vaccination</strong> : introduction d'un antigène atténué pour créer la mémoire.</li></ul></div>
+<h3>3. Applications médicales et RDC</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Vaccins</strong> : BCG, DTC, rougeole, polio, COVID-19. Programme élargi de vaccination (PEV) en RDC.</li><li><strong>Sérothérapie</strong> : injection d'anticorps (antivenin, antitetanique).</li><li><strong>VIH/SIDA</strong> : destruction des lymphocytes T CD4, immunodéficience.</li><li><strong>Allergies</strong> : réaction excessive à un antigène inoffensif.</li><li><strong>Maladies auto-immunes</strong> : l'organisme attaque ses propres cellules.</li><li><strong>Paludisme</strong> : le système immunitaire lutte contre <em>Plasmodium</em> ; recherche de vaccin en RDC.</li></ul><p><a href="https://www.youtube.com/results?search_query=immunologie+système+immunitaire+vaccination+biologie+terminale" target="_blank" rel="noopener">🎥 Recherche : immunologie (chaînes de cours de biologie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>L'immunité innée (barrières, phagocytose) et l'immunité acquise (lymphocytes B et T) protègent l'organisme. La vaccination crée une mémoire immunitaire. Le VIH détruit les lymphocytes T CD4. Le PEV est essentiel en RDC.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Biologie, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice BIO6.23.<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT, HSC.</div>
+    `
+},
+{
+    title: "Leçon 24 — Grandes maladies infectieuses en RDC",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans un centre de santé de Kinshasa, les infirmiers luttent contre le paludisme, la tuberculose, le VIH et la rougeole. Ces maladies infectieuses restent les principales causes de mortalité en RDC. Comment les prévenir et les traiter ?</p></div>
+<h3>1. Le paludisme</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Agent</strong> : <em>Plasmodium falciparum</em> (protozoaire).</li><li><strong>Vecteur</strong> : anophèle femelle.</li><li><strong>Symptômes</strong> : fièvre, frissons, céphalées, anémie.</li><li><strong>Prévention</strong> : moustiquaires imprégnées, insecticides, élimination des eaux stagnantes.</li><li><strong>Traitement</strong> : ACT (artémisinine + combinaison).</li><li>La RDC est l'un des pays les plus touchés au monde.</li></ul></div>
+<h3>2. Tuberculose, VIH et autres</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Tuberculose</strong> : <em>Mycobacterium tuberculosis</em> ; toux persistante, fièvre, amaigrissement ; traitement long (6 mois), BCG.</li><li><strong>VIH/SIDA</strong> : virus qui détruit les lymphocytes T CD4 ; transmission sexuelle, sanguine, mère-enfant ; prévention par préservatif, dépistage, ARV.</li><li><strong>Rougeole</strong> : virus très contagieux ; vaccination (PEV).</li><li><strong>Choléra</strong> : <em>Vibrio cholerae</em> ; diarrhée aqueuse ; eau potable, hygiène.</li><li><strong>Ébola</strong> : fièvre hémorragique ; épidémies en RDC (2018-2020 au Nord-Kivu).</li></ul></div>
+<h3>3. Prévention et santé publique</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Hygiène</strong> : lavage des mains, eau potable, assainissement.</li><li><strong>Vaccination</strong> : PEV (BCG, DTC, rougeole, polio).</li><li><strong>Dépistage</strong> : centres de santé, hôpitaux.</li><li><strong>Éducation sanitaire</strong> : sensibilisation dans les écoles et les médias.</li><li><strong>Programmes</strong> : PNLP (paludisme), PNLT (tuberculose), PNLS (SIDA), INRB (recherche).</li><li><strong>Défis</strong> : accès aux soins, pauvreté, insécurité à l'Est.</li></ul><p><a href="https://www.youtube.com/results?search_query=maladies+infectieuses+RDC+paludisme+VIH+tuberculose+biologie+terminale" target="_blank" rel="noopener">🎥 Recherche : maladies infectieuses en RDC (chaînes de cours de biologie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le paludisme, la tuberculose, le VIH, la rougeole, le choléra et Ébola sont les principales maladies infectieuses en RDC. La prévention repose sur l'hygiène, la vaccination, le dépistage et l'éducation sanitaire. Le PEV et les programmes nationaux jouent un rôle clé.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Biologie, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice BIO6.24.<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT, HSC.</div>
+    `
+},
+{
+    title: "Évaluation finale — Items EXETAT",
+    content: `
+        <p style="margin-bottom:18px;color:#004d40;font-size:0.95rem;">Cette évaluation regroupe des items tirés des épreuves d'État (EXETAT) des années précédentes. Fais l'exercice dans les conditions du concours : sans notes, en une seule fois.</p>
+
+        <div class="bloc theorie">
+            <div class="bloc-label">Consignes</div>
+            <ul>
+                <li>40 questions à choix multiples.</li>
+                <li>Une seule réponse correcte par question.</li>
+                <li>Pas de retour en arrière sur les questions déjà validées.</li>
+                <li>Durée recommandée : 40 minutes.</li>
+            </ul>
+        </div>
+
+        <div class="quiz-container" id="quizContainer">
+            <h3 style="color:#004d40;margin-bottom:16px;font-size:1.1rem;">Partie 1 — Questions</h3>
+            <div id="quizQuestions"></div>
+            <button id="submitQuiz" class="quiz-btn-submit">Valider mes réponses</button>
+            <div id="quizResult" class="quiz-result"></div>
+        </div>
+    `
+}
+];
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim()) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderQuiz() {
+    const questions = [
+        { text:"La théorie cellulaire a été établie par :", options:["Schleiden et Schwann","Darwin et Mendel","Watson et Crick"], correct:0 },
+        { text:"Quel organite est le siège de la respiration cellulaire ?", options:["Le noyau","La mitochondrie","Le ribosome"], correct:1 },
+        { text:"La photosynthèse a lieu dans :", options:["les mitochondries","les chloroplastes","les lysosomes"], correct:1 },
+        { text:"La membrane plasmique est :", options:["imperméable","sélectivement perméable","rigide"], correct:1 },
+        { text:"L'osmose est le passage de :", options:["l'eau du milieu hypotonique vers le milieu hypertonique","des ions du moins concentré au plus concentré","des grosses molécules"], correct:0 },
+        { text:"La mitose produit :", options:["4 cellules haploïdes","2 cellules identiques diploïdes","des gamètes"], correct:1 },
+        { text:"La méiose produit :", options:["2 cellules diploïdes","4 cellules haploïdes","des cellules identiques"], correct:1 },
+        { text:"Les lois de Mendel ont été établies sur :", options:["la drosophile","le pois cultivé","la souris"], correct:1 },
+        { text:"L'Homme possède :", options:["23 chromosomes","46 chromosomes","48 chromosomes"], correct:1 },
+        { text:"Les chromosomes sexuels de la femme sont :", options:["XY","XX","XO"], correct:1 },
+        { text:"La réplication de l'ADN est :", options:["conservative","semi-conservative","dispersive"], correct:1 },
+        { text:"Le dogme central de la biologie moléculaire est :", options:["ADN → ARN → Protéine","Protéine → ARN → ADN","ARN → ADN → Protéine"], correct:0 },
+        { text:"Le code génétique est :", options:["un triplet de bases","un doublet","un quadruplet"], correct:0 },
+        { text:"La drépanocytose est due à :", options:["une mutation ponctuelle","une trisomie","une délétion chromosomique"], correct:0 },
+        { text:"Le groupe sanguin O est :", options:["dominant","récessif","codominant"], correct:1 },
+        { text:"Le facteur rhésus est déterminé par :", options:["l'antigène D","l'antigène A","l'antigène B"], correct:0 },
+        { text:"Un OGM est un organisme :", options:["naturel","génétiquement modifié","cloné"], correct:1 },
+        { text:"La sélection naturelle a été proposée par :", options:["Lamarck","Darwin","Mendel"], correct:1 },
+        { text:"Les pinsons des Galápagos sont un exemple de :", options:["preuve de l'évolution","mutation","sélection artificielle"], correct:0 },
+        { text:"Le bonobo (Pan paniscus) est endémique de :", options:["la RDC","le Kenya","l'Éthiopie"], correct:0 },
+        { text:"La nomenclature binominale a été établie par :", options:["Darwin","Linné","Mendel"], correct:1 },
+        { text:"Un écosystème comprend :", options:["biocénose + biotope","seulement les animaux","seulement les plantes"], correct:0 },
+        { text:"Dans une chaîne alimentaire, les producteurs sont :", options:["les animaux","les plantes vertes","les champignons"], correct:1 },
+        { text:"Le cycle du carbone fait intervenir :", options:["la photosynthèse et la respiration","uniquement la combustion","uniquement la décomposition"], correct:0 },
+        { text:"La capacité biotique est :", options:["la taille maximale d'une population","la vitesse de croissance","la densité minimale"], correct:0 },
+        { text:"Le premier parc national d'Afrique est :", options:["le parc de la Salonga","le parc des Virunga","le parc de Kahuzi-Biega"], correct:1 },
+        { text:"Le testicule produit :", options:["les ovules","les spermatozoïdes","les hormones thyroïdiennes"], correct:1 },
+        { text:"La fécondation a lieu dans :", options:["l'utérus","la trompe de Fallope","le vagin"], correct:1 },
+        { text:"Le placenta assure :", options:["les échanges mère-fœtus","la production d'ovules","la production de spermatozoïdes"], correct:0 },
+        { text:"Le cycle menstruel dure en moyenne :", options:["14 jours","28 jours","40 jours"], correct:1 },
+        { text:"L'ovulation a lieu vers :", options:["le 1er jour","le 14e jour","le 28e jour"], correct:1 },
+        { text:"Le neurone est :", options:["une cellule nerveuse","une hormone","un muscle"], correct:0 },
+        { text:"Le potentiel de repos d'un neurone est :", options:["−70 mV","+40 mV","0 mV"], correct:0 },
+        { text:"La synapse libère :", options:["des neurotransmetteurs","des anticorps","des enzymes digestives"], correct:0 },
+        { text:"Les lymphocytes B produisent :", options:["des anticorps","des globules rouges","des plaquettes"], correct:0 },
+        { text:"Le VIH détruit :", options:["les lymphocytes T CD4","les globules rouges","les plaquettes"], correct:0 },
+        { text:"Le paludisme est transmis par :", options:["l'anophèle femelle","le moustique tigre","la mouche tsé-tsé"], correct:0 },
+        { text:"Le BCG protège contre :", options:["la tuberculose","le paludisme","le choléra"], correct:0 },
+        { text:"L'agent du choléra est :", options:["Vibrio cholerae","Plasmodium","Mycobacterium"], correct:0 },
+        { text:"Le PEV signifie :", options:["Programme élargi de vaccination","Plan d'éradication du VIH","Programme d'éducation à la vie"], correct:0 }
+    ];
+    let html = '';
+    questions.forEach((q,i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o,k) => { html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>'; });
+        html += '</div>';
+    });
+    document.getElementById('quizQuestions').innerHTML = html;
+    document.getElementById('submitQuiz').onclick = () => {
+        let score = 0;
+        questions.forEach((q,i) => {
+            const s = document.querySelector('input[name="q' + i + '"]:checked');
+            if (s && parseInt(s.value) === q.correct) score++;
+        });
+        const pct = Math.round(score/questions.length*100);
+        document.getElementById('quizResult').innerHTML = '<div style="background:#b2dfdb;padding:16px;border-radius:10px;margin-top:14px;">' +
+            '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong><br>' +
+            (score === questions.length ? 'Excellent. Tu maîtrises le programme.' :
+             score >= 20 ? 'Bien. Revoyez les leçons où vous avez échoué.' :
+             'Relis attentivement les leçons avant l\'examen.') + '</div>';
+    };
+}
+function renderSlide(index, keepHighlight = true) {
+    const isQuiz = (index === slides.length - 1);
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    if (isQuiz) renderQuiz();
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm && !isQuiz) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+
+</body>
+</html>
