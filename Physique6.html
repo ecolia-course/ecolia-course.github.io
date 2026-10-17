@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Physique — 4e secondaire (EXETAT)</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body {
+    font-family:'Segoe UI',system-ui,sans-serif;
+    background:linear-gradient(160deg,#4a1010 0%,#b71c1c 50%,#2b0a0a 100%);
+    display:flex; justify-content:center; align-items:center;
+    padding:8px;
+}
+.container {
+    width:100%; max-width:1400px; background:#fefdf8;
+    border-radius:20px; overflow:hidden;
+    display:flex; flex-direction:column;
+    height:100%; max-height:100vh;
+    box-shadow:0 20px 60px rgba(0,0,0,0.4);
+}
+
+/* BARRE DE PROGRESSION */
+.progress-bar { height:4px; background:#f0d3d0; flex-shrink:0; }
+.progress-fill {
+    height:100%; background:linear-gradient(90deg,#d9706a,#8e1b1b);
+    width:0%; transition:width 0.3s;
+}
+
+/* HEADER COMPACT */
+.header {
+    padding:10px 16px; background:#fbeaea;
+    border-bottom:1px solid #e8a9a5;
+    display:flex; justify-content:space-between; align-items:center;
+    gap:10px; flex-shrink:0;
+}
+.header h1 { color:#8e1b1b; font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box {
+    display:flex; background:white; border-radius:20px;
+    padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06);
+}
+.search-box input {
+    border:none; padding:6px 10px; border-radius:20px;
+    outline:none; width:130px; font-size:0.8rem;
+}
+.search-box button {
+    background:none; border:none; cursor:pointer;
+    padding:4px 8px; font-size:0.85rem; color:#b71c1c;
+}
+.badge {
+    background:#d9706a; color:white; padding:4px 10px;
+    border-radius:20px; font-weight:bold; font-size:0.75rem;
+}
+.search-nav {
+    display:none; gap:4px; background:#f3cdcb;
+    padding:2px 8px; border-radius:20px; align-items:center;
+    font-size:0.75rem;
+}
+.search-nav button {
+    background:none; border:none; cursor:pointer;
+    font-size:0.9rem; color:#8e1b1b; padding:2px 4px;
+}
+
+/* CONTENU PLEIN ÉCRAN + AÉRÉ */
+.content {
+    padding:28px 32px; flex:1; overflow-y:auto;
+    background:#fff; scroll-behavior:smooth;
+    line-height:1.85;
+}
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide {
+    from { opacity:0; transform:translateY(8px); }
+    to { opacity:1; transform:translateY(0); }
+}
+
+.slide-title {
+    color:#4a1010; font-size:1.5rem; font-weight:700;
+    padding-bottom:12px; margin-bottom:20px;
+    border-bottom:2px solid #d9706a;
+}
+.slide-content { color:#2a0d0d; font-size:1rem; }
+
+/* BLOCS PÉDAGOGIQUES */
+.bloc {
+    padding:18px 22px; border-radius:12px;
+    margin:22px 0; line-height:1.85;
+}
+.bloc-label {
+    font-size:0.75rem; font-weight:700;
+    letter-spacing:1.5px; text-transform:uppercase;
+    margin-bottom:8px; opacity:0.7;
+}
+.bloc p, .bloc li { font-size:0.98rem; }
+.bloc h3 {
+    font-size:1.1rem; margin:20px 0 10px;
+    font-weight:600;
+}
+.bloc h3:first-child { margin-top:0; }
+
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+
+.theorie { background:#fbeaea; border-left:4px solid #d9706a; }
+.theorie .bloc-label { color:#8e1b1b; }
+
+.pratique { background:#e8f5e9; border-left:4px solid #43a047; }
+.pratique .bloc-label { color:#1b5e20; }
+
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+
+/* LISTES */
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:#4a1010; }
+
+/* QUIZ */
+.quiz-container { padding:22px; background:#fbeaea; border-radius:16px; }
+.quiz-question {
+    background:white; border-radius:10px; padding:16px;
+    margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05);
+}
+.quiz-question p { font-weight:600; margin-bottom:10px; color:#4a1010; }
+.quiz-question label {
+    display:block; padding:8px 10px; margin:4px 0;
+    border-radius:6px; cursor:pointer; transition:background 0.2s;
+}
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit {
+    background:#a62a2a; color:white; border:none;
+    padding:12px 24px; border-radius:30px; font-size:1rem;
+    cursor:pointer; font-weight:600; margin-top:14px;
+}
+.quiz-result { margin-top:16px; font-weight:600; }
+
+/* SOURCES */
+.sources {
+    background:#f5f5f5; padding:12px 16px; border-radius:10px;
+    margin-top:26px; font-size:0.82rem; color:#666;
+    border-left:3px solid #999; line-height:1.6;
+}
+.sources strong { color:#333; }
+
+/* FOOTER COMPACT */
+.controls {
+    padding:8px 16px; background:#fafafa;
+    border-top:1px solid #e0e0e0;
+    display:flex; justify-content:space-between;
+    align-items:center; gap:8px; flex-shrink:0;
+}
+.nav-btn {
+    background:white; color:#8e1b1b;
+    border:1px solid #ccc; padding:8px 14px;
+    border-radius:8px; font-size:0.82rem;
+    cursor:pointer; font-weight:500;
+}
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+
+/* SCROLLBAR STYLE */
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:#f8dede; }
+.content::-webkit-scrollbar-thumb { background:#d9706a; border-radius:3px; }
+
+/* MOBILE */
+@media (max-width:600px) {
+    body { padding:0; }
+    .container { border-radius:0; max-height:100vh; }
+    .content { padding:20px 18px; }
+    .slide-title { font-size:1.25rem; }
+    .search-box input { width:90px; }
+    .header h1 { font-size:0.85rem; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+    <div class="header">
+        <h1>Physique · 4e secondaire</h1>
+        <div class="header-right">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Rechercher">
+                <button id="searchBtn">⌕</button>
+            </div>
+            <div class="search-nav" id="searchNav">
+                <button id="prevResultBtn">‹</button>
+                <span id="resultCounter">0/0</span>
+                <button id="nextResultBtn">›</button>
+            </div>
+            <span class="badge" id="slideCounter">1/12</span>
+        </div>
+    </div>
+
+    <div class="content" id="content"></div>
+
+    <div class="controls">
+        <button class="nav-btn" id="prevBtn">← Précédent</button>
+        <span class="counter" id="counter">Leçon 1 / 12</span>
+        <button class="nav-btn" id="nextBtn">Suivant →</button>
+    </div>
+</div>
+
+<script>
+const slides = [
+{
+    title: "Leçon 1 — Éléments de base de la cinématique",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Papy raconte : il a quitté Boma avant-hier à 18 h et est arrivé hier à 9 h 30. En route, les arbres défilaient, on roulait vite, puis moins vite, on s'arrêtait au péage. Chaque détail correspond à un concept de cinématique.</p></div>
+<h3>1. Concepts de base</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Cinématique</strong> : étude du mouvement sans s'occuper de ses causes.</li><li><strong>Mobile</strong> : corps en mouvement ; <strong>mobile ponctuel</strong> : mobile assimilé à un point.</li><li><strong>Référentiel</strong> : corps de référence (la Terre, le sol) ; <strong>repère</strong> : axes liés au référentiel.</li><li><strong>Repos et mouvement</strong> sont <strong>relatifs</strong> au référentiel.</li><li><strong>Trajectoire</strong> : ensemble des positions occupées (rectiligne, circulaire, curviligne).</li><li><strong>Durée</strong> Δt = t<sub>2</sub> − t<sub>1</sub> (≠ <strong>instant</strong> t).</li></ul></div>
+<h3>2. Grandeurs vectorielles</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Position</strong> : x (abscisse) ou vecteur position r = OM. <strong>Déplacement</strong> : Δr = r<sub>2</sub> − r<sub>1</sub> (≠ <strong>distance parcourue</strong>).</li><li><strong>Vitesse moyenne</strong> : v<sub>m</sub> = Δx / Δt ; <strong>au sens commun</strong> : distance totale / durée.</li><li><strong>Vitesse instantanée</strong> : v = dx/dt (limite de Δx/Δt quand Δt → 0).</li><li><strong>Accélération moyenne</strong> : a<sub>m</sub> = Δv/Δt ; <strong>instantanée</strong> : a = dv/dt = d<sup>2</sup>x/dt<sup>2</sup>.</li><li><strong>Équation horaire</strong> : x = f(t).</li></ul></div>
+<h3>3. Unités et sigles</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>SI</strong> : Système international d'unités ; longueur m, durée s, vitesse m/s, accélération m/s<sup>2</sup>. 1 km/h = 1/3,6 m/s.</li><li><strong>MRU</strong> : mouvement rectiligne uniforme ; <strong>MRUV</strong> : mouvement rectiligne uniformément varié ; <strong>MCU, MCUV</strong> : mouvement circulaire uniforme, uniformément varié.</li><li><strong>EXETAT</strong> : Examen d'État ; <strong>SPTIC</strong> : Sciences physiques et technologies de l'information et de la communication ; <strong>MSP</strong> : matrice de sciences physiques/physique ; <strong>HSC</strong> : humanités scientifiques.</li></ul><p><a href="https://www.youtube.com/results?search_query=Éléments+de+base+de+la+cinématique+physique+terminale" target="_blank" rel="noopener">🎥 Recherche : Éléments de base de la cinématique (chaînes de cours de physique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Mobile, référentiel, trajectoire, déplacement, vitesse (v = dx/dt) et accélération (a = dv/dt) sont les concepts de base. Repos et mouvement sont relatifs.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSP 6.1.</div>
+    `
+},
+{
+    title: "Leçon 2 — Mouvement rectiligne uniforme (MRU)",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>À Kananga, Kalala note les positions d'un véhicule : 5 m de plus à chaque minute. Les distances sont égales en des durées égales : quel est le nom de ce mouvement, et quelles sont ses lois ?</p></div>
+<h3>1. Définition et lois</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>MRU</strong> : trajectoire rectiligne, <strong>vitesse constante</strong>, accélération a = 0.</li><li><strong>Loi des vitesses</strong> : v = constante.</li><li><strong>Équation horaire</strong> : x = x<sub>0</sub> + v t (v = Δx/Δt).</li><li>Exemple de Kalala : 5 m par minute ⇒ v = 5 m/min ≈ 0,083 m/s.</li></ul></div>
+<h3>2. Graphiques</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>x(t)</strong> : droite de pente v (croissante si v > 0).</li><li><strong>v(t)</strong> : droite horizontale ; l'<strong>aire</strong> sous la courbe donne le déplacement.</li><li><strong>a(t)</strong> : confondue avec l'axe des temps.</li></ul></div>
+<h3>3. Exemple résolu</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Arrêts de bus distants de 300 m ; un cycliste met 10 min d'un arrêt à l'autre : v = 300 m / 600 s = <strong>0,5 m/s</strong> (1,8 km/h) ; mouvement <strong>uniforme</strong>.</li></ul><p><a href="https://www.youtube.com/results?search_query=Mouvement+rectiligne+uniforme+(MRU)+physique+terminale" target="_blank" rel="noopener">🎥 Recherche : Mouvement rectiligne uniforme (MRU) (chaînes de cours de physique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>MRU : v constante, a = 0, x = x<sub>0</sub> + vt. Le graphique x(t) est une droite ; v(t) est une horizontale.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSP 6.2.</div>
+    `
+},
+{
+    title: "Leçon 3 — Mouvement rectiligne uniformément varié (MRUV)",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Un poste de police note la vitesse d'une voiture : 0, 6, 12, 18, 24, 30 m/s toutes les 5 s. La vitesse augmente de 6 m/s à chaque intervalle égal : ce mouvement est uniformément varié.</p></div>
+<h3>1. Définition et lois</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>MRUV</strong> : trajectoire rectiligne, <strong>accélération constante</strong> (a > 0 accéléré ; a < 0 retardé).</li><li><strong>v = v<sub>0</sub> + a t</strong> ; <strong>x = x<sub>0</sub> + v<sub>0</sub> t + ½ a t<sup>2</sup></strong> ; <strong>v<sup>2</sup> − v<sub>0</sub><sup>2</sup> = 2a(x − x<sub>0</sub>)</strong> (relation de Galilée).</li><li><strong>Vitesse moyenne</strong> : v<sub>m</sub> = (v<sub>0</sub> + v)/2.</li></ul></div>
+<h3>2. Particularités</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Départ sans vitesse initiale : distances parcourues pendant des intervalles égaux successifs dans le rapport <strong>1 : 3 : 5 : 7 …</strong>.</li><li><strong>Graphiques</strong> : x(t) parabole ; v(t) droite de pente a ; a(t) droite horizontale.</li></ul></div>
+<h3>3. Exemples résolus</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Tableau de la police : a = 6/5 = <strong>1,2 m/s<sup>2</sup></strong> ; en 25 s, x = ½ × 1,2 × 25<sup>2</sup> = <strong>375 m</strong>.</li><li>Une voiture passe de 0 à 90 km/h (25 m/s) en 10 s : a = 2,5 m/s<sup>2</sup> ; distance = ½ × 2,5 × 10<sup>2</sup> = <strong>125 m</strong>.</li></ul><p><a href="https://www.youtube.com/results?search_query=Mouvement+rectiligne+uniformément+varié+(MRUV)+physique+terminale" target="_blank" rel="noopener">🎥 Recherche : Mouvement rectiligne uniformément varié (MRUV) (chaînes de cours de physique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>MRUV : a constante ; v = v<sub>0</sub> + at ; x = x<sub>0</sub> + v<sub>0</sub>t + ½at<sup>2</sup> ; v<sup>2</sup> − v<sub>0</sub><sup>2</sup> = 2a Δx.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSP 6.3.</div>
+    `
+},
+{
+    title: "Leçon 4 — Chute libre des corps",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Un enseignant demande de lâcher en même temps un caillou et une feuille de papier : le caillou tombe plus vite à cause de l'air. Dans le vide, tous les corps tombent pareil : c'est la chute libre.</p></div>
+<h3>1. Définition et lois</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Justus_Sustermans_-_Portrait_of_Galileo_Galilei,_1636.jpg?width=700" alt="Galilée" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Galilée — Wikimedia Commons : Justus Sustermans - Portrait of Galileo Galilei, 1636.jpg</p><ul><li><strong>Chute libre</strong> : mouvement d'un corps soumis <strong>uniquement à son poids</strong> (sans frottement), sans vitesse initiale ou avec.</li><li>C'est un <strong>MRUV</strong> d'accélération g ≈ <strong>9,8 m/s<sup>2</sup></strong>.</li><li><strong>v = g t</strong> ; <strong>h = ½ g t<sup>2</sup></strong> ; <strong>v<sup>2</sup> = 2 g h</strong>.</li><li>Tous les corps tombent avec la <strong>même accélération</strong>, quelle que soit leur masse (Galilée).</li></ul></div>
+<h3>2. Caractères de la pesanteur</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Direction</strong> : verticale ; <strong>sens</strong> : vers le centre de la Terre ; <strong>intensité</strong> : g ≈ 9,8 N/kg ; <strong>point d'application</strong> : centre de gravité.</li><li>g varie avec la <strong>latitude</strong> (≈ 9,78 à l'équateur, 9,83 aux pôles) et l'<strong>altitude</strong>.</li></ul></div>
+<h3>3. Exemples résolus</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Chute de 20 m : t = √(2h/g) = √(40/9,8) ≈ <strong>2,0 s</strong> ; v = √(2gh) ≈ <strong>19,8 m/s</strong>.</li><li><strong>Lancer vertical vers le haut</strong> (v<sub>0</sub>) : hauteur max h = v<sub>0</sub><sup>2</sup>/(2g) ; durée de montée t = v<sub>0</sub>/g.</li></ul><p><a href="https://www.youtube.com/results?search_query=Chute+libre+des+corps+physique+terminale" target="_blank" rel="noopener">🎥 Recherche : Chute libre des corps (chaînes de cours de physique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Chute libre : seul le poids agit ; a = g ≈ 9,8 m/s<sup>2</sup> ; v = gt ; h = ½gt<sup>2</sup> ; indépendant de la masse.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSP 6.4.</div>
+    `
+},
+{
+    title: "Leçon 5 — Mouvements circulaires (MCU et MCUV)",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>On renverse un vélo et on met en rotation le pneu arrière, avec une tache de craie. La tache décrit un cercle : quelle est la nature de son mouvement ?</p></div>
+<h3>1. Grandeurs angulaires</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Abscisse angulaire</strong> θ (rad) ; <strong>abscisse curviligne</strong> s = R θ.</li><li><strong>Vitesse angulaire</strong> ω = Δθ/Δt (rad/s) ; <strong>vitesse linéaire</strong> v = ω R.</li><li><strong>Période</strong> T (s) ; <strong>fréquence</strong> f = 1/T (Hz) ; ω = 2π/T = 2π f.</li><li>Conversions : 1 tr/s = 2π rad/s ; 1 tr/min = 2π/60 ≈ 0,105 rad/s.</li></ul></div>
+<h3>2. MCU : mouvement circulaire uniforme</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>ω constante</strong>, v constante en intensité, direction qui change.</li><li><strong>θ = θ<sub>0</sub> + ω t</strong> ; <strong>s = v t</strong>.</li><li><strong>Accélération centripète</strong> a<sub>c</sub> = v<sup>2</sup>/R = ω<sup>2</sup> R, dirigée vers le centre.</li></ul></div>
+<h3>3. MCUV : mouvement circulaire uniformément varié</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Accélération angulaire</strong> α constante : α = Δω/Δt (rad/s<sup>2</sup>).</li><li><strong>ω = ω<sub>0</sub> + α t</strong> ; <strong>θ = θ<sub>0</sub> + ω<sub>0</sub> t + ½ α t<sup>2</sup></strong> ; <strong>ω<sup>2</sup> − ω<sub>0</sub><sup>2</sup> = 2 α θ</strong>.</li><li><strong>Accélération tangentielle</strong> a<sub>t</sub> = α R.</li><li>Différence MRU/MCU : en MCU, la vitesse change de direction.</li></ul><p><a href="https://www.youtube.com/results?search_query=Mouvements+circulaires+(MCU+et+MCUV)+physique+terminale" target="_blank" rel="noopener">🎥 Recherche : Mouvements circulaires (MCU et MCUV) (chaînes de cours de physique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>MCU : ω constante, v = ωR, a<sub>c</sub> = ω<sup>2</sup>R. MCUV : α constante, ω = ω<sub>0</sub> + αt.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSP 6.5.</div>
+    `
+},
+{
+    title: "Leçon 6 — Principes de la dynamique (lois de Newton)",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Un carton est posé sur une table, un bloc sur une pente. Pourquoi le carton reste-t-il immobile, alors que le bloc glisse ? Les trois lois de Newton répondent.</p></div>
+<h3>1. Les trois lois</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Portrait_of_Sir_Isaac_Newton,_1689.jpg?width=700" alt="Isaac Newton" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Isaac Newton — Wikimedia Commons : Portrait of Sir Isaac Newton, 1689.jpg</p><ul><li><strong>1re loi (inertie)</strong> : si ΣF = 0, un corps reste au repos ou en MRU (référentiel galiléen).</li><li><strong>2e loi (principe fondamental)</strong> : <strong>ΣF = m a</strong> (N = kg·m/s<sup>2</sup>).</li><li><strong>3e loi (action-réaction)</strong> : F<sub>A→B</sub> = − F<sub>B→A</sub> (mêmes droites d'action).</li></ul></div>
+<h3>2. Application</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Carton : poids P et réaction N s'annulent ⇒ équilibre.</li><li>Bloc sur pente : P a une composante parallèle P sinθ qui n'est pas équilibrée ⇒ glissement.</li><li><strong>Ceinture de sécurité</strong> : lors d'un freinage, le corps tend à garder sa vitesse (inertie).</li></ul></div>
+<h3>3. Exemple résolu</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Train de 500 t, force motrice 70 000 N, frottements 30 000 N : ΣF = 40 000 N ⇒ a = 0,08 m/s<sup>2</sup> ⇒ v(200 s) = <strong>16 m/s</strong> (57,6 km/h).</li><li>Pour maintenir cette vitesse : force motrice = frottements = <strong>30 000 N</strong>.</li></ul><p><a href="https://www.youtube.com/results?search_query=Principes+de+la+dynamique+(lois+de+Newton)+physique+terminale" target="_blank" rel="noopener">🎥 Recherche : Principes de la dynamique (lois de Newton) (chaînes de cours de physique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Inertie (ΣF = 0), principe fondamental (ΣF = ma), action-réaction. Si la résultante est nulle, la vitesse reste constante.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSP 6.6.</div>
+    `
+},
+{
+    title: "Leçon 7 — Balistique",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Avec une seringue d'eau, on projette un jet sous 0°, 30°, 45°, 60° et 90° et on mesure la hauteur maximale et la distance atteinte. Quel angle donne la plus grande portée ?</p></div>
+<h3>1. Définitions</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Balistique</strong> : étude du mouvement des projectiles.</li><li><strong>Projectile</strong> (missile balistique) : corps lancé soumis à son seul poids.</li><li><strong>Portée</strong> : distance horizontale au point d'impact ; <strong>flèche</strong> : hauteur maximale.</li></ul></div>
+<h3>2. Tir horizontal et tir oblique</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Horizontal</strong> : x = v<sub>0</sub> t ; y = ½ g t<sup>2</sup> ; trajectoire y = g x<sup>2</sup>/(2 v<sub>0</sub><sup>2</sup>) (parabole).</li><li><strong>Oblique</strong> (angle α) : x = v<sub>0</sub> cosα · t ; y = v<sub>0</sub> sinα · t − ½ g t<sup>2</sup>.</li><li><strong>Portée</strong> R = v<sub>0</sub><sup>2</sup> sin 2α / g ; <strong>flèche</strong> H = v<sub>0</sub><sup>2</sup> sin<sup>2</sup>α / (2g) ; <strong>durée</strong> T = 2 v<sub>0</sub> sinα / g.</li><li><strong>Portée maximale à 45°</strong> ; des angles complémentaires donnent la même portée.</li></ul></div>
+<h3>3. Parabole de sûreté</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Parabole de sûreté</strong> : enveloppe de toutes les trajectoires pour une même vitesse initiale, y = v<sub>0</sub><sup>2</sup>/(2g) − g x<sup>2</sup>/(2 v<sub>0</sub><sup>2</sup>) ; elle limite la zone atteinte.</li><li>Exemple : v<sub>0</sub> = 20 m/s, α = 30° : R ≈ 35,3 m ; H ≈ 5,1 m ; T ≈ 2,0 s.</li></ul><p><a href="https://www.youtube.com/results?search_query=Balistique+physique+terminale" target="_blank" rel="noopener">🎥 Recherche : Balistique (chaînes de cours de physique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Tir horizontal et oblique : trajectoires paraboliques. R = v<sub>0</sub><sup>2</sup> sin 2α/g, maximale à 45°. Parabole de sûreté : enveloppe des trajectoires.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSP 6.7.</div>
+    `
+},
+{
+    title: "Leçon 8 — Force centripète et force centrifuge",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Un bus scolaire aborde le rond-point de Ngaba. Les élèves sont poussés vers l'extérieur du virage. Quelle force agit ?</p></div>
+<h3>1. Force centripète</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Dirigée vers le <strong>centre</strong> du cercle ; <strong>F = m v<sup>2</sup>/R = m ω<sup>2</sup> R</strong>.</li><li>Elle est fournie par une force réelle : frottement des pneus, tension d'un fil, gravitation…</li></ul></div>
+<h3>2. Force centrifuge</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Force d'inertie</strong> ressentie dans le référentiel qui tourne ; même intensité m v<sup>2</sup>/R, <strong>sens opposé</strong> (vers l'extérieur).</li><li>Dans un référentiel galiléen, il n'y a que la force centripète.</li></ul></div>
+<h3>3. Applications</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Virage : route relevée, tanθ = v<sup>2</sup>/(g R). Essoreuse, centrifugeuse, seau d'eau tournant.</li><li>Exemple : v = 10 m/s, R = 50 m, m = 60 kg : a = 2 m/s<sup>2</sup> ; F = <strong>120 N</strong>.</li></ul><p><a href="https://www.youtube.com/results?search_query=Force+centripète+et+force+centrifuge+physique+terminale" target="_blank" rel="noopener">🎥 Recherche : Force centripète et force centrifuge (chaînes de cours de physique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Force centripète F = mv<sup>2</sup>/R vers le centre ; la force centrifuge est une force d'inertie ressentie dans le référentiel tournant.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSP 6.8.</div>
+    `
+},
+{
+    title: "Leçon 9 — Moments d'inertie",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Une patineuse tourne plus vite quand elle rentre les bras : la répartition de la masse par rapport à l'axe compte. C'est le moment d'inertie.</p></div>
+<h3>1. Définition</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>I = Σ m<sub>i</sub> r<sub>i</sub><sup>2</sup></strong> (kg·m<sup>2</sup>) : mesure de la résistance d'un corps à la mise en rotation.</li><li><strong>Dynamique de rotation</strong> : Σ M = I α ; <strong>énergie cinétique de rotation</strong> : E<sub>c</sub> = ½ I ω<sup>2</sup>.</li></ul></div>
+<h3>2. Solides usuels (axe passant par le centre)</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Anneau, cerceau</strong> : MR<sup>2</sup> ; <strong>disque plein, cylindre plein</strong> : ½ MR<sup>2</sup>.</li><li><strong>Sphère pleine</strong> : (2/5) MR<sup>2</sup> ; <strong>sphère creuse</strong> : (2/3) MR<sup>2</sup>.</li><li><strong>Tige</strong> (axe au centre) : (1/12) ML<sup>2</sup> ; <strong>tige</strong> (axe à l'extrémité) : (1/3) ML<sup>2</sup>.</li></ul></div>
+<h3>3. Théorème de Huygens-Steiner</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>I = I<sub>G</sub> + M d<sup>2</sup></strong> (axe parallèle à un axe passant par G, à la distance d).</li><li>Exemple : tige de 2 m, 3 kg : I(centre) = 1 kg·m<sup>2</sup> ; I(extrémité) = 4 kg·m<sup>2</sup>.</li></ul><p><a href="https://www.youtube.com/results?search_query=Moments+d'inertie+physique+terminale" target="_blank" rel="noopener">🎥 Recherche : Moments d'inertie (chaînes de cours de physique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>I = Σ m r<sup>2</sup> ; Σ M = I α ; I = I<sub>G</sub> + M d<sup>2</sup>. Connaître les moments d'inertie du cerceau, du disque, de la sphère et de la tige.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSP 6.9.</div>
+    `
+},
+{
+    title: "Leçon 10 — Poids d'un corps et attraction universelle",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Un astronaute de 60 kg pèse environ 588 N sur Terre mais seulement 97 N sur la Lune. Sa masse n'a pas changé : c'est son poids qui diffère.</p></div>
+<h3>1. Poids et masse</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Masse</strong> m (kg) : invariable ; <strong>poids</strong> P = m g (N) : force, qui varie avec g.</li><li>g<sub>T</sub>erre ≈ 9,8 m/s<sup>2</sup> ; g<sub>L</sub>une ≈ 1,62 m/s<sup>2</sup>.</li></ul></div>
+<h3>2. Loi de la gravitation universelle (Newton)</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>F = G m<sub>1</sub> m<sub>2</sub> / d<sup>2</sup></strong>, avec <strong>G = 6,67 × 10<sup>−11</sup> N·m<sup>2</sup>/kg<sup>2</sup></strong>.</li><li><strong>g à l'altitude h</strong> : g = G M/(R + h)<sup>2</sup> ; g<sub>0</sub> = G M<sub>T</sub>/R<sub>T</sub><sup>2</sup> ≈ 9,8 m/s<sup>2</sup> (M<sub>T</sub> ≈ 5,97 × 10<sup>24</sup> kg ; R<sub>T</sub> ≈ 6 371 km).</li></ul></div>
+<h3>3. Satellites</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Un satellite en orbite circulaire de rayon r a pour vitesse <strong>v = √(G M/r)</strong> et période <strong>T = 2π r / v</strong>.</li><li>L'apesanteur apparente vient de la chute libre continue du satellite.</li></ul><p><a href="https://www.youtube.com/results?search_query=Poids+d'un+corps+et+attraction+universelle+physique+terminale" target="_blank" rel="noopener">🎥 Recherche : Poids d'un corps et attraction universelle (chaînes de cours de physique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>P = mg ; F = G m<sub>1</sub> m<sub>2</sub>/d<sup>2</sup> ; la masse est invariable, le poids dépend du lieu.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSP 6.10.</div>
+    `
+},
+{
+    title: "Leçon 11 — Forces de frottement",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Pourquoi une caisse lourde est-elle difficile à pousser au démarrage, mais plus facile à garder en mouvement ? Les frottements agissent entre les surfaces.</p></div>
+<h3>1. Frottement solide</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Force <strong>tangente</strong> aux surfaces, <strong>opposée</strong> au mouvement (ou à la tendance au mouvement).</li><li><strong>Statique</strong> : f ≤ μ<sub>s</sub> N (limite de glissement) ; <strong>dynamique</strong> : <strong>f = μ<sub>d</sub> N</strong> (μ<sub>d</sub> < μ<sub>s</sub>).</li><li><strong>Lois d'Amontons-Coulomb</strong> : f est proportionnelle à la réaction normale N et pratiquement indépendante de l'aire de contact.</li></ul></div>
+<h3>2. Angle de frottement</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>tan φ = μ</strong> ; sur un plan incliné, le corps commence à glisser quand tan θ = μ<sub>s</sub>.</li><li>Exemple : caisse de 50 kg, μ<sub>d</sub> = 0,4 : f = 0,4 × 50 × 9,8 = <strong>196 N</strong>.</li></ul></div>
+<h3>3. Avantages et inconvénients</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Utiles</strong> : marche, freinage, adhérence des pneus.</li><li><strong>Gênants</strong> : usure, chaleur ; on les réduit par le <strong>graissage</strong> et les <strong>roulements</strong>.</li></ul><p><a href="https://www.youtube.com/results?search_query=Forces+de+frottement+physique+terminale" target="_blank" rel="noopener">🎥 Recherche : Forces de frottement (chaînes de cours de physique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>f = μ N ; frottement statique plus grand que dynamique ; sur plan incliné, glissement quand tanθ = μ<sub>s</sub>.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSP 6.11.</div>
+    `
+},
+{
+    title: "Leçon 12 — Ascenseurs et tensions mécaniques",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans l'ascenseur, on se sent plus lourd au démarrage vers le haut et plus léger au démarrage vers le bas. Le poids apparent change.</p></div>
+<h3>1. Cabine montant ou descendant</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Axe vers le haut</strong>, a positif vers le haut : <strong>T − mg = m a</strong>.</li><li><strong>Poids apparent</strong> (réaction du plancher) : <strong>N = m (g + a)</strong> (montée accélérée ou descente freinée) ; <strong>N = m (g − a)</strong> (montée freinée ou descente accélérée).</li></ul></div>
+<h3>2. Cas particuliers</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Vitesse constante</strong> : N = mg.</li><li><strong>Câble rompu (chute libre)</strong> : N = 0 : <strong>apesanteur</strong>.</li><li><strong>Tension du câble</strong> pour cabine M et passagers m : T = (M + m)(g + a).</li></ul></div>
+<h3>3. Exemple</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>m = 70 kg, a = 1 m/s<sup>2</sup> : montée accélérée N = 70 × 10,8 = <strong>756 N</strong> ; descente accélérée N = 70 × 8,8 = <strong>616 N</strong>.</li></ul><p><a href="https://www.youtube.com/results?search_query=Ascenseurs+et+tensions+mécaniques+physique+terminale" target="_blank" rel="noopener">🎥 Recherche : Ascenseurs et tensions mécaniques (chaînes de cours de physique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Poids apparent N = m(g ± a). À vitesse constante N = mg ; en chute libre N = 0.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSP 6.12.</div>
+    `
+},
+{
+    title: "Leçon 13 — Mouvement d'une sphère sur un plan incliné",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Une sphère et un bloc descendent la même pente : lequel arrive le premier ? Le roulement change l'accélération.</p></div>
+<h3>1. Glissement sans frottement</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>a = g sin θ</strong> (indépendante de la masse).</li></ul></div>
+<h3>2. Roulement sans glissement</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>a = g sin θ / (1 + I/(m R<sup>2</sup>))</strong>.</li><li><strong>Sphère pleine</strong> : a = (5/7) g sin θ ; <strong>cylindre ou disque plein</strong> : (2/3) g sin θ ; <strong>cerceau</strong> : (1/2) g sin θ.</li><li>Vitesse en bas (hauteur h) pour la sphère : v = √(10 g h/7) ; énergie : m g h = ½ m v<sup>2</sup> + ½ I ω<sup>2</sup>.</li></ul></div>
+<h3>3. Exemple</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>θ = 30° : glissement a = 4,9 m/s<sup>2</sup> ; sphère pleine a = <strong>3,5 m/s<sup>2</sup></strong>. La sphère met plus de temps car une partie de l'énergie sert à la rotation.</li></ul><p><a href="https://www.youtube.com/results?search_query=Mouvement+d'une+sphère+sur+un+plan+incliné+physique+terminale" target="_blank" rel="noopener">🎥 Recherche : Mouvement d'une sphère sur un plan incliné (chaînes de cours de physique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Glissement : a = g sinθ. Roulement : a = g sinθ/(1 + I/mR<sup>2</sup>) ; sphère pleine (5/7) g sinθ.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSP 6.13.</div>
+    `
+},
+{
+    title: "Leçon 14 — Résistance de l'air",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Un parachutiste atteint une vitesse limite et ne continue pas à accélérer. La résistance de l'air équilibre son poids.</p></div>
+<h3>1. Traînée</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Force de <strong>sens opposé à la vitesse</strong>.</li><li><strong>Faibles vitesses</strong> : f = k v ; <strong>grandes vitesses</strong> : <strong>f = ½ ρ C<sub>x</sub> S v<sup>2</sup></strong> (ρ masse volumique de l'air, C<sub>x</sub> coefficient de forme, S surface frontale).</li></ul></div>
+<h3>2. Vitesse limite</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Atteinte quand la traînée équilibre le poids (moins la poussée d'Archimède) : <strong>v<sub>l</sub>im = √(2 m g/(ρ C<sub>x</sub> S))</strong> (ou mg/k).</li><li>Elle dépend de la <strong>forme</strong>, de la <strong>surface</strong> et de la <strong>masse</strong>.</li></ul></div>
+<h3>3. Exemple</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Parachutiste de 80 kg avec f = k v<sup>2</sup>, k = 0,25 kg/m : v<sub>l</sub>im = √(mg/k) = √(784/0,25) = <strong>56 m/s</strong>. Parachute ouvert, k augmente et v<sub>l</sub>im diminue.</li></ul><p><a href="https://www.youtube.com/results?search_query=Résistance+de+l'air+physique+terminale" target="_blank" rel="noopener">🎥 Recherche : Résistance de l'air (chaînes de cours de physique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La traînée croît avec v ; à la vitesse limite, elle équilibre le poids et l'accélération s'annule.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSP 6.14.</div>
+    `
+},
+{
+    title: "Leçon 15 — Énergie mécanique, travail et puissance",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Monter un sac de 100 kg à 5 m de hauteur en 10 s demande un travail et une puissance précis. Pour ne pas se tromper, il faut distinguer travail, énergie et puissance.</p></div>
+<h3>1. Travail et puissance</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Travail</strong> W = F d cosα (joule, J) ; travail du poids : ± m g h.</li><li><strong>Puissance</strong> P = W/t = F v (watt, W) ; 1 kW = 1 000 W ; 1 ch ≈ 736 W ; <strong>1 kWh = 3,6 MJ</strong>.</li><li><strong>Rendement</strong> η = P<sub>u</sub>tile / P<sub>a</sub>bsorbée.</li></ul></div>
+<h3>2. Énergie</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Cinétique</strong> E<sub>c</sub> = ½ m v<sup>2</sup> ; <strong>potentielle de pesanteur</strong> E<sub>p</sub> = m g h ; <strong>élastique</strong> E<sub>p</sub> = ½ k x<sup>2</sup>.</li><li><strong>Théorème de l'énergie cinétique</strong> : ΔE<sub>c</sub> = ΣW.</li><li><strong>Énergie mécanique</strong> E<sub>m</sub> = E<sub>c</sub> + E<sub>p</sub> ; elle se <strong>conserve</strong> en l'absence de frottements.</li></ul></div>
+<h3>3. Exemples</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Chute libre de 20 m : v = √(2gh) ≈ 19,8 m/s.</li><li>Sac de 100 kg à 5 m en 10 s : W = mgh = 4 900 J ; <strong>P = 490 W</strong>.</li></ul><p><a href="https://www.youtube.com/results?search_query=Énergie+mécanique,+travail+et+puissance+physique+terminale" target="_blank" rel="noopener">🎥 Recherche : Énergie mécanique, travail et puissance (chaînes de cours de physique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>W = F d cosα ; P = W/t ; E<sub>c</sub> = ½mv<sup>2</sup> ; E<sub>p</sub> = mgh ; E<sub>m</sub> se conserve sans frottement.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSP 6.15.</div>
+    `
+},
+{
+    title: "Leçon 16 — Quantité de mouvement",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Quand on tire avec un fusil, l'arme recule. La quantité de mouvement se conserve.</p></div>
+<h3>1. Définitions</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>p = m v</strong> (kg·m/s) ; <strong>ΣF = dp/dt</strong> ; <strong>impulsion</strong> F Δt = Δp.</li><li><strong>Conservation</strong> : pour un système isolé, <strong>Σp<sub>a</sub>vant = Σp<sub>a</sub>près</strong>.</li></ul></div>
+<h3>2. Applications</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Newtons_cradle_animation_book_2.gif?width=700" alt="Pendule de Newton" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Pendule de Newton — Wikimedia Commons : Newtons cradle animation book 2.gif</p><ul><li><strong>Recul</strong> d'une arme : m v + M V = 0 ⇒ V = − m v/M. Fusil de 4 kg, balle de 10 g à 800 m/s : V = <strong>−2 m/s</strong>.</li><li><strong>Fusée</strong> : poussée F = D<sub>m</sub> v<sub>e</sub> (débit de gaz × vitesse d'éjection).</li></ul></div>
+<h3>3. Chocs</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Choc élastique</strong> : p et E<sub>c</sub> se conservent.</li><li><strong>Choc mou</strong> : p se conserve, les corps restent liés : v = (m<sub>1</sub> v<sub>1</sub> + m<sub>2</sub> v<sub>2</sub>)/(m<sub>1</sub> + m<sub>2</sub>).</li><li>Exemple : 2 kg à 3 m/s heurte 1 kg au repos (choc mou) : v = <strong>2 m/s</strong>.</li></ul><p><a href="https://www.youtube.com/results?search_query=Quantité+de+mouvement+physique+terminale" target="_blank" rel="noopener">🎥 Recherche : Quantité de mouvement (chaînes de cours de physique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Σp se conserve pour un système isolé. Applications : recul, fusée, chocs élastiques ou mous.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSP 6.16.</div>
+    `
+},
+{
+    title: "Leçon 17 — Moment cinétique",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Les patineurs accélèrent leur rotation en rentrant les bras. Le moment cinétique se conserve.</p></div>
+<h3>1. Définitions</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Moment d'une force</strong> : M = F d (N·m).</li><li><strong>Moment cinétique</strong> d'un solide en rotation : <strong>L = I ω</strong> (kg·m<sup>2</sup>/s) ; d'un point matériel : L = r × p.</li></ul></div>
+<h3>2. Théorème et conservation</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Théorème du moment cinétique</strong> : ΣM = dL/dt.</li><li>Si ΣM = 0, <strong>L se conserve</strong> : I<sub>1</sub> ω<sub>1</sub> = I<sub>2</sub> ω<sub>2</sub>.</li></ul></div>
+<h3>3. Exemple</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Patineuse : I<sub>1</sub> = 3 kg·m<sup>2</sup>, ω<sub>1</sub> = 2 tr/s ; bras rentrés I<sub>2</sub> = 1 kg·m<sup>2</sup> ⇒ ω<sub>2</sub> = <strong>6 tr/s</strong>.</li></ul><p><a href="https://www.youtube.com/results?search_query=Moment+cinétique+physique+terminale" target="_blank" rel="noopener">🎥 Recherche : Moment cinétique (chaînes de cours de physique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>L = Iω ; ΣM = dL/dt ; en l'absence de moment extérieur, L se conserve.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSP 6.17.</div>
+    `
+},
+{
+    title: "Leçon 18 — Le volant",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans un moteur, les explosions ne fournissent de l'énergie que par à-coups. Une grande roue lourde, le volant, régularise la rotation.</p></div>
+<h3>1. Définition</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Volant</strong> : roue massive à grand moment d'inertie, calée sur un arbre.</li><li>Il <strong>emmagasine</strong> de l'énergie cinétique de rotation (½ I ω<sup>2</sup>) et la restitue.</li></ul></div>
+<h3>2. Pouvoir régulateur</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Coefficient d'irrégularité</strong> δ = (ω<sub>m</sub>ax − ω<sub>m</sub>in)/ω<sub>m</sub>oy.</li><li>Variation d'énergie : <strong>ΔE = ½ I (ω<sub>m</sub>ax<sup>2</sup> − ω<sub>m</sub>in<sup>2</sup>) = I ω<sub>m</sub>oy<sup>2</sup> δ</strong>.</li><li>Plus I est grand, plus δ est petit.</li></ul></div>
+<h3>3. Usages</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Moteurs à pistons, presses, machines à vapeur, cisailles.</li></ul><p><a href="https://www.youtube.com/results?search_query=Le+volant+physique+terminale" target="_blank" rel="noopener">🎥 Recherche : Le volant (chaînes de cours de physique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le volant régularise la rotation par son grand moment d'inertie ; ΔE = I ω<sub>m</sub>oy<sup>2</sup> δ.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSP 6.18.</div>
+    `
+},
+{
+    title: "Leçon 19 — Le marteau",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Pour enfoncer un pieu, on laisse tomber un marteau-pilon : toute son énergie est transformée en travail sur le sol.</p></div>
+<h3>1. Types</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Marteau de menuisier, de forgeron, marteau-pilon, marteau-piqueur</strong>.</li><li>Il faut préciser le <strong>poids</strong> du marteau, sa <strong>hauteur de chute</strong> et la <strong>vitesse d'impact</strong>.</li></ul></div>
+<h3>2. Énergie et force du coup</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Vitesse d'impact : v = √(2gh) ; énergie : E = M g h = ½ M v<sup>2</sup>.</li><li><strong>Force moyenne du coup</strong> : F = E/s (s = enfoncement).</li></ul></div>
+<h3>3. Exemple</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Pilon de 500 kg tombant de 2 m : E = 9 800 J ; enfoncement s = 5 cm ⇒ F = 9 800/0,05 = <strong>196 000 N</strong>.</li></ul><p><a href="https://www.youtube.com/results?search_query=Le+marteau+physique+terminale" target="_blank" rel="noopener">🎥 Recherche : Le marteau (chaînes de cours de physique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Énergie du marteau E = Mgh ; force moyenne du coup F = E/s.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSP 6.19.</div>
+    `
+},
+{
+    title: "Leçon 20 — Notions de thermodynamique",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Un gaz qui se détend pousse un piston et le moteur travaille. La thermodynamique étudie les échanges de chaleur et de travail.</p></div>
+<h3>1. Principes</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Principe zéro</strong> : deux corps en équilibre thermique avec un troisième sont en équilibre entre eux.</li><li><strong>1er principe (équivalence)</strong> : <strong>ΔU = W + Q</strong> (énergie conservée) ; 1 cal = 4,18 J.</li><li><strong>Principe de l'état initial et de l'état final</strong> : ΔU ne dépend que des états initial et final.</li><li><strong>2e principe</strong> : la chaleur passe spontanément du corps chaud au corps froid ; aucun moteur ne transforme toute la chaleur en travail.</li></ul></div>
+<h3>2. Gaz parfait et transformations</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>PV = nRT</strong> (R = 8,31 J/(mol·K)).</li><li><strong>Isotherme</strong> : ΔU = 0 ; <strong>isochore</strong> : W = 0 ; <strong>isobare</strong> : W = −PΔV ; <strong>adiabatique</strong> : Q = 0.</li></ul></div>
+<h3>3. Rendement</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Carnot_cycle_p-V_diagram.svg?width=700" alt="Cycle de Carnot" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Cycle de Carnot — Wikimedia Commons : Carnot cycle p-V diagram.svg</p><ul><li><strong>η = W/Q<sub>c</sub>haud</strong> ; <strong>Carnot</strong> : η<sub>m</sub>ax = 1 − T<sub>f</sub>/T<sub>c</sub> (températures en K). Exemple : 600 K et 300 K ⇒ <strong>50 %</strong>.</li></ul><p><a href="https://www.youtube.com/results?search_query=Notions+de+thermodynamique+physique+terminale" target="_blank" rel="noopener">🎥 Recherche : Notions de thermodynamique (chaînes de cours de physique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>ΔU = W + Q ; la chaleur passe du chaud au froid ; η<sub>m</sub>ax = 1 − T<sub>f</sub>/T<sub>c</sub>.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSP 6.20.</div>
+    `
+},
+{
+    title: "Leçon 21 — Moteurs à combustion interne",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans la voiture comme dans la moto, un piston monte et descend dans un cylindre. Comment une explosion devient-elle un mouvement de rotation ?</p></div>
+<h3>1. Le moteur à quatre temps</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/4-Stroke-Engine.gif?width=700" alt="Moteur à quatre temps" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Moteur à quatre temps — Wikimedia Commons : 4-Stroke-Engine.gif</p><ul><li><strong>Admission</strong> (soupape ouverte, le piston descend, mélange air-carburant).</li><li><strong>Compression</strong> (le piston monte, soupapes fermées).</li><li><strong>Explosion-détente</strong> (étincelle de la bougie, le piston descend, <strong>temps moteur</strong>).</li><li><strong>Échappement</strong> (le piston monte, gaz brûlés évacués).</li><li><strong>2 tours</strong> de vilebrequin par cycle.</li></ul></div>
+<h3>2. Le moteur à deux temps</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Un cycle par <strong>tour</strong> de vilebrequin : compression + admission, puis explosion + échappement.</li><li>Plus léger et plus puissant à cylindrée égale, mais plus polluant.</li></ul></div>
+<h3>3. Éléments et types</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Piston, bielle, vilebrequin, soupapes, bougie, carburateur ou injecteur, volant</strong>.</li><li><strong>Moteur à essence</strong> (allumage par bougie) ; <strong>moteur Diesel</strong> (auto-allumage par forte compression).</li><li>Rendement réel : ≈ 25 à 35 %.</li></ul><p><a href="https://www.youtube.com/results?search_query=Moteurs+à+combustion+interne+physique+terminale" target="_blank" rel="noopener">🎥 Recherche : Moteurs à combustion interne (chaînes de cours de physique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Quatre temps : admission, compression, explosion-détente, échappement. Deux temps : un cycle par tour.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSP 6.21.</div>
+    `
+},
+{
+    title: "Leçon 22 — Oscillateur harmonique simple (OHS)",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Un ressort fixé à un support, une masse accrochée, on tire et on lâche : la masse oscille. Quelle est la loi de ce mouvement ?</p></div>
+<h3>1. Définition et équations</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Simple_harmonic_oscillator.gif?width=700" alt="Oscillateur harmonique" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Oscillateur harmonique — Wikimedia Commons : Simple harmonic oscillator.gif</p><ul><li><strong>OHS</strong> : mouvement rectiligne <strong>sinusoïdal</strong> soumis à une force de rappel <strong>F = −k x</strong>.</li><li><strong>x = X<sub>m</sub> cos(ω t + φ)</strong> ; <strong>v = −ω X<sub>m</sub> sin(ω t + φ)</strong> ; <strong>a = −ω<sup>2</sup> x</strong>.</li><li><strong>ω<sup>2</sup> = k/m</strong> ; <strong>T = 2π√(m/k)</strong> ; f = 1/T.</li></ul></div>
+<h3>2. Caractéristiques</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Élongation</strong> x ; <strong>amplitude</strong> X<sub>m</sub> ; <strong>pulsation</strong> ω ; <strong>phase</strong> (ω t + φ).</li><li><strong>v<sub>m</sub>ax = ω X<sub>m</sub></strong> (au centre) ; <strong>a<sub>m</sub>ax = ω<sup>2</sup> X<sub>m</sub></strong> (aux extrémités) ; v<sup>2</sup> = ω<sup>2</sup> (X<sub>m</sub><sup>2</sup> − x<sup>2</sup>).</li><li><strong>Conditions d'existence</strong> : force de rappel proportionnelle à l'élongation, système conservatif.</li></ul></div>
+<h3>3. Énergie</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>E<sub>c</sub> = ½ m v<sup>2</sup> ; E<sub>p</sub> = ½ k x<sup>2</sup> ; <strong>E<sub>m</sub> = ½ k X<sub>m</sub><sup>2</sup></strong> (constante).</li><li>Exemple : X<sub>m</sub> = 0,1 m, T = 2 s ⇒ ω = π rad/s ; v<sub>m</sub>ax = <strong>0,314 m/s</strong> ; a<sub>m</sub>ax = <strong>0,987 m/s<sup>2</sup></strong>.</li></ul><p><a href="https://www.youtube.com/results?search_query=Oscillateur+harmonique+simple+(OHS)+physique+terminale" target="_blank" rel="noopener">🎥 Recherche : Oscillateur harmonique simple (OHS) (chaînes de cours de physique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>OHS : a = −ω<sup>2</sup> x ; T = 2π√(m/k) ; énergie mécanique constante E<sub>m</sub> = ½ k X<sub>m</sub><sup>2</sup>.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSP 6.22.</div>
+    `
+},
+{
+    title: "Leçon 23 — Pendule simple",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Une pierre au bout d'un fil, que l'on écarte un peu de la verticale puis qu'on lâche : elle oscille. De quoi dépend la durée d'un va-et-vient ?</p></div>
+<h3>1. Période et fréquence</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Pour de <strong>petites oscillations</strong> (moins de 10° environ) : <strong>T = 2π√(l/g)</strong> ; <strong>ω<sub>0</sub> = √(g/l)</strong>.</li><li><strong>Isochronisme</strong> : T ne dépend ni de la masse ni de l'amplitude ; <strong>T<sup>2</sup> ∝ l</strong>.</li><li>Pendule de 1 m : T ≈ <strong>2,0 s</strong> (pendule battant la seconde).</li></ul></div>
+<h3>2. Tension du fil et mesure de g</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Tension au point bas pour un lâcher depuis θ<sub>0</sub> : <strong>T<sub>f</sub>il = m g (3 − 2 cosθ<sub>0</sub>)</strong>.</li><li><strong>Mesure absolue de g</strong> : g = 4π<sup>2</sup> l/T<sup>2</sup> ; <strong>régulation des horloges</strong> : on ajuste la longueur l.</li></ul></div>
+<h3>3. Battements</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Deux pendules de longueurs voisines (périodes T<sub>1</sub> et T<sub>2</sub>) : la <strong>période du battement</strong> est T<sub>b</sub> = T<sub>1</sub> T<sub>2</sub>/|T<sub>1</sub> − T<sub>2</sub>|.</li></ul><p><a href="https://www.youtube.com/results?search_query=Pendule+simple+physique+terminale" target="_blank" rel="noopener">🎥 Recherche : Pendule simple (chaînes de cours de physique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>T = 2π√(l/g) : indépendante de la masse et de l'amplitude. Application : mesure de g et régulation des horloges.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSP 6.23.</div>
+    `
+},
+{
+    title: "Leçon 24 — Pendule pesant",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Un solide quelconque suspendu à un axe horizontal ne passant pas par son centre de gravité oscille : c'est un pendule pesant. Un balancier de tige en est un exemple.</p></div>
+<h3>1. Période</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>T = 2π√(I/(m g d))</strong> (d = distance entre l'axe O et le centre de gravité G) ; <strong>ω<sub>0</sub> = √(m g d/I)</strong>.</li><li><strong>Longueur du pendule simple synchrone</strong> : l = I/(m d).</li></ul></div>
+<h3>2. Tige homogène</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Tige de longueur L oscillant autour d'une extrémité : I = mL<sup>2</sup>/3 ; d = L/2.</li><li><strong>T = 2π√(2L/(3g))</strong> ; l<sub>s</sub> = <strong>2L/3</strong>.</li><li>Exemple : L = 1 m ⇒ T ≈ <strong>1,64 s</strong>.</li></ul></div>
+<h3>3. Théorème de Huygens</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>I = I<sub>G</sub> + m d<sup>2</sup> ⇒ T minimale pour une valeur de d ; le point d'oscillation et le centre de suspension sont conjugués (pendule réversible de Kater).</li></ul><p><a href="https://www.youtube.com/results?search_query=Pendule+pesant+physique+terminale" target="_blank" rel="noopener">🎥 Recherche : Pendule pesant (chaînes de cours de physique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Pendule pesant : T = 2π√(I/(mgd)) ; la tige oscillant par une extrémité équivaut à un pendule simple de longueur 2L/3.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSP 6.24.</div>
+    `
+},
+{
+    title: "Leçon 25 — Pendule élastique",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Une masse accrochée à un ressort oscille horizontalement ou verticalement. La période dépend de la masse et de la raideur du ressort.</p></div>
+<h3>1. Période et fréquence angulaire</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>T = 2π√(m/k)</strong> ; <strong>ω<sub>0</sub> = √(k/m)</strong> (k : raideur, N/m).</li><li>Identique à l'horizontale et à la verticale ; à la verticale, l'équilibre est décalé : k Δl = m g.</li></ul></div>
+<h3>2. Association de ressorts</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>En série</strong> : 1/k = 1/k<sub>1</sub> + 1/k<sub>2</sub> (plus mou) ; <strong>en parallèle</strong> : k = k<sub>1</sub> + k<sub>2</sub> (plus raide).</li></ul></div>
+<h3>3. Exemple</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>m = 0,2 kg, k = 20 N/m : T = 2π√(0,01) ≈ <strong>0,63 s</strong> ; f ≈ 1,6 Hz.</li></ul><p><a href="https://www.youtube.com/results?search_query=Pendule+élastique+physique+terminale" target="_blank" rel="noopener">🎥 Recherche : Pendule élastique (chaînes de cours de physique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Pendule élastique : T = 2π√(m/k) ; association en série (k plus faible) ou en parallèle (k plus grand).</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSP 6.25.</div>
+    `
+},
+{
+    title: "Leçon 26 — Pendule conique",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Une balle au bout d'un fil de longueur l tourne en cercle horizontal : le fil décrit un cône. Quelle est la période de rotation ?</p></div>
+<h3>1. Définition</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Pendule conique</strong> : masse m en rotation uniforme dans un plan horizontal, le fil faisant l'angle α avec la verticale.</li><li><strong>Rayon</strong> r = l sin α ; <strong>tension</strong> du fil T<sub>f</sub> = m g/cos α.</li></ul></div>
+<h3>2. Période et fréquence angulaire</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>tan α = v<sup>2</sup>/(g r)</strong> ; <strong>ω<sup>2</sup> = g/(l cos α)</strong> ; <strong>T = 2π√(l cos α/g)</strong>.</li><li>La période diminue quand α augmente.</li></ul></div>
+<h3>3. Exemple</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>l = 1 m, α = 30° : T = 2π√(0,866/9,8) ≈ <strong>1,87 s</strong>.</li></ul><p><a href="https://www.youtube.com/results?search_query=Pendule+conique+physique+terminale" target="_blank" rel="noopener">🎥 Recherche : Pendule conique (chaînes de cours de physique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Pendule conique : T = 2π√(l cosα/g) ; tension T<sub>f</sub> = mg/cosα.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSP 6.26.</div>
+    `
+},
+{
+    title: "Leçon 27 — Pendule de torsion",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Un disque suspendu à un fil métallique : on le tourne d'un petit angle, le fil se tord et le disque oscille autour de l'axe. C'est un pendule de torsion.</p></div>
+<h3>1. Couple de rappel</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>M = −C θ</strong> (C : constante de torsion, N·m/rad).</li><li>Pour un fil cylindrique de rayon r et de longueur L : <strong>C = π G r<sup>4</sup>/(2 L)</strong> (G : module de rigidité).</li></ul></div>
+<h3>2. Période et fréquence angulaire</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>T = 2π√(I/C)</strong> ; <strong>ω<sub>0</sub> = √(C/I)</strong>.</li><li>La période est <strong>indépendante de l'amplitude</strong> (petites torsions).</li></ul></div>
+<h3>3. Exemple et usages</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>I = 0,01 kg·m<sup>2</sup>, C = 0,04 N·m/rad : T = 2π√0,25 = <strong>π s</strong> ≈ 3,14 s.</li><li>Usages : balance de torsion (Coulomb, Cavendish), galvanomètre, mesure de G.</li></ul><p><a href="https://www.youtube.com/results?search_query=Pendule+de+torsion+physique+terminale" target="_blank" rel="noopener">🎥 Recherche : Pendule de torsion (chaînes de cours de physique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Pendule de torsion : M = −Cθ ; T = 2π√(I/C).</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSP 6.27.</div>
+    `
+},
+{
+    title: "Leçon 28 — Pendule magnétique",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Une boussole écartée de sa position d'équilibre oscille avant de se stabiliser vers le nord magnétique. C'est un pendule magnétique.</p></div>
+<h3>1. Moment magnétique de rappel</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Aiguille aimantée de moment magnétique m, dans un champ B : <strong>M = −m B sin θ ≈ −m B θ</strong> (petits angles).</li></ul></div>
+<h3>2. Période et fréquence angulaire</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>T = 2π√(I/(m B))</strong> ; <strong>ω<sub>0</sub> = √(m B/I)</strong>.</li><li>Plus B est grand, plus la période est courte.</li></ul></div>
+<h3>3. Application</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Mesure de la composante horizontale du champ magnétique terrestre : B = 4π<sup>2</sup> I/(m T<sup>2</sup>).</li><li>Exemple : I = 10<sup>−6</sup> kg·m<sup>2</sup>, m = 0,1 A·m<sup>2</sup>, B = 3 × 10<sup>−5</sup> T : T ≈ <strong>3,6 s</strong>.</li></ul><p><a href="https://www.youtube.com/results?search_query=Pendule+magnétique+physique+terminale" target="_blank" rel="noopener">🎥 Recherche : Pendule magnétique (chaînes de cours de physique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Pendule magnétique : T = 2π√(I/(mB)).</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSP 6.28.</div>
+    `
+},
+{
+    title: "Leçon 29 — Ondes électromagnétiques",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Radio Okapi, la télévision, le téléphone mobile, la lumière du soleil : toutes ces ondes sont de même nature mais de longueurs d'onde différentes.</p></div>
+<h3>1. Notion d'onde</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Onde</strong> : propagation d'une <strong>perturbation</strong> sans transport de matière.</li><li><strong>Onde mécanique</strong> : a besoin d'un milieu matériel ; <strong>onde électromagnétique</strong> : se propage même <strong>dans le vide</strong>.</li><li><strong>Longueur d'onde</strong> λ = c T = c/f ; <strong>c = 3 × 10<sup>8</sup> m/s</strong> dans le vide.</li></ul></div>
+<h3>2. Onde électromagnétique</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/EM_spectrum.svg?width=700" alt="Spectre électromagnétique" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Spectre électromagnétique — Wikimedia Commons : EM spectrum.svg</p><ul><li>Onde <strong>transversale</strong> : champ électrique E et champ magnétique B perpendiculaires entre eux et à la direction de propagation.</li><li><strong>Énergie d'un photon</strong> : E = h f (h = 6,63 × 10<sup>−34</sup> J·s).</li></ul></div>
+<h3>3. Spectre électromagnétique</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Par longueur d'onde décroissante : <strong>ondes radio</strong>, <strong>micro-ondes</strong>, <strong>infrarouge</strong>, <strong>lumière visible</strong> (≈ 400 à 800 nm, du violet au rouge), <strong>ultraviolet</strong>, <strong>rayons X</strong>, <strong>rayons gamma</strong>.</li><li>Exemple : onde FM de 100 MHz ⇒ λ = <strong>3 m</strong>.</li></ul><p><a href="https://www.youtube.com/results?search_query=Ondes+électromagnétiques+physique+terminale" target="_blank" rel="noopener">🎥 Recherche : Ondes électromagnétiques (chaînes de cours de physique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Les ondes électromagnétiques se propagent dans le vide à c = 3 × 10<sup>8</sup> m/s ; spectre : radio, micro-ondes, IR, visible, UV, X, gamma.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSP 6.29.</div>
+    `
+},
+{
+    title: "Leçon 30 — Composition de deux vibrations de même fréquence",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Deux vibrations de même fréquence agissent sur un même point : le résultat dépend de leur déphasage.</p></div>
+<h3>1. Composition</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>x<sub>1</sub> = a<sub>1</sub> cos(ω t + φ<sub>1</sub>) ; x<sub>2</sub> = a<sub>2</sub> cos(ω t + φ<sub>2</sub>) ⇒ <strong>x = A cos(ω t + φ)</strong>.</li><li><strong>A<sup>2</sup> = a<sub>1</sub><sup>2</sup> + a<sub>2</sub><sup>2</sup> + 2 a<sub>1</sub> a<sub>2</sub> cos(φ<sub>2</sub> − φ<sub>1</sub>)</strong> ; tan φ = (a<sub>1</sub> sinφ<sub>1</sub> + a<sub>2</sub> sinφ<sub>2</sub>)/(a<sub>1</sub> cosφ<sub>1</sub> + a<sub>2</sub> cosφ<sub>2</sub>).</li><li><strong>Construction de Fresnel</strong> : addition de vecteurs tournants.</li></ul></div>
+<h3>2. Cas particuliers</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Concordance de phase</strong> (Δφ = 0) : A = a<sub>1</sub> + a<sub>2</sub>.</li><li><strong>Opposition de phase</strong> (Δφ = π) : A = |a<sub>1</sub> − a<sub>2</sub>|.</li><li><strong>Quadrature de phase</strong> (Δφ = π/2) : A = √(a<sub>1</sub><sup>2</sup> + a<sub>2</sub><sup>2</sup>).</li></ul></div>
+<h3>3. Exemple</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>a<sub>1</sub> = 3, a<sub>2</sub> = 4 en quadrature : A = <strong>5</strong> ; en concordance : A = 7 ; en opposition : A = 1.</li></ul><p><a href="https://www.youtube.com/results?search_query=Composition+de+deux+vibrations+de+même+fréquence+physique+terminale" target="_blank" rel="noopener">🎥 Recherche : Composition de deux vibrations de même fréquence (chaînes de cours de physique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>A<sup>2</sup> = a<sub>1</sub><sup>2</sup> + a<sub>2</sub><sup>2</sup> + 2a<sub>1</sub>a<sub>2</sub> cosΔφ ; A = a<sub>1</sub> + a<sub>2</sub> en concordance, |a<sub>1</sub> − a<sub>2</sub>| en opposition, √(a<sub>1</sub><sup>2</sup> + a<sub>2</sub><sup>2</sup>) en quadrature.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSP 6.30.</div>
+    `
+},
+{
+    title: "Leçon 31 — Interférences mécaniques",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans une cuve à ondes, deux pointes vibrent à la même fréquence : certaines zones sont très agitées, d'autres calmes. Ce sont les interférences.</p></div>
+<h3>1. Conditions et phénomène</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Interférences</strong> : superposition de deux ondes issues de <strong>sources cohérentes</strong> (même fréquence, déphasage constant).</li><li><strong>Différence de marche</strong> : δ = d<sub>2</sub> − d<sub>1</sub> (distances d'un point aux deux sources).</li></ul></div>
+<h3>2. Interférences constructives et destructives</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Constructives</strong> (amplitude maximale 2a) : <strong>δ = k λ</strong> (k entier).</li><li><strong>Destructives</strong> (amplitude nulle) : <strong>δ = (2k + 1) λ/2</strong>.</li><li>Les lieux de même état vibratoire sont des <strong>hyperboles</strong> de foyers S<sub>1</sub> et S<sub>2</sub>.</li></ul></div>
+<h3>3. Exemple</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>λ = 2 cm ; un point est à 10 cm de S<sub>1</sub> et à 15 cm de S<sub>2</sub> : δ = 5 cm = 2,5 λ ⇒ <strong>interférence destructive</strong>.</li></ul><p><a href="https://www.youtube.com/results?search_query=Interférences+mécaniques+physique+terminale" target="_blank" rel="noopener">🎥 Recherche : Interférences mécaniques (chaînes de cours de physique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Interférences constructives : δ = kλ ; destructives : δ = (2k + 1)λ/2.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSP 6.31.</div>
+    `
+},
+{
+    title: "Leçon 32 — Interférences lumineuses",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Thomas Young éclaire deux fentes très fines avec la même source : sur l'écran apparaissent des franges alternativement brillantes et sombres.</p></div>
+<h3>1. Dispositif des fentes d'Young</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Deux fentes séparées de <strong>a</strong>, un écran à la distance <strong>D</strong>.</li><li>Différence de marche en un point d'ordonnée x : <strong>δ = a x/D</strong>.</li></ul></div>
+<h3>2. Franges et interfrange</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Frange brillante</strong> : δ = kλ ⇒ x<sub>k</sub> = k λ D/a.</li><li><strong>Frange sombre</strong> : δ = (k + ½)λ ⇒ x = (k + ½) λ D/a.</li><li><strong>Interfrange</strong> : <strong>i = λ D/a</strong>.</li></ul></div>
+<h3>3. Exemple</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>λ = 600 nm, a = 0,5 mm, D = 2 m : i = 600 × 10<sup>−9</sup> × 2/(0,5 × 10<sup>−3</sup>) = <strong>2,4 mm</strong>.</li><li>Les franges prouvent la nature <strong>ondulatoire</strong> de la lumière.</li></ul><p><a href="https://www.youtube.com/results?search_query=Interférences+lumineuses+physique+terminale" target="_blank" rel="noopener">🎥 Recherche : Interférences lumineuses (chaînes de cours de physique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Fentes d'Young : i = λD/a ; brillantes si δ = kλ, sombres si δ = (k + ½)λ.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSP 6.32.</div>
+    `
+},
+{
+    title: "Leçon 33 — Ondes stationnaires",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Quand on pince une corde de guitare, elle vibre avec des points immobiles et des points qui vibrent fortement : ce sont des ondes stationnaires.</p></div>
+<h3>1. Définition</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Standing_wave.gif?width=700" alt="Onde stationnaire" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Onde stationnaire — Wikimedia Commons : Standing wave.gif</p><ul><li><strong>Onde stationnaire</strong> : superposition de deux ondes progressives de même fréquence se propageant en <strong>sens contraires</strong>.</li><li><strong>Nœuds</strong> : amplitude nulle ; <strong>ventres</strong> : amplitude maximale.</li><li><strong>Distance entre deux nœuds consécutifs</strong> (ou deux ventres) : <strong>λ/2</strong>.</li></ul></div>
+<h3>2. Corde fixée aux deux extrémités</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>L = n λ/2</strong> ; <strong>f<sub>n</sub> = n v/(2 L)</strong>, avec v = √(F/μ) (F tension, μ masse linéique).</li><li><strong>Fondamental</strong> n = 1 ; <strong>harmoniques</strong> n = 2, 3, …</li><li>Exemple : L = 0,6 m, v = 240 m/s : f<sub>1</sub> = <strong>200 Hz</strong>.</li></ul></div>
+<h3>3. Tuyaux sonores</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Ouvert aux deux bouts</strong> : L = n λ/2 ; f<sub>n</sub> = n v/(2L).</li><li><strong>Fermé à un bout</strong> : L = (2n + 1) λ/4 ; f = (2n + 1) v/(4 L).</li></ul><p><a href="https://www.youtube.com/results?search_query=Ondes+stationnaires+physique+terminale" target="_blank" rel="noopener">🎥 Recherche : Ondes stationnaires (chaînes de cours de physique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Nœuds et ventres sont séparés de λ/2. Corde fixée : f<sub>n</sub> = n v/(2L) ; tuyau fermé : f = (2n + 1)v/(4L).</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSP 6.33.</div>
+    `
+},
+{
+    title: "Leçon 34 — Notions de base d'acoustique",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>On entend le tonnerre quelques secondes après l'éclair : le son se propage plus lentement que la lumière.</p></div>
+<h3>1. Le son</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Onde mécanique longitudinale</strong> (compressions et dilatations) ; il lui faut un <strong>milieu</strong>.</li><li><strong>Fréquences audibles</strong> : 20 Hz à 20 kHz ; <strong>infrasons</strong> < 20 Hz ; <strong>ultrasons</strong> > 20 kHz.</li><li><strong>Vitesse</strong> : air ≈ 340 m/s (343 m/s à 20 °C), eau ≈ 1 480 m/s, acier ≈ 5 000 m/s.</li><li><strong>Écho</strong> perçu si le délai dépasse 0,1 s (obstacle à plus de 17 m).</li></ul></div>
+<h3>2. Qualités du son</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Hauteur</strong> (fréquence : grave, aigu) ; <strong>timbre</strong> (harmoniques) ; <strong>intensité</strong> (force).</li><li><strong>Bruit</strong> : son sans périodicité.</li></ul></div>
+<h3>3. Intensité et niveau sonore</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>I = P/S</strong> (W/m<sup>2</sup>) ; seuil d'audibilité I<sub>0</sub> = 10<sup>−12</sup> W/m<sup>2</sup>.</li><li><strong>Niveau sonore</strong> L = 10 log(I/I<sub>0</sub>) (dB) ; I = 10<sup>−6</sup> W/m<sup>2</sup> ⇒ <strong>60 dB</strong> ; doubler l'intensité ajoute <strong>3 dB</strong> ; douleur ≈ 120 dB.</li></ul><p><a href="https://www.youtube.com/results?search_query=Notions+de+base+d'acoustique+physique+terminale" target="_blank" rel="noopener">🎥 Recherche : Notions de base d'acoustique (chaînes de cours de physique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le son est une onde longitudinale ; v ≈ 340 m/s dans l'air ; niveau sonore L = 10 log(I/I<sub>0</sub>).</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSP 6.34.</div>
+    `
+},
+{
+    title: "Leçon 35 — Effet Doppler",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>La sirène d'une ambulance semble plus aiguë quand elle s'approche et plus grave quand elle s'éloigne. C'est l'effet Doppler.</p></div>
+<h3>1. Notion</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Doppler_effect_diagrammatic.svg?width=700" alt="Effet Doppler" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Effet Doppler — Wikimedia Commons : Doppler effect diagrammatic.svg</p><ul><li><strong>Effet Doppler</strong> : variation de la <strong>fréquence perçue</strong> due au <strong>mouvement relatif</strong> entre la source et l'observateur.</li><li>La source qui s'approche : fréquence plus élevée ; qui s'éloigne : plus basse.</li></ul></div>
+<h3>2. Formule (son)</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>f' = f (v + v<sub>o</sub>)/(v − v<sub>s</sub>)</strong> ; v<sub>o</sub> > 0 si l'observateur se rapproche, v<sub>s</sub> > 0 si la source se rapproche (signes inversés sinon).</li><li>Exemple : ambulance à 20 m/s, f = 700 Hz, v = 340 m/s : approche <strong>f' ≈ 744 Hz</strong> ; éloignement <strong>f' ≈ 661 Hz</strong>.</li></ul></div>
+<h3>3. Applications</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Radar de vitesse, <strong>échographie Doppler</strong> (flux sanguin), astronomie (décalage vers le rouge des galaxies).</li></ul><p><a href="https://www.youtube.com/results?search_query=Effet+Doppler+physique+terminale" target="_blank" rel="noopener">🎥 Recherche : Effet Doppler (chaînes de cours de physique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>f' = f(v + v<sub>o</sub>)/(v − v<sub>s</sub>) : la fréquence augmente en cas de rapprochement et diminue en cas d'éloignement.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSP 6.35.</div>
+    `
+},
+{
+    title: "Leçon 36 — Lois d'Ohm en courant alternatif : circuits R, L, C, RL et RLC série",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Au Congo, le réseau de la SNEL fournit un courant alternatif de fréquence 50 Hz. Les appareils contiennent des résistances, des bobines et des condensateurs : leur comportement est différent en alternatif.</p></div>
+<h3>1. Grandeurs alternatives</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/RLC_series_circuit.svg?width=700" alt="Circuit RLC série" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Circuit RLC série — Wikimedia Commons : RLC series circuit.svg</p><ul><li><strong>u = U<sub>m</sub> cos(ω t + φ)</strong> ; <strong>valeur efficace</strong> U = U<sub>m</sub>/√2 (220 V efficaces ⇒ U<sub>m</sub> ≈ 311 V).</li><li>ω = 2π f (50 Hz ⇒ 314 rad/s).</li><li><strong>Déphasage</strong> φ entre u et i.</li></ul></div>
+<h3>2. Dipôles élémentaires</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Résistor</strong> : U = R I, courant en phase avec la tension.</li><li><strong>Bobine</strong> : U = L ω I (réactance X<sub>L</sub> = L ω) ; <strong>le courant est en retard de π/2</strong>.</li><li><strong>Condensateur</strong> : U = I/(C ω) (X<sub>C</sub> = 1/(C ω)) ; <strong>le courant est en avance de π/2</strong>.</li></ul></div>
+<h3>3. Circuits RL et RLC série</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>RL</strong> : Z = √(R<sup>2</sup> + (L ω)<sup>2</sup>) ; tan φ = L ω/R.</li><li><strong>RLC</strong> : <strong>Z = √(R<sup>2</sup> + (L ω − 1/(C ω))<sup>2</sup>)</strong> ; tan φ = (L ω − 1/(C ω))/R ; U = Z I.</li><li><strong>Résonance</strong> : L ω = 1/(C ω) ⇒ <strong>f<sub>0</sub> = 1/(2π√(LC))</strong> ; Z = R (minimale) ; I maximale.</li><li>Exemple RL : R = 30 Ω, L = 0,1 H, f = 50 Hz : X<sub>L</sub> = 31,4 Ω ; Z ≈ <strong>43,4 Ω</strong> ; I = 220/43,4 ≈ <strong>5,1 A</strong> ; φ ≈ 46°.</li><li>Exemple résonance : L = 0,1 H, C = 100 μF : f<sub>0</sub> ≈ <strong>50 Hz</strong>.</li></ul><p><a href="https://www.youtube.com/results?search_query=Lois+d'Ohm+en+courant+alternatif+:+circuits+R,+L,+C,+RL+et+RLC+série+physique+terminale" target="_blank" rel="noopener">🎥 Recherche : Lois d'Ohm en courant alternatif : circuits R, L, C, RL et RLC série (chaînes de cours de physique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>U<sub>e</sub>ff = U<sub>m</sub>/√2. Bobine : courant en retard de π/2 ; condensateur : en avance de π/2. RLC série : Z = √(R<sup>2</sup> + (Lω − 1/Cω)<sup>2</sup>) ; résonance à f<sub>0</sub> = 1/(2π√LC).</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSP 6.36 et 6.37.</div>
+    `
+},
+{
+    title: "Leçon 37 — Puissance et transformateur",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>La tension de 220 V du secteur est abaissée à 12 V pour charger un téléphone ou une lampe : c'est le rôle d'un transformateur.</p></div>
+<h3>1. Puissance en alternatif</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Puissance active</strong> : P = U I cos φ (W) = R I<sup>2</sup>.</li><li><strong>Facteur de puissance</strong> : cos φ = R/Z.</li><li><strong>Puissance apparente</strong> S = U I (VA) ; <strong>réactive</strong> Q = U I sin φ (var).</li><li>Exemple (circuit RL précédent) : cos φ = 30/43,4 ≈ 0,69 ; P ≈ 770 W.</li></ul></div>
+<h3>2. Transformateur parfait</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Transformer3d_col3.svg?width=700" alt="Transformateur" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Transformateur — Wikimedia Commons : Transformer3d col3.svg</p><ul><li>Deux bobines sur un noyau de fer : primaire (N<sub>1</sub>) et secondaire (N<sub>2</sub>).</li><li><strong>U<sub>2</sub>/U<sub>1</sub> = N<sub>2</sub>/N<sub>1</sub> = I<sub>1</sub>/I<sub>2</sub></strong>.</li><li><strong>Élévateur</strong> (N<sub>2</sub> > N<sub>1</sub>) ; <strong>abaisseur</strong> (N<sub>2</sub> < N<sub>1</sub>).</li><li>Exemple : 220 V → 12 V avec N<sub>1</sub> = 1 100 spires ⇒ N<sub>2</sub> = <strong>60 spires</strong>.</li></ul></div>
+<h3>3. Rendement et pertes</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>η = P<sub>2</sub>/P<sub>1</sub></strong>.</li><li><strong>Pertes</strong> : effet Joule (R I<sup>2</sup>), courants de Foucault, hystérésis.</li><li><strong>Transport d'énergie en haute tension</strong> : I diminue, donc les pertes R I<sup>2</sup> diminuent.</li></ul><p><a href="https://www.youtube.com/results?search_query=Puissance+et+transformateur+physique+terminale" target="_blank" rel="noopener">🎥 Recherche : Puissance et transformateur (chaînes de cours de physique)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>P = U I cosφ ; transformateur parfait : U<sub>2</sub>/U<sub>1</sub> = N<sub>2</sub>/N<sub>1</sub> = I<sub>1</sub>/I<sub>2</sub> ; la haute tension réduit les pertes en ligne.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSP 6.38.</div>
+    `
+},
+{
+    title: "Évaluation finale — Items EXETAT",
+    content: `
+        <p style="margin-bottom:18px;color:#8e1b1b;font-size:0.95rem;">Cette évaluation regroupe des items tirés des épreuves d'État (EXETAT) des années précédentes. Fais l'exercice dans les conditions du concours : sans notes, en une seule fois.</p>
+
+        <div class="bloc theorie">
+            <div class="bloc-label">Consignes</div>
+            <ul>
+                <li>49 questions à choix multiples.</li>
+                <li>Une seule réponse correcte par question.</li>
+                <li>Pas de retour en arrière sur les questions déjà validées.</li>
+                <li>Durée recommandée : 50 minutes.</li>
+            </ul>
+        </div>
+
+        <div class="quiz-container" id="quizContainer">
+            <h3 style="color:#4a1010;margin-bottom:16px;font-size:1.1rem;">Partie 1 — Questions</h3>
+            <div id="quizQuestions"></div>
+            <button id="submitQuiz" class="quiz-btn-submit">Valider mes réponses</button>
+            <div id="quizResult" class="quiz-result"></div>
+        </div>
+    `
+}
+];
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim()) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderQuiz() {
+    const questions = [
+        { text:"Quelle est l'unité SI de force ?", options:["le joule (J)","le watt (W)","le newton (N)"], correct:2 },
+        { text:"Un MRU a une accélération :", options:["constante non nulle","nulle","variable"], correct:1 },
+        { text:"L'équation horaire du MRUV s'écrit :", options:["x = x<sub>0</sub> + v<sub>0</sub> t + ½ a t<sup>2</sup>","x = x<sub>0</sub> + v t","x = x<sub>0</sub> + a t"], correct:0 },
+        { text:"La valeur approchée de g sur Terre est :", options:["9,8 m/s<sup>2</sup>","98 m/s<sup>2</sup>","0,98 m/s<sup>2</sup>"], correct:0 },
+        { text:"Un corps tombe en chute libre de 20 m (g = 10 m/s<sup>2</sup>). La durée de chute est :", options:["10 s","4 s","2 s"], correct:2 },
+        { text:"Un tour par seconde correspond à :", options:["2π rad/s","π rad/s","1 rad/s"], correct:0 },
+        { text:"En MCU, la relation entre v et ω est :", options:["v = ω R","v = ω/R","v = R/ω"], correct:0 },
+        { text:"La deuxième loi de Newton s'écrit :", options:["F = m/a","ΣF = m a","F = m v"], correct:1 },
+        { text:"Si la résultante des forces est nulle, le corps :", options:["accélère","s'arrête toujours","reste au repos ou en MRU"], correct:2 },
+        { text:"La portée d'un tir est maximale pour un angle de :", options:["60°","30°","45°"], correct:2 },
+        { text:"La trajectoire d'un tir horizontal est :", options:["un cercle","une parabole","une droite"], correct:1 },
+        { text:"La force centripète a pour expression :", options:["m v<sup>2</sup>/R","m R/v<sup>2</sup>","m v R"], correct:0 },
+        { text:"Le poids d'un corps de 60 kg (g = 10 m/s<sup>2</sup>) vaut :", options:["60 N","6 N","600 N"], correct:2 },
+        { text:"La loi de la gravitation universelle s'écrit :", options:["F = G m<sub>1</sub> m<sub>2</sub>/d","F = G m<sub>1</sub> m<sub>2</sub>/d<sup>2</sup>","F = G (m<sub>1</sub> + m<sub>2</sub>)/d<sup>2</sup>"], correct:1 },
+        { text:"Le frottement dynamique vaut :", options:["f = μ/N","f = μ N","f = N/μ"], correct:1 },
+        { text:"Dans un ascenseur qui monte avec une accélération a, le poids apparent est :", options:["m(g − a)","m g","m(g + a)"], correct:2 },
+        { text:"Pour une sphère pleine qui roule sans glisser sur un plan incliné, a vaut :", options:["(2/5) g sin θ","(5/7) g sin θ","g sin θ"], correct:1 },
+        { text:"Le travail d'une force s'écrit :", options:["F/d","F d cos α","F + d"], correct:1 },
+        { text:"Le watt est l'unité de :", options:["la puissance","l'énergie","la force"], correct:0 },
+        { text:"L'énergie cinétique vaut :", options:["½ m v<sup>2</sup>","m v<sup>2</sup>","m g h"], correct:0 },
+        { text:"La quantité de mouvement vaut :", options:["½ m v<sup>2</sup>","m/v","m v"], correct:2 },
+        { text:"La quantité de mouvement se conserve dans :", options:["un système isolé","aucun système","tout système"], correct:0 },
+        { text:"Le moment d'inertie d'un disque plein vaut :", options:["½ M R<sup>2</sup>","M R<sup>2</sup>","(2/5) M R<sup>2</sup>"], correct:0 },
+        { text:"Une patineuse rentre les bras : sa vitesse de rotation :", options:["reste constante","diminue","augmente"], correct:2 },
+        { text:"Le volant sert à :", options:["régulariser la rotation","augmenter la vitesse","refroidir le moteur"], correct:0 },
+        { text:"Le premier principe de la thermodynamique s'écrit :", options:["ΔU = 0 toujours","ΔU = W × Q","ΔU = W + Q"], correct:2 },
+        { text:"Le rendement maximal de Carnot est :", options:["T<sub>f</sub>/T<sub>c</sub>","1 + T<sub>f</sub>/T<sub>c</sub>","1 − T<sub>f</sub>/T<sub>c</sub>"], correct:2 },
+        { text:"L'ordre des temps d'un moteur à quatre temps est :", options:["admission, compression, explosion-détente, échappement","compression, admission, échappement, explosion","admission, explosion, compression, échappement"], correct:0 },
+        { text:"Pour un oscillateur harmonique simple, a vaut :", options:["−ω<sup>2</sup> x","x/ω<sup>2</sup>","ω x"], correct:0 },
+        { text:"La période d'un pendule simple vaut :", options:["2π√(g/l)","2π√(l g)","2π√(l/g)"], correct:2 },
+        { text:"La période d'un pendule élastique vaut :", options:["2π√(m k)","2π√(k/m)","2π√(m/k)"], correct:2 },
+        { text:"La période d'un pendule simple de 1 m (g ≈ 9,8 m/s<sup>2</sup>) est environ :", options:["1 s","2 s","4 s"], correct:1 },
+        { text:"La période d'un pendule de torsion vaut :", options:["2π√(I/C)","2π√(I C)","2π√(C/I)"], correct:0 },
+        { text:"La célérité d'une onde électromagnétique dans le vide est :", options:["3 × 10<sup>8</sup> m/s","3 × 10<sup>6</sup> m/s","340 m/s"], correct:0 },
+        { text:"La lumière visible a une longueur d'onde d'environ :", options:["1 à 10 mm","400 à 800 nm","0,01 nm"], correct:1 },
+        { text:"Deux vibrations en concordance de phase donnent une amplitude :", options:["a<sub>1</sub> + a<sub>2</sub>","√(a<sub>1</sub><sup>2</sup> + a<sub>2</sub><sup>2</sup>)","|a<sub>1</sub> − a<sub>2</sub>|"], correct:0 },
+        { text:"Une interférence est constructive si la différence de marche vaut :", options:["λ/4","(2k + 1) λ/2","k λ"], correct:2 },
+        { text:"L'interfrange des fentes d'Young vaut :", options:["λ D/a","a D/λ","λ a/D"], correct:0 },
+        { text:"La distance entre deux nœuds consécutifs d'une onde stationnaire est :", options:["λ","λ/4","λ/2"], correct:2 },
+        { text:"Le son est une onde :", options:["électromagnétique","longitudinale","transversale"], correct:1 },
+        { text:"Le niveau sonore se calcule par :", options:["log(I/I<sub>0</sub>)","10 log(I/I<sub>0</sub>)","I/I<sub>0</sub>"], correct:1 },
+        { text:"Une source sonore qui s'approche de l'observateur produit une fréquence perçue :", options:["plus élevée","plus basse","inchangée"], correct:0 },
+        { text:"La valeur efficace d'une tension de valeur maximale U<sub>m</sub> est :", options:["U<sub>m</sub>/√2","U<sub>m</sub> √2","U<sub>m</sub>/2"], correct:0 },
+        { text:"L'impédance d'un circuit RLC série vaut :", options:["R + Lω + 1/Cω","R · L · C","√(R<sup>2</sup> + (Lω − 1/Cω)<sup>2</sup>)"], correct:2 },
+        { text:"La fréquence de résonance d'un circuit RLC série est :", options:["1/(2π√(LC))","√(LC)","2π√(LC)"], correct:0 },
+        { text:"Pour un transformateur parfait, U<sub>2</sub>/U<sub>1</sub> vaut :", options:["N<sub>1</sub>/N<sub>2</sub>","N<sub>2</sub>/N<sub>1</sub>","N<sub>1</sub> N<sub>2</sub>"], correct:1 },
+        { text:"Le facteur de puissance d'un circuit est :", options:["sin φ","cos φ","tan φ"], correct:1 },
+        { text:"Un train de 500 t soumis à une force résultante de 40 000 N a une accélération de :", options:["0,2 m/s<sup>2</sup>","0,14 m/s<sup>2</sup>","0,08 m/s<sup>2</sup>"], correct:2 },
+        { text:"La parabole de sûreté est :", options:["une trajectoire horizontale","le lieu des impacts à 45°","l'enveloppe des trajectoires pour une même vitesse initiale"], correct:2 }
+    ];
+    let html = '';
+    questions.forEach((q,i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o,k) => { html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>'; });
+        html += '</div>';
+    });
+    document.getElementById('quizQuestions').innerHTML = html;
+    document.getElementById('submitQuiz').onclick = () => {
+        let score = 0;
+        questions.forEach((q,i) => {
+            const s = document.querySelector('input[name="q' + i + '"]:checked');
+            if (s && parseInt(s.value) === q.correct) score++;
+        });
+        const pct = Math.round(score/questions.length*100);
+        document.getElementById('quizResult').innerHTML = '<div style="background:#f3cdcb;padding:16px;border-radius:10px;margin-top:14px;">' +
+            '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong><br>' +
+            (score === questions.length ? 'Excellent. Tu maîtrises le programme.' :
+             score >= 7 ? 'Bien. Revoyez les leçons où vous avez échoué.' :
+             'Relis attentivement les leçons avant l\'examen.') + '</div>';
+    };
+}
+function renderSlide(index, keepHighlight = true) {
+    const isQuiz = (index === slides.length - 1);
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    if (isQuiz) renderQuiz();
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm && !isQuiz) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+</body>
+</html>

@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Philosophie — 6e secondaire (EXETAT)</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body {
+    font-family:'Segoe UI',system-ui,sans-serif;
+    background:linear-gradient(160deg,#3b1f5c 0%,#6a3fa0 50%,#1d0f33 100%);
+    display:flex; justify-content:center; align-items:center;
+    padding:8px;
+}
+.container {
+    width:100%; max-width:1400px; background:#fefdf8;
+    border-radius:20px; overflow:hidden;
+    display:flex; flex-direction:column;
+    height:100%; max-height:100vh;
+    box-shadow:0 20px 60px rgba(0,0,0,0.4);
+}
+
+/* BARRE DE PROGRESSION */
+.progress-bar { height:4px; background:#e2d5f1; flex-shrink:0; }
+.progress-fill {
+    height:100%; background:linear-gradient(90deg,#9b7bc7,#4a2a7a);
+    width:0%; transition:width 0.3s;
+}
+
+/* HEADER COMPACT */
+.header {
+    padding:10px 16px; background:#f0eaf8;
+    border-bottom:1px solid #c4b0e0;
+    display:flex; justify-content:space-between; align-items:center;
+    gap:10px; flex-shrink:0;
+}
+.header h1 { color:#4a2a7a; font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box {
+    display:flex; background:white; border-radius:20px;
+    padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06);
+}
+.search-box input {
+    border:none; padding:6px 10px; border-radius:20px;
+    outline:none; width:130px; font-size:0.8rem;
+}
+.search-box button {
+    background:none; border:none; cursor:pointer;
+    padding:4px 8px; font-size:0.85rem; color:#6a3fa0;
+}
+.badge {
+    background:#9b7bc7; color:white; padding:4px 10px;
+    border-radius:20px; font-weight:bold; font-size:0.75rem;
+}
+.search-nav {
+    display:none; gap:4px; background:#ddd0ee;
+    padding:2px 8px; border-radius:20px; align-items:center;
+    font-size:0.75rem;
+}
+.search-nav button {
+    background:none; border:none; cursor:pointer;
+    font-size:0.9rem; color:#4a2a7a; padding:2px 4px;
+}
+
+/* CONTENU PLEIN ÉCRAN + AÉRÉ */
+.content {
+    padding:28px 32px; flex:1; overflow-y:auto;
+    background:#fff; scroll-behavior:smooth;
+    line-height:1.85;
+}
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide {
+    from { opacity:0; transform:translateY(8px); }
+    to { opacity:1; transform:translateY(0); }
+}
+
+.slide-title {
+    color:#3b1f5c; font-size:1.5rem; font-weight:700;
+    padding-bottom:12px; margin-bottom:20px;
+    border-bottom:2px solid #9b7bc7;
+}
+.slide-content { color:#1d1030; font-size:1rem; }
+
+/* BLOCS PÉDAGOGIQUES */
+.bloc {
+    padding:18px 22px; border-radius:12px;
+    margin:22px 0; line-height:1.85;
+}
+.bloc-label {
+    font-size:0.75rem; font-weight:700;
+    letter-spacing:1.5px; text-transform:uppercase;
+    margin-bottom:8px; opacity:0.7;
+}
+.bloc p, .bloc li { font-size:0.98rem; }
+.bloc h3 {
+    font-size:1.1rem; margin:20px 0 10px;
+    font-weight:600;
+}
+.bloc h3:first-child { margin-top:0; }
+
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+
+.theorie { background:#f0eaf8; border-left:4px solid #9b7bc7; }
+.theorie .bloc-label { color:#4a2a7a; }
+
+.pratique { background:#e8f5e9; border-left:4px solid #43a047; }
+.pratique .bloc-label { color:#1b5e20; }
+
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+
+/* LISTES */
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:#3b1f5c; }
+
+/* QUIZ */
+.quiz-container { padding:22px; background:#f0eaf8; border-radius:16px; }
+.quiz-question {
+    background:white; border-radius:10px; padding:16px;
+    margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05);
+}
+.quiz-question p { font-weight:600; margin-bottom:10px; color:#3b1f5c; }
+.quiz-question label {
+    display:block; padding:8px 10px; margin:4px 0;
+    border-radius:6px; cursor:pointer; transition:background 0.2s;
+}
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit {
+    background:#6b4a9a; color:white; border:none;
+    padding:12px 24px; border-radius:30px; font-size:1rem;
+    cursor:pointer; font-weight:600; margin-top:14px;
+}
+.quiz-result { margin-top:16px; font-weight:600; }
+
+/* SOURCES */
+.sources {
+    background:#f5f5f5; padding:12px 16px; border-radius:10px;
+    margin-top:26px; font-size:0.82rem; color:#666;
+    border-left:3px solid #999; line-height:1.6;
+}
+.sources strong { color:#333; }
+
+/* FOOTER COMPACT */
+.controls {
+    padding:8px 16px; background:#fafafa;
+    border-top:1px solid #e0e0e0;
+    display:flex; justify-content:space-between;
+    align-items:center; gap:8px; flex-shrink:0;
+}
+.nav-btn {
+    background:white; color:#4a2a7a;
+    border:1px solid #ccc; padding:8px 14px;
+    border-radius:8px; font-size:0.82rem;
+    cursor:pointer; font-weight:500;
+}
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+
+/* SCROLLBAR STYLE */
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:#ebe0f5; }
+.content::-webkit-scrollbar-thumb { background:#9b7bc7; border-radius:3px; }
+
+/* MOBILE */
+@media (max-width:600px) {
+    body { padding:0; }
+    .container { border-radius:0; max-height:100vh; }
+    .content { padding:20px 18px; }
+    .slide-title { font-size:1.25rem; }
+    .search-box input { width:90px; }
+    .header h1 { font-size:0.85rem; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+    <div class="header">
+        <h1>Philosophie · 6e secondaire</h1>
+        <div class="header-right">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Rechercher">
+                <button id="searchBtn">⌕</button>
+            </div>
+            <div class="search-nav" id="searchNav">
+                <button id="prevResultBtn">‹</button>
+                <span id="resultCounter">0/0</span>
+                <button id="nextResultBtn">›</button>
+            </div>
+            <span class="badge" id="slideCounter">1/12</span>
+        </div>
+    </div>
+
+    <div class="content" id="content"></div>
+
+    <div class="controls">
+        <button class="nav-btn" id="prevBtn">← Précédent</button>
+        <span class="counter" id="counter">Leçon 1 / 12</span>
+        <button class="nav-btn" id="nextBtn">Suivant →</button>
+    </div>
+</div>
+
+<script>
+const slides = [
+{
+    title: "Leçon 1 — Qu'est-ce que la philosophie ?",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Un élève demande à son professeur : « À quoi sert la philosophie ? On ne cultive pas le manioc avec. » Le professeur répond par une autre question : « Pourquoi veux-tu cultiver le manioc, et pour qui ? » Sans le savoir, l'élève vient de commencer à philosopher.</p></div>
+<h3>1. Origine et sens du mot</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><figure style="margin:14px 0;"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Sanzio_01.jpg?width=700" alt="« L'École d'Athènes » de Raphaël (1509-1511), qui réunit les grands philosophes grecs" style="max-width:100%; border-radius:10px;" onerror="this.parentNode.style.display='none'"><figcaption style="font-size:0.78rem;color:#666;margin-top:4px;">« L'École d'Athènes » de Raphaël (1509-1511), qui réunit les grands philosophes grecs (Wikimedia Commons)</figcaption></figure><ul><li><strong>Étymologie</strong> : du grec <em>philein</em> (aimer) et <em>sophia</em> (sagesse) : <strong>amour de la sagesse</strong>.</li><li><strong>Philosophe</strong> : celui qui cherche la vérité sans prétendre la posséder. Selon la tradition, Pythagore aurait employé le mot le premier (source à vérifier).</li><li><strong>Naissance</strong> : VIe siècle av. J.-C., en Grèce (Milet, en Ionie), avec <strong>Thalès</strong> : passage du <strong>mythe</strong> (récit sacré) au <strong>logos</strong> (discours rationnel).</li><li><strong>Autres berceaux</strong> : Égypte, Inde, Chine, Afrique ; la philosophie n'appartient pas à une seule civilisation.</li></ul></div>
+<h3>2. Les sources de la philosophie</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><figure style="margin:14px 0;"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/The_Thinker,_Rodin.jpg?width=700" alt="« Le Penseur » d'Auguste Rodin, symbole de la réflexion" style="max-width:100%; border-radius:10px;" onerror="this.parentNode.style.display='none'"><figcaption style="font-size:0.78rem;color:#666;margin-top:4px;">« Le Penseur » d'Auguste Rodin, symbole de la réflexion (Wikimedia Commons)</figcaption></figure><ul><li><strong>L'étonnement</strong> (Platon, Aristote) : s'étonner devant le monde pousse à chercher des causes.</li><li><strong>Le doute</strong> (Descartes) : douter pour atteindre une certitude.</li><li><strong>Les situations limites</strong> (Jaspers) : la mort, la souffrance, la faute.</li><li><strong>Les questions de l'homme</strong> : d'où venons-nous ? que devons-nous faire ? que pouvons-nous espérer ?</li></ul></div>
+<h3>3. Objet, méthode et branches</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Objet</strong> : le réel dans sa totalité : l'être, la connaissance, l'action, le beau, la société.</li><li><strong>Méthode</strong> : questionner, analyser, définir, argumenter, critiquer ; la <strong>dialectique</strong> (dialogue), la <strong>réflexion</strong> personnelle.</li><li><strong>Branches</strong> : <strong>logique</strong> (le raisonnement correct), <strong>métaphysique</strong> (l'être), <strong>épistémologie</strong> (la science), <strong>morale ou éthique</strong> (l'action), <strong>politique</strong> (le pouvoir), <strong>esthétique</strong> (le beau), <strong>anthropologie philosophique</strong> (l'homme).</li></ul><blockquote style="border-left:3px solid #999; padding-left:14px; margin:16px 0; font-style:italic; color:#555;">"Une vie sans examen ne vaut pas d'être vécue."<br><strong>— Socrate, d'après Platon, <em>Apologie de Socrate</em> (38a)</strong></blockquote></div>
+<h3>4. Philosophie, mythe, science et religion</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:0.85rem;margin:10px 0;"><tr><th style="border:1px solid #bbb;padding:5px 8px;text-align:center;"></th><th style="border:1px solid #bbb;padding:5px 8px;text-align:center;">Mythe</th><th style="border:1px solid #bbb;padding:5px 8px;text-align:center;">Religion</th><th style="border:1px solid #bbb;padding:5px 8px;text-align:center;">Science</th><th style="border:1px solid #bbb;padding:5px 8px;text-align:center;">Philosophie</th></tr><tr><td style="border:1px solid #bbb;padding:5px 8px;text-align:center;">Fondement</td><td style="border:1px solid #bbb;padding:5px 8px;text-align:center;">Tradition</td><td style="border:1px solid #bbb;padding:5px 8px;text-align:center;">Foi</td><td style="border:1px solid #bbb;padding:5px 8px;text-align:center;">Preuve</td><td style="border:1px solid #bbb;padding:5px 8px;text-align:center;">Raison</td></tr><tr><td style="border:1px solid #bbb;padding:5px 8px;text-align:center;">Question</td><td style="border:1px solid #bbb;padding:5px 8px;text-align:center;">Origine</td><td style="border:1px solid #bbb;padding:5px 8px;text-align:center;">Salut, sens</td><td style="border:1px solid #bbb;padding:5px 8px;text-align:center;">Comment ?</td><td style="border:1px solid #bbb;padding:5px 8px;text-align:center;">Pourquoi ? Que signifie ?</td></tr><tr><td style="border:1px solid #bbb;padding:5px 8px;text-align:center;">Réponse</td><td style="border:1px solid #bbb;padding:5px 8px;text-align:center;">Récit</td><td style="border:1px solid #bbb;padding:5px 8px;text-align:center;">Dogme</td><td style="border:1px solid #bbb;padding:5px 8px;text-align:center;">Loi vérifiée</td><td style="border:1px solid #bbb;padding:5px 8px;text-align:center;">Problématisation</td></tr></table></div><strong>Utilité</strong> : former l'<strong>esprit critique</strong>, apprendre à penser par soi-même (Kant : <em>Sapere aude</em>, « ose te servir de ton propre entendement », 1784), éclairer la morale et la politique.<p><a href="https://www.youtube.com/results?search_query=qu'est-ce+que+la+philosophie+introduction" target="_blank" rel="noopener">🎥 Recherche : introduction à la philosophie (TV5Monde / France 24)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La philosophie est l'amour de la sagesse. Née du passage du mythe au logos, elle questionne le réel par la raison. Elle a plusieurs branches et vise l'esprit critique.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national de philosophie RDC (EPST) ; manuels de philosophie du secondaire, Platon, Kant.<br><strong>Sigles et abréviations :</strong> **EPST** : Enseignement primaire, secondaire et technique ; **EXETAT** : Examen d'État ; **av. J.-C.** : avant Jésus-Christ ; **RDC** : République démocratique du Congo.</div>
+    `
+},
+{
+    title: "Leçon 2 — Histoire de la philosophie : repères",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Au tableau, une frise chronologique relie Thalès à Sartre. Tu te rends compte que chaque philosophe répond aux précédents. La philosophie est une grande conversation qui dure depuis 2 600 ans.</p></div>
+<h3>1. L'Antiquité grecque et romaine</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><figure style="margin:14px 0;"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Socrates_Louvre.jpg?width=700" alt="Buste de Socrate (musée du Louvre)" style="max-width:100%; border-radius:10px;" onerror="this.parentNode.style.display='none'"><figcaption style="font-size:0.78rem;color:#666;margin-top:4px;">Buste de Socrate (musée du Louvre) (Wikimedia Commons)</figcaption></figure><figure style="margin:14px 0;"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Plato_Silanion_Musei_Capitolini_MC1377.jpg?width=700" alt="Buste de Platon (musées du Capitole)" style="max-width:100%; border-radius:10px;" onerror="this.parentNode.style.display='none'"><figcaption style="font-size:0.78rem;color:#666;margin-top:4px;">Buste de Platon (musées du Capitole) (Wikimedia Commons)</figcaption></figure><figure style="margin:14px 0;"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Aristotle_Altemps_Inv8575.jpg?width=700" alt="Buste d'Aristote (palais Altemps)" style="max-width:100%; border-radius:10px;" onerror="this.parentNode.style.display='none'"><figcaption style="font-size:0.78rem;color:#666;margin-top:4px;">Buste d'Aristote (palais Altemps) (Wikimedia Commons)</figcaption></figure><ul><li><strong>Présocratiques</strong> : Thalès (l'eau), Anaximandre (l'illimité), Héraclite (le devenir, le feu), Parménide (l'être), Pythagore (le nombre), Démocrite (les atomes), Empédocle (4 éléments).</li><li><strong>Sophistes</strong> : Protagoras (« l'homme est la mesure de toutes choses »), Gorgias.</li><li><strong>Socrate</strong> (470-399 av. J.-C.) : n'a rien écrit, méthode <strong>ironie</strong> et <strong>maïeutique</strong> ; condamné à boire la ciguë.</li><li><strong>Platon</strong> (428-348 av. J.-C.) : Académie, théorie des <strong>Idées</strong>, <em>La République</em>.</li><li><strong>Aristote</strong> (384-322 av. J.-C.) : Lycée, logique, <em>Métaphysique</em>, <em>Éthique à Nicomaque</em>.</li><li><strong>Hellénistiques</strong> : Épicure (plaisir), <strong>stoïciens</strong> (Zénon, Épictète, Sénèque, Marc Aurèle), sceptiques (Pyrrhon).</li></ul></div>
+<h3>2. Le Moyen Âge</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><figure style="margin:14px 0;"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Thomas_Aquinas_in_Stained_Glass.jpg?width=700" alt="Thomas d'Aquin, vitrail" style="max-width:100%; border-radius:10px;" onerror="this.parentNode.style.display='none'"><figcaption style="font-size:0.78rem;color:#666;margin-top:4px;">Thomas d'Aquin, vitrail (Wikimedia Commons)</figcaption></figure><ul><li><strong>Patristique</strong> : <strong>Augustin</strong> d'Hippone (354-430), <em>Confessions</em>, <em>La Cité de Dieu</em> ; Boèce.</li><li><strong>Scolastique</strong> : <strong>Anselme</strong> (1033-1109), <strong>Thomas d'Aquin</strong> (1225-1274, <em>Somme théologique</em>).</li><li><strong>Philosophie arabe</strong> : Avicenne (Ibn Sina, 980-1037), <strong>Averroès</strong> (Ibn Rushd, 1126-1198), qui a transmis Aristote à l'Europe.</li><li><strong>Thème central</strong> : accord entre <strong>foi et raison</strong>.</li></ul></div>
+<h3>3. Les Temps modernes (XVIe-XVIIIe siècles)</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><figure style="margin:14px 0;"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Frans_Hals_-_Portret_van_René_Descartes.jpg?width=700" alt="René Descartes, par Frans Hals" style="max-width:100%; border-radius:10px;" onerror="this.parentNode.style.display='none'"><figcaption style="font-size:0.78rem;color:#666;margin-top:4px;">René Descartes, par Frans Hals (Wikimedia Commons)</figcaption></figure><figure style="margin:14px 0;"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Immanuel_Kant_(painted_portrait).jpg?width=700" alt="Emmanuel Kant, portrait" style="max-width:100%; border-radius:10px;" onerror="this.parentNode.style.display='none'"><figcaption style="font-size:0.78rem;color:#666;margin-top:4px;">Emmanuel Kant, portrait (Wikimedia Commons)</figcaption></figure><ul><li><strong>Renaissance</strong> : Machiavel (<em>Le Prince</em>), Montaigne (<em>Essais</em>), Bacon, Galilée.</li><li><strong>XVIIe siècle</strong> : <strong>Descartes</strong> (<em>Discours de la méthode</em>, 1637), Pascal (<em>Pensées</em>), Spinoza (<em>Éthique</em>), Leibniz, Hobbes (<em>Léviathan</em>, 1651), Locke.</li><li><strong>Lumières (XVIIIe)</strong> : Montesquieu (<em>De l'esprit des lois</em>, 1748), Voltaire, <strong>Rousseau</strong> (<em>Du contrat social</em>, 1762), Hume, <strong>Kant</strong> (<em>Critique de la raison pure</em>, 1781).</li></ul></div>
+<h3>4. Le XIXe et le XXe siècle</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><figure style="margin:14px 0;"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Karl_Marx_001.jpg?width=700" alt="Karl Marx" style="max-width:100%; border-radius:10px;" onerror="this.parentNode.style.display='none'"><figcaption style="font-size:0.78rem;color:#666;margin-top:4px;">Karl Marx (Wikimedia Commons)</figcaption></figure><figure style="margin:14px 0;"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Nietzsche187a.jpg?width=700" alt="Friedrich Nietzsche" style="max-width:100%; border-radius:10px;" onerror="this.parentNode.style.display='none'"><figcaption style="font-size:0.78rem;color:#666;margin-top:4px;">Friedrich Nietzsche (Wikimedia Commons)</figcaption></figure><ul><li><strong>XIXe</strong> : <strong>Hegel</strong> (1770-1831), Comte (positivisme), <strong>Marx</strong> (1818-1883), Kierkegaard, <strong>Nietzsche</strong> (1844-1900).</li><li><strong>XXe</strong> : Husserl (phénoménologie), Heidegger, <strong>Sartre</strong> et Camus (existentialisme), Wittgenstein, Popper, Simone de Beauvoir, Lévi-Strauss (structuralisme), Arendt.</li><li><strong>Philosophie africaine</strong> : voir leçon 15.</li></ul><p><a href="https://www.youtube.com/results?search_query=histoire+de+la+philosophie+grands+philosophes" target="_blank" rel="noopener">🎥 Recherche : histoire de la philosophie (TV5Monde / France 24)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La philosophie traverse quatre grandes périodes : Antiquité, Moyen Âge, Temps modernes, époque contemporaine. Socrate, Platon, Aristote, Descartes, Kant, Marx, Nietzsche et Sartre en sont des repères.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national de philosophie RDC (EPST) ; manuels de philosophie du secondaire<br><strong>Sigles et abréviations :</strong> **EPST** : Enseignement primaire, secondaire et technique ; **EXETAT** : Examen d'État ; **av. J.-C.** : avant Jésus-Christ ; **RDC** : République démocratique du Congo.</div>
+    `
+},
+{
+    title: "Leçon 3 — La connaissance",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans le désert, un voyageur voit de l'eau au loin : c'est un mirage. Tes yeux t'ont trompé. Comment être sûr de ce que l'on sait ?</p></div>
+<h3>1. Savoir, croire, opinion</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><figure style="margin:14px 0;"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Allegory_of_the_Cave.jpg?width=700" alt="Illustration de l'allégorie de la caverne de Platon" style="max-width:100%; border-radius:10px;" onerror="this.parentNode.style.display='none'"><figcaption style="font-size:0.78rem;color:#666;margin-top:4px;">Illustration de l'allégorie de la caverne de Platon (Wikimedia Commons)</figcaption></figure><ul><li><strong>Connaissance</strong> : rapport entre un sujet qui connaît et un objet connu.</li><li><strong>Opinion</strong> (<em>doxa</em>) : jugement sans preuve ; <strong>savoir</strong> (<em>épistémè</em>) : connaissance justifiée (Platon).</li><li><strong>Croyance</strong> : adhésion sans preuve complète ; <strong>certitude</strong> : état d'esprit sans doute ; <strong>vérité</strong> : accord de la pensée avec le réel.</li></ul></div>
+<h3>2. Les sources et les théories</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><figure style="margin:14px 0;"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Allan_Ramsay_-_David_Hume,_1711_-_1776._Historian_and_philosopher_-_Google_Art_Project.jpg?width=700" alt="David Hume, représentant de l'empirisme" style="max-width:100%; border-radius:10px;" onerror="this.parentNode.style.display='none'"><figcaption style="font-size:0.78rem;color:#666;margin-top:4px;">David Hume, représentant de l'empirisme (Wikimedia Commons)</figcaption></figure><ul><li><strong>Rationalisme</strong> (Descartes, Spinoza, Leibniz) : la <strong>raison</strong> est la source du savoir ; idées innées ; critère : l'<strong>évidence</strong>.</li><li><strong>Empirisme</strong> (Locke, Berkeley, <strong>Hume</strong>) : toute connaissance vient de l'<strong>expérience</strong> ; l'esprit est une « table rase » (Locke).</li><li><strong>Criticisme</strong> (Kant) : la connaissance naît de l'union de la <strong>sensibilité</strong> et de l'<strong>entendement</strong> ; on connaît les <strong>phénomènes</strong>, pas la chose en soi.</li><li><strong>Intuitionnisme</strong> (Bergson) : connaissance directe.</li></ul></div>
+<h3>3. La vérité et ses critères</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Correspondance</strong> : accord de l'idée avec la chose.</li><li><strong>Cohérence</strong> : accord des idées entre elles.</li><li><strong>Pragmatisme</strong> (James) : est vrai ce qui réussit.</li><li><strong>Critères</strong> : évidence, vérification, cohérence, consensus.</li></ul></div>
+<h3>4. L'erreur et le doute</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Causes de l'erreur</strong> : précipitation, préjugés, passions, illusions des sens, langage ambigu.</li><li><strong>Idoles de Bacon</strong> : de la tribu, de la caverne, de la place publique, du théâtre.</li><li><strong>Doute méthodique</strong> de Descartes : volontaire, provisoire, radical, méthodique ; il aboutit au <strong>cogito</strong>.</li><li><strong>Scepticisme</strong> (Pyrrhon) : suspendre son jugement ; <strong>dogmatisme</strong> : affirmer sans examen.</li></ul><p><a href="https://www.youtube.com/results?search_query=théorie+de+la+connaissance+rationalisme+empirisme" target="_blank" rel="noopener">🎥 Recherche : rationalisme et empirisme (TV5Monde / France 24)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Savoir, croire et opinion ne sont pas la même chose. Rationalisme, empirisme et criticisme expliquent la connaissance. La vérité s'atteint par l'examen et le doute méthodique.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national de philosophie RDC (EPST) ; manuels de philosophie du secondaire, Platon, Descartes, Hume, Kant.<br><strong>Sigles et abréviations :</strong> **EPST** : Enseignement primaire, secondaire et technique ; **EXETAT** : Examen d'État ; **av. J.-C.** : avant Jésus-Christ ; **RDC** : République démocratique du Congo.</div>
+    `
+},
+{
+    title: "Leçon 4 — La science et la méthode scientifique",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Un médecin teste un nouveau médicament sur deux groupes de malades. Il ne se contente pas de croire qu'il marche : il le prouve. C'est l'esprit scientifique.</p></div>
+<h3>1. Définition et classification</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Science</strong> : connaissance rigoureuse, objective, universelle et vérifiable.</li><li><strong>Sciences formelles</strong> : mathématiques, logique (méthode <strong>déductive</strong>).</li><li><strong>Sciences de la nature</strong> : physique, chimie, biologie (méthode <strong>expérimentale</strong>).</li><li><strong>Sciences humaines</strong> : histoire, sociologie, psychologie, économie.</li><li><strong>Positivisme</strong> d'<strong>Auguste Comte</strong> : trois états de l'humanité : théologique, métaphysique, <strong>positif</strong> (scientifique).</li></ul></div>
+<h3>2. La démarche expérimentale</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><figure style="margin:14px 0;"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Francis_Bacon,_Viscount_St_Alban_from_NPG_(2).jpg?width=700" alt="Francis Bacon" style="max-width:100%; border-radius:10px;" onerror="this.parentNode.style.display='none'"><figcaption style="font-size:0.78rem;color:#666;margin-top:4px;">Francis Bacon (Wikimedia Commons)</figcaption></figure><figure style="margin:14px 0;"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Justus_Sustermans_-_Portrait_of_Galileo_Galilei,_1636.jpg?width=700" alt="Galilée, fondateur de la physique expérimentale" style="max-width:100%; border-radius:10px;" onerror="this.parentNode.style.display='none'"><figcaption style="font-size:0.78rem;color:#666;margin-top:4px;">Galilée, fondateur de la physique expérimentale (Wikimedia Commons)</figcaption></figure><strong>Claude Bernard</strong> (1813-1878, <em>Introduction à l'étude de la médecine expérimentale</em>, 1865) :<ul><li><strong>OHERIC</strong> : <strong>O</strong>bservation, <strong>H</strong>ypothèse, <strong>E</strong>xpérimentation, <strong>R</strong>ésultat, <strong>I</strong>nterprétation, <strong>C</strong>onclusion.</li><li><strong>Hypothèse</strong> : explication provisoire à vérifier ; <strong>loi</strong> : relation constante entre phénomènes ; <strong>théorie</strong> : ensemble cohérent de lois.</li></ul><blockquote style="border-left:3px solid #999; padding-left:14px; margin:16px 0; font-style:italic; color:#555;">"On ne commande à la nature qu'en lui obéissant."<br><strong>— Francis Bacon, <em>Novum Organum</em> (1620)</strong></blockquote></div>
+<h3>3. L'épistémologie contemporaine</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Popper</strong> : une théorie est scientifique si elle est <strong>falsifiable</strong> (<em>La logique de la découverte scientifique</em>, 1934).</li><li><strong>Bachelard</strong> : <strong>obstacle épistémologique</strong> et <strong>rupture</strong> avec le sens commun.</li><li><strong>Kuhn</strong> : les sciences évoluent par <strong>révolutions</strong> et <strong>paradigmes</strong> (1962).</li></ul></div>
+<h3>4. Limites et dangers</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Scientisme</strong> : croire que la science explique tout.</li><li><strong>Éthique</strong> : bioéthique, armes, environnement ; science sans conscience, disait Rabelais, n'est que ruine de l'âme.</li><li><strong>Rôle</strong> : la science explique <strong>comment</strong>, la philosophie questionne le <strong>pourquoi</strong> et le <strong>pour quoi faire</strong>.</li></ul><p><a href="https://www.youtube.com/results?search_query=méthode+expérimentale+Claude+Bernard+OHERIC" target="_blank" rel="noopener">🎥 Recherche : démarche scientifique (TV5Monde / France 24)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La science est une connaissance vérifiable. La démarche expérimentale suit OHERIC. Popper pose la falsifiabilité. La science a des limites éthiques.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national de philosophie RDC (EPST) ; manuels de philosophie du secondaire, Claude Bernard, Popper, Bachelard.<br><strong>Sigles et abréviations :</strong> **EPST** : Enseignement primaire, secondaire et technique ; **EXETAT** : Examen d'État ; **av. J.-C.** : avant Jésus-Christ ; **RDC** : République démocratique du Congo. **OHERIC** : Observation, Hypothèse, Expérimentation, Résultat, Interprétation, Conclusion.</div>
+    `
+},
+{
+    title: "Leçon 5 — La conscience et l'inconscient",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Tu cherches ton stylo partout, alors qu'il est dans ta main. Ton esprit était ailleurs. Sommes-nous toujours conscients de ce que nous faisons ?</p></div>
+<h3>1. La conscience</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><figure style="margin:14px 0;"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Frans_Hals_-_Portret_van_René_Descartes.jpg?width=700" alt="René Descartes, auteur du cogito" style="max-width:100%; border-radius:10px;" onerror="this.parentNode.style.display='none'"><figcaption style="font-size:0.78rem;color:#666;margin-top:4px;">René Descartes, auteur du cogito (Wikimedia Commons)</figcaption></figure><ul><li><strong>Conscience spontanée</strong> (savoir ce qui se passe) ; <strong>conscience réfléchie</strong> (se prendre soi-même pour objet).</li><li><strong>Conscience morale</strong> : jugement du bien et du mal.</li><li><strong>Descartes</strong> : <em>Cogito, ergo sum</em> (« je pense, donc je suis », 1637) : première certitude.</li><li><strong>Husserl</strong> : la conscience est <strong>intentionnelle</strong> : toute conscience est conscience de quelque chose.</li><li><strong>Sartre</strong> : la conscience est liberté, non-chose.</li></ul></div>
+<h3>2. L'inconscient chez Freud</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><figure style="margin:14px 0;"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Sigmund_Freud_LIFE.jpg?width=700" alt="Sigmund Freud" style="max-width:100%; border-radius:10px;" onerror="this.parentNode.style.display='none'"><figcaption style="font-size:0.78rem;color:#666;margin-top:4px;">Sigmund Freud (Wikimedia Commons)</figcaption></figure><strong>Sigmund Freud</strong> (1856-1939), fondateur de la <strong>psychanalyse</strong>.<ul><li><strong>Première topique</strong> : conscient, préconscient, <strong>inconscient</strong>.</li><li><strong>Deuxième topique</strong> : <strong>ça</strong> (pulsions), <strong>moi</strong> (réalité), <strong>surmoi</strong> (interdits moraux).</li><li><strong>Pulsions</strong> : Éros (vie), Thanatos (mort).</li><li><strong>Mécanismes</strong> : refoulement, sublimation, déni.</li><li><strong>Manifestations</strong> : rêves, lapsus, actes manqués, symptômes (<em>L'interprétation des rêves</em>, 1900).</li></ul><blockquote style="border-left:3px solid #999; padding-left:14px; margin:16px 0; font-style:italic; color:#555;">"Le moi n'est pas maître dans sa propre maison."<br><strong>— Freud, 1917</strong></blockquote></div>
+<h3>3. Discussion</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Critiques</strong> : Sartre (la « mauvaise foi » : se mentir à soi-même), Popper (psychanalyse non falsifiable).</li><li><strong>Importance</strong> : l'homme n'est pas transparent à lui-même ; responsabilité et liberté demeurent des questions.</li></ul><p><a href="https://www.youtube.com/results?search_query=conscience+inconscient+Freud+philosophie" target="_blank" rel="noopener">🎥 Recherche : conscience et inconscient (TV5Monde / France 24)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La conscience est la connaissance de soi et du monde (cogito de Descartes). Freud montre que l'inconscient agit en nous : ça, moi, surmoi.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national de philosophie RDC (EPST) ; manuels de philosophie du secondaire, Descartes, Freud, Husserl, Sartre.<br><strong>Sigles et abréviations :</strong> **EPST** : Enseignement primaire, secondaire et technique ; **EXETAT** : Examen d'État ; **av. J.-C.** : avant Jésus-Christ ; **RDC** : République démocratique du Congo.</div>
+    `
+},
+{
+    title: "Leçon 6 — La liberté et le déterminisme",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Tu voulais étudier, mais tes amis t'ont invité à sortir. Tu as choisi de sortir. Étais-tu vraiment libre, ou poussé par des forces que tu ne contrôlais pas ?</p></div>
+<h3>1. Le problème</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Liberté</strong> : pouvoir de choisir et d'agir sans contrainte.</li><li><strong>Libre arbitre</strong> : pouvoir de choisir entre plusieurs possibles.</li><li><strong>Déterminisme</strong> : tout phénomène a une cause ; types : <strong>physique</strong>, <strong>biologique</strong>, <strong>psychologique</strong>, <strong>social</strong>.</li><li><strong>Fatalisme</strong> : tout est écrit d'avance, même sans cause (différent du déterminisme).</li></ul></div>
+<h3>2. Les positions philosophiques</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><figure style="margin:14px 0;"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Jean-Paul_Sartre_FP.JPG?width=700" alt="Jean-Paul Sartre, philosophe de la liberté" style="max-width:100%; border-radius:10px;" onerror="this.parentNode.style.display='none'"><figcaption style="font-size:0.78rem;color:#666;margin-top:4px;">Jean-Paul Sartre, philosophe de la liberté (Wikimedia Commons)</figcaption></figure><ul><li><strong>Descartes</strong> : le libre arbitre est la plus grande perfection de l'homme ; <strong>liberté d'indifférence</strong> = degré le plus bas.</li><li><strong>Spinoza</strong> : la liberté est la connaissance de la nécessité.</li><li><strong>Kant</strong> : <strong>autonomie</strong> : obéir à la loi que la raison se donne.</li><li><strong>Sartre</strong> : l'existence précède l'essence ; l'homme est <strong>condamné à être libre</strong> et responsable.</li><li><strong>Montesquieu</strong> : la liberté politique est le droit de faire ce que les lois permettent.</li></ul></div>
+<h3>3. Liberté, responsabilité, sanction</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Responsabilité</strong> : répondre de ses actes (morale, juridique, civile).</li><li><strong>Conditions</strong> : discernement, volonté, connaissance de l'acte.</li><li><strong>Libertés publiques</strong> : expression, conscience, association, circulation.</li></ul><p><a href="https://www.youtube.com/results?search_query=liberté+déterminisme+philosophie" target="_blank" rel="noopener">🎥 Recherche : liberté et déterminisme (TV5Monde / France 24)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>L'homme est conditionné mais peut choisir. Kant fonde la liberté sur l'autonomie, Sartre sur l'existence. Liberté et responsabilité vont ensemble.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national de philosophie RDC (EPST) ; manuels de philosophie du secondaire, Descartes, Spinoza, Kant, Sartre.<br><strong>Sigles et abréviations :</strong> **EPST** : Enseignement primaire, secondaire et technique ; **EXETAT** : Examen d'État ; **av. J.-C.** : avant Jésus-Christ ; **RDC** : République démocratique du Congo.</div>
+    `
+},
+{
+    title: "Leçon 7 — La morale",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Tu vois un camarade tricher et tu hésites : le dénoncer ou te taire ? Ce petit dilemme est le cœur de la morale.</p></div>
+<h3>1. Notions de base</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Morale</strong> : ensemble de règles de conduite du bien et du mal ; <strong>éthique</strong> : réflexion philosophique sur ces règles.</li><li><strong>Moral</strong>, <strong>immoral</strong> (contraire), <strong>amoral</strong> (hors morale).</li><li><strong>Valeur</strong>, <strong>norme</strong>, <strong>devoir</strong>, <strong>vertu</strong>, <strong>bien</strong>, <strong>conscience morale</strong>, <strong>obligation</strong>, <strong>sanction</strong>.</li></ul></div>
+<h3>2. Les grandes théories</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><figure style="margin:14px 0;"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Aristotle_Altemps_Inv8575.jpg?width=700" alt="Buste d'Aristote" style="max-width:100%; border-radius:10px;" onerror="this.parentNode.style.display='none'"><figcaption style="font-size:0.78rem;color:#666;margin-top:4px;">Buste d'Aristote (Wikimedia Commons)</figcaption></figure><figure style="margin:14px 0;"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Immanuel_Kant_(painted_portrait).jpg?width=700" alt="Emmanuel Kant" style="max-width:100%; border-radius:10px;" onerror="this.parentNode.style.display='none'"><figcaption style="font-size:0.78rem;color:#666;margin-top:4px;">Emmanuel Kant (Wikimedia Commons)</figcaption></figure><ul><li><strong>Aristote</strong> : éthique de la <strong>vertu</strong> ; le <strong>juste milieu</strong> ; but : le <strong>bonheur</strong> (<em>eudaimonia</em>), dans l'<em>Éthique à Nicomaque</em>.</li><li><strong>Épicure</strong> : plaisir modéré ; <strong>stoïciens</strong> : vivre selon la nature et la raison.</li><li><strong>Kant</strong> : morale du <strong>devoir</strong>, fondée sur la <strong>bonne volonté</strong>.</li><li><strong>Utilitarisme</strong> (<strong>Bentham</strong>, <strong>Mill</strong>) : agir pour le plus grand bonheur du plus grand nombre.</li><li><strong>Nietzsche</strong> : critique de la morale (<em>La généalogie de la morale</em>, 1887).</li></ul></div>
+<h3>3. L'impératif catégorique de Kant</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Impératif hypothétique</strong> : « si tu veux X, fais Y » ; <strong>impératif catégorique</strong> : « fais ton devoir », sans condition.</li></ul><blockquote style="border-left:3px solid #999; padding-left:14px; margin:16px 0; font-style:italic; color:#555;">"Agis uniquement d'après la maxime grâce à laquelle tu peux vouloir en même temps qu'elle devienne une loi universelle."<br><strong>— Kant, <em>Fondements de la métaphysique des mœurs</em>, 1785</strong></blockquote><ul><li><strong>Humanité</strong> : traite toujours l'humanité comme une <strong>fin</strong> et jamais seulement comme un moyen.</li></ul></div>
+<h3>4. Morale, droit, religion, culture</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Morale</strong> : intérieure, sanction = remords ; <strong>droit</strong> : extérieur, sanction = contrainte de l'État.</li><li><strong>Universalisme</strong> vs <strong>relativisme culturel</strong>.</li><li><strong>Dilemmes</strong> : mensonge, secret, euthanasie, peine de mort (bioéthique).</li></ul><p><a href="https://www.youtube.com/results?search_query=morale+éthique+Kant+impératif+catégorique" target="_blank" rel="noopener">🎥 Recherche : la morale (TV5Monde / France 24)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La morale distingue le bien du mal. Aristote prône la vertu, Kant le devoir (impératif catégorique), les utilitaristes le bonheur du plus grand nombre.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national de philosophie RDC (EPST) ; manuels de philosophie du secondaire, Aristote, Kant, Bentham, Mill.<br><strong>Sigles et abréviations :</strong> **EPST** : Enseignement primaire, secondaire et technique ; **EXETAT** : Examen d'État ; **av. J.-C.** : avant Jésus-Christ ; **RDC** : République démocratique du Congo.</div>
+    `
+},
+{
+    title: "Leçon 8 — La politique et l'État",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Une route est construite dans ton quartier. Qui décide ? Qui paie ? Pourquoi obéit-on à la loi ? Ces questions sont celles de la philosophie politique.</p></div>
+<h3>1. Notions</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Société</strong>, <strong>État</strong> (territoire, population, pouvoir souverain), <strong>nation</strong>, <strong>gouvernement</strong>, <strong>pouvoir</strong>, <strong>autorité</strong>.</li><li><strong>Légitimité</strong> (<strong>Weber</strong>) : traditionnelle, charismatique, légale-rationnelle.</li><li><strong>Aristote</strong> : « l'homme est un animal politique ».</li></ul></div>
+<h3>2. Les théories du contrat social</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><figure style="margin:14px 0;"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Leviathan_by_Thomas_Hobbes.jpg?width=700" alt="Frontispice du Léviathan de Hobbes (1651)" style="max-width:100%; border-radius:10px;" onerror="this.parentNode.style.display='none'"><figcaption style="font-size:0.78rem;color:#666;margin-top:4px;">Frontispice du <em>Léviathan</em> de Hobbes (1651) (Wikimedia Commons)</figcaption></figure><figure style="margin:14px 0;"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Jean-Jacques_Rousseau_(painted_portrait).jpg?width=700" alt="Jean-Jacques Rousseau" style="max-width:100%; border-radius:10px;" onerror="this.parentNode.style.display='none'"><figcaption style="font-size:0.78rem;color:#666;margin-top:4px;">Jean-Jacques Rousseau (Wikimedia Commons)</figcaption></figure><ul><li><strong>Hobbes</strong> (<em>Léviathan</em>, 1651) : l'état de nature est la « guerre de tous contre tous » ; il faut un souverain fort.</li><li><strong>Locke</strong> (<em>Traité du gouvernement civil</em>, 1690) : droits naturels (vie, liberté, propriété) ; gouvernement limité.</li><li><strong>Rousseau</strong> (<em>Du contrat social</em>, 1762) : <strong>volonté générale</strong> ; souveraineté du peuple.</li><li><strong>Montesquieu</strong> : séparation des pouvoirs (exécutif, législatif, judiciaire).</li><li><strong>Machiavel</strong> (<em>Le Prince</em>) : le pouvoir et l'efficacité.</li><li><strong>Marx</strong> : l'État comme instrument de domination d'une classe.</li></ul></div>
+<h3>3. Formes de gouvernement et justice</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><figure style="margin:14px 0;"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Declaration_of_the_Rights_of_Man_and_of_the_Citizen_in_1789.jpg?width=700" alt="Déclaration des droits de l'homme et du citoyen (1789)" style="max-width:100%; border-radius:10px;" onerror="this.parentNode.style.display='none'"><figcaption style="font-size:0.78rem;color:#666;margin-top:4px;">Déclaration des droits de l'homme et du citoyen (1789) (Wikimedia Commons)</figcaption></figure><ul><li><strong>Monarchie</strong>, <strong>aristocratie</strong>, <strong>démocratie</strong>, <strong>tyrannie</strong>, <strong>totalitarisme</strong> (Arendt, 1951).</li><li><strong>Justice</strong> : distributive (selon les mérites) et commutative (échange) chez Aristote ; <strong>Rawls</strong> (<em>Théorie de la justice</em>, 1971).</li><li><strong>Droits de l'homme</strong> : DUDH (Déclaration universelle des droits de l'homme, 1948).</li><li><strong>Désobéissance civile</strong> : Thoreau, Gandhi, Mandela.</li></ul><p><a href="https://www.youtube.com/results?search_query=contrat+social+Hobbes+Locke+Rousseau" target="_blank" rel="noopener">🎥 Recherche : philosophie politique (TV5Monde / France 24)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>L'État organise la vie commune. Hobbes, Locke et Rousseau fondent l'État sur un contrat. Montesquieu défend la séparation des pouvoirs. La démocratie respecte les droits de l'homme.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national de philosophie RDC (EPST) ; manuels de philosophie du secondaire, Hobbes, Locke, Rousseau, Montesquieu.<br><strong>Sigles et abréviations :</strong> **EPST** : Enseignement primaire, secondaire et technique ; **EXETAT** : Examen d'État ; **av. J.-C.** : avant Jésus-Christ ; **RDC** : République démocratique du Congo. **DUDH** : Déclaration universelle des droits de l'homme.</div>
+    `
+},
+{
+    title: "Leçon 9 — Le travail, la technique et le développement",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Un paysan de Kisangani utilise une houe, un autre un tracteur. Les deux travaillent, mais pas de la même manière. Qu'est-ce que le travail change à l'homme et au monde ?</p></div>
+<h3>1. Le travail</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><figure style="margin:14px 0;"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Karl_Marx_001.jpg?width=700" alt="Karl Marx, théoricien de l'aliénation" style="max-width:100%; border-radius:10px;" onerror="this.parentNode.style.display='none'"><figcaption style="font-size:0.78rem;color:#666;margin-top:4px;">Karl Marx, théoricien de l'aliénation (Wikimedia Commons)</figcaption></figure><ul><li><strong>Définition</strong> : activité consciente, transformatrice de la nature pour satisfaire des besoins.</li><li><strong>Marx</strong> : l'homme se produit lui-même par le travail ; <strong>aliénation</strong> quand le travailleur est dépossédé du fruit de son travail.</li><li><strong>Hegel</strong> : dialectique du <strong>maître et de l'esclave</strong>.</li><li><strong>Arendt</strong> (<em>Condition de l'homme moderne</em>, 1958) : <strong>travail</strong>, <strong>œuvre</strong>, <strong>action</strong>.</li></ul></div>
+<h3>2. La technique</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Technique</strong> : ensemble de procédés pour agir sur le monde ; <strong>outil</strong>, <strong>machine</strong>, <strong>technologie</strong>.</li><li><strong>Révolutions industrielles</strong> : vapeur, électricité, numérique.</li><li><strong>Ambivalence</strong> : progrès (santé, communication) et danger (armes, pollution, chômage).</li><li><strong>Hans Jonas</strong> (1979) : principe de <strong>responsabilité</strong> envers les générations futures.</li></ul></div>
+<h3>3. Le développement</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Croissance</strong> (hausse du PIB) ≠ <strong>développement</strong> (amélioration du bien-être).</li><li><strong>Sous-développement</strong> : le résultat de l'histoire (colonisation, échange inégal) selon <strong>Walter Rodney</strong>, <em>Et l'Europe sous-développa l'Afrique</em> (1972).</li><li><strong>Nkrumah</strong> : le <strong>néocolonialisme</strong> (1965).</li><li><strong>Développement durable</strong> : répondre aux besoins du présent sans compromettre l'avenir.</li></ul><p><a href="https://www.youtube.com/results?search_query=travail+technique+développement+philosophie" target="_blank" rel="noopener">🎥 Recherche : travail et technique (TV5Monde / France 24)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le travail transforme la nature et l'homme. La technique est ambivalente. Le développement vise le bien-être durable.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national de philosophie RDC (EPST) ; manuels de philosophie du secondaire, Marx, Hegel, Arendt, Jonas, Rodney, Nkrumah.<br><strong>Sigles et abréviations :</strong> **EPST** : Enseignement primaire, secondaire et technique ; **EXETAT** : Examen d'État ; **av. J.-C.** : avant Jésus-Christ ; **RDC** : République démocratique du Congo. **PIB** : produit intérieur brut.</div>
+    `
+},
+{
+    title: "Leçon 10 — La religion, Dieu et le sens de la vie",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Au chevet d'un malade, certains prient, d'autres cherchent des explications médicales. Chacun cherche un sens à la souffrance et à la mort. C'est le domaine de la religion et de la philosophie.</p></div>
+<h3>1. La religion</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><figure style="margin:14px 0;"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Michelangelo_-_Creation_of_Adam_(cropped).jpg?width=700" alt="« La Création d'Adam » de Michel-Ange (chapelle Sixtine)" style="max-width:100%; border-radius:10px;" onerror="this.parentNode.style.display='none'"><figcaption style="font-size:0.78rem;color:#666;margin-top:4px;">« La Création d'Adam » de Michel-Ange (chapelle Sixtine) (Wikimedia Commons)</figcaption></figure><ul><li><strong>Étymologie</strong> : <em>religare</em> (relier) ou <em>relegere</em> (relire).</li><li><strong>Sacré</strong> et <strong>profane</strong> (Durkheim) ; <strong>rite</strong>, <strong>dogme</strong>, <strong>culte</strong>.</li><li><strong>Grandes religions</strong> : christianisme, islam, judaïsme, hindouisme, bouddhisme ; <strong>religions traditionnelles africaines</strong> (culte des ancêtres, être suprême).</li><li><strong>Foi</strong> et <strong>raison</strong> : conflit ou accord ?</li></ul></div>
+<h3>2. Les preuves de l'existence de Dieu</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><figure style="margin:14px 0;"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Thomas_Aquinas_in_Stained_Glass.jpg?width=700" alt="Thomas d'Aquin, vitrail" style="max-width:100%; border-radius:10px;" onerror="this.parentNode.style.display='none'"><figcaption style="font-size:0.78rem;color:#666;margin-top:4px;">Thomas d'Aquin, vitrail (Wikimedia Commons)</figcaption></figure><ul><li><strong>Ontologique</strong> (<strong>Anselme</strong>, Descartes) : Dieu est l'être parfait, donc il existe.</li><li><strong>Cosmologique</strong> (<strong>Thomas d'Aquin</strong>, « cinq voies ») : il faut une cause première.</li><li><strong>Téléologique</strong> : l'ordre du monde suppose un ordonnateur.</li><li><strong>Pascal</strong> : le <strong>pari</strong> ; Dieu est sensible au cœur.</li><li><strong>Kant</strong> : critique des preuves ; Dieu comme postulat de la raison pratique.</li></ul></div>
+<h3>3. Athéisme, agnosticisme, mal</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Athéisme</strong> : Feuerbach, <strong>Marx</strong> (« la religion est l'opium du peuple », 1843-1844), <strong>Nietzsche</strong> (« Dieu est mort », <em>Le Gai Savoir</em>, 1882), Freud (illusion), Sartre.</li><li><strong>Agnosticisme</strong> : on ne peut rien savoir de Dieu.</li><li><strong>Problème du mal</strong> : pourquoi le mal si Dieu est bon ? <strong>Théodicée</strong> de Leibniz (1710).</li></ul></div>
+<h3>4. Laïcité et sens de la vie</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Laïcité</strong> : séparation des Églises et de l'État ; la <strong>RDC est un État laïc</strong> (Constitution, art. 1) ; liberté de religion.</li><li><strong>Mort</strong> : Épicure : « la mort n'est rien pour nous » ; <strong>Heidegger</strong> : être-pour-la-mort ; <strong>Camus</strong> (<em>Le Mythe de Sisyphe</em>, 1942) : l'<strong>absurde</strong>.</li></ul><p><a href="https://www.youtube.com/results?search_query=religion+Dieu+athéisme+philosophie" target="_blank" rel="noopener">🎥 Recherche : philosophie de la religion (TV5Monde / France 24)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La religion relie l'homme au sacré. Les preuves de Dieu et leurs critiques nourrissent la réflexion. La laïcité garantit la liberté de croire ou de ne pas croire.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national de philosophie RDC (EPST) ; manuels de philosophie du secondaire, Anselme, Thomas d'Aquin, Pascal, Kant, Nietzsche.<br><strong>Sigles et abréviations :</strong> **EPST** : Enseignement primaire, secondaire et technique ; **EXETAT** : Examen d'État ; **av. J.-C.** : avant Jésus-Christ ; **RDC** : République démocratique du Congo.</div>
+    `
+},
+{
+    title: "Leçon 11 — L'art et le beau",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Devant un masque luba exposé au musée de Kinshasa, un élève dit : « C'est magnifique. » Un autre : « Ça ne me dit rien. » Le beau est-il une affaire de goût personnel ou existe-t-il un beau universel ?</p></div>
+<h3>1. Notions</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><figure style="margin:14px 0;"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Mona_Lisa,_by_Leonardo_da_Vinci,_from_C2RMF_retouched.jpg?width=700" alt="« La Joconde » de Léonard de Vinci" style="max-width:100%; border-radius:10px;" onerror="this.parentNode.style.display='none'"><figcaption style="font-size:0.78rem;color:#666;margin-top:4px;">« La Joconde » de Léonard de Vinci (Wikimedia Commons)</figcaption></figure><ul><li><strong>Esthétique</strong> : philosophie du beau et de l'art (mot créé par <strong>Baumgarten</strong>, 1750).</li><li><strong>Art</strong> (<em>ars</em>, technique) ; <strong>artiste</strong> et <strong>artisan</strong> ; <strong>beau</strong>, <strong>goût</strong>, <strong>génie</strong>, <strong>œuvre</strong>.</li><li><strong>Platon</strong> : le beau en soi ; <strong>Kant</strong> (<em>Critique de la faculté de juger</em>, 1790) : le beau plaît universellement sans concept.</li></ul></div>
+<h3>2. Les fonctions de l'art</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Imitation</strong> (<em>mimesis</em>, Aristote) et <strong>catharsis</strong> (purification des passions par la tragédie).</li><li><strong>Expression</strong> des sentiments ; <strong>communication</strong> ; <strong>embellissement</strong>.</li><li><strong>Fonction religieuse et rituelle</strong> (masques africains) ; <strong>fonction sociale et politique</strong> ; <strong>fonction critique</strong>.</li><li><strong>Hegel</strong> : l'art est la manifestation sensible de l'Idée ; <strong>Nietzsche</strong> : apollinien (ordre) et dionysiaque (ivresse).</li></ul></div>
+<h3>3. L'art africain et congolais</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><figure style="margin:14px 0;"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Les_Demoiselles_d'Avignon.jpg?width=700" alt="« Les Demoiselles d'Avignon » de Pablo Picasso (1907)" style="max-width:100%; border-radius:10px;" onerror="this.parentNode.style.display='none'"><figcaption style="font-size:0.78rem;color:#666;margin-top:4px;">« Les Demoiselles d'Avignon » de Pablo Picasso (1907) (Wikimedia Commons)</figcaption></figure><ul><li><strong>Sculptures et masques</strong> : Luba, Kuba, Songye, Tshokwe.</li><li><strong>Peinture populaire</strong> : Chéri Samba ; <strong>musique</strong> : la <strong>rumba congolaise</strong>, inscrite au patrimoine culturel immatériel de l'UNESCO en 2021.</li><li><strong>Influence</strong> : l'art africain a inspiré <strong>Picasso</strong> (<em>Les Demoiselles d'Avignon</em>, 1907).</li></ul><p><a href="https://www.youtube.com/results?search_query=esthétique+art+beau+philosophie" target="_blank" rel="noopener">🎥 Recherche : philosophie de l'art (TV5Monde / France 24)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>L'esthétique étudie le beau et l'art. Les fonctions de l'art sont multiples. L'art africain et congolais est riche et a marqué l'art mondial.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national de philosophie RDC (EPST) ; manuels de philosophie du secondaire, Kant, Hegel, Nietzsche, UNESCO.<br><strong>Sigles et abréviations :</strong> **EPST** : Enseignement primaire, secondaire et technique ; **EXETAT** : Examen d'État ; **av. J.-C.** : avant Jésus-Christ ; **RDC** : République démocratique du Congo. **UNESCO** : Organisation des Nations unies pour l'éducation, la science et la culture.</div>
+    `
+},
+{
+    title: "Leçon 12 — Le langage et la communication",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Deux enfants se parlent sans se comprendre : l'un parle lingala, l'autre swahili. Ils finissent par s'entendre avec des gestes. Qu'est-ce qui fait qu'un langage est un langage ?</p></div>
+<h3>1. Définitions</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><figure style="margin:14px 0;"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Rosetta_Stone.JPG?width=700" alt="La pierre de Rosette, qui a permis de déchiffrer les hiéroglyphes (Champollion, 1822)" style="max-width:100%; border-radius:10px;" onerror="this.parentNode.style.display='none'"><figcaption style="font-size:0.78rem;color:#666;margin-top:4px;">La pierre de Rosette, qui a permis de déchiffrer les hiéroglyphes (Champollion, 1822) (Wikimedia Commons)</figcaption></figure><ul><li><strong>Langage</strong> : faculté humaine d'exprimer et de communiquer la pensée par des <strong>signes</strong>.</li><li><strong>Langue</strong> : système de signes d'une communauté ; <strong>parole</strong> : usage individuel (<strong>Saussure</strong>, 1916).</li><li><strong>Signe</strong> : <strong>signifiant</strong> (forme) + <strong>signifié</strong> (sens).</li><li><strong>Double articulation</strong> (Martinet) : propre au langage humain.</li></ul></div>
+<h3>2. Fonctions du langage et communication</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Jakobson</strong> : fonctions <strong>référentielle</strong>, <strong>expressive</strong>, <strong>conative</strong> (influencer), <strong>phatique</strong> (contact), <strong>poétique</strong>, <strong>métalinguistique</strong>.</li><li><strong>Schéma</strong> : émetteur, récepteur, message, code, canal, contexte.</li><li><strong>Animal</strong> vs <strong>humain</strong> : les abeilles (von Frisch) communiquent, mais sans langage articulé ni abstraction.</li></ul></div>
+<h3>3. Langage, pensée, pouvoir</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Langage et pensée</strong> : liés ; Wittgenstein : « Les limites de mon langage signifient les limites de mon monde » (<em>Tractatus</em>, 1921).</li><li><strong>Rhétorique</strong> et <strong>sophistique</strong> : art de persuader ; <strong>propagande</strong>, <strong>manipulation</strong>.</li><li><strong>RDC</strong> : français (langue officielle) et 4 langues nationales (kikongo, lingala, swahili, tshiluba).</li></ul><p><a href="https://www.youtube.com/results?search_query=langage+communication+Saussure+philosophie" target="_blank" rel="noopener">🎥 Recherche : philosophie du langage (TV5Monde / France 24)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le langage est propre à l'homme. Il est un système de signes à plusieurs fonctions. Il est lié à la pensée et au pouvoir.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national de philosophie RDC (EPST) ; manuels de philosophie du secondaire, Saussure, Jakobson, Wittgenstein.<br><strong>Sigles et abréviations :</strong> **EPST** : Enseignement primaire, secondaire et technique ; **EXETAT** : Examen d'État ; **av. J.-C.** : avant Jésus-Christ ; **RDC** : République démocratique du Congo.</div>
+    `
+},
+{
+    title: "Leçon 13 — La société, l'histoire et le progrès",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Ton grand-père raconte l'indépendance de 1960 ; toi, tu vis à l'ère du téléphone mobile. Le monde a-t-il progressé ? L'histoire a-t-elle un sens ?</p></div>
+<h3>1. La société et la culture</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Société</strong> : groupe d'individus organisés ; <strong>Durkheim</strong> : les <strong>faits sociaux</strong> sont extérieurs, généraux et coercitifs (<em>Les règles de la méthode sociologique</em>, 1895).</li><li><strong>Nature</strong> et <strong>culture</strong> : <strong>Lévi-Strauss</strong> (prohibition de l'inceste).</li><li><strong>Ethnocentrisme</strong> : juger les autres cultures selon la sienne ; <strong>relativisme culturel</strong> (<em>Race et histoire</em>, 1952).</li></ul></div>
+<h3>2. Le sens de l'histoire</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><figure style="margin:14px 0;"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Hegel_portrait_by_Schlesinger_1831.jpg?width=700" alt="Hegel, portrait de 1831" style="max-width:100%; border-radius:10px;" onerror="this.parentNode.style.display='none'"><figcaption style="font-size:0.78rem;color:#666;margin-top:4px;">Hegel, portrait de 1831 (Wikimedia Commons)</figcaption></figure><ul><li><strong>Hegel</strong> : l'histoire est le progrès de la conscience de la <strong>liberté</strong> ; <strong>ruse de la raison</strong>.</li><li><strong>Marx</strong> : <strong>matérialisme historique</strong> ; <strong>lutte des classes</strong> (<em>Manifeste du Parti communiste</em>, 1848).</li><li><strong>Condorcet</strong> (1795) : foi dans le progrès.</li><li><strong>Critiques</strong> : Rousseau (<em>Discours sur les sciences et les arts</em>, 1750).</li></ul></div>
+<h3>3. Mémoire et colonisation</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Mémoire</strong> et <strong>devoir de mémoire</strong>.</li><li><strong>Colonisation</strong> : <strong>Aimé Césaire</strong> (<em>Discours sur le colonialisme</em>, 1950) dénonce son effet déshumanisant.</li><li><strong>Mondialisation</strong> : échanges, influences, inégalités.</li></ul><p><a href="https://www.youtube.com/results?search_query=histoire+progrès+Hegel+Marx" target="_blank" rel="noopener">🎥 Recherche : philosophie de l'histoire (TV5Monde / France 24)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La société se fonde sur des normes et une culture. Hegel et Marx cherchent un sens à l'histoire. Le progrès est discuté.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national de philosophie RDC (EPST) ; manuels de philosophie du secondaire, Durkheim, Hegel, Marx, Césaire.<br><strong>Sigles et abréviations :</strong> **EPST** : Enseignement primaire, secondaire et technique ; **EXETAT** : Examen d'État ; **av. J.-C.** : avant Jésus-Christ ; **RDC** : République démocratique du Congo.</div>
+    `
+},
+{
+    title: "Leçon 14 — Autrui, l'amitié et l'amour",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Tu pars en ville et tu te perds. Un inconnu t'aide. Il aurait pu passer son chemin. Qui est autrui pour moi ?</p></div>
+<h3>1. Autrui</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Autrui</strong> : l'autre « moi », un sujet comme moi.</li><li><strong>Solipsisme</strong> : seul mon esprit existe.</li><li><strong>Hegel</strong> : désir de <strong>reconnaissance</strong> ; <strong>Sartre</strong> : le <strong>regard</strong> d'autrui (<em>L'Être et le Néant</em>, 1943 ; « l'enfer, c'est les autres », <em>Huis clos</em>, 1944) ; <strong>Lévinas</strong> : le <strong>visage</strong>.</li></ul></div>
+<h3>2. L'amitié</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Aristote</strong> : trois amitiés : par <strong>utilité</strong>, par <strong>plaisir</strong>, par <strong>vertu</strong> (la plus parfaite).</li></ul><blockquote style="border-left:3px solid #999; padding-left:14px; margin:16px 0; font-style:italic; color:#555;">"Parce que c'était lui, parce que c'était moi."<br><strong>— Montaigne, <em>Essais</em>, I, 28 (sur son amitié avec La Boétie)</strong></blockquote></div>
+<h3>3. L'amour</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Platon</strong> (<em>Le Banquet</em>) : <strong>éros</strong>, désir du beau ; <strong>philia</strong> (amitié), <strong>agapè</strong> (amour désintéressé).</li><li><strong>Tolérance</strong> : Locke (<em>Lettre sur la tolérance</em>, 1689), Voltaire (1763).</li><li><strong>Racisme</strong> et <strong>xénophobie</strong> : refus d'autrui, sans fondement scientifique.</li></ul><p><a href="https://www.youtube.com/results?search_query=autrui+amitié+amour+philosophie" target="_blank" rel="noopener">🎥 Recherche : autrui et l'amitié (TV5Monde / France 24)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Autrui est un autre moi. L'amitié vraie repose sur la vertu. Respect et tolérance sont la base de la vie commune.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national de philosophie RDC (EPST) ; manuels de philosophie du secondaire, Hegel, Sartre, Aristote, Montaigne.<br><strong>Sigles et abréviations :</strong> **EPST** : Enseignement primaire, secondaire et technique ; **EXETAT** : Examen d'État ; **av. J.-C.** : avant Jésus-Christ ; **RDC** : République démocratique du Congo.</div>
+    `
+},
+{
+    title: "Leçon 15 — La philosophie africaine",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Un étudiant lit un livre sur les proverbes de son village et découvre que chaque proverbe contient une pensée. L'Afrique a-t-elle une philosophie ? Les penseurs africains répondent : oui, et elle est plurielle.</p></div>
+<h3>1. Le débat</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><figure style="margin:14px 0;"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Africa_(orthographic_projection).svg?width=700" alt="Carte de l'Afrique" style="max-width:100%; border-radius:10px;" onerror="this.parentNode.style.display='none'"><figcaption style="font-size:0.78rem;color:#666;margin-top:4px;">Carte de l'Afrique (Wikimedia Commons)</figcaption></figure><ul><li><strong>Existe-t-elle ?</strong> Certains Européens ont nié la pensée africaine ; les philosophes africains ont répondu par des œuvres.</li><li><strong>Quatre courants</strong> : <strong>ethnophilosophie</strong> (pensée collective), <strong>philosophie critique</strong> (professionnelle), courant <strong>politico-idéologique</strong>, <strong>herméneutique</strong>.</li></ul></div>
+<h3>2. Les grands noms</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Placide Tempels</strong> (missionnaire belge) : <em>La philosophie bantoue</em> (1945) : la <strong>force vitale</strong>.</li><li><strong>Alexis Kagame</strong> (Rwanda) : <em>La philosophie bantu-rwandaise de l'Être</em> (1956).</li><li><strong>Vincent Mulago</strong> (RDC) : théologie et religion bantoue.</li><li><strong>Mabika Kalanda</strong> (RDC) : <em>La remise en question</em> (1965), <strong>décolonisation mentale</strong>.</li><li><strong>V. Y. Mudimbe</strong> (RDC) : <em>The Invention of Africa</em> (1988).</li><li><strong>Paulin Hountondji</strong> (Bénin) : <em>Sur la « philosophie africaine »</em> (1977), critique de l'ethnophilosophie.</li><li><strong>Eboussi Boulaga</strong> (Cameroun) : <em>La crise du Muntu</em> (1977).</li><li><strong>Cheikh Anta Diop</strong> (Sénégal) : antériorité des civilisations africaines.</li></ul></div>
+<h3>3. Négritude, panafricanisme, ujamaa</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><figure style="margin:14px 0;"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Kwame_Nkrumah_(JFKWHP-AR6407-A).jpg?width=700" alt="Kwame Nkrumah, premier dirigeant du Ghana indépendant" style="max-width:100%; border-radius:10px;" onerror="this.parentNode.style.display='none'"><figcaption style="font-size:0.78rem;color:#666;margin-top:4px;">Kwame Nkrumah, premier dirigeant du Ghana indépendant (Wikimedia Commons)</figcaption></figure><ul><li><strong>Négritude</strong> : <strong>Senghor</strong> (Sénégal), <strong>Césaire</strong> (Martinique), <strong>Damas</strong>.</li><li><strong>Nkrumah</strong> (Ghana) : <strong>consciencisme</strong>, panafricanisme.</li><li><strong>Nyerere</strong> (Tanzanie) : <strong>ujamaa</strong>, socialisme africain (Déclaration d'Arusha, 1967).</li><li><strong>Lumumba</strong> : indépendance et dignité du Congo (30 juin 1960).</li></ul></div>
+<h3>4. Ubuntu et sagesse africaine</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Ubuntu</strong> (langues bantoues d'Afrique australe) : « une personne est une personne à travers les autres personnes ».</li><li><strong>Mbiti</strong> (Kenya) : « Je suis parce que nous sommes, et parce que nous sommes, je suis » (1969).</li><li><strong>Valeurs</strong> : communauté, solidarité, <strong>palabre</strong> (discussion pour résoudre un conflit), respect des aînés, <strong>proverbes</strong> et contes.</li><li><strong>Défi</strong> : concilier tradition et modernité.</li></ul><p><a href="https://www.youtube.com/results?search_query=philosophie+africaine+Ubuntu+Kagame+Hountondji" target="_blank" rel="noopener">🎥 Recherche : philosophie africaine (TV5Monde / RFI)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La philosophie africaine est plurielle : ethnophilosophie, philosophie critique, négritude, panafricanisme. L'ubuntu exprime l'esprit de solidarité.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national de philosophie RDC (EPST) ; manuels de philosophie du secondaire, Tempels, Kagame, Hountondji, Mudimbe, Nkrumah.<br><strong>Sigles et abréviations :</strong> **EPST** : Enseignement primaire, secondaire et technique ; **EXETAT** : Examen d'État ; **av. J.-C.** : avant Jésus-Christ ; **RDC** : République démocratique du Congo.</div>
+    `
+},
+{
+    title: "Leçon 16 — La métaphysique : l'être, la matière et l'esprit",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Pourquoi y a-t-il quelque chose plutôt que rien ? Cette question de Leibniz paraît étrange, mais elle ouvre le domaine le plus ancien de la philosophie.</p></div>
+<h3>1. Qu'est-ce que la métaphysique ?</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><figure style="margin:14px 0;"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Sanzio_01.jpg?width=700" alt="« L'École d'Athènes » : Platon (le ciel) et Aristote (la terre) au centre" style="max-width:100%; border-radius:10px;" onerror="this.parentNode.style.display='none'"><figcaption style="font-size:0.78rem;color:#666;margin-top:4px;">« L'École d'Athènes » : Platon (le ciel) et Aristote (la terre) au centre (Wikimedia Commons)</figcaption></figure><ul><li><strong>Définition</strong> : étude de l'être au-delà des apparences, des premières causes et des principes.</li><li><strong>Étymologie</strong> : <em>meta ta physika</em> (« après la physique »), classement des livres d'Aristote par <strong>Andronicos de Rhodes</strong>.</li><li><strong>Ontologie</strong> : étude de l'être en tant qu'être.</li></ul></div>
+<h3>2. Être et devenir</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Parménide</strong> : l'être est, le non-être n'est pas ; l'être est immuable.</li><li><strong>Héraclite</strong> : tout change (devenir).</li><li><strong>Platon</strong> : monde sensible et monde des <strong>Idées</strong> ; <strong>Aristote</strong> : <strong>substance</strong>, <strong>forme</strong> et <strong>matière</strong>.</li></ul></div>
+<h3>3. Matière et esprit, âme et corps</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Matérialisme</strong> (Démocrite, Épicure, Marx) : tout est matière.</li><li><strong>Idéalisme</strong> (Platon, Berkeley, Hegel) : l'esprit est premier.</li><li><strong>Dualisme</strong> (Descartes) : <strong>res cogitans</strong> (pensée) et <strong>res extensa</strong> (étendue).</li><li><strong>Monisme</strong> (Spinoza) : une seule substance.</li><li><strong>Âme</strong> : immortelle (Platon, <em>Phédon</em>) ou forme du corps (Aristote).</li></ul></div>
+<h3>4. Existence et critique</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Essence</strong> et <strong>existence</strong> ; <strong>existentialisme</strong> (Sartre).</li><li><strong>Kant</strong> : limites de la raison ; <strong>positivisme</strong> : rejet de la métaphysique.</li><li><strong>Grandes questions</strong> : Dieu, liberté, immortalité de l'âme.</li></ul><p><a href="https://www.youtube.com/results?search_query=métaphysique+être+matière+esprit" target="_blank" rel="noopener">🎥 Recherche : métaphysique (TV5Monde / France 24)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La métaphysique étudie l'être. Elle oppose matérialisme et idéalisme, monisme et dualisme. Kant a critiqué ses prétentions.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national de philosophie RDC (EPST) ; manuels de philosophie du secondaire, Platon, Aristote, Descartes, Spinoza, Kant.<br><strong>Sigles et abréviations :</strong> **EPST** : Enseignement primaire, secondaire et technique ; **EXETAT** : Examen d'État ; **av. J.-C.** : avant Jésus-Christ ; **RDC** : République démocratique du Congo.</div>
+    `
+},
+{
+    title: "Leçon 17 — Le droit et la justice",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans _Antigone_, Sophocle fait enterrer un frère malgré l'interdiction du roi, au nom d'une loi plus haute. Quelle loi doit l'emporter : celle de l'État ou celle de la conscience ?</p></div>
+<h3>1. Notions</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><figure style="margin:14px 0;"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Scale_of_justice_2.svg?width=700" alt="Balance, symbole de la justice" style="max-width:100%; border-radius:10px;" onerror="this.parentNode.style.display='none'"><figcaption style="font-size:0.78rem;color:#666;margin-top:4px;">Balance, symbole de la justice (Wikimedia Commons)</figcaption></figure><ul><li><strong>Droit</strong> : ensemble de règles imposées par l'État ; <strong>loi</strong>, <strong>règlement</strong>, <strong>jurisprudence</strong>, <strong>coutume</strong>.</li><li><strong>Droit naturel</strong> : droits inhérents à tout homme ; <strong>droit positif</strong> : droit en vigueur dans un État.</li><li><strong>Légalité</strong> (conforme à la loi) et <strong>légitimité</strong> (conforme à la justice).</li></ul></div>
+<h3>2. La justice</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Aristote</strong> : justice <strong>distributive</strong> et <strong>commutative</strong>.</li><li><strong>Équité</strong> : adapter la loi au cas particulier.</li><li><strong>Rawls</strong> (1971) : justice comme équité.</li><li><strong>Antigone</strong> et Créon : loi non écrite et loi de la cité.</li></ul></div>
+<h3>3. La sanction</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Beccaria</strong> (<em>Des délits et des peines</em>, 1764) : peines proportionnées.</li><li><strong>Fonctions de la peine</strong> : rétribution, dissuasion, protection, <strong>réinsertion</strong>.</li><li><strong>Droit international</strong> : <strong>CPI</strong> (Cour pénale internationale, 1998), DUDH (1948).</li></ul><p><a href="https://www.youtube.com/results?search_query=droit+naturel+droit+positif+justice" target="_blank" rel="noopener">🎥 Recherche : droit et justice (TV5Monde / France 24)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le droit organise la vie sociale. Droit naturel et droit positif s'opposent parfois. La justice vise l'équité et la sanction juste.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national de philosophie RDC (EPST) ; manuels de philosophie du secondaire, Aristote, Beccaria, Rawls.<br><strong>Sigles et abréviations :</strong> **EPST** : Enseignement primaire, secondaire et technique ; **EXETAT** : Examen d'État ; **av. J.-C.** : avant Jésus-Christ ; **RDC** : République démocratique du Congo. **CPI** : Cour pénale internationale ; **DUDH** : Déclaration universelle des droits de l'homme.</div>
+    `
+},
+{
+    title: "Leçon 18 — Méthodologie : la dissertation et l'explication de texte",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Le jour de l'EXETAT, tu lis le sujet : « Peut-on tout dire ? ». Tu as 4 heures. Sans méthode, tu pars dans tous les sens ; avec une méthode, ta pensée s'organise.</p></div>
+<h3>1. Comprendre le sujet</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Analyser les termes</strong> : définir chaque mot.</li><li><strong>Repérer le type</strong> : « Peut-on... ? », « Est-il vrai que... ? », une citation, une comparaison.</li><li><strong>Dégager la problématique</strong> : la question philosophique cachée derrière le sujet.</li><li><strong>Éviter</strong> : le hors-sujet et la récitation du cours.</li></ul></div>
+<h3>2. La dissertation</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Introduction</strong> : accroche, définition, problématique, annonce du plan.</li><li><strong>Développement</strong> : 2 à 3 parties ; chaque partie contient arguments, exemples, références philosophiques, transition.</li><li><strong>Plans</strong> : <strong>dialectique</strong> (thèse, antithèse, synthèse), <strong>analytique</strong>, <strong>comparatif</strong>.</li><li><strong>Conclusion</strong> : bilan et ouverture, sans nouvel argument.</li></ul></div>
+<h3>3. L'explication de texte</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><p>1) Lire plusieurs fois ; 2) dégager la <strong>thèse</strong> et la <strong>structure</strong> ; 3) expliquer chaque partie ; 4) discuter (intérêt, limites) ; 5) conclure.</p></div>
+<h3>4. Conseils pour l'EXETAT</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Lire les consignes ; gérer le temps ; brouillon ; relecture.</li><li><strong>Écrire clairement</strong> : phrases courtes, paragraphes, vocabulaire précis.</li><li><strong>Exemples</strong> : histoire, littérature, vie quotidienne, actualité.</li><li><strong>Citations</strong> : exactes et commentées.</li></ul><p><a href="https://www.youtube.com/results?search_query=méthode+dissertation+philosophie" target="_blank" rel="noopener">🎥 Recherche : réussir sa dissertation (TV5Monde / France 24)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Une dissertation réussie suit un plan clair (introduction, développement, conclusion), répond à une problématique et utilise des références. L'explication de texte demande thèse, structure et discussion.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national de philosophie RDC (EPST) ; manuels de philosophie du secondaire<br><strong>Sigles et abréviations :</strong> **EPST** : Enseignement primaire, secondaire et technique ; **EXETAT** : Examen d'État ; **av. J.-C.** : avant Jésus-Christ ; **RDC** : République démocratique du Congo.</div>
+    `
+},
+{
+    title: "Évaluation finale — Items EXETAT",
+    content: `
+        <p style="margin-bottom:18px;color:#4a2a7a;font-size:0.95rem;">Cette évaluation regroupe des items tirés des épreuves d'État (EXETAT) des années précédentes. Fais l'exercice dans les conditions du concours : sans notes, en une seule fois.</p>
+
+        <div class="bloc theorie">
+            <div class="bloc-label">Consignes</div>
+            <ul>
+                <li>40 questions à choix multiples.</li>
+                <li>Une seule réponse correcte par question.</li>
+                <li>Pas de retour en arrière sur les questions déjà validées.</li>
+                <li>Durée recommandée : 40 minutes.</li>
+            </ul>
+        </div>
+
+        <div class="quiz-container" id="quizContainer">
+            <h3 style="color:#3b1f5c;margin-bottom:16px;font-size:1.1rem;">Partie 1 — Questions</h3>
+            <div id="quizQuestions"></div>
+            <button id="submitQuiz" class="quiz-btn-submit">Valider mes réponses</button>
+            <div id="quizResult" class="quiz-result"></div>
+        </div>
+    `
+}
+];
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim()) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderQuiz() {
+    const questions = [
+        { text:"Que signifie « philosophie » étymologiquement ?", options:["Art de bien parler","Amour de la sagesse","Science de la nature"], correct:1 },
+        { text:"Qui est traditionnellement considéré comme le premier philosophe grec ?", options:["Kant","Thalès de Milet","Descartes"], correct:1 },
+        { text:"Quelle est la méthode de Socrate ?", options:["Le doute méthodique","L'induction expérimentale","La maïeutique"], correct:2 },
+        { text:"Qui a fondé l'Académie ?", options:["Épicure","Platon","Aristote"], correct:1 },
+        { text:"Qui a fondé le Lycée ?", options:["Platon","Aristote","Zénon"], correct:1 },
+        { text:"« Je pense, donc je suis » est de :", options:["Kant","Hume","Descartes"], correct:2 },
+        { text:"Qui a écrit la Critique de la raison pure ?", options:["Kant","Marx","Hegel"], correct:0 },
+        { text:"Pour l'empirisme, la source de la connaissance est :", options:["La raison seule","La foi","L'expérience"], correct:2 },
+        { text:"Quel philosophe est un rationaliste ?", options:["Hume","Locke","Descartes"], correct:2 },
+        { text:"OHERIC désigne :", options:["Une théorie politique","Un courant de l'art","La démarche expérimentale de Claude Bernard"], correct:2 },
+        { text:"Quel critère de scientificité propose Popper ?", options:["La vérification","L'autorité","La falsifiabilité"], correct:2 },
+        { text:"Freud est le fondateur de :", options:["La psychanalyse","Le positivisme","L'existentialisme"], correct:0 },
+        { text:"Les trois instances de la deuxième topique freudienne sont :", options:["L'âme, l'esprit, le corps","La raison, la volonté, le désir","Le ça, le moi, le surmoi"], correct:2 },
+        { text:"« L'existence précède l'essence » : quel philosophe ?", options:["Aristote","Hobbes","Sartre"], correct:2 },
+        { text:"L'impératif catégorique est une notion de :", options:["Kant","Mill","Nietzsche"], correct:0 },
+        { text:"L'utilitarisme est défendu par :", options:["Platon et Aristote","Hegel et Marx","Bentham et Mill"], correct:2 },
+        { text:"Qui a écrit Du contrat social (1762) ?", options:["Rousseau","Hobbes","Locke"], correct:0 },
+        { text:"Qui a écrit le Léviathan ?", options:["Locke","Hobbes","Montesquieu"], correct:1 },
+        { text:"Qui a théorisé la séparation des pouvoirs ?", options:["Machiavel","Voltaire","Montesquieu"], correct:2 },
+        { text:"« L'homme est un animal politique » est de :", options:["Marx","Aristote","Platon"], correct:1 },
+        { text:"Quel philosophe a développé la notion d'aliénation par le travail ?", options:["Descartes","Marx","Pascal"], correct:1 },
+        { text:"« Dieu est mort » est de :", options:["Marx","Nietzsche","Freud"], correct:1 },
+        { text:"« La religion est l'opium du peuple » est de :", options:["Kant","Marx","Pascal"], correct:1 },
+        { text:"La preuve ontologique de l'existence de Dieu est liée à :", options:["Anselme","Hume","Sartre"], correct:0 },
+        { text:"Le pari concernant l'existence de Dieu est de :", options:["Pascal","Kant","Descartes"], correct:0 },
+        { text:"L'esthétique est la philosophie de :", options:["Le beau et de l'art","La vérité","Le droit"], correct:0 },
+        { text:"La catharsis chez Aristote est :", options:["La purification des passions","Une loi physique","Une preuve logique"], correct:0 },
+        { text:"Qui distingue langue et parole ?", options:["Descartes","Rousseau","Saussure"], correct:2 },
+        { text:"Qui a écrit La philosophie bantoue (1945) ?", options:["Paulin Hountondji","Placide Tempels","Léopold Senghor"], correct:1 },
+        { text:"Paulin Hountondji critique surtout :", options:["La logique","Le marxisme","L'ethnophilosophie"], correct:2 },
+        { text:"Que signifie l'ubuntu ?", options:["Je suis parce que nous sommes","Je pense donc je suis","La fin justifie les moyens"], correct:0 },
+        { text:"La négritude est associée à :", options:["Senghor et Césaire","Kant et Hegel","Nkrumah et Nyerere"], correct:0 },
+        { text:"L'ujamaa est lié à :", options:["Léopold Senghor","Julius Nyerere","Kwame Nkrumah"], correct:1 },
+        { text:"Le dualisme âme-corps est associé à :", options:["Démocrite","Spinoza","Descartes"], correct:2 },
+        { text:"Le droit positif est :", options:["La morale","Le droit de nature","Le droit en vigueur dans un État"], correct:2 },
+        { text:"L'allégorie de la caverne est de :", options:["Kant","Aristote","Platon"], correct:2 },
+        { text:"Une dissertation comprend :", options:["Résumé du cours","Introduction, développement, conclusion","Thèse seule"], correct:1 },
+        { text:"EXETAT signifie :", options:["Examen extérieur","Examen d'État","Épreuve écrite"], correct:1 },
+        { text:"Le doute méthodique est une démarche de :", options:["Descartes","Pascal","Marx"], correct:0 },
+        { text:"Quelle formule est inscrite au temple de Delphes et reprise par Socrate ?", options:["Connais-toi toi-même","Tout est eau","Rien ne sert de courir"], correct:0 }
+    ];
+    let html = '';
+    questions.forEach((q,i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o,k) => { html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>'; });
+        html += '</div>';
+    });
+    document.getElementById('quizQuestions').innerHTML = html;
+    document.getElementById('submitQuiz').onclick = () => {
+        let score = 0;
+        questions.forEach((q,i) => {
+            const s = document.querySelector('input[name="q' + i + '"]:checked');
+            if (s && parseInt(s.value) === q.correct) score++;
+        });
+        const pct = Math.round(score/questions.length*100);
+        document.getElementById('quizResult').innerHTML = '<div style="background:#ddd0ee;padding:16px;border-radius:10px;margin-top:14px;">' +
+            '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong><br>' +
+            (score === questions.length ? 'Excellent. Tu maîtrises le programme.' :
+             score >= 7 ? 'Bien. Revoyez les leçons où vous avez échoué.' :
+             'Relis attentivement les leçons avant l\'examen.') + '</div>';
+    };
+}
+function renderSlide(index, keepHighlight = true) {
+    const isQuiz = (index === slides.length - 1);
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    if (isQuiz) renderQuiz();
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm && !isQuiz) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+</body>
+</html>

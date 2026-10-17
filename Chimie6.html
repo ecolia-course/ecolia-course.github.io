@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Chimie — 4e secondaire (EXETAT)</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body {
+    font-family:'Segoe UI',system-ui,sans-serif;
+    background:linear-gradient(160deg,#0b3a3a 0%,#00796b 50%,#062626 100%);
+    display:flex; justify-content:center; align-items:center;
+    padding:8px;
+}
+.container {
+    width:100%; max-width:1400px; background:#fefdf8;
+    border-radius:20px; overflow:hidden;
+    display:flex; flex-direction:column;
+    height:100%; max-height:100vh;
+    box-shadow:0 20px 60px rgba(0,0,0,0.4);
+}
+
+/* BARRE DE PROGRESSION */
+.progress-bar { height:4px; background:#c5e6e3; flex-shrink:0; }
+.progress-fill {
+    height:100%; background:linear-gradient(90deg,#4db6ac,#00574b);
+    width:0%; transition:width 0.3s;
+}
+
+/* HEADER COMPACT */
+.header {
+    padding:10px 16px; background:#e0f2f1;
+    border-bottom:1px solid #80cbc4;
+    display:flex; justify-content:space-between; align-items:center;
+    gap:10px; flex-shrink:0;
+}
+.header h1 { color:#00574b; font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box {
+    display:flex; background:white; border-radius:20px;
+    padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06);
+}
+.search-box input {
+    border:none; padding:6px 10px; border-radius:20px;
+    outline:none; width:130px; font-size:0.8rem;
+}
+.search-box button {
+    background:none; border:none; cursor:pointer;
+    padding:4px 8px; font-size:0.85rem; color:#00796b;
+}
+.badge {
+    background:#4db6ac; color:white; padding:4px 10px;
+    border-radius:20px; font-weight:bold; font-size:0.75rem;
+}
+.search-nav {
+    display:none; gap:4px; background:#b2dfdb;
+    padding:2px 8px; border-radius:20px; align-items:center;
+    font-size:0.75rem;
+}
+.search-nav button {
+    background:none; border:none; cursor:pointer;
+    font-size:0.9rem; color:#00574b; padding:2px 4px;
+}
+
+/* CONTENU PLEIN ÉCRAN + AÉRÉ */
+.content {
+    padding:28px 32px; flex:1; overflow-y:auto;
+    background:#fff; scroll-behavior:smooth;
+    line-height:1.85;
+}
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide {
+    from { opacity:0; transform:translateY(8px); }
+    to { opacity:1; transform:translateY(0); }
+}
+
+.slide-title {
+    color:#0b3a3a; font-size:1.5rem; font-weight:700;
+    padding-bottom:12px; margin-bottom:20px;
+    border-bottom:2px solid #4db6ac;
+}
+.slide-content { color:#0a2b2b; font-size:1rem; }
+
+/* BLOCS PÉDAGOGIQUES */
+.bloc {
+    padding:18px 22px; border-radius:12px;
+    margin:22px 0; line-height:1.85;
+}
+.bloc-label {
+    font-size:0.75rem; font-weight:700;
+    letter-spacing:1.5px; text-transform:uppercase;
+    margin-bottom:8px; opacity:0.7;
+}
+.bloc p, .bloc li { font-size:0.98rem; }
+.bloc h3 {
+    font-size:1.1rem; margin:20px 0 10px;
+    font-weight:600;
+}
+.bloc h3:first-child { margin-top:0; }
+
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+
+.theorie { background:#e0f2f1; border-left:4px solid #4db6ac; }
+.theorie .bloc-label { color:#00574b; }
+
+.pratique { background:#e8f5e9; border-left:4px solid #43a047; }
+.pratique .bloc-label { color:#1b5e20; }
+
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+
+/* LISTES */
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:#0b3a3a; }
+
+/* QUIZ */
+.quiz-container { padding:22px; background:#e0f2f1; border-radius:16px; }
+.quiz-question {
+    background:white; border-radius:10px; padding:16px;
+    margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05);
+}
+.quiz-question p { font-weight:600; margin-bottom:10px; color:#0b3a3a; }
+.quiz-question label {
+    display:block; padding:8px 10px; margin:4px 0;
+    border-radius:6px; cursor:pointer; transition:background 0.2s;
+}
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit {
+    background:#26897d; color:white; border:none;
+    padding:12px 24px; border-radius:30px; font-size:1rem;
+    cursor:pointer; font-weight:600; margin-top:14px;
+}
+.quiz-result { margin-top:16px; font-weight:600; }
+
+/* SOURCES */
+.sources {
+    background:#f5f5f5; padding:12px 16px; border-radius:10px;
+    margin-top:26px; font-size:0.82rem; color:#666;
+    border-left:3px solid #999; line-height:1.6;
+}
+.sources strong { color:#333; }
+
+/* FOOTER COMPACT */
+.controls {
+    padding:8px 16px; background:#fafafa;
+    border-top:1px solid #e0e0e0;
+    display:flex; justify-content:space-between;
+    align-items:center; gap:8px; flex-shrink:0;
+}
+.nav-btn {
+    background:white; color:#00574b;
+    border:1px solid #ccc; padding:8px 14px;
+    border-radius:8px; font-size:0.82rem;
+    cursor:pointer; font-weight:500;
+}
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+
+/* SCROLLBAR STYLE */
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:#d5ecea; }
+.content::-webkit-scrollbar-thumb { background:#4db6ac; border-radius:3px; }
+
+/* MOBILE */
+@media (max-width:600px) {
+    body { padding:0; }
+    .container { border-radius:0; max-height:100vh; }
+    .content { padding:20px 18px; }
+    .slide-title { font-size:1.25rem; }
+    .search-box input { width:90px; }
+    .header h1 { font-size:0.85rem; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+    <div class="header">
+        <h1>Chimie · 4e secondaire</h1>
+        <div class="header-right">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Rechercher">
+                <button id="searchBtn">⌕</button>
+            </div>
+            <div class="search-nav" id="searchNav">
+                <button id="prevResultBtn">‹</button>
+                <span id="resultCounter">0/0</span>
+                <button id="nextResultBtn">›</button>
+            </div>
+            <span class="badge" id="slideCounter">1/12</span>
+        </div>
+    </div>
+
+    <div class="content" id="content"></div>
+
+    <div class="controls">
+        <button class="nav-btn" id="prevBtn">← Précédent</button>
+        <span class="counter" id="counter">Leçon 1 / 12</span>
+        <button class="nav-btn" id="nextBtn">Suivant →</button>
+    </div>
+</div>
+
+<script>
+const slides = [
+{
+    title: "Leçon 1 — Concentration d'une solution : dilution et solutions titrées",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Au collège Shabana de Kabinda, l'enseignant constate que ses élèves ne savent pas diluer une solution commerciale très concentrée. Il les emmène au laboratoire pour préparer des solutions titrées, par dilution et par pesée.</p></div>
+<h3>1. Grandeurs qui caractérisent une solution</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Concentration molaire</strong> (molarité) : C = n/V (mol/L, notée M).</li><li><strong>Concentration massique (titre)</strong> : t = m/V (g/L) ; relation <strong>t = C × M</strong>.</li><li><strong>Pourcentage massique</strong> p (%) et <strong>densité</strong> d (kg/L) d'une solution commerciale : <strong>C = 10 p d / M</strong>.</li><li><strong>Normalité</strong> N = C × z (équivalents par litre, z = nombre de H<sup>+</sup> ou OH<sup>−</sup> échangés).</li><li><strong>Solution titrée</strong> : solution dont la concentration est connue avec précision.</li><li>Exemple : HCl commercial (d = 1,19 ; 37 % ; M = 36,5 g/mol) : C = 10 × 37 × 1,19 / 36,5 ≈ <strong>12,1 mol/L</strong>.</li></ul></div>
+<h3>2. Dilution et mélanges</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Dilution</strong> : on ajoute du solvant ; <strong>la quantité de soluté ne change pas</strong> : <strong>C<sub>1</sub> V<sub>1</sub> = C<sub>2</sub> V<sub>2</sub></strong>.</li><li><strong>Mélange de solutions de même nature</strong> : C = (C<sub>1</sub> V<sub>1</sub> + C<sub>2</sub> V<sub>2</sub>)/(V<sub>1</sub> + V<sub>2</sub>).</li><li><strong>Mélange de solutions antagonistes</strong> (acide + base) : on compare n(H<sup>+</sup>) et n(OH<sup>−</sup>) ; l'excès détermine le caractère final ; si n(H<sup>+</sup>) = n(OH<sup>−</sup>), mélange neutre.</li><li>Exemple du programme : 500 mL de HNO<sub>3</sub> 0,01 M à partir de HNO<sub>3</sub> commercial (d = 1,33 ; 52,5 % ; M = 63) : C<sub>com</sub> = 10 × 52,5 × 1,33/63 ≈ 11,1 mol/L ; V<sub>1</sub> = 0,01 × 500/11,1 ≈ <strong>0,45 mL</strong> à prélever, puis compléter à 500 mL.</li></ul></div>
+<h3>3. Préparer une solution titrée</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Par pesée</strong> : m = C × V × M (ex. 1 L de KOH 0,1 M : m = 0,1 × 56 = <strong>5,6 g</strong>). Peser (capsule tarée), introduire dans une <strong>fiole jaugée</strong>, rincer, dissoudre aux ¾, compléter jusqu'au trait de jauge, boucher, homogénéiser, étiqueter.</li><li><strong>Par dilution</strong> : prélever V<sub>1</sub> à la <strong>pipette jaugée</strong>, verser dans une fiole jaugée, compléter au trait, agiter.</li><li><strong>Règle de sécurité</strong> : verser l'<strong>acide dans l'eau</strong>, jamais l'inverse.</li></ul></div>
+<h3>4. Notations et sigles</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>M</strong> : mol/L ; <strong>mol</strong> : mole ; <strong>SI</strong> : Système international ; <strong>TPN</strong> : conditions normales (0 °C, 1 atm) ; <strong>d</strong> : densité ; <strong>M</strong> (en g/mol) : masse molaire ; <strong>u</strong> : unité de masse atomique.</li><li><strong>EXETAT</strong> : Examen d'État ; <strong>SPTIC</strong> : Sciences physiques et technologies de l'information et de la communication ; <strong>MSPC</strong> : matrice de sciences physiques / chimie ; <strong>HSC</strong> : humanités scientifiques ; <strong>pH</strong> : potentiel hydrogène.</li></ul><p><a href="https://www.youtube.com/results?search_query=Concentration+d'une+solution+:+dilution+et+solutions+titrées+chimie+terminale" target="_blank" rel="noopener">🎥 Recherche : Concentration d'une solution : dilution et solutions titrées (chaînes de cours de chimie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>C = n/V ; C<sub>1</sub>V<sub>1</sub> = C<sub>2</sub>V<sub>2</sub> à la dilution ; C commerciale = 10·p·d/M ; une solution titrée se prépare par pesée ou par dilution dans une fiole jaugée.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSPC 6.1.</div>
+    `
+},
+{
+    title: "Leçon 2 — Sécurité au laboratoire",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>À Kisangani, les parents s'inquiètent des risques que courent leurs enfants au laboratoire de leur collège. Le préfet demande à l'enseignant de rédiger avec les élèves des normes de sécurité et un code de bonne conduite.</p></div>
+<h3>1. Les obligations</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Porter une <strong>blouse en coton</strong> (le polyester fond et colle à la peau).</li><li>Se <strong>laver les mains</strong> en entrant et en sortant ; attacher les cheveux ; retirer les bijoux.</li><li>Porter <strong>lunettes, gants, masque</strong> pendant les manipulations.</li><li>Repérer <strong>douche, extincteur, trousse de secours</strong>.</li><li>Manipuler les gaz et produits volatils <strong>sous la hotte</strong>.</li><li><strong>Étiqueter</strong> tous les flacons ; lire les étiquettes ; vérifier la verrerie.</li><li>Ranger les produits dangereux (poisons, acides, bases, inflammables) dans un endroit protégé ; trier les déchets (verre, métaux, matières décomposables).</li><li>Vérifier régulièrement extincteurs, alarmes, ventilation.</li></ul></div>
+<h3>2. Les interdictions</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Interdit de <strong>fumer, boire, manger</strong> au laboratoire.</li><li>Interdit de <strong>pipeter à la bouche</strong> : utiliser une <strong>propipette</strong>.</li><li>Interdit de manipuler un inflammable près d'une flamme.</li><li>Interdit de manipuler <strong>sans lunettes, blouse et gants</strong>.</li><li><strong>Acide concentré dans l'eau</strong>, jamais l'inverse (la dilution dégage beaucoup de chaleur).</li></ul></div>
+<h3>3. Les pictogrammes de danger (SGH)</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/GHS-pictogram-flamme.svg?width=600" alt="Pictogramme inflammable" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Pictogramme inflammable — Wikimedia Commons : GHS-pictogram-flamme.svg</p><img src="https://commons.wikimedia.org/wiki/Special:FilePath/GHS-pictogram-acid.svg?width=600" alt="Pictogramme corrosif" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Pictogramme corrosif — Wikimedia Commons : GHS-pictogram-acid.svg</p><img src="https://commons.wikimedia.org/wiki/Special:FilePath/GHS-pictogram-skull.svg?width=600" alt="Pictogramme toxique" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Pictogramme toxique — Wikimedia Commons : GHS-pictogram-skull.svg</p><ul><li><strong>Flamme</strong> : inflammable ; <strong>flamme sur cercle</strong> : comburant ; <strong>bombe explosant</strong> : explosif.</li><li><strong>Corrosion</strong> : corrosif (acides, bases fortes) ; <strong>tête de mort</strong> : toxique ; <strong>point d'exclamation</strong> : irritant, nocif.</li><li><strong>Danger pour la santé</strong> (cancérogène…) ; <strong>environnement</strong> : dangereux pour le milieu aquatique ; <strong>bouteille de gaz</strong> : gaz sous pression.</li><li><strong>SGH</strong> : Système général harmonisé de classification et d'étiquetage des produits chimiques.</li></ul><p><a href="https://www.youtube.com/results?search_query=Sécurité+au+laboratoire+chimie+terminale" target="_blank" rel="noopener">🎥 Recherche : Sécurité au laboratoire (chaînes de cours de chimie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Blouse en coton, lunettes, gants, hotte, propipette, étiquettes ; jamais de nourriture ni de pipetage à la bouche ; l'acide va dans l'eau ; connaître les pictogrammes SGH.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSPC 6.2.</div>
+    `
+},
+{
+    title: "Leçon 3 — Le matériel de laboratoire",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Le laboratoire d'un collège vient de recevoir du nouveau matériel, mais personne ne sait le classer. Le préfet demande à l'enseignant de le ranger selon les règles d'usage et d'établir une fiche descriptive.</p></div>
+<h3>1. Verrerie</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Tube à essai</strong> : petites réactions ; <strong>bécher</strong> : stocker, chauffer, mélanger (graduation approximative).</li><li><strong>Erlenmeyer</strong> : titrages, évite les éclaboussures ; <strong>ballon</strong> (à fond plat ou rond) : chauffage, distillation.</li><li><strong>Éprouvette graduée</strong> : mesure moyennement précise ; <strong>fiole jaugée</strong> : volume exact d'une solution ; <strong>burette</strong> : volume versé lors d'un titrage ; <strong>pipette jaugée</strong> : prélèvement <strong>précis</strong> d'un volume fixe ; <strong>pipette graduée</strong> : volumes variables.</li><li><strong>Entonnoir</strong> (filtration, transvasement), <strong>ampoule à décanter</strong> (liquides non miscibles), <strong>réfrigérant</strong> (condensation), <strong>verre de montre</strong>, <strong>cristallisoir</strong>, <strong>flacons</strong>.</li></ul></div>
+<h3>2. Porcelaine, métal et appareils</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Porcelaine</strong> : mortier et pilon, capsule, creuset (résistent aux hautes températures).</li><li><strong>Métal</strong> : support, noix et pince, trépied, grille, spatule, pince en bois.</li><li><strong>Chauffage</strong> : bec Bunsen, plaque chauffante, étuve.</li><li><strong>Mesure</strong> : balance, thermomètre, <strong>pH-mètre</strong>, <strong>conductimètre</strong>.</li><li><strong>Séparation</strong> : filtration, décantation, distillation, centrifugation.</li></ul></div>
+<h3>3. Règles d'usage</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Vérifier l'état du verre avant utilisation ; ne jamais chauffer une fiole jaugée ni une burette.</li><li>Lire le <strong>bas du ménisque</strong> à hauteur des yeux.</li><li>Nettoyer et ranger après usage.</li><li>Idée de classement : par matière (verre, porcelaine, métal), par usage (chauffage, mesure, séparation).</li><li>Fabrication locale possible : filtres en tissu, supports en bois, bec à alcool.</li></ul><p><a href="https://www.youtube.com/results?search_query=Le+matériel+de+laboratoire+chimie+terminale" target="_blank" rel="noopener">🎥 Recherche : Le matériel de laboratoire (chaînes de cours de chimie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Connaître le nom et l'usage de la verrerie (fiole jaugée, burette, pipette jaugée), de la porcelaine, du matériel de chauffage et de mesure.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSPC 6.3.</div>
+    `
+},
+{
+    title: "Leçon 4 — Titrages acido-basiques",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Au laboratoire de l'institut Ebenga, à Kinshasa, un flacon étiqueté « H<sub>2</sub>SO<sub>4</sub> » ne porte pas de concentration. L'enseignant demande de la déterminer par un titrage avec une solution de soude de concentration connue.</p></div>
+<h3>1. Principe du titrage</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Titrage volumétrique</strong> : on fait réagir une solution de concentration inconnue avec une <strong>solution titrée</strong>, jusqu'à l'<strong>équivalence</strong> (proportions stœchiométriques).</li><li><strong>Matériel</strong> : burette, erlenmeyer ou bécher, indicateur coloré, agitateur.</li><li><strong>Relation fondamentale</strong> : <strong>n<sub>a</sub> C<sub>a</sub> V<sub>a</sub> = n<sub>b</sub> C<sub>b</sub> V<sub>b</sub></strong> (n<sub>a</sub> = nombre de H<sup>+</sup>, n<sub>b</sub> = nombre de OH<sup>−</sup>).</li><li><strong>Acidimétrie</strong> : dosage d'une base par un acide titré ; <strong>alcalimétrie</strong> : dosage d'un acide par une base titrée.</li><li>Exemple : 10 mL de H<sub>2</sub>SO<sub>4</sub> neutralisés par 20 mL de NaOH 0,1 M : C<sub>a</sub> = 0,1 × 20/(2 × 10) = <strong>0,1 mol/L</strong>.</li></ul></div>
+<h3>2. Calcul du pH</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>pH = −log[H<sub>3</sub>O<sup>+</sup>]</strong>.</li><li><strong>Acide fort</strong> : pH = −log C ; ex. HCl 0,01 M : pH = <strong>2</strong>.</li><li><strong>Base forte</strong> : pH = 14 + log C ; ex. NaOH 0,01 M : pH = <strong>12</strong>.</li><li><strong>Acide faible</strong> : pH = ½(pK<sub>a</sub> − log C) ; <strong>base faible</strong> : pH = 7 + ½(pK<sub>a</sub> + log C).</li><li>À 25 °C : pH + pOH = 14.</li></ul></div>
+<h3>3. Courbe de neutralisation</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>On trace le <strong>pH en fonction du volume versé</strong> ; le <strong>point équivalent</strong> est au milieu du <strong>saut de pH</strong>.</li><li><strong>Acide fort / base forte</strong> : pH équivalent = <strong>7</strong>.</li><li><strong>Acide faible / base forte</strong> : pH équivalent <strong>> 7</strong>.</li><li><strong>Acide fort / base faible</strong> : pH équivalent <strong>< 7</strong>.</li></ul></div>
+<h3>4. Indicateurs colorés</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Indicateur coloré</strong> : acide ou base faible dont la couleur change avec le pH, dans une <strong>zone de virage</strong>.</li><li><strong>Hélianthine</strong> (3,1 – 4,4 : rouge → jaune) ; <strong>bleu de bromothymol</strong> (6,0 – 7,6 : jaune → bleu) ; <strong>phénolphtaléine</strong> (8,2 – 10 : incolore → rose).</li><li><strong>Choix</strong> : la zone de virage doit contenir le pH à l'équivalence ; l'écart donne l'<strong>erreur de titrage</strong>.</li><li>Exemple de la situation similaire : HCl commercial (d = 1,19 ; 37 %) dilué 10 fois : C ≈ 12,1/10 = <strong>1,21 mol/L</strong>.</li></ul><p><a href="https://www.youtube.com/results?search_query=Titrages+acido-basiques+chimie+terminale" target="_blank" rel="noopener">🎥 Recherche : Titrages acido-basiques (chaînes de cours de chimie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>n<sub>a</sub>C<sub>a</sub>V<sub>a</sub> = n<sub>b</sub>C<sub>b</sub>V<sub>b</sub> à l'équivalence ; le pH équivalent dépend de la force de l'acide et de la base ; l'indicateur se choisit selon le pH équivalent.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSPC 6.4.</div>
+    `
+},
+{
+    title: "Leçon 5 — Titrages par précipitation : gravimétrie et argentimétrie",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Un géologue apporte à l'institut Mbutwile, à Malemba-Nkulu, un minerai d'argent dont il veut connaître la teneur. Les élèves dissolvent l'échantillon, précipitent l'argent sous forme de chlorure et pèsent le précipité.</p></div>
+<h3>1. La gravimétrie</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Gravimétrie</strong> : dosage par pesée d'un <strong>précipité</strong> pur et de composition connue.</li><li><strong>Étapes</strong> : peser l'échantillon (m<sub>1</sub>) ; dissoudre ; précipiter (ex. Ag<sup>+</sup> + Cl<sup>−</sup> → AgCl) ; filtrer ; <strong>laver</strong> ; <strong>sécher</strong> (ou calciner) ; peser le précipité (m<sub>2</sub>).</li><li><strong>Facteur gravimétrique</strong> F = M(substance dosée) / M(précipité).</li><li><strong>Teneur</strong> : % = F × m<sub>2</sub> / m<sub>1</sub> × 100.</li><li>Exemple : F(Ag/AgCl) = 108/143,5 ≈ 0,753 ; si m<sub>1</sub> = 2,00 g de minerai donne m<sub>2</sub> = 1,435 g d'AgCl : m(Ag) = 1,08 g ⇒ <strong>54 %</strong>.</li></ul></div>
+<h3>2. L'argentimétrie : définition</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Argentimétrie</strong> : dosage de <strong>halogénures</strong> (Cl<sup>−</sup>, Br<sup>−</sup>, I<sup>−</sup>) ou d'argent par précipitation avec Ag<sup>+</sup> ou un réactif en excès.</li><li>Quatre méthodes : <strong>Gay-Lussac</strong>, <strong>Mohr</strong>, <strong>Charpentier-Volhard</strong>, <strong>Fajans</strong>.</li></ul></div>
+<h3>3. Les quatre méthodes</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Gay-Lussac</strong> : précipitation directe, sans indicateur ; fin du dosage quand le trouble cesse de se former.</li><li><strong>Mohr</strong> : indicateur <strong>chromate de potassium K<sub>2</sub>CrO<sub>4</sub></strong> ; fin du dosage au précipité <strong>rouge brique</strong> d'Ag<sub>2</sub>CrO<sub>4</sub> ; milieu neutre (pH 6,5 – 10,5).</li><li><strong>Charpentier-Volhard</strong> : <strong>dosage en retour</strong> ; Ag<sup>+</sup> en excès dosé par <strong>KSCN</strong>, indicateur <strong>alun ferrique</strong> (Fe<sup>3+</sup>) ; coloration <strong>rouge sang</strong> de [FeSCN]<sup>2+</sup> ; milieu <strong>nitrique</strong> acide.</li><li><strong>Fajans</strong> : <strong>indicateurs d'adsorption</strong> (fluorescéine, éosine) qui changent de couleur à la surface du précipité.</li></ul><p><a href="https://www.youtube.com/results?search_query=Titrages+par+précipitation+:+gravimétrie+et+argentimétrie+chimie+terminale" target="_blank" rel="noopener">🎥 Recherche : Titrages par précipitation : gravimétrie et argentimétrie (chaînes de cours de chimie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Gravimétrie : pesée d'un précipité, % = F·m<sub>2</sub>/m<sub>1</sub>. Argentimétrie : Gay-Lussac (sans indicateur), Mohr (chromate), Charpentier-Volhard (retour, Fe<sup>3+</sup>), Fajans (adsorption).</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSPC 6.5.</div>
+    `
+},
+{
+    title: "Leçon 6 — Titrages d'oxydoréduction : manganimétrie, iodométrie et iodimétrie",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>La propriétaire d'une clinique de beauté reçoit de l'eau oxygénée « à 10 volumes » et veut vérifier sa concentration. L'enseignant du lycée Amani, à Kalemie, fait doser l'échantillon avec du permanganate de potassium.</p></div>
+<h3>1. Notions d'oxydoréduction</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Oxydation</strong> : perte d'électrons (le nombre d'oxydation augmente) ; <strong>réduction</strong> : gain d'électrons (il diminue).</li><li><strong>Oxydant</strong> : capte des électrons ; <strong>réducteur</strong> : cède des électrons.</li><li><strong>Nombre d'oxydation (n.o.)</strong> : corps simple = 0 ; ion simple = sa charge ; <strong>O = −II</strong> (sauf peroxydes −I) ; <strong>H = +I</strong> (sauf hydrures −I) ; somme des n.o. = charge de l'espèce.</li><li>Exemple : Mn dans MnO<sub>4</sub><sup>−</sup> : x + 4(−2) = −1 ⇒ <strong>+VII</strong> ; I dans IO<sub>3</sub><sup>−</sup> : <strong>+V</strong> ; P dans Mg<sub>3</sub>(PO<sub>4</sub>)<sub>2</sub> : <strong>+V</strong>.</li><li><strong>Équilibrer</strong> : méthode des <strong>demi-équations</strong> ou des <strong>nombres d'oxydation</strong>.</li></ul></div>
+<h3>2. La manganimétrie</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Dosage par <strong>KMnO<sub>4</sub></strong> (violet), <strong>auto-indicateur</strong> : fin du dosage à la première teinte <strong>rose persistante</strong>.</li><li><strong>Milieu acide</strong> : MnO<sub>4</sub><sup>−</sup> + 8H<sup>+</sup> + 5e<sup>−</sup> → Mn<sup>2+</sup> + 4H<sub>2</sub>O.</li><li><strong>Milieu neutre ou faiblement basique</strong> : MnO<sub>4</sub><sup>−</sup> + 2H<sub>2</sub>O + 3e<sup>−</sup> → MnO<sub>2</sub> + 4OH<sup>−</sup>.</li><li><strong>Milieu très basique</strong> : MnO<sub>4</sub><sup>−</sup> + e<sup>−</sup> → MnO<sub>4</sub><sup>2−</sup>.</li><li><strong>Eau oxygénée</strong> : 2MnO<sub>4</sub><sup>−</sup> + 5H<sub>2</sub>O<sub>2</sub> + 6H<sup>+</sup> → 2Mn<sup>2+</sup> + 5O<sub>2</sub> + 8H<sub>2</sub>O.</li></ul></div>
+<h3>3. Exemple : eau oxygénée à 10 volumes</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>10 volumes ⇒ 1 L dégage 10 L d'O<sub>2</sub> (TPN) : C ≈ 10/11,2 ≈ <strong>0,89 mol/L</strong>. Diluée 10 fois : 0,089 mol/L.</li><li>Pour 10 mL de cette solution diluée : n(H<sub>2</sub>O<sub>2</sub>) = 8,9 × 10<sup>−4</sup> mol ⇒ n(MnO<sub>4</sub><sup>−</sup>) = (2/5) × 8,9 × 10<sup>−4</sup> = 3,6 × 10<sup>−4</sup> mol ⇒ <strong>V = 3,6 × 10<sup>−4</sup>/0,02 ≈ 18 mL</strong> de KMnO<sub>4</sub> 2 × 10<sup>−2</sup> M.</li></ul></div>
+<h3>4. Iodométrie et iodimétrie</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Couple <strong>I<sub>2</sub>/I<sup>−</sup></strong> : I<sub>2</sub> + 2e<sup>−</sup> ⇌ 2I<sup>−</sup>.</li><li><strong>Iodimétrie</strong> : dosage <strong>direct</strong> d'un <strong>réducteur</strong> par une solution d'iode.</li><li><strong>Iodométrie</strong> : dosage <strong>indirect</strong> d'un <strong>oxydant</strong> : il libère I<sub>2</sub> à partir de I<sup>−</sup>, puis I<sub>2</sub> est dosé par le <strong>thiosulfate</strong> : <strong>I<sub>2</sub> + 2S<sub>2</sub>O<sub>3</sub><sup>2−</sup> → 2I<sup>−</sup> + S<sub>4</sub>O<sub>6</sub><sup>2−</sup></strong>.</li><li><strong>Indicateur</strong> : <strong>empois d'amidon</strong> (bleu en présence d'I<sub>2</sub>), ajouté près de la fin.</li><li><strong>Eau de Javel</strong> : ClO<sup>−</sup> + 2I<sup>−</sup> + 2H<sup>+</sup> → Cl<sup>−</sup> + I<sub>2</sub> + H<sub>2</sub>O ; <strong>degré chlorométrique</strong> ≈ 22,4 × C(ClO<sup>−</sup>) en mol/L.</li><li>Avantage du dosage en retour : permet de doser des substances lentes ou volatiles.</li></ul><p><a href="https://www.youtube.com/results?search_query=Titrages+d'oxydoréduction+:+manganimétrie,+iodométrie+et+iodimétrie+chimie+terminale" target="_blank" rel="noopener">🎥 Recherche : Titrages d'oxydoréduction : manganimétrie, iodométrie et iodimétrie (chaînes de cours de chimie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Oxydation = perte d'électrons. KMnO<sub>4</sub> est son propre indicateur (rose persistant). Iodométrie : oxydant → I<sub>2</sub> → dosé par thiosulfate, indicateur amidon.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSPC 6.6.</div>
+    `
+},
+{
+    title: "Leçon 7 — Électrochimie : potentiel redox et pile",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>À l'institut Lukolela, à Kikwit, l'enseignant demande à chaque groupe de rechercher sur Internet le potentiel redox et la pile électrochimique, puis de préparer un exposé.</p></div>
+<h3>1. Potentiel redox</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Électrochimie</strong> : étude des échanges entre énergie chimique et énergie électrique.</li><li><strong>Potentiel redox E</strong> d'un couple Ox/Red, mesuré par rapport à l'<strong>électrode normale à hydrogène (ENH)</strong> : H<sup>+</sup>(1 M)/H<sub>2</sub>(1 atm), platine platiné, 25 °C, <strong>E° = 0 V</strong> par convention.</li><li><strong>Potentiel standard E°</strong> : mesuré en conditions standard.</li><li><strong>Formule de Nernst</strong> (25 °C) : <strong>E = E° + (0,059/n) log([Ox]/[Red])</strong>.</li><li>Exemple : Cu<sup>2+</sup>/Cu, [Cu<sup>2+</sup>] = 0,01 M : E = 0,34 + 0,0295 × (−2) = <strong>0,28 V</strong>.</li><li><strong>Facteurs</strong> : concentration, pH, température.</li><li><strong>Lien avec K</strong> : log K = n(E°<sub>ox</sub> − E°<sub>red</sub>)/0,059.</li></ul></div>
+<h3>2. Quelques potentiels standard (V)</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Li<sup>+</sup>/Li −3,04 ; Na<sup>+</sup>/Na −2,71 ; Mg<sup>2+</sup>/Mg −2,37 ; Al<sup>3+</sup>/Al −1,66 ; <strong>Zn<sup>2+</sup>/Zn −0,76</strong> ; Fe<sup>2+</sup>/Fe −0,44 ; Pb<sup>2+</sup>/Pb −0,13.</li><li><strong>H<sup>+</sup>/H<sub>2</sub> 0,00</strong>.</li><li><strong>Cu<sup>2+</sup>/Cu +0,34</strong> ; I<sub>2</sub>/I<sup>−</sup> +0,54 ; Fe<sup>3+</sup>/Fe<sup>2+</sup> +0,77 ; <strong>Ag<sup>+</sup>/Ag +0,80</strong> ; Cl<sub>2</sub>/Cl<sup>−</sup> +1,36 ; MnO<sub>4</sub><sup>−</sup>/Mn<sup>2+</sup> +1,51 ; F<sub>2</sub>/F<sup>−</sup> +2,87.</li><li><strong>Prévoir le sens d'une réaction</strong> : l'oxydant du couple de <strong>E le plus grand</strong> réagit avec le réducteur du couple de E le plus petit.</li></ul></div>
+<h3>3. La pile électrochimique</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Galvanic_cell.svg?width=600" alt="Pile galvanique (Daniell)" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Pile galvanique (Daniell) — Wikimedia Commons : Galvanic cell.svg</p><ul><li><strong>Pile</strong> : deux demi-piles reliées par un <strong>pont salin</strong> ; <strong>f.é.m. E = E°(cathode) − E°(anode)</strong>.</li><li><strong>Anode (−)</strong> : siège de l'<strong>oxydation</strong> ; <strong>cathode (+)</strong> : siège de la <strong>réduction</strong>.</li><li><strong>Électrons</strong> : de l'anode vers la cathode dans le circuit extérieur ; le <strong>courant conventionnel</strong> circule en sens inverse.</li><li><strong>Pile Daniell</strong> : Zn | Zn<sup>2+</sup> || Cu<sup>2+</sup> | Cu ; anode Zn → Zn<sup>2+</sup> + 2e<sup>−</sup> ; cathode Cu<sup>2+</sup> + 2e<sup>−</sup> → Cu ; <strong>E = 0,34 − (−0,76) = 1,10 V</strong>.</li><li><strong>Exemple</strong> : Ag/Ag<sup>+</sup> (0,80 V) // Cu/Cu<sup>2+</sup> (0,34 V) : <strong>E = 0,46 V</strong> (Ag est la cathode).</li><li><strong>Types de piles</strong> : Daniell, Leclanché (saline), alcaline, au plomb (accumulateur), à combustible, à bouton.</li></ul><p><a href="https://www.youtube.com/results?search_query=Électrochimie+:+potentiel+redox+et+pile+chimie+terminale" target="_blank" rel="noopener">🎥 Recherche : Électrochimie : potentiel redox et pile (chaînes de cours de chimie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>E = E° + (0,059/n) log([Ox]/[Red]) ; ENH : E° = 0 V ; f.é.m. = E°cathode − E°anode ; l'oxydation a lieu à l'anode, la réduction à la cathode.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSPC 6.7.</div>
+    `
+},
+{
+    title: "Leçon 8 — Étude de l'atome : constituants et modèles",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>À Kalemie, des élèves discutent : l'atome est-il neutre ou chargé ? Leur enseignant les envoie rechercher les constituants de l'atome et l'histoire des modèles atomiques.</p></div>
+<h3>1. Les constituants de l'atome</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Électron</strong> : charge −1,6 × 10<sup>−19</sup> C, masse 9,11 × 10<sup>−31</sup> kg ; découvert par <strong>J.J. Thomson</strong> (1897, tube cathodique).</li><li><strong>Proton</strong> : charge +1,6 × 10<sup>−19</sup> C, masse 1,673 × 10<sup>−27</sup> kg ; mis en évidence par <strong>Rutherford</strong> (1919).</li><li><strong>Neutron</strong> : charge nulle, masse 1,675 × 10<sup>−27</sup> kg ; découvert par <strong>Chadwick</strong> (1932).</li><li><strong>Atome neutre</strong> : nombre de protons = nombre d'électrons ; <strong>Z</strong> numéro atomique, <strong>A</strong> nombre de masse, <strong>N = A − Z</strong> ; <strong>isotopes</strong> : même Z, A différent.</li></ul></div>
+<h3>2. Les modèles atomiques</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Plum_pudding_atom.svg?width=600" alt="Modèle de Thomson" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Modèle de Thomson — Wikimedia Commons : Plum pudding atom.svg</p><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Rutherford_gold_foil_experiment_results.svg?width=600" alt="Expérience de Rutherford" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Expérience de Rutherford — Wikimedia Commons : Rutherford gold foil experiment results.svg</p><ul><li><strong>Thomson</strong> (1904) : « pain aux raisins », sphère positive avec électrons incrustés.</li><li><strong>Rutherford</strong> (1911) : modèle <strong>planétaire</strong>, noyau petit, dense, positif ; expérience de la <strong>feuille d'or</strong> (la plupart des particules α traversent, quelques-unes sont déviées, très rares rebroussent chemin). Limite : instabilité prévue par la physique classique.</li></ul></div>
+<h3>3. Spectres atomiques</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Spectre d'émission</strong> : raies brillantes sur fond noir ; <strong>d'absorption</strong> : raies noires sur fond coloré.</li><li>Hydrogène : séries de <strong>Lyman</strong> (UV), <strong>Balmer</strong> (visible), <strong>Paschen</strong> (IR).</li><li><strong>Formule de Rydberg</strong> : 1/λ = R<sub>H</sub> (1/n<sub>1</sub><sup>2</sup> − 1/n<sub>2</sub><sup>2</sup>), R<sub>H</sub> = 1,097 × 10<sup>7</sup> m<sup>−1</sup>.</li></ul></div>
+<h3>4. Le modèle de Bohr (1913)</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Bohr-atom-PAR.svg?width=600" alt="Modèle de Bohr" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Modèle de Bohr — Wikimedia Commons : Bohr-atom-PAR.svg</p><ul><li><strong>1.</strong> L'électron décrit des <strong>orbites circulaires stationnaires</strong>, sans rayonner.</li><li><strong>2.</strong> Moment cinétique <strong>quantifié</strong> : m v r = n h/(2π).</li><li><strong>3.</strong> Émission ou absorption d'un photon lors d'une transition : <strong>ΔE = h ν = E<sub>n<sub>2</sub></sub> − E<sub>n<sub>1</sub></sub></strong>.</li><li>Pour l'hydrogène : <strong>E<sub>n</sub> = −13,6/n<sup>2</sup> eV</strong> ; rayon r<sub>n</sub> = 0,053 n<sup>2</sup> nm.</li></ul><p><a href="https://www.youtube.com/results?search_query=Étude+de+l'atome+:+constituants+et+modèles+chimie+terminale" target="_blank" rel="noopener">🎥 Recherche : Étude de l'atome : constituants et modèles (chaînes de cours de chimie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Électron (Thomson), proton (Rutherford), neutron (Chadwick). Modèles : Thomson, Rutherford (planétaire), Bohr (niveaux d'énergie quantifiés, E<sub>n</sub> = −13,6/n<sup>2</sup> eV).</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSPC 6.8.</div>
+    `
+},
+{
+    title: "Leçon 9 — Nombres quantiques et structure électronique des atomes",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Les élèves du complexe scolaire La Borne ont trouvé les constituants de l'atome. Leur enseignant remarque que les atomes n'ont pas la même structure électronique ; ils vont donc étudier les nombres quantiques et les règles de remplissage.</p></div>
+<h3>1. Les quatre nombres quantiques</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>n</strong> (principal) : 1, 2, 3… ; couches <strong>K, L, M, N…</strong></li><li><strong>ℓ</strong> (secondaire) : de 0 à n − 1 ; sous-couches <strong>s (0), p (1), d (2), f (3)</strong>.</li><li><strong>m</strong> (magnétique) : de −ℓ à +ℓ ; une valeur = une <strong>orbitale</strong>.</li><li><strong>s</strong> (spin) : +½ ou −½.</li><li><strong>Capacités</strong> : s = 1 orbitale (2 e<sup>−</sup>) ; p = 3 (6 e<sup>−</sup>) ; d = 5 (10 e<sup>−</sup>) ; f = 7 (14 e<sup>−</sup>) ; <strong>couche n : n<sup>2</sup> orbitales, 2n<sup>2</sup> électrons</strong>.</li></ul></div>
+<h3>2. Règles de remplissage</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Aufbau_Principle-en.svg?width=600" alt="Ordre de remplissage des orbitales" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Ordre de remplissage des orbitales — Wikimedia Commons : Aufbau Principle-en.svg</p><ul><li><strong>Principe d'exclusion de Pauli</strong> : deux électrons d'un atome n'ont pas les quatre mêmes nombres quantiques (2 e<sup>−</sup> par orbitale, de spins opposés).</li><li><strong>Règle de Klechkowski</strong> : remplissage par (n + ℓ) croissant, puis n croissant : <strong>1s 2s 2p 3s 3p 4s 3d 4p 5s 4d 5p 6s 4f 5d 6p 7s 5f 6d 7p</strong>.</li><li><strong>Règle de Hund</strong> : dans des orbitales de même énergie, on place d'abord <strong>un électron par orbitale</strong>, spins parallèles.</li><li>Exceptions : <strong>Cr</strong> (3d<sup>5</sup> 4s<sup>1</sup>), <strong>Cu</strong> (3d<sup>10</sup> 4s<sup>1</sup>).</li></ul></div>
+<h3>3. Structures électroniques et stabilité</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Na (Z = 11)</strong> : 1s<sup>2</sup> 2s<sup>2</sup> 2p<sup>6</sup> 3s<sup>1</sup> ; <strong>F (Z = 9)</strong> : 1s<sup>2</sup> 2s<sup>2</sup> 2p<sup>5</sup>.</li><li>L'ion <strong>F<sup>−</sup></strong> : 1s<sup>2</sup> 2s<sup>2</sup> 2p<sup>6</sup>, configuration stable (<strong>octet</strong>, gaz noble) : explique pourquoi F devient F<sup>−</sup>.</li><li><strong>Classification périodique</strong> : la <strong>période</strong> = n de la dernière couche ; les <strong>blocs</strong> s, p, d, f correspondent à la sous-couche remplie en dernier.</li></ul></div>
+<h3>4. Notion d'orbitale et hybridation</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Dualité onde-corpuscule</strong> (de Broglie) : λ = h/(m v) ; <strong>principe d'incertitude de Heisenberg</strong> : Δx · Δp ≥ h/(4π).</li><li><strong>Orbitale</strong> : région où la probabilité de présence de l'électron est maximale (~90 %) ; <strong>s</strong> sphérique, <strong>p</strong> en haltère (p<sub>x</sub>, p<sub>y</sub>, p<sub>z</sub>).</li><li><strong>Hybridation</strong> : mélange d'orbitales de même atome : <strong>sp<sup>3</sup></strong> (CH<sub>4</sub>, tétraédrique, 109,5°) ; <strong>sp<sup>2</sup></strong> (C<sub>2</sub>H<sub>4</sub>, plan, 120°) ; <strong>sp</strong> (C<sub>2</sub>H<sub>2</sub>, linéaire, 180°).</li></ul><p><a href="https://www.youtube.com/results?search_query=Nombres+quantiques+et+structure+électronique+des+atomes+chimie+terminale" target="_blank" rel="noopener">🎥 Recherche : Nombres quantiques et structure électronique des atomes (chaînes de cours de chimie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>n, ℓ, m, s ; couche n : 2n<sup>2</sup> électrons. Pauli, Klechkowski, Hund. Hybridation sp<sup>3</sup>, sp<sup>2</sup>, sp du carbone.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSPC 6.9.</div>
+    `
+},
+{
+    title: "Leçon 10 — Radioactivité et transformations du noyau",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>L'élève Siosio a lu que les mines d'uranium de Shinkolobwe, au Haut-Katanga, sont d'accès très réglementé. Son enseignant lui demande d'expliquer le comportement de l'uranium et ses effets.</p></div>
+<h3>1. Découverte et rayonnements</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Alfa_beta_gamma_radiation_penetration.svg?width=600" alt="Pénétration des rayonnements α, β, γ" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Pénétration des rayonnements α, β, γ — Wikimedia Commons : Alfa beta gamma radiation penetration.svg</p><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Marie_Curie_c1920.jpg?width=600" alt="Marie Curie" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Marie Curie — Wikimedia Commons : Marie Curie c1920.jpg</p><ul><li><strong>Radioactivité</strong> : transformation spontanée de noyaux instables avec émission de rayonnement.</li><li>Découverte par <strong>Henri Becquerel</strong> (1896, sels d'uranium) ; <strong>Pierre et Marie Curie</strong> (polonium et radium, 1898).</li><li><strong>Rayons α</strong> : noyaux d'hélium ⁴₂He, très ionisants, arrêtés par une feuille de papier.</li><li><strong>Rayons β<sup>−</sup></strong> : électrons ; arrêtés par quelques mm d'aluminium ; <strong>β<sup>+</sup></strong> : positons.</li><li><strong>Rayons γ</strong> : photons très énergétiques, très pénétrants ; arrêtés par le plomb ou le béton.</li></ul></div>
+<h3>2. Lois de Soddy et transmutations</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Désintégration α</strong> : A − 4, Z − 2 ; <strong>β<sup>−</sup></strong> : A inchangé, Z + 1 ; <strong>β<sup>+</sup></strong> : Z − 1 ; <strong>γ</strong> : pas de changement de A ni de Z.</li><li><strong>Transmutation</strong> (Rutherford, 1919) : ¹⁴₇N + ⁴₂He → ¹⁷₈O + ¹₁H.</li><li><strong>Stabilité</strong> : ligne de stabilité (rapport N/Z proche de 1 pour les noyaux légers, jusqu'à ≈ 1,5).</li></ul></div>
+<h3>3. Loi de désintégration et familles radioactives</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>N = N<sub>0</sub> e<sup>−λ t</sup></strong> ; <strong>période</strong> T = ln 2/λ ; <strong>activité</strong> A = λ N (becquerel, Bq ; 1 Ci = 3,7 × 10<sup>10</sup> Bq).</li><li><strong>Familles</strong> : uranium-238 → plomb-206 (<strong>8 α et 6 β<sup>−</sup></strong>) ; uranium-235 → plomb-207 ; thorium-232 → plomb-208 ; neptunium-237 → bismuth-209.</li><li>Vérification U-238 → Pb-206 : ΔA = 32 = 8 × 4 ; ΔZ = −16 + 6 = −10 (92 → 82) ✔.</li></ul></div>
+<h3>4. Détection et protection</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Détecteurs</strong> : <strong>compteur Geiger-Müller</strong>, chambre à brouillard de Wilson, scintillateur, émulsion photographique, chambre d'ionisation.</li><li><strong>Protection</strong> : limiter le <strong>temps</strong>, augmenter la <strong>distance</strong>, interposer un <strong>écran</strong> (plomb, béton).</li><li><strong>Effets</strong> : brûlures, cancers, mutations ; usage strictement contrôlé (cas de Shinkolobwe).</li></ul><p><a href="https://www.youtube.com/results?search_query=Radioactivité+et+transformations+du+noyau+chimie+terminale" target="_blank" rel="noopener">🎥 Recherche : Radioactivité et transformations du noyau (chaînes de cours de chimie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>α (He), β (électron), γ (photon). Lois de Soddy ; N = N<sub>0</sub> e<sup>−λt</sup>, T = ln2/λ. Détection : Geiger-Müller, chambre à brouillard.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSPC 6.10.</div>
+    `
+},
+{
+    title: "Leçon 11 — Énergie nucléaire et ses utilisations",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>L'élève Amani se souvient des bombes d'Hiroshima et de Nagasaki. Il demande à son enseignant comment un atome peut produire autant d'énergie.</p></div>
+<h3>1. Défaut de masse et énergie de liaison</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Défaut de masse</strong> : Δm = Σ m(nucléons libres) − m(noyau).</li><li><strong>Énergie de liaison</strong> : <strong>E = Δm c<sup>2</sup></strong> ; 1 u = 931,5 MeV/c<sup>2</sup>.</li><li>Exemple : ⁴₂He : Δm ≈ 0,0304 u ⇒ E ≈ <strong>28,3 MeV</strong>, soit ≈ 7,1 MeV par nucléon.</li><li>Plus l'énergie de liaison <strong>par nucléon</strong> est élevée, plus le noyau est stable.</li></ul></div>
+<h3>2. Fission nucléaire</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Nuclear_fission.svg?width=600" alt="Fission nucléaire" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Fission nucléaire — Wikimedia Commons : Nuclear fission.svg</p><ul><li><strong>Fission</strong> : un noyau lourd, frappé par un neutron, se casse en deux noyaux plus légers en libérant des neutrons et ≈ 200 MeV.</li><li>Exemple : ²³⁵₉₂U + ¹₀n → ¹⁴¹₅₆Ba + ⁹²₃₆Kr + 3 ¹₀n.</li><li><strong>Réaction en chaîne</strong> : les neutrons produits provoquent d'autres fissions ; <strong>masse critique</strong> nécessaire.</li></ul></div>
+<h3>3. Fusion nucléaire</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Deuterium-tritium_fusion.svg?width=600" alt="Fusion deutérium-tritium" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Fusion deutérium-tritium — Wikimedia Commons : Deuterium-tritium fusion.svg</p><ul><li><strong>Fusion</strong> : deux noyaux légers s'unissent ; exemple ²₁H + ³₁H → ⁴₂He + ¹₀n + 17,6 MeV.</li><li>Elle alimente le <strong>Soleil</strong> ; nécessite des températures de plusieurs millions de degrés.</li></ul></div>
+<h3>4. Réacteur nucléaire et accélérateurs</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Réacteur</strong> : combustible (uranium enrichi), <strong>modérateur</strong> (eau, graphite), <strong>barres de commande</strong> (cadmium, bore), <strong>fluide caloporteur</strong>, enceinte de confinement.</li><li><strong>Applications</strong> : électricité, production de radio-isotopes, propulsion.</li><li><strong>Accélérateur de particules</strong> : <strong>cyclotron</strong>, synchrotron, collisionneur (LHC au CERN) ; sert à la recherche et à la médecine.</li><li>Principe d'une bombe nucléaire : réaction en chaîne <strong>non contrôlée</strong>.</li></ul><p><a href="https://www.youtube.com/results?search_query=Énergie+nucléaire+et+ses+utilisations+chimie+terminale" target="_blank" rel="noopener">🎥 Recherche : Énergie nucléaire et ses utilisations (chaînes de cours de chimie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>E = Δm c<sup>2</sup> ; fission d'un noyau lourd (chaîne) et fusion de noyaux légers libèrent d'énormes énergies ; le réacteur contrôle la chaîne avec des barres de commande.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSPC 6.11.</div>
+    `
+},
+{
+    title: "Leçon 12 — Radio-isotopes et leurs applications",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Lors d'une visite à l'imagerie médicale de l'Hôpital militaire du camp Kokolo, des élèves apprennent qu'un produit contenant un radio-isotope est injecté au patient avant le scanner. Ils rédigent un rapport sur les radio-isotopes.</p></div>
+<h3>1. Définition</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Radio-isotope</strong> : isotope radioactif d'un élément.</li><li>Il peut être <strong>naturel</strong> (¹⁴C, ⁴⁰K, U) ou <strong>artificiel</strong>, produit par réacteur ou accélérateur.</li></ul></div>
+<h3>2. Applications</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Médecine</strong> : <strong>technétium-99m</strong> (imagerie), <strong>iode-131</strong> (thyroïde), <strong>cobalt-60</strong> (radiothérapie), <strong>fluor-18</strong> (TEP, tomographie par émission de positons).</li><li><strong>Biologie</strong> : <strong>traceurs</strong> (³²P, ¹⁴C) pour suivre le trajet d'une substance.</li><li><strong>Agriculture</strong> : stérilisation d'insectes (ravageurs du maïs), conservation d'aliments par irradiation, amélioration des plantes.</li><li><strong>Industrie</strong> : jauges d'épaisseur, détection de fuites, <strong>gammagraphie</strong> des soudures.</li><li><strong>Chimie</strong> : étude des mécanismes réactionnels.</li><li><strong>Géologie, archéologie</strong> : datation.</li></ul></div>
+<h3>3. Géochronologie nucléaire (datation)</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Principe</strong> : mesurer la proportion restante de l'isotope père par rapport à l'isotope fils ; <strong>t = (T/ln 2) · ln(N<sub>0</sub>/N)</strong>.</li><li><strong>Carbone-14</strong> (T = 5 730 ans) : matières organiques (ossements d'un cimetière) ; exemple : il reste 25 % de l'activité ⇒ 2 périodes ⇒ <strong>11 460 ans</strong>.</li><li><strong>Uranium-238 / plomb-206</strong> (T = 4,47 × 10<sup>9</sup> ans) et <strong>potassium-40 / argon-40</strong> : roches très anciennes (calcaire de Mbanza-Ngungu).</li><li>Équation de désintégration : ¹⁴₆C → ¹⁴₇N + e<sup>−</sup> (β<sup>−</sup>).</li></ul><p><a href="https://www.youtube.com/results?search_query=Radio-isotopes+et+leurs+applications+chimie+terminale" target="_blank" rel="noopener">🎥 Recherche : Radio-isotopes et leurs applications (chaînes de cours de chimie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Les radio-isotopes servent en médecine, biologie, agriculture, industrie, chimie, géologie. Datation : t = (T/ln2) ln(N<sub>0</sub>/N) ; ¹⁴C pour les matières organiques.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSPC 6.12.</div>
+    `
+},
+{
+    title: "Leçon 13 — Méthodes physico-chimiques de séparation : chromatographie sur couche mince",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Les élèves veulent isoler et identifier les pigments de la chlorophylle d'épinard. Ils broient les feuilles avec de la propanone (acétone), filtrent, puis séparent les pigments par chromatographie sur couche mince (CCM).</p></div>
+<h3>1. Principe</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Chromatographie</strong> : séparation des constituants d'un mélange par <strong>migration différentielle</strong> : chaque constituant a une affinité différente pour la <strong>phase stationnaire</strong> et la <strong>phase mobile</strong>.</li><li><strong>CCM</strong> : phase stationnaire = couche mince de <strong>gel de silice</strong> sur plaque ; phase mobile = <strong>éluant</strong> qui monte par capillarité.</li><li><strong>Éléments</strong> : plaque, cuve fermée, éluant, dépôt, front du solvant.</li><li><strong>Rapport frontal</strong> : <strong>Rf = d(substance)/d(front du solvant)</strong>, toujours entre 0 et 1, caractéristique d'une substance dans des conditions données.</li></ul></div>
+<h3>2. Mode opératoire</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Chlorophyll_ab_spectra2.png?width=600" alt="Spectres d'absorption des chlorophylles a et b" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Spectres d'absorption des chlorophylles a et b — Wikimedia Commons : Chlorophyll ab spectra2.png</p><ul><li><strong>1.</strong> Broyer des feuilles d'épinard avec du sable et de la propanone ; filtrer.</li><li><strong>2.</strong> Tracer au crayon un trait à ≈ 1,5 cm du bas de la plaque ; déposer le filtrat avec un capillaire.</li><li><strong>3.</strong> Placer dans la cuve contenant l'<strong>éluant</strong> (100 mL d'éther de pétrole, 10 mL d'isopropanol, 0,25 mL d'eau) ; laisser migrer jusqu'à ≈ 1 cm du haut.</li><li><strong>4.</strong> Marquer le <strong>front du solvant</strong>, entourer les taches, sécher sous hotte ; calculer les <strong>Rf</strong> ; photographier car les couleurs s'estompent.</li></ul></div>
+<h3>3. Résultats attendus</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Pigments séparés : <strong>carotène</strong> (jaune-orange, monte le plus haut), <strong>xanthophylles</strong> (jaune), <strong>chlorophylle a</strong> (vert-bleu), <strong>chlorophylle b</strong> (vert-jaune, migre le moins).</li><li>Autres situations : piment jaune, pigments de fleur rose, substances colorées.</li><li><strong>Précautions</strong> : travailler sous hotte, éviter la flamme (éther de pétrole inflammable).</li></ul><p><a href="https://www.youtube.com/results?search_query=Méthodes+physico-chimiques+de+séparation+:+chromatographie+sur+couche+mince+chimie+terminale" target="_blank" rel="noopener">🎥 Recherche : Méthodes physico-chimiques de séparation : chromatographie sur couche mince (chaînes de cours de chimie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>CCM : séparation par migration différentielle ; Rf = d substance / d front du solvant ; les pigments de l'épinard se séparent en carotène, xanthophylles et chlorophylles a et b.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSPC 6.13.</div>
+    `
+},
+{
+    title: "Leçon 14 — Identification des cations",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Un chercheur apporte au collège Boboto un échantillon d'eau de source pour savoir quels métaux elle contient. Les élèves identifient les cations par groupes, avec des réactifs précipitants.</p></div>
+<h3>1. Principe de l'analyse par groupes</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>On sépare les cations en <strong>groupes</strong> selon le réactif précipitant.</li><li>Pour chaque essai : 2 mL d'échantillon, ajout du réactif, observation du précipité, décantation, justification.</li><li><strong>1er groupe</strong> (HCl) ; <strong>2e groupe</strong> (H<sub>2</sub>S ou thioacétamide, milieu acide pH ≈ 0,5) ; <strong>3e groupe</strong> (S<sup>2−</sup>, milieu basique pH 8 – 9) ; <strong>4e groupe</strong> (carbonate) ; <strong>5e groupe</strong> (non précipités).</li></ul></div>
+<h3>2. Groupes 1, 2 et 3</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>1er groupe : Ag<sup>+</sup>, Pb<sup>2+</sup>, Hg<sub>2</sub><sup>2+</sup></strong> + HCl ⇒ chlorures blancs (<strong>AgCl</strong> soluble dans NH<sub>3</sub>, <strong>PbCl<sub>2</sub></strong> soluble à chaud).</li><li><strong>2e groupe : Cu<sup>2+</sup>, Cd<sup>2+</sup>, Bi<sup>3+</sup></strong> ⇒ sulfures : <strong>CuS noir</strong>, <strong>CdS jaune</strong>, <strong>Bi<sub>2</sub>S<sub>3</sub> brun-noir</strong>.</li><li><strong>3e groupe : Co<sup>2+</sup>, Zn<sup>2+</sup>, Ni<sup>2+</sup></strong> ⇒ <strong>CoS noir</strong>, <strong>NiS noir</strong>, <strong>ZnS blanc</strong>.</li></ul></div>
+<h3>3. Groupes 4 et 5 et tests spécifiques</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Flametest--Na.swn.jpg?width=600" alt="Essai à la flamme du sodium" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Essai à la flamme du sodium — Wikimedia Commons : Flametest--Na.swn.jpg</p><ul><li><strong>4e groupe : Ba<sup>2+</sup>, Ca<sup>2+</sup></strong> (et Sr<sup>2+</sup>) + (NH<sub>4</sub>)<sub>2</sub>CO<sub>3</sub> ⇒ carbonates blancs.</li><li><strong>5e groupe : Na<sup>+</sup>, K<sup>+</sup>, NH<sub>4</sub><sup>+</sup></strong> : identifiés par <strong>essais à la flamme</strong> : Na jaune, K violet, Ca rouge brique, Cu vert, Ba vert pâle, Li rouge carmin.</li><li><strong>Cu<sup>2+</sup></strong> + NH<sub>3</sub> en excès ⇒ bleu intense ; <strong>Fe<sup>3+</sup></strong> + SCN<sup>−</sup> ⇒ rouge sang ; <strong>Fe<sup>3+</sup></strong> + K<sub>4</sub>[Fe(CN)<sub>6</sub>] ⇒ bleu de Prusse ; <strong>Zn<sup>2+</sup></strong> + NaOH ⇒ précipité blanc soluble en excès.</li></ul><p><a href="https://www.youtube.com/results?search_query=Identification+des+cations+chimie+terminale" target="_blank" rel="noopener">🎥 Recherche : Identification des cations (chaînes de cours de chimie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Cations par groupes : 1er (HCl : Ag<sup>+</sup>, Pb<sup>2+</sup>), 2e (sulfures en milieu acide : Cu<sup>2+</sup>, Cd<sup>2+</sup>, Bi<sup>3+</sup>), 3e (sulfures en milieu basique : Co<sup>2+</sup>, Zn<sup>2+</sup>, Ni<sup>2+</sup>), 4e (carbonates : Ba<sup>2+</sup>, Ca<sup>2+</sup>), 5e (Na<sup>+</sup>, K<sup>+</sup>).</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSPC 6.14.</div>
+    `
+},
+{
+    title: "Leçon 15 — Identification des anions",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Satisfait du travail sur les cations, le chercheur revient au collège Boboto avec un échantillon de la même eau pour une analyse des anions.</p></div>
+<h3>1. Anions du 1er groupe : BaCl_2</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><p>En solution <strong>neutre ou faiblement basique</strong>, le chlorure de baryum donne un précipité blanc avec :</p><ul><li><strong>SO<sub>4</sub><sup>2−</sup></strong> : BaSO<sub>4</sub> <strong>insoluble</strong> dans HCl.</li><li><strong>SO<sub>3</sub><sup>2−</sup></strong> : BaSO<sub>3</sub>, <strong>soluble</strong> dans HCl avec dégagement de SO<sub>2</sub> (odeur piquante).</li><li><strong>CO<sub>3</sub><sup>2−</sup></strong> : BaCO<sub>3</sub>, <strong>soluble</strong> dans HCl avec <strong>effervescence</strong> de CO<sub>2</sub> (trouble de l'eau de chaux).</li></ul></div>
+<h3>2. Anions du 2e groupe : AgNO_3</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><p>En milieu <strong>nitrique</strong>, le nitrate d'argent donne :</p><ul><li><strong>Cl<sup>−</sup></strong> : AgCl <strong>blanc</strong>, soluble dans NH<sub>3</sub>.</li><li><strong>Br<sup>−</sup></strong> : AgBr <strong>jaune pâle</strong>, peu soluble dans NH<sub>3</sub> concentré.</li><li><strong>I<sup>−</sup></strong> : AgI <strong>jaune</strong>, insoluble dans NH<sub>3</sub>.</li></ul></div>
+<h3>3. Autres identifications</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>NO<sub>3</sub><sup>−</sup></strong> : « anneau brun » (FeSO<sub>4</sub> + H<sub>2</sub>SO<sub>4</sub> concentré) ; <strong>PO<sub>4</sub><sup>3−</sup></strong> : précipité <strong>jaune</strong> au molybdate d'ammonium.</li><li><strong>MnO<sub>4</sub><sup>−</sup></strong> : solution <strong>violette</strong>, décolorée par H<sub>2</sub>O<sub>2</sub> en milieu acide.</li><li><strong>Eau de Javel</strong> : contient ClO<sup>−</sup> et Cl<sup>−</sup> ; elle oxyde I<sup>−</sup> en I<sub>2</sub>.</li><li>Comparaison des anions des eaux de puits, de source et de rivière.</li></ul><p><a href="https://www.youtube.com/results?search_query=Identification+des+anions+chimie+terminale" target="_blank" rel="noopener">🎥 Recherche : Identification des anions (chaînes de cours de chimie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>BaCl<sub>2</sub> : SO<sub>4</sub><sup>2−</sup> (insoluble dans HCl), SO<sub>3</sub><sup>2−</sup> et CO<sub>3</sub><sup>2−</sup> (solubles). AgNO<sub>3</sub> : Cl<sup>−</sup> blanc, Br<sup>−</sup> jaune pâle, I<sup>−</sup> jaune.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSPC 6.15.</div>
+    `
+},
+{
+    title: "Leçon 16 — Techniques de préparation des produits de consommation",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>À Bukavu, les élèves n'ont plus d'empois d'amidon pour leurs titrages d'iodométrie. À Lubumbashi, le laboratoire a besoin d'être repeint. Les élèves doivent fabriquer eux-mêmes ces produits.</p></div>
+<h3>1. Préparation de l'empois d'amidon</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Rôle</strong> : indicateur chimique de l'iode (bleu intense).</li><li><strong>Mode opératoire</strong> (à partir d'un kilogramme de manioc) : éplucher, nettoyer, <strong>broyer</strong>, tremper la pâte dans l'eau, secouer, laisser reposer (deux phases), <strong>filtrer</strong>, récupérer l'amidon, <strong>sécher</strong>, conserver dans un flacon étiqueté.</li><li>Autre source : le maïs.</li></ul></div>
+<h3>2. Préparation de la peinture latex</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Constituants</strong> : eau, <strong>tylose</strong> (épaississant), <strong>charge</strong> (carbonate de calcium, craie), <strong>pigment</strong> (oxyde de titane TiO<sub>2</sub>, blanc), <strong>liant</strong> (résine, latex), ammoniac (pH), <strong>parfum</strong>, <strong>conservateur</strong>.</li><li><strong>Démarche</strong> : verser l'eau, ajouter la tylose en agitant, ajouter la charge, le pigment et l'ammoniac, malaxer, ajouter parfum et conservateur, emballer, étiqueter.</li><li><strong>Rôle de la charge</strong> : donner du corps et du pouvoir couvrant, réduire le coût.</li></ul></div>
+<h3>3. Autres produits de la banque de situations</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Savon</strong> (saponification d'huile de palme ou de palmiste par la soude), <strong>vernis</strong>, <strong>antirouille</strong>, <strong>peinture émail</strong>, <strong>colle</strong>, <strong>parfum</strong>, <strong>colorants</strong>.</li><li><strong>Fermentation de la mélasse</strong>, <strong>acide acétique</strong>, <strong>jus de fruits</strong>, <strong>eau distillée</strong>, <strong>purification de l'eau</strong>, <strong>eau oxygénée</strong>.</li><li><strong>Précautions</strong> : gants, lunettes, hotte, ne jamais goûter, étiqueter, respecter les dosages.</li></ul><p><a href="https://www.youtube.com/results?search_query=Techniques+de+préparation+des+produits+de+consommation+chimie+terminale" target="_blank" rel="noopener">🎥 Recherche : Techniques de préparation des produits de consommation (chaînes de cours de chimie)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Empois d'amidon : amidon de manioc ou de maïs. Peinture latex : eau, tylose, charge, pigment TiO<sub>2</sub>, ammoniac, parfum, conservateur. Toujours respecter les règles de sécurité.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif SPTIC, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MSPC 6.16 et 6.17.</div>
+    `
+},
+{
+    title: "Évaluation finale — Items EXETAT",
+    content: `
+        <p style="margin-bottom:18px;color:#00574b;font-size:0.95rem;">Cette évaluation regroupe des items tirés des épreuves d'État (EXETAT) des années précédentes. Fais l'exercice dans les conditions du concours : sans notes, en une seule fois.</p>
+
+        <div class="bloc theorie">
+            <div class="bloc-label">Consignes</div>
+            <ul>
+                <li>50 questions à choix multiples.</li>
+                <li>Une seule réponse correcte par question.</li>
+                <li>Pas de retour en arrière sur les questions déjà validées.</li>
+                <li>Durée recommandée : 50 minutes.</li>
+            </ul>
+        </div>
+
+        <div class="quiz-container" id="quizContainer">
+            <h3 style="color:#0b3a3a;margin-bottom:16px;font-size:1.1rem;">Partie 1 — Questions</h3>
+            <div id="quizQuestions"></div>
+            <button id="submitQuiz" class="quiz-btn-submit">Valider mes réponses</button>
+            <div id="quizResult" class="quiz-result"></div>
+        </div>
+    `
+}
+];
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim()) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderQuiz() {
+    const questions = [
+        { text:"Quelle formule exprime la dilution d'une solution ?", options:["C<sub>1</sub> V<sub>1</sub> = C<sub>2</sub> V<sub>2</sub>","C<sub>1</sub> + V<sub>1</sub> = C<sub>2</sub> + V<sub>2</sub>","C<sub>1</sub>/V<sub>1</sub> = C<sub>2</sub> V<sub>2</sub>"], correct:0 },
+        { text:"La concentration molaire d'une solution commerciale (p en %, d en kg/L) s'écrit :", options:["C = 10 p d/M","C = p/(10 d M)","C = p d/M"], correct:0 },
+        { text:"La masse de KOH (M = 56 g/mol) nécessaire pour 1 L de solution 0,1 M est :", options:["5,6 g","56 g","0,56 g"], correct:0 },
+        { text:"Pour diluer un acide concentré, on doit :", options:["verser l'acide dans l'eau","verser l'eau dans l'acide","peu importe l'ordre"], correct:0 },
+        { text:"Pour prélever avec précision 10 mL d'une solution, on utilise :", options:["une grande éprouvette","un bécher","une pipette jaugée"], correct:2 },
+        { text:"Le pictogramme de la flamme indique un produit :", options:["inflammable","corrosif","toxique"], correct:0 },
+        { text:"Au laboratoire, on porte une blouse en coton car le polyester :", options:["est trop lourd","fond et colle à la peau","est trop cher"], correct:1 },
+        { text:"L'acidimétrie est le dosage :", options:["d'un sel","d'un acide par une base titrée","d'une base par un acide titré"], correct:2 },
+        { text:"Pour un titrage acide/base, la relation à l'équivalence est :", options:["n<sub>a</sub> C<sub>a</sub> V<sub>a</sub> = n<sub>b</sub> C<sub>b</sub> V<sub>b</sub>","C<sub>a</sub> V<sub>b</sub> = C<sub>b</sub> V<sub>a</sub> seulement","C<sub>a</sub> + V<sub>a</sub> = C<sub>b</sub> + V<sub>b</sub>"], correct:0 },
+        { text:"Le pH d'une solution de HCl 0,01 M est :", options:["12","0,01","2"], correct:2 },
+        { text:"Au point équivalent d'un titrage acide fort / base forte, le pH vaut :", options:["14","7","1"], correct:1 },
+        { text:"Pour doser un acide faible par une base forte, l'indicateur adapté est :", options:["l'hélianthine","la phénolphtaléine","aucun indicateur"], correct:1 },
+        { text:"La dernière étape d'une gravimétrie est :", options:["la dissolution","la filtration","la pesée du précipité sec"], correct:2 },
+        { text:"La méthode de Mohr utilise comme indicateur :", options:["la fluorescéine","le chromate de potassium","l'alun ferrique"], correct:1 },
+        { text:"La méthode de Charpentier-Volhard est un dosage :", options:["sans indicateur","en retour par KSCN","par adsorption"], correct:1 },
+        { text:"Le nombre d'oxydation de Mn dans MnO<sub>4</sub><sup>−</sup> est :", options:["+VII","+II","+IV"], correct:0 },
+        { text:"Un oxydant est une espèce qui :", options:["cède des électrons","capte des électrons","ne réagit pas"], correct:1 },
+        { text:"En milieu acide, MnO<sub>4</sub><sup>−</sup> est réduit en :", options:["Mn<sup>2+</sup>","MnO<sub>4</sub><sup>2−</sup>","MnO<sub>2</sub>"], correct:0 },
+        { text:"Dans le dosage de H<sub>2</sub>O<sub>2</sub> par KMnO<sub>4</sub>, la fin du dosage est signalée par :", options:["l'empois d'amidon","la phénolphtaléine","la teinte rose persistante"], correct:2 },
+        { text:"En iodométrie, le diiode formé est dosé par :", options:["le thiosulfate de sodium","la soude","l'acide chlorhydrique"], correct:0 },
+        { text:"L'empois d'amidon en présence de diiode devient :", options:["rouge","bleu","vert"], correct:1 },
+        { text:"Le potentiel standard de l'électrode normale à hydrogène vaut :", options:["0 V","1 V","−1 V"], correct:0 },
+        { text:"La f.é.m. de la pile Daniell vaut :", options:["1,10 V","2,20 V","0,42 V"], correct:0 },
+        { text:"Dans une pile, l'anode est le siège de :", options:["la réduction","l'oxydation","la neutralisation"], correct:1 },
+        { text:"La formule de Nernst à 25 °C s'écrit :", options:["E = E° − 0,059 n log([Ox]/[Red])","E = E° × log([Ox]/[Red])","E = E° + (0,059/n) log([Ox]/[Red])"], correct:2 },
+        { text:"L'électron a été découvert par :", options:["Thomson","Rutherford","Chadwick"], correct:0 },
+        { text:"Le neutron a été découvert par :", options:["Chadwick","Thomson","Bohr"], correct:0 },
+        { text:"Le modèle planétaire de l'atome est dû à :", options:["Rutherford","Thomson","Dalton"], correct:0 },
+        { text:"Le nombre maximal d'électrons de la couche n = 3 est :", options:["8","18","32"], correct:1 },
+        { text:"La structure électronique du sodium (Z = 11) est :", options:["1s<sup>2</sup> 2s<sup>2</sup> 2p<sup>5</sup> 3s<sup>2</sup>","1s<sup>2</sup> 2s<sup>2</sup> 2p<sup>6</sup> 3s<sup>1</sup>","1s<sup>2</sup> 2s<sup>2</sup> 2p<sup>6</sup> 3p<sup>1</sup>"], correct:1 },
+        { text:"Selon la règle de Klechkowski, après 3p on remplit :", options:["3d","4p","4s"], correct:2 },
+        { text:"Le principe d'exclusion de Pauli dit que :", options:["les orbitales vides se remplissent d'abord","deux électrons d'un atome n'ont pas les mêmes quatre nombres quantiques","l'énergie augmente avec n"], correct:1 },
+        { text:"L'hybridation du carbone dans le méthane CH<sub>4</sub> est :", options:["sp","sp<sup>2</sup>","sp<sup>3</sup>"], correct:2 },
+        { text:"Le rayonnement le plus pénétrant est :", options:["β","γ","α"], correct:1 },
+        { text:"Un rayonnement α est constitué de :", options:["électrons","photons","noyaux d'hélium"], correct:2 },
+        { text:"Lors d'une désintégration β<sup>−</sup>, le numéro atomique :", options:["diminue de 2","augmente de 1","reste inchangé"], correct:1 },
+        { text:"De ²³⁸U à ²⁰⁶Pb, le nombre de particules α émises est :", options:["4","8","6"], correct:1 },
+        { text:"La période T d'un radio-isotope s'exprime par :", options:["1/λ","ln 2/λ","λ/ln 2"], correct:1 },
+        { text:"La fission nucléaire est :", options:["l'émission d'un photon","la rupture d'un noyau lourd","l'union de noyaux légers"], correct:1 },
+        { text:"L'énergie de liaison d'un noyau vaut :", options:["½ m v<sup>2</sup>","Δm c<sup>2</sup>","m c"], correct:1 },
+        { text:"Le carbone 14 sert à dater :", options:["des matières organiques","des roches très anciennes","des métaux"], correct:0 },
+        { text:"Un échantillon contient 25 % de son ¹⁴C initial (T = 5 730 ans). Son âge est :", options:["11 460 ans","5 730 ans","22 920 ans"], correct:0 },
+        { text:"Le rapport frontal Rf vaut :", options:["d(substance)/d(front du solvant)","d(substance) × d(front)","d(front)/d(substance)"], correct:0 },
+        { text:"En CCM, la phase stationnaire est :", options:["l'acétone","le gel de silice","l'éluant"], correct:1 },
+        { text:"Parmi ces précipités, celui du 2e groupe de cations, noir, est :", options:["AgCl","ZnS","CuS"], correct:2 },
+        { text:"Les anions du 2e groupe précipitent avec :", options:["AgNO<sub>3</sub>","HCl","BaCl<sub>2</sub>"], correct:0 },
+        { text:"L'ion SO<sub>4</sub><sup>2−</sup> avec BaCl<sub>2</sub> donne :", options:["aucun précipité","un précipité jaune","un précipité blanc insoluble dans HCl"], correct:2 },
+        { text:"L'ion Fe<sup>3+</sup> avec SCN<sup>−</sup> donne une coloration :", options:["bleue","incolore","rouge sang"], correct:2 },
+        { text:"Dans la peinture latex, l'oxyde de titane sert de :", options:["épaississant","pigment blanc","solvant"], correct:1 },
+        { text:"La tylose sert de :", options:["épaississant","pigment","conservateur"], correct:0 }
+    ];
+    let html = '';
+    questions.forEach((q,i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o,k) => { html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>'; });
+        html += '</div>';
+    });
+    document.getElementById('quizQuestions').innerHTML = html;
+    document.getElementById('submitQuiz').onclick = () => {
+        let score = 0;
+        questions.forEach((q,i) => {
+            const s = document.querySelector('input[name="q' + i + '"]:checked');
+            if (s && parseInt(s.value) === q.correct) score++;
+        });
+        const pct = Math.round(score/questions.length*100);
+        document.getElementById('quizResult').innerHTML = '<div style="background:#b2dfdb;padding:16px;border-radius:10px;margin-top:14px;">' +
+            '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong><br>' +
+            (score === questions.length ? 'Excellent. Tu maîtrises le programme.' :
+             score >= 7 ? 'Bien. Revoyez les leçons où vous avez échoué.' :
+             'Relis attentivement les leçons avant l\'examen.') + '</div>';
+    };
+}
+function renderSlide(index, keepHighlight = true) {
+    const isQuiz = (index === slides.length - 1);
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    if (isQuiz) renderQuiz();
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm && !isQuiz) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+</body>
+</html>

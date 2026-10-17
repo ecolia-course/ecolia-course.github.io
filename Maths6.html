@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Mathématiques — 4e secondaire (EXETAT)</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body {
+    font-family:'Segoe UI',system-ui,sans-serif;
+    background:linear-gradient(160deg,#2d1b4e 0%,#6a1b9a 50%,#1a0f2e 100%);
+    display:flex; justify-content:center; align-items:center;
+    padding:8px;
+}
+.container {
+    width:100%; max-width:1400px; background:#fefdf8;
+    border-radius:20px; overflow:hidden;
+    display:flex; flex-direction:column;
+    height:100%; max-height:100vh;
+    box-shadow:0 20px 60px rgba(0,0,0,0.4);
+}
+
+/* BARRE DE PROGRESSION */
+.progress-bar { height:4px; background:#e0d0f3; flex-shrink:0; }
+.progress-fill {
+    height:100%; background:linear-gradient(90deg,#9c6fd0,#4a148c);
+    width:0%; transition:width 0.3s;
+}
+
+/* HEADER COMPACT */
+.header {
+    padding:10px 16px; background:#f1e9fb;
+    border-bottom:1px solid #c4a8e6;
+    display:flex; justify-content:space-between; align-items:center;
+    gap:10px; flex-shrink:0;
+}
+.header h1 { color:#4a148c; font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box {
+    display:flex; background:white; border-radius:20px;
+    padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06);
+}
+.search-box input {
+    border:none; padding:6px 10px; border-radius:20px;
+    outline:none; width:130px; font-size:0.8rem;
+}
+.search-box button {
+    background:none; border:none; cursor:pointer;
+    padding:4px 8px; font-size:0.85rem; color:#6a1b9a;
+}
+.badge {
+    background:#9c6fd0; color:white; padding:4px 10px;
+    border-radius:20px; font-weight:bold; font-size:0.75rem;
+}
+.search-nav {
+    display:none; gap:4px; background:#dccbf2;
+    padding:2px 8px; border-radius:20px; align-items:center;
+    font-size:0.75rem;
+}
+.search-nav button {
+    background:none; border:none; cursor:pointer;
+    font-size:0.9rem; color:#4a148c; padding:2px 4px;
+}
+
+/* CONTENU PLEIN ÉCRAN + AÉRÉ */
+.content {
+    padding:28px 32px; flex:1; overflow-y:auto;
+    background:#fff; scroll-behavior:smooth;
+    line-height:1.85;
+}
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide {
+    from { opacity:0; transform:translateY(8px); }
+    to { opacity:1; transform:translateY(0); }
+}
+
+.slide-title {
+    color:#2d1b4e; font-size:1.5rem; font-weight:700;
+    padding-bottom:12px; margin-bottom:20px;
+    border-bottom:2px solid #9c6fd0;
+}
+.slide-content { color:#1d1030; font-size:1rem; }
+
+/* BLOCS PÉDAGOGIQUES */
+.bloc {
+    padding:18px 22px; border-radius:12px;
+    margin:22px 0; line-height:1.85;
+}
+.bloc-label {
+    font-size:0.75rem; font-weight:700;
+    letter-spacing:1.5px; text-transform:uppercase;
+    margin-bottom:8px; opacity:0.7;
+}
+.bloc p, .bloc li { font-size:0.98rem; }
+.bloc h3 {
+    font-size:1.1rem; margin:20px 0 10px;
+    font-weight:600;
+}
+.bloc h3:first-child { margin-top:0; }
+
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+
+.theorie { background:#f1e9fb; border-left:4px solid #9c6fd0; }
+.theorie .bloc-label { color:#4a148c; }
+
+.pratique { background:#e8f5e9; border-left:4px solid #43a047; }
+.pratique .bloc-label { color:#1b5e20; }
+
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+
+/* LISTES */
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:#2d1b4e; }
+
+/* QUIZ */
+.quiz-container { padding:22px; background:#f1e9fb; border-radius:16px; }
+.quiz-question {
+    background:white; border-radius:10px; padding:16px;
+    margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05);
+}
+.quiz-question p { font-weight:600; margin-bottom:10px; color:#2d1b4e; }
+.quiz-question label {
+    display:block; padding:8px 10px; margin:4px 0;
+    border-radius:6px; cursor:pointer; transition:background 0.2s;
+}
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit {
+    background:#7e3fb2; color:white; border:none;
+    padding:12px 24px; border-radius:30px; font-size:1rem;
+    cursor:pointer; font-weight:600; margin-top:14px;
+}
+.quiz-result { margin-top:16px; font-weight:600; }
+
+/* SOURCES */
+.sources {
+    background:#f5f5f5; padding:12px 16px; border-radius:10px;
+    margin-top:26px; font-size:0.82rem; color:#666;
+    border-left:3px solid #999; line-height:1.6;
+}
+.sources strong { color:#333; }
+
+/* FOOTER COMPACT */
+.controls {
+    padding:8px 16px; background:#fafafa;
+    border-top:1px solid #e0e0e0;
+    display:flex; justify-content:space-between;
+    align-items:center; gap:8px; flex-shrink:0;
+}
+.nav-btn {
+    background:white; color:#4a148c;
+    border:1px solid #ccc; padding:8px 14px;
+    border-radius:8px; font-size:0.82rem;
+    cursor:pointer; font-weight:500;
+}
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+
+/* SCROLLBAR STYLE */
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:#e8ddf6; }
+.content::-webkit-scrollbar-thumb { background:#9c6fd0; border-radius:3px; }
+
+/* MOBILE */
+@media (max-width:600px) {
+    body { padding:0; }
+    .container { border-radius:0; max-height:100vh; }
+    .content { padding:20px 18px; }
+    .slide-title { font-size:1.25rem; }
+    .search-box input { width:90px; }
+    .header h1 { font-size:0.85rem; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+    <div class="header">
+        <h1>Mathématiques · 4e secondaire</h1>
+        <div class="header-right">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Rechercher">
+                <button id="searchBtn">⌕</button>
+            </div>
+            <div class="search-nav" id="searchNav">
+                <button id="prevResultBtn">‹</button>
+                <span id="resultCounter">0/0</span>
+                <button id="nextResultBtn">›</button>
+            </div>
+            <span class="badge" id="slideCounter">1/12</span>
+        </div>
+    </div>
+
+    <div class="content" id="content"></div>
+
+    <div class="controls">
+        <button class="nav-btn" id="prevBtn">← Précédent</button>
+        <span class="counter" id="counter">Leçon 1 / 12</span>
+        <button class="nav-btn" id="nextBtn">Suivant →</button>
+    </div>
+</div>
+
+<script>
+const slides = [
+{
+    title: "Leçon 1 — Les nombres complexes : notions et construction de C",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Au Bas-Uélé, des élèves résolvent x<sup>2</sup> + 2x + 2 = 0. Le discriminant est négatif : pas de solution dans R. Faut-il abandonner ? Non : on invente un nouveau nombre i tel que i<sup>2</sup> = −1.</p></div>
+<h3>1. Notion de nombre complexe</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Nombre imaginaire</strong> : i tel que i<sup>2</sup> = −1.</li><li><strong>Nombre complexe</strong> : z = a + ib avec a et b réels ; a = partie réelle Re(z), b = partie imaginaire Im(z).</li><li><strong>C</strong> : ensemble des nombres complexes ; R ⊂ C.</li><li><strong>Égalité</strong> : a + ib = c + id ⇔ a = c et b = d.</li><li>Exemple : x<sup>2</sup> + 2x + 2 = 0 → Δ = −4 = 4i<sup>2</sup> → x = −1 ± i.</li></ul></div>
+<h3>2. Opérations et conjugué</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Somme, produit</strong> : (a + ib) + (c + id) = (a + c) + i(b + d) ; (a + ib)(c + id) = (ac − bd) + i(ad + bc).</li><li><strong>Opposé</strong> : −z = −a − ib. <strong>Conjugué</strong> : z̄ = a − ib. <strong>Inverse</strong> : 1/z = z̄ / (a<sup>2</sup> + b<sup>2</sup>).</li><li><strong>Module</strong> : |z| = √(a<sup>2</sup> + b<sup>2</sup>) ; z z̄ = |z|<sup>2</sup>.</li><li><strong>Puissances de i</strong> : i<sup>0</sup> = 1, i<sup>1</sup> = i, i<sup>2</sup> = −1, i<sup>3</sup> = −i, puis cycle de 4. Exemple : i<sup>3</sup>003 = i<sup>3</sup> = −i (3003 = 4×750 + 3).</li></ul></div>
+<h3>3. Propriétés du module et du conjugué</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>|z̄| = |z| ; |z<sub>1</sub> z<sub>2</sub>| = |z<sub>1</sub>||z<sub>2</sub>| ; |z<sub>1</sub> / z<sub>2</sub>| = |z<sub>1</sub>| / |z<sub>2</sub>| ; |z<sub>1</sub> + z<sub>2</sub>| ≤ |z<sub>1</sub>| + |z<sub>2</sub>|.</li><li>Le conjugué d'une somme (d'un produit) est la somme (le produit) des conjugués.</li><li>z est réel ⇔ z = z̄ ; z est imaginaire pur ⇔ z = −z̄.</li><li><strong>Binôme de Newton</strong> : (a + ib)<sup>n</sup> = Σ C(n,k) a<sup>n−k</sup> (ib)<sup>k</sup>.</li></ul></div>
+<h3>4. Notations et sigles du programme</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>R, N, C</strong> : ensembles des réels, des naturels, des complexes ; <strong>∈</strong> : appartient à ; <strong>≡</strong> : équivaut à ; <strong>Δ</strong> : discriminant ; <strong>ln</strong> : logarithme népérien ; <strong>log</strong> : logarithme décimal ; <strong>e</strong> : base du logarithme népérien ; <strong>sh, ch</strong> : sinus et cosinus hyperboliques ; <strong>lim</strong> : limite ; <strong>∫</strong> : intégrale ; <strong>tg</strong> : tangente.</li><li><strong>EXETAT</strong> : Examen d'État ; <strong>HSC</strong> : Humanités scientifiques ; <strong>MEPST</strong> : Ministère de l'Enseignement primaire, secondaire et technique ; <strong>DIPROMAD</strong> : Direction des programmes scolaires et matériel didactique ; <strong>MM</strong> : matrice de mathématiques.</li></ul><p><a href="https://www.youtube.com/results?search_query=Les+nombres+complexes+:+notions+et+construction+de+C+terminale+maths" target="_blank" rel="noopener">🎥 Recherche : Les nombres complexes : notions et construction de C (chaînes de cours de maths)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>z = a + ib avec i<sup>2</sup> = −1. Conjugué z̄ = a − ib, module |z| = √(a<sup>2</sup> + b<sup>2</sup>), z z̄ = |z|<sup>2</sup>. Les puissances de i se répètent tous les 4 rangs.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Mathématiques, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MM6.1.</div>
+    `
+},
+{
+    title: "Leçon 2 — Représentation des nombres complexes : plan de Gauss, forme trigonométrique et exponentielle",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Trois points sur un cercle de rayon 2 forment un triangle équilatéral ; le premier a pour argument π/2. Comment retrouver les deux autres nombres complexes ? En passant à la forme trigonométrique.</p></div>
+<h3>1. Le plan de Gauss</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Complex_number_illustration.svg?width=700" alt="Plan complexe" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Plan complexe — Wikimedia Commons : Complex number illustration.svg</p><ul><li>À z = a + ib correspond le point M(a ; b), l'<strong>image</strong> de z ; z est l'<strong>affixe</strong> de M.</li><li><strong>Axe réel</strong> (abscisses), <strong>axe imaginaire</strong> (ordonnées).</li><li>Le <strong>module</strong> r = |z| = OM ; l'<strong>argument</strong> θ est l'angle (Ox, OM) défini à 2π près.</li></ul></div>
+<h3>2. Les trois formes</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Algébrique</strong> : z = a + ib.</li><li><strong>Trigonométrique</strong> : z = r(cos θ + i sin θ), avec r = √(a<sup>2</sup> + b<sup>2</sup>), cos θ = a/r, sin θ = b/r.</li><li><strong>Exponentielle</strong> : z = r e<sup>iθ</sup> (formule d'Euler : e<sup>iθ</sup> = cos θ + i sin θ).</li><li>Exemples : 1 + i = √2 (cos π/4 + i sin π/4) = √2 e<sup>iπ/4</sup> ; 1 + i√3 = 2 e<sup>iπ/3</sup> ; −8 = 8 e<sup>iπ</sup> ; −6i = 6 e<sup>−iπ/2</sup>.</li></ul></div>
+<h3>3. Passage d'une forme à l'autre</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Algébrique → trigonométrique : calculer r, puis θ (attention au quadrant).</li><li>Trigonométrique → algébrique : a = r cos θ, b = r sin θ.</li><li>Exemple du programme : 3 nombres sur le cercle de centre O et de rayon 2, formant un triangle équilatéral, le premier d'argument π/2 : z<sub>1</sub> = 2i ; z<sub>2</sub> = 2 e<sup>i 7π/6</sup> = −√3 − i ; z<sub>3</sub> = 2 e<sup>i 11π/6</sup> = √3 − i (on ajoute 2π/3 à chaque fois).</li></ul><p><a href="https://www.youtube.com/results?search_query=Représentation+des+nombres+complexes+:+plan+de+Gauss,+forme+trigonométrique+et+exponentielle+terminale+maths" target="_blank" rel="noopener">🎥 Recherche : Représentation des nombres complexes : plan de Gauss, forme trigonométrique et exponentielle (chaînes de cours de maths)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Un complexe se représente par un point du plan de Gauss ; z = r(cos θ + i sin θ) = r e<sup>iθ</sup> avec r = |z| et θ = arg z.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Mathématiques, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MM6.2.</div>
+    `
+},
+{
+    title: "Leçon 3 — Opérations en forme trigonométrique, formule de Moivre, racines n-ièmes",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Un architecte veut dessiner un polygone régulier. Les sommets sont les racines n-ièmes d'un nombre complexe : les complexes en forme trigonométrique rendent le calcul presque immédiat.</p></div>
+<h3>1. Produit, quotient, puissance</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><p>Soit z<sub>1</sub> = r<sub>1</sub> e<sup>iθ<sub>1</sub></sup> et z<sub>2</sub> = r<sub>2</sub> e<sup>iθ<sub>2</sub></sup>.</p><ul><li><strong>Produit</strong> : z<sub>1</sub> z<sub>2</sub> = r<sub>1</sub> r<sub>2</sub> e<sup>i(θ<sub>1</sub> + θ<sub>2</sub>)</sup> (modules multipliés, arguments additionnés).</li><li><strong>Quotient</strong> : z<sub>1</sub> / z<sub>2</sub> = (r<sub>1</sub> / r<sub>2</sub>) e<sup>i(θ<sub>1</sub> − θ<sub>2</sub>)</sup>.</li><li><strong>Puissance</strong> : <strong>formule de Moivre</strong> (cos θ + i sin θ)<sup>n</sup> = cos nθ + i sin nθ ; donc z<sup>n</sup> = r<sup>n</sup> e<sup>inθ</sup>.</li><li>Exemple : (1 + i)<sup>8</sup> = (√2)<sup>8</sup> e<sup>i 2π</sup> = 16.</li></ul></div>
+<h3>2. Racines n-ièmes</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Les racines n-ièmes de z = r e<sup>iθ</sup> sont : w<sub>k</sub> = r<sup>1/n</sup> e<sup>i(θ + 2kπ)/n</sup>, k = 0, 1, …, n − 1 (n racines distinctes).</li><li>Leurs images sont les sommets d'un <strong>polygone régulier</strong> à n côtés inscrit dans un cercle de rayon r<sup>1/n</sup>.</li><li><strong>Racines n-ièmes de l'unité</strong> : e<sup>2ikπ/n</sup>. Exemple n = 3 : 1, −1/2 + i√3/2, −1/2 − i√3/2.</li></ul></div>
+<h3>3. Applications</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Calculer cos nθ et sin nθ en fonction de cos θ et sin θ (Moivre + binôme).</li><li>Exemple : cos 2θ = cos<sup>2</sup> θ − sin<sup>2</sup> θ ; sin 2θ = 2 sin θ cos θ.</li><li>Racines cubiques de −8i : on écrit −8i = 8 e<sup>−iπ/2</sup>, d'où w<sub>k</sub> = 2 e<sup>i(−π/2 + 2kπ)/3</sup>.</li><li>Exemple d'item : arg(z<sub>1</sub>/z<sub>2</sub>) = arg z<sub>1</sub> − arg z<sub>2</sub>.</li></ul><p><a href="https://www.youtube.com/results?search_query=Opérations+en+forme+trigonométrique,+formule+de+Moivre,+racines+n-ièmes+terminale+maths" target="_blank" rel="noopener">🎥 Recherche : Opérations en forme trigonométrique, formule de Moivre, racines n-ièmes (chaînes de cours de maths)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Produit : on multiplie les modules et on additionne les arguments. Moivre : (cos θ + i sin θ)<sup>n</sup> = cos nθ + i sin nθ. Il y a n racines n-ièmes, sommets d'un polygone régulier.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Mathématiques, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MM6.2.</div>
+    `
+},
+{
+    title: "Leçon 4 — Équations dans l'ensemble des nombres complexes",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Nkulu a lu que les équations dans C se résolvent comme dans R à condition de poser i<sup>2</sup> = −1. Il doit montrer que z<sup>2</sup> − 4z + 5 = 0 et z<sup>3</sup> − (1 + 2i)z<sup>2</sup> − 3z + (2i − 1) = 0 ont une solution commune.</p></div>
+<h3>1. Équation du premier degré et racines carrées</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>a z + c = 0</strong> (a ≠ 0) : z = −c/a (calculs de division dans C).</li><li><strong>Racine carrée d'un complexe</strong> : pour trouver w = x + iy tel que w<sup>2</sup> = a + ib, on résout : x<sup>2</sup> − y<sup>2</sup> = a, 2xy = b, x<sup>2</sup> + y<sup>2</sup> = √(a<sup>2</sup> + b<sup>2</sup>).</li><li>Exemple : w<sup>2</sup> = 3 + 4i → x<sup>2</sup> + y<sup>2</sup> = 5, x<sup>2</sup> − y<sup>2</sup> = 3 → x = ±2, y = ±1, 2xy = 4 > 0 → w = ±(2 + i).</li></ul></div>
+<h3>2. Équation du second degré</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>a z<sup>2</sup> + b z + c = 0</strong>, Δ = b<sup>2</sup> − 4ac (réalisant), δ une racine carrée de Δ : z = (−b ± δ) / 2a.</li><li>Si a, b, c sont <strong>réels</strong> et Δ < 0 : deux racines <strong>conjuguées</strong> z = (−b ± i√(−Δ)) / 2a.</li><li>Exemple : z<sup>2</sup> − 4z + 5 = 0 → Δ = −4 → z = 2 ± i.</li><li>Exemple : z<sup>2</sup> + z − 3 = 0 → z = (−1 ± √13)/2 (réels).</li></ul></div>
+<h3>3. Équations de degré supérieur</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>d'Alembert-Gauss</strong> : tout polynôme de degré n a n racines complexes (comptées avec leur multiplicité).</li><li>Si P est à coefficients réels et z<sub>0</sub> est racine, alors z̄<sub>0</sub> l'est aussi.</li><li>Méthode : trouver une racine évidente (réelle, imaginaire pure…), puis factoriser.</li><li>Exemple du programme : z = 2 + i est racine de z<sup>2</sup> − 4z + 5 = 0 et de z<sup>3</sup> − (1 + 2i)z<sup>2</sup> − 3z + (2i − 1) = 0. Vérification : (2 + i)<sup>3</sup> = 2 + 11i ; (1 + 2i)(2 + i)<sup>2</sup> = −5 + 10i ; on obtient 2 + 11i + 5 − 10i − 6 − 3i + 2i − 1 = 0.</li></ul><p><a href="https://www.youtube.com/results?search_query=Équations+dans+l'ensemble+des+nombres+complexes+terminale+maths" target="_blank" rel="noopener">🎥 Recherche : Équations dans l'ensemble des nombres complexes (chaînes de cours de maths)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Dans C, toute équation de degré n a n racines. Le second degré se résout par Δ et une racine carrée de Δ ; à coefficients réels, les racines non réelles sont conjuguées.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Mathématiques, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MM6.3.</div>
+    `
+},
+{
+    title: "Leçon 5 — Fonctions logarithmiques et exponentielles",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Une infirmière perfuse un élève : la quantité de sérum restante est q(t) = q<sub>0</sub> e<sup>−t/24</sup>. Pour savoir au bout de combien d'heures il reste la moitié du produit, il faut inverser la fonction exponentielle : c'est le logarithme.</p></div>
+<h3>1. Définitions</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Fonction exponentielle de base a</strong> (a > 0, a ≠ 1) : f(x) = a<sup>x</sup>, domaine R, image ]0 ; +∞[ ; croissante si a > 1, décroissante si 0 < a < 1.</li><li><strong>Fonction logarithme de base a</strong> : y = log<sub>a</sub> x ⇔ x = a<sup>y</sup> ; domaine ]0 ; +∞[ ; réciproque de a<sup>x</sup> ; courbes symétriques par rapport à la droite y = x.</li><li><strong>Nombre e</strong> ≈ 2,71828 (base du logarithme <strong>népérien</strong> ln) ; <strong>log</strong> = logarithme décimal (base 10).</li></ul></div>
+<h3>2. Propriétés</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>log<sub>a</sub>(xy) = log<sub>a</sub> x + log<sub>a</sub> y ; log<sub>a</sub>(x/y) = log<sub>a</sub> x − log<sub>a</sub> y ; log<sub>a</sub>(x<sup>n</sup>) = n log<sub>a</sub> x.</li><li>log<sub>a</sub> a = 1 ; log<sub>a</sub> 1 = 0 ; a<sup>log<sub>a</sub> x</sup> = x.</li><li><strong>Changement de base</strong> : log<sub>a</sub> x = ln x / ln a.</li><li>Exemples : log<sub>b</sub> 10<sup>4</sup> = −2 ⇒ b = 10<sup>−2</sup> ; si 4<sup>6x</sup> = 5 alors 64<sup>4x</sup> = 4<sup>12x</sup> = 25 ; domaine de log<sub>x−2</sub>((x − 2)/(4 − x)) : ]2 ; 3[ ∪ ]3 ; 4[.</li></ul></div>
+<h3>3. Fonctions hyperboliques</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>sh x</strong> = (e<sup>x</sup> − e<sup>−x</sup>)/2 ; <strong>ch x</strong> = (e<sup>x</sup> + e<sup>−x</sup>)/2 ; <strong>th x</strong> = sh x / ch x.</li><li><strong>ch<sup>2</sup> x − sh<sup>2</sup> x = 1</strong> (à savoir établir) ; ch est paire, sh est impaire.</li><li><strong>Sérum</strong> : q(t) = q<sub>0</sub> e<sup>−t/24</sup> ; réciproque : t = −24 ln(q / q<sub>0</sub>).</li></ul><p><a href="https://www.youtube.com/results?search_query=Fonctions+logarithmiques+et+exponentielles+terminale+maths" target="_blank" rel="noopener">🎥 Recherche : Fonctions logarithmiques et exponentielles (chaînes de cours de maths)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>L'exponentielle a<sup>x</sup> et le logarithme log<sub>a</sub> x sont réciproques. Retenir les propriétés du logarithme, le changement de base, le nombre e et les fonctions sh et ch (ch<sup>2</sup> − sh<sup>2</sup> = 1).</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Mathématiques, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MM6.4.</div>
+    `
+},
+{
+    title: "Leçon 6 — Dérivées et limites des fonctions logarithmiques et exponentielles",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Kande trouve sur une feuille une limite de la forme 0/0. Incapable de la calculer, il demande à son enseignant, qui lui propose la règle de l'Hospital.</p></div>
+<h3>1. Dérivées</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>(ln x)' = 1/x ; <strong>(ln u)' = u'/u</strong> ; (log<sub>a</sub> x)' = 1/(x ln a).</li><li>(e<sup>x</sup>)' = e<sup>x</sup> ; <strong>(e<sup>u</sup>)' = u' e<sup>u</sup></strong> ; (a<sup>x</sup>)' = a<sup>x</sup> ln a.</li><li><strong>(u<sup>v</sup>)' = u<sup>v</sup> (v' ln u + v u'/u)</strong> (dérivation logarithmique).</li><li>(sh x)' = ch x ; (ch x)' = sh x.</li><li>Exemple : y = (sin x)<sup>cos x</sup> ⇒ y' = (sin x)<sup>cos x</sup> [−sin x · ln(sin x) + cos<sup>2</sup> x / sin x].</li></ul></div>
+<h3>2. Limites usuelles</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>lim<sub>x→+∞</sub> ln x = +∞ ; lim<sub>x→0+</sub> ln x = −∞ ; lim<sub>x→+∞</sub> e<sup>x</sup> = +∞ ; lim<sub>x→−∞</sub> e<sup>x</sup> = 0.</li><li><strong>Croissances comparées</strong> : ln x / x → 0 (x→+∞) ; x ln x → 0 (x→0+) ; e<sup>x</sup> / x<sup>n</sup> → +∞.</li><li>lim<sub>x→0</sub> ln(1 + x)/x = 1 ; lim<sub>x→0</sub> (e<sup>x</sup> − 1)/x = 1 ; lim<sub>x→∞</sub> (1 + 1/x)<sup>x</sup> = e.</li><li>Si la base a < 1, les limites en +∞ et 0 sont <strong>inversées</strong>.</li></ul></div>
+<h3>3. Lever les indéterminations</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Formes : 0/0, ∞/∞, 0·∞, ∞ − ∞, 0<sup>0</sup>, ∞<sup>0</sup>, 1<sup>∞</sup>.</li><li><strong>Règle de l'Hospital</strong> : si lim f/g est de la forme 0/0 ou ∞/∞, alors lim f/g = lim f'/g'.</li><li>Pour 0<sup>0</sup>, ∞<sup>0</sup>, 1<sup>∞</sup> : écrire f<sup>g</sup> = e<sup>g ln f</sup>.</li><li>Exemple : lim<sub>x→0</sub> (1 − e<sup>x</sup>)/ln(1 + x) = lim (−e<sup>x</sup>)/(1/(1 + x)) = −1.</li></ul></div>
+<h3>4. Étude de f(x) = x(ln x − 1)</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Domaine ]0 ; +∞[ ; f(x) → 0 quand x → 0+ ; f'(x) = ln x ; f' = 0 en x = 1.</li><li>f décroît sur ]0 ; 1], croît sur [1 ; +∞[ ; <strong>minimum</strong> f(1) = −1 ; f(e) = 0 ; f(x) → +∞ quand x → +∞.</li></ul><p><a href="https://www.youtube.com/results?search_query=Dérivées+et+limites+des+fonctions+logarithmiques+et+exponentielles+terminale+maths" target="_blank" rel="noopener">🎥 Recherche : Dérivées et limites des fonctions logarithmiques et exponentielles (chaînes de cours de maths)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Savoir dériver ln u, e<sup>u</sup>, a<sup>u</sup>, u<sup>v</sup>, connaître les limites usuelles et les croissances comparées, et lever les indéterminations avec Hospital ou avec e<sup>g ln f</sup>.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Mathématiques, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MM6.5.</div>
+    `
+},
+{
+    title: "Leçon 7 — Équations logarithmiques et exponentielles",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Le Maire de Kolwezi veut limiter le bruit à 4 décibels dans les bars. L'intensité est i = 10 log(p/p<sub>0</sub>) avec p<sub>0</sub> = 0,1. Quelle puissance p autoriser ? Il faut résoudre une équation logarithmique.</p></div>
+<h3>1. Méthode</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>1.</strong> Déterminer le <strong>domaine</strong> (arguments des ln et log strictement positifs, bases positives et différentes de 1).</li><li><strong>2.</strong> Utiliser les propriétés pour obtenir une seule expression par membre.</li><li><strong>3.</strong> Résoudre : log<sub>a</sub> f = log<sub>a</sub> g ⇔ f = g ; a<sup>f</sup> = a<sup>g</sup> ⇔ f = g.</li><li><strong>4.</strong> <strong>Vérifier</strong> que les solutions appartiennent au domaine.</li><li>Pour les équations de la forme A(e<sup>x</sup>) = 0 ou A(ln x) = 0 : poser t = e<sup>x</sup> (t > 0) ou t = ln x.</li></ul></div>
+<h3>2. Exemples résolus</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>4 = log<sub>b</sub> 81 ⇒ b<sup>4</sup> = 81 ⇒ b = 3.</li><li>log x + log 3 = 2 log 4 − log 2 ⇒ log 3x = log 8 ⇒ x = 8/3.</li><li>ln(x − 1) = 7 ⇒ x = 1 + e<sup>7</sup>.</li><li>2e<sup>x</sup> + 10 = 6 ⇒ e<sup>x</sup> = −2 : <strong>aucune solution</strong>.</li><li>3 ln<sup>2</sup> x + 5 ln x − 2 = 0 : t = ln x ⇒ 3t<sup>2</sup> + 5t − 2 = 0 ⇒ t = 1/3 ou t = −2 ⇒ x = e<sup>1/3</sup> ou x = e<sup>−2</sup>.</li><li>−e<sup>2x</sup> + e<sup>x</sup> + 2 = 0 : t = e<sup>x</sup> ⇒ t<sup>2</sup> − t − 2 = 0 ⇒ t = 2 (t = −1 rejeté) ⇒ x = ln 2.</li></ul></div>
+<h3>3. Systèmes et situation du bruit</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Système</strong> : on exprime les inconnues par substitution ou en prenant les logarithmes ; on vérifie les conditions d'existence.</li><li><strong>Bruit à Kolwezi</strong> : 4 = 10 log(p/0,1) ⇒ log(p/0,1) = 0,4 ⇒ p = 0,1 × 10<sup>0,4</sup> ≈ 0,25.</li></ul><p><a href="https://www.youtube.com/results?search_query=Équations+logarithmiques+et+exponentielles+terminale+maths" target="_blank" rel="noopener">🎥 Recherche : Équations logarithmiques et exponentielles (chaînes de cours de maths)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Toujours : domaine, simplification, résolution, vérification. Pour les équations en e<sup>x</sup> ou ln x, poser t = e<sup>x</sup> (t > 0) ou t = ln x.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Mathématiques, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MM6.6.</div>
+    `
+},
+{
+    title: "Leçon 8 — Inéquations logarithmiques et exponentielles",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Le professeur se souvient d'un concours d'entrée au graduat : 2e<sup>2x</sup> − 5e<sup>x</sup> + 2 > 0. Il demande de la résoudre puis de représenter les solutions sur une droite numérique.</p></div>
+<h3>1. Règles</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Base a > 1 : a<sup>u</sup> < a<sup>v</sup> ⇔ u < v ; log<sub>a</sub> u < log<sub>a</sub> v ⇔ u < v (sens <strong>conservé</strong>).</li><li>Base 0 < a < 1 : le sens est <strong>inversé</strong>.</li><li>Pour les logarithmes : toujours commencer par le <strong>domaine</strong>, puis résoudre, puis <strong>intersecter</strong> avec le domaine.</li></ul></div>
+<h3>2. Inéquations exponentielles</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Poser t = e<sup>x</sup> (t > 0), résoudre l'inéquation en t par le signe du trinôme, puis revenir en x.</li><li>Exemple : 2e<sup>2x</sup> − 5e<sup>x</sup> + 2 > 0 ⇒ 2t<sup>2</sup> − 5t + 2 > 0 ⇒ t < 1/2 ou t > 2 ⇒ <strong>x < −ln 2 ou x > ln 2</strong>.</li><li>Exemple : (1 − ln x)(ln x + 3) ≥ 0 ⇒ −3 ≤ ln x ≤ 1 ⇒ <strong>e<sup>−3</sup> ≤ x ≤ e</strong>.</li></ul></div>
+<h3>3. Inéquations logarithmiques et systèmes</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Exemple : ln(x + 2) + ln(x + 4) < ln(x + 8). Domaine : x > −2. On obtient (x + 2)(x + 4) < x + 8 ⇒ x<sup>2</sup> + 5x < 0 ⇒ −5 < x < 0. Solution : <strong>−2 < x < 0</strong>.</li><li><strong>Système</strong> : résoudre chaque inéquation puis prendre l'<strong>intersection</strong> des ensembles de solutions.</li></ul><p><a href="https://www.youtube.com/results?search_query=Inéquations+logarithmiques+et+exponentielles+terminale+maths" target="_blank" rel="noopener">🎥 Recherche : Inéquations logarithmiques et exponentielles (chaînes de cours de maths)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Inéquation exponentielle : poser t = e<sup>x</sup>. Inéquation logarithmique : domaine d'abord, puis solutions, puis intersection ; le sens s'inverse si la base est comprise entre 0 et 1.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Mathématiques, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MM6.7.</div>
+    `
+},
+{
+    title: "Leçon 9 — Applications des fonctions logarithmiques et exponentielles",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans une ville de l'Est où sévit Ébola, la population évolue selon p(t) = p<sub>i</sub> e<sup>nt</sup>. En 2017 elle compte 2 500 000 habitants et en 2018, 2 750 000. Quelle population prévoir en 2021 ?</p></div>
+<h3>1. Modèles de croissance</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Croissance exponentielle</strong> : p(t) = p<sub>i</sub> e<sup>nt</sup> (n = taux de croissance).</li><li><strong>Décroissance radioactive</strong> : N(t) = N<sub>0</sub> e<sup>−λt</sup>, période T = ln 2 / λ.</li><li><strong>Intérêts composés</strong> : C(t) = C<sub>0</sub> (1 + r)<sup>t</sup>.</li><li><strong>Démographie, épidémiologie (Ébola, choléra), économie, acoustique</strong> : mêmes outils.</li></ul></div>
+<h3>2. Méthode</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>1.</strong> Traduire l'énoncé par une équation exponentielle ou logarithmique.</li><li><strong>2.</strong> Prendre le logarithme pour isoler le paramètre.</li><li><strong>3.</strong> Calculer, vérifier la cohérence, répondre par une phrase.</li></ul></div>
+<h3>3. Exemples résolus</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Ville de l'Est</strong> : 2 750 000 = 2 500 000 e<sup>n</sup> ⇒ n = ln 1,1 ≈ 0,0953. En 2021 (t = 4) : 2 500 000 × 1,1<sup>4</sup> = <strong>3 660 250 habitants</strong>.</li><li><strong>Roses de Kola</strong> : une fleur aujourd'hui, nombre doublé chaque jour : dans 10 jours 2<sup>10</sup> = 1 024 ; 2 048 = 2<sup>11</sup> ⇒ <strong>11 jours</strong>.</li><li><strong>Sérum</strong> : q(t) = q<sub>0</sub> e<sup>−t/24</sup> ; après 8 h : ≈ 0,72 q<sub>0</sub> ; 10 h : ≈ 0,66 q<sub>0</sub> ; 24 h : ≈ 0,37 q<sub>0</sub>.</li></ul><p><a href="https://www.youtube.com/results?search_query=Applications+des+fonctions+logarithmiques+et+exponentielles+terminale+maths" target="_blank" rel="noopener">🎥 Recherche : Applications des fonctions logarithmiques et exponentielles (chaînes de cours de maths)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Les fonctions exponentielles modélisent la croissance (population, épidémie) et la décroissance (radioactivité, médicament) ; le logarithme permet de retrouver le taux ou la durée.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Mathématiques, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MM6.8.</div>
+    `
+},
+{
+    title: "Leçon 10 — Développement en série des fonctions usuelles",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Bele pense qu'on peut toujours écrire une fonction sous forme de polynôme ; Tumi le conteste. Les formules de Taylor et de Mac-Laurin permettent de les départager.</p></div>
+<h3>1. Formules de Taylor et de Mac-Laurin</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Sintay_SVG.svg?width=700" alt="Approximations de sin x par des polynômes de Taylor" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Approximations de sin x par des polynômes de Taylor — Wikimedia Commons : Sintay SVG.svg</p><ul><li><strong>Taylor</strong> : f(x) = f(a) + f'(a)(x − a) + f''(a)(x − a)<sup>2</sup>/2! + … + f<sup>(n)</sup>(a)(x − a)<sup>n</sup>/n! + R<sub>n</sub>.</li><li><strong>Mac-Laurin</strong> (a = 0) : f(x) = f(0) + f'(0)x + f''(0)x<sup>2</sup>/2! + … + f<sup>(n)</sup>(0)x<sup>n</sup>/n! + R<sub>n</sub>.</li><li>Conditions : f est dérivable n fois en a (n + 1 fois pour le reste).</li></ul></div>
+<h3>2. Développements usuels (en 0)</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>e<sup>x</sup> = 1 + x + x<sup>2</sup>/2! + x<sup>3</sup>/3! + …</li><li>sin x = x − x<sup>3</sup>/3! + x<sup>5</sup>/5! − …</li><li>cos x = 1 − x<sup>2</sup>/2! + x<sup>4</sup>/4! − …</li><li>ln(1 + x) = x − x<sup>2</sup>/2 + x<sup>3</sup>/3 − … (−1 < x ≤ 1)</li><li>1/(1 − x) = 1 + x + x<sup>2</sup> + … (|x| < 1)</li><li>(1 + x)<sup>m</sup> = 1 + mx + m(m − 1)x<sup>2</sup>/2! + …</li></ul></div>
+<h3>3. Applications</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Équivalents en 0</strong> : sin x ~ x ; tg x ~ x ; 1 − cos x ~ x<sup>2</sup>/2 ; ln(1 + x) ~ x ; e<sup>x</sup> − 1 ~ x.</li><li><strong>Limite</strong> : lim<sub>x→0</sub> (1 − cos x)/tg<sup>2</sup> x = (x<sup>2</sup>/2)/x<sup>2</sup> = <strong>1/2</strong>.</li><li><strong>Valeur approchée</strong> : √1,03 = (1 + 0,03)<sup>1/2</sup> ≈ 1 + 0,015 − 0,0001125 ≈ <strong>1,01489</strong> ; ln 0,95 = ln(1 − 0,05) ≈ −0,05 − 0,00125 − 0,00004 ≈ <strong>−0,0513</strong>.</li><li><strong>Erreur</strong> : majorée par le premier terme négligé (reste).</li></ul><p><a href="https://www.youtube.com/results?search_query=Développement+en+série+des+fonctions+usuelles+terminale+maths" target="_blank" rel="noopener">🎥 Recherche : Développement en série des fonctions usuelles (chaînes de cours de maths)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Taylor : développement autour de a ; Mac-Laurin : autour de 0. Connaître les développements de e<sup>x</sup>, sin x, cos x, ln(1 + x), (1 + x)<sup>m</sup>, et s'en servir pour les limites et les valeurs approchées.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Mathématiques, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MM6.9.</div>
+    `
+},
+{
+    title: "Leçon 11 — La différentielle d'une fonction",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>À Mbuji-Mayi, la famille de Kanku veut augmenter de 2 cm chaque arête de sa citerne cubique. De combien le volume augmente-t-il ? On calcule vite avec la différentielle.</p></div>
+<h3>1. Notion de différentielle</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Tangent_to_a_curve.svg?width=700" alt="Tangente à une courbe" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Tangente à une courbe — Wikimedia Commons : Tangent to a curve.svg</p><ul><li><strong>Nombre dérivé</strong> : f'(x<sub>0</sub>) = lim<sub>h→0</sub> [f(x<sub>0</sub> + h) − f(x<sub>0</sub>)] / h.</li><li><strong>Différentielle</strong> de f en x<sub>0</sub> : <strong>dy = f'(x<sub>0</sub>) dx</strong> (dx = h = accroissement de x).</li><li><strong>Accroissement</strong> Δy = f(x<sub>0</sub> + h) − f(x<sub>0</sub>) ≈ dy lorsque h est petit.</li></ul></div>
+<h3>2. Interprétation graphique et règles</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>dy est l'accroissement de l'ordonnée <strong>sur la tangente</strong> ; Δy est celui sur la <strong>courbe</strong>.</li><li>d(u + v) = du + dv ; d(uv) = u dv + v du ; d(u/v) = (v du − u dv)/v<sup>2</sup>.</li><li>d(x<sup>n</sup>) = n x<sup>n−1</sup> dx ; d(sin x) = cos x dx ; d(ln x) = dx/x ; d(e<sup>x</sup>) = e<sup>x</sup> dx.</li></ul></div>
+<h3>3. Applications</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Citerne cubique</strong> d'arête a : V = a<sup>3</sup>, dV = 3a<sup>2</sup> da. Pour a = 2 m et da = 0,02 m : dV = 0,24 m<sup>3</sup> (valeur exacte : 0,242408 m<sup>3</sup>).</li><li>Exemples d'items : f(x) = x<sup>2</sup> + x − 3 ⇒ df = (2x + 1) dx ; f(x) = sin(2x + π/7) ⇒ df = 2 cos(2x + π/7) dx.</li><li><strong>Population</strong> f(t) = (26t + 10)/(t + 5) milliers (t en années depuis 2015) : f'(t) = 120/(t + 5)<sup>2</sup> ; en 2035 (t = 20) : 0,192 millier par an (192 habitants/an) ; en 2060 (t = 45) : 48 habitants/an. f' > 0 : la population croît toujours.</li></ul><p><a href="https://www.youtube.com/results?search_query=La+différentielle+d'une+fonction+terminale+maths" target="_blank" rel="noopener">🎥 Recherche : La différentielle d'une fonction (chaînes de cours de maths)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>dy = f'(x<sub>0</sub>) dx. La différentielle approche l'accroissement réel de la fonction ; on s'en sert pour estimer des variations et des erreurs.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Mathématiques, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MM6.10.</div>
+    `
+},
+{
+    title: "Leçon 12 — Les primitives d'une fonction",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Le rapport de la MONUSCO donne le taux de variation du nombre de réfugiés : y'(x) = 5√x (en centaines, x en années). Pour retrouver le nombre de réfugiés, il faut remonter de la dérivée à la fonction : c'est la primitive.</p></div>
+<h3>1. Définition</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>F est une primitive de f</strong> si F' = f ; toutes les primitives de f diffèrent d'une <strong>constante</strong> : F(x) + C.</li><li><strong>Intégrale indéfinie</strong> : ∫ f(x) dx = F(x) + C.</li><li>Graphiquement : une <strong>famille de courbes</strong> translatées verticalement.</li></ul></div>
+<h3>2. Primitives usuelles</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>∫ x<sup>n</sup> dx = x<sup>n+1</sup>/(n + 1) + C (n ≠ −1) ; ∫ dx/x = ln|x| + C ; ∫ e<sup>x</sup> dx = e<sup>x</sup> + C ; ∫ a<sup>x</sup> dx = a<sup>x</sup>/ln a + C.</li><li>∫ cos x dx = sin x + C ; ∫ sin x dx = −cos x + C ; ∫ dx/cos<sup>2</sup> x = tg x + C.</li><li>∫ dx/(1 + x<sup>2</sup>) = arctg x + C ; ∫ dx/√(1 − x<sup>2</sup>) = arcsin x + C.</li><li>∫ sh x dx = ch x + C ; ∫ ch x dx = sh x + C ; <strong>∫ u'/u dx = ln|u| + C</strong>.</li><li><strong>Linéarité</strong> : ∫ (αf + βg) = α∫f + β∫g.</li></ul></div>
+<h3>3. Exemples résolus</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Réfugiés</strong> : y(x) = (10/3) x<sup>3/2</sup> + C ; si y(0) = 1 000 (centaines) alors y(9) = 90 + 1 000 = <strong>1 090 centaines</strong>.</li><li>∫ cos x sin x dx = sin<sup>2</sup> x / 2 + C.</li><li>∫ (e<sup>x</sup> − e<sup>−x</sup>)/e<sup>x</sup> dx = ∫ (1 − e<sup>−2x</sup>) dx = x + e<sup>−2x</sup>/2 + C.</li><li>Primitive de f(x) = √x − 1/x<sup>2</sup> qui vaut 1/2 en x = 2 : F(x) = (2/3) x√x + 1/x − 4√2/3.</li></ul><p><a href="https://www.youtube.com/results?search_query=Les+primitives+d'une+fonction+terminale+maths" target="_blank" rel="noopener">🎥 Recherche : Les primitives d'une fonction (chaînes de cours de maths)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Une primitive F de f vérifie F' = f ; elle est définie à une constante près. Maîtriser le tableau des primitives usuelles et déterminer la constante avec une condition initiale.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Mathématiques, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MM6.11.</div>
+    `
+},
+{
+    title: "Leçon 13 — Méthodes d'intégration et intégrale définie",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Mutombo a trouvé en ligne un tableau de types de fonctions à intégrer, avec la méthode adaptée à chacun. Il demande à son ami de le compléter. Voici ce tableau, et le calcul de l'intégrale définie.</p></div>
+<h3>1. Intégration par parties et changement de variable</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Par parties</strong> : ∫ u v' dx = u v − ∫ u' v dx (choisir u simple à dériver). Exemple : ∫ x ln x dx = (x<sup>2</sup>/2) ln x − x<sup>2</sup>/4 + C ; ∫ x<sup>2</sup> e<sup>x</sup> dx = e<sup>x</sup> (x<sup>2</sup> − 2x + 2) + C.</li><li><strong>Changement de variable</strong> : poser t = g(x), dt = g'(x) dx. Exemple : ∫ x<sup>5</sup> √(x<sup>2</sup> + 4) dx, avec u = x<sup>2</sup> + 4 : = u<sup>7/2</sup>/7 − 8u<sup>5/2</sup>/5 + 16u<sup>3/2</sup>/3 + C.</li></ul></div>
+<h3>2. Types de fonctions et méthodes</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Usuelles, polynôme, 1/(x − a)<sup>n</sup></strong> : intégration immédiate.</li><li><strong>Produit u × v</strong> (e<sup>x</sup> sin x, x ln x) : par parties.</li><li><strong>Fonction composée</strong> : changement de variable.</li><li><strong>Fraction rationnelle</strong> : <strong>décomposition en éléments simples</strong>.</li><li><strong>1/(ax<sup>2</sup> + bx + c)</strong>, Δ < 0 : forme canonique et arctg : ∫ dx/(x<sup>2</sup> + a<sup>2</sup>) = (1/a) arctg(x/a).</li><li><strong>1/√(ax<sup>2</sup> + bx + c)</strong> : arcsin ou ln.</li><li><strong>Fraction rationnelle en sin x, cos x</strong> : t = tg(x/2) ; sin x = 2t/(1 + t<sup>2</sup>), cos x = (1 − t<sup>2</sup>)/(1 + t<sup>2</sup>), dx = 2dt/(1 + t<sup>2</sup>).</li><li><strong>sin<sup>n</sup> x cos<sup>m</sup> x</strong> : linéarisation (sin<sup>2</sup> x = (1 − cos 2x)/2, sin a cos b = ½[sin(a + b) + sin(a − b)]) ou substitution.</li><li><strong>1/(ax<sup>2</sup> + bx + c)<sup>n</sup></strong> : formule de réduction.</li></ul></div>
+<h3>3. Intégrale définie</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>∫<sub>a</sub><sup>b</sup> f(x) dx = F(b) − F(a)</strong> (F primitive de f).</li><li><strong>Propriétés</strong> : linéarité ; Chasles ∫<sub>a</sub><sup>b</sup> + ∫<sub>b</sub><sup>c</sup> = ∫<sub>a</sub><sup>c</sup> ; ∫<sub>b</sub><sup>a</sup> = −∫<sub>a</sub><sup>b</sup> ; si f ≥ 0 alors ∫<sub>a</sub><sup>b</sup> f ≥ 0 (a < b).</li><li><strong>Interprétation</strong> : aire algébrique entre la courbe, l'axe Ox et les droites x = a, x = b.</li><li>Exemple : ∫<sub>0</sub><sup>π/2</sup> x<sup>2</sup> sin x dx = [−x<sup>2</sup> cos x + 2x sin x + 2cos x]<sub>0</sub><sup>π/2</sup> = π − 2.</li></ul><p><a href="https://www.youtube.com/results?search_query=Méthodes+d'intégration+et+intégrale+définie+terminale+maths" target="_blank" rel="noopener">🎥 Recherche : Méthodes d'intégration et intégrale définie (chaînes de cours de maths)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Choisir la méthode selon le type : immédiate, par parties, changement de variable, éléments simples, t = tg(x/2), linéarisation. L'intégrale définie se calcule par F(b) − F(a).</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Mathématiques, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MM6.12.</div>
+    `
+},
+{
+    title: "Leçon 14 — Applications géométriques de l'intégrale",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Un maçon doit placer une voûte à l'entrée de l'Institut Bodo. Sa face avant est limitée par les courbes f(x) = −x<sup>2</sup>/8 + 2x + 5 et g(x) = −x<sup>2</sup>/8 + 3x + 2, entre x = 2 et x = 5. Quelle est son aire ?</p></div>
+<h3>1. Aires</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Integral_example.svg?width=700" alt="Aire sous une courbe" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Aire sous une courbe — Wikimedia Commons : Integral example.svg</p><ul><li><strong>Entre deux courbes</strong> : A = ∫<sub>a</sub><sup>b</sup> |f(x) − g(x)| dx (couper aux points où f − g change de signe).</li><li><strong>Bornes inconnues</strong> : elles sont les abscisses des points d'intersection (f = g).</li><li><strong>En polaires</strong> : A = ½ ∫ ρ<sup>2</sup> dθ.</li><li><strong>Voûte</strong> : g − f = x − 3 ; A = ∫<sub>2</sub><sup>3</sup> (3 − x) dx + ∫<sub>3</sub><sup>5</sup> (x − 3) dx = 0,5 + 2 = <strong>2,5 m<sup>2</sup></strong>.</li><li>Item : aire entre y = x<sup>2</sup> + 4x + 1 et y = 2x + 1 sur [−1 ; 2] : ∫(x<sup>2</sup> + 2x) en tenant compte du signe = <strong>22/3</strong>.</li></ul></div>
+<h3>2. Longueurs d'arc</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Cartésiennes</strong> : L = ∫<sub>a</sub><sup>b</sup> √(1 + f'(x)<sup>2</sup>) dx.</li><li><strong>Paramétriques</strong> : L = ∫ √(x'(t)<sup>2</sup> + y'(t)<sup>2</sup>) dt.</li><li><strong>Polaires</strong> : L = ∫ √(ρ<sup>2</sup> + ρ'<sup>2</sup>) dθ.</li></ul></div>
+<h3>3. Volumes de révolution</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Autour de Ox</strong> : V = π ∫<sub>a</sub><sup>b</sup> f(x)<sup>2</sup> dx.</li><li><strong>Autour de Oy</strong> (méthode des coquilles) : V = 2π ∫ x f(x) dx ; ou π ∫ x<sup>2</sup> dy.</li><li>Exemple : y = 1/x, x ∈ [1 ; 3], autour de Ox : V = π ∫<sub>1</sub><sup>3</sup> dx/x<sup>2</sup> = π(1 − 1/3) = <strong>2π/3</strong>.</li><li><strong>Corps de révolution</strong> : solide engendré par la rotation d'une surface plane autour d'un axe.</li></ul><p><a href="https://www.youtube.com/results?search_query=Applications+géométriques+de+l'intégrale+terminale+maths" target="_blank" rel="noopener">🎥 Recherche : Applications géométriques de l'intégrale (chaînes de cours de maths)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Aire : intégrale de |f − g|. Longueur : intégrale de la racine de 1 + f'<sup>2</sup>. Volume de révolution autour de Ox : π fois l'intégrale de f<sup>2</sup>.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Mathématiques, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MM6.13.</div>
+    `
+},
+{
+    title: "Leçon 15 — Introduction aux probabilités",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Pour un examen oral, l'enseignant a préparé 30 questions : 15 sur les intégrales, 5 sur les similitudes, 4 en géométrie descriptive, 6 en algèbre. Chaque élève tire 3 questions sans remise. Quelle est la probabilité de tirer 3 questions d'intégrales ?</p></div>
+<h3>1. Vocabulaire et définitions</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Expérience aléatoire</strong> : résultat imprévisible ; <strong>univers</strong> Ω : ensemble des résultats possibles ; <strong>événement</strong> : partie de Ω.</li><li><strong>Événement élémentaire, certain (Ω), impossible (∅), contraire Ā, incompatibles</strong> (A ∩ B = ∅).</li><li><strong>Équiprobabilité</strong> : P(A) = nombre de cas favorables / nombre de cas possibles ; 0 ≤ P(A) ≤ 1.</li></ul></div>
+<h3>2. Formules</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>P(Ā) = 1 − P(A).</li><li><strong>P(A ∪ B) = P(A) + P(B) − P(A ∩ B)</strong> ; si A et B sont incompatibles, P(A ∪ B) = P(A) + P(B).</li><li><strong>Probabilité conditionnelle</strong> : P(A|B) = P(A ∩ B) / P(B).</li><li><strong>Événements indépendants</strong> : P(A ∩ B) = P(A) P(B).</li><li><strong>Probabilités totales</strong> : P(B) = Σ P(A<sub>i</sub>) P(B|A<sub>i</sub>) pour une partition (A<sub>i</sub>).</li></ul></div>
+<h3>3. Exemples résolus</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Tirage</strong> : C(30, 3) = 4 060 tirages possibles. 3 questions d'intégrales : C(15, 3) = 455 ⇒ P = 455/4 060 = <strong>13/116 ≈ 0,112</strong>.</li><li><strong>2 intégrales et 1 similitude</strong> : C(15, 2) × C(5, 1) = 525 ⇒ P = 525/4 060 = <strong>15/116 ≈ 0,129</strong>.</li><li><strong>Appareils téléphoniques</strong> (3 de l'usine A avec p = 0,9 ; 4 de B avec p = 0,8 ; 5 de C avec p = 0,75) : P(bon) = (3×0,9 + 4×0,8 + 5×0,75)/12 = 9,65/12 ≈ <strong>0,804</strong>.</li><li><strong>Variable aléatoire</strong> : fonction qui associe un nombre à chaque résultat ; sa <strong>loi de probabilité</strong> donne P(X = x<sub>i</sub>).</li></ul><p><a href="https://www.youtube.com/results?search_query=Introduction+aux+probabilités+terminale+maths" target="_blank" rel="noopener">🎥 Recherche : Introduction aux probabilités (chaînes de cours de maths)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Probabilité = cas favorables / cas possibles (équiprobabilité). Retenir P(A ∪ B), la probabilité conditionnelle, l'indépendance et les probabilités totales.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Mathématiques, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MM6.14.</div>
+    `
+},
+{
+    title: "Leçon 16 — Espérance mathématique, variance et écart-type",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>L'école de Kabala dans le Kwilu a un jardin scolaire. Le nombre X de kilos d'oranges récoltés en un mois est aléatoire. En moyenne, combien l'école récolte-t-elle ? Et de combien varie la récolte ?</p></div>
+<h3>1. Définitions</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Espérance</strong> : E(X) = Σ x<sub>i</sub> p<sub>i</sub> (valeur moyenne attendue).</li><li><strong>Variance</strong> : Var(X) = Σ (x<sub>i</sub> − E(X))<sup>2</sup> p<sub>i</sub> = <strong>E(X<sup>2</sup>) − E(X)<sup>2</sup></strong>.</li><li><strong>Écart-type</strong> : σ(X) = √Var(X).</li><li>Ces trois paramètres résument la <strong>position</strong> et la <strong>dispersion</strong> d'une distribution.</li></ul></div>
+<h3>2. Exemple du jardin (loi cumulée donnée)</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Valeurs 0, 1, 2, 3 avec P(X ≤ x) = 0,1 ; 0,6 ; 0,9 ; 1 (lecture : cumulée). Donc P(0) = 0,1 ; P(1) = 0,5 ; P(2) = 0,3 ; P(3) = 0,1.</li><li>E(X) = 0,5 + 0,6 + 0,3 = <strong>1,4</strong> ; E(X<sup>2</sup>) = 0,5 + 1,2 + 0,9 = 2,6 ; Var(X) = 2,6 − 1,96 = <strong>0,64</strong> ; σ = <strong>0,8</strong>.</li><li>Source à vérifier : le tableau de l'énoncé est écrit P(X < x) ; la lecture cumulée est ici supposée.</li></ul></div>
+<h3>3. Autres exemples</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Somme de deux dés</strong> (2 à 12) : E(X) = 7 ; Var(X) = 35/6 ≈ 5,83 ; σ ≈ 2,42.</li><li><strong>Consultations chez l'enseignant</strong> (X de 0 à 6 avec p = 0,05 ; 0,10 ; 0,15 ; 0,25 ; 0,30 ; 0,10 ; 0,05) : E(X) = <strong>3,15</strong> ; E(X<sup>2</sup>) = 12,05 ; Var(X) ≈ <strong>2,13</strong>.</li><li>Interprétation : plus σ est grand, plus les valeurs sont dispersées.</li></ul><p><a href="https://www.youtube.com/results?search_query=Espérance+mathématique,+variance+et+écart-type+terminale+maths" target="_blank" rel="noopener">🎥 Recherche : Espérance mathématique, variance et écart-type (chaînes de cours de maths)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>E(X) = Σ x<sub>i</sub> p<sub>i</sub> ; Var(X) = E(X<sup>2</sup>) − E(X)<sup>2</sup> ; σ = √Var. L'espérance mesure la moyenne, la variance et l'écart-type mesurent la dispersion.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Mathématiques, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MM6.15.</div>
+    `
+},
+{
+    title: "Leçon 17 — La loi binomiale",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans une école, 10 % des finalistes réussissent avec distinction à l'Examen d'État. Quelle est la probabilité que 2 élèves sur un échantillon de 10 réussissent avec distinction ?</p></div>
+<h3>1. Conditions et formule</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Épreuve de Bernoulli</strong> : deux issues, succès (probabilité p) ou échec (q = 1 − p).</li><li><strong>Loi binomiale B(n ; p)</strong> : on répète n épreuves <strong>indépendantes</strong> identiques ; X = nombre de succès.</li><li><strong>P(X = k) = C(n, k) p<sup>k</sup> q<sup>n−k</sup></strong>, k = 0, 1, …, n.</li><li><strong>E(X) = np</strong> ; <strong>Var(X) = npq</strong>.</li></ul></div>
+<h3>2. Exemples résolus</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>n = 10, p = 0,1, k = 2</strong> : C(10, 2) × 0,1<sup>2</sup> × 0,9<sup>8</sup> = 45 × 0,01 × 0,4305 ≈ <strong>0,194</strong>.</li><li><strong>n = 6, p = 0,20, k = 4</strong> : C(6, 4) × 0,2<sup>4</sup> × 0,8<sup>2</sup> = 15 × 0,0016 × 0,64 = <strong>0,01536</strong>.</li><li><strong>n = 5, p = q = ½</strong> : P(X = k) = C(5, k)/32 = 1/32, 5/32, 10/32, 10/32, 5/32, 1/32.</li></ul></div>
+<h3>3. Utilisation</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Vérifier d'abord les <strong>conditions</strong> (épreuves répétées, indépendantes, deux issues, même probabilité de succès).</li><li>Pour « plus de sept » : P(X > 7) = P(8) + P(9) + P(10) ; pour « au moins un » : 1 − P(0).</li><li>Sur n = 10, p = 0,1 : E(X) = 1 ; σ = √0,9 ≈ 0,95.</li></ul><p><a href="https://www.youtube.com/results?search_query=La+loi+binomiale+terminale+maths" target="_blank" rel="noopener">🎥 Recherche : La loi binomiale (chaînes de cours de maths)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Loi binomiale : P(X = k) = C(n, k) p<sup>k</sup> (1 − p)<sup>n−k</sup> ; E = np ; Var = np(1 − p). Vérifier toujours les conditions d'application.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Mathématiques, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MM6.16.</div>
+    `
+},
+{
+    title: "Leçon 18 — Les lieux géométriques",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Lors de l'ouverture des jeux de la journée de l'enseignement, les élèves dessinent des figures sur le terrain : ils restent à une certaine distance d'un point et d'une droite, ou se déplacent comme le milieu d'un segment qui glisse sur deux droites. Quelles courbes décrivent-ils ?</p></div>
+<h3>1. Méthode de traduction</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Lieu géométrique</strong> : ensemble des points qui vérifient une même propriété.</li><li><strong>1.</strong> Identifier la propriété. <strong>2.</strong> Choisir un repère orthonormé adapté. <strong>3.</strong> Traduire la propriété par une relation f(x ; y) = 0.</li><li>Exemple : points équidistants du point (3 ; 0) et de la droite x + 3 = 0 : (x − 3)<sup>2</sup> + y<sup>2</sup> = (x + 3)<sup>2</sup> ⇒ <strong>y<sup>2</sup> = 12x</strong> (parabole).</li><li>Exemple : somme des distances à (4 ; 0) et (−4 ; 0) égale à 10 : <strong>x<sup>2</sup>/25 + y<sup>2</sup>/9 = 1</strong> (ellipse).</li><li>Rapport MF / d(M ; d) = e : e = 1 parabole ; e < 1 ellipse ; e > 1 hyperbole (cas 1, 1/2, 4/3 de la situation).</li></ul></div>
+<h3>2. Méthode des génératrices</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>On exprime les points comme <strong>intersection de deux droites (génératrices)</strong> qui dépendent d'un paramètre λ.</li><li>On écrit leurs équations, puis on <strong>élimine λ</strong> pour obtenir l'équation du lieu.</li><li>On cherche les parties <strong>parasites</strong> et <strong>singulières</strong> (points où la méthode ne s'applique pas).</li><li>Exemple : droite variable passant par A(1 ; 3) et perpendiculaire menée par B(−1 ; −4) : le lieu est un <strong>cercle de diamètre AB</strong>.</li></ul></div>
+<h3>3. Exemples de la situation</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Segment de 12 m glissant</strong> entre x = 4 et y = −2 : le milieu décrit le <strong>cercle (x − 4)<sup>2</sup> + (y + 2)<sup>2</sup> = 36</strong>.</li><li><strong>Somme des distances à F(3 ; 0) et F'(−3 ; 0) égale à 10</strong> : <strong>x<sup>2</sup>/25 + y<sup>2</sup>/16 = 1</strong> (ellipse de demi-axes 5 et 4).</li></ul><p><a href="https://www.youtube.com/results?search_query=Les+lieux+géométriques+terminale+maths" target="_blank" rel="noopener">🎥 Recherche : Les lieux géométriques (chaînes de cours de maths)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Lieu géométrique : traduire la propriété en équation (méthode de traduction) ou éliminer un paramètre (génératrices). Distance à un point et à une droite : parabole ; somme des distances constante : ellipse.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Mathématiques, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MM6.17.</div>
+    `
+},
+{
+    title: "Leçon 19 — Généralités sur les coniques",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>L'enseignant dessine un cône et un plan au tableau : selon l'inclinaison du plan, la section est un cercle, une ellipse, une parabole ou une hyperbole. Quelle est la nature de 4x<sup>2</sup> − 9y<sup>2</sup> − 16x − 18y − 29 = 0 ?</p></div>
+<h3>1. Définition et équation générale</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Conic_sections_with_plane.svg?width=700" alt="Les coniques, sections d'un cône" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Les coniques, sections d'un cône — Wikimedia Commons : Conic sections with plane.svg</p><ul><li>Une <strong>conique</strong> est la section d'un cône de révolution par un plan.</li><li><strong>Équation générale</strong> : a x<sup>2</sup> + 2b xy + c y<sup>2</sup> + 2d x + 2e y + f = 0.</li><li><strong>Formes réduites</strong> : ellipse x<sup>2</sup>/a<sup>2</sup> + y<sup>2</sup>/b<sup>2</sup> = 1 ; hyperbole x<sup>2</sup>/a<sup>2</sup> − y<sup>2</sup>/b<sup>2</sup> = 1 ; parabole y<sup>2</sup> = 2px ; cercle x<sup>2</sup> + y<sup>2</sup> = R<sup>2</sup>.</li></ul></div>
+<h3>2. Classification</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Soit δ = ac − b<sup>2</sup>.</li><li><strong>δ > 0</strong> : ellipse (ou point, ou ensemble vide) ; <strong>δ = 0</strong> : parabole (ou droites) ; <strong>δ < 0</strong> : hyperbole (ou deux droites sécantes).</li><li>Le déterminant 3×3 de la matrice de la conique, nul, indique une conique <strong>dégénérée</strong>.</li></ul></div>
+<h3>3. Réduction de l'équation</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Si b ≠ 0</strong> : rotation des axes d'angle θ tel que tg 2θ = 2b/(a − c), pour éliminer le terme xy.</li><li><strong>Translation</strong> pour éliminer les termes du premier degré : compléter les carrés.</li><li>Exemple : 4x<sup>2</sup> − 9y<sup>2</sup> − 16x − 18y − 29 = 0 ⇒ 4(x − 2)<sup>2</sup> − 9(y + 1)<sup>2</sup> = 36 ⇒ <strong>(x − 2)<sup>2</sup>/9 − (y + 1)<sup>2</sup>/4 = 1</strong> : hyperbole de centre (2 ; −1), a = 3, b = 2.</li><li>Exemple : 2x<sup>2</sup> − 2xy + 2y<sup>2</sup> − 4x − 3y + 4 = 0 : δ = 4 − 1 = 3 > 0 ⇒ genre ellipse.</li></ul><p><a href="https://www.youtube.com/results?search_query=Généralités+sur+les+coniques+terminale+maths" target="_blank" rel="noopener">🎥 Recherche : Généralités sur les coniques (chaînes de cours de maths)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Équation générale du second degré en x et y. Le signe de δ = ac − b<sup>2</sup> donne le genre : ellipse (δ > 0), parabole (δ = 0), hyperbole (δ < 0). Réduire par rotation puis translation.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Mathématiques, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MM6.18.</div>
+    `
+},
+{
+    title: "Leçon 20 — Les éléments focaux d'une conique",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans un cahier d'items de l'EXETAT 2018, les finalistes ne parviennent pas à trouver le foyer et la directrice de y<sup>2</sup> − x<sup>2</sup> − 8y + 2x + 10 = 0. La clé : les éléments focaux.</p></div>
+<h3>1. Définition focale</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Une conique est l'ensemble des points M tels que <strong>MF = e · d(M ; directrice)</strong>.</li><li><strong>e</strong> : excentricité ; <strong>e < 1</strong> ellipse ; <strong>e = 1</strong> parabole ; <strong>e > 1</strong> hyperbole.</li><li><strong>F</strong> : foyer ; la <strong>directrice</strong> est associée au foyer.</li></ul></div>
+<h3>2. Formules des coniques centrées</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Ellipse</strong> x<sup>2</sup>/a<sup>2</sup> + y<sup>2</sup>/b<sup>2</sup> = 1 (a > b) : c<sup>2</sup> = a<sup>2</sup> − b<sup>2</sup> ; e = c/a ; foyers (±c ; 0) ; directrices x = ±a<sup>2</sup>/c.</li><li><strong>Hyperbole</strong> x<sup>2</sup>/a<sup>2</sup> − y<sup>2</sup>/b<sup>2</sup> = 1 : c<sup>2</sup> = a<sup>2</sup> + b<sup>2</sup> ; e = c/a ; foyers (±c ; 0) ; directrices x = ±a<sup>2</sup>/c.</li><li><strong>Parabole</strong> y<sup>2</sup> = 2px : foyer (p/2 ; 0) ; directrice x = −p/2 ; e = 1.</li><li>Le <strong>centre</strong> est le milieu des foyers (ellipse, hyperbole).</li></ul></div>
+<h3>3. Exemples résolus</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>y<sup>2</sup> − x<sup>2</sup> − 8y + 2x + 10 = 0</strong> ⇒ (y − 4)<sup>2</sup> − (x − 1)<sup>2</sup> = 5 : hyperbole équilatère, centre (1 ; 4), a = b = √5, c = √10, e = √2 ; foyers (1 ; 4 ± √10) ; directrices y = 4 ± √10/2.</li><li><strong>Conique de foyer F(−1 ; 0), directrice x = √2 et e = √3/3</strong> : (x + 1)<sup>2</sup> + y<sup>2</sup> = (1/3)(x − √2)<sup>2</sup>, soit 2x<sup>2</sup> + (6 + 2√2)x + 3y<sup>2</sup> + 1 = 0 : c'est une <strong>ellipse</strong> (e < 1).</li></ul><p><a href="https://www.youtube.com/results?search_query=Les+éléments+focaux+d'une+conique+terminale+maths" target="_blank" rel="noopener">🎥 Recherche : Les éléments focaux d'une conique (chaînes de cours de maths)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>MF = e × distance à la directrice. e < 1 : ellipse ; e = 1 : parabole ; e > 1 : hyperbole. Calculer c, e, les foyers et les directrices après avoir réduit l'équation.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Mathématiques, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MM6.19.</div>
+    `
+},
+{
+    title: "Leçon 21 — Pôle et polaire par rapport à une conique",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Pour améliorer leurs notes, les élèves de l'institut Mokala reçoivent une interrogation de récupération sur le lieu d'un point dont les polaires par rapport à deux coniques concourent. Il faut maîtriser pôle et polaire.</p></div>
+<h3>1. Définitions et équations</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>La <strong>polaire</strong> d'un point P(x<sub>0</sub> ; y<sub>0</sub>) par rapport à une conique est la droite obtenue par <strong>dédoublement</strong> des termes.</li><li>Pour a x<sup>2</sup> + 2b xy + c y<sup>2</sup> + 2d x + 2e y + f = 0 : <strong>a x x<sub>0</sub> + b(x y<sub>0</sub> + y x<sub>0</sub>) + c y y<sub>0</sub> + d(x + x<sub>0</sub>) + e(y + y<sub>0</sub>) + f = 0</strong>.</li><li>Cercle x<sup>2</sup> + y<sup>2</sup> = R<sup>2</sup> : x x<sub>0</sub> + y y<sub>0</sub> = R<sup>2</sup> ; ellipse : x x<sub>0</sub>/a<sup>2</sup> + y y<sub>0</sub>/b<sup>2</sup> = 1 ; parabole y<sup>2</sup> = 2px : y y<sub>0</sub> = p(x + x<sub>0</sub>).</li></ul></div>
+<h3>2. Propriétés</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Si P est <strong>sur la conique</strong>, sa polaire est la <strong>tangente</strong> en P.</li><li><strong>Réciprocité</strong> : si P' est sur la polaire de P, alors P est sur la polaire de P'.</li><li>Le <strong>pôle</strong> d'une droite est le point dont c'est la polaire ; le <strong>lieu des pôles</strong> d'une droite par rapport à une famille de coniques est en général une droite ou une conique.</li></ul></div>
+<h3>3. Exemple résolu</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Conique 2x<sup>2</sup> − 2xy + 5y<sup>2</sup> − 7y − x + 10 = 0 et point (1 ; 1) : polaire = 2x − (x + y) + 5y − ½(x + 1) − (7/2)(y + 1) + 10 = 0, soit <strong>x + y + 12 = 0</strong>.</li><li>Méthode du pôle d'une droite : écrire la polaire d'un point (x<sub>0</sub> ; y<sub>0</sub>) puis identifier avec l'équation de la droite donnée.</li></ul><p><a href="https://www.youtube.com/results?search_query=Pôle+et+polaire+par+rapport+à+une+conique+terminale+maths" target="_blank" rel="noopener">🎥 Recherche : Pôle et polaire par rapport à une conique (chaînes de cours de maths)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La polaire d'un point s'obtient par dédoublement ; pour un point de la conique, c'est la tangente. Pôle et polaire sont réciproques.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Mathématiques, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MM6.20.</div>
+    `
+},
+{
+    title: "Leçon 22 — Tangentes et normales à une conique",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Un menuisier de Kinshasa/Delvaux dessine une table ovale en forme d'ellipse x<sup>2</sup>/36 + y<sup>2</sup>/9 = 1. Il veut tracer des tangentes et des perpendiculaires en certains points pour placer les pieds de la table.</p></div>
+<h3>1. Tangente et normale en un point</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>La <strong>tangente</strong> en un point P(x<sub>0</sub> ; y<sub>0</sub>) de la conique s'obtient par <strong>dédoublement</strong> : ellipse x x<sub>0</sub>/a<sup>2</sup> + y y<sub>0</sub>/b<sup>2</sup> = 1 ; hyperbole x x<sub>0</sub>/a<sup>2</sup> − y y<sub>0</sub>/b<sup>2</sup> = 1 ; parabole y y<sub>0</sub> = p(x + x<sub>0</sub>).</li><li>La <strong>normale</strong> est la perpendiculaire à la tangente au point de contact.</li><li><strong>Table ovale, x<sub>0</sub> = 2</strong> : y<sub>0</sub> = ±2√2 ; tangente x + 4√2 y = 18 ; normale y = 4√2 x − 6√2.</li></ul></div>
+<h3>2. Tangentes menées d'un point</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Tangentes issues d'un point A extérieur</strong> : écrire y − y<sub>A</sub> = m(x − x<sub>A</sub>), substituer dans la conique, exprimer <strong>Δ = 0</strong> : on obtient les valeurs de m.</li><li><strong>De pente donnée</strong> : y = mx + k, avec condition de tangence. Pour y<sup>2</sup> = 2px : k = p/(2m).</li><li>Exemple : tangente à y<sup>2</sup> = 4x parallèle à x − 3y = 0 : y = x/3 + 3, soit <strong>x − 3y + 9 = 0</strong>.</li><li>Exemple : y<sup>2</sup> − 5x + a = 0 tangente à 12y − 5x + 6 = 0 ⇒ <strong>a = 42</strong>.</li></ul></div>
+<h3>3. Notions complémentaires</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Normales issues d'un point</strong> : on utilise l'<strong>hyperbole d'Apollonius</strong> ; ses intersections avec la conique donnent les pieds des normales.</li><li><strong>Sous-tangente, sous-normale</strong> : projections de la tangente et de la normale sur l'axe.</li><li><strong>Angle de deux coniques</strong> : angle de leurs tangentes au point commun.</li><li><strong>Podaire</strong> : lieu des projections orthogonales d'un point fixe sur les tangentes.</li></ul><p><a href="https://www.youtube.com/results?search_query=Tangentes+et+normales+à+une+conique+terminale+maths" target="_blank" rel="noopener">🎥 Recherche : Tangentes et normales à une conique (chaînes de cours de maths)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Tangente en un point : dédoublement. Tangentes d'un point extérieur ou de pente donnée : condition Δ = 0. La normale est perpendiculaire à la tangente au point de contact.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Mathématiques, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MM6.21.</div>
+    `
+},
+{
+    title: "Leçon 23 — Les asymptotes d'une conique",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Pour préparer la séquence, l'enseignant demande l'équation de l'hyperbole passant par l'origine et ayant pour asymptotes y = 2x + 3 et 3y − x + 1 = 0.</p></div>
+<h3>1. Définition et directions asymptotiques</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Une <strong>asymptote</strong> est une droite dont la courbe se rapproche à l'infini sans la couper à distance finie ; seules les coniques à <strong>centre</strong> de genre hyperbole en ont (δ < 0).</li><li><strong>Directions asymptotiques</strong> : on résout a + 2b m + c m<sup>2</sup> = 0 (m = pente), c'est-à-dire a x<sup>2</sup> + 2b xy + c y<sup>2</sup> = 0.</li><li>Hyperbole x<sup>2</sup>/a<sup>2</sup> − y<sup>2</sup>/b<sup>2</sup> = 1 : asymptotes <strong>y = ±(b/a) x</strong>.</li></ul></div>
+<h3>2. Trouver les asymptotes</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Factoriser la partie du second degré en (y − m<sub>1</sub> x)(y − m<sub>2</sub> x) ; les asymptotes ont pour équations y − m<sub>1</sub> x + α = 0 et y − m<sub>2</sub> x + β = 0 ; déterminer α et β par identification.</li><li>Exemple : y<sup>2</sup> − 4xy + 3x<sup>2</sup> + 2y + x − 5 = 0 ; partie quadratique (y − x)(y − 3x) ; α + β = 2 et β + 3α = −1 ⇒ α = −3/2, β = 7/2 ⇒ asymptotes <strong>y = x + 3/2</strong> et <strong>y = 3x − 7/2</strong>.</li></ul></div>
+<h3>3. Hyperbole connaissant ses asymptotes</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>L'équation d'une conique de <strong>mêmes asymptotes</strong> est (d<sub>1</sub>)(d<sub>2</sub>) = k où d<sub>1</sub> = 0 et d<sub>2</sub> = 0 sont les asymptotes ; on détermine k avec un point.</li><li><strong>Exemple</strong> : (y − 2x − 3)(3y − x + 1) = k, passage par O : k = −3 ⇒ <strong>2x<sup>2</sup> − 7xy + 3y<sup>2</sup> + x − 8y = 0</strong>.</li><li>k = 0 : paire de droites (conique dégénérée).</li></ul><p><a href="https://www.youtube.com/results?search_query=Les+asymptotes+d'une+conique+terminale+maths" target="_blank" rel="noopener">🎥 Recherche : Les asymptotes d'une conique (chaînes de cours de maths)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Les asymptotes d'une hyperbole passent par son centre ; leurs directions viennent de a + 2bm + cm<sup>2</sup> = 0. Une hyperbole de mêmes asymptotes a pour équation (d<sub>1</sub>)(d<sub>2</sub>) = k.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Mathématiques, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MM6.22.</div>
+    `
+},
+{
+    title: "Leçon 24 — Diamètres, axes de symétrie et sommets d'une conique",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>En classe, les élèves tracent l'ellipse 9x<sup>2</sup> + 36y<sup>2</sup> − 324 = 0. À la maison, Tsoni trouve que l'œuf pondu par sa poule ressemble à cette ellipse. Il trace ses axes de symétrie et place ses sommets.</p></div>
+<h3>1. Diamètres</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Un <strong>diamètre</strong> est le lieu des milieux d'un faisceau de cordes parallèles ; il passe par le centre.</li><li><strong>Ellipse</strong> x<sup>2</sup>/a<sup>2</sup> + y<sup>2</sup>/b<sup>2</sup> = 1 : cordes de pente m ⇒ diamètre y = −(b<sup>2</sup>/(a<sup>2</sup> m)) x ; deux directions m, m' sont <strong>conjuguées</strong> si m m' = −b<sup>2</sup>/a<sup>2</sup> (hyperbole : m m' = b<sup>2</sup>/a<sup>2</sup>).</li><li>Exemple : hyperbole xy = 16, cordes parallèles à 3x + 2y + 2 = 0 (pente −3/2) : le diamètre est <strong>3x − 2y = 0</strong>.</li></ul></div>
+<h3>2. Axes de symétrie</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Les <strong>axes</strong> sont les diamètres <strong>perpendiculaires à leurs directions conjuguées</strong> ; leurs <strong>directions principales</strong> sont solutions de b m<sup>2</sup> + (a − c) m − b = 0 (pour a x<sup>2</sup> + 2b xy + c y<sup>2</sup> + …).</li><li>Une ellipse et une hyperbole ont <strong>2 axes</strong> ; la parabole en a <strong>1</strong>.</li></ul></div>
+<h3>3. Sommets</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Les <strong>sommets</strong> sont les points d'intersection de la conique avec ses axes.</li><li><strong>Œuf de Tsoni</strong> : x<sup>2</sup>/36 + y<sup>2</sup>/9 = 1 ; axes x = 0 et y = 0 ; sommets <strong>(±6 ; 0) et (0 ; ±3)</strong>.</li><li>Pour une conique quelconque : trouver le centre, les directions principales, écrire les axes puis les couper avec la conique.</li></ul><p><a href="https://www.youtube.com/results?search_query=Diamètres,+axes+de+symétrie+et+sommets+d'une+conique+terminale+maths" target="_blank" rel="noopener">🎥 Recherche : Diamètres, axes de symétrie et sommets d'une conique (chaînes de cours de maths)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Diamètre : lieu des milieux de cordes parallèles. Axes : diamètres perpendiculaires à leurs conjugués. Sommets : intersections de la conique avec ses axes.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Mathématiques, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MM6.23.</div>
+    `
+},
+{
+    title: "Leçon 25 — Les similitudes planes",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Après une séquence sur les similitudes, deux élèves se disputent : Grâcela affirme que z' = (−2 + i)z + 1 + 2i est une similitude directe ; Emmanuel dit que ce n'en est même pas une. Qui a raison ?</p></div>
+<h3>1. Définition</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Une <strong>similitude</strong> est une transformation du plan qui <strong>multiplie toutes les distances par un même réel k > 0</strong> (le rapport).</li><li><strong>Directe</strong> : conserve les angles orientés ; <strong>indirecte</strong> : les renverse.</li><li><strong>Isométrie</strong> : k = 1 ; <strong>homothétie</strong> : k réel ; <strong>rotation</strong> : directe de rapport 1.</li></ul></div>
+<h3>2. Écriture complexe</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Directe</strong> : z' = a z + b (a ≠ 0) : rapport |a|, angle arg a ; si a ≠ 1, <strong>centre</strong> ω = b/(1 − a).</li><li><strong>Indirecte</strong> : z' = a z̄ + b (a ≠ 0) : rapport |a|.</li><li>a = 1 : translation ; a = réel ≠ 1 : homothétie ; |a| = 1 : rotation.</li><li>En réels : (x' ; y') = (x − y√3 ; x√3 + y) correspond à a = 1 + i√3 : <strong>similitude directe de rapport 2, d'angle 60°, de centre O</strong>.</li></ul></div>
+<h3>3. Exemples résolus</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>z' = (−2 + i)z + 1 + 2i</strong> : a = −2 + i, |a| = √5 ⇒ <strong>similitude directe</strong> (Grâcela a raison), rapport √5 ; centre ω = (1 + 2i)/(3 − i) = (1 + 7i)/10.</li><li><strong>z' = (−2 + i)z + 1 + 3i</strong> : centre ω = i.</li><li><strong>z' = i z̄ − 1 + i</strong> : indirecte, rapport |i| = 1 : <strong>isométrie indirecte</strong>.</li></ul><p><a href="https://www.youtube.com/results?search_query=Les+similitudes+planes+terminale+maths" target="_blank" rel="noopener">🎥 Recherche : Les similitudes planes (chaînes de cours de maths)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Similitude directe : z' = az + b, rapport |a|, angle arg a, centre b/(1 − a). Similitude indirecte : z' = a z̄ + b.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Mathématiques, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MM6.24.</div>
+    `
+},
+{
+    title: "Leçon 26 — Les plans dans l'espace",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Au Centre Saint Gérard de Kola, la sœur négocie avec trois opérateurs téléphoniques l'installation de trois antennes en trois points différents. On veut l'équation du plan passant par ces trois points, de trois manières différentes.</p></div>
+<h3>1. Équations d'un plan</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Vectorielle</strong> : OM = OA + λu + μv (A point du plan, u et v vecteurs directeurs non colinéaires).</li><li><strong>Paramétrique</strong> : x = x<sub>0</sub> + λu<sub>1</sub> + μv<sub>1</sub> ; y = y<sub>0</sub> + λu<sub>2</sub> + μv<sub>2</sub> ; z = z<sub>0</sub> + λu<sub>3</sub> + μv<sub>3</sub>.</li><li><strong>Cartésienne</strong> : a x + b y + c z + d = 0 ; <strong>n = (a ; b ; c)</strong> est un vecteur <strong>normal</strong> (n = u × v).</li><li><strong>Par les coordonnées à l'origine</strong> : x/p + y/q + z/r = 1.</li></ul></div>
+<h3>2. Plans particuliers, parallélisme, distances</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Plane_equation_normal_vector.svg?width=700" alt="Plan et vecteur normal" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Plan et vecteur normal — Wikimedia Commons : Plane equation normal vector.svg</p><ul><li><strong>Plan par trois points non alignés</strong> I, J, K : n = IJ × IK. Exemple : I(2 ; 1 ; 3), J(−1 ; −2 ; 4), K(4 ; 2 ; 1) : n = (5 ; −4 ; 3) ⇒ <strong>5x − 4y + 3z − 15 = 0</strong>.</li><li><strong>Parallèles</strong> : normaux colinéaires ; <strong>perpendiculaires</strong> : n · n' = 0.</li><li><strong>Distance d'un point P(x<sub>0</sub> ; y<sub>0</sub> ; z<sub>0</sub>) au plan</strong> : d = |a x<sub>0</sub> + b y<sub>0</sub> + c z<sub>0</sub> + d| / √(a<sup>2</sup> + b<sup>2</sup> + c<sup>2</sup>). Exemple : P(7 ; 3 ; 4), 6x − 3y + 2z − 13 = 0 : d = 28/7 = <strong>4</strong>.</li><li><strong>Distance de deux plans parallèles</strong> : on prend un point de l'un. Exemple : 3x + 2y − 2z + 12 = 0 et 3x + 2y − 2z − 5 = 0 : d = 17/√17 = <strong>√17</strong>.</li></ul><p><a href="https://www.youtube.com/results?search_query=Les+plans+dans+l'espace+terminale+maths" target="_blank" rel="noopener">🎥 Recherche : Les plans dans l'espace (chaînes de cours de maths)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Un plan se définit par un point et deux vecteurs directeurs, ou par un point et un vecteur normal. Équation cartésienne : ax + by + cz + d = 0 ; distance d'un point : |ax<sub>0</sub> + by<sub>0</sub> + cz<sub>0</sub> + d| / √(a<sup>2</sup> + b<sup>2</sup> + c<sup>2</sup>).</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Mathématiques, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MM6.25.</div>
+    `
+},
+{
+    title: "Leçon 27 — Les droites de l'espace",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Un judoka balaye l'espace des deux bras en position horizontale, puis du bras droit en position verticale : deux plans qui se coupent suivant une droite. Comment écrire les équations de cette droite ?</p></div>
+<h3>1. Équations d'une droite</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Vectorielle</strong> : OM = OA + λu (u vecteur directeur).</li><li><strong>Paramétrique</strong> : x = x<sub>0</sub> + λu<sub>1</sub> ; y = y<sub>0</sub> + λu<sub>2</sub> ; z = z<sub>0</sub> + λu<sub>3</sub>.</li><li><strong>Cartésienne (symétrique)</strong> : (x − x<sub>0</sub>)/u<sub>1</sub> = (y − y<sub>0</sub>)/u<sub>2</sub> = (z − z<sub>0</sub>)/u<sub>3</sub>.</li><li><strong>Par deux points</strong> A et B : u = AB.</li><li><strong>Intersection de deux plans</strong> : système de deux équations cartésiennes ; son vecteur directeur est n<sub>1</sub> × n<sub>2</sub>.</li></ul></div>
+<h3>2. Angles</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Angle de deux droites</strong> : cos φ = |u · v| / (|u| |v|).</li><li><strong>Angle d'une droite et d'un plan</strong> : sin φ = |u · n| / (|u| |n|).</li></ul></div>
+<h3>3. Distance d'un point à une droite</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>d(P ; D) = |AP × u| / |u|</strong> (A point de D).</li><li>Exemple : A(1 ; 2 ; 3) et D : x = 1, y = λ, z = 1 − λ ⇒ B(1 ; 0 ; 1), u = (0 ; 1 ; −1), BA = (0 ; 2 ; 2), BA × u = (−4 ; 0 ; 0) ⇒ d = 4/√2 = <strong>2√2</strong>.</li></ul><p><a href="https://www.youtube.com/results?search_query=Les+droites+de+l'espace+terminale+maths" target="_blank" rel="noopener">🎥 Recherche : Les droites de l'espace (chaînes de cours de maths)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Une droite de l'espace se définit par un point et un vecteur directeur. Retenir les formes vectorielle, paramétrique et cartésienne, les formules d'angle et de distance.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Mathématiques, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MM6.26.</div>
+    `
+},
+{
+    title: "Leçon 28 — Rabattement des figures planes",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Un panneau publicitaire s'est incliné après une forte pluie : Lobiko ne parvient plus à lire le texte. Pour retrouver la forme réelle d'une figure située dans un plan incliné, on la rabat sur un plan de projection : c'est le rabattement.</p></div>
+<h3>1. Notions</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Plans de projection</strong> : plan <strong>horizontal</strong> π et plan <strong>frontal</strong> (ou vertical) ; leur intersection est la <strong>ligne de terre</strong>.</li><li><strong>Rabattement</strong> : rotation d'un plan autour d'une de ses droites, la <strong>charnière</strong> (ch), jusqu'à le faire coïncider avec un plan horizontal ou frontal.</li><li><strong>But</strong> : obtenir la <strong>vraie grandeur</strong> des figures planes.</li><li>Les points de la charnière restent <strong>fixes</strong> (points fixes).</li></ul></div>
+<h3>2. Comportement des éléments</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Un point du plan décrit un <strong>arc de cercle</strong> situé dans un plan <strong>perpendiculaire à la charnière</strong> ; sa projection se déplace sur une <strong>perpendiculaire à la charnière</strong>.</li><li>La <strong>charnière</strong> est une <strong>horizontale</strong> (rabattement sur un plan horizontal) ou une <strong>frontale</strong> (sur un plan frontal) du plan à rabattre.</li><li>Les longueurs et les angles sont conservés dans la figure rabattue.</li></ul></div>
+<h3>3. Méthodes</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Droites sécantes</strong> : on rabat chaque point à l'aide de droites du plan qui se coupent en un point déjà rabattu.</li><li><strong>Droites parallèles</strong> : on utilise des parallèles à la charnière (rapide pour un polygone).</li><li>Source à vérifier : les noms exacts des méthodes et la notation des épures varient selon les manuels ; se reporter au manuel de géométrie descriptive de la classe.</li></ul><p><a href="https://www.youtube.com/results?search_query=Rabattement+des+figures+planes+terminale+maths" target="_blank" rel="noopener">🎥 Recherche : Rabattement des figures planes (chaînes de cours de maths)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Rabattre un plan autour d'une horizontale ou d'une frontale (la charnière) donne la vraie grandeur d'une figure plane. Les points de la charnière sont fixes.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Mathématiques, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MM6.27.</div>
+    `
+},
+{
+    title: "Leçon 29 — Relèvement des figures planes",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>L'épure représente le plan α rabattu sur le plan horizontal π autour d'une horizontale h. Connaissant les points B et C après rabattement, on veut retrouver leurs positions réelles dans le plan α : on effectue un relèvement.</p></div>
+<h3>1. Définition</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Relèvement</strong> : opération <strong>inverse</strong> du rabattement ; on ramène une figure rabattue dans sa position réelle dans l'espace.</li><li>On connaît la figure rabattue et <strong>un point de base</strong> ou la charnière.</li></ul></div>
+<h3>2. Principe</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Les points du plan se déplacent sur des arcs perpendiculaires à la charnière, comme pour le rabattement.</li><li>On relève point par point : à partir de la position rabattue, on revient sur la <strong>perpendiculaire à la charnière</strong> pour retrouver les projections, grâce aux droites du plan connues (par exemple la droite de plus grande pente).</li></ul></div>
+<h3>3. Utilisation</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Résoudre des problèmes d'épure</strong> : construire une figure de forme donnée (par exemple un hexagone régulier de 35 mm de côté) dans un plan, rabattre le plan, tracer la figure en vraie grandeur, puis la relever.</li><li>Source à vérifier : détails de construction à compléter avec les épures du manuel de la classe.</li></ul><p><a href="https://www.youtube.com/results?search_query=Relèvement+des+figures+planes+terminale+maths" target="_blank" rel="noopener">🎥 Recherche : Relèvement des figures planes (chaînes de cours de maths)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le relèvement est l'inverse du rabattement : il replace une figure dessinée en vraie grandeur dans sa position réelle. On construit d'abord la figure rabattue, puis on la relève.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Mathématiques, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MM6.28.</div>
+    `
+},
+{
+    title: "Leçon 30 — La rotation d'un point autour d'un axe",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Sur l'horloge, l'aiguille passe de l'heure A à l'heure B : chaque extrémité décrit un arc de cercle autour du centre. On peut tourner dans les deux sens : c'est une rotation.</p></div>
+<h3>1. Définitions</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Rotation</strong> : déplacement d'un point sur un cercle autour d'un <strong>axe</strong> ; <strong>angle</strong> (amplitude) et <strong>sens</strong> (direct ou rétrograde) la caractérisent.</li><li><strong>Plan de mouvement</strong> : plan perpendiculaire à l'axe contenant le point.</li><li><strong>Éléments</strong> : axe, amplitude, sens de rotation.</li></ul></div>
+<h3>2. Axes de bout et verticaux</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Axe de bout</strong> : perpendiculaire au plan frontal ; le plan de mouvement est <strong>frontal</strong> (parallèle au plan frontal) ; dans la projection frontale le point décrit un <strong>vrai cercle</strong>, la projection horizontale se déplace sur une droite parallèle à la ligne de terre.</li><li><strong>Axe vertical</strong> : perpendiculaire au plan horizontal ; le plan de mouvement est <strong>horizontal</strong> ; dans la projection horizontale le point décrit un vrai cercle, la projection frontale se déplace sur une droite parallèle à la ligne de terre.</li></ul></div>
+<h3>3. Épure de la rotation d'un point</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>1.</strong> Tracer le cercle décrit dans la projection où il apparaît en vraie grandeur. <strong>2.</strong> Reporter l'angle et le sens. <strong>3.</strong> Déduire l'autre projection par une ligne de rappel, sur la parallèle à la ligne de terre.</li><li>Exemple : rotation de 90° d'un point autour d'un axe de bout dans le sens rétrograde.</li></ul><p><a href="https://www.youtube.com/results?search_query=La+rotation+d'un+point+autour+d'un+axe+terminale+maths" target="_blank" rel="noopener">🎥 Recherche : La rotation d'un point autour d'un axe (chaînes de cours de maths)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Dans une rotation autour d'un axe de bout ou vertical, le point décrit un cercle vu en vraie grandeur dans l'une des projections ; l'autre projection se déplace parallèlement à la ligne de terre.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Mathématiques, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MM6.29.</div>
+    `
+},
+{
+    title: "Leçon 31 — La rotation d'une droite",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Lors d'un défilé, un militaire fait tourner un long bâton : tantôt horizontal, tantôt vertical. Quels axes et quelles amplitudes pour amener le bâton à la verticale ?</p></div>
+<h3>1. Principe</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Une <strong>droite</strong> est déterminée par deux points : on fait tourner <strong>deux points</strong> (ou un point et la direction) de la <strong>même amplitude</strong> autour du <strong>même axe</strong>.</li><li>La rotation conserve les <strong>longueurs</strong> et les <strong>angles</strong>.</li></ul></div>
+<h3>2. Cas à connaître</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>Rendre une droite <strong>quelconque horizontale</strong> : rotation autour d'un <strong>axe de bout</strong>.</li><li>Rendre une droite <strong>horizontale de bout</strong> : rotation autour d'un <strong>axe vertical</strong>.</li><li>Rendre une droite quelconque <strong>parallèle</strong> à un plan de projection : <strong>une</strong> rotation.</li><li>Rendre une droite quelconque <strong>perpendiculaire</strong> à un plan de projection : <strong>deux rotations</strong> (d'abord la rendre parallèle à un plan de projection, puis perpendiculaire à l'autre).</li></ul></div>
+<h3>3. Exemple</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Arbres abattus</strong> : l'un tombe en décrivant un angle de 90° (rotation de la droite qui le représente autour du point de section) ; l'autre ne s'incline que de 35°. On représente chaque position sur une épure, avec le centre de rotation comme point fixe.</li><li>Source à vérifier : les conventions « de bout » et « verticale » dépendent du manuel.</li></ul><p><a href="https://www.youtube.com/results?search_query=La+rotation+d'une+droite+terminale+maths" target="_blank" rel="noopener">🎥 Recherche : La rotation d'une droite (chaînes de cours de maths)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Une droite quelconque devient parallèle à un plan de projection par une rotation et perpendiculaire à un plan par deux rotations successives.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Mathématiques, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MM6.30.</div>
+    `
+},
+{
+    title: "Leçon 32 — La rotation d'un plan",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Les élèves de l'Institut Wuba de Bagata maîtrisent la rotation d'un point et d'une droite. Un plan se définit par deux droites parallèles ou sécantes, trois points non alignés ou une droite et un point : ils font donc tourner un plan comme ces éléments.</p></div>
+<h3>1. Principe</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li>On fait tourner les éléments qui <strong>définissent</strong> le plan (par exemple un point et une horizontale, ou trois points) de la même amplitude autour du même axe.</li><li>Le plan tourné conserve sa <strong>forme</strong> et ses <strong>mesures</strong>.</li></ul></div>
+<h3>2. Cas à connaître</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Plan quelconque → plan de bout</strong> : rotation autour d'un <strong>axe vertical</strong>, qui rend une horizontale du plan de bout.</li><li><strong>Plan de bout → plan horizontal</strong> : rotation autour d'un <strong>axe de bout</strong>.</li><li><strong>Plan vertical → plan frontal</strong> : rotation autour d'un <strong>axe vertical</strong>.</li><li><strong>Plan quelconque → plan horizontal ou frontal</strong> : <strong>deux rotations</strong> successives.</li><li><strong>Plan de profil → horizontal ou frontal</strong> : <strong>90°</strong> de rotation.</li></ul></div>
+<h3>3. Comment procéder</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>1.</strong> Choisir une horizontale (ou frontale) du plan. <strong>2.</strong> La rendre de bout (ou verticale) par une rotation d'axe adapté. <strong>3.</strong> Faire suivre la rotation à tous les éléments du plan. <strong>4.</strong> Si nécessaire, effectuer une seconde rotation d'axe de bout pour rendre le plan horizontal.</li><li>Source à vérifier : conventions de nomenclature (« de bout », « frontal », « de profil ») à confirmer avec le manuel de la classe.</li></ul><p><a href="https://www.youtube.com/results?search_query=La+rotation+d'un+plan+terminale+maths" target="_blank" rel="noopener">🎥 Recherche : La rotation d'un plan (chaînes de cours de maths)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Un plan quelconque devient de bout (ou vertical) par une rotation autour d'un axe vertical (ou de bout), puis horizontal ou frontal par une deuxième rotation ; un plan de profil exige 90°.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme éducatif de Mathématiques, 4e année des Humanités scientifiques (MEPST/DIPROMAD, 2021), matrice MM6.31.</div>
+    `
+},
+{
+    title: "Évaluation finale — Items EXETAT",
+    content: `
+        <p style="margin-bottom:18px;color:#4a148c;font-size:0.95rem;">Cette évaluation regroupe des items tirés des épreuves d'État (EXETAT) des années précédentes. Fais l'exercice dans les conditions du concours : sans notes, en une seule fois.</p>
+
+        <div class="bloc theorie">
+            <div class="bloc-label">Consignes</div>
+            <ul>
+                <li>43 questions à choix multiples.</li>
+                <li>Une seule réponse correcte par question.</li>
+                <li>Pas de retour en arrière sur les questions déjà validées.</li>
+                <li>Durée recommandée : 45 minutes.</li>
+            </ul>
+        </div>
+
+        <div class="quiz-container" id="quizContainer">
+            <h3 style="color:#2d1b4e;margin-bottom:16px;font-size:1.1rem;">Partie 1 — Questions</h3>
+            <div id="quizQuestions"></div>
+            <button id="submitQuiz" class="quiz-btn-submit">Valider mes réponses</button>
+            <div id="quizResult" class="quiz-result"></div>
+        </div>
+    `
+}
+];
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim()) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderQuiz() {
+    const questions = [
+        { text:"Quelle est la valeur de i<sup>3</sup>003 ?", options:["i","−i","1"], correct:1 },
+        { text:"Quel est le module de 3 + 4i ?", options:["5","7","25"], correct:0 },
+        { text:"Quel est le conjugué de −1 − 3i ?", options:["1 + 3i","−1 + 3i","1 − 3i"], correct:1 },
+        { text:"Quel est l'argument de 1 + i ?", options:["π/4","π/2","π/3"], correct:0 },
+        { text:"La formule (cos θ + i sin θ)<sup>n</sup> = cos nθ + i sin nθ est celle de :", options:["Euler","Moivre","Taylor"], correct:1 },
+        { text:"Quelles sont les solutions de z<sup>2</sup> + 2z + 2 = 0 ?", options:["−1 ± i","1 ± i","−2 ± 2i"], correct:0 },
+        { text:"Combien de racines cubiques un nombre complexe non nul a-t-il ?", options:["3","2","1"], correct:0 },
+        { text:"Quelle relation relie les fonctions hyperboliques ?", options:["ch<sup>2</sup> x − sh<sup>2</sup> x = 1","ch x + sh x = 1","ch x = sh x"], correct:0 },
+        { text:"Une valeur approchée de e est :", options:["2,718","3,141","1,618"], correct:0 },
+        { text:"La dérivée de ln u est :", options:["u'/u","1/u","u' ln u"], correct:0 },
+        { text:"La dérivée de e<sup>2x</sup> est :", options:["e<sup>2x</sup>","2e<sup>2x</sup>","2x e<sup>2x</sup>"], correct:1 },
+        { text:"La solution de ln(x − 1) = 7 est :", options:["e<sup>7</sup>","1 + e<sup>7</sup>","7e"], correct:1 },
+        { text:"L'équation 2e<sup>x</sup> + 10 = 6 :", options:["a pour solution ln(−2)","n'a aucune solution réelle","a pour solution −2"], correct:1 },
+        { text:"lim<sub>x→0</sub> ln(1 + x)/x vaut :", options:["0","1","+∞"], correct:1 },
+        { text:"Dans la règle de l'Hospital, lim f/g (forme 0/0) est égale à :", options:["lim f'/g'","lim f·g","lim (f − g)"], correct:0 },
+        { text:"Le développement de Mac-Laurin de e<sup>x</sup> commence par :", options:["1 + x + x<sup>2</sup>/2! + …","1 − x + x<sup>2</sup> − …","x − x<sup>3</sup>/3! + …"], correct:0 },
+        { text:"La différentielle de y = x<sup>2</sup> est :", options:["2x dx","x dx","2 dx"], correct:0 },
+        { text:"Une primitive de 1/x sur ]0 ; +∞[ est :", options:["x<sup>2</sup>","ln x","e<sup>x</sup>"], correct:1 },
+        { text:"∫ x e<sup>x</sup> dx est égale à :", options:["e<sup>x</sup> (x − 1) + C","x e<sup>x</sup> + C","e<sup>x</sup> / x + C"], correct:0 },
+        { text:"L'intégration par parties s'écrit :", options:["∫ u v' = uv − ∫ u' v","∫ u v' = u'v + uv'","∫ u v' = uv + ∫ u' v"], correct:0 },
+        { text:"Le volume engendré par rotation de y = f(x) autour de Ox entre a et b est :", options:["π ∫ f<sup>2</sup> dx","∫ f<sup>2</sup> dx","2π ∫ f dx"], correct:0 },
+        { text:"∫<sub>0</sub><sup>1</sup> x dx vaut :", options:["1/2","1","2"], correct:0 },
+        { text:"De combien de façons peut-on tirer 3 questions parmi 30 ?", options:["4 060","27 000","90"], correct:0 },
+        { text:"Pour deux événements A et B, P(A ∪ B) est égale à :", options:["P(A) + P(B) − P(A ∩ B)","P(A) + P(B)","P(A) P(B)"], correct:0 },
+        { text:"Deux événements A et B sont indépendants si :", options:["P(A ∩ B) = P(A) P(B)","P(A ∩ B) = 0","P(A) = P(B)"], correct:0 },
+        { text:"X vaut 0, 1, 2 avec les probabilités 0,2 ; 0,5 ; 0,3. L'espérance est :", options:["1","1,1","1,5"], correct:1 },
+        { text:"La variance s'écrit :", options:["E(X<sup>2</sup>) − E(X)<sup>2</sup>","E(X)<sup>2</sup>","E(X) − E(X<sup>2</sup>)"], correct:0 },
+        { text:"Pour une loi binomiale B(n ; p), l'espérance est :", options:["np","npq","n/p"], correct:0 },
+        { text:"n = 3 et p = 1/2 : P(X = 2) vaut :", options:["1/4","3/8","1/2"], correct:1 },
+        { text:"Le lieu des points équidistants d'un point et d'une droite est :", options:["un cercle","une parabole","une ellipse"], correct:1 },
+        { text:"Le lieu des points dont la somme des distances à deux points fixes est constante est :", options:["une ellipse","une hyperbole","une parabole"], correct:0 },
+        { text:"Pour une hyperbole, l'excentricité vérifie :", options:["e < 1","e = 1","e > 1"], correct:2 },
+        { text:"Si δ = ac − b<sup>2</sup> < 0, la conique est (genre) :", options:["une ellipse","une parabole","une hyperbole"], correct:2 },
+        { text:"La polaire de P(x<sub>0</sub> ; y<sub>0</sub>) par rapport au cercle x<sup>2</sup> + y<sup>2</sup> = R<sup>2</sup> a pour équation :", options:["x x<sub>0</sub> + y y<sub>0</sub> = R<sup>2</sup>","x<sup>2</sup> + y<sup>2</sup> = R<sup>2</sup>","x + y = R"], correct:0 },
+        { text:"Les asymptotes de x<sup>2</sup>/a<sup>2</sup> − y<sup>2</sup>/b<sup>2</sup> = 1 sont :", options:["y = ±(b/a) x","y = ±(a/b) x","y = ±x/ab"], correct:0 },
+        { text:"Les sommets de l'ellipse x<sup>2</sup>/36 + y<sup>2</sup>/9 = 1 sont :", options:["(±6 ; 0) et (0 ; ±3)","(±3 ; 0) et (0 ; ±6)","(±36 ; 0) et (0 ; ±9)"], correct:0 },
+        { text:"La similitude directe z' = az + b a pour rapport :", options:["|a|","arg a","a"], correct:0 },
+        { text:"Le centre de z' = az + b (a ≠ 1) est :", options:["b/(1 − a)","b/a","−b"], correct:0 },
+        { text:"La distance du point (7 ; 3 ; 4) au plan 6x − 3y + 2z − 13 = 0 est :", options:["4","28","7"], correct:0 },
+        { text:"Un vecteur normal au plan 5x − 4y + 3z − 15 = 0 est :", options:["(5 ; −4 ; 3)","(5 ; 4 ; 3)","(−15 ; 0 ; 0)"], correct:0 },
+        { text:"Le rabattement d'un plan sert à :", options:["obtenir la vraie grandeur d'une figure plane","calculer un volume","agrandir une figure"], correct:0 },
+        { text:"Pour rendre de bout une droite quelconque, il faut :", options:["une seule rotation","deux rotations","c'est impossible"], correct:1 },
+        { text:"Pour rendre horizontal ou frontal un plan de profil, la rotation est de :", options:["45°","90°","180°"], correct:1 }
+    ];
+    let html = '';
+    questions.forEach((q,i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o,k) => { html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>'; });
+        html += '</div>';
+    });
+    document.getElementById('quizQuestions').innerHTML = html;
+    document.getElementById('submitQuiz').onclick = () => {
+        let score = 0;
+        questions.forEach((q,i) => {
+            const s = document.querySelector('input[name="q' + i + '"]:checked');
+            if (s && parseInt(s.value) === q.correct) score++;
+        });
+        const pct = Math.round(score/questions.length*100);
+        document.getElementById('quizResult').innerHTML = '<div style="background:#dccbf2;padding:16px;border-radius:10px;margin-top:14px;">' +
+            '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong><br>' +
+            (score === questions.length ? 'Excellent. Tu maîtrises le programme.' :
+             score >= 7 ? 'Bien. Revoyez les leçons où vous avez échoué.' :
+             'Relis attentivement les leçons avant l\'examen.') + '</div>';
+    };
+}
+function renderSlide(index, keepHighlight = true) {
+    const isQuiz = (index === slides.length - 1);
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    if (isQuiz) renderQuiz();
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm && !isQuiz) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+</body>
+</html>

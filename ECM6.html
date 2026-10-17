@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>ECM — 6e secondaire (EXETAT)</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body {
+    font-family:'Segoe UI',system-ui,sans-serif;
+    background:linear-gradient(160deg,#0d2b4f 0%,#1565c0 50%,#07172e 100%);
+    display:flex; justify-content:center; align-items:center;
+    padding:8px;
+}
+.container {
+    width:100%; max-width:1400px; background:#fefdf8;
+    border-radius:20px; overflow:hidden;
+    display:flex; flex-direction:column;
+    height:100%; max-height:100vh;
+    box-shadow:0 20px 60px rgba(0,0,0,0.4);
+}
+
+/* BARRE DE PROGRESSION */
+.progress-bar { height:4px; background:#d3e1f4; flex-shrink:0; }
+.progress-fill {
+    height:100%; background:linear-gradient(90deg,#5b8fd0,#12437a);
+    width:0%; transition:width 0.3s;
+}
+
+/* HEADER COMPACT */
+.header {
+    padding:10px 16px; background:#e8f0fb;
+    border-bottom:1px solid #a9c3e8;
+    display:flex; justify-content:space-between; align-items:center;
+    gap:10px; flex-shrink:0;
+}
+.header h1 { color:#12437a; font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box {
+    display:flex; background:white; border-radius:20px;
+    padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06);
+}
+.search-box input {
+    border:none; padding:6px 10px; border-radius:20px;
+    outline:none; width:130px; font-size:0.8rem;
+}
+.search-box button {
+    background:none; border:none; cursor:pointer;
+    padding:4px 8px; font-size:0.85rem; color:#1565c0;
+}
+.badge {
+    background:#5b8fd0; color:white; padding:4px 10px;
+    border-radius:20px; font-weight:bold; font-size:0.75rem;
+}
+.search-nav {
+    display:none; gap:4px; background:#cfdff5;
+    padding:2px 8px; border-radius:20px; align-items:center;
+    font-size:0.75rem;
+}
+.search-nav button {
+    background:none; border:none; cursor:pointer;
+    font-size:0.9rem; color:#12437a; padding:2px 4px;
+}
+
+/* CONTENU PLEIN ÉCRAN + AÉRÉ */
+.content {
+    padding:28px 32px; flex:1; overflow-y:auto;
+    background:#fff; scroll-behavior:smooth;
+    line-height:1.85;
+}
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide {
+    from { opacity:0; transform:translateY(8px); }
+    to { opacity:1; transform:translateY(0); }
+}
+
+.slide-title {
+    color:#0d2b4f; font-size:1.5rem; font-weight:700;
+    padding-bottom:12px; margin-bottom:20px;
+    border-bottom:2px solid #5b8fd0;
+}
+.slide-content { color:#0a1c35; font-size:1rem; }
+
+/* BLOCS PÉDAGOGIQUES */
+.bloc {
+    padding:18px 22px; border-radius:12px;
+    margin:22px 0; line-height:1.85;
+}
+.bloc-label {
+    font-size:0.75rem; font-weight:700;
+    letter-spacing:1.5px; text-transform:uppercase;
+    margin-bottom:8px; opacity:0.7;
+}
+.bloc p, .bloc li { font-size:0.98rem; }
+.bloc h3 {
+    font-size:1.1rem; margin:20px 0 10px;
+    font-weight:600;
+}
+.bloc h3:first-child { margin-top:0; }
+
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+
+.theorie { background:#e8f0fb; border-left:4px solid #5b8fd0; }
+.theorie .bloc-label { color:#12437a; }
+
+.pratique { background:#e8f5e9; border-left:4px solid #43a047; }
+.pratique .bloc-label { color:#1b5e20; }
+
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+
+/* LISTES */
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:#0d2b4f; }
+
+/* QUIZ */
+.quiz-container { padding:22px; background:#e8f0fb; border-radius:16px; }
+.quiz-question {
+    background:white; border-radius:10px; padding:16px;
+    margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05);
+}
+.quiz-question p { font-weight:600; margin-bottom:10px; color:#0d2b4f; }
+.quiz-question label {
+    display:block; padding:8px 10px; margin:4px 0;
+    border-radius:6px; cursor:pointer; transition:background 0.2s;
+}
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit {
+    background:#2a67b0; color:white; border:none;
+    padding:12px 24px; border-radius:30px; font-size:1rem;
+    cursor:pointer; font-weight:600; margin-top:14px;
+}
+.quiz-result { margin-top:16px; font-weight:600; }
+
+/* SOURCES */
+.sources {
+    background:#f5f5f5; padding:12px 16px; border-radius:10px;
+    margin-top:26px; font-size:0.82rem; color:#666;
+    border-left:3px solid #999; line-height:1.6;
+}
+.sources strong { color:#333; }
+
+/* FOOTER COMPACT */
+.controls {
+    padding:8px 16px; background:#fafafa;
+    border-top:1px solid #e0e0e0;
+    display:flex; justify-content:space-between;
+    align-items:center; gap:8px; flex-shrink:0;
+}
+.nav-btn {
+    background:white; color:#12437a;
+    border:1px solid #ccc; padding:8px 14px;
+    border-radius:8px; font-size:0.82rem;
+    cursor:pointer; font-weight:500;
+}
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+
+/* SCROLLBAR STYLE */
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:#dde8f7; }
+.content::-webkit-scrollbar-thumb { background:#5b8fd0; border-radius:3px; }
+
+/* MOBILE */
+@media (max-width:600px) {
+    body { padding:0; }
+    .container { border-radius:0; max-height:100vh; }
+    .content { padding:20px 18px; }
+    .slide-title { font-size:1.25rem; }
+    .search-box input { width:90px; }
+    .header h1 { font-size:0.85rem; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+    <div class="header">
+        <h1>ECM · 6e secondaire</h1>
+        <div class="header-right">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Rechercher">
+                <button id="searchBtn">⌕</button>
+            </div>
+            <div class="search-nav" id="searchNav">
+                <button id="prevResultBtn">‹</button>
+                <span id="resultCounter">0/0</span>
+                <button id="nextResultBtn">›</button>
+            </div>
+            <span class="badge" id="slideCounter">1/12</span>
+        </div>
+    </div>
+
+    <div class="content" id="content"></div>
+
+    <div class="controls">
+        <button class="nav-btn" id="prevBtn">← Précédent</button>
+        <span class="counter" id="counter">Leçon 1 / 12</span>
+        <button class="nav-btn" id="nextBtn">Suivant →</button>
+    </div>
+</div>
+
+<script>
+const slides = [
+{
+    title: "Leçon 1 — Citoyenneté et nationalité congolaise",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>À 18 ans, tu reçois ta carte d'électeur. Pour la première fois, ton nom compte dans le choix de ceux qui dirigent le pays. Être citoyen, ce n'est pas seulement habiter quelque part : c'est appartenir à une nation avec des droits et des devoirs.</p></div>
+<h3>1. Définitions</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Flag_of_the_Democratic_Republic_of_the_Congo.svg?width=800" alt="Drapeau de la RDC" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Image : Wikimedia Commons (visible avec connexion)</p><ul><li><strong>Citoyen</strong> : personne qui jouit de droits civils et politiques dans un État et en assume les devoirs.</li><li><strong>Nationalité</strong> : lien juridique d'appartenance à un État.</li><li><strong>Civisme</strong> : respect des lois, des institutions et des autres.</li><li><strong>Patriotisme</strong> : amour et service de la patrie.</li></ul></div>
+<h3>2. La nationalité congolaise</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Une et exclusive</strong> : on ne peut pas avoir deux nationalités (Constitution, art. 10).</li><li><strong>Congolais d'origine</strong> : appartient à un groupe ethnique dont le territoire faisait partie de la RDC à l'indépendance, le <strong>30 juin 1960</strong>.</li><li><strong>Acquisition</strong> : par la naissance, par naturalisation, par adoption (loi du 12 novembre 2004).</li><li><strong>Perte</strong> : notamment par acquisition volontaire d'une autre nationalité (source à vérifier).</li></ul></div>
+<h3>3. Droits et devoirs du citoyen</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Droits</strong> : vie, liberté, égalité, éducation, santé, travail, vote (dès <strong>18 ans</strong>).</li><li><strong>Devoirs</strong> : respecter la Constitution et les lois, payer l'impôt, défendre le pays, protéger les biens publics, respecter les autres (Constitution, titre II, devoirs du citoyen).</li></ul></div>
+<h3>4. Les symboles nationaux</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Drapeau</strong> : bleu ciel avec une étoile jaune et une bande rouge bordée de jaune.</li><li><strong>Devise</strong> : Justice – Paix – Travail.</li><li><strong>Hymne</strong> : « Debout Congolais ».</li><li><strong>Armoiries</strong> : tête de léopard.</li><li><strong>Capitale</strong> : Kinshasa ; <strong>monnaie</strong> : franc congolais.</li></ul><p><a href="https://www.youtube.com/results?search_query=citoyenneté+nationalité+congolaise" target="_blank" rel="noopener">🎥 Recherche : citoyenneté en RDC (Radio Okapi / TV5Monde)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le citoyen congolais a des droits et des devoirs. La nationalité est une et exclusive. Les symboles nationaux sont le drapeau, la devise, l'hymne et les armoiries.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national d'ECM RDC (EPST), Constitution de la RDC (2006), loi sur la nationalité (2004).</div>
+    `
+},
+{
+    title: "Leçon 2 — La Constitution de la RDC",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Une loi interdit ou autorise, mais qui limite le pouvoir lui-même ? C'est la Constitution, texte suprême de l'État, que tous doivent respecter, du Président au simple citoyen.</p></div>
+<h3>1. Définition et rôle</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Coat_of_arms_of_the_Democratic_Republic_of_the_Congo.svg?width=800" alt="Armoiries de la RDC" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Image : Wikimedia Commons (visible avec connexion)</p><p>La <strong>Constitution</strong> est la loi fondamentale d'un État. Elle organise les pouvoirs, garantit les droits et fixe les règles du jeu politique. Toutes les autres lois doivent lui être conformes (<strong>hiérarchie des normes</strong>).</p></div>
+<h3>2. Histoire constitutionnelle de la RDC</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>1960</strong> : Loi fondamentale.</li><li><strong>1964</strong> : Constitution de Luluabourg.</li><li><strong>1967</strong> : Constitution (révisée en 1974).</li><li><strong>1994</strong> : Acte constitutionnel de transition.</li><li><strong>2003</strong> : Constitution de transition, après l'accord de Sun City.</li><li><strong>2006</strong> : Constitution actuelle, adoptée par <strong>référendum</strong> (déc. 2005), promulguée le <strong>18 février 2006</strong>.</li><li><strong>2011</strong> : révision (loi du 20 janvier 2011).</li></ul></div>
+<h3>3. Principes de la Constitution de 2006</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><blockquote style="border-left:3px solid #999; padding-left:14px; margin:16px 0; font-style:italic; color:#555;">"La République démocratique du Congo est, dans ses frontières du 30 juin 1960, un État de droit, indépendant, souverain, uni et indivisible, social, démocratique et laïc."<br><strong>— Constitution de la RDC, article 1</strong></blockquote><ul><li><strong>Souveraineté</strong> : appartient au peuple (art. 5).</li><li><strong>Séparation des pouvoirs</strong>, <strong>pluralisme politique</strong>, <strong>décentralisation</strong>.</li><li><strong>Structure</strong> : préambule, titres sur les droits, les institutions, les provinces, la révision.</li></ul></div>
+<h3>4. La révision</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><p>Certains points ne peuvent <strong>pas</strong> être révisés (art. 220) : forme républicaine de l'État, suffrage universel, nombre et durée des mandats du Président, indépendance de la justice, pluralisme politique et syndical.</p><p><a href="https://www.youtube.com/results?search_query=Constitution+RDC+2006+histoire" target="_blank" rel="noopener">🎥 Recherche : Constitution de la RDC (TV5Monde / Radio Okapi)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La Constitution du 18 février 2006 est la loi suprême. Elle fonde l'État de droit et protège les droits ; des clauses sont non révisables (art. 220).</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national d'ECM RDC (EPST), Constitution de la RDC (2006, révisée 2011).</div>
+    `
+},
+{
+    title: "Leçon 3 — L'État de droit et la démocratie",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Un policier arrête quelqu'un sans mandat. Un juge libère l'homme car la loi n'a pas été respectée. Dans un État de droit, même l'autorité doit obéir à la loi.</p></div>
+<h3>1. L'État de droit</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Scale_of_justice_2.svg?width=800" alt="Balance de la justice" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Image : Wikimedia Commons (visible avec connexion)</p><p>Un État où <strong>la loi s'impose à tous</strong>, y compris aux gouvernants. Il suppose : une Constitution, la <strong>séparation des pouvoirs</strong>, une <strong>justice indépendante</strong>, la garantie des <strong>droits de l'homme</strong>.</p></div>
+<h3>2. La démocratie</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Définition</strong> : gouvernement du peuple, par le peuple, pour le peuple.</li><li><strong>Directe</strong> (référendum), <strong>représentative</strong> (élus), <strong>semi-directe</strong>.</li><li><strong>Principes</strong> : souveraineté du peuple, élections libres, pluralisme, alternance, liberté d'expression, respect des minorités.</li></ul></div>
+<h3>3. La séparation des pouvoirs</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><p>Montesquieu (*De l'esprit des lois*, 1748) : trois pouvoirs distincts.</p><ul><li><strong>Exécutif</strong> : fait appliquer les lois.</li><li><strong>Législatif</strong> : vote les lois, contrôle le gouvernement.</li><li><strong>Judiciaire</strong> : juge les litiges.</li></ul><p>Une <strong>collaboration</strong> existe entre eux, ainsi que des <strong>contrôles réciproques</strong>.</p></div>
+<h3>4. Régimes politiques</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Présidentiel</strong>, <strong>parlementaire</strong>, <strong>semi-présidentiel</strong> (cas de la RDC : exécutif à deux têtes).</li><li><strong>Opposés</strong> : dictature, régime à parti unique.</li></ul><p><a href="https://www.youtube.com/results?search_query=État+de+droit+démocratie+séparation+des+pouvoirs" target="_blank" rel="noopener">🎥 Recherche : État de droit (TV5Monde / France 24)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>L'État de droit soumet tous à la loi. La démocratie repose sur le peuple souverain, les élections et la séparation des pouvoirs.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national d'ECM RDC (EPST), Montesquieu, Constitution de la RDC.</div>
+    `
+},
+{
+    title: "Leçon 4 — Le pouvoir exécutif en RDC",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Chaque matin, un décret ou un arrêté est signé. Qui gouverne, qui exécute, qui contrôle ? Comprendre l'exécutif, c'est comprendre qui décide au quotidien.</p></div>
+<h3>1. Le Président de la République</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Flag_of_the_Democratic_Republic_of_the_Congo.svg?width=800" alt="RDC" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Image : Wikimedia Commons (visible avec connexion)</p><ul><li><strong>Élu</strong> au suffrage universel direct, à la majorité simple.</li><li><strong>Mandat</strong> de <strong>5 ans</strong>, <strong>renouvelable une seule fois</strong> (art. 70).</li><li><strong>Chef de l'État</strong>, chef des forces armées, garant de l'indépendance et de l'intégrité du territoire.</li><li><strong>Pouvoirs</strong> : nomme le Premier ministre, promulgue les lois, signe des ordonnances.</li></ul></div>
+<h3>2. Le gouvernement</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Premier ministre</strong> : nommé par le Président parmi la majorité parlementaire ; dirige le gouvernement.</li><li><strong>Composition</strong> : Premier ministre, vice-Premiers ministres, ministres, vice-ministres.</li><li><strong>Rôle</strong> : définit et conduit la politique de la nation, <strong>responsable devant l'Assemblée nationale</strong>.</li></ul></div>
+<h3>3. L'administration publique</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><p>Elle exécute les décisions : ministères, secrétariats généraux, services publics, entreprises publiques. Elle doit servir l'intérêt général avec <strong>neutralité</strong>, <strong>légalité</strong> et <strong>continuité</strong>.</p><p><a href="https://www.youtube.com/results?search_query=pouvoir+exécutif+RDC+président+gouvernement" target="_blank" rel="noopener">🎥 Recherche : institutions de la RDC (Radio Okapi / TV5Monde)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Exécutif à deux têtes : le Président (5 ans, renouvelable une fois) et le Premier ministre qui dirige le gouvernement.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national d'ECM RDC (EPST), Constitution de la RDC.</div>
+    `
+},
+{
+    title: "Leçon 5 — Les pouvoirs législatif et judiciaire",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Le Parlement vote une loi, un tribunal la fait appliquer. Sans ces deux pouvoirs, le gouvernement serait sans contrôle.</p></div>
+<h3>1. Le Parlement bicaméral</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Scale_of_justice_2.svg?width=800" alt="Justice" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Image : Wikimedia Commons (visible avec connexion)</p><ul><li><strong>Assemblée nationale</strong> : <strong>500 députés</strong> élus au suffrage universel direct pour 5 ans.</li><li><strong>Sénat</strong> : <strong>108 sénateurs</strong> élus par les assemblées provinciales.</li><li><strong>Fonctions</strong> : vote les lois et le budget, contrôle le gouvernement, représente le peuple.</li><li><strong>Siège</strong> : Palais du Peuple, Kinshasa.</li></ul></div>
+<h3>2. Les juridictions</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Cour constitutionnelle</strong> : contrôle la constitutionnalité des lois, juge les élections présidentielles et législatives.</li><li><strong>Cour de cassation</strong> : juridictions de l'ordre judiciaire.</li><li><strong>Conseil d'État</strong> : juridictions administratives.</li><li><strong>Cours d'appel</strong>, <strong>tribunaux de grande instance</strong>, <strong>tribunaux de paix</strong>.</li><li><strong>Juridictions militaires</strong>.</li></ul></div>
+<h3>3. Principes de la justice</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Indépendance</strong> des juges (<strong>Conseil supérieur de la magistrature</strong>).</li><li><strong>Présomption d'innocence</strong>, <strong>droit à la défense</strong>, <strong>procès équitable</strong>.</li><li><strong>Magistrats</strong> : siège (juges) et parquet (procureurs).</li></ul><p><a href="https://www.youtube.com/results?search_query=Parlement+RDC+Assemblée+nationale+Sénat" target="_blank" rel="noopener">🎥 Recherche : Parlement de la RDC (Radio Okapi / TV5Monde)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le Parlement (500 députés et 108 sénateurs) fait la loi. La justice, indépendante, juge selon la loi ; la Cour constitutionnelle veille à la Constitution.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national d'ECM RDC (EPST), Constitution de la RDC.</div>
+    `
+},
+{
+    title: "Leçon 6 — Les droits de l'homme : textes et principes",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Après la Seconde Guerre mondiale et ses horreurs, les peuples se sont dit : plus jamais ça. Le 10 décembre 1948, un texte est adopté à Paris pour protéger chaque être humain.</p></div>
+<h3>1. Définition et caractères</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Eleanor_Roosevelt_and_United_Nations_Universal_Declaration_of_Human_Rights_in_Spanish.jpg?width=800" alt="Déclaration universelle des droits de l'homme" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Image : Wikimedia Commons (visible avec connexion)</p><p>Les <strong>droits de l'homme</strong> sont des droits inhérents à tout être humain. Ils sont <strong>universels</strong>, <strong>inaliénables</strong>, <strong>indivisibles</strong>, <strong>égaux</strong> et <strong>interdépendants</strong>.</p></div>
+<h3>2. Les textes majeurs</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Déclaration universelle des droits de l'homme (DUDH)</strong> : 10 décembre 1948, Paris, 30 articles.</li><li><strong>Pactes de 1966</strong> : droits civils et politiques ; droits économiques, sociaux et culturels.</li><li><strong>CEDEF</strong> (1979) : contre la discrimination à l'égard des femmes.</li><li><strong>Convention relative aux droits de l'enfant</strong> (1989).</li><li><strong>Charte africaine des droits de l'homme et des peuples</strong> (1981, Nairobi ; en vigueur 1986).</li><li><strong>Protocole de Maputo</strong> (2003) : droits des femmes en Afrique.</li></ul></div>
+<h3>3. Les trois générations de droits</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>1re</strong> : droits civils et politiques (vie, liberté, vote).</li><li><strong>2e</strong> : droits économiques, sociaux et culturels (travail, santé, éducation).</li><li><strong>3e</strong> : droits de solidarité (paix, environnement, développement).</li></ul></div>
+<h3>4. Qui les protège ?</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><p>ONU (Conseil des droits de l'homme), Commission africaine (Banjul), <strong>CPI</strong> (La Haye), juridictions nationales, ONG (Amnesty, Human Rights Watch), société civile. En RDC : <strong>Commission nationale des droits de l'homme (CNDH)</strong>.</p><p><a href="https://www.youtube.com/results?search_query=Déclaration+universelle+des+droits+de+l'homme+1948" target="_blank" rel="noopener">🎥 Recherche : DUDH 1948 (ONU / TV5Monde)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La DUDH (1948) fonde les droits de l'homme, repris par la Charte africaine (1981). Trois générations de droits : civils, sociaux, solidarité.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national d'ECM RDC (EPST), ONU (DUDH), Union africaine.</div>
+    `
+},
+{
+    title: "Leçon 7 — Les droits et libertés dans la Constitution et la protection des personnes vulnérables",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Une jeune fille veut aller à l'école, un enfant handicapé a besoin d'aide. Que dit la loi ? La RDC a inscrit ces droits dans sa Constitution et dans des lois spéciales.</p></div>
+<h3>1. Les droits fondamentaux (titre II)</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Flag_of_the_United_Nations.svg?width=800" alt="Drapeau de l'ONU" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Image : Wikimedia Commons (visible avec connexion)</p><ul><li><strong>Dignité et égalité</strong> : tous égaux en droit, sans discrimination (art. 11 à 13).</li><li><strong>Droit à la vie</strong>, intégrité physique, interdiction de la torture.</li><li><strong>Libertés</strong> : pensée, conscience, religion, expression, presse, réunion, association, manifestation, circulation.</li><li><strong>Droits sociaux</strong> : travail, santé, éducation, propriété, environnement sain.</li></ul></div>
+<h3>2. Garanties judiciaires</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><p>Présomption d'innocence, arrestation par autorité judiciaire, droit à un avocat, interdiction de la détention arbitraire.</p></div>
+<h3>3. Protection de l'enfant</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Loi du 10 janvier 2009</strong> sur la protection de l'enfant.</li><li><strong>Interdits</strong> : enrôlement dans les forces armées, travail dangereux, mariage précoce.</li><li><strong>Majorité civile et âge nuptial</strong> : 18 ans.</li><li><strong>Enseignement primaire</strong> gratuit et obligatoire dans le public.</li></ul></div>
+<h3>4. Femmes, handicapés, minorités</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Parité</strong> hommes-femmes consacrée (art. 14) ; loi de 2015 sur la parité.</li><li><strong>Personnes handicapées</strong> : droits protégés par la Constitution et une loi de 2016 (source à vérifier).</li><li><strong>Populations autochtones</strong> (pygmées) et minorités : protection spéciale.</li></ul><p><a href="https://www.youtube.com/results?search_query=droits+de+l'enfant+RDC+protection" target="_blank" rel="noopener">🎥 Recherche : droits de l'enfant (UNICEF / Radio Okapi)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La Constitution garantit dignité, égalité, libertés et droits sociaux. Enfants, femmes, personnes handicapées et autochtones bénéficient d'une protection spéciale.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national d'ECM RDC (EPST), Constitution de la RDC, loi du 10 janvier 2009.</div>
+    `
+},
+{
+    title: "Leçon 8 — Les élections et la participation politique",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Un dimanche d'élections, de longues files se forment devant les bureaux de vote. Chacun attend de glisser son bulletin. Ce geste simple décide de l'avenir du pays.</p></div>
+<h3>1. Les principes du vote</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Ballot_box_icon.svg?width=800" alt="Urne électorale" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Image : Wikimedia Commons (visible avec connexion)</p><ul><li><strong>Suffrage universel</strong> (tous les adultes), <strong>direct</strong>, <strong>égal</strong> et <strong>secret</strong>.</li><li><strong>Électeur</strong> : Congolais âgé de <strong>18 ans</strong> révolus, inscrit sur le fichier électoral.</li><li><strong>Éligibilité</strong> : Président (30 ans minimum) ; députés et sénateurs selon la loi.</li></ul></div>
+<h3>2. Qui organise ?</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>CENI</strong> : Commission électorale nationale indépendante, organise les scrutins.</li><li><strong>Cour constitutionnelle</strong> : contentieux de la présidentielle et des législatives.</li><li><strong>Observateurs</strong> nationaux et internationaux.</li></ul></div>
+<h3>3. Les élections en RDC</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>2006</strong> : premières élections libres après la transition.</li><li><strong>2011</strong>, <strong>2018</strong>, <strong>décembre 2023</strong> : élections générales.</li><li><strong>Types</strong> : présidentielle, législatives, provinciales, locales.</li></ul></div>
+<h3>4. Les acteurs de la vie politique</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Partis politiques</strong> (majorité, opposition).</li><li><strong>Société civile</strong> : associations, syndicats, Églises, ONG.</li><li><strong>Médias</strong> : presse, radio, télé ; régulation par le <strong>CSAC</strong>.</li><li><strong>Citoyens</strong> : vote, pétition, manifestation pacifique.</li></ul><p><a href="https://www.youtube.com/results?search_query=élections+RDC+CENI+vote" target="_blank" rel="noopener">🎥 Recherche : élections en RDC (Radio Okapi / France 24)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Vote universel, direct, égal et secret dès 18 ans. La CENI organise, la Cour constitutionnelle tranche les litiges. Partis, société civile et médias animent la démocratie.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national d'ECM RDC (EPST), Constitution de la RDC, CENI.</div>
+    `
+},
+{
+    title: "Leçon 9 — La décentralisation et l'administration du territoire",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Ton village a un chef de groupement, ta ville un maire, ta province un gouverneur. Qui décide de quoi ? La décentralisation répartit le pouvoir.</p></div>
+<h3>1. Définitions</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Democratic_Republic_of_the_Congo_-_Location_Map_(2013)_-_COD_-_UNOCHA.svg?width=800" alt="Provinces de la RDC" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Image : Wikimedia Commons (visible avec connexion)</p><ul><li><strong>Centralisation</strong> : tout est décidé par le pouvoir central.</li><li><strong>Déconcentration</strong> : le pouvoir central délègue à ses agents sur le terrain.</li><li><strong>Décentralisation</strong> : des entités locales s'administrent elles-mêmes, avec <strong>personnalité juridique</strong> et budget.</li></ul></div>
+<h3>2. Les entités territoriales décentralisées (ETD)</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><p><strong>Ville</strong>, <strong>commune</strong>, <strong>secteur</strong>, <strong>chefferie</strong>. Le <strong>territoire</strong> et le <strong>groupement</strong> sont des divisions déconcentrées.</p></div>
+<h3>3. Les 26 provinces</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><p>Kinshasa, Kongo Central, Kwango, Kwilu, Mai-Ndombe, Kasaï, Kasaï-Central, Kasaï-Oriental, Lomami, Sankuru, Maniema, Sud-Kivu, Nord-Kivu, Ituri, Haut-Uele, Bas-Uele, Tshopo, Nord-Ubangi, Sud-Ubangi, Mongala, Équateur, Tshuapa, Tanganyika, Haut-Lomami, Lualaba, Haut-Katanga.</p><ul><li><strong>Institutions</strong> : assemblée provinciale, gouverneur, gouvernement provincial.</li><li><strong>Finances</strong> : <strong>40 %</strong> des recettes nationales retournent aux provinces (art. 175).</li></ul><p><a href="https://www.youtube.com/results?search_query=décentralisation+RDC+provinces" target="_blank" rel="noopener">🎥 Recherche : décentralisation en RDC (Radio Okapi / TV5Monde)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La décentralisation rapproche le pouvoir du citoyen. La RDC compte 26 provinces et des ETD (ville, commune, secteur, chefferie).</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national d'ECM RDC (EPST), Constitution de la RDC.</div>
+    `
+},
+{
+    title: "Leçon 10 — Les devoirs civiques et la lutte contre la corruption",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>À un poste de contrôle, on te demande un « matabiche » pour te laisser passer. Si chacun cède, la loi disparaît. La corruption ronge l'État de l'intérieur.</p></div>
+<h3>1. Les devoirs civiques</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Transparency_International_logo.svg?width=800" alt="Transparency International" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Image : Wikimedia Commons (visible avec connexion)</p><ul><li><strong>Respecter</strong> la Constitution, les lois et les autorités légitimes.</li><li><strong>Payer l'impôt</strong>, défendre la patrie, protéger les <strong>biens publics</strong>.</li><li><strong>Voter</strong>, <strong>payer ses factures</strong>, <strong>respecter</strong> l'environnement et autrui.</li></ul></div>
+<h3>2. La corruption : définition et formes</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><p>Abus d'un pouvoir ou d'une fonction pour un <strong>gain personnel</strong>.</p><ul><li><strong>Pot-de-vin</strong> (matabiche), <strong>détournement</strong> de fonds, <strong>fraude</strong>, <strong>favoritisme</strong>, <strong>trafic d'influence</strong>, <strong>surfacturation</strong>.</li></ul></div>
+<h3>3. Conséquences</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><p>Appauvrit l'État, freine le développement, détruit la confiance, favorise l'injustice, décourage les investisseurs.</p></div>
+<h3>4. Lutter contre la corruption</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Organes</strong> : Inspection générale des finances (<strong>IGF</strong>), <strong>Cour des comptes</strong>, justice, Agence de prévention et de lutte contre la corruption (source à vérifier).</li><li><strong>Textes</strong> : Convention de l'ONU (2003), Convention de l'Union africaine (2003).</li><li><strong>Journée internationale</strong> : <strong>9 décembre</strong>.</li><li><strong>Moyens</strong> : transparence, dénonciation, sanctions, éducation civique.</li></ul><p><a href="https://www.youtube.com/results?search_query=corruption+RDC+lutte" target="_blank" rel="noopener">🎥 Recherche : lutte contre la corruption (France 24 / TV5Monde)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le civisme exige le respect de la loi et des biens publics. La corruption est un fléau combattu par des organes, des textes et des citoyens vigilants.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national d'ECM RDC (EPST), ONU (CNUCC), Union africaine, IGF.</div>
+    `
+},
+{
+    title: "Leçon 11 — Paix, conflits et droit international humanitaire",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Un déplacé raconte : son village a été attaqué, sa famille a fui. Les conflits armés détruisent des vies. Des règles existent pour protéger les civils, même en guerre.</p></div>
+<h3>1. Les conflits : causes et conséquences</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Flag_of_the_International_Committee_of_the_Red_Cross.svg?width=800" alt="CICR" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Image : Wikimedia Commons (visible avec connexion)</p><ul><li><strong>Causes</strong> : lutte pour le pouvoir, contrôle des ressources, tensions identitaires, pauvreté, ingérences extérieures.</li><li><strong>Conséquences</strong> : morts, déplacés, violences sexuelles, enfants soldats, destruction d'infrastructures.</li><li><strong>RDC</strong> : guerres de 1996-1997 et de 1998-2003, conflits persistants dans l'Est.</li></ul></div>
+<h3>2. Résoudre pacifiquement</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Dialogue</strong>, <strong>négociation</strong>, <strong>médiation</strong>, <strong>arbitrage</strong>, <strong>justice</strong>.</li><li><strong>Accords</strong> : Sun City (2002-2003), Accord-cadre d'Addis-Abeba (2013), processus de Nairobi et de Luanda.</li><li><strong>DDR</strong> : désarmement, démobilisation, réinsertion.</li><li><strong>ONU</strong> : MONUC (1999), devenue <strong>MONUSCO</strong> (2010).</li></ul></div>
+<h3>3. Le droit international humanitaire</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Conventions de Genève</strong> (1949) et protocoles additionnels (1977).</li><li><strong>Protège</strong> : civils, blessés, prisonniers, personnel médical.</li><li><strong>Interdit</strong> : attaques contre les civils, enrôlement d'enfants, pillage, torture.</li><li><strong>CICR</strong> : Comité international de la Croix-Rouge (1863, Genève).</li></ul></div>
+<h3>4. La justice internationale</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><p><strong>CPI</strong> (Statut de Rome, 1998, La Haye). <strong>Thomas Lubanga</strong> condamné en 2012 pour recrutement d'enfants soldats. <strong>Denis Mukwege</strong> (médecin congolais, Bukavu) : Prix Nobel de la paix 2018.</p><p><a href="https://www.youtube.com/results?search_query=MONUSCO+paix+RDC+droit+humanitaire" target="_blank" rel="noopener">🎥 Recherche : paix et droit humanitaire (Radio Okapi / France 24)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Les conflits ont des causes multiples ; on les règle par le dialogue et la justice. Le DIH protège les civils et la CPI juge les crimes graves.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national d'ECM RDC (EPST), ONU, CICR, CPI.</div>
+    `
+},
+{
+    title: "Leçon 12 — Les organisations internationales",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>La RDC siège à l'ONU, préside l'Union africaine en 2021, accueille un sommet de la Francophonie en 2012. Aucun pays ne vit seul : il appartient à un réseau d'organisations.</p></div>
+<h3>1. L'ONU</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Flag_of_the_African_Union.svg?width=800" alt="Union africaine" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Image : Wikimedia Commons (visible avec connexion)</p><ul><li><strong>Créée</strong> en 1945 (San Francisco), siège à <strong>New York</strong>, <strong>193 membres</strong>.</li><li><strong>Organes</strong> : Assemblée générale, <strong>Conseil de sécurité</strong> (15 membres, 5 permanents : États-Unis, Russie, Chine, France, Royaume-Uni), Secrétariat, ECOSOC, <strong>CIJ</strong> (La Haye).</li><li><strong>RDC</strong> : membre depuis le <strong>20 septembre 1960</strong>.</li><li><strong>Institutions</strong> : UNESCO, OMS, UNICEF, FAO, PAM, PNUD.</li></ul></div>
+<h3>2. L'Union africaine</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Succède à l'OUA</strong> (1963) ; lancée en <strong>2002</strong>, siège <strong>Addis-Abeba</strong>, <strong>55 membres</strong>.</li><li><strong>Organes</strong> : Conférence, Conseil exécutif, Commission, Parlement panafricain, Conseil de paix et de sécurité.</li><li><strong>Agenda 2063</strong>.</li><li><strong>RDC</strong> : Félix Tshisekedi président de l'UA en 2021-2022.</li></ul></div>
+<h3>3. Les organisations régionales</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>CEEAC</strong> (1983, Libreville) ; <strong>SADC</strong> (siège Gaborone ; RDC depuis 1997) ; <strong>EAC</strong> (RDC depuis 2022) ; <strong>COMESA</strong> ; <strong>CEPGL</strong> (1976).</li><li><strong>OIF</strong> (Francophonie) : XIVe Sommet à <strong>Kinshasa</strong> en 2012.</li></ul><p><a href="https://www.youtube.com/results?search_query=ONU+Union+africaine+organisations+internationales" target="_blank" rel="noopener">🎥 Recherche : l'ONU et l'UA (ONU / France 24)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>L'ONU, l'UA et les organisations régionales (CEEAC, SADC, EAC, CEPGL) encadrent la coopération. La RDC est membre de l'ONU depuis le 20 septembre 1960.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national d'ECM RDC (EPST), ONU, Union africaine, OIF.</div>
+    `
+},
+{
+    title: "Leçon 13 — Morale, valeurs et vie en société",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Tu trouves un portefeuille dans la rue. Le rendre, c'est choisir l'honnêteté. La morale, c'est ce petit choix de chaque jour qui fait une société juste.</p></div>
+<h3>1. Morale et valeurs</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Emojione_1F46A.svg?width=800" alt="Famille" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Image : Wikimedia Commons (visible avec connexion)</p><ul><li><strong>Morale</strong> : ensemble des règles du bien et du mal.</li><li><strong>Valeurs</strong> : honnêteté, respect, <strong>tolérance</strong>, <strong>solidarité</strong>, responsabilité, courage, justice, travail, patriotisme.</li><li><strong>Conscience morale</strong> : voix intérieure qui guide nos choix.</li></ul></div>
+<h3>2. La famille</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Cellule de base</strong> de la société.</li><li><strong>Rôles</strong> : éducation, protection, transmission des valeurs.</li><li><strong>Code de la famille</strong> (1987, révisé en 2016) : mariage, filiation, autorité parentale, <strong>égalité des époux</strong>.</li><li><strong>Mariage</strong> : consentement libre, <strong>18 ans</strong> minimum.</li></ul></div>
+<h3>3. Vivre ensemble</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Diversité</strong> : plus de 200 ethnies, 4 langues nationales.</li><li><strong>Tolérance</strong>, dialogue, rejet de la haine et du tribalisme.</li><li><strong>Solidarité</strong> : entraide, respect des aînés, protection des faibles.</li><li><strong>Antivaleurs</strong> : mensonge, vol, violence, corruption, paresse.</li></ul></div>
+<h3>4. L'éducation et la jeunesse</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><blockquote style="border-left:3px solid #999; padding-left:14px; margin:16px 0; font-style:italic; color:#555;">"L'éducation est l'arme la plus puissante que l'on puisse utiliser pour changer le monde."<br><strong>— Attribuée à Nelson Mandela, 2003 (source à vérifier)</strong></blockquote><p><a href="https://www.youtube.com/results?search_query=valeurs+morales+famille+Afrique" target="_blank" rel="noopener">🎥 Recherche : valeurs et vie en société (TV5Monde / UNICEF)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La morale guide nos actes ; la famille transmet les valeurs. Honnêteté, tolérance et solidarité permettent de vivre ensemble dans la diversité.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national d'ECM RDC (EPST), Code de la famille (RDC).</div>
+    `
+},
+{
+    title: "Leçon 14 — Genre, égalité et autonomisation",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans une famille, la fille quitte l'école pour aider à la maison, tandis que son frère continue ses études. Est-ce juste ? Le « genre » invite à regarder les rôles qu'on attribue aux filles et aux garçons.</p></div>
+<h3>1. Sexe et genre</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Emojione_1F469.svg?width=800" alt="Femme" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Image : Wikimedia Commons (visible avec connexion)</p><ul><li><strong>Sexe</strong> : différence biologique entre homme et femme.</li><li><strong>Genre</strong> : rôles, comportements et attentes que la <strong>société</strong> attribue aux hommes et aux femmes ; ils peuvent changer.</li><li><strong>Stéréotype</strong> : idée toute faite (« les filles ne font pas de sciences »).</li><li><strong>Discrimination</strong> : traitement inégal fondé sur le sexe.</li></ul></div>
+<h3>2. Égalité et équité</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Égalité</strong> : mêmes droits et mêmes chances.</li><li><strong>Équité</strong> : traiter chacun selon ses besoins pour arriver à l'égalité.</li><li><strong>Parité</strong> : représentation égale des femmes et des hommes (Constitution, art. 14 ; loi de 2015).</li></ul></div>
+<h3>3. Les textes</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>DUDH</strong> (1948), <strong>CEDEF</strong> (1979), <strong>Protocole de Maputo</strong> (2003).</li><li><strong>Résolution 1325</strong> du Conseil de sécurité (2000) : femmes, paix et sécurité.</li><li><strong>Dates</strong> : <strong>8 mars</strong> (Journée internationale des droits des femmes) ; <strong>17 mai</strong> : Journée de la femme congolaise (source à vérifier).</li></ul></div>
+<h3>4. Obstacles et solutions</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Obstacles</strong> : mariages précoces, abandon scolaire des filles, charges domestiques, accès limité à la terre et au crédit, faible représentation politique.</li><li><strong>Solutions</strong> : scolariser les filles, sensibiliser les familles, <strong>autonomiser</strong> les femmes (éducation, emploi, entrepreneuriat), partager les tâches, impliquer les hommes et les garçons.</li><li><strong>Bénéfices</strong> : famille plus stable, économie plus forte.</li></ul><p><a href="https://www.youtube.com/results?search_query=égalité+des+genres+Afrique+femmes" target="_blank" rel="noopener">🎥 Recherche : égalité des genres (ONU Femmes / TV5Monde)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le genre est une construction sociale ; l'égalité est un droit. Scolariser les filles et autonomiser les femmes profitent à toute la société.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national d'ECM RDC (EPST), ONU Femmes, CEDEF, Protocole de Maputo.</div>
+    `
+},
+{
+    title: "Leçon 15 — Les violences basées sur le genre (VBG)",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Une jeune fille n'ose pas dire ce qu'elle a vécu, par honte. La violence cherche toujours le silence. En parler, c'est déjà commencer à se protéger.</p></div>
+<h3>1. Définition et formes</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Emojione_270B.svg?width=800" alt="Stop aux violences" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Image : Wikimedia Commons (visible avec connexion)</p><p><strong>VBG</strong> : tout acte nuisible commis contre une personne en raison de son sexe ou de son genre.</p><ul><li><strong>Physiques</strong> : coups, blessures.</li><li><strong>Sexuelles</strong> : viol, agression, harcèlement, exploitation.</li><li><strong>Psychologiques</strong> : insultes, menaces, humiliations.</li><li><strong>Économiques</strong> : privation de ressources, d'héritage.</li><li><strong>Pratiques néfastes</strong> : mariage forcé ou précoce.</li></ul></div>
+<h3>2. Causes et conséquences</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Causes</strong> : inégalités de pouvoir, stéréotypes, pauvreté, impunité, conflits armés, alcool et drogues.</li><li><strong>Conséquences</strong> : blessures, grossesses non désirées, infections (VIH et IST), traumatismes, exclusion, abandon scolaire, décès.</li></ul></div>
+<h3>3. La loi congolaise</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Constitution</strong> : interdit les violences sexuelles et protège l'intégrité.</li><li><strong>Lois de 2006</strong> sur les violences sexuelles (modification du Code pénal et de la procédure) : peines lourdes de servitude pénale (source à vérifier).</li><li><strong>Loi de 2009</strong> sur la protection de l'enfant.</li><li><strong>Statut de Rome</strong> : le viol comme arme de guerre est un crime.</li></ul></div>
+<h3>4. Que faire en cas de violence ?</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><p>1) <strong>Parler</strong> à une personne de confiance.</p><p>2) <strong>Aller à l'hôpital ou au centre de santé dans les 72 heures</strong> : soins, prévention du VIH et de la grossesse.</p><p>3) <strong>Porter plainte</strong> (police, parquet) ; l'<strong>aide juridique</strong> existe.</p><p>4) <strong>Soutien psychosocial</strong> (centres de prise en charge, ONG).</p><p>La victime n'est <strong>jamais</strong> responsable ; la <strong>stigmatisation</strong> aggrave la souffrance.</p></div>
+<h3>5. Prévention</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><p>Éducation, respect mutuel, dialogue en famille, dénonciation, sanction des auteurs. <strong>25 novembre</strong> : Journée internationale pour l'élimination de la violence à l'égard des femmes (suivie de 16 jours d'activisme).</p><p><a href="https://www.youtube.com/results?search_query=violences+basées+sur+le+genre+RDC+prévention" target="_blank" rel="noopener">🎥 Recherche : lutte contre les VBG (UNFPA / Radio Okapi)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Les VBG sont des violations des droits. La victime doit consulter vite (dans les 72 heures), porter plainte et être soutenue ; elle n'est jamais coupable.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national d'ECM RDC (EPST), ONU Femmes, UNFPA, OMS, lois de 2006.</div>
+    `
+},
+{
+    title: "Leçon 16 — Le VIH/sida et les infections sexuellement transmissibles",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Un camarade apprend qu'il est séropositif. Certains s'éloignent de lui par peur. Pourtant, il peut vivre longtemps, étudier et travailler. La vraie arme : l'information.</p></div>
+<h3>1. Qu'est-ce que le VIH et le sida ?</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Red_Ribbon.svg?width=800" alt="Ruban rouge de la lutte contre le sida" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Image : Wikimedia Commons (visible avec connexion)</p><ul><li><strong>VIH</strong> : virus de l'immunodéficience humaine ; il attaque les <strong>défenses immunitaires</strong>.</li><li><strong>Sida</strong> : syndrome d'immunodéficience acquise, stade avancé de l'infection.</li><li><strong>Séropositif</strong> : porteur du virus ; une personne peut rester <strong>sans symptômes</strong> longtemps.</li></ul></div>
+<h3>2. Modes de transmission</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Rapports sexuels non protégés</strong> (vaginal, anal, oral).</li><li><strong>Sang</strong> : transfusion non contrôlée, aiguilles et objets tranchants souillés.</li><li><strong>De la mère à l'enfant</strong> : grossesse, accouchement, allaitement.</li></ul><p><strong>Pas de transmission</strong> par : poignée de main, baiser, toilettes, vaisselle, moustiques, partage d'un repas.</p></div>
+<h3>3. Prévention</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Abstinence</strong> (le plus sûr pour les jeunes), <strong>fidélité</strong> à un partenaire testé.</li><li><strong>Préservatif</strong> utilisé correctement à chaque rapport.</li><li><strong>Dépistage</strong> volontaire et confidentiel.</li><li><strong>Sang</strong> testé ; <strong>matériel stérile</strong>.</li><li><strong>PTME</strong> : prévention de la transmission mère-enfant.</li><li><strong>Traitement</strong> précoce.</li></ul></div>
+<h3>4. Dépistage et traitement</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Test</strong> : prise de sang ou test rapide ; la <strong>période fenêtre</strong> est d'environ 3 mois.</li><li><strong>ARV</strong> (antirétroviraux) : <strong>ne guérissent pas</strong> mais contrôlent le virus, permettent une vie normale ; une charge virale indétectable empêche la transmission.</li><li>Prise <strong>à vie</strong>, suivie médicale.</li></ul></div>
+<h3>5. Autres IST et lutte contre la stigmatisation</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>IST</strong> : syphilis, gonococcie, chlamydia, hépatite B, HPV... Signes : écoulements, douleurs, plaies. <strong>Consulter</strong> sans attendre ; ne pas s'automédiquer.</li><li><strong>Stigmatisation</strong> : isoler un malade est injuste et dangereux, car on le pousse à se cacher.</li><li><strong>Journée mondiale du sida</strong> : <strong>1er décembre</strong> (ruban rouge). Acteurs : ONUSIDA, <strong>PNLS</strong> (Programme national de lutte contre le sida).</li></ul><p><a href="https://www.youtube.com/results?search_query=VIH+sida+prévention+jeunes+RDC" target="_blank" rel="noopener">🎥 Recherche : VIH/sida, prévention (OMS / ONUSIDA)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le VIH se transmet par les rapports non protégés, le sang et de la mère à l'enfant, pas par les gestes du quotidien. Prévention, dépistage et ARV permettent de vivre ; la stigmatisation est à bannir.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national d'ECM RDC (EPST), OMS, ONUSIDA, PNLS (RDC).</div>
+    `
+},
+{
+    title: "Leçon 17 — Santé de la reproduction, puberté et grossesses précoces",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>À 15 ans, ton corps change, tes émotions aussi. Tu as des questions mais tu as honte de les poser. Bonne nouvelle : ces changements sont normaux, et il existe des adultes et des services pour répondre.</p></div>
+<h3>1. La puberté</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Emojione_1F331.svg?width=800" alt="Croissance" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Image : Wikimedia Commons (visible avec connexion)</p><ul><li><strong>Âge</strong> : environ 9 à 16 ans, variable selon les personnes.</li><li><strong>Filles</strong> : poitrine, règles (menstruation), élargissement du bassin.</li><li><strong>Garçons</strong> : voix qui mue, pilosité, croissance rapide.</li><li><strong>Émotions</strong> : sautes d'humeur, attirance, besoin d'indépendance.</li><li><strong>Hygiène</strong> : toilette quotidienne, hygiène menstruelle (serviettes propres, changer régulièrement).</li></ul></div>
+<h3>2. Les grossesses précoces</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Causes</strong> : manque d'information, pauvreté, pression, violences, mariages précoces.</li><li><strong>Risques</strong> : complications à l'accouchement, anémie, décès maternel, abandon des études, rejet.</li><li><strong>Solutions</strong> : information, dialogue avec les parents, retarder les rapports, accès aux services de santé, scolarisation.</li></ul></div>
+<h3>3. Planification familiale</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><p><strong>Espacer les naissances</strong> protège la santé de la mère et de l'enfant. Méthodes : <strong>préservatif</strong> (seul à protéger aussi contre les IST), pilules, injectables, implants, stérilet, méthodes naturelles. À choisir avec un <strong>agent de santé</strong>.</p></div>
+<h3>4. Droits et responsabilités</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Droit</strong> à l'information et aux soins de santé.</li><li><strong>Droit de dire non</strong>, de protéger son corps.</li><li><strong>Loi</strong> : les rapports avec un mineur de moins de 18 ans sont punis ; le consentement est obligatoire.</li><li><strong>Responsabilité</strong> : se protéger, respecter l'autre, repousser les risques.</li></ul><p><a href="https://www.youtube.com/results?search_query=puberté+santé+reproduction+adolescents" target="_blank" rel="noopener">🎥 Recherche : santé des adolescents (UNICEF / OMS)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La puberté est un passage normal. Les grossesses précoces mettent en danger la santé et l'avenir ; l'information, le dialogue et les services de santé aident à bien choisir.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national d'ECM RDC (EPST), OMS, UNFPA, Ministère de la Santé.</div>
+    `
+},
+{
+    title: "Leçon 18 — Jeunesse, drogues, alcool et addictions",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Un ami te tend une cigarette « pour faire comme les grands ». Refuser demande du courage, mais accepter peut coûter cher. La jeunesse est l'âge des choix qui construisent l'avenir.</p></div>
+<h3>1. La jeunesse : atouts et risques</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Emojione_1F6AD.svg?width=800" alt="Interdit de fumer" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Image : Wikimedia Commons (visible avec connexion)</p><ul><li><strong>Atouts</strong> : énergie, créativité, esprit d'innovation.</li><li><strong>Risques</strong> : désœuvrement, influence des pairs, drogues, délinquance, violences, grossesses précoces, exploitation.</li></ul><blockquote style="border-left:3px solid #999; padding-left:14px; margin:16px 0; font-style:italic; color:#555;">"Il faut oser inventer l'avenir."<br><strong>— Thomas Sankara (source et date à vérifier)</strong></blockquote></div>
+<h3>2. Les substances addictives</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Alcool</strong> : trouble du jugement, accidents, violences, dépendance.</li><li><strong>Tabac</strong> : cancers, maladies respiratoires.</li><li><strong>Cannabis (chanvre, « bangi »)</strong>, <strong>colle et solvants</strong>, <strong>tramadol</strong> utilisé hors prescription, drogues de synthèse.</li><li><strong>Effets</strong> : perte de contrôle, échec scolaire, maladies mentales, dépendance, ruine familiale.</li></ul></div>
+<h3>3. L'addiction et la prévention</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Dépendance</strong> : besoin irrésistible de consommer.</li><li><strong>Prévention</strong> : dire <strong>non</strong>, choisir ses amis, pratiquer un sport, s'occuper, parler à un adulte de confiance.</li><li><strong>Aide</strong> : centres de santé, psychologues, écoles, ONG, familles.</li></ul></div>
+<h3>4. Délinquance juvénile et enfants de la rue</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Enfants de la rue</strong> (« shégués ») : causes : pauvreté, conflits, accusations de sorcellerie, familles brisées.</li><li><strong>Bandes urbaines</strong> (« kuluna ») à Kinshasa : violence, vol, drogue.</li><li><strong>Solutions</strong> : éducation, emploi des jeunes, formation professionnelle, réinsertion, soutien familial.</li><li><strong>Responsabilité</strong> : l'État, la famille et la communauté.</li></ul><p><a href="https://www.youtube.com/results?search_query=drogues+alcool+jeunes+prévention" target="_blank" rel="noopener">🎥 Recherche : prévention des drogues (OMS / TV5Monde)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Alcool, tabac et drogues détruisent santé et avenir. Savoir dire non, s'occuper utilement et chercher de l'aide protège la jeunesse.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national d'ECM RDC (EPST), OMS, UNICEF, UNODC.</div>
+    `
+},
+{
+    title: "Leçon 19 — Santé publique, hygiène et maladies courantes",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Une épidémie éclate dans une province voisine. Les mesures simples (se laver les mains, isoler les malades, vacciner) sauvent des vies. La santé est l'affaire de tous.</p></div>
+<h3>1. Hygiène personnelle et collective</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Anopheles_stephensi.jpeg?width=800" alt="Moustique anophèle" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Image : Wikimedia Commons (visible avec connexion)</p><ul><li><strong>Lavage des mains</strong> à l'eau et au savon (avant de manger, après les toilettes).</li><li><strong>Eau potable</strong> : bouillir, filtrer, chlorer.</li><li><strong>Latrines</strong>, évacuation des déchets, propreté des quartiers.</li><li><strong>Alimentation équilibrée</strong> et sommeil suffisant.</li></ul></div>
+<h3>2. Maladies courantes en RDC</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Paludisme</strong> : moustique anophèle ; moustiquaire imprégnée, traitement rapide.</li><li><strong>Choléra</strong> et fièvre typhoïde : eau et aliments souillés.</li><li><strong>Rougeole</strong>, <strong>poliomyélite</strong>, <strong>tuberculose</strong> : vaccination, dépistage.</li><li><strong>Ebola</strong> : virus transmis par contact avec les liquides corporels ; isolement, vaccin.</li><li><strong>Mpox</strong>, <strong>COVID-19</strong> : gestes barrières.</li></ul></div>
+<h3>3. Vaccination et système de santé</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Vaccination</strong> : protège individu et communauté ; calendrier du <strong>PEV</strong> (Programme élargi de vaccination).</li><li><strong>Structure</strong> : poste de santé, centre de santé, hôpital général de référence, hôpital provincial.</li><li><strong>Droit à la santé</strong> garanti par la Constitution ; <strong>OMS</strong> (Genève), Ministère de la Santé.</li></ul><p><a href="https://www.youtube.com/results?search_query=paludisme+choléra+Ebola+prévention+RDC" target="_blank" rel="noopener">🎥 Recherche : maladies et prévention (OMS / Radio Okapi)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Hygiène, eau potable, vaccination et consultation rapide freinent les maladies (paludisme, choléra, Ebola...). La santé est un droit et une responsabilité.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national d'ECM RDC (EPST), OMS, Ministère de la Santé publique (RDC).</div>
+    `
+},
+{
+    title: "Leçon 20 — Environnement, travail et développement durable",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Un fleuve pollué, une forêt rasée, un chômage qui frappe les jeunes : trois problèmes qui se tiennent. Le développement durable cherche à les résoudre ensemble.</p></div>
+<h3>1. L'environnement</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Sustainable_Development_Goals.svg?width=800" alt="Objectifs de développement durable" style="max-width:100%; border-radius:10px; margin:14px 0;" onerror="this.style.display='none'"><p style="font-size:0.75rem;color:#666;margin-top:-8px;">Image : Wikimedia Commons (visible avec connexion)</p><ul><li><strong>Droit à un environnement sain</strong> (Constitution, art. 53).</li><li><strong>Menaces</strong> : déforestation, pollution, érosion, braconnage, déchets.</li><li><strong>Lois</strong> : Code forestier (2002), Code minier, loi-cadre sur l'environnement (2011).</li><li><strong>Gestes</strong> : planter des arbres, trier les déchets, économiser l'eau.</li></ul></div>
+<h3>2. Le travail</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Droit au travail</strong>, au salaire, au repos, à la sécurité sociale (<strong>INSS</strong>), aux syndicats, à la grève dans le cadre légal.</li><li><strong>Code du travail</strong> (loi du 16 octobre 2002) : 8 heures par jour et 48 heures par semaine (source à vérifier).</li><li><strong>Interdits</strong> : travail forcé, pires formes de travail des enfants.</li><li><strong>Devoirs</strong> : ponctualité, qualité, loyauté.</li></ul></div>
+<h3>3. Le développement durable</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Définition</strong> : répondre aux besoins d'aujourd'hui sans compromettre ceux des générations futures (rapport Brundtland, 1987).</li><li><strong>Trois piliers</strong> : économique, social, environnemental.</li><li><strong>ODD</strong> : <strong>17 objectifs</strong>, Agenda 2030 (adopté en 2015).</li></ul><p><a href="https://www.youtube.com/results?search_query=développement+durable+ODD+environnement" target="_blank" rel="noopener">🎥 Recherche : objectifs de développement durable (ONU / France 24)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Un environnement sain et un travail décent sont des droits. Le développement durable concilie économie, société et nature pour les générations futures.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme national d'ECM RDC (EPST), ONU (ODD), Code du travail (2002), Code forestier (2002).</div>
+    `
+},
+{
+    title: "Évaluation finale — Items EXETAT",
+    content: `
+        <p style="margin-bottom:18px;color:#12437a;font-size:0.95rem;">Cette évaluation regroupe des items tirés des épreuves d'État (EXETAT) des années précédentes. Fais l'exercice dans les conditions du concours : sans notes, en une seule fois.</p>
+
+        <div class="bloc theorie">
+            <div class="bloc-label">Consignes</div>
+            <ul>
+                <li>36 questions à choix multiples.</li>
+                <li>Une seule réponse correcte par question.</li>
+                <li>Pas de retour en arrière sur les questions déjà validées.</li>
+                <li>Durée recommandée : 35 minutes.</li>
+            </ul>
+        </div>
+
+        <div class="quiz-container" id="quizContainer">
+            <h3 style="color:#0d2b4f;margin-bottom:16px;font-size:1.1rem;">Partie 1 — Questions</h3>
+            <div id="quizQuestions"></div>
+            <button id="submitQuiz" class="quiz-btn-submit">Valider mes réponses</button>
+            <div id="quizResult" class="quiz-result"></div>
+        </div>
+    `
+}
+];
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim()) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderQuiz() {
+    const questions = [
+        { text:"Quelle est la devise de la RDC ?", options:["Justice – Paix – Travail","Liberté – Égalité – Fraternité","Unité – Travail – Progrès"], correct:0 },
+        { text:"À quel âge devient-on électeur en RDC ?", options:["16 ans","18 ans","21 ans"], correct:1 },
+        { text:"La nationalité congolaise est :", options:["Multiple","Une et exclusive","Facultative"], correct:1 },
+        { text:"En quelle année la Constitution actuelle a-t-elle été promulguée ?", options:["1964","2003","2006"], correct:2 },
+        { text:"Le mandat du Président de la République dure :", options:["4 ans","5 ans","7 ans"], correct:1 },
+        { text:"Combien de fois le mandat présidentiel est-il renouvelable ?", options:["Une fois","Deux fois","Indéfiniment"], correct:0 },
+        { text:"Qui a théorisé la séparation des pouvoirs ?", options:["Rousseau","Montesquieu","Voltaire"], correct:1 },
+        { text:"Le Parlement congolais comprend :", options:["Une chambre","L'Assemblée nationale et le Sénat","Trois chambres"], correct:1 },
+        { text:"Combien de sénateurs compte le Sénat ?", options:["76","108","500"], correct:1 },
+        { text:"Quelle institution contrôle la constitutionnalité des lois ?", options:["Cour constitutionnelle","Conseil d'État","Cour des comptes"], correct:0 },
+        { text:"La DUDH a été adoptée en :", options:["1945","1948","1966"], correct:1 },
+        { text:"La Charte africaine des droits de l'homme date de :", options:["1963","1981","2002"], correct:1 },
+        { text:"Quelle institution organise les élections en RDC ?", options:["CENI","CSAC","IGF"], correct:0 },
+        { text:"Combien de provinces compte la RDC ?", options:["11","26","31"], correct:1 },
+        { text:"Quel pourcentage des recettes nationales revient aux provinces ?", options:["10 %","25 %","40 %"], correct:2 },
+        { text:"La Journée internationale contre la corruption est le :", options:["9 décembre","1er décembre","8 mars"], correct:0 },
+        { text:"Les Conventions de Genève protègent :", options:["Les civils et blessés en guerre","Les commerçants","Les marchandises"], correct:0 },
+        { text:"La RDC est membre de l'ONU depuis :", options:["1945","1960","1997"], correct:1 },
+        { text:"Où se trouve le siège de l'Union africaine ?", options:["Addis-Abeba","Nairobi","Kinshasa"], correct:0 },
+        { text:"La MONUSCO est :", options:["Une mission de l'ONU en RDC","Un parti politique","Une banque"], correct:0 },
+        { text:"Le sexe désigne :", options:["Les rôles sociaux","La différence biologique","Le métier"], correct:1 },
+        { text:"Le genre désigne :", options:["Les rôles attribués par la société","Un groupe sanguin","Une langue"], correct:0 },
+        { text:"La parité est consacrée dans la Constitution à l'article :", options:["14","1","220"], correct:0 },
+        { text:"Le 8 mars est la Journée internationale :", options:["Des droits des femmes","De la paix","De l'enfant"], correct:0 },
+        { text:"Après une agression sexuelle, il faut consulter à l'hôpital dans les :", options:["72 heures","3 mois","1 an"], correct:0 },
+        { text:"Que signifie VBG ?", options:["Violences basées sur le genre","Vaccin contre le VIH","Vie de bonne gouvernance"], correct:0 },
+        { text:"Le VIH se transmet par :", options:["Poignée de main","Rapports sexuels non protégés","Moustique"], correct:1 },
+        { text:"Les ARV :", options:["Guérissent le sida","Contrôlent le virus","Préviennent le paludisme"], correct:1 },
+        { text:"La Journée mondiale du sida est le :", options:["1er décembre","25 novembre","17 mai"], correct:0 },
+        { text:"Quel moyen protège à la fois du VIH, des IST et des grossesses ?", options:["La pilule","Le préservatif","Le stérilet"], correct:1 },
+        { text:"Le plus sûr moyen pour un jeune d'éviter le VIH est :", options:["L'abstinence","La pilule","Le médicament"], correct:0 },
+        { text:"Le chanvre (« bangi ») est :", options:["Un médicament","Une drogue","Un aliment"], correct:1 },
+        { text:"Le paludisme est transmis par :", options:["Un moustique","L'eau de pluie","Le contact de la main"], correct:0 },
+        { text:"Combien y a-t-il d'objectifs de développement durable (ODD) ?", options:["8","17","30"], correct:1 },
+        { text:"Quel article de la Constitution protège un environnement sain ?", options:["Article 53","Article 70","Article 220"], correct:0 },
+        { text:"L'âge minimum du mariage en RDC est :", options:["15 ans","18 ans","21 ans"], correct:1 }
+    ];
+    let html = '';
+    questions.forEach((q,i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o,k) => { html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>'; });
+        html += '</div>';
+    });
+    document.getElementById('quizQuestions').innerHTML = html;
+    document.getElementById('submitQuiz').onclick = () => {
+        let score = 0;
+        questions.forEach((q,i) => {
+            const s = document.querySelector('input[name="q' + i + '"]:checked');
+            if (s && parseInt(s.value) === q.correct) score++;
+        });
+        const pct = Math.round(score/questions.length*100);
+        document.getElementById('quizResult').innerHTML = '<div style="background:#cfdff5;padding:16px;border-radius:10px;margin-top:14px;">' +
+            '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong><br>' +
+            (score === questions.length ? 'Excellent. Tu maîtrises le programme.' :
+             score >= 7 ? 'Bien. Revoyez les leçons où vous avez échoué.' :
+             'Relis attentivement les leçons avant l\'examen.') + '</div>';
+    };
+}
+function renderSlide(index, keepHighlight = true) {
+    const isQuiz = (index === slides.length - 1);
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    if (isQuiz) renderQuiz();
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm && !isQuiz) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+</body>
+</html>
