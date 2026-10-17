@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Pharmacologie — 4e Médicale (EXETAT)</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:linear-gradient(160deg,#4e2a0c 0%,#ef6c00 50%,#2e1604 100%); display:flex; justify-content:center; align-items:center; padding:8px; }
+.container { width:100%; max-width:1400px; background:#fefdf8; border-radius:20px; overflow:hidden; display:flex; flex-direction:column; height:100%; max-height:100vh; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.progress-bar { height:4px; background:#fbdcb8; flex-shrink:0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,#f0a15a,#b34a00); width:0%; transition:width 0.3s; }
+.header { padding:10px 16px; background:#fff1e0; border-bottom:1px solid #f3c08a; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+.header h1 { color:#b34a00; font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box { display:flex; background:white; border-radius:20px; padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.search-box input { border:none; padding:6px 10px; border-radius:20px; outline:none; width:130px; font-size:0.8rem; }
+.search-box button { background:none; border:none; cursor:pointer; padding:4px 8px; font-size:0.85rem; color:#ef6c00; }
+.badge { background:#f0a15a; color:white; padding:4px 10px; border-radius:20px; font-weight:bold; font-size:0.75rem; }
+.search-nav { display:none; gap:4px; background:#fbdcb8; padding:2px 8px; border-radius:20px; align-items:center; font-size:0.75rem; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:0.9rem; color:#b34a00; padding:2px 4px; }
+.content { padding:28px 32px; flex:1; overflow-y:auto; background:#fff; scroll-behavior:smooth; line-height:1.85; }
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.slide-title { color:#4e2a0c; font-size:1.5rem; font-weight:700; padding-bottom:12px; margin-bottom:20px; border-bottom:2px solid #f0a15a; }
+.slide-content { color:#331a07; font-size:1rem; }
+.bloc { padding:18px 22px; border-radius:12px; margin:22px 0; line-height:1.85; }
+.bloc-label { font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; opacity:0.7; }
+.bloc p, .bloc li { font-size:0.98rem; }
+.bloc h3 { font-size:1.1rem; margin:20px 0 10px; font-weight:600; }
+.bloc h3:first-child { margin-top:0; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:#fff1e0; border-left:4px solid #f0a15a; }
+.theorie .bloc-label { color:#b34a00; }
+.pratique { background:#e8f5e9; border-left:4px solid #43a047; }
+.pratique .bloc-label { color:#1b5e20; }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:#4e2a0c; }
+.quiz-container { padding:22px; background:#fff1e0; border-radius:16px; }
+.quiz-question { background:white; border-radius:10px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.quiz-question p { font-weight:600; margin-bottom:10px; color:#4e2a0c; }
+.quiz-question label { display:block; padding:8px 10px; margin:4px 0; border-radius:6px; cursor:pointer; transition:background 0.2s; }
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit { background:#c9650a; color:white; border:none; padding:12px 24px; border-radius:30px; font-size:1rem; cursor:pointer; font-weight:600; margin-top:14px; }
+.quiz-result { margin-top:16px; font-weight:600; }
+.sources { background:#f5f5f5; padding:12px 16px; border-radius:10px; margin-top:26px; font-size:0.82rem; color:#666; border-left:3px solid #999; line-height:1.6; }
+.sources strong { color:#333; }
+.controls { padding:8px 16px; background:#fafafa; border-top:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0; }
+.nav-btn { background:white; color:#b34a00; border:1px solid #ccc; padding:8px 14px; border-radius:8px; font-size:0.82rem; cursor:pointer; font-weight:500; }
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:#fdebd6; }
+.content::-webkit-scrollbar-thumb { background:#f0a15a; border-radius:3px; }
+@media (max-width:600px) { body { padding:0; } .container { border-radius:0; max-height:100vh; } .content { padding:20px 18px; } .slide-title { font-size:1.25rem; } .search-box input { width:90px; } .header h1 { font-size:0.85rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="header">
+        <h1>Pharmacologie · 4e Médicale</h1>
+        <div class="header-right">
+            <div class="search-box"><input type="text" id="searchInput" placeholder="Rechercher"><button id="searchBtn">⌕</button></div>
+            <div class="search-nav" id="searchNav"><button id="prevResultBtn">‹</button><span id="resultCounter">0/0</span><button id="nextResultBtn">›</button></div>
+            <span class="badge" id="slideCounter">1/9</span>
+        </div>
+    </div>
+    <div class="content" id="content"></div>
+    <div class="controls">
+        <button class="nav-btn" id="prevBtn">← Précédent</button>
+        <span class="counter" id="counter">Leçon 1 / 9</span>
+        <button class="nav-btn" id="nextBtn">Suivant →</button>
+    </div>
+</div>
+<script>
+const slides = [
+{
+    title: "Leçon 1 — Introduction à la pharmacologie",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>À l'hôpital de Kinshasa, un patient reçoit un antibiotique pour une infection. Très vite, il présente une réaction allergique. L'infirmière doit agir : arrêt du produit, appel du médecin, surveillance. Comprendre la pharmacologie permet de prévenir ces accidents et d'administrer les médicaments en toute sécurité.</p></div>
+<h3>1. Définition et objet</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Pharmacologie</strong> : science qui étudie les médicaments, leur origine, leur composition, leurs effets, leur devenir dans l'organisme et leur usage thérapeutique.</li><li><strong>Médicament</strong> : substance ou composition présentée comme possédant des propriétés curatives ou préventives à l'égard des maladies humaines ou animales.</li><li><strong>Pharmacognosie</strong> : étude des substances naturelles médicinales.</li><li><strong>Pharmacocinétique</strong> : devenir du médicament dans l'organisme (ADME).</li><li><strong>Pharmacodynamie</strong> : effets du médicament sur l'organisme.</li></ul></div>
+<h3>2. Origine des médicaments</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Naturelle</strong> : plantes (quinquina → quinine), animaux, minéraux.</li><li><strong>Synthèse chimique</strong> : la majorité des médicaments modernes.</li><li><strong>Biotechnologique</strong> : insuline humaine, hormones de croissance, vaccins recombinants.</li><li><strong>Semi-synthétique</strong> : dérivés de substances naturelles modifiées.</li></ul></div>
+<h3>3. Les formes galéniques</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Formes orales</strong> : comprimés, gélules, sirops, suspensions, poudres.</li><li><strong>Formes injectables</strong> : ampoules, flacons, seringues préremplies.</li><li><strong>Formes rectales</strong> : suppositoires, lavements.</li><li><strong>Formes topiques</strong> : pommades, crèmes, gels, patchs.</li><li><strong>Formes inhalées</strong> : aérosols, sprays.</li><li><strong>Formes oculaires et auriculaires</strong> : collyres, gouttes.</li></ul></div>
+<h3>4. Classification des médicaments</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Selon l'usage</strong> : antibiotiques, antalgiques, anti-inflammatoires, antihypertenseurs.</li><li><strong>Selon la prescription</strong> : liste I (prescription obligatoire), liste II (prescription possible), hors liste.</li><li><strong>Stupéfiants</strong> : morphine, codéine (réglementation stricte).</li><li><strong>Génériques</strong> : copie d'un médicament original, moins cher.</li><li><strong>Médicaments essentiels</strong> : liste OMS des médicaments indispensables à la santé publique.</li></ul><p><a href="https://www.youtube.com/results?search_query=introduction+pharmacologie+médicament+formes+galéniques" target="_blank" rel="noopener">🎥 Recherche : introduction à la pharmacologie (chaînes de cours)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La pharmacologie étudie les médicaments, leur origine, leurs effets et leur devenir dans l'organisme. Les médicaments ont une origine naturelle, synthétique ou biotechnologique. Ils existent en de multiples formes galéniques. La classification repose sur l'usage, la prescription et la réglementation.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme réformé de Pharmacologie, Ministère de la Santé (RDC) ; OMS — Liste des médicaments essentiels.<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT, MSP, OMS, ADME.</div>
+    `
+},
+{
+    title: "Leçon 2 — La pharmacocinétique : devenir du médicament",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Un patient de Kinshasa prend un comprimé de paracétamol. Combien de temps faut-il pour qu'il fasse effet ? Combien de temps reste-t-il dans l'organisme ? Comment est-il éliminé ? Ces questions relèvent de la pharmacocinétique.</p></div>
+<h3>1. Les 4 étapes de la pharmacocinétique (ADME)</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>A - Absorption</strong> : passage du médicament dans la circulation sanguine.</li><li><strong>D - Distribution</strong> : diffusion dans les tissus et organes.</li><li><strong>M - Métabolisme (biotransformation)</strong> : transformation du médicament, principalement dans le foie.</li><li><strong>E - Élimination</strong> : élimination par les reins, la bile, les poumons, la sueur, le lait maternel.</li></ul></div>
+<h3>2. L'absorption</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Voie orale</strong> : absorption dans l'intestin grêle, effet de premier passage hépatique.</li><li><strong>Voie injectable IV</strong> : absorption immédiate (biodisponibilité 100 %).</li><li><strong>Voie IM</strong> : absorption rapide mais variable.</li><li><strong>Voie SC</strong> : absorption plus lente.</li><li><strong>Facteurs</strong> : forme galénique, alimentation, pH gastrique, motricité intestinale.</li></ul></div>
+<h3>3. La distribution et le métabolisme</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Distribution</strong> : le médicament se lie aux protéines plasmatiques (albumine) et diffuse dans les tissus.</li><li><strong>Volume de distribution</strong> : volume apparent dans lequel le médicament se répartit.</li><li><strong>Barrières</strong> : hémato-encéphalique, placentaire (attention chez la femme enceinte).</li><li><strong>Métabolisme hépatique</strong> : phase I (oxydation, réduction) et phase II (conjugaison).</li><li><strong>Cytochrome P450</strong> : principale famille d'enzymes hépatiques.</li></ul></div>
+<h3>4. L'élimination et la demi-vie</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Élimination rénale</strong> : filtration glomérulaire, sécrétion tubulaire, réabsorption.</li><li><strong>Élimination biliaire</strong> : pour certains médicaments (rifampicine).</li><li><strong>Demi-vie (t½)</strong> : temps nécessaire pour que la concentration plasmatique diminue de moitié.</li><li><strong>Exemple</strong> : paracétamol (t½ = 2 h), amoxicilline (t½ = 1 h), digoxine (t½ = 36 h).</li><li><strong>Répétition des doses</strong> : on répète la dose après 4 à 5 demi-vies pour atteindre l'équilibre.</li><li><strong>Insuffisances</strong> : insuffisance rénale ou hépatique nécessite une adaptation posologique.</li></ul><p><a href="https://www.youtube.com/results?search_query=pharmacocinétique+ADME+absorption+métabolisme+élimination" target="_blank" rel="noopener">🎥 Recherche : la pharmacocinétique (chaînes de cours)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La pharmacocinétique comprend 4 étapes : absorption, distribution, métabolisme, élimination (ADME). La biodisponibilité dépend de la voie d'administration. Le foie métabolise les médicaments, les reins les éliminent. La demi-vie guide la fréquence d'administration.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme réformé de Pharmacologie (RDC) ; OMS — Bon usage des médicaments.</div>
+    `
+},
+{
+    title: "Leçon 3 — La pharmacodynamie et les interactions médicamenteuses",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Un patient hypertendu prend simultanément un antihypertenseur et un anti-inflammatoire. Sa tension remonte. Le médecin explique : les deux médicaments interagissent. Comprendre la pharmacodynamie et les interactions évite ces problèmes.</p></div>
+<h3>1. Le mécanisme d'action</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Pharmacodynamie</strong> : étude des effets du médicament sur l'organisme.</li><li><strong>Récepteurs</strong> : cibles moléculaires des médicaments (protéines membranaires, enzymes, canaux ioniques).</li><li><strong>Agoniste</strong> : molécule qui active le récepteur.</li><li><strong>Antagoniste</strong> : molécule qui bloque le récepteur.</li><li><strong>Effet thérapeutique</strong> : effet recherché.</li><li><strong>Effet indésirable</strong> : effet non désiré (effets secondaires, toxiques).</li></ul></div>
+<h3>2. La relation dose-effet</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Dose minimale efficace</strong> : seuil en dessous duquel le médicament est inefficace.</li><li><strong>Dose maximale tolérée</strong> : seuil au-dessus duquel apparaissent des effets toxiques.</li><li><strong>Marge thérapeutique</strong> : intervalle entre dose efficace et dose toxique.</li><li><strong>Index thérapeutique</strong> : rapport dose toxique / dose efficace.</li><li><strong>Exemple</strong> : la digoxine a une marge thérapeutique étroite (risque de toxicité).</li></ul></div>
+<h3>3. Les interactions médicamenteuses</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Définition</strong> : modification de l'effet d'un médicament par un autre.</li><li><strong>Synergie</strong> : les effets s'additionnent (ex. paracétamol + codéine).</li><li><strong>Antagonisme</strong> : un médicament diminue l'effet de l'autre (ex. antihypertenseur + AINS).</li><li><strong>Interactions pharmacocinétiques</strong> : modification de l'absorption, du métabolisme ou de l'élimination.</li><li><strong>Interactions pharmacodynamiques</strong> : modification de l'effet au niveau des récepteurs.</li><li><strong>Exemple clinique</strong> : la rifampicine diminue l'efficacité des contraceptifs oraux.</li></ul></div>
+<h3>4. Les effets indésirables</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Effets secondaires</strong> : prévisibles, liés au mécanisme d'action (somnolence des antihistaminiques).</li><li><strong>Effets toxiques</strong> : liés à un surdosage (toxicité hépatique du paracétamol).</li><li><strong>Allergies</strong> : réactions immunologiques (éruption, choc anaphylactique).</li><li><strong>Effets à long terme</strong> : résistance aux antibiotiques, dépendance.</li><li><strong>Pharmacovigilance</strong> : surveillance des effets indésirables après commercialisation.</li><li><strong>Déclaration</strong> : tout effet grave doit être signalé au centre de pharmacovigilance.</li></ul><p><a href="https://www.youtube.com/results?search_query=pharmacodynamie+interactions+médicamenteuses+effets+indésirables" target="_blank" rel="noopener">🎥 Recherche : la pharmacodynamie (chaînes de cours)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La pharmacodynamie étudie les effets des médicaments via les récepteurs (agonistes, antagonistes). La marge thérapeutique est l'intervalle entre dose efficace et toxique. Les interactions peuvent être synergiques ou antagonistes. La pharmacovigilance surveille les effets indésirables.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme réformé de Pharmacologie (RDC) ; OMS — Pharmacovigilance.</div>
+    `
+},
+{
+    title: "Leçon 4 — Les antibiotiques et l'antibiothérapie",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Un patient de Kinshasa est traité par un antibiotique pour une infection urinaire. Après 3 jours, il se sent mieux et arrête son traitement. Quelques jours plus tard, l'infection revient, plus résistante. L'antibiothérapie doit être respectée jusqu'au bout. Voici pourquoi.</p></div>
+<h3>1. Définition et classification des antibiotiques</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Antibiotique</strong> : substance qui détruit les bactéries (bactéricide) ou empêche leur multiplication (bactériostatique).</li><li><strong>Familles</strong> : bêta-lactamines (pénicillines, céphalosporines), aminosides, macrolides, tétracyclines, quinolones, sulfamides.</li><li><strong>Spectre</strong> : étroit (une espèce), large (plusieurs espèces).</li><li><strong>Origine</strong> : naturelle (pénicilline de Penicillium), semi-synthétique, synthétique.</li></ul></div>
+<h3>2. Mécanismes d'action</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Inhibition de la synthèse de la paroi</strong> : pénicillines, céphalosporines.</li><li><strong>Inhibition de la synthèse des protéines</strong> : aminosides, macrolides, tétracyclines.</li><li><strong>Inhibition de la synthèse des acides nucléiques</strong> : quinolones, rifampicine.</li><li><strong>Inhibition du métabolisme des folates</strong> : sulfamides.</li><li><strong>Action sur la membrane cytoplasmique</strong> : polymyxines.</li></ul></div>
+<h3>3. Règles de l'antibiothérapie</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Prescription médicale obligatoire</strong>.</li><li><strong>Antibiogramme</strong> : test de sensibilité des bactéries.</li><li><strong>Respect de la dose et de la durée</strong> : ne jamais arrêter trop tôt.</li><li><strong>Antibiothérapie probabiliste</strong> : début avant résultat de l'antibiogramme.</li><li><strong>Antibiothérapie ciblée</strong> : après identification du germe.</li><li><strong>Association</strong> : parfois nécessaire (tuberculose).</li></ul></div>
+<h3>4. La résistance aux antibiotiques</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Résistance</strong> : capacité des bactéries à survivre aux antibiotiques.</li><li><strong>Causes</strong> : usage excessif, traitements incomplets, automédication, usage vétérinaire.</li><li><strong>Conséquences</strong> : infections difficiles à traiter, mortalité accrue.</li><li><strong>Exemple</strong> : la tuberculose multirésistante (MDR-TB) est un défi en RDC.</li><li><strong>Prévention</strong> : usage raisonné, respect des prescriptions, hygiène, vaccination.</li><li><strong>Bon usage</strong> : ne jamais prendre d'antibiotique sans prescription, ne jamais partager.</li></ul><p><a href="https://www.youtube.com/results?search_query=antibiotiques+antibiothérapie+résistance+bactérienne" target="_blank" rel="noopener">🎥 Recherche : les antibiotiques (chaînes de cours)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Les antibiotiques détruisent les bactéries ou empêchent leur multiplication. Leur mécanisme d'action est varié. L'antibiothérapie doit être respectée intégralement. La résistance est un problème mondial, lié à l'usage excessif et à l'automédication. Le bon usage est essentiel.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme réformé de Pharmacologie (RDC) ; OMS — Résistance aux antimicrobiens.</div>
+    `
+},
+{
+    title: "Leçon 5 — Les antalgiques et les anti-inflammatoires",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>À l'hôpital de Lubumbashi, un patient se plaint de douleurs intenses après une chirurgie. Le médecin prescrit un antalgique de palier 3 (morphine). L'infirmière doit surveiller les effets secondaires : somnolence, dépression respiratoire, constipation.</p></div>
+<h3>1. Les antalgiques</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Définition</strong> : médicaments qui soulagent la douleur.</li><li><strong>Palier 1</strong> : antalgiques non opioïdes (paracétamol, AINS).</li><li><strong>Palier 2</strong> : opioïdes faibles (codéine, tramadol).</li><li><strong>Palier 3</strong> : opioïdes forts (morphine, fentanyl).</li><li><strong>Échelle OMS</strong> : progression selon l'intensité de la douleur.</li><li><strong>Paracétamol</strong> : dose maximale 4 g/jour chez l'adulte ; toxicité hépatique en cas de surdosage.</li></ul></div>
+<h3>2. Les anti-inflammatoires</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>AINS</strong> (anti-inflammatoires non stéroïdiens) : ibuprofène, diclofénac, aspirine.</li><li><strong>AIS</strong> (anti-inflammatoires stéroïdiens) : corticoïdes (prednisone, dexaméthasone).</li><li><strong>Mécanisme</strong> : inhibition de la synthèse des prostaglandines.</li><li><strong>Effets indésirables des AINS</strong> : ulcère gastrique, saignement, insuffisance rénale.</li><li><strong>Effets indésirables des corticoïdes</strong> : hyperglycémie, hypertension, ostéoporose, immunodépression.</li><li><strong>Précautions</strong> : prise au cours des repas, jamais à jeun.</li></ul></div>
+<h3>3. Les antispasmodiques et myorelaxants</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Antispasmodiques</strong> : phloroglucinol, trimébutine (douleurs abdominales).</li><li><strong>Myorelaxants</strong> : thiocolchicoside, baclofène (contractures musculaires).</li><li><strong>Usage</strong> : lombalgies, coliques néphrétiques, crampes.</li></ul></div>
+<h3>4. Les anesthésiques</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Anesthésiques locaux</strong> : lidocaïne, bupivacaïne.</li><li><strong>Anesthésiques généraux</strong> : propofol, kétamine, halothane.</li><li><strong>Analgésie péridurale</strong> : pour l'accouchement.</li><li><strong>Surveillance</strong> : conscience, respiration, tension, fréquence cardiaque.</li><li><strong>Réveil</strong> : surveiller la reprise de conscience, la douleur, les nausées.</li></ul><p><a href="https://www.youtube.com/results?search_query=antalgiques+anti-inflammatoires+paracétamol+AINS+opioïdes" target="_blank" rel="noopener">🎥 Recherche : les antalgiques et anti-inflammatoires (chaînes de cours)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Les antalgiques suivent l'échelle OMS à 3 paliers. Les AINS et les corticoïdes combattent l'inflammation mais ont des effets indésirables. Les antispasmodiques et myorelaxants soulagent les contractures. Les anesthésiques sont utilisés pour la chirurgie et l'accouchement.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme réformé de Pharmacologie (RDC) ; OMS — Traitement de la douleur.</div>
+    `
+},
+{
+    title: "Leçon 6 — Les médicaments du système cardiovasculaire",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>À Kinshasa, un patient hypertendu consulte son médecin. Il reçoit un antihypertenseur. Le médecin insiste sur l'observance : sans prise régulière, les complications (AVC, infarctus, insuffisance rénale) sont inévitables.</p></div>
+<h3>1. Les antihypertenseurs</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Diurétiques</strong> : furosémide, hydrochlorothiazide (élimination du sodium et de l'eau).</li><li><strong>Inhibiteurs de l'enzyme de conversion (IEC)</strong> : captopril, énalapril.</li><li><strong>Antagonistes des récepteurs de l'angiotensine (ARA II)</strong> : losartan, valsartan.</li><li><strong>Inhibiteurs calciques</strong> : amlodipine, nifédipine.</li><li><strong>Bêtabloquants</strong> : aténolol, propranolol.</li><li><strong>Effets indésirables</strong> : hypotension, toux (IEC), bradycardie (bêtabloquants).</li></ul></div>
+<h3>2. Les médicaments de l'insuffisance cardiaque</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Digitaliques</strong> : digoxine (renforce la contraction cardiaque).</li><li><strong>Diurétiques</strong> : réduisent les œdèmes.</li><li><strong>IEC / ARA II</strong> : réduisent la post-charge.</li><li><strong>Bêtabloquants</strong> : ralentissent le cœur, réduisent la mortalité.</li><li><strong>Marge thérapeutique étroite</strong> de la digoxine : risque de toxicité.</li></ul></div>
+<h3>3. Les antiangineux et les anticoagulants</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Dérivés nitrés</strong> : trinitrine, isosorbide (crise d'angine de poitrine).</li><li><strong>Anticoagulants</strong> : héparine, warfarine, AOD (rivaroxaban).</li><li><strong>Antiagrégants plaquettaires</strong> : aspirine à faible dose, clopidogrel.</li><li><strong>Surveillance</strong> : INR pour la warfarine, TCA pour l'héparine, signes hémorragiques.</li></ul></div>
+<h3>4. Les médicaments hypolipémiants</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Statines</strong> : atorvastatine, simvastatine (baisse du cholestérol LDL).</li><li><strong>Fibrates</strong> : gemfibrozil (baisse des triglycérides).</li><li><strong>Effets indésirables</strong> : douleurs musculaires (statines), troubles digestifs.</li><li><strong>Prévention</strong> : régime alimentaire, exercice physique avant tout médicament.</li><li><strong>Suivi</strong> : bilan lipidique régulier.</li><li><strong>Éducation du patient</strong> : expliquer la nécessité du traitement à vie, les effets secondaires et les signes d'alerte.</li></ul><p><a href="https://www.youtube.com/results?search_query=médicaments+cardiovasculaires+antihypertenseurs+diurétiques+digoxine" target="_blank" rel="noopener">🎥 Recherche : les médicaments cardiovasculaires (chaînes de cours)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Les antihypertenseurs sont diurétiques, IEC, ARA II, inhibiteurs calciques, bêtabloquants. L'insuffisance cardiaque utilise digitaliques, diurétiques, IEC et bêtabloquants. Les antiangineux sont des dérivés nitrés. Les anticoagulants et hypolipémiants préviennent les complications cardiovasculaires.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme réformé de Pharmacologie (RDC) ; OMS — Maladies cardiovasculaires.</div>
+    `
+},
+{
+    title: "Leçon 7 — Les médicaments anti-infectieux et antiparasitaires",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans un centre de santé à Kinshasa, un enfant présente une fièvre élevée. Le test de diagnostic rapide confirme le paludisme. L'infirmière prépare une combinaison thérapeutique à base d'artémisinine (CTA). Le paludisme reste la première cause de mortalité en RDC.</p></div>
+<h3>1. Les antipaludiques</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Combinaisons thérapeutiques à base d'artémisinine (CTA)</strong> : traitement de première ligne du paludisme simple (OMS).</li><li><strong>Artéméther-luméfantrine</strong> : Coartem, traitement de référence.</li><li><strong>Artésunate</strong> : paludisme grave, voie injectable.</li><li><strong>Chloroquine</strong> : abandonnée en RDC à cause des résistances.</li><li><strong>Prévention</strong> : moustiquaire imprégnée, pulvérisation, TPI chez la femme enceinte.</li></ul></div>
+<h3>2. Les autres anti-infectieux</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Antituberculeux</strong> : rifampicine, isoniazide, pyrazinamide, éthambutol (protocole RHZE).</li><li><strong>Antiviraux</strong> : ARV (antirétroviraux) pour le VIH, oseltamivir pour la grippe, aciclovir pour l'herpès.</li><li><strong>Antifongiques</strong> : fluconazole, nystatine, amphotéricine B.</li><li><strong>Antiparasitaires</strong> : albendazole (vers), métronidazole (amibes, giardia), ivermectine (onchocercose).</li><li><strong>Antihelminthiques</strong> : praziquantel (schistosomiase), mébendazole.</li></ul></div>
+<h3>3. Le traitement de la tuberculose</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Protocole standard</strong> : 2 mois de RHZE + 4 mois de RH.</li><li><strong>Résistance</strong> : MDR-TB (multirésistance), XDR-TB (ultrarésistance).</li><li><strong>Observance</strong> : traitement supervisé (DOTS).</li><li><strong>Effets indésirables</strong> : hépatite (isoniazide), urines rouges (rifampicine).</li><li><strong>Rôle de l'infirmière</strong> : surveillance, éducation, soutien.</li></ul></div>
+<h3>4. Le traitement du VIH/SIDA</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>ARV</strong> : trithérapie (2 INTI + 1 INNTI ou 1 IP).</li><li><strong>Exemples</strong> : ténofovir + lamivudine + dolutégravir (protocole OMS).</li><li><strong>Objectif</strong> : charge virale indétectable.</li><li><strong>Observance</strong> : à vie, sans interruption.</li><li><strong>Effets indésirables</strong> : troubles digestifs, lipodystrophie, toxicité rénale.</li><li><strong>Prévention</strong> : préservatif, dépistage, PTME (prévention de la transmission mère-enfant).</li></ul><p><a href="https://www.youtube.com/results?search_query=antipaludiques+CTA+antituberculeux+ARV+anti-infectieux" target="_blank" rel="noopener">🎥 Recherche : les anti-infectieux (chaînes de cours)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le paludisme se traite par CTA (artémisinine). La tuberculose utilise le protocole RHZE + RH. Le VIH est traité par trithérapie ARV à vie. Les antifongiques, antiparasitaires et antihelminthiques complètent l'arsenal. L'observance est la clé du succès.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme réformé de Pharmacologie (RDC) ; OMS — Paludisme, tuberculose, VIH.</div>
+    `
+},
+{
+    title: "Leçon 8 — Le bon usage des médicaments et l'éducation du patient",
+    content: `
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>À Kinshasa, une patiente diabétique stocke ses médicaments dans la cuisine, près du feu. Elle oublie certaines prises. Elle partage parfois ses comprimés avec une amie. Ces comportements compromettent le traitement. L'éducation du patient est essentielle.</p></div>
+<h3>1. Le bon usage des médicaments</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Prescription médicale</strong> : seul le médecin peut prescrire.</li><li><strong>Dose exacte</strong> : respecter la posologie indiquée.</li><li><strong>Horaires réguliers</strong> : respecter les intervalles entre les prises.</li><li><strong>Durée complète</strong> : ne jamais interrompre un traitement sans avis médical.</li><li><strong>Voie correcte</strong> : orale, injectable, topique.</li><li><strong>Ne jamais partager</strong> ses médicaments.</li></ul></div>
+<h3>2. La conservation des médicaments</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Endroit sec et frais</strong> : à l'abri de la chaleur, de l'humidité, de la lumière.</li><li><strong>Température</strong> : entre 15 et 25 °C, ou 2 à 8 °C au réfrigérateur (insuline).</li><li><strong>Boîte d'origine</strong> : conserver la notice et l'emballage.</li><li><strong>Date de péremption</strong> : ne jamais utiliser un médicament périmé.</li><li><strong>Hors de portée des enfants</strong> : armoire fermée ou en hauteur.</li><li><strong>Ne pas mettre à la poubelle</strong> : rapporter à la pharmacie pour destruction.</li></ul></div>
+<h3>3. L'observance thérapeutique</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Observance</strong> : respect du traitement tel que prescrit.</li><li><strong>Facteurs d'inobservance</strong> : oubli, effets secondaires, manque de moyens, croyances.</li><li><strong>Conséquences</strong> : échec thérapeutique, résistance, complications.</li><li><strong>Stratégies</strong> : simplifier le traitement, expliquer, rappeler par SMS, impliquer la famille.</li></ul></div>
+<h3>4. L'éducation thérapeutique du patient</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Expliquer la maladie</strong> : nature, causes, évolution.</li><li><strong>Expliquer le traitement</strong> : nom, dose, horaires, durée, effets.</li><li><strong>Écouter le patient</strong> : ses craintes, ses croyances, ses difficultés.</li><li><strong>Vérifier la compréhension</strong> : faire reformuler.</li><li><strong>Impliquer la famille</strong> : soutien, rappel des prises.</li><li><strong>Documents écrits</strong> : ordonnance lisible, schéma posologique.</li><li><strong>Suivi régulier</strong> : consultations, bilans.</li><li><strong>Exemple RDC</strong> : les centres de traitement ambulatoire (CTA) pour le VIH et les centres antituberculeux (CAT) pour la tuberculose assurent cette éducation.</li></ul><p><a href="https://www.youtube.com/results?search_query=bon+usage+médicaments+observance+éducation+patient" target="_blank" rel="noopener">🎥 Recherche : le bon usage des médicaments (chaînes de cours)</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le bon usage repose sur la prescription, la dose, la durée et la voie correctes. La conservation doit protéger de la chaleur, de l'humidité, de la lumière. L'observance est essentielle pour l'efficacité. L'éducation thérapeutique du patient améliore les résultats.</p></div>
+<div class="sources"><strong>Sources :</strong> Programme réformé de Pharmacologie (RDC) ; OMS — Bon usage des médicaments.</div>
+    `
+},
+{
+    title: "Évaluation finale — Items EXETAT",
+    content: `
+        <p style="margin-bottom:18px;color:#b34a00;font-size:0.95rem;">Cette évaluation regroupe des items de type EXETAT. Fais l'exercice dans les conditions du concours : sans notes, en une seule fois.</p>
+        <div class="bloc theorie">
+            <div class="bloc-label">Consignes</div>
+            <ul>
+                <li>30 questions à choix multiples.</li>
+                <li>Une seule réponse correcte par question.</li>
+                <li>Pas de retour en arrière sur les questions déjà validées.</li>
+                <li>Durée recommandée : 30 minutes.</li>
+            </ul>
+        </div>
+        <div class="quiz-container" id="quizContainer">
+            <h3 style="color:#4e2a0c;margin-bottom:16px;font-size:1.1rem;">Partie 1 — Questions</h3>
+            <div id="quizQuestions"></div>
+            <button id="submitQuiz" class="quiz-btn-submit">Valider mes réponses</button>
+            <div id="quizResult" class="quiz-result"></div>
+        </div>
+    `
+}
+];
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim()) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderQuiz() {
+    const questions = [
+        { text:"Quelle science étudie les médicaments ?", options:["La pharmacologie","La chimie","La biologie"], correct:0 },
+        { text:"Que signifie ADME ?", options:["Absorption, Distribution, Métabolisme, Élimination","Analyse, Dosage, Mesure, Évaluation","Aucune de ces réponses"], correct:0 },
+        { text:"Quelle est la voie d'administration la plus rapide ?", options:["Intraveineuse","Orale","Rectale"], correct:0 },
+        { text:"Que signifie biodisponibilité ?", options:["Fraction du médicament qui atteint la circulation","Dose maximale","Effet secondaire"], correct:0 },
+        { text:"Quel organe métabolise principalement les médicaments ?", options:["Le foie","Le rein","Le poumon"], correct:0 },
+        { text:"Quel organe élimine principalement les médicaments ?", options:["Le rein","Le foie","Le cœur"], correct:0 },
+        { text:"Que signifie demi-vie ?", options:["Temps pour que la concentration diminue de moitié","Temps d'action","Temps de conservation"], correct:0 },
+        { text:"Qu'est-ce qu'un agoniste ?", options:["Molécule qui active le récepteur","Molécule qui bloque le récepteur","Molécule qui détruit la cellule"], correct:0 },
+        { text:"Qu'est-ce qu'un antagoniste ?", options:["Molécule qui bloque le récepteur","Molécule qui active le récepteur","Molécule qui active la douleur"], correct:0 },
+        { text:"Que signifie index thérapeutique ?", options:["Rapport dose toxique / dose efficace","Dose maximale","Dose minimale"], correct:0 },
+        { text:"Qu'est-ce qu'une synergie médicamenteuse ?", options:["Addition des effets","Annulation des effets","Aucune interaction"], correct:0 },
+        { text:"Que signifie antibiogramme ?", options:["Test de sensibilité des bactéries","Test d'allergie","Test de grossesse"], correct:0 },
+        { text:"Quel est le traitement de première ligne du paludisme ?", options:["CTA (artémisinine)","Chloroquine","Aspirine"], correct:0 },
+        { text:"Quel est le protocole de la tuberculose ?", options:["RHZE + RH","Aspirine + paracétamol","Ibuprofène"], correct:0 },
+        { text:"Quel médicament est un antalgique de palier 1 ?", options:["Paracétamol","Morphine","Codéine"], correct:0 },
+        { text:"Quel médicament est un antalgique de palier 3 ?", options:["Morphine","Paracétamol","Ibuprofène"], correct:0 },
+        { text:"Que sont les AINS ?", options:["Anti-inflammatoires non stéroïdiens","Antibiotiques","Antiviraux"], correct:0 },
+        { text:"Quel est l'effet indésirable classique des AINS ?", options:["Ulcère gastrique","Diabète","Hypertension"], correct:0 },
+        { text:"Quel est le rôle de l'insuline ?", options:["Abaisser la glycémie","Élever la glycémie","Réduire l'inflammation"], correct:0 },
+        { text:"Quelle est la voie d'administration de l'insuline ?", options:["Sous-cutanée","Orale","Intraveineuse"], correct:0 },
+        { text:"Que signifie ARV ?", options:["Antirétroviral","Anti-inflammatoire","Antibiotique"], correct:0 },
+        { text:"Quel médicament est utilisé contre le VIH ?", options:["Trithérapie ARV","Aspirine","Ibuprofène"], correct:0 },
+        { text:"Quel est l'objectif du traitement ARV ?", options:["Charge virale indétectable","Éliminer le VIH","Aucun effet"], correct:0 },
+        { text:"Quel antifongique est utilisé pour le Candida ?", options:["Fluconazole","Paracétamol","Amoxicilline"], correct:0 },
+        { text:"Quel antiparasitaire traite l'amibiase ?", options:["Métronidazole","Paracétamol","Ibuprofène"], correct:0 },
+        { text:"Quel est le risque de la digoxine ?", options:["Marge thérapeutique étroite","Aucun risque","Très faible"], correct:0 },
+        { text:"Où conserver l'insuline ?", options:["Au réfrigérateur (2-8 °C)","Au congélateur","À température ambiante"], correct:0 },
+        { text:"Que faire d'un médicament périmé ?", options:["Le rapporter à la pharmacie","Le jeter aux toilettes","Le donner à un proche"], correct:0 },
+        { text:"Que signifie observance thérapeutique ?", options:["Respect du traitement prescrit","Oubli des prises","Automédication"], correct:0 },
+        { text:"Quel est l'objectif de l'éducation thérapeutique ?", options:["Améliorer l'observance et les résultats","Remplacer le médecin","Vendre des médicaments"], correct:0 }
+    ];
+    let html = '';
+    questions.forEach((q,i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o,k) => { html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>'; });
+        html += '</div>';
+    });
+    document.getElementById('quizQuestions').innerHTML = html;
+    document.getElementById('submitQuiz').onclick = () => {
+        let score = 0;
+        questions.forEach((q,i) => {
+            const s = document.querySelector('input[name="q' + i + '"]:checked');
+            if (s && parseInt(s.value) === q.correct) score++;
+        });
+        const pct = Math.round(score/questions.length*100);
+        document.getElementById('quizResult').innerHTML = '<div style="background:#fbdcb8;padding:16px;border-radius:10px;margin-top:14px;"><strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong><br>' + (score === questions.length ? 'Excellent. Tu maîtrises le programme.' : score >= 21 ? 'Bien. Revoyez les leçons où vous avez échoué.' : 'Relis attentivement les leçons avant l\'examen.') + '</div>';
+    };
+}
+function renderSlide(index, keepHighlight = true) {
+    const isQuiz = (index === slides.length - 1);
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    if (isQuiz) renderQuiz();
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm && !isQuiz) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+</body>
+</html>
