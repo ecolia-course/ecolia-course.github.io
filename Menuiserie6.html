@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Menuiserie — 4e Technique (EXETAT)</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}html,body{height:100%}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:linear-gradient(160deg,#3e2723 0%,#5d4037 50%,#2e1b13 100%);display:flex;justify-content:center;align-items:center;padding:8px}
+.container{width:100%;max-width:1400px;background:#fefdf8;border-radius:20px;overflow:hidden;display:flex;flex-direction:column;height:100%;max-height:100vh;box-shadow:0 20px 60px rgba(0,0,0,0.4)}
+.progress-bar{height:4px;background:#e0c8b8;flex-shrink:0}.progress-fill{height:100%;background:linear-gradient(90deg,#8d6e63,#4e342e);width:0%;transition:width 0.3s}
+.header{padding:10px 16px;background:#efebe9;border-bottom:1px solid #bcaaa4;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-shrink:0}
+.header h1{color:#4e342e;font-size:1rem;font-weight:600}
+.header-right{display:flex;gap:6px;align-items:center}
+.search-box{display:flex;background:white;border-radius:20px;padding:2px 4px}
+.search-box input{border:none;padding:6px 10px;border-radius:20px;outline:none;width:130px;font-size:0.8rem}
+.search-box button{background:none;border:none;cursor:pointer;padding:4px 8px;color:#5d4037}
+.badge{background:#8d6e63;color:white;padding:4px 10px;border-radius:20px;font-weight:bold;font-size:0.75rem}
+.search-nav{display:none;gap:4px;background:#d7ccc8;padding:2px 8px;border-radius:20px;align-items:center;font-size:0.75rem}
+.search-nav button{background:none;border:none;cursor:pointer;color:#4e342e;padding:2px 4px}
+.content{padding:28px 32px;flex:1;overflow-y:auto;background:#fff;line-height:1.85}
+.slide{display:none}.slide.active{display:block}
+.slide-title{color:#3e2723;font-size:1.5rem;font-weight:700;padding-bottom:12px;margin-bottom:20px;border-bottom:2px solid #8d6e63}
+.slide-content{color:#2a1a15;font-size:1rem}
+.bloc{padding:18px 22px;border-radius:12px;margin:22px 0}
+.bloc-label{font-size:0.75rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;opacity:0.7}
+.bloc p,.bloc li{font-size:0.98rem}
+.bloc h3{font-size:1.1rem;margin:20px 0 10px;font-weight:600}
+.bloc h3:first-child{margin-top:0}
+.cas{background:#fff8e1;border-left:4px solid #ff8f00}.cas .bloc-label{color:#e65100}
+.theorie{background:#efebe9;border-left:4px solid #8d6e63}.theorie .bloc-label{color:#4e342e}
+.exemple{background:#fce4ec;border-left:4px solid #c62828}.exemple .bloc-label{color:#b71c1c}
+.resume{background:#e1f5fe;border:2px solid #0277bd}.resume .bloc-label{color:#01579b}
+.bloc ul,.bloc ol{margin-left:22px;margin-top:8px}.bloc li{margin-bottom:8px}.bloc strong{color:#3e2723}
+.quiz-container{padding:22px;background:#efebe9;border-radius:16px}
+.quiz-question{background:white;border-radius:10px;padding:16px;margin-bottom:14px}
+.quiz-question p{font-weight:600;margin-bottom:10px;color:#3e2723}
+.quiz-question label{display:block;padding:8px 10px;margin:4px 0;border-radius:6px;cursor:pointer}
+.quiz-question input{margin-right:8px}
+.quiz-btn-submit{background:#6d4c41;color:white;border:none;padding:12px 24px;border-radius:30px;font-size:1rem;cursor:pointer;font-weight:600;margin-top:14px}
+.quiz-result{margin-top:16px;font-weight:600}
+.sources{background:#f5f5f5;padding:12px 16px;border-radius:10px;margin-top:26px;font-size:0.82rem;color:#666;border-left:3px solid #999}
+.controls{padding:8px 16px;background:#fafafa;border-top:1px solid #e0e0e0;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.nav-btn{background:white;color:#4e342e;border:1px solid #ccc;padding:8px 14px;border-radius:8px;font-size:0.82rem;cursor:pointer}
+.nav-btn:disabled{opacity:0.35;cursor:not-allowed}
+.counter{font-size:0.78rem;color:#666}
+@media (max-width:600px){body{padding:0}.container{border-radius:0}.content{padding:20px 18px}.slide-title{font-size:1.25rem}}
+</style></head><body>
+<div class="container">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="header"><h1>Menuiserie · 4e Technique</h1><div class="header-right">
+<div class="search-box"><input type="text" id="searchInput" placeholder="Rechercher"><button id="searchBtn">⌕</button></div>
+<div class="search-nav" id="searchNav"><button id="prevResultBtn">‹</button><span id="resultCounter">0/0</span><button id="nextResultBtn">›</button></div>
+<span class="badge" id="slideCounter">1/9</span></div></div>
+<div class="content" id="content"></div>
+<div class="controls"><button class="nav-btn" id="prevBtn">← Précédent</button><span class="counter" id="counter">Leçon 1 / 9</span><button class="nav-btn" id="nextBtn">Suivant →</button></div>
+</div>
+<script>
+const slides=[
+{title:"Leçon 1 — Le bois : essences et propriétés",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans un atelier de menuiserie à Kinshasa, un apprenti doit choisir le bois pour fabriquer une table. Le menuisier lui explique : le bois dur pour le plateau, le bois tendre pour les pieds. Chaque essence a ses propriétés.</p></div>
+<h3>1. Les essences de bois</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Bois dur (feuillus)</strong> : chêne, iroko, acajou, teck, ébène. Résistant, durable.</li><li><strong>Bois tendre (résineux)</strong> : sapin, pin, épicéa, cèdre. Facile à travailler.</li><li><strong>Bois locaux congolais</strong> : iroko, tola, sapelli, bossé, wengé.</li><li><strong>Contreplaqué</strong> : panneaux collés, stable.</li><li><strong>Panneaux de particules</strong> : copeaux agglomérés, économique.</li></ul></div>
+<h3>2. Les propriétés du bois</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Dureté</strong> : résistance à la rayure.</li><li><strong>Densité</strong> : masse volumique (kg/m³).</li><li><strong>Humidité</strong> : pourcentage d'eau. Doit être séché (10-15 %).</li><li><strong>Retrait/gonflement</strong> : variation avec l'humidité.</li><li><strong>Fil</strong> : direction des fibres (droit, ondulé, contre-fil).</li><li><strong>Durabilité</strong> : résistance aux insectes, champignons.</li></ul></div>
+<h3>3. Les défauts du bois</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Nœuds</strong> : points d'attache des branches.</li><li><strong>Fentes</strong> : fissures dues au séchage.</li><li><strong>Gélivures</strong> : fentes du gel.</li><li><strong>Piqûres d'insectes</strong> : galeries.</li><li><strong>Malformations</strong> : courbures, loupes.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Table</strong> : plateau en iroko, pieds en sapin.</li><li><strong>Porte</strong> : cadre en iroko, panneau en contreplaqué.</li><li><strong>Meuble</strong> : acajou pour l'aspect, sapin pour la structure.</li><li><strong>Séchage</strong> : à l'air libre (naturel) ou au four (artificiel).</li></ul><p><a href="https://www.youtube.com/results?search_query=essences+bois+menuiserie+propriétés" target="_blank" rel="noopener">🎥 Recherche : les essences de bois</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Les bois durs (chêne, iroko, acajou) sont résistants ; les bois tendres (sapin, pin) sont faciles à travailler. Les propriétés : dureté, densité, humidité, retrait. Les défauts : nœuds, fentes, piqûres.</p></div>
+<div class="sources"><strong>Sources :</strong> Manuels Menuiserie 4e Technique (manuels-scolaires-rdc.com, 2026).<br><strong>Sigles :</strong> MEPST, DIPROMAD, EXETAT.</div>
+`},
+{title:"Leçon 2 — Les outils de menuiserie",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans un atelier de Lubumbashi, le menuisier dispose d'une panoplie d'outils : scie, rabot, ciseau à bois, maillet, perceuse. Chaque outil a sa fonction. Leur maîtrise fait la qualité du travail.</p></div>
+<h3>1. Les outils de traçage</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Mètre ruban</strong>, <strong>règle</strong>, <strong>équerre</strong>.</li><li><strong>Fausse équerre</strong> : pour les angles variables.</li><li><strong>Trusquin</strong> : traçage parallèle.</li><li><strong>Compas</strong> : traçage des cercles.</li><li><strong>Crayon de menuisier</strong> : mine plate.</li></ul></div>
+<h3>2. Les outils de coupe</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Scie égoïne</strong> : coupes droites.</li><li><strong>Scie à dos</strong> : coupes précises.</li><li><strong>Scie sauteuse</strong> : coupes courbes.</li><li><strong>Rabot</strong> : dressage, aplanissement.</li><li><strong>Ciseau à bois</strong> : mortaises, assemblages.</li><li><strong>Gouge</strong> : creusage.</li><li><strong>Perceuse</strong> : trous.</li></ul></div>
+<h3>3. Les outils d'assemblage et de finition</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Maillet</strong> : frapper sans abîmer.</li><li><strong>Marteau</strong> : clouer.</li><li><strong>Tournevis</strong> : visser.</li><li><strong>Serre-joints</strong> : maintenir pendant le collage.</li><li><strong>Râpe et lime</strong> : finition.</li><li><strong>Papier de verre</strong> : ponçage.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Couper une planche</strong> : scie égoïne, tracé à l'équerre.</li><li><strong>Aplanir</strong> : rabot, dans le sens du fil.</li><li><strong>Assembler</strong> : mortaise + tenon, ciseau + maillet.</li><li><strong>Poncer</strong> : papier de verre grain 80 puis 120.</li></ul><p><a href="https://www.youtube.com/results?search_query=outils+menuiserie+scie+rabot+ciseau" target="_blank" rel="noopener">🎥 Recherche : les outils de menuiserie</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Les outils de menuiserie se classent en : traçage (mètre, équerre, trusquin), coupe (scie, rabot, ciseau), assemblage et finition (maillet, marteau, serre-joints, papier de verre).</p></div>
+<div class="sources"><strong>Sources :</strong> Manuels Menuiserie 4e Technique (2026).</div>
+`},
+{title:"Leçon 3 — Les assemblages en bois",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Pour fabriquer une table solide, le menuisier assemble les planches. Il utilise des assemblages : tenon-mortaise, queue d'aronde, mi-bois. Un bon assemblage résiste au temps.</p></div>
+<h3>1. Les assemblages traditionnels</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Tenon-mortaise</strong> : solide, pour les cadres.</li><li><strong>Queue d'aronde</strong> : très solide, pour les tiroirs.</li><li><strong>Mi-bois</strong> : deux pièces entaillées à mi-épaisseur.</li><li><strong>Enture</strong> : assemblage en longueur.</li><li><strong>Tourillon</strong> : cheville cylindrique.</li><li><strong>Lamelle</strong> : pour les panneaux.</li></ul></div>
+<h3>2. Les assemblages modernes</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Vis</strong> : rapide, moins solide.</li><li><strong>Clous</strong> : pour les caisses.</li><li><strong>Écrous et boulons</strong> : pour les meubles démontables.</li><li><strong>Excentriques</strong> : pour les panneaux (meubles en kit).</li><li><strong>Colle à bois</strong> : renforce l'assemblage.</li></ul></div>
+<h3>3. Le collage</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Colle vinylique (blanche)</strong> : usage intérieur.</li><li><strong>Colle polyuréthane</strong> : usage extérieur, résistante à l'eau.</li><li><strong>Application</strong> : encoller les deux faces, serrer, laisser sécher 24 h.</li><li><strong>Serre-joints</strong> : maintenir la pression.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p><strong>Assemblage d'un cadre de porte</strong></p><ul><li>Tenon-mortaise aux angles.</li><li>Colle vinylique + chevilles.</li><li>Serrage au serre-joint.</li><li>Séchage 24 h.</li><li>Ponçage et finition.</li></ul><p><a href="https://www.youtube.com/results?search_query=assemblages+bois+tenon+mortaise+queue+aronde" target="_blank" rel="noopener">🎥 Recherche : les assemblages en bois</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Les assemblages traditionnels sont : tenon-mortaise, queue d'aronde, mi-bois, enture, tourillon. Les assemblages modernes : vis, clous, boulons, excentriques. Le collage utilise la colle vinylique ou polyuréthane, avec serrage.</p></div>
+<div class="sources"><strong>Sources :</strong> Manuels Menuiserie 4e Technique (2026).</div>
+`},
+{title:"Leçon 4 — La fabrication d'un meuble simple",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Un menuisier de Kinshasa reçoit la commande d'une table basse. Il suit les étapes : plan, débit, usinage, assemblage, finition. Chaque étape compte pour un résultat de qualité.</p></div>
+<h3>1. Le plan et le débit</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Plan</strong> : dessin coté du meuble.</li><li><strong>Liste de débit</strong> : pièces, dimensions, nombre.</li><li><strong>Choix du bois</strong> : selon l'usage.</li><li><strong>Traçage</strong> : sur les planches.</li><li><strong>Débit</strong> : coupe à la scie.</li></ul></div>
+<h3>2. L'usinage</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Dressage</strong> : mise à l'équerre.</li><li><strong>Rabotage</strong> : aplanissement.</li><li><strong>Perçage</strong> : trous pour vis/chevilles.</li><li><strong>Mortaisage</strong> : pour les assemblages.</li><li><strong>Ponçage</strong> : papier de verre.</li></ul></div>
+<h3>3. L'assemblage et la finition</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Assemblage</strong> : tenon-mortaise, vis, colle.</li><li><strong>Vérification</strong> : équerrage, stabilité.</li><li><strong>Finition</strong> : ponçage fin, vernis, peinture, cire.</li><li><strong>Séchage</strong> : entre les couches.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p><strong>Table basse 100 × 50 × 45 cm</strong></p><ul><li>Plateau : 100 × 50 × 3 cm.</li><li>Pieds : 4 × (6 × 6 × 45 cm).</li><li>Traverses : 4 × (40 × 6 × 3 cm).</li><li>Assemblage : tenon-mortaise + vis.</li><li>Finition : ponçage + vernis.</li></ul><p><a href="https://www.youtube.com/results?search_query=fabrication+meuble+menuiserie+table" target="_blank" rel="noopener">🎥 Recherche : la fabrication d'un meuble</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La fabrication d'un meuble comprend : plan, débit, usinage (dressage, rabotage, perçage, mortaisage), assemblage, finition (ponçage, vernis). Chaque étape doit être soignée.</p></div>
+<div class="sources"><strong>Sources :</strong> Manuels Menuiserie 4e Technique (2026).</div>
+`},
+{title:"Leçon 5 — Les machines-outils de menuiserie",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans un atelier moderne de Kinshasa, le menuisier utilise des machines : scie circulaire, raboteuse, toupie, perceuse à colonne. Ces machines augmentent la productivité mais exigent la prudence.</p></div>
+<h3>1. Les machines de sciage</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Scie circulaire</strong> : coupes droites.</li><li><strong>Scie à ruban</strong> : coupes courbes.</li><li><strong>Scie radiale</strong> : coupes d'onglet.</li><li><strong>Scie à format</strong> : panneaux.</li></ul></div>
+<h3>2. Les machines de façonnage</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Dégauchisseuse</strong> : dressage des faces.</li><li><strong>Raboteuse</strong> : mise à l'épaisseur.</li><li><strong>Toupie</strong> : moulures, profils.</li><li><strong>Mortaisage</strong> : mortaises.</li><li><strong>Perceuse à colonne</strong> : trous précis.</li></ul></div>
+<h3>3. Les machines de finition</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Ponceuse à bande</strong> : ponçage rapide.</li><li><strong>Ponceuse vibrante</strong> : finitions.</li><li><strong>Ponceuse orbitale</strong> : finition fine.</li><li><strong>Compresseur + pistolet</strong> : vernis, peinture.</li></ul></div>
+<h3>4. Application et sécurité</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><ul><li><strong>Utilisation</strong> : formation obligatoire, lecture de la notice.</li><li><strong>EPI</strong> : lunettes, gants, protection auditive, masque anti-poussière.</li><li><strong>Sécurité</strong> : capots de protection, poussoirs, jamais les mains près de la lame.</li><li><strong>Entretien</strong> : affûtage, nettoyage, graissage régulier.</li></ul><p><a href="https://www.youtube.com/results?search_query=machines+menuiserie+scie+raboteuse+sécurité" target="_blank" rel="noopener">🎥 Recherche : les machines-outils</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Les machines de menuiserie : sciage (scie circulaire, à ruban), façonnage (dégauchisseuse, raboteuse, toupie), finition (ponceuses, pistolet). La sécurité est essentielle : EPI, capots, formation.</p></div>
+<div class="sources"><strong>Sources :</strong> Manuels Menuiserie 4e Technique (2026).</div>
+`},
+{title:"Leçon 6 — La finition du bois",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Un meuble de qualité doit être protégé et embelli. Le menuisier applique un vernis, une cire ou une peinture. La finition protège le bois de l'humidité, des insectes, de l'usure.</p></div>
+<h3>1. La préparation</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Ponçage</strong> : grains 80, 120, 180.</li><li><strong>Dépoussiérage</strong> : chiffon, aspirateur.</li><li><strong>Rebouchage</strong> : pâte à bois.</li><li><strong>Égrenage</strong> : ponçage fin entre les couches.</li></ul></div>
+<h3>2. Les produits de finition</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Vernis</strong> : protection filmogène, brillant ou mat.</li><li><strong>Lasure</strong> : protection sans film, laisse voir le bois.</li><li><strong>Cire</strong> : aspect naturel, entretien régulier.</li><li><strong>Huile</strong> : nourrit le bois, aspect satiné.</li><li><strong>Peinture</strong> : opaque, décore et protège.</li><li><strong>Teinte</strong> : modifie la couleur.</li></ul></div>
+<h3>3. La technique d'application</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Pinceau</strong> : pour les vernis et peintures.</li><li><strong>Chiffon</strong> : pour les huiles et cires.</li><li><strong>Pistolet</strong> : pour les grandes surfaces.</li><li><strong>Sens d'application</strong> : dans le sens du fil.</li><li><strong>Séchage</strong> : entre les couches (4 à 24 h).</li><li><strong>Égrenage</strong> : entre les couches.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p><strong>Finition d'une table en iroko</strong></p><ul><li>Ponçage : grains 80, 120, 180.</li><li>Dépoussiérage.</li><li>Application de teinte (optionnel).</li><li>Vernis : 3 couches, égrenage entre.</li><li>Séchage 24 h entre les couches.</li></ul><p><a href="https://www.youtube.com/results?search_query=finition+bois+vernis+cire+peinture" target="_blank" rel="noopener">🎥 Recherche : la finition du bois</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>La finition comprend la préparation (ponçage, dépoussiérage) et l'application du produit (vernis, lasure, cire, huile, peinture). Le sens du fil, le séchage et l'égrenage sont essentiels.</p></div>
+<div class="sources"><strong>Sources :</strong> Manuels Menuiserie 4e Technique (2026).</div>
+`},
+{title:"Leçon 7 — Le dessin technique et la lecture de plans",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Avant de fabriquer un meuble, le menuisier consulte un plan technique. Il lit les vues (face, dessus, côté), les cotes, les symboles. Sans cette lecture, la fabrication serait impossible.</p></div>
+<h3>1. Les vues</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Vue de face</strong> : ce qu'on voit de face.</li><li><strong>Vue de dessus</strong> : vue du haut.</li><li><strong>Vue de côté</strong> : vue de gauche ou droite.</li><li><strong>Perspective</strong> : vue en 3D.</li><li><strong>Coupe</strong> : vue de l'intérieur.</li></ul></div>
+<h3>2. Les cotes et échelles</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Cotes</strong> : dimensions en mm ou cm.</li><li><strong>Échelle</strong> : 1:1 (réel), 1:10 (réduit), 10:1 (agrandi).</li><li><strong>Lignes</strong> : trait plein (arête visible), pointillé (arête cachée), trait fin (cote).</li><li><strong>Hachures</strong> : matières coupées.</li></ul></div>
+<h3>3. La lecture d'un plan</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>1.</strong> Identifier le meuble et sa fonction.</li><li><strong>2.</strong> Repérer les vues.</li><li><strong>3.</strong> Lire les cotes.</li><li><strong>4.</strong> Identifier les matériaux.</li><li><strong>5.</strong> Comprendre les assemblages.</li><li><strong>6.</strong> Établir la liste de débit.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p><strong>Lecture d'un plan de table</strong></p><ul><li>Vue de face : 100 × 45 cm.</li><li>Vue de dessus : 100 × 50 cm.</li><li>Vue de côté : 50 × 45 cm.</li><li>Échelle 1:10.</li><li>Cotes : plateau 100 × 50 × 3, pieds 6 × 6 × 45.</li></ul><p><a href="https://www.youtube.com/results?search_query=dessin+technique+menuiserie+lecture+plans" target="_blank" rel="noopener">🎥 Recherche : le dessin technique</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>Le dessin technique utilise des vues (face, dessus, côté), des cotes, des échelles. La lecture suit : identification, vues, cotes, matériaux, assemblages, liste de débit.</p></div>
+<div class="sources"><strong>Sources :</strong> Manuels Menuiserie 4e Technique (2026).</div>
+`},
+{title:"Leçon 8 — L'organisation d'un atelier de menuiserie",content:`
+<div class="bloc cas"><div class="bloc-label">Situation</div><p>Dans un atelier de Kinshasa, le menuisier organise son espace : zone de stockage, zone de coupe, zone d'assemblage, zone de finition. Cette organisation améliore la productivité et la sécurité.</p></div>
+<h3>1. L'aménagement de l'atelier</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Zone de stockage</strong> : matières premières, bois, panneaux.</li><li><strong>Zone de traçage/débit</strong> : établis, scies.</li><li><strong>Zone d'usinage</strong> : raboteuse, toupie, perceuse.</li><li><strong>Zone d'assemblage</strong> : grands établis, serre-joints.</li><li><strong>Zone de finition</strong> : ponçage, vernis, peinture.</li><li><strong>Zone de stockage produits finis</strong>.</li></ul></div>
+<h3>2. L'organisation du travail</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Planification</strong> : ordre des travaux, délais.</li><li><strong>Répartition des tâches</strong> : selon les compétences.</li><li><strong>Gestion des stocks</strong> : matières premières, fournitures.</li><li><strong>Maintenance</strong> : entretien des machines.</li><li><strong>Sécurité</strong> : EPI, formation, signalisation.</li></ul></div>
+<h3>3. La gestion d'un atelier</h3>
+<div class="bloc theorie"><div class="bloc-label">Théorie</div><ul><li><strong>Devis</strong> : estimation du coût d'un meuble.</li><li><strong>Facturation</strong> : prix de vente, bénéfice.</li><li><strong>Comptabilité simple</strong> : recettes, dépenses.</li><li><strong>Marketing</strong> : qualité, bouche-à-oreille, réseaux sociaux.</li><li><strong>Formation continue</strong> : nouvelles techniques.</li></ul></div>
+<h3>4. Application</h3>
+<div class="bloc exemple"><div class="bloc-label">Exemple</div><p><strong>Organisation d'un atelier de 5 ouvriers</strong></p><ul><li>1 chef d'atelier.</li><li>2 menuisiers (débit, assemblage).</li><li>1 finisseur (ponçage, vernis).</li><li>1 apprenti.</li><li>Production : 5 meubles/mois.</li></ul><p><a href="https://www.youtube.com/results?search_query=organisation+atelier+menuiserie+gestion" target="_blank" rel="noopener">🎥 Recherche : l'organisation d'un atelier</a></p></div>
+<div class="bloc resume"><div class="bloc-label">À retenir</div><p>L'atelier s'organise en zones (stockage, débit, usinage, assemblage, finition). La gestion comprend planification, répartition des tâches, stocks, maintenance, sécurité. Le menuisier doit aussi savoir établir un devis et facturer.</p></div>
+<div class="sources"><strong>Sources :</strong> Manuels Menuiserie 4e Technique (2026).</div>
+`},
+{title:"Évaluation finale — Items EXETAT",content:`
+<p style="margin-bottom:18px;color:#4e342e;font-size:0.95rem;">Évaluation type EXETAT.</p>
+<div class="bloc theorie"><div class="bloc-label">Consignes</div><ul><li>15 questions à choix multiples.</li><li>Durée recommandée : 15 minutes.</li></ul></div>
+<div class="quiz-container" id="quizContainer"><div id="quizQuestions"></div><button id="submitQuiz" class="quiz-btn-submit">Valider mes réponses</button><div id="quizResult" class="quiz-result"></div></div>
+`}];
+
+let currentSlide=0,lastSearchTerm="",searchResults=[],currentResultIdx=-1;
+const contentDiv=document.getElementById('content'),prevBtn=document.getElementById('prevBtn'),nextBtn=document.getElementById('nextBtn'),slideCounterSpan=document.getElementById('slideCounter'),progressFill=document.getElementById('progressFill'),counterSpan=document.getElementById('counter'),searchInput=document.getElementById('searchInput'),searchBtn=document.getElementById('searchBtn'),searchNav=document.getElementById('searchNav'),prevResultBtn=document.getElementById('prevResultBtn'),nextResultBtn=document.getElementById('nextResultBtn'),resultCounterSpan=document.getElementById('resultCounter');
+function getTextFromHtml(html){const d=document.createElement('div');d.innerHTML=html;return d.textContent||'';}
+function searchSlides(term){if(!term.trim())return[];const l=term.toLowerCase();const r=[];slides.forEach((s,i)=>{if(s.title.toLowerCase().includes(l)||getTextFromHtml(s.content).toLowerCase().includes(l))r.push(i);});return r;}
+function highlightInCurrentSlide(term){if(!term)return;const sc=document.querySelector('.slide-content');if(!sc)return;const regex=new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`,'gi');const walker=document.createTreeWalker(sc,NodeFilter.SHOW_TEXT,null,false);const nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);for(let n of nodes){if(n.nodeValue&&regex.test(n.nodeValue)){const sp=document.createElement('span');sp.innerHTML=n.nodeValue.replace(regex,'<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');n.parentNode.replaceChild(sp,n);}}}
+function renderQuiz(){
+const questions=[
+{text:"Quelle est la différence entre bois dur et bois tendre ?",options:["Le bois dur est plus résistant","Le bois tendre est plus résistant","Aucune"],correct:0},
+{text:"Quel bois est local en RDC ?",options:["L'iroko","Le chêne","Le bouleau"],correct:0},
+{text:"Quel outil sert à tracer des lignes parallèles ?",options:["Le trusquin","Le marteau","La scie"],correct:0},
+{text:"Quel outil sert à aplanir le bois ?",options:["Le rabot","La scie","Le ciseau"],correct:0},
+{text:"Quel assemblage est très solide pour les tiroirs ?",options:["Queue d'aronde","Clou","Vis"],correct:0},
+{text:"Quelle colle est résistante à l'eau ?",options:["Polyuréthane","Vinylique","Néoprène"],correct:0},
+{text:"Quelle est la première étape de fabrication d'un meuble ?",options:["Le plan","L'assemblage","La finition"],correct:0},
+{text:"Quelle machine sert au dressage ?",options:["Dégauchisseuse","Scie circulaire","Toupie"],correct:0},
+{text:"Quel EPI protège les yeux ?",options:["Lunettes","Casque","Gants"],correct:0},
+{text:"Quel produit laisse voir le bois ?",options:["Lasure","Peinture opaque","Enduit"],correct:0},
+{text:"Dans quel sens appliquer le vernis ?",options:["Dans le sens du fil","En travers","Peu importe"],correct:0},
+{text:"Quelle vue montre l'objet en 3D ?",options:["La perspective","La vue de face","La vue de côté"],correct:0},
+{text:"Que signifie l'échelle 1:10 ?",options:["Dix fois plus petit","Dix fois plus grand","Taille réelle"],correct:0},
+{text:"Quelle zone d'atelier pour le vernis ?",options:["Zone de finition","Zone de coupe","Zone de stockage"],correct:0},
+{text:"Quel document estime le coût d'un meuble ?",options:["Le devis","La facture","Le bon de commande"],correct:0}];
+let html='';questions.forEach((q,i)=>{html+='<div class="quiz-question"><p>'+(i+1)+'. '+q.text+'</p>';q.options.forEach((o,k)=>{html+='<label><input type="radio" name="q'+i+'" value="'+k+'"> '+o+'</label>';});html+='</div>';});
+document.getElementById('quizQuestions').innerHTML=html;
+document.getElementById('submitQuiz').onclick=()=>{let score=0;questions.forEach((q,i)=>{const s=document.querySelector('input[name="q'+i+'"]:checked');if(s&&parseInt(s.value)===q.correct)score++;});const pct=Math.round(score/questions.length*100);document.getElementById('quizResult').innerHTML='<div style="background:#d7ccc8;padding:16px;border-radius:10px;margin-top:14px;"><strong>Score : '+score+'/'+questions.length+' ('+pct+'%)</strong><br>'+(score===questions.length?'Excellent.':score>=10?'Bien.':'Relis les leçons.')+'</div>';};
+}
+function renderSlide(index,keepHighlight=true){const isQuiz=(index===slides.length-1);contentDiv.innerHTML='<div class="slide active"><h2 class="slide-title">'+slides[index].title+'</h2><div class="slide-content">'+slides[index].content+'</div></div>';if(isQuiz)renderQuiz();slideCounterSpan.textContent=(index+1)+'/'+slides.length;progressFill.style.width=((index+1)/slides.length*100)+'%';prevBtn.disabled=(index===0);nextBtn.disabled=(index===slides.length-1);counterSpan.textContent='Leçon '+(index+1)+' / '+slides.length;contentDiv.scrollTop=0;if(keepHighlight&&lastSearchTerm&&!isQuiz)highlightInCurrentSlide(lastSearchTerm);}
+function updateResultDisplay(){if(searchResults.length===0){searchNav.style.display='none';return;}searchNav.style.display='flex';resultCounterSpan.textContent=(currentResultIdx+1)+'/'+searchResults.length;}
+function goToResult(idx){if(idx<0||idx>=searchResults.length)return;currentResultIdx=idx;currentSlide=searchResults[currentResultIdx];renderSlide(currentSlide,true);updateResultDisplay();}
+function performSearch(){const term=searchInput.value.trim();if(!term)return;lastSearchTerm=term;searchResults=searchSlides(term);if(searchResults.length===0){searchNav.style.display='none';return;}currentResultIdx=0;goToResult(0);}
+function nextResult(){if(searchResults.length)goToResult((currentResultIdx+1)%searchResults.length);}
+function prevResult(){if(searchResults.length)goToResult((currentResultIdx-1+searchResults.length)%searchResults.length);}
+function nextSlide(){if(currentSlide<slides.length-1){currentSlide++;renderSlide(currentSlide,true);}}
+function prevSlide(){if(currentSlide>0){currentSlide--;renderSlide(currentSlide,true);}}
+prevBtn.onclick=prevSlide;nextBtn.onclick=nextSlide;searchBtn.onclick=performSearch;prevResultBtn.onclick=prevResult;nextResultBtn.onclick=nextResult;
+searchInput.addEventListener('keydown',e=>{if(e.key==='Enter')performSearch();});
+renderSlide(0,false);
+</script></body></html>
