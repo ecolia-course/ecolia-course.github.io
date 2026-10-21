@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr" data-theme="bleu">
+
+<html data-theme="bleu" lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, user-scalable=yes" name="viewport"/>
 <title>ECOLIA — Anglais</title>
 <style>
 [data-theme="bleu"]   { --p1:#0d2b4f; --p2:#1565c0; --p3:#07172e; --p4:#12437a; --p5:#5b8fd0; --bg:#e8f0fb; --bg2:#cfdff5; --bd:#a9c3e8; --soft:#dde8f7; --btn:#2a67b0; }
@@ -71,28 +72,28 @@ body { font-family:'Segoe UI',system-ui,sans-serif; background:linear-gradient(1
 </head>
 <body>
 <div class="container">
-    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
-    <div class="header">
-        <h1 id="pageTitle">ECOLIA</h1>
-        <div class="header-right">
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Rechercher">
-                <button id="searchBtn">⌕</button>
-            </div>
-            <div class="search-nav" id="searchNav">
-                <button id="prevResultBtn">‹</button>
-                <span id="resultCounter">0/0</span>
-                <button id="nextResultBtn">›</button>
-            </div>
-            <span class="badge" id="slideCounter">0/0</span>
-        </div>
-    </div>
-    <div class="content" id="content"></div>
-    <div class="controls">
-        <button class="nav-btn" id="prevBtn">← Précédent</button>
-        <span class="counter" id="counter">—</span>
-        <button class="nav-btn" id="nextBtn">Suivant →</button>
-    </div>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="header">
+<h1 id="pageTitle">ECOLIA</h1>
+<div class="header-right">
+<div class="search-box">
+<input id="searchInput" placeholder="Rechercher" type="text"/>
+<button id="searchBtn">⌕</button>
+</div>
+<div class="search-nav" id="searchNav">
+<button id="prevResultBtn">‹</button>
+<span id="resultCounter">0/0</span>
+<button id="nextResultBtn">›</button>
+</div>
+<span class="badge" data-audio-src="audio_files/audio_Ang7_1.mp3" id="slideCounter">0/0</span>
+</div>
+</div>
+<div class="content" id="content"></div>
+<div class="controls">
+<button class="nav-btn" id="prevBtn">← Précédent</button>
+<span class="counter" id="counter">—</span>
+<button class="nav-btn" id="nextBtn">Suivant →</button>
+</div>
 </div>
 <script>
 const COURSE_TITLE = "Anglais";
@@ -907,7 +908,6 @@ nextResultBtn.onclick = nextResult;
 searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') performSearch(); });
 renderSlide(0, false);
 </script>
-
 <!-- ECOLIA_IMAGE_LOADER_START -->
 <script>
 (function () {
@@ -930,5 +930,139 @@ renderSlide(0, false);
 })();
 </script>
 <!-- ECOLIA_IMAGE_LOADER_END -->
+
+<!-- ECOLIA_AUDIO_PLAYER_START -->
+<style>
+  .ecolia-audio-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin: 12px 0 18px 0;
+    padding-left: 5px;
+  }
+  .ecolia-play-btn {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    border: none;
+    background-color: #2563eb;
+    color: #ffffff;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease-in-out;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .ecolia-play-btn:active {
+    transform: scale(0.92);
+    background-color: #1d4ed8;
+  }
+  .ecolia-play-btn svg {
+    width: 22px;
+    height: 22px;
+    fill: currentColor;
+  }
+</style>
+
+<script>
+(function() {
+  document.addEventListener("DOMContentLoaded", function() {
+    var slides = document.querySelectorAll(".slide, [id^='slide']");
+    if (!slides.length) return;
+
+    var currentAudio = null;
+    var currentBtn = null;
+    var currentIndex = 0;
+
+    var playIcon = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+    var pauseIcon = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+
+    slides.forEach(function(slide, idx) {
+      var audioSrc = slide.getAttribute("data-audio-src");
+      if (!audioSrc) return;
+
+      // Évite la création en double si déjà présent
+      if (slide.querySelector(".ecolia-audio-container")) return;
+
+      var container = document.createElement("div");
+      container.className = "ecolia-audio-container";
+
+      var btn = document.createElement("button");
+      btn.className = "ecolia-play-btn";
+      btn.setAttribute("type", "button");
+      btn.setAttribute("aria-label", "Écouter la leçon");
+      btn.innerHTML = playIcon;
+
+      var audio = new Audio(audioSrc);
+
+      btn.addEventListener("click", function(e) {
+        e.stopPropagation();
+
+        // Si un autre audio jouait, on l'arrête immédiatement
+        if (currentAudio && currentAudio !== audio) {
+          currentAudio.pause();
+          currentAudio.currentTime = 0;
+          if (currentBtn) currentBtn.innerHTML = playIcon;
+        }
+
+        if (audio.paused) {
+          audio.play().then(function() {
+            btn.innerHTML = pauseIcon;
+            currentAudio = audio;
+            currentBtn = btn;
+            currentIndex = idx;
+          }).catch(function(err) {
+            console.warn("ECOLIA : Problème lors de la lecture audio", err);
+          });
+        } else {
+          audio.pause();
+          btn.innerHTML = playIcon;
+        }
+      });
+
+      audio.addEventListener("ended", function() {
+        btn.innerHTML = playIcon;
+        // Navigation / Enchaînement automatique vers la slide suivante
+        if (idx + 1 < slides.length) {
+          var nextSlide = slides[idx + 1];
+          var nextBtn = nextSlide.querySelector(".ecolia-play-btn");
+          
+          // Déplacement visuel de la slide si votre fonction globale existe
+          if (typeof showSlide === "function") {
+            showSlide(idx + 1);
+          } else if (nextSlide.scrollIntoView) {
+            nextSlide.scrollIntoView({ behavior: 'smooth' });
+          }
+
+          if (nextBtn) {
+            setTimeout(function() { nextBtn.click(); }, 600);
+          }
+        }
+      });
+
+      container.appendChild(btn);
+      // Insertion au tout début de la slide (isolé des flèches)
+      slide.insertBefore(container, slide.firstChild);
+    });
+
+    // Arrêt immédiat de l'audio si l'élève change manuellement de slide via boutons externes
+    document.addEventListener("click", function(e) {
+      var target = e.target;
+      if (target.closest(".next-btn, .prev-btn, .nav-arrow, [onclick*='slide']")) {
+        if (currentAudio) {
+          currentAudio.pause();
+          currentAudio.currentTime = 0;
+          if (currentBtn) currentBtn.innerHTML = playIcon;
+        }
+      }
+    });
+  });
+})();
+</script>
+<!-- ECOLIA_AUDIO_PLAYER_END -->
 </body>
 </html>
