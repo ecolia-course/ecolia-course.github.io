@@ -85,7 +85,7 @@ body { font-family:'Segoe UI',system-ui,sans-serif; background:linear-gradient(1
 <span id="resultCounter">0/0</span>
 <button id="nextResultBtn">›</button>
 </div>
-<span class="badge" data-audio-src="audio_files/audio_Ang7_1.mp3" id="slideCounter">0/0</span>
+<span class="badge" id="slideCounter">0/0</span>
 </div>
 </div>
 <div class="content" id="content"></div>
@@ -931,136 +931,145 @@ renderSlide(0, false);
 </script>
 <!-- ECOLIA_IMAGE_LOADER_END -->
 
+
+
 <!-- ECOLIA_AUDIO_PLAYER_START -->
 <style>
-  .ecolia-audio-container {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    margin: 12px 0 18px 0;
-    padding-left: 5px;
+  #ecolia-audio-btn {
+    position: fixed; top: 10px; left: 10px;
+    width: 34px; height: 34px; padding: 0; margin: 0;
+    border: none; border-radius: 50%;
+    background: #2563eb; color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,.25);
+    cursor: pointer; opacity: .92;
+    z-index: 2147483000;
+    -webkit-tap-highlight-color: transparent; outline: none;
   }
-  .ecolia-play-btn {
-    width: 46px;
-    height: 46px;
-    border-radius: 50%;
-    border: none;
-    background-color: #2563eb;
-    color: #ffffff;
-    font-size: 20px;
-    cursor: pointer;
-    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease-in-out;
-    outline: none;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .ecolia-play-btn:active {
-    transform: scale(0.92);
-    background-color: #1d4ed8;
-  }
-  .ecolia-play-btn svg {
-    width: 22px;
-    height: 22px;
-    fill: currentColor;
-  }
+  #ecolia-audio-btn:active { transform: scale(.92); background: #1d4ed8; }
+  #ecolia-audio-btn svg { width: 16px; height: 16px; fill: currentColor; pointer-events: none; }
+  #ecolia-audio-btn.ecolia-off { display: none; }
 </style>
-
 <script>
-(function() {
-  document.addEventListener("DOMContentLoaded", function() {
-    var slides = document.querySelectorAll(".slide, [id^='slide']");
-    if (!slides.length) return;
+(function () {
+  var CFG = {"selector": "[id^='slide']", "code": "Ang7", "base": "audio_files/", "available": [1]};
+  var PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  var PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+  var NEXT_SEL = '.next, .next-btn, #next, #nextBtn, #next-btn, .nav-next, [data-next], [aria-label*="uivant"], [aria-label*="ext"]';
 
-    var currentAudio = null;
-    var currentBtn = null;
-    var currentIndex = 0;
+  function init() {
+    if (document.getElementById("ecolia-audio-btn")) return;
+    var btn = document.createElement("button");
+    btn.id = "ecolia-audio-btn";
+    btn.type = "button";
+    btn.className = "ecolia-off";
+    btn.setAttribute("aria-label", "Écouter la leçon");
+    btn.innerHTML = PLAY;
+    document.body.appendChild(btn);
 
-    var playIcon = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
-    var pauseIcon = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+    var audio = new Audio();           // un seul élément Audio, réutilisé (autorisé par le mobile)
+    audio.preload = "auto";
+    var st = { idx: -1, auto: false, advancing: false };
 
-    slides.forEach(function(slide, idx) {
-      var audioSrc = slide.getAttribute("data-audio-src");
-      if (!audioSrc) return;
-
-      // Évite la création en double si déjà présent
-      if (slide.querySelector(".ecolia-audio-container")) return;
-
-      var container = document.createElement("div");
-      container.className = "ecolia-audio-container";
-
-      var btn = document.createElement("button");
-      btn.className = "ecolia-play-btn";
-      btn.setAttribute("type", "button");
-      btn.setAttribute("aria-label", "Écouter la leçon");
-      btn.innerHTML = playIcon;
-
-      var audio = new Audio(audioSrc);
-
-      btn.addEventListener("click", function(e) {
-        e.stopPropagation();
-
-        // Si un autre audio jouait, on l'arrête immédiatement
-        if (currentAudio && currentAudio !== audio) {
-          currentAudio.pause();
-          currentAudio.currentTime = 0;
-          if (currentBtn) currentBtn.innerHTML = playIcon;
-        }
-
-        if (audio.paused) {
-          audio.play().then(function() {
-            btn.innerHTML = pauseIcon;
-            currentAudio = audio;
-            currentBtn = btn;
-            currentIndex = idx;
-          }).catch(function(err) {
-            console.warn("ECOLIA : Problème lors de la lecture audio", err);
-          });
-        } else {
-          audio.pause();
-          btn.innerHTML = playIcon;
-        }
+    function slides() {
+      var all = [].slice.call(document.querySelectorAll(CFG.selector));
+      return all.filter(function (el) {
+        return !(el.parentElement && el.parentElement.closest(CFG.selector));
       });
-
-      audio.addEventListener("ended", function() {
-        btn.innerHTML = playIcon;
-        // Navigation / Enchaînement automatique vers la slide suivante
-        if (idx + 1 < slides.length) {
-          var nextSlide = slides[idx + 1];
-          var nextBtn = nextSlide.querySelector(".ecolia-play-btn");
-          
-          // Déplacement visuel de la slide si votre fonction globale existe
-          if (typeof showSlide === "function") {
-            showSlide(idx + 1);
-          } else if (nextSlide.scrollIntoView) {
-            nextSlide.scrollIntoView({ behavior: 'smooth' });
-          }
-
-          if (nextBtn) {
-            setTimeout(function() { nextBtn.click(); }, 600);
-          }
-        }
+    }
+    function visibleArea(el) {
+      if (!el.getClientRects().length) return 0;
+      var cs = getComputedStyle(el);
+      if (cs.display === "none" || cs.visibility === "hidden" || parseFloat(cs.opacity) === 0) return 0;
+      var r = el.getBoundingClientRect();
+      var w = Math.min(r.right, window.innerWidth) - Math.max(r.left, 0);
+      var h = Math.min(r.bottom, window.innerHeight) - Math.max(r.top, 0);
+      return (w > 0 && h > 0) ? w * h : 0;
+    }
+    function currentIndex() {
+      var best = -1, bestA = 0;
+      slides().forEach(function (el, i) {
+        var a = visibleArea(el);
+        if (a > bestA) { bestA = a; best = i; }
       });
+      return best;
+    }
+    function hasAudio(i) { return CFG.available.indexOf(i + 1) !== -1; }
+    function srcFor(i) { return CFG.base + "audio_" + CFG.code + "_" + (i + 1) + ".mp3"; }
+    function stop() { try { audio.pause(); audio.currentTime = 0; } catch (e) {} btn.innerHTML = PLAY; }
 
-      container.appendChild(btn);
-      // Insertion au tout début de la slide (isolé des flèches)
-      slide.insertBefore(container, slide.firstChild);
-    });
-
-    // Arrêt immédiat de l'audio si l'élève change manuellement de slide via boutons externes
-    document.addEventListener("click", function(e) {
-      var target = e.target;
-      if (target.closest(".next-btn, .prev-btn, .nav-arrow, [onclick*='slide']")) {
-        if (currentAudio) {
-          currentAudio.pause();
-          currentAudio.currentTime = 0;
-          if (currentBtn) currentBtn.innerHTML = playIcon;
-        }
+    function playCurrent() {
+      if (st.idx < 0 || !hasAudio(st.idx)) { st.auto = false; return; }
+      var src = srcFor(st.idx);
+      if (audio.getAttribute("data-src") !== src) {
+        audio.setAttribute("data-src", src);
+        audio.src = src;
       }
+      var p = audio.play();
+      if (p && p.catch) p.catch(function (err) { console.warn("ECOLIA audio :", err); btn.innerHTML = PLAY; });
+    }
+
+    function onSlideChange(i) {
+      var wasAdvancing = st.advancing;
+      st.advancing = false;
+      st.idx = i;
+      btn.classList.toggle("ecolia-off", !hasAudio(i));
+      if (wasAdvancing && st.auto) {
+        stop();
+        setTimeout(playCurrent, 400);
+      } else {
+        st.auto = false;       // changement manuel : on coupe tout
+        stop();
+        audio.removeAttribute("data-src");
+      }
+    }
+
+    function goNext(fromIdx) {
+      var all = slides();
+      if (fromIdx + 1 >= all.length) { st.auto = false; return; }
+      st.advancing = true;
+      var done = false;
+      var nb = null;
+      var cands = document.querySelectorAll(NEXT_SEL);
+      for (var k = 0; k < cands.length; k++) {
+        if (cands[k].id !== "ecolia-audio-btn" && cands[k].getClientRects().length) { nb = cands[k]; break; }
+      }
+      if (nb) { nb.click(); }
+      else if (typeof window.showSlide === "function") { try { window.showSlide(fromIdx + 1); } catch (e) {} }
+      setTimeout(function () {
+        if (currentIndex() === fromIdx && st.advancing) {
+          try { all[fromIdx + 1].scrollIntoView({ behavior: "smooth" }); } catch (e) {}
+        }
+      }, 1200);
+      setTimeout(function () { st.advancing = false; }, 4000);
+    }
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var i = currentIndex();
+      if (i < 0) return;
+      if (i !== st.idx) onSlideChange(i);
+      if (audio.paused) { st.auto = true; playCurrent(); }
+      else { st.auto = false; audio.pause(); }
     });
-  });
+    audio.addEventListener("play", function () { btn.innerHTML = PAUSE; });
+    audio.addEventListener("pause", function () { btn.innerHTML = PLAY; });
+    audio.addEventListener("error", function () { btn.innerHTML = PLAY; st.auto = false; });
+    audio.addEventListener("ended", function () {
+      btn.innerHTML = PLAY;
+      if (st.auto) goNext(st.idx);
+    });
+    window.addEventListener("pagehide", stop);
+
+    // Suivi de la slide visible (robuste au scroll, aux flèches, aux transitions)
+    setInterval(function () {
+      var i = currentIndex();
+      if (i >= 0 && i !== st.idx) onSlideChange(i);
+    }, 300);
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
 })();
 </script>
 <!-- ECOLIA_AUDIO_PLAYER_END -->
