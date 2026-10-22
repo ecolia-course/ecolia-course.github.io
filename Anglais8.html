@@ -679,29 +679,31 @@ renderSlide(0, false);
 
 
 
+
+
+
+
 <!-- ECOLIA_AUDIO_PLAYER_START -->
 <style>
   #ecolia-audio-btn {
-    position: fixed; top: 10px; left: 10px;
-    width: 34px; height: 34px; padding: 0; margin: 0;
+    width: 30px; height: 30px; min-width: 30px; padding: 0; margin: 0 4px 0 0;
     border: none; border-radius: 50%;
     background: #2563eb; color: #fff;
-    display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 2px 6px rgba(0,0,0,.25);
-    cursor: pointer; opacity: .92;
-    z-index: 2147483000;
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,.25);
+    cursor: pointer; flex-shrink: 0;
     -webkit-tap-highlight-color: transparent; outline: none;
   }
+  #ecolia-audio-btn.ecolia-fixed { position: fixed; top: 8px; left: 8px; z-index: 2147483000; }
   #ecolia-audio-btn:active { transform: scale(.92); background: #1d4ed8; }
-  #ecolia-audio-btn svg { width: 16px; height: 16px; fill: currentColor; pointer-events: none; }
+  #ecolia-audio-btn svg { width: 15px; height: 15px; fill: currentColor; pointer-events: none; }
   #ecolia-audio-btn.ecolia-off { display: none; }
 </style>
 <script>
 (function () {
-  var CFG = {"selector": "[id^='slide']", "code": "Ang8", "base": "audio_files/", "available": [1]};
+  var CFG = {"code": "Ang8", "base": "audio_files/", "available": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22], "count": 22};
   var PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
   var PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
-  var NEXT_SEL = '.next, .next-btn, #next, #nextBtn, #next-btn, .nav-next, [data-next], [aria-label*="uivant"], [aria-label*="ext"]';
 
   function init() {
     if (document.getElementById("ecolia-audio-btn")) return;
@@ -711,48 +713,29 @@ renderSlide(0, false);
     btn.className = "ecolia-off";
     btn.setAttribute("aria-label", "Écouter la leçon");
     btn.innerHTML = PLAY;
-    document.body.appendChild(btn);
+    var host = document.querySelector(".header-right");
+    if (host) host.insertBefore(btn, host.firstChild);      // dans la barre du haut : ne scrolle jamais
+    else { btn.className += " ecolia-fixed"; document.body.appendChild(btn); }
 
-    var audio = new Audio();           // un seul élément Audio, réutilisé (autorisé par le mobile)
+    var audio = new Audio();            // un seul élément Audio, réutilisé (exigé par les navigateurs mobiles)
     audio.preload = "auto";
     var st = { idx: -1, auto: false, advancing: false };
 
-    function slides() {
-      var all = [].slice.call(document.querySelectorAll(CFG.selector));
-      return all.filter(function (el) {
-        return !(el.parentElement && el.parentElement.closest(CFG.selector));
-      });
-    }
-    function visibleArea(el) {
-      if (!el.getClientRects().length) return 0;
-      var cs = getComputedStyle(el);
-      if (cs.display === "none" || cs.visibility === "hidden" || parseFloat(cs.opacity) === 0) return 0;
-      var r = el.getBoundingClientRect();
-      var w = Math.min(r.right, window.innerWidth) - Math.max(r.left, 0);
-      var h = Math.min(r.bottom, window.innerHeight) - Math.max(r.top, 0);
-      return (w > 0 && h > 0) ? w * h : 0;
-    }
-    function currentIndex() {
-      var best = -1, bestA = 0;
-      slides().forEach(function (el, i) {
-        var a = visibleArea(el);
-        if (a > bestA) { bestA = a; best = i; }
-      });
-      return best;
+    function cur() {
+      try { if (typeof currentSlide === "number") return currentSlide; } catch (e) {}
+      return 0;
     }
     function hasAudio(i) { return CFG.available.indexOf(i + 1) !== -1; }
     function srcFor(i) { return CFG.base + "audio_" + CFG.code + "_" + (i + 1) + ".mp3"; }
-    function stop() { try { audio.pause(); audio.currentTime = 0; } catch (e) {} btn.innerHTML = PLAY; }
+    function setIcon(playing) { btn.innerHTML = playing ? PAUSE : PLAY; }
+    function stop() { try { audio.pause(); audio.currentTime = 0; } catch (e) {} setIcon(false); }
 
     function playCurrent() {
-      if (st.idx < 0 || !hasAudio(st.idx)) { st.auto = false; return; }
+      if (!hasAudio(st.idx)) { st.auto = false; return; }
       var src = srcFor(st.idx);
-      if (audio.getAttribute("data-src") !== src) {
-        audio.setAttribute("data-src", src);
-        audio.src = src;
-      }
+      if (audio.getAttribute("data-src") !== src) { audio.setAttribute("data-src", src); audio.src = src; }
       var p = audio.play();
-      if (p && p.catch) p.catch(function (err) { console.warn("ECOLIA audio :", err); btn.innerHTML = PLAY; });
+      if (p && p.catch) p.catch(function (err) { console.warn("ECOLIA audio :", err); setIcon(false); st.auto = false; });
     }
 
     function onSlideChange(i) {
@@ -760,58 +743,36 @@ renderSlide(0, false);
       st.advancing = false;
       st.idx = i;
       btn.classList.toggle("ecolia-off", !hasAudio(i));
-      if (wasAdvancing && st.auto) {
-        stop();
-        setTimeout(playCurrent, 400);
-      } else {
-        st.auto = false;       // changement manuel : on coupe tout
-        stop();
-        audio.removeAttribute("data-src");
-      }
+      stop();
+      audio.removeAttribute("data-src");
+      if (wasAdvancing && st.auto) setTimeout(playCurrent, 500);   // enchaînement automatique
+      else st.auto = false;                                         // changement manuel : on coupe tout
     }
 
-    function goNext(fromIdx) {
-      var all = slides();
-      if (fromIdx + 1 >= all.length) { st.auto = false; return; }
+    function goNext() {
+      if (st.idx + 1 >= CFG.count) { st.auto = false; return; }
       st.advancing = true;
-      var done = false;
-      var nb = null;
-      var cands = document.querySelectorAll(NEXT_SEL);
-      for (var k = 0; k < cands.length; k++) {
-        if (cands[k].id !== "ecolia-audio-btn" && cands[k].getClientRects().length) { nb = cands[k]; break; }
-      }
-      if (nb) { nb.click(); }
-      else if (typeof window.showSlide === "function") { try { window.showSlide(fromIdx + 1); } catch (e) {} }
-      setTimeout(function () {
-        if (currentIndex() === fromIdx && st.advancing) {
-          try { all[fromIdx + 1].scrollIntoView({ behavior: "smooth" }); } catch (e) {}
-        }
-      }, 1200);
+      if (typeof nextSlide === "function") nextSlide();
+      else { var nb = document.getElementById("nextBtn"); if (nb) nb.click(); }
       setTimeout(function () { st.advancing = false; }, 4000);
     }
 
     btn.addEventListener("click", function (e) {
       e.stopPropagation();
-      var i = currentIndex();
-      if (i < 0) return;
+      var i = cur();
       if (i !== st.idx) onSlideChange(i);
       if (audio.paused) { st.auto = true; playCurrent(); }
       else { st.auto = false; audio.pause(); }
     });
-    audio.addEventListener("play", function () { btn.innerHTML = PAUSE; });
-    audio.addEventListener("pause", function () { btn.innerHTML = PLAY; });
-    audio.addEventListener("error", function () { btn.innerHTML = PLAY; st.auto = false; });
-    audio.addEventListener("ended", function () {
-      btn.innerHTML = PLAY;
-      if (st.auto) goNext(st.idx);
-    });
+    audio.addEventListener("play", function () { setIcon(true); });
+    audio.addEventListener("pause", function () { setIcon(false); });
+    audio.addEventListener("error", function () { setIcon(false); st.auto = false; });
+    audio.addEventListener("ended", function () { setIcon(false); if (st.auto) goNext(); });
     window.addEventListener("pagehide", stop);
 
-    // Suivi de la slide visible (robuste au scroll, aux flèches, aux transitions)
-    setInterval(function () {
-      var i = currentIndex();
-      if (i >= 0 && i !== st.idx) onSlideChange(i);
-    }, 300);
+    // Suivi de la slide affichée (boutons, recherche, quiz : tout passe par currentSlide)
+    st.idx = -1;
+    setInterval(function () { var i = cur(); if (i !== st.idx) onSlideChange(i); }, 250);
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
