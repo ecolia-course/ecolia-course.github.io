@@ -7,7 +7,7 @@
    - Pas de skipWaiting automatique : l'élève choisit la mise à jour (message SKIP_WAITING)
    ═══════════════════════════════════════════════════════════════ */
 
-const CACHE = 'ecolia-cours-v1';   // MÊME nom qu'avant : les cours déjà téléchargés sont conservés
+const CACHE = 'ecolia-cours-v2';   // MÊME nom qu'avant : les cours déjà téléchargés sont conservés
 const SHELL_FILES = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 
 const isMedia = p => /\.(mp3|m4a|ogg|wav|jpe?g|png|webp|gif|svg|ico)$/i.test(p);
