@@ -1,13 +1,13 @@
 /* ═══════════════════════════════════════════════════════════════
    SERVICE WORKER ECOLIA v2 — PWA uniquement (l'APK n'en a pas)
    - UNE seule copie de chaque fichier (clé sans « ?v=… », index.html = « / »)
-   - Pages, JSON, JS, CSS : « stale-while-revalidate » → le cours s'ouvre tout de suite depuis le cache
-     ET se met à jour en arrière-plan (la version fraîche s'affiche à l'ouverture suivante)
+   - Pages, JS, CSS : « stale-while-revalidate » → s'ouvrent tout de suite depuis le cache ET se mettent à jour en arrière-plan
+   - JSON (catalogue, promos) et téléchargements explicites (cache:'no-store') : réseau d'abord, cache seulement hors ligne
    - Audio / images : cache d'abord (noms de fichiers stables), requêtes « Range » (lecture audio) servies en 206
    - Pas de skipWaiting automatique : l'élève choisit la mise à jour (message SKIP_WAITING)
    ═══════════════════════════════════════════════════════════════ */
 
-const CACHE = 'ecolia-cours-v2';   // MÊME nom qu'avant : les cours déjà téléchargés sont conservés
+const CACHE = 'ecolia-cours-v1';   // MÊME nom qu'avant : les cours déjà téléchargés sont conservés
 const SHELL_FILES = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 
 const isMedia = p => /\.(mp3|m4a|ogg|wav|jpe?g|png|webp|gif|svg|ico)$/i.test(p);
@@ -38,7 +38,7 @@ self.addEventListener('install', event => {
 self.addEventListener('activate', event => {
   event.waitUntil((async () => {
     for (const k of await caches.keys()) {
-      if (k !== CACHE) await caches.delete(k);
+      if (k.startsWith('ecolia-shell')) await caches.delete(k);   // ancien doublon ; on ne touche PAS aux autres caches (ex. ecolia-promos-v1)
     }
     const cache = await caches.open(CACHE);
     for (const req of await cache.keys()) {
@@ -59,8 +59,32 @@ self.addEventListener('fetch', event => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;            // autres sites : on ne touche à rien
-  event.respondWith(isMedia(url.pathname) ? media(req, url) : page(event, url));
+  if (isMedia(url.pathname)) { event.respondWith(media(req, url)); return; }
+  // catalogue.json, promos.json… et tout téléchargement demandé explicitement par l'app (cache:'no-store' / 'reload') :
+  // on va chercher la version FRAÎCHE ; le cache ne sert qu'hors ligne.
+  if (/\.json$/i.test(url.pathname) || req.cache === 'no-store' || req.cache === 'reload') {
+    event.respondWith(networkFirst(url));
+    return;
+  }
+  event.respondWith(page(event, url));
 });
+
+async function networkFirst(url) {
+  const cache = await caches.open(CACHE);
+  const key = cleanKey(url);
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), 8000);               // réseau lent : on retombe sur le cache
+  try {
+    const r = await fetch(url.href, { cache: 'no-store', credentials: 'same-origin', signal: ctl.signal });
+    clearTimeout(timer);
+    if (r.ok) cache.put(key, r.clone());
+    return r;
+  } catch (_) {
+    clearTimeout(timer);
+    const cached = await cache.match(key, { ignoreSearch: true });
+    return cached || new Response('', { status: 504 });
+  }
+}
 
 async function page(event, url) {
   const cache = await caches.open(CACHE);
