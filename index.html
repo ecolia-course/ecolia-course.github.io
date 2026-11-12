@@ -128,7 +128,7 @@ h1 { color:#00ff88; font-size:22px; margin-bottom:4px; }
                 <li>Fiches EXETAT</li>
                 <li>OpenStax (CC BY)</li>
             </ul>
-            <p style="margin-top:10px;font-size:12px;color:#888;">Aucune donnée collectée. Aucune publicité. 100% gratuit.</p>
+            <p style="margin-top:10px;font-size:12px;color:#888;">Cours 100 % gratuits, sans compte ni publicité. Usage mesuré de façon anonyme (Google Analytics) ; ta progression reste sur ton appareil. « Découvertes » = offres de partenaires, marquées « Sponsorisé ».</p>
         </div>
         <button class="intro-btn" onclick="fermerIntro()">C'est parti !</button>
     </div>
@@ -159,13 +159,90 @@ h1 { color:#00ff88; font-size:22px; margin-bottom:4px; }
         <h1>✨ Découvertes</h1>
         <button class="dec-close" onclick="fermerDecouvertes()">✕</button>
     </div>
-    <p class="dec-intro">Recommandations sélectionnées — aucun suivi, aucune donnée collectée.</p>
+    <p class="dec-intro">Offres de partenaires (Sponsorisé). Les clics sont comptés de façon anonyme.</p>
     <div id="promosListe">
         <p style="color:#666;text-align:center;padding:30px;">Chargement...</p>
     </div>
 </div>
 
+<script>
+/* ═══════════ SERVICE WORKER + MISE À JOUR + TUTO iOS ═══════════ */
+(function () {
+    'use strict';
+    function stock(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
+    var BTN = 'border:0;border-radius:8px;padding:8px 14px;font-weight:bold;margin:8px 8px 0 0;font-size:14px;cursor:pointer;';
+    function barre(id, html, pos) {
+        if (document.getElementById(id)) return null;
+        var d = document.createElement('div');
+        d.id = id; d.setAttribute('role', 'dialog');
+        d.style.cssText = 'position:fixed;left:10px;right:10px;' + pos + ';z-index:100000;background:#161b22;color:#e6f1ff;' +
+            'border:1px solid #00ff88;border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.5;box-shadow:0 4px 18px rgba(0,0,0,.5)';
+        d.innerHTML = html;
+        document.body.appendChild(d);
+        return d;
+    }
 
+    /* — Mise à jour : invite SEULEMENT quand une vraie nouvelle version attend (jamais à la 1re visite) — */
+    if ('serviceWorker' in navigator) {
+        var avaitControleur = !!navigator.serviceWorker.controller;
+        var recharge = false;
+        navigator.serviceWorker.addEventListener('controllerchange', function () {
+            if (!avaitControleur || recharge) return;
+            recharge = true; location.reload();
+        });
+        var inviteMaj = function (worker) {
+            var d = barre('ecolia-update',
+                '<div>🔄 Une nouvelle version d\'ECOLIA est prête.</div>' +
+                '<button id="ecolia-update-ok" style="' + BTN + 'background:#00ff88;color:#121212">Mettre à jour</button>' +
+                '<button id="ecolia-update-no" style="' + BTN + 'background:transparent;color:#e6f1ff;border:1px solid #444">Plus tard</button>', 'top:10px');
+            if (!d) return;
+            document.getElementById('ecolia-update-ok').onclick = function () { worker.postMessage({ type: 'SKIP_WAITING' }); d.remove(); };
+            document.getElementById('ecolia-update-no').onclick = function () { d.remove(); };
+        };
+        window.addEventListener('load', function () {
+            navigator.serviceWorker.register('./sw.js').then(function (reg) {
+                if (reg.waiting && navigator.serviceWorker.controller) inviteMaj(reg.waiting);
+                reg.addEventListener('updatefound', function () {
+                    var w = reg.installing;
+                    if (!w) return;
+                    w.addEventListener('statechange', function () {
+                        if (w.state === 'installed' && navigator.serviceWorker.controller) inviteMaj(w);
+                    });
+                });
+                window.ecoliaCheckUpdate = function () { return reg.update(); };
+            }).catch(function (e) { console.error('SW:', e); });
+        });
+    }
+
+    /* — Tutoriel d'installation iOS (Safari n'envoie jamais « beforeinstallprompt ») — */
+    var ua = navigator.userAgent || '';
+    var estIOS = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    var installee = navigator.standalone === true || (window.matchMedia && matchMedia('(display-mode: standalone)').matches);
+    var dansAppli = /FBAN|FBAV|Instagram|WhatsApp|Messenger|TikTok|Line\/|MicroMessenger|Snapchat/i.test(ua);
+
+    window.ecoliaShowIOSGuide = function () {
+        var corps = dansAppli
+            ? '<b>Ouvre ECOLIA dans Safari</b> : touche « ⋯ » ou l\'icône de navigateur, puis « Ouvrir dans Safari ». Ensuite, installe l\'application.'
+            : '<b>📲 Installer ECOLIA sur ton iPhone / iPad</b><ol style="margin:6px 0 0 18px;padding:0">' +
+              '<li>Touche le bouton <b>Partager</b> (carré avec une flèche vers le haut).</li>' +
+              '<li>Fais défiler et touche <b>« Sur l\'écran d\'accueil »</b>.</li>' +
+              '<li>Touche <b>Ajouter</b>.</li></ol>';
+        var d = barre('ecolia-ios', corps + '<div><button id="ecolia-ios-ok" style="' + BTN + 'background:#00ff88;color:#121212">J\'ai compris</button>' +
+            '<button id="ecolia-ios-never" style="' + BTN + 'background:transparent;color:#e6f1ff;border:1px solid #444">Ne plus afficher</button></div>', 'bottom:56px');
+        if (!d) return;
+        document.getElementById('ecolia-ios-ok').onclick = function () { d.remove(); };
+        document.getElementById('ecolia-ios-never').onclick = function () { stock('ecolia_ios_guide', 'never'); d.remove(); };
+    };
+    /* affiché une fois l'introduction fermée (appelé aussi par fermerIntro) */
+    window.ecoliaMaybeIOS = function () {
+        if (!estIOS || installee || stock('ecolia_ios_guide') === 'never') return;
+        var intro = document.getElementById('intro');
+        if (intro && intro.style.display !== 'none') return;
+        setTimeout(window.ecoliaShowIOSGuide, 1500);
+    };
+    window.addEventListener('load', function () { setTimeout(window.ecoliaMaybeIOS, 1500); });
+})();
+</script>
 
 <script>
 /* ═══════════ CONFIG ═══════════ */
@@ -210,6 +287,7 @@ var recherche = '';
 function fermerIntro() {
     document.getElementById('intro').style.display = 'none';
     try { localStorage.setItem('intro_seen', 'true'); } catch(e) {}
+    if (window.ecoliaMaybeIOS) window.ecoliaMaybeIOS();
 }
 try { if (localStorage.getItem('intro_seen') === 'true') document.getElementById('intro').style.display = 'none'; } catch(e) {}
 
@@ -449,7 +527,7 @@ function getAllCours() {
 /* ═══════════ LECTURE / SUPPRESSION ═══════════ */
 async function ouvrirLocal(c) {
     var url = BASE_URL + c.fichiers[0];
-    try { await CoursStorage.setVersion(c.id, c.version); } catch(e) {}
+    try { if (!(await CoursStorage.getVersion(c.id))) await CoursStorage.setVersion(c.id, c.version); } catch(e) {}
     track('ecolia_open', { cours_id: c.id, cours_titre: c.titre });
 
     var o = document.createElement('div');
@@ -496,17 +574,26 @@ async function ouvrirDecouvertes() {
 }
 function fermerDecouvertes() { document.getElementById('decouvertesOverlay').style.display = 'none'; }
 
+/* promos.json : on demande TOUJOURS la version fraîche ; la copie en cache ne sert que hors ligne */
+async function lirePromos() {
+    var cache = await caches.open(PROMOS_CACHE);
+    try {
+        var resp = await fetch(PROMOS_URL, { cache: 'no-store' });
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        await cache.put(PROMOS_URL, resp.clone());
+        return await resp.json();
+    } catch (e) {
+        var ancienne = await cache.match(PROMOS_URL, { ignoreSearch: true });
+        if (!ancienne) throw e;
+        return await ancienne.json();
+    }
+}
+
 async function chargerPromos() {
     var liste = document.getElementById('promosListe');
     liste.innerHTML = '<p style="color:#666;text-align:center;padding:30px;">Chargement...</p>';
     try {
-        var cache = await caches.open(PROMOS_CACHE);
-        var resp = await cache.match(PROMOS_URL, { ignoreSearch: true });
-        if (!resp) {
-            resp = await fetch(PROMOS_URL, { cache: 'no-store' });
-            if (resp.ok) await cache.put(PROMOS_URL, resp.clone());
-        }
-        var data = await resp.json();
+        var data = await lirePromos();
         afficherPromos(data.promos);
     } catch (e) {
         liste.innerHTML = '<p style="color:#666;text-align:center;padding:30px;">Hors ligne — reviens plus tard.</p>';
@@ -533,7 +620,7 @@ function afficherPromos(promos) {
             'utm_source=' + APP_SOURCE + '&utm_medium=app&utm_campaign=' + (p.id || 'promo');
         var div = document.createElement('div');
         div.className = 'promo-card';
-        var badgeHtml = p.partenaire ? '<span class="promo-badge">Partenaire</span>' : '';
+        var badgeHtml = '<span class="promo-badge">Sponsorisé</span>';   // toutes les promos affichées sont payantes (filtre p.paye)
         div.innerHTML =
             '<div class="promo-head">' +
                 '<div class="promo-ico">' + (p.image ? '<img src="' + p.image + '" alt="" loading="lazy">' : (p.icone || '📌')) + '</div>' +
@@ -550,13 +637,7 @@ function afficherPromos(promos) {
 
 async function verifierBadgePromos() {
     try {
-        var cache = await caches.open(PROMOS_CACHE);
-        var resp = await cache.match(PROMOS_URL, { ignoreSearch: true });
-        if (!resp) {
-            resp = await fetch(PROMOS_URL, { cache: 'no-store' });
-            if (resp.ok) await cache.put(PROMOS_URL, resp.clone());
-        }
-        var data = await resp.json();
+        var data = await lirePromos();
         var maintenant = new Date().toISOString().split('T')[0];
         var count = data.promos.filter(p => p.paye && p.debut <= maintenant && p.fin >= maintenant &&
                     (!p.cible || p.cible === APP_SOURCE || p.cible === 'toutes')).length;
@@ -599,6 +680,5 @@ window.addEventListener('appinstalled', function() { track('ecolia_pwa_install')
 verifierBadgePromos();
 charger();
 </script>
-  <script src="./ecolia_pwa.js"></script>
 </body>
 </html>
