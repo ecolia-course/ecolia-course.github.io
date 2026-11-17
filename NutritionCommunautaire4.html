@@ -1,0 +1,1840 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="orange">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>ECOLIA — Nutrition Communautaire4</title>
+<style>
+[data-theme="bleu"]   { --p1:#0d2b4f; --p2:#1565c0; --p3:#07172e; --p4:#12437a; --p5:#5b8fd0; --bg:#e8f0fb; --bg2:#cfdff5; --bd:#a9c3e8; --soft:#dde8f7; --btn:#2a67b0; }
+[data-theme="vert"]   { --p1:#14442e; --p2:#2e7d32; --p3:#0b2b1a; --p4:#1f5c3a; --p5:#4f9a6b; --bg:#e8f5ec; --bg2:#c8e6d2; --bd:#a5cdb2; --soft:#dcefe2; --btn:#2f7a4f; }
+[data-theme="violet"] { --p1:#2d1b4e; --p2:#6a1b9a; --p3:#1a0f2e; --p4:#4a148c; --p5:#9c6fd0; --bg:#f1e9fb; --bg2:#dccbf2; --bd:#c4a8e6; --soft:#e8ddf6; --btn:#7e3fb2; }
+[data-theme="rouge"]  { --p1:#4a1010; --p2:#b71c1c; --p3:#2b0a0a; --p4:#8e1b1b; --p5:#d9706a; --bg:#fbeaea; --bg2:#f3cdcb; --bd:#e8a9a5; --soft:#f8dede; --btn:#a62a2a; }
+[data-theme="orange"] { --p1:#4e2a0c; --p2:#ef6c00; --p3:#2e1604; --p4:#b34a00; --p5:#f0a15a; --bg:#fff1e0; --bg2:#fbdcb8; --bd:#f3c08a; --soft:#fdebd6; --btn:#c9650a; }
+[data-theme="teal"]   { --p1:#0b3a3a; --p2:#00796b; --p3:#062626; --p4:#00574b; --p5:#4db6ac; --bg:#e0f2f1; --bg2:#b2dfdb; --bd:#80cbc4; --soft:#d5ecea; --btn:#26897d; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:linear-gradient(160deg,var(--p1) 0%,var(--p2) 50%,var(--p3) 100%); display:flex; justify-content:center; align-items:center; padding:8px; }
+.container { width:100%; max-width:1400px; background:#fefdf8; border-radius:20px; overflow:hidden; display:flex; flex-direction:column; height:100%; max-height:100vh; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.progress-bar { height:4px; background:var(--bg2); flex-shrink:0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--p5),var(--p4)); width:0%; transition:width 0.3s; }
+.header { padding:10px 16px; background:var(--bg); border-bottom:1px solid var(--bd); display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+.header h1 { color:var(--p4); font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box { display:flex; background:white; border-radius:20px; padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.search-box input { border:none; padding:6px 10px; border-radius:20px; outline:none; width:130px; font-size:0.8rem; }
+.search-box button { background:none; border:none; cursor:pointer; padding:4px 8px; font-size:0.85rem; color:var(--p2); }
+.badge { background:var(--p5); color:white; padding:4px 10px; border-radius:20px; font-weight:bold; font-size:0.75rem; }
+.search-nav { display:none; gap:4px; background:var(--bg2); padding:2px 8px; border-radius:20px; align-items:center; font-size:0.75rem; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:0.9rem; color:var(--p4); padding:2px 4px; }
+.content { padding:28px 32px; flex:1; overflow-y:auto; background:#fff; scroll-behavior:smooth; line-height:1.85; }
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.slide-title { color:var(--p1); font-size:1.5rem; font-weight:700; padding-bottom:12px; margin-bottom:20px; border-bottom:2px solid var(--p5); }
+.slide-content { color:var(--p3); font-size:1rem; }
+.empty-state { display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-height:60vh; padding:40px 20px; gap:18px; }
+.empty-state .icon { width:72px; height:72px; border-radius:50%; background:var(--bg); border:2px solid var(--bd); display:flex; align-items:center; justify-content:center; color:var(--p2); font-size:2rem; font-weight:300; }
+.empty-state h2 { color:var(--p1); font-size:1.4rem; font-weight:700; margin:0; }
+.empty-state p { color:#666; font-size:0.95rem; max-width:520px; line-height:1.7; }
+.empty-state .tag { display:inline-block; padding:6px 14px; background:var(--bg); color:var(--p4); border:1px solid var(--bd); border-radius:20px; font-size:0.8rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; }
+.bloc { padding:18px 22px; border-radius:12px; margin:22px 0; line-height:1.85; }
+.bloc-label { font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; opacity:0.7; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:var(--bg); border-left:4px solid var(--p5); }
+.theorie .bloc-label { color:var(--p4); }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.sources { background:#f5f5f5; padding:12px 16px; border-radius:10px; margin-top:26px; font-size:0.82rem; color:#666; border-left:3px solid #999; line-height:1.6; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:var(--p1); }
+.quiz-container { padding:22px; background:var(--bg); border-radius:16px; }
+.quiz-question { background:white; border-radius:10px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.quiz-question p { font-weight:600; margin-bottom:10px; color:var(--p1); }
+.quiz-question label { display:block; padding:8px 10px; margin:4px 0; border-radius:6px; cursor:pointer; transition:background 0.2s; }
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit { background:var(--btn); color:white; border:none; padding:12px 24px; border-radius:30px; font-size:1rem; cursor:pointer; font-weight:600; margin-top:14px; }
+.quiz-result { margin-top:16px; font-weight:600; }
+.controls { padding:8px 16px; background:#fafafa; border-top:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0; }
+.nav-btn { background:white; color:var(--p4); border:1px solid #ccc; padding:8px 14px; border-radius:8px; font-size:0.82rem; cursor:pointer; font-weight:500; }
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:var(--soft); }
+.content::-webkit-scrollbar-thumb { background:var(--p5); border-radius:3px; }
+@media (max-width:600px) { body { padding:0; } .container { border-radius:0; max-height:100vh; } .content { padding:20px 18px; } .slide-title { font-size:1.25rem; } .search-box input { width:90px; } .header h1 { font-size:0.85rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="header">
+<h1 id="pageTitle">ECOLIA</h1>
+<div class="header-right">
+<div class="search-box">
+<input id="searchInput" placeholder="Rechercher" type="text"/>
+<button id="searchBtn">⌕</button>
+</div>
+<div class="search-nav" id="searchNav">
+<button id="prevResultBtn">‹</button>
+<span id="resultCounter">0/0</span>
+<button id="nextResultBtn">›</button>
+</div>
+<span class="badge" id="slideCounter">0/0</span>
+</div>
+</div>
+<div class="content" id="content"></div>
+<div class="controls">
+<button class="nav-btn" id="prevBtn">← Précédent</button>
+<span class="counter" id="counter">—</span>
+<button class="nav-btn" id="nextBtn">Suivant →</button>
+</div>
+</div>
+<script>
+const COURSE_TITLE = "Nutrition Communautaire (Nutrition et Santé Publique)";
+const slides = [
+  {
+    title: "Sommaire — Nutrition Communautaire",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Bienvenue</div>
+        <h3>La nutrition communautaire : protéger la santé des populations par l'alimentation</h3>
+        <p>La <strong>nutrition communautaire</strong> est l'application des sciences de la nutrition à la santé des populations, avec une approche participative et multisectorielle. Elle vise à <strong>prévenir</strong> et à <strong>traiter</strong> les problèmes nutritionnels au sein des communautés. En République Démocratique du Congo, la malnutrition reste une cause majeure de morbidité et de mortalité, en particulier chez les enfants de moins de 5 ans et les femmes enceintes.</p>
+        <p>Ce cours s'adresse aux élèves de 4<sup>e</sup> Humanité de la filière Nutrition. Il prépare le futur technicien A2 à <strong>évaluer l'état nutritionnel d'une population</strong>, à <strong>identifier les problèmes nutritionnels</strong>, à <strong>concevoir et planifier des interventions</strong> et à <strong>sensibiliser les communautés</strong>, en collaboration avec les secteurs de la santé, de l'agriculture et de l'éducation.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Objectifs d'apprentissage</div>
+        <p>À la fin de ce cours, l'élève doit être capable de :</p>
+        <ol>
+          <li>Définir les concepts de base de la nutrition communautaire.</li>
+          <li>Classer les aliments en groupes fonctionnels (énergétiques, bâtisseurs, protecteurs) et connaître leurs sources locales.</li>
+          <li>Identifier les problèmes nutritionnels prévalents en RDC.</li>
+          <li>Réaliser une évaluation nutritionnelle simple (enquêtes, mesures anthropométriques).</li>
+          <li>Concevoir et planifier un programme de nutrition communautaire.</li>
+          <li>Communiquer et sensibiliser en nutrition.</li>
+          <li>Travailler en approche multisectorielle.</li>
+        </ol>
+      </div>
+
+      <div class="bloc cas">
+        <div class="bloc-label">Grands chapitres du cours</div>
+        <ul>
+          <li><strong>Chapitre I</strong> — Introduction à la nutrition communautaire.</li>
+          <li><strong>Chapitre II</strong> — Besoins nutritionnels et groupes d'aliments.</li>
+          <li><strong>Chapitre III</strong> — Problèmes nutritionnels en RDC.</li>
+          <li><strong>Chapitre IV</strong> — Évaluation nutritionnelle.</li>
+          <li><strong>Chapitre V</strong> — Programmes de nutrition communautaire.</li>
+          <li><strong>Chapitre VI</strong> — Communication et sensibilisation.</li>
+          <li><strong>Chapitre VII</strong> — Approche multisectorielle et planification.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Pourquoi la nutrition communautaire ?",
+    content: `
+      <div class="bloc cas">
+        <div class="bloc-label">Situation-problème</div>
+        <p>Dans un quartier périphérique de Kinshasa, une enquête rapide révèle que de nombreux enfants de moins de 5 ans ont une taille inférieure à la normale pour leur âge. Plusieurs femmes enceintes souffrent d'anémie. Pourtant, les marchés regorgent de manioc, de poisson, de légumes-feuilles et de fruits. Comment expliquer cette situation ? Que peut faire un technicien en nutrition communautaire ?</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Une discipline au carrefour de plusieurs enjeux</h3>
+        <p>La nutrition communautaire relie plusieurs domaines : biologie, médecine, agriculture, éducation, économie, sciences sociales. Elle s'intéresse à la fois :</p>
+        <ul>
+          <li>À la <strong>disponibilité</strong> des aliments (production, marchés, accès).</li>
+          <li>À la <strong>qualité</strong> de l'alimentation (diversité, équilibre, sécurité sanitaire).</li>
+          <li>Aux <strong>pratiques</strong> alimentaires (allaitement, sevrage, préparation, hygiène).</li>
+          <li>À l'<strong>état de santé</strong> (maladies infectieuses, carences).</li>
+          <li>Aux <strong>déterminants sociaux</strong> (pauvreté, éducation, genre, accès à l'eau).</li>
+        </ul>
+
+        <h3>Les conséquences de la malnutrition</h3>
+        <p>La malnutrition (sous-nutrition ou surnutrition) a des conséquences graves :</p>
+        <ul>
+          <li><strong>Sur la santé</strong> : retard de croissance, baisse de l'immunité, augmentation de la mortalité infantile.</li>
+          <li><strong>Sur le développement cognitif</strong> : baisse des capacités d'apprentissage, mauvais résultats scolaires.</li>
+          <li><strong>Sur la productivité</strong> : baisse de la capacité de travail à l'âge adulte.</li>
+          <li><strong>Sur l'économie</strong> : coûts de santé, perte de capital humain, pauvreté qui s'aggrave.</li>
+        </ul>
+        <p>Investir dans la nutrition est donc l'un des investissements les plus rentables pour un pays. Les <strong>1000 premiers jours</strong> (de la conception aux 2 ans de l'enfant) constituent une fenêtre d'opportunité unique pour agir.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>La nutrition communautaire protège la santé des populations et lutte contre la malnutrition. Elle combine disponibilité, qualité, pratiques alimentaires, état de santé et déterminants sociaux. Les 1000 premiers jours sont une période critique pour agir.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Les concepts de base",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Définitions indispensables</h3>
+
+        <h4>Nutrition</h4>
+        <p>Ensemble des processus biologiques par lesquels l'organisme utilise les aliments pour se maintenir en vie, se développer et fonctionner. La nutrition inclut la digestion, l'absorption, le transport et l'utilisation des nutriments par les cellules.</p>
+
+        <h4>Alimentation</h4>
+        <p>Acte de se nourrir, comprenant le choix, la préparation et la consommation des aliments. L'alimentation est influencée par la culture, les ressources, le niveau d'éducation et les habitudes.</p>
+
+        <h4>Nutriment</h4>
+        <p>Substance nutritive contenue dans les aliments, utilisable par l'organisme. On distingue les <strong>macro-nutriments</strong> (glucides, lipides, protéines) et les <strong>micro-nutriments</strong> (vitamines, minéraux).</p>
+
+        <h4>Besoins nutritionnels</h4>
+        <p>Quantités de nutriments nécessaires au fonctionnement de l'organisme. Ils varient selon l'âge, le sexe, l'état physiologique (grossesse, allaitement, maladie) et l'activité physique.</p>
+
+        <h4>Sécurité alimentaire</h4>
+        <p>Situation dans laquelle tous les êtres humains ont, à tout moment, un accès physique, social et économique à une nourriture suffisante, saine et nutritive, leur permettant de satisfaire leurs besoins énergétiques et leurs préférences alimentaires pour mener une vie saine et active. La sécurité alimentaire combine : <strong>disponibilité</strong>, <strong>accès</strong>, <strong>utilisation</strong> et <strong>stabilité</strong>.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Confondre <strong>nutrition</strong> et <strong>alimentation</strong> est une erreur fréquente. La nutrition est le processus biologique d'utilisation des aliments ; l'alimentation est l'acte de se nourrir. De même, ne pas confondre <strong>sécurité alimentaire</strong> (avoir accès à assez de nourriture) et <strong>sécurité sanitaire des aliments</strong> (nourriture non contaminée).</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Les déterminants de la malnutrition",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Un problème multifactoriel</h3>
+        <p>La malnutrition n'est pas un simple manque de nourriture : c'est un problème complexe, avec des causes à plusieurs niveaux. On distingue trois niveaux de causes, souvent représentés dans le <strong>cadre conceptuel de l'UNICEF</strong>.</p>
+
+        <h4>1. Causes immédiates</h4>
+        <ul>
+          <li><strong>Apports alimentaires insuffisants</strong> en quantité ou en qualité.</li>
+          <li><strong>Maladies</strong> : infections répétées (diarrhées, infections respiratoires), parasitoses, VIH.</li>
+        </ul>
+
+        <h4>2. Causes sous-jacentes</h4>
+        <ul>
+          <li><strong>Insécurité alimentaire</strong> des ménages : manque d'accès à une alimentation suffisante et diversifiée.</li>
+          <li><strong>Accès limité aux soins de santé</strong> : absence de vaccination, de suivi médical.</li>
+          <li><strong>Environnement insalubre</strong> : manque d'eau potable, mauvais assainissement, hygiène insuffisante.</li>
+          <li><strong>Éducation insuffisante</strong> des mères : faible niveau d'instruction, méconnaissance des bonnes pratiques alimentaires.</li>
+        </ul>
+
+        <h4>3. Causes fondamentales</h4>
+        <ul>
+          <li><strong>Pauvreté</strong> : faibles revenus, sous-emploi, insécurité économique.</li>
+          <li><strong>Inégalités</strong> sociales, économiques et de genre.</li>
+          <li><strong>Gouvernance</strong> : faible priorité politique donnée à la nutrition, corruption.</li>
+          <li><strong>Conflits</strong> et déplacements de populations.</li>
+          <li><strong>Changements climatiques</strong> : sécheresses, inondations, mauvaises récoltes.</li>
+        </ul>
+
+        <h4>Conséquence pratique</h4>
+        <p>Agir uniquement sur une cause est inefficace. Un programme qui distribue de la nourriture sans traiter les diarrhées ni améliorer l'accès à l'eau potable aura peu d'impact durable. C'est pourquoi la lutte contre la malnutrition doit être <strong>multisectorielle</strong>.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>La malnutrition a des causes immédiates (apports insuffisants, maladies), sous-jacentes (insécurité alimentaire, accès aux soins, hygiène, éducation) et fondamentales (pauvreté, inégalités, gouvernance, conflits, climat). Elle nécessite une approche multisectorielle.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — Les besoins nutritionnels",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Des besoins qui varient</h3>
+        <p>Les besoins nutritionnels désignent les quantités de nutriments nécessaires au fonctionnement de l'organisme. Ils varient selon plusieurs facteurs :</p>
+
+        <h4>Facteurs de variation</h4>
+        <ul>
+          <li><strong>L'âge</strong> : un enfant a besoin de plus d'énergie et de protéines par kilo de poids qu'un adulte.</li>
+          <li><strong>Le sexe</strong> : les besoins diffèrent entre hommes et femmes, surtout à l'adolescence et à la ménopause.</li>
+          <li><strong>L'état physiologique</strong> : grossesse, allaitement, convalescence augmentent les besoins.</li>
+          <li><strong>L'activité physique</strong> : un travailleur de force a besoin de plus d'énergie qu'un employé de bureau.</li>
+          <li><strong>L'état de santé</strong> : certaines maladies augmentent ou diminuent les besoins.</li>
+        </ul>
+
+        <h4>Les grands besoins</h4>
+        <ul>
+          <li><strong>Énergie</strong> : exprimée en kilocalories (kcal) ou kilojoules (kJ). Apportée par les glucides (4 kcal/g), les lipides (9 kcal/g) et les protéines (4 kcal/g).</li>
+          <li><strong>Protéines</strong> : environ 10 à 15 % de l'apport énergétique total.</li>
+          <li><strong>Lipides</strong> : 25 à 35 % de l'apport énergétique (dont une part d'acides gras essentiels).</li>
+          <li><strong>Glucides</strong> : 50 à 60 % de l'apport énergétique, avec priorité aux glucides complexes (amidons).</li>
+          <li><strong>Vitamines et minéraux</strong> : en petites quantités, mais indispensables.</li>
+          <li><strong>Eau</strong> : 1,5 à 3 litres par jour selon l'activité et le climat.</li>
+        </ul>
+
+        <h4>Le cas particulier de la grossesse et de l'allaitement</h4>
+        <p>Une femme enceinte a des besoins accrus en énergie, protéines, fer, acide folique, calcium et vitamine A. Une femme qui allaite a des besoins encore plus élevés en énergie et en liquides. Ces périodes sont critiques pour la santé de la mère et de l'enfant.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Les besoins nutritionnels varient selon l'âge, le sexe, l'état physiologique, l'activité physique et l'état de santé. La grossesse et l'allaitement augmentent fortement les besoins. Un apport équilibré associe glucides complexes, protéines, lipides de qualité, vitamines, minéraux et eau.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — Les trois groupes fonctionnels d'aliments",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Classer les aliments selon leur fonction</h3>
+        <p>La classification fonctionnelle des aliments, inspirée de Michael C. Latham, répartit les aliments en trois groupes selon leur rôle principal dans l'organisme. Cette classification est au cœur de la nutrition communautaire car elle est simple, pédagogique et adaptée aux réalités locales.</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Groupe</th>
+              <th>Rôle</th>
+              <th>Nutriments dominants</th>
+              <th>Exemples congolais</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Aliments énergétiques</strong></td>
+              <td>Fournir l'énergie nécessaire à l'activité et au fonctionnement du corps</td>
+              <td>Glucides, lipides</td>
+              <td>Fufu, manioc, riz, maïs, banane plantain, huile de palme, arachides</td>
+            </tr>
+            <tr>
+              <td><strong>Aliments bâtisseurs</strong></td>
+              <td>Construire et réparer les tissus (muscles, os, organes)</td>
+              <td>Protéines</td>
+              <td>Poisson, viande, œufs, lait, haricots, arachides, chenilles</td>
+            </tr>
+            <tr>
+              <td><strong>Aliments protecteurs</strong></td>
+              <td>Protéger contre les maladies, réguler le métabolisme</td>
+              <td>Vitamines, minéraux, fibres</td>
+              <td>Pondu, matembele, morelle noire, papaye, mangue, agrumes, légumes-feuilles</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4>Un repas équilibré</h4>
+        <p>Un repas équilibré combine les trois groupes. Exemple de repas congolais équilibré :</p>
+        <ul>
+          <li><strong>Énergétique</strong> : fufu de manioc ou riz.</li>
+          <li><strong>Bâtisseur</strong> : poisson grillé ou haricots.</li>
+          <li><strong>Protecteur</strong> : pondu (feuilles de manioc) ou matembele, plus un fruit (mangue, papaye, orange).</li>
+        </ul>
+        <p>Un repas qui ne contient que du fufu et du manioc est déséquilibré : il apporte beaucoup d'énergie mais peu de protéines et de vitamines.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Opposer aliments « riches » et aliments « pauvres » est une erreur. La qualité nutritionnelle ne dépend pas du prix : le pondu, les haricots, le poisson de fleuve sont accessibles et très nutritifs. Un aliment cher peut être déséquilibré, un aliment simple peut être excellent.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — Les aliments locaux congolais",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Valoriser les ressources locales</h3>
+        <p>La nutrition communautaire en RDC s'appuie sur les aliments disponibles localement, accessibles à toutes les familles. Les ignorer serait une erreur : ils sont la base d'une alimentation durable et culturellement acceptée.</p>
+
+        <h4>Les aliments de base</h4>
+        <ul>
+          <li><strong>Manioc</strong> : racine riche en amidon, base du fufu et de la chikwangue. Attention : il doit être bien préparé pour éliminer les composés toxiques (acide cyanhydrique).</li>
+          <li><strong>Maïs</strong> : céréale énergétique, base de la pâte et du semoule.</li>
+          <li><strong>Riz</strong> : énergétique, apprécié dans les centres urbains.</li>
+          <li><strong>Banane plantain</strong> : énergétique, consommée bouillie, grillée ou en purée.</li>
+          <li><strong>Haricot</strong> : légumineuse riche en protéines.</li>
+          <li><strong>Arachide</strong> : source de protéines et de lipides.</li>
+        </ul>
+
+        <h4>Les sources de protéines</h4>
+        <ul>
+          <li><strong>Poisson de fleuve</strong> (capitaine, tilapia, mboto) : protéines de haute qualité, oméga-3.</li>
+          <li><strong>Viande</strong> (bœuf, chèvre, porc) : protéines complètes, fer.</li>
+          <li><strong>Œufs</strong> : protéines complètes, vitamines.</li>
+          <li><strong>Chenilles</strong> et insectes comestibles : protéines accessibles.</li>
+          <li><strong>Lait</strong> et produits laitiers : protéines, calcium.</li>
+        </ul>
+
+        <h4>Les sources de vitamines et minéraux</h4>
+        <ul>
+          <li><strong>Pondu</strong> (feuilles de manioc) : fer, calcium, vitamine A.</li>
+          <li><strong>Matembele</strong> (feuilles de patate douce) : vitamines, minéraux.</li>
+          <li><strong>Morelle noire</strong> (nteke) : fer, vitamine A.</li>
+          <li><strong>Papaye, mangue, orange, safou</strong> : vitamines C et A, fibres.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>La RDC dispose d'une richesse alimentaire remarquable : manioc, maïs, riz, poisson de fleuve, légumineuses, pondu, matembele, fruits. Une bonne nutrition communautaire valorise ces aliments locaux et combine les trois groupes fonctionnels.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — La malnutrition aiguë : marasme et kwashiorkor",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Deux formes de malnutrition aiguë sévère</h3>
+        <p>La <strong>malnutrition aiguë</strong> est une perte de poids rapide ou un arrêt de croissance récent. Dans sa forme sévère, elle met la vie en danger et nécessite une prise en charge urgente.</p>
+
+        <h4>1. Le marasme</h4>
+        <p>Forme de malnutrition aiguë sévère caractérisée par un <strong>amaigrissement extrême</strong> : fonte des muscles et de la graisse sous-cutanée. L'enfant a la peau collée aux os, un visage de vieillard, un regard éteint. Le périmètre brachial est très faible.</p>
+        <p><strong>Causes :</strong> carence globale en énergie (et souvent en protéines), souvent due à une alimentation insuffisante prolongée et à des infections répétées.</p>
+
+        <h4>2. Le kwashiorkor</h4>
+        <p>Forme de malnutrition aiguë sévère caractérisée par des <strong>œdèmes</strong> (gonflement du visage, des jambes, des mains), des <strong>lésions cutanées</strong> (peau qui pèle, dépigmentée), une <strong>apathie</strong>, une décoloration des cheveux, parfois un ventre gonflé. Il est lié à une <strong>carence protéique sévère</strong>, souvent après un sevrage trop précoce ou une alimentation riche en glucides mais pauvre en protéines.</p>
+
+        <h4>Danger du kwashiorkor</h4>
+        <p>Le kwashiorkor est plus dangereux que le marasme car :</p>
+        <ul>
+          <li>L'œdème masque la maigreur (le poids peut sembler normal).</li>
+          <li>Les infections sont souvent graves.</li>
+          <li>La mortalité est plus élevée.</li>
+        </ul>
+
+        <h4>Prise en charge</h4>
+        <p>Les deux formes nécessitent une prise en charge spécialisée :</p>
+        <ul>
+          <li>Traitement des infections et des complications.</li>
+          <li>Réalimentation progressive et surveillée (lait thérapeutique, aliments thérapeutiques prêts à l'emploi).</li>
+          <li>Suppl\u00e9mentation en vitamines et minéraux.</li>
+          <li>Suivi rapproché pour prévenir le syndrome de renutrition.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Croire que le kwashiorkor et le marasme sont bénins est une erreur mortelle. Ce sont des formes sévères qui nécessitent une prise en charge médicale urgente et spécialisée. Le technicien en nutrition communautaire doit identifier et référer ces cas à un centre de santé sans délai.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — La malnutrition chronique",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le retard de croissance</h3>
+        <p>La <strong>malnutrition chronique</strong> se manifeste par un <strong>retard de croissance</strong> : l'enfant est trop petit pour son âge. C'est la forme la plus fréquente de malnutrition, mais elle est moins visible que la malnutrition aiguë, car elle ne s'accompagne pas nécessairement d'amaigrissement.</p>
+
+        <h4>Cause et période critique</h4>
+        <p>Le retard de croissance est lié à une alimentation inadéquate et à des infections répétées pendant les <strong>1000 premiers jours</strong> (de la conception aux 2 ans de l'enfant). C'est pendant cette période que se jouent la croissance physique et le développement cérébral.</p>
+
+        <h4>Conséquences</h4>
+        <p>Le retard de croissance n'est pas seulement une question de taille. Il s'accompagne de :</p>
+        <ul>
+          <li><strong>Développement cognitif altéré</strong> : moindre capacité d'apprentissage, mauvais résultats scolaires.</li>
+          <li><strong>Baisse de la productivité</strong> à l'âge adulte.</li>
+          <li><strong>Risque accru de maladies chroniques</strong> (obésité, diabète, hypertension) à l'âge adulte.</li>
+          <li><strong>Réduction du capital humain</strong> pour le pays.</li>
+        </ul>
+
+        <h4>Prévention</h4>
+        <p>Le retard de croissance est difficile à corriger une fois installé. La prévention est donc cruciale :</p>
+        <ul>
+          <li>Allaitement maternel exclusif jusqu'à 6 mois.</li>
+          <li>Diversification alimentaire adéquate à partir de 6 mois.</li>
+          <li>Suivi de la croissance (pesées régulières).</li>
+          <li>Supplémentation en micronutriments.</li>
+          <li>Accès à l'eau potable, hygiène, vaccination.</li>
+          <li>Éducation et autonomisation des femmes.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Sous-estimer la malnutrition chronique (« retard de croissance ») parce qu'elle est moins visible que la malnutrition aiguë est une erreur. Ses conséquences sur le développement cognitif et la santé future sont durables et parfois irréversibles.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — Les carences en micronutriments",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Trois carences majeures en RDC</h3>
+
+        <h4>1. L'anémie ferriprive</h4>
+        <p>L'<strong>anémie ferriprive</strong> est due à une carence en fer. Le fer est nécessaire à la fabrication de l'hémoglobine qui transporte l'oxygène dans le sang. Sans fer, l'organisme ne peut pas produire assez de globules rouges.</p>
+        <p><strong>Signes :</strong> fatigue, pâleur (paumes, paupières, lèvres), essoufflement à l'effort, vertiges, baisse des capacités cognitives, moindre résistance aux infections.</p>
+        <p><strong>Groupes à risque :</strong> femmes enceintes, femmes en âge de procréer, enfants de moins de 5 ans, adolescents.</p>
+        <p><strong>Prévention :</strong> consommation d'aliments riches en fer (viande, poisson, légumineuses, pondu, matembele), vitamine C pour favoriser l'absorption, supplémentation en fer, fortification des farines.</p>
+
+        <h4>2. La carence en vitamine A</h4>
+        <p>La <strong>vitamine A</strong> est essentielle pour la vision, l'immunité et la croissance. Sa carence est l'une des principales causes de cécité évitable chez l'enfant.</p>
+        <p><strong>Signes :</strong> cécité nocturne (difficulté à voir au crépuscule), sécheresse oculaire (xérophtalmie), taches de Bitot, baisse de l'immunité avec infections répétées.</p>
+        <p><strong>Prévention :</strong> consommation de légumes-feuilles verts (pondu, matembele, morelle noire), fruits jaunes (mangue, papaye), huile de palme, foie, œufs ; supplémentation en vitamine A chez les enfants de 6 à 59 mois (tous les 4 à 6 mois).</p>
+
+        <h4>3. Les troubles dus à la carence en iode</h4>
+        <p>L'<strong>iode</strong> est nécessaire à la fabrication des hormones thyroïdiennes, qui régulent la croissance et le développement cérébral.</p>
+        <p><strong>Signes :</strong> goitre (gonflement de la thyroïde), retard mental, surdité, fausses couches, crétinisme.</p>
+        <p><strong>Prévention :</strong> utilisation de <strong>sel iodé</strong> dans la cuisine familiale, supplémentation en iode (huile iodée) dans les zones d'endémie, consommation de poissons de mer.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Les trois carences majeures en RDC sont l'anémie ferriprive (fer), la carence en vitamine A et le goitre (iode). Elles se préviennent par une alimentation diversifiée, la supplémentation, la fortification et l'utilisation du sel iodé.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre IV — L'évaluation nutritionnelle : les enquêtes alimentaires",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Pourquoi évaluer ?</h3>
+        <p>L'évaluation nutritionnelle permet de connaître l'état nutritionnel d'une population, d'identifier les problèmes prioritaires et de planifier les interventions. Elle combine plusieurs outils :</p>
+        <ul>
+          <li>Les <strong>enquêtes alimentaires</strong>.</li>
+          <li>Les <strong>mesures anthropométriques</strong>.</li>
+          <li>Les <strong>examens biologiques</strong> (dosage de l'hémoglobine, de la vitamine A, etc.).</li>
+          <li>Les <strong>enquêtes socio-économiques</strong>.</li>
+        </ul>
+
+        <h3>Les enquêtes alimentaires</h3>
+        <p>Elles visent à estimer les apports alimentaires et à connaître les habitudes alimentaires d'un individu, d'une famille ou d'une communauté.</p>
+
+        <h4>Méthodes principales</h4>
+        <ul>
+          <li><strong>Rappel de 24 heures</strong> : on demande à la personne de se souvenir de tout ce qu'elle a mangé et bu dans les dernières 24 heures. Simple, rapide, mais dépend de la mémoire.</li>
+          <li><strong>Enregistrement alimentaire</strong> : la personne note tout ce qu'elle consomme pendant plusieurs jours (3 à 7). Plus précis, mais demande de l'alphabétisation et de la motivation.</li>
+          <li><strong>Fréquence de consommation</strong> : on demande à quelle fréquence (par jour, par semaine) la personne consomme certains aliments. Utile pour évaluer la diversité alimentaire.</li>
+          <li><strong>Pesée des aliments</strong> : on pèse les aliments consommés. Le plus précis mais lourd et coûteux.</li>
+        </ul>
+
+        <h4>Exploitation des données</h4>
+        <p>Les données recueillies permettent de :</p>
+        <ul>
+          <li>Calculer les apports en énergie et en nutriments.</li>
+          <li>Identifier les carences ou les excès.</li>
+          <li>Évaluer la diversité alimentaire (nombre de groupes d'aliments consommés).</li>
+          <li>Formuler des recommandations adaptées.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Les enquêtes alimentaires (rappel de 24 heures, enregistrement, fréquence, pesée) permettent d'estimer les apports et les habitudes. Elles sont complétées par les mesures anthropométriques et biologiques pour une évaluation nutritionnelle complète.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre IV — Les mesures anthropométriques",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Mesurer le corps pour évaluer la nutrition</h3>
+        <p>Les <strong>mesures anthropométriques</strong> sont des mesures simples du corps humain. Elles sont peu coûteuses, reproductibles et adaptées au terrain. Elles constituent la base de l'évaluation nutritionnelle, en particulier chez les enfants.</p>
+
+        <h4>Chez l'adulte</h4>
+        <ul>
+          <li><strong>Poids</strong> (kg) et <strong>taille</strong> (m).</li>
+          <li><strong>IMC (Indice de Masse Corporelle)</strong> = poids / taille². Interprétation :
+            <ul>
+              <li>&lt; 18,5 : dénutrition</li>
+              <li>18,5 – 24,9 : normal</li>
+              <li>25 – 29,9 : surpoids</li>
+              <li>≥ 30 : obésité</li>
+            </ul>
+          </li>
+          <li><strong>Tour de taille</strong> : indicateur de graisse abdominale.</li>
+        </ul>
+
+        <h4>Chez l'enfant</h4>
+        <ul>
+          <li><strong>Poids-pour-taille (P/T)</strong> : détecte la malnutrition aiguë.</li>
+          <li><strong>Taille-pour-âge (T/A)</strong> : détecte la malnutrition chronique (retard de croissance).</li>
+          <li><strong>Poids-pour-âge (P/A)</strong> : indicateur global (insuffisance pondérale).</li>
+          <li><strong>Périmètre brachial (PB)</strong> : mesure rapide de la malnutrition aiguë. Chez l'enfant de 6 à 59 mois :
+            <ul>
+              <li>&gt; 135 mm : normal</li>
+              <li>125 – 135 mm : malnutrition modérée</li>
+              <li>&lt; 125 mm : malnutrition sévère</li>
+            </ul>
+          </li>
+          <li><strong>Périmètre crânien</strong> : suivi du développement cérébral.</li>
+        </ul>
+
+        <h4>Les z-scores</h4>
+        <p>Les mesures sont comparées à une population de référence (normes OMS) et exprimées en <strong>z-scores</strong>. Un z-score inférieur à -2 écarts-types indique une malnutrition ; inférieur à -3, une malnutrition sévère.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Utiliser un seul indicateur sans le contextualiser est une erreur. Un enfant peut avoir un poids-pour-taille normal et un retard de croissance (taille-pour-âge bas). L'évaluation nutritionnelle combine plusieurs mesures et une enquête alimentaire, complétées par un examen clinique.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre V — Les programmes de supplémentation et de fortification",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Agir directement sur les carences</h3>
+
+        <h4>1. La supplémentation</h4>
+        <p>La <strong>supplémentation</strong> consiste à distribuer des micronutriments sous forme de comprimés, gélules ou sirops aux groupes vulnérables. C'est une mesure curative et préventive efficace et peu coûteuse.</p>
+        <p><strong>Exemples :</strong></p>
+        <ul>
+          <li><strong>Vitamine A</strong> : une dose tous les 4 à 6 mois chez les enfants de 6 à 59 mois.</li>
+          <li><strong>Fer et acide folique</strong> : chez la femme enceinte (au moins 90 comprimés sur la grossesse).</li>
+          <li><strong>Fer</strong> : chez les enfants anémiés et les femmes en âge de procréer.</li>
+          <li><strong>Déparasitage</strong> : antiparasitaires réguliers chez les enfants.</li>
+        </ul>
+
+        <h4>2. La fortification</h4>
+        <p>La <strong>fortification</strong> consiste à enrichir un aliment de base en micronutriments. Elle touche de larges populations sans nécessiter de changement de comportement.</p>
+        <p><strong>Exemples :</strong></p>
+        <ul>
+          <li>Farine de blé enrichie en fer et acide folique.</li>
+          <li>Huile végétale enrichie en vitamine A.</li>
+          <li>Sel iodé (pour prévenir les troubles dus à la carence en iode).</li>
+          <li>Sucre enrichi en vitamine A (dans certains pays).</li>
+        </ul>
+
+        <h4>3. La biofortification</h4>
+        <p>La <strong>biofortification</strong> consiste à sélectionner ou à créer des variétés de plantes plus riches en micronutriments (par exemple, une patate douce à chair orange, riche en vitamine A). C'est une approche durable qui agit sur l'aliment à la source.</p>
+
+        <h4>Conditions de succès</h4>
+        <ul>
+          <li>Bonne couverture des populations cibles.</li>
+          <li>Qualité et innocuité des produits.</li>
+          <li>Adhésion des communautés.</li>
+          <li>Intégration avec d'autres interventions.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>La supplémentation (distribution de micronutriments) et la fortification (enrichissement des aliments de base) sont des interventions efficaces et peu coûteuses contre les carences. La biofortification agit à la source, sur la variété végétale.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre V — Éducation nutritionnelle et jardins potagers",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Agir sur les comportements et la production</h3>
+
+        <h4>1. L'éducation nutritionnelle</h4>
+        <p>L'<strong>éducation nutritionnelle</strong> vise à améliorer les connaissances et les pratiques alimentaires des familles. Elle ne consiste pas à donner des ordres, mais à accompagner un changement de comportement.</p>
+        <p><strong>Messages clés :</strong></p>
+        <ul>
+          <li>Allaitement maternel exclusif jusqu'à 6 mois, puis allaitement jusqu'à 2 ans ou plus.</li>
+          <li>Diversification alimentaire à partir de 6 mois avec des aliments locaux variés.</li>
+          <li>Consommation quotidienne de légumes-feuilles, de fruits, de légumineuses.</li>
+          <li>Hygiène des mains, des aliments, de l'eau.</li>
+          <li>Utilisation du sel iodé.</li>
+          <li>Fréquence des repas adaptée à l'âge.</li>
+        </ul>
+        <p><strong>Méthodes :</strong> causeries, démonstrations culinaires, jeux de rôle, visites à domicile, groupes de mères.</p>
+
+        <h4>2. Les jardins potagers</h4>
+        <p>Les <strong>jardins potagers communautaires</strong> ou familiaux permettent de produire des légumes et des fruits pour améliorer la disponibilité et l'accès aux aliments protecteurs.</p>
+        <p><strong>Avantages :</strong></p>
+        <ul>
+          <li>Production locale d'aliments frais et variés.</li>
+          <li>Réduction des dépenses alimentaires.</li>
+          <li>Autonomisation des femmes et des familles.</li>
+          <li>Éducation nutritionnelle par la pratique.</li>
+          <li>Revenus supplémentaires par la vente des surplus.</li>
+        </ul>
+        <p><strong>Cultures recommandées :</strong> légumes-feuilles (pondu, matembele, amarante, morelle), tomate, oignon, carotte, haricot, papaye.</p>
+
+        <h4>3. Les cantines scolaires</h4>
+        <p>Les <strong>cantines scolaires</strong> assurent un repas équilibré aux élèves, ce qui améliore leur nutrition, leur concentration et leur assiduité. Le Programme National d'Alimentation Scolaire en RDC renforce cette approche.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Miser sur un seul type d'intervention est une erreur. Les programmes efficaces combinent éducation nutritionnelle, jardins potagers, supplémentation, sécurité alimentaire et accès à l'eau potable. La nutrition est multidimensionnelle.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VI — La communication et la sensibilisation en nutrition",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Bien communiquer pour faire changer les pratiques</h3>
+        <p>La communication en nutrition vise à <strong>informer</strong>, <strong>sensibiliser</strong> et <strong>faire changer les comportements</strong>. Une bonne information ne suffit pas : il faut aussi que le message soit compris, accepté et applicable.</p>
+
+        <h4>Principes d'une communication efficace</h4>
+        <ul>
+          <li><strong>Simplicité</strong> : messages courts, clairs, un seul message à la fois.</li>
+          <li><strong>Pertinence culturelle</strong> : tenir compte des habitudes, des tabous, des croyances.</li>
+          <li><strong>Répétition</strong> : un message répété est mieux mémorisé.</li>
+          <li><strong>Démonstration</strong> : montrer concrètement (cuisine, hygiène).</li>
+          <li><strong>Participation</strong> : impliquer les communautés, écouter leurs préoccupations.</li>
+          <li><strong>Adaptation au public</strong> : niveau d'éducation, langue, âge.</li>
+        </ul>
+
+        <h4>Canaux de communication</h4>
+        <ul>
+          <li><strong>Causeries</strong> dans les centres de santé, les écoles, les églises.</li>
+          <li><strong>Radios communautaires</strong> : très écoutées, adaptées aux zones rurales.</li>
+          <li><strong>Affiches et images</strong> : utiles pour les personnes peu alphabétisées.</li>
+          <li><strong>Théâtre participatif</strong> : permet d'aborder des sujets sensibles.</li>
+          <li><strong>Visites à domicile</strong> : approche personnalisée.</li>
+          <li><strong>Réseaux sociaux</strong> : utiles en milieu urbain.</li>
+        </ul>
+
+        <h4>Messages clés</h4>
+        <p>Quelques messages universels :</p>
+        <ul>
+          <li>Allaitement maternel exclusif jusqu'à 6 mois.</li>
+          <li>Diversification à partir de 6 mois avec des aliments locaux.</li>
+          <li>Consommer des légumes-feuilles chaque jour.</li>
+          <li>Se laver les mains avant de manger et après les toilettes.</li>
+          <li>Utiliser du sel iodé.</li>
+          <li>Faire suivre la croissance de l'enfant (pesées régulières).</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>La communication en nutrition doit être simple, adaptée culturellement, répétée, participative et démonstrative. Elle utilise plusieurs canaux (causeries, radios, affiches, théâtre, visites). Les messages clés portent sur l'allaitement, la diversification, les légumes, l'hygiène et le suivi de croissance.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VII — L'approche multisectorielle",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>La nutrition est transversale</h3>
+        <p>La nutrition ne dépend pas d'un seul secteur. Elle est influencée par la santé, l'agriculture, l'éducation, l'eau et l'assainissement, la protection sociale. C'est pourquoi l'approche <strong>multisectorielle</strong> est indispensable.</p>
+
+        <h4>Les secteurs clés</h4>
+        <ul>
+          <li><strong>Santé</strong> : soins préventifs et curatifs, supplémentation, vaccination, suivi de croissance.</li>
+          <li><strong>Agriculture</strong> : disponibilité et diversité alimentaire, jardins potagers, élevage, pêche.</li>
+          <li><strong>Éducation</strong> : alphabétisation, éducation nutritionnelle à l'école, cantines scolaires.</li>
+          <li><strong>Eau et assainissement</strong> : accès à l'eau potable, latrines, hygiène.</li>
+          <li><strong>Protection sociale</strong> : transferts monétaires, sécurité alimentaire, filets sociaux.</li>
+          <li><strong>Genre</strong> : autonomisation des femmes, éducation des filles.</li>
+        </ul>
+
+        <h4>Les plateformes de coordination</h4>
+        <ul>
+          <li><strong>Comités de nutrition</strong> aux niveaux national, provincial, local.</li>
+          <li><strong>Groupes techniques</strong> réunissant les partenaires (État, ONG, agences des Nations Unies).</li>
+          <li><strong>Plans d'action multisectoriels</strong> avec des objectifs communs.</li>
+        </ul>
+
+        <h4>Exemple concret</h4>
+        <p>Un programme de réduction de l'anémie chez les femmes enceintes pourrait combiner :</p>
+        <ul>
+          <li>Supplémentation en fer (santé).</li>
+          <li>Promotion de la consommation de légumes-feuilles (agriculture, éducation).</li>
+          <li>Déparasitage (santé).</li>
+          <li>Accès à l'eau potable (eau et assainissement).</li>
+          <li>Éducation nutritionnelle (éducation, santé).</li>
+        </ul>
+        <p>Aucune de ces interventions, seule, ne suffirait.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Travailler en silo sans coordination avec les autres secteurs est une erreur. La nutrition est transversale : son efficacité dépend de la cohérence entre les interventions de santé, d'agriculture, d'éducation et d'assainissement.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VII — Planification et suivi-évaluation",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le cycle de projet en nutrition</h3>
+        <p>Un programme de nutrition communautaire suit un cycle en plusieurs étapes :</p>
+
+        <h4>1. Identification</h4>
+        <p>Connaître la situation : évaluer l'état nutritionnel, identifier les problèmes prioritaires, analyser les causes, cartographier les acteurs et les ressources.</p>
+
+        <h4>2. Planification</h4>
+        <p>Définir :</p>
+        <ul>
+          <li>Les <strong>objectifs</strong> (général et spécifiques).</li>
+          <li>Les <strong>activités</strong> et les <strong>responsables</strong>.</li>
+          <li>Le <strong>budget</strong> et les <strong>ressources</strong>.</li>
+          <li>Le <strong>calendrier</strong>.</li>
+          <li>Les <strong>indicateurs</strong> de suivi.</li>
+        </ul>
+
+        <h4>3. Mise en œuvre</h4>
+        <p>Réalisation des activités : formations, campagnes de supplémentation, jardins potagers, éducation nutritionnelle, etc.</p>
+
+        <h4>4. Suivi</h4>
+        <p>Collecte régulière de données pour vérifier que les activités se déroulent comme prévu et pour ajuster en cours de route. Indicateurs de <strong>processus</strong> (activités réalisées, nombre de bénéficiaires).</p>
+
+        <h4>5. Évaluation</h4>
+        <p>Mesure des <strong>résultats</strong> (changements de comportement, couverture) et de l'<strong>impact</strong> (amélioration de l'état nutritionnel). L'évaluation peut être à mi-parcours ou finale.</p>
+
+        <h4>Les indicateurs</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Type d'indicateur</th>
+              <th>Exemple</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Processus</td><td>Nombre de mères formées, nombre de séances réalisées</td></tr>
+            <tr><td>Résultats</td><td>% de mères pratiquant l'allaitement exclusif, % de familles ayant un jardin potager</td></tr>
+            <tr><td>Impact</td><td>Prévalence de la malnutrition aiguë, prévalence de l'anémie</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Un programme de nutrition communautaire suit un cycle : identification, planification, mise en œuvre, suivi, évaluation. Les indicateurs de processus, de résultats et d'impact permettent de mesurer les progrès et d'ajuster.</p>
+      </div>
+    `
+  },
+  {
+    title: "Synthèse — De l'évaluation à l'intervention",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Synthèse générale</div>
+        <h3>Les compétences du technicien en nutrition communautaire</h3>
+        <ol>
+          <li><strong>Comprendre les concepts</strong> : nutrition, alimentation, nutriments, sécurité alimentaire, déterminants de la malnutrition.</li>
+          <li><strong>Connaître les besoins nutritionnels</strong> et les groupes fonctionnels d'aliments.</li>
+          <li><strong>Identifier les problèmes nutritionnels</strong> : malnutrition aiguë (marasme, kwashiorkor), chronique (retard de croissance), carences en micronutriments (fer, vitamine A, iode).</li>
+          <li><strong>Évaluer</strong> : enquêtes alimentaires, mesures anthropométriques, indicateurs.</li>
+          <li><strong>Intervenir</strong> : supplémentation, fortification, éducation nutritionnelle, jardins potagers, cantines scolaires.</li>
+          <li><strong>Communiquer</strong> : messages adaptés, canaux multiples, participation communautaire.</li>
+          <li><strong>Planifier et coordonner</strong> : approche multisectorielle, cycle de projet, suivi-évaluation.</li>
+        </ol>
+
+        <h3>Tableau récapitulatif</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Problème</th>
+              <th>Signes</th>
+              <th>Intervention clé</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Marasme</td><td>Amaigrissement extrême, fonte musculaire</td><td>Réhabilitation nutritionnelle progressive</td></tr>
+            <tr><td>Kwashiorkor</td><td>Œdèmes, lésions cutanées, apathie</td><td>Prise en charge spécialisée, aliment thérapeutique</td></tr>
+            <tr><td>Retard de croissance</td><td>Taille basse pour l'âge</td><td>Prévention dans les 1000 premiers jours</td></tr>
+            <tr><td>Anémie ferriprive</td><td>Pâleur, fatigue</td><td>Supplémentation en fer, alimentation riche en fer + vitamine C</td></tr>
+            <tr><td>Carence en vitamine A</td><td>Cécité nocturne, baisse immunité</td><td>Supplémentation, légumes-feuilles, fruits jaunes</td></tr>
+            <tr><td>Carence en iode</td><td>Goitre, retard mental</td><td>Sel iodé</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bloc cas">
+        <div class="bloc-label">Étude de cas (cas pédagogique)</div>
+        <p>« Un élève de 4<sup>e</sup> nutrition communautaire à Kinshasa réalise une enquête alimentaire dans un quartier de Matete. Il constate une faible consommation de légumes et de fruits, et une prévalence élevée d'anémie chez les femmes enceintes. Il propose un programme combinant éducation nutritionnelle, jardin potager communautaire et supplémentation en fer. Il présente son plan à la classe. »</p>
+        <p><strong>Analyse :</strong> la démarche est complète et multisectorielle. L'élève a identifié un problème (anémie), ses causes (faible consommation de légumes), et proposé une réponse combinée : éducation (changement de pratiques), jardin (disponibilité d'aliments protecteurs), supplémentation (action directe sur la carence). C'est exactement ce qu'on attend d'un technicien en nutrition communautaire.</p>
+      </div>
+
+      <div class="bloc sources">
+        <div class="bloc-label">Sources du cours</div>
+        <ul>
+          <li>Sciences-Africa, <em>Nutrition</em>, 4<sup>e</sup> Année des Humanités, Curriculum Officiel APC – MINEPST RDC.</li>
+          <li>Sciences-Africa, <em>Vulgarisation en nutrition</em>, 4<sup>e</sup> Année des Humanités.</li>
+          <li>Manuels Scolaires RDC, <em>Fiches pédagogiques — Cours de Nutrition Générale</em>, Édition 2025.</li>
+          <li>Lobinayo, « Nutrition, option des humanités en RDC ».</li>
+          <li>Les Volcans News (2023) — objectifs de l'option Nutrition.</li>
+          <li>EDU-NC, Programme National d'Alimentation Scolaire (2025).</li>
+          <li>Michael C. Latham, <em>Nutrition humaine en Afrique tropicale</em>.</li>
+          <li>OMS, UNICEF, FAO — documents de référence sur la nutrition communautaire.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Évaluation finale — Nutrition Communautaire",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Consigne</div>
+        <p>Répondez aux questions ci-dessous en sélectionnant la bonne réponse parmi les quatre propositions. Le QCM couvre l'ensemble du cours. Cliquez ensuite sur « Valider mes réponses » pour obtenir votre score.</p>
+      </div>
+
+      <div class="quiz-container">
+        <div id="quizQuestions"></div>
+        <button id="submitQuiz" class="quiz-btn-submit">
+          Valider mes réponses
+        </button>
+        <div id="quizResult" class="quiz-result"></div>
+      </div>
+    `
+  }
+];
+const questions = [
+  {
+    text: "La nutrition communautaire vise principalement à :",
+    options: [
+      "Améliorer la santé des populations par l'alimentation",
+      "Vendre des aliments sur les marchés",
+      "Construire des routes rurales",
+      "Élever des animaux de rente"
+    ],
+    correct: 0
+  },
+  {
+    text: "Parmi les définitions suivantes, laquelle correspond à la nutrition ?",
+    options: [
+      "Le processus biologique d'utilisation des aliments par l'organisme",
+      "L'acte de se nourrir",
+      "La quantité d'aliments disponibles",
+      "Le prix des aliments"
+    ],
+    correct: 0
+  },
+  {
+    text: "Les 1000 premiers jours couvrent la période :",
+    options: [
+      "De la conception aux 2 ans de l'enfant",
+      "De 0 à 5 ans",
+      "De 2 à 6 ans",
+      "De 6 à 12 ans"
+    ],
+    correct: 0
+  },
+  {
+    text: "Les aliments énergétiques sont riches principalement en :",
+    options: [
+      "Glucides et lipides",
+      "Protéines",
+      "Vitamines et minéraux",
+      "Eau et fibres"
+    ],
+    correct: 0
+  },
+  {
+    text: "Les aliments bâtisseurs sont riches principalement en :",
+    options: [
+      "Protéines",
+      "Glucides",
+      "Lipides",
+      "Vitamines"
+    ],
+    correct: 0
+  },
+  {
+    text: "Les aliments protecteurs sont riches principalement en :",
+    options: [
+      "Vitamines, minéraux et fibres",
+      "Protéines",
+      "Glucides",
+      "Lipides"
+    ],
+    correct: 0
+  },
+  {
+    text: "Parmi les aliments suivants, lequel est un aliment protecteur typiquement congolais ?",
+    options: ["Le pondu (feuilles de manioc)", "Le fufu", "L'huile de palme", "Le riz"],
+    correct: 0
+  },
+  {
+    text: "Le kwashiorkor est une forme de malnutrition aiguë caractérisée par :",
+    options: [
+      "Des œdèmes, des lésions cutanées et une apathie",
+      "Un amaigrissement extrême sans œdème",
+      "Un goitre",
+      "Une cécité nocturne"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le marasme se caractérise par :",
+    options: [
+      "Un amaigrissement extrême avec fonte musculaire et graisseuse",
+      "Des œdèmes du visage et des jambes",
+      "Un goitre",
+      "Une pâleur des paumes"
+    ],
+    correct: 0
+  },
+  {
+    text: "La malnutrition chronique se manifeste principalement par :",
+    options: [
+      "Un retard de croissance (taille basse pour l'âge)",
+      "Un amaigrissement rapide",
+      "Des œdèmes",
+      "Une cécité"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'anémie ferriprive est due à une carence en :",
+    options: ["Fer", "Vitamine A", "Iode", "Calcium"],
+    correct: 0
+  },
+  {
+    text: "La carence en vitamine A peut provoquer :",
+    options: [
+      "La cécité nocturne et une baisse de l'immunité",
+      "Le goitre",
+      "L'anémie ferriprive",
+      "Le rachitisme"
+    ],
+    correct: 0
+  },
+  {
+    text: "La carence en iode provoque principalement :",
+    options: [
+      "Le goitre et un retard mental",
+      "La cécité nocturne",
+      "L'anémie",
+      "Le kwashiorkor"
+    ],
+    correct: 0
+  },
+  {
+    text: "Parmi les méthodes suivantes, laquelle est une enquête alimentaire ?",
+    options: [
+      "Le rappel de 24 heures",
+      "La mesure du périmètre brachial",
+      "Le calcul de l'IMC",
+      "La prise de température"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'IMC se calcule par la formule :",
+    options: [
+      "Poids (kg) / Taille² (m²)",
+      "Taille (m) / Poids (kg)",
+      "Poids × Taille",
+      "Taille² × Poids"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le périmètre brachial chez l'enfant de 6 à 59 mois est utilisé pour détecter :",
+    options: [
+      "La malnutrition aiguë",
+      "La malnutrition chronique uniquement",
+      "L'obésité",
+      "La carence en iode"
+    ],
+    correct: 0
+  },
+  {
+    text: "La supplémentation en vitamine A chez l'enfant se fait :",
+    options: [
+      "Tous les 4 à 6 mois",
+      "Une seule fois dans la vie",
+      "Tous les jours",
+      "Chaque semaine"
+    ],
+    correct: 0
+  },
+  {
+    text: "La fortification consiste à :",
+    options: [
+      "Enrichir un aliment de base en micronutriments",
+      "Distribuer des comprimés",
+      "Éduquer les mères",
+      "Planter des jardins"
+    ],
+    correct: 0
+  },
+  {
+    text: "La biofortification consiste à :",
+    options: [
+      "Sélectionner ou créer des variétés de plantes plus riches en micronutriments",
+      "Distribuer des comprimés",
+      "Enrichir industriellement un aliment",
+      "Éduquer les familles"
+    ],
+    correct: 0
+  },
+  {
+    text: "Parmi les interventions suivantes, laquelle améliore l'accès aux aliments protecteurs au niveau familial ?",
+    options: [
+      "Le jardin potager communautaire",
+      "La supplémentation en fer",
+      "La fortification du sel",
+      "La vaccination"
+    ],
+    correct: 0
+  },
+  {
+    text: "Parmi les messages clés de l'éducation nutritionnelle, lequel est recommandé par l'OMS ?",
+    options: [
+      "Allaitement maternel exclusif jusqu'à 6 mois",
+      "Allaitement jusqu'à 1 mois seulement",
+      "Donner de l'eau sucrée au nouveau-né",
+      "Sevrage à 2 mois"
+    ],
+    correct: 0
+  },
+  {
+    text: "La communication en nutrition doit être :",
+    options: [
+      "Simple, adaptée culturellement, répétée et participative",
+      "Complexe et standardisée",
+      "Réservée aux professionnels de santé",
+      "Uniquement écrite"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'approche multisectorielle en nutrition implique la collaboration entre :",
+    options: [
+      "Santé, agriculture, éducation, eau et assainissement",
+      "Un seul secteur",
+      "Uniquement les ONG",
+      "Uniquement l'État"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le cycle de projet en nutrition comprend :",
+    options: [
+      "Identification, planification, mise en œuvre, suivi, évaluation",
+      "Uniquement la planification",
+      "Uniquement l'évaluation",
+      "Uniquement la mise en œuvre"
+    ],
+    correct: 0
+  },
+  {
+    text: "Un indicateur d'impact mesure :",
+    options: [
+      "L'amélioration de l'état nutritionnel de la population",
+      "Le nombre de séances réalisées",
+      "Le nombre de mères formées",
+      "Le budget dépensé"
+    ],
+    correct: 0
+  },
+  {
+    text: "Parmi les déterminants suivants de la malnutrition, lequel est une cause sous-jacente ?",
+    options: [
+      "L'insécurité alimentaire des ménages",
+      "Les apports alimentaires insuffisants",
+      "Les maladies infectieuses",
+      "La pauvreté"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'objectif principal de la nutrition communautaire en 4<sup>e</sup> Humanité est de rendre l'élève capable de :",
+    options: [
+      "Évaluer l'état nutritionnel d'une communauté et proposer des interventions adaptées",
+      "Vendre des aliments",
+      "Construire des routes",
+      "Élever des animaux"
+    ],
+    correct: 0
+  }
+];
+
+try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+        questions.forEach(function (q) {
+            if (!q.text) q.text = q.question || q.q || q.enonce || q.titre || "";
+            if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+            if (typeof q.correct === "undefined") {
+                if (typeof q.answer !== "undefined") q.correct = q.answer;
+                else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+            }
+        });
+    }
+} catch (e) {}
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+const pageTitle = document.getElementById('pageTitle');
+pageTitle.textContent = "ECOLIA · " + COURSE_TITLE;
+document.title = "ECOLIA — " + COURSE_TITLE;
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim() || slides.length === 0) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp("(" + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ")", 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderEmptyState() {
+    contentDiv.innerHTML = '<div class="empty-state"><div class="icon">·</div><span class="tag">Bientôt disponible</span><h2>' + COURSE_TITLE + '</h2><p>Ce cours est en préparation. Le contenu sera ajouté prochainement.</p></div>';
+    slideCounterSpan.textContent = '0/0';
+    progressFill.style.width = '0%';
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    counterSpan.textContent = '—';
+}
+
+function renderQuiz() {
+    const qc = document.getElementById('quizQuestions');
+    if (!qc) return;
+    if (typeof questions === 'undefined' || questions.length === 0) {
+        qc.innerHTML = '<p style="color:#666;font-style:italic;">Quiz bientot disponible.</p>';
+        return;
+    }
+    let html = '';
+    questions.forEach((q, i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o, k) => {
+            html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>';
+        });
+        html += '</div>';
+    });
+    qc.innerHTML = html;
+    const submitBtn = document.getElementById('submitQuiz');
+    if (submitBtn) {
+        submitBtn.onclick = () => {
+            let score = 0;
+            questions.forEach((q, i) => {
+                const s = document.querySelector('input[name="q' + i + '"]:checked');
+                if (s && parseInt(s.value) === q.correct) score++;
+            });
+            const pct = Math.round(score/questions.length*100);
+            document.getElementById('quizResult').innerHTML =
+                '<div style="background:var(--bg2);padding:16px;border-radius:10px;margin-top:14px;">' +
+                '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong></div>';
+        };
+    }
+}
+
+function renderSlide(index, keepHighlight) {
+    if (keepHighlight === undefined) keepHighlight = true;
+    if (slides.length === 0) { renderEmptyState(); return; }
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    if (index === slides.length - 1) renderQuiz();
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    if (slides.length === 0) return;
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (slides.length && currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (slides.length && currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+<!-- ECOLIA_IMAGE_LOADER_START -->
+<script>
+(function () {
+  var SITE = "https://ecolia-course.github.io/";
+  var NATIVE = false;
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function abs(u) { return /^(https?:|data:|blob:)/i.test(u) ? u : (NATIVE ? SITE + u.replace(/^(\.\/|\/)+/, "") : u); }
+  function ext(u) { var m = String(u).split("?")[0].match(/\.(jpe?g|png|gif|webp|svg)$/i); return m ? m[1].toLowerCase() : "jpg"; }
+  function hide(img) { img.onerror = null; img.style.display = "none"; }
+  var table = null, queue = [], queued = {}, running = false;
+  function enqueue(full, fn) {
+    if (queued[fn]) return;
+    queued[fn] = 1; queue.push([full, fn]);
+    if (!running) { running = true; setTimeout(next, 2500); }
+  }
+  function next() {
+    if (!queue.length) { running = false; return; }
+    if (!navigator.onLine) { running = false; return; }
+    var q = queue.shift(), t0 = Date.now();
+    try { CoursInterface.download(q[0], q[1]); } catch (e) { return setTimeout(next, 500); }
+    (function wait() {
+      var ok = false;
+      try { ok = !!CoursInterface.exists(q[1]); } catch (e) {}
+      if (ok) setTimeout(next, 1500);
+      else if (Date.now() - t0 > 40000) next();
+      else setTimeout(wait, 700);
+    })();
+  }
+  function exists(fn) { try { return !!CoursInterface.exists(fn); } catch (e) { return false; } }
+  function show(img) {
+    if (!table || img.getAttribute("data-ecolia-done")) return;
+    var id = img.getAttribute("data-image-id");
+    var url = table[id];
+    if (typeof url !== "string" || !url.length) { console.warn("ECOLIA : image absente du JSON :", id); return; }
+    img.setAttribute("data-ecolia-done", "1");
+    if (!NATIVE) { img.onerror = function () { hide(img); }; img.setAttribute("src", url); return; }
+    var full = abs(url), fn = "img_" + id + "." + ext(url);
+    if (exists(fn)) {
+      img.onerror = function () {
+        try { CoursInterface["delete"](fn); } catch (e) {}
+        queued[fn] = 0;
+        img.onerror = function () { hide(img); };
+        img.setAttribute("src", full);
+      };
+      img.setAttribute("src", "https://app.local/cours/" + fn);
+    } else {
+      img.onerror = function () { hide(img); };
+      img.setAttribute("src", full);
+      enqueue(full, fn);
+    }
+  }
+  function scan(root) {
+    if (!root || !root.querySelectorAll) return;
+    if (root.matches && root.matches("img[data-image-id]")) show(root);
+    root.querySelectorAll("img[data-image-id]").forEach(show);
+  }
+  function prefetchAll() {
+    var ids = {};
+    try { JSON.stringify(slides).replace(/data-image-id=\\?"([^"\\]+)/g, function (m, id) { ids[id] = 1; }); } catch (e) {}
+    Object.keys(ids).forEach(function (id) {
+      var url = table[id];
+      if (typeof url !== "string" || !url.length) return;
+      var fn = "img_" + id + "." + ext(url);
+      if (!exists(fn)) enqueue(abs(url), fn);
+    });
+  }
+  function start(tbl) {
+    table = tbl;
+    scan(document.body);
+    new MutationObserver(function (muts) {
+      muts.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.nodeType === 1) scan(n); }); });
+    }).observe(document.body, { childList: true, subtree: true });
+    if (NATIVE) prefetchAll();
+  }
+  var JSON_URL = NATIVE ? SITE + "images_ecolia.json" : "images_ecolia.json";
+  var KEY = "ecolia_images_json";
+  fetch(JSON_URL, NATIVE ? { cache: "no-cache" } : undefined)
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (table) { if (NATIVE) lsSet(KEY, JSON.stringify(table)); start(table); })
+    .catch(function (e) {
+      var saved = null;
+      if (NATIVE) { try { saved = JSON.parse(lsGet(KEY) || "null"); } catch (x) {} }
+      if (saved) start(saved);
+      else console.warn("ECOLIA : JSON des images indisponible.", e);
+    });
+})();
+</script>
+<!-- ECOLIA_IMAGE_LOADER_END -->
+
+
+
+<!-- ECOLIA_AUDIO_PLAYER_START -->
+<style>
+  #ecolia-audio-btn, #ecolia-dl-btn {
+    width: 30px; height: 30px; min-width: 30px; padding: 0; margin: 0 4px 0 0;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    cursor: pointer; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent; outline: none;
+  }
+  #ecolia-audio-btn { border: none; background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-dl-btn { border: 1.5px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb); }
+  #ecolia-dl-btn.ecolia-full { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-btn.ecolia-fixed { position: fixed; top: 8px; left: 8px; z-index: 2147483000; }
+  #ecolia-audio-btn:active, #ecolia-dl-btn:active { transform: scale(.92); }
+  #ecolia-audio-btn svg, #ecolia-dl-btn svg { width: 15px; height: 15px; fill: currentColor; pointer-events: none; }
+  #ecolia-audio-btn.ecolia-off, #ecolia-dl-btn.ecolia-off { display: none; }
+  #ecolia-audio-banner {
+    display: none; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0;
+    padding: 8px 14px; font-size: .82rem; line-height: 1.35;
+    background: var(--soft, #eef3fb); color: var(--p1, #123); border-bottom: 1px solid var(--bd, #c9d6ea);
+  }
+  #ecolia-audio-banner.on { display: flex; }
+  #ecolia-audio-banner .eab-txt { flex: 1 1 180px; }
+  #ecolia-audio-banner .eab-act { display: flex; gap: 6px; flex-wrap: wrap; }
+  #ecolia-audio-banner button {
+    border: 1px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb);
+    border-radius: 16px; padding: 5px 12px; font-size: .8rem; cursor: pointer;
+  }
+  #ecolia-audio-banner button.pri { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-banner .eab-bar { display: none; flex-basis: 100%; height: 4px; border-radius: 2px; overflow: hidden; background: var(--bd, #c9d6ea); }
+  #ecolia-audio-banner .eab-bar i { display: block; height: 100%; width: 0; background: var(--p2, #2563eb); transition: width .2s; }
+</style>
+<script>
+(function () {
+  var CFG = {"code":"NutritionCommunautaire4","base":"https://ecolia-course.github.io/ecolia-media/audio_files/","available":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"count":19,"sizeMo":20,"sizes":{"1":1048704,"2":1164864,"3":974016,"4":1049664,"5":1129536,"6":1056960,"7":1041792,"8":1113216,"9":915840,"10":1276608,"11":995520,"12":1089792,"13":1001280,"14":1071168,"15":1055616,"16":1027392,"17":980928,"18":1369920,"19":158976},"fallback":{"1":[["fr","Sommaire, Nutrition Communautaire. Bienvenue. La nutrition communautaire: protéger la santé des populations par l'alimentation. La nutrition communautaire est l'application des sciences de la nutrition à la santé des populations, avec une approche participative et multisectorielle. Elle vise à prévenir et à traiter les problèmes nutritionnels au sein des communautés. En République Démocratique du Congo, la malnutrition reste une cause majeure de morbidité et de mortalité, en particulier chez les enfants de moins de 5 ans et les femmes enceintes. Ce cours s'adresse aux élèves de 4e Humanité de la filière Nutrition. Il prépare le futur technicien A2 à évaluer l'état nutritionnel d'une population, à identifier les problèmes nutritionnels, à concevoir et planifier des interventions et à sensibiliser les communautés, en collaboration avec les secteurs de la santé, de l'agriculture et de l'éducation. Objectifs d'apprentissage. À la fin de ce cours, l'élève doit être capable de: Définir les concepts de base de la nutrition communautaire. Classer les aliments en groupes fonctionnels (énergétiques, bâtisseurs, protecteurs) et connaître leurs sources locales. Identifier les problèmes nutritionnels prévalents en R D C. Réaliser une évaluation nutritionnelle simple (enquêtes, mesures anthropométriques). Concevoir et planifier un programme de nutrition communautaire. Communiquer et sensibiliser en nutrition. Travailler en approche multisectorielle. Grands chapitres du cours. Chapitre I, Introduction à la nutrition communautaire. Chapitre II, Besoins nutritionnels et groupes d'aliments. Chapitre III, Problèmes nutritionnels en R D C. Chapitre IV, Évaluation nutritionnelle. Chapitre V, Programmes de nutrition communautaire. Chapitre VI, Communication et sensibilisation. Chapitre VII, Approche multisectorielle et planification."]],"2":[["fr","Chapitre I, Pourquoi la nutrition communautaire? Situation-problème. Dans un quartier périphérique de Kinshasa, une enquête rapide révèle que de nombreux enfants de moins de 5 ans ont une taille inférieure à la normale pour leur âge. Plusieurs femmes enceintes souffrent d'anémie. Pourtant, les marchés regorgent de manioc, de poisson, de légumes-feuilles et de fruits. Comment expliquer cette situation? Que peut faire un technicien en nutrition communautaire? Fondements théoriques. Une discipline au carrefour de plusieurs enjeux. La nutrition communautaire relie plusieurs domaines: biologie, médecine, agriculture, éducation, économie, sciences sociales. Elle s'intéresse à la fois: À la disponibilité des aliments (production, marchés, accès). À la qualité de l'alimentation (diversité, équilibre, sécurité sanitaire). Aux pratiques alimentaires (allaitement, sevrage, préparation, hygiène). À l'état de santé (maladies infectieuses, carences). Aux déterminants sociaux (pauvreté, éducation, genre, accès à l'eau). Les conséquences de la malnutrition. La malnutrition (sous-nutrition ou surnutrition) a des conséquences graves: Sur la santé: retard de croissance, baisse de l'immunité, augmentation de la mortalité infantile. Sur le développement cognitif: baisse des capacités d'apprentissage, mauvais résultats scolaires. Sur la productivité: baisse de la capacité de travail à l'âge adulte. Sur l'économie: coûts de santé, perte de capital humain, pauvreté qui s'aggrave. Investir dans la nutrition est donc l'un des investissements les plus rentables pour un pays. Les 1000 premiers jours (de la conception aux 2 ans de l'enfant) constituent une fenêtre d'opportunité unique pour agir. À retenir. La nutrition communautaire protège la santé des populations et lutte contre la malnutrition. Elle combine disponibilité, qualité, pratiques alimentaires, état de santé et déterminants sociaux. Les 1000 premiers jours sont une période critique pour agir."]],"3":[["fr","Chapitre I, Les concepts de base. Fondements théoriques. Définitions indispensables. Nutrition. Ensemble des processus biologiques par lesquels l'organisme utilise les aliments pour se maintenir en vie, se développer et fonctionner. La nutrition inclut la digestion, l'absorption, le transport et l'utilisation des nutriments par les cellules. Alimentation. Acte de se nourrir, comprenant le choix, la préparation et la consommation des aliments. L'alimentation est influencée par la culture, les ressources, le niveau d'éducation et les habitudes. Nutriment. Substance nutritive contenue dans les aliments, utilisable par l'organisme. On distingue les macro-nutriments (glucides, lipides, protéines) et les micro-nutriments (vitamines, minéraux). Besoins nutritionnels. Quantités de nutriments nécessaires au fonctionnement de l'organisme. Ils varient selon l'âge, le sexe, l'état physiologique (grossesse, allaitement, maladie) et l'activité physique. Sécurité alimentaire. Situation dans laquelle tous les êtres humains ont, à tout moment, un accès physique, social et économique à une nourriture suffisante, saine et nutritive, leur permettant de satisfaire leurs besoins énergétiques et leurs préférences alimentaires pour mener une vie saine et active. La sécurité alimentaire combine: disponibilité, accès, utilisation et stabilité. Erreur fréquente. Confondre nutrition et alimentation est une erreur fréquente. La nutrition est le processus biologique d'utilisation des aliments; l'alimentation est l'acte de se nourrir. De même, ne pas confondre sécurité alimentaire (avoir accès à assez de nourriture) et sécurité sanitaire des aliments (nourriture non contaminée)."]],"4":[["fr","Chapitre I, Les déterminants de la malnutrition. Fondements théoriques. Un problème multifactoriel. La malnutrition n'est pas un simple manque de nourriture: c'est un problème complexe, avec des causes à plusieurs niveaux. On distingue trois niveaux de causes, souvent représentés dans le cadre conceptuel de l'UNICEF. 1. Causes immédiates. Apports alimentaires insuffisants en quantité ou en qualité. Maladies: infections répétées (diarrhées, infections respiratoires), parasitoses, VIH. 2. Causes sous-jacentes. Insécurité alimentaire des ménages: manque d'accès à une alimentation suffisante et diversifiée. Accès limité aux soins de santé: absence de vaccination, de suivi médical. Environnement insalubre: manque d'eau potable, mauvais assainissement, hygiène insuffisante. Éducation insuffisante des mères: faible niveau d'instruction, méconnaissance des bonnes pratiques alimentaires. 3. Causes fondamentales. Pauvreté: faibles revenus, sous-emploi, insécurité économique. Inégalités sociales, économiques et de genre. Gouvernance: faible priorité politique donnée à la nutrition, corruption. Conflits et déplacements de populations. Changements climatiques: sécheresses, inondations, mauvaises récoltes. Conséquence pratique. Agir uniquement sur une cause est inefficace. Un programme qui distribue de la nourriture sans traiter les diarrhées ni améliorer l'accès à l'eau potable aura peu d'impact durable. C'est pourquoi la lutte contre la malnutrition doit être multisectorielle. À retenir. La malnutrition a des causes immédiates (apports insuffisants, maladies), sous-jacentes (insécurité alimentaire, accès aux soins, hygiène, éducation) et fondamentales (pauvreté, inégalités, gouvernance, conflits, climat). Elle nécessite une approche multisectorielle."]],"5":[["fr","Chapitre II, Les besoins nutritionnels. Fondements théoriques. Des besoins qui varient. Les besoins nutritionnels désignent les quantités de nutriments nécessaires au fonctionnement de l'organisme. Ils varient selon plusieurs facteurs: Facteurs de variation. L'âge: un enfant a besoin de plus d'énergie et de protéines par kilo de poids qu'un adulte. Le sexe: les besoins diffèrent entre hommes et femmes, surtout à l'adolescence et à la ménopause. L'état physiologique: grossesse, allaitement, convalescence augmentent les besoins. L'activité physique: un travailleur de force a besoin de plus d'énergie qu'un employé de bureau. L'état de santé: certaines maladies augmentent ou diminuent les besoins. Les grands besoins. Énergie: exprimée en kilocalories (kcal) ou kilojoules (kJ). Apportée par les glucides (4 kcal ou g), les lipides (9 kcal ou g) et les protéines (4 kcal ou g). Protéines: environ 10 à 15 pour cent de l'apport énergétique total. Lipides: 25 à 35 pour cent de l'apport énergétique (dont une part d'acides gras essentiels). Glucides: 50 à 60 pour cent de l'apport énergétique, avec priorité aux glucides complexes (amidons). Vitamines et minéraux: en petites quantités, mais indispensables. Eau: 1,5 à 3 litres par jour selon l'activité et le climat. Le cas particulier de la grossesse et de l'allaitement. Une femme enceinte a des besoins accrus en énergie, protéines, fer, acide folique, calcium et vitamine A. Une femme qui allaite a des besoins encore plus élevés en énergie et en liquides. Ces périodes sont critiques pour la santé de la mère et de l'enfant. À retenir. Les besoins nutritionnels varient selon l'âge, le sexe, l'état physiologique, l'activité physique et l'état de santé. La grossesse et l'allaitement augmentent fortement les besoins. Un apport équilibré associe glucides complexes, protéines, lipides de qualité, vitamines, minéraux et eau."]],"6":[["fr","Chapitre II, Les trois groupes fonctionnels d'aliments. Fondements théoriques. Classer les aliments selon leur fonction. La classification fonctionnelle des aliments, inspirée de Michael C. Latham, répartit les aliments en trois groupes selon leur rôle principal dans l'organisme. Cette classification est au cœur de la nutrition communautaire car elle est simple, pédagogique et adaptée aux réalités locales. Groupe. Rôle. Nutriments dominants. Exemples congolais. Aliments énergétiques. Fournir l'énergie nécessaire à l'activité et au fonctionnement du corps. Glucides, lipides. Fufu, manioc, riz, maïs, banane plantain, huile de palme, arachides. Aliments bâtisseurs. Construire et réparer les tissus (muscles, os, organes). Protéines. Poisson, viande, œufs, lait, haricots, arachides, chenilles. Aliments protecteurs. Protéger contre les maladies, réguler le métabolisme. Vitamines, minéraux, fibres. Pondu, matembele, morelle noire, papaye, mangue, agrumes, légumes-feuilles. Un repas équilibré. Un repas équilibré combine les trois groupes. Exemple de repas congolais équilibré: Énergétique: fufu de manioc ou riz. Bâtisseur: poisson grillé ou haricots. Protecteur: pondu (feuilles de manioc) ou matembele, plus un fruit (mangue, papaye, orange). Un repas qui ne contient que du fufu et du manioc est déséquilibré: il apporte beaucoup d'énergie mais peu de protéines et de vitamines. Erreur fréquente. Opposer aliments « riches » et aliments « pauvres » est une erreur. La qualité nutritionnelle ne dépend pas du prix: le pondu, les haricots, le poisson de fleuve sont accessibles et très nutritifs. Un aliment cher peut être déséquilibré, un aliment simple peut être excellent."]],"7":[["fr","Chapitre II, Les aliments locaux congolais. Fondements théoriques. Valoriser les ressources locales. La nutrition communautaire en R D C s'appuie sur les aliments disponibles localement, accessibles à toutes les familles. Les ignorer serait une erreur: ils sont la base d'une alimentation durable et culturellement acceptée. Les aliments de base. Manioc: racine riche en amidon, base du fufu et de la chikwangue. Attention: il doit être bien préparé pour éliminer les composés toxiques (acide cyanhydrique). Maïs: céréale énergétique, base de la pâte et du semoule. Riz: énergétique, apprécié dans les centres urbains. Banane plantain: énergétique, consommée bouillie, grillée ou en purée. Haricot: légumineuse riche en protéines. Arachide: source de protéines et de lipides. Les sources de protéines. Poisson de fleuve (capitaine, tilapia, mboto): protéines de haute qualité, oméga-3. Viande (bœuf, chèvre, porc): protéines complètes, fer. Œufs: protéines complètes, vitamines. Chenilles et insectes comestibles: protéines accessibles. Lait et produits laitiers: protéines, calcium. Les sources de vitamines et minéraux. Pondu (feuilles de manioc): fer, calcium, vitamine A. Matembele (feuilles de patate douce): vitamines, minéraux. Morelle noire (nteke): fer, vitamine A. Papaye, mangue, orange, safou: vitamines C et A, fibres. À retenir. La R D C dispose d'une richesse alimentaire remarquable: manioc, maïs, riz, poisson de fleuve, légumineuses, pondu, matembele, fruits. Une bonne nutrition communautaire valorise ces aliments locaux et combine les trois groupes fonctionnels."]],"8":[["fr","Chapitre III, La malnutrition aiguë: marasme et kwashiorkor. Fondements théoriques. Deux formes de malnutrition aiguë sévère. La malnutrition aiguë est une perte de poids rapide ou un arrêt de croissance récent. Dans sa forme sévère, elle met la vie en danger et nécessite une prise en charge urgente. 1. Le marasme. Forme de malnutrition aiguë sévère caractérisée par un amaigrissement extrême: fonte des muscles et de la graisse sous-cutanée. L'enfant a la peau collée aux os, un visage de vieillard, un regard éteint. Le périmètre brachial est très faible. Causes: carence globale en énergie (et souvent en protéines), souvent due à une alimentation insuffisante prolongée et à des infections répétées. 2. Le kwashiorkor. Forme de malnutrition aiguë sévère caractérisée par des œdèmes (gonflement du visage, des jambes, des mains), des lésions cutanées (peau qui pèle, dépigmentée), une apathie, une décoloration des cheveux, parfois un ventre gonflé. Il est lié à une carence protéique sévère, souvent après un sevrage trop précoce ou une alimentation riche en glucides mais pauvre en protéines. Danger du kwashiorkor. Le kwashiorkor est plus dangereux que le marasme car: L'œdème masque la maigreur (le poids peut sembler normal). Les infections sont souvent graves. La mortalité est plus élevée. Prise en charge. Les deux formes nécessitent une prise en charge spécialisée: Traitement des infections et des complications. Réalimentation progressive et surveillée (lait thérapeutique, aliments thérapeutiques prêts à l'emploi). Supplu00e9mentation en vitamines et minéraux. Suivi rapproché pour prévenir le syndrome de renutrition. Erreur fréquente. Croire que le kwashiorkor et le marasme sont bénins est une erreur mortelle. Ce sont des formes sévères qui nécessitent une prise en charge médicale urgente et spécialisée. Le technicien en nutrition communautaire doit identifier et référer ces cas à un centre de santé sans délai."]],"9":[["fr","Chapitre III, La malnutrition chronique. Fondements théoriques. Le retard de croissance. La malnutrition chronique se manifeste par un retard de croissance: l'enfant est trop petit pour son âge. C'est la forme la plus fréquente de malnutrition, mais elle est moins visible que la malnutrition aiguë, car elle ne s'accompagne pas nécessairement d'amaigrissement. Cause et période critique. Le retard de croissance est lié à une alimentation inadéquate et à des infections répétées pendant les 1000 premiers jours (de la conception aux 2 ans de l'enfant). C'est pendant cette période que se jouent la croissance physique et le développement cérébral. Conséquences. Le retard de croissance n'est pas seulement une question de taille. Il s'accompagne de: Développement cognitif altéré: moindre capacité d'apprentissage, mauvais résultats scolaires. Baisse de la productivité à l'âge adulte. Risque accru de maladies chroniques (obésité, diabète, hypertension) à l'âge adulte. Réduction du capital humain pour le pays. Prévention. Le retard de croissance est difficile à corriger une fois installé. La prévention est donc cruciale: Allaitement maternel exclusif jusqu'à 6 mois. Diversification alimentaire adéquate à partir de 6 mois. Suivi de la croissance (pesées régulières). Supplémentation en micronutriments. Accès à l'eau potable, hygiène, vaccination. Éducation et autonomisation des femmes. Erreur fréquente. Sous-estimer la malnutrition chronique (« retard de croissance ») parce qu'elle est moins visible que la malnutrition aiguë est une erreur. Ses conséquences sur le développement cognitif et la santé future sont durables et parfois irréversibles."]],"10":[["fr","Chapitre III, Les carences en micronutriments. Fondements théoriques. Trois carences majeures en R D C. 1. L'anémie ferriprive. L'anémie ferriprive est due à une carence en fer. Le fer est nécessaire à la fabrication de l'hémoglobine qui transporte l'oxygène dans le sang. Sans fer, l'organisme ne peut pas produire assez de globules rouges. Signes: fatigue, pâleur (paumes, paupières, lèvres), essoufflement à l'effort, vertiges, baisse des capacités cognitives, moindre résistance aux infections. Groupes à risque: femmes enceintes, femmes en âge de procréer, enfants de moins de 5 ans, adolescents. Prévention: consommation d'aliments riches en fer (viande, poisson, légumineuses, pondu, matembele), vitamine C pour favoriser l'absorption, supplémentation en fer, fortification des farines. 2. La carence en vitamine A. La vitamine A est essentielle pour la vision, l'immunité et la croissance. Sa carence est l'une des principales causes de cécité évitable chez l'enfant. Signes: cécité nocturne (difficulté à voir au crépuscule), sécheresse oculaire (xérophtalmie), taches de Bitot, baisse de l'immunité avec infections répétées. Prévention: consommation de légumes-feuilles verts (pondu, matembele, morelle noire), fruits jaunes (mangue, papaye), huile de palme, foie, œufs; supplémentation en vitamine A chez les enfants de 6 à 59 mois (tous les 4 à 6 mois). 3. Les troubles dus à la carence en iode. L'iode est nécessaire à la fabrication des hormones thyroïdiennes, qui régulent la croissance et le développement cérébral. Signes: goitre (gonflement de la thyroïde), retard mental, surdité, fausses couches, crétinisme. Prévention: utilisation de sel iodé dans la cuisine familiale, supplémentation en iode (huile iodée) dans les zones d'endémie, consommation de poissons de mer. À retenir. Les trois carences majeures en R D C sont l'anémie ferriprive (fer), la carence en vitamine A et le goitre (iode). Elles se préviennent par une alimentation diversifiée, la supplémentation, la fortification et l'utilisation du sel iodé."]],"11":[["fr","Chapitre IV, L'évaluation nutritionnelle: les enquêtes alimentaires. Fondements théoriques. Pourquoi évaluer? L'évaluation nutritionnelle permet de connaître l'état nutritionnel d'une population, d'identifier les problèmes prioritaires et de planifier les interventions. Elle combine plusieurs outils: Les enquêtes alimentaires. Les mesures anthropométriques. Les examens biologiques (dosage de l'hémoglobine, de la vitamine A, etc.). Les enquêtes socio-économiques. Les enquêtes alimentaires. Elles visent à estimer les apports alimentaires et à connaître les habitudes alimentaires d'un individu, d'une famille ou d'une communauté. Méthodes principales. Rappel de 24 heures: on demande à la personne de se souvenir de tout ce qu'elle a mangé et bu dans les dernières 24 heures. Simple, rapide, mais dépend de la mémoire. Enregistrement alimentaire: la personne note tout ce qu'elle consomme pendant plusieurs jours (3 à 7). Plus précis, mais demande de l'alphabétisation et de la motivation. Fréquence de consommation: on demande à quelle fréquence (par jour, par semaine) la personne consomme certains aliments. Utile pour évaluer la diversité alimentaire. Pesée des aliments: on pèse les aliments consommés. Le plus précis mais lourd et coûteux. Exploitation des données. Les données recueillies permettent de: Calculer les apports en énergie et en nutriments. Identifier les carences ou les excès. Évaluer la diversité alimentaire (nombre de groupes d'aliments consommés). Formuler des recommandations adaptées. À retenir. Les enquêtes alimentaires (rappel de 24 heures, enregistrement, fréquence, pesée) permettent d'estimer les apports et les habitudes. Elles sont complétées par les mesures anthropométriques et biologiques pour une évaluation nutritionnelle complète."]],"12":[["fr","Chapitre IV, Les mesures anthropométriques. Fondements théoriques. Mesurer le corps pour évaluer la nutrition. Les mesures anthropométriques sont des mesures simples du corps humain. Elles sont peu coûteuses, reproductibles et adaptées au terrain. Elles constituent la base de l'évaluation nutritionnelle, en particulier chez les enfants. Chez l'adulte. Poids (kg) et taille (m). IMC (Indice de Masse Corporelle) égale poids ou taille au carré. Interprétation: inférieur à 18,5: dénutrition. 18,5 moins 24,9: normal. 25 moins 29,9: surpoids. supérieur ou égal à 30: obésité. Tour de taille: indicateur de graisse abdominale. Chez l'enfant. Poids-pour-taille (P ou T): détecte la malnutrition aiguë. Taille-pour-âge (T ou A): détecte la malnutrition chronique (retard de croissance). Poids-pour-âge (P ou A): indicateur global (insuffisance pondérale). Périmètre brachial (PB): mesure rapide de la malnutrition aiguë. Chez l'enfant de 6 à 59 mois: supérieur à 135 millimètres: normal. 125 moins 135 millimètres: malnutrition modérée. inférieur à 125 millimètres: malnutrition sévère. Périmètre crânien: suivi du développement cérébral. Les z-scores. Les mesures sont comparées à une population de référence (normes OMS) et exprimées en z-scores. Un z-score inférieur à moins 2 écarts-types indique une malnutrition; inférieur à moins 3, une malnutrition sévère. Erreur fréquente. Utiliser un seul indicateur sans le contextualiser est une erreur. Un enfant peut avoir un poids-pour-taille normal et un retard de croissance (taille-pour-âge bas). L'évaluation nutritionnelle combine plusieurs mesures et une enquête alimentaire, complétées par un examen clinique."]],"13":[["fr","Chapitre V, Les programmes de supplémentation et de fortification. Fondements théoriques. Agir directement sur les carences. 1. La supplémentation. La supplémentation consiste à distribuer des micronutriments sous forme de comprimés, gélules ou sirops aux groupes vulnérables. C'est une mesure curative et préventive efficace et peu coûteuse. Exemples: Vitamine A: une dose tous les 4 à 6 mois chez les enfants de 6 à 59 mois. Fer et acide folique: chez la femme enceinte (au moins 90 comprimés sur la grossesse). Fer: chez les enfants anémiés et les femmes en âge de procréer. Déparasitage: antiparasitaires réguliers chez les enfants. 2. La fortification. La fortification consiste à enrichir un aliment de base en micronutriments. Elle touche de larges populations sans nécessiter de changement de comportement. Exemples: Farine de blé enrichie en fer et acide folique. Huile végétale enrichie en vitamine A. Sel iodé (pour prévenir les troubles dus à la carence en iode). Sucre enrichi en vitamine A (dans certains pays). 3. La biofortification. La biofortification consiste à sélectionner ou à créer des variétés de plantes plus riches en micronutriments (par exemple, une patate douce à chair orange, riche en vitamine A). C'est une approche durable qui agit sur l'aliment à la source. Conditions de succès. Bonne couverture des populations cibles. Qualité et innocuité des produits. Adhésion des communautés. Intégration avec d'autres interventions. À retenir. La supplémentation (distribution de micronutriments) et la fortification (enrichissement des aliments de base) sont des interventions efficaces et peu coûteuses contre les carences. La biofortification agit à la source, sur la variété végétale."]],"14":[["fr","Chapitre V, Éducation nutritionnelle et jardins potagers. Fondements théoriques. Agir sur les comportements et la production. 1. L'éducation nutritionnelle. L'éducation nutritionnelle vise à améliorer les connaissances et les pratiques alimentaires des familles. Elle ne consiste pas à donner des ordres, mais à accompagner un changement de comportement. Messages clés: Allaitement maternel exclusif jusqu'à 6 mois, puis allaitement jusqu'à 2 ans ou plus. Diversification alimentaire à partir de 6 mois avec des aliments locaux variés. Consommation quotidienne de légumes-feuilles, de fruits, de légumineuses. Hygiène des mains, des aliments, de l'eau. Utilisation du sel iodé. Fréquence des repas adaptée à l'âge. Méthodes: causeries, démonstrations culinaires, jeux de rôle, visites à domicile, groupes de mères. 2. Les jardins potagers. Les jardins potagers communautaires ou familiaux permettent de produire des légumes et des fruits pour améliorer la disponibilité et l'accès aux aliments protecteurs. Avantages: Production locale d'aliments frais et variés. Réduction des dépenses alimentaires. Autonomisation des femmes et des familles. Éducation nutritionnelle par la pratique. Revenus supplémentaires par la vente des surplus. Cultures recommandées: légumes-feuilles (pondu, matembele, amarante, morelle), tomate, oignon, carotte, haricot, papaye. 3. Les cantines scolaires. Les cantines scolaires assurent un repas équilibré aux élèves, ce qui améliore leur nutrition, leur concentration et leur assiduité. Le Programme National d'Alimentation Scolaire en R D C renforce cette approche. Erreur fréquente. Miser sur un seul type d'intervention est une erreur. Les programmes efficaces combinent éducation nutritionnelle, jardins potagers, supplémentation, sécurité alimentaire et accès à l'eau potable. La nutrition est multidimensionnelle."]],"15":[["fr","Chapitre VI, La communication et la sensibilisation en nutrition. Fondements théoriques. Bien communiquer pour faire changer les pratiques. La communication en nutrition vise à informer, sensibiliser et faire changer les comportements. Une bonne information ne suffit pas: il faut aussi que le message soit compris, accepté et applicable. Principes d'une communication efficace. Simplicité: messages courts, clairs, un seul message à la fois. Pertinence culturelle: tenir compte des habitudes, des tabous, des croyances. Répétition: un message répété est mieux mémorisé. Démonstration: montrer concrètement (cuisine, hygiène). Participation: impliquer les communautés, écouter leurs préoccupations. Adaptation au public: niveau d'éducation, langue, âge. Canaux de communication. Causeries dans les centres de santé, les écoles, les églises. Radios communautaires: très écoutées, adaptées aux zones rurales. Affiches et images: utiles pour les personnes peu alphabétisées. Théâtre participatif: permet d'aborder des sujets sensibles. Visites à domicile: approche personnalisée. Réseaux sociaux: utiles en milieu urbain. Messages clés. Quelques messages universels: Allaitement maternel exclusif jusqu'à 6 mois. Diversification à partir de 6 mois avec des aliments locaux. Consommer des légumes-feuilles chaque jour. Se laver les mains avant de manger et après les toilettes. Utiliser du sel iodé. Faire suivre la croissance de l'enfant (pesées régulières). À retenir. La communication en nutrition doit être simple, adaptée culturellement, répétée, participative et démonstrative. Elle utilise plusieurs canaux (causeries, radios, affiches, théâtre, visites). Les messages clés portent sur l'allaitement, la diversification, les légumes, l'hygiène et le suivi de croissance."]],"16":[["fr","Chapitre VII, L'approche multisectorielle. Fondements théoriques. La nutrition est transversale. La nutrition ne dépend pas d'un seul secteur. Elle est influencée par la santé, l'agriculture, l'éducation, l'eau et l'assainissement, la protection sociale. C'est pourquoi l'approche multisectorielle est indispensable. Les secteurs clés. Santé: soins préventifs et curatifs, supplémentation, vaccination, suivi de croissance. Agriculture: disponibilité et diversité alimentaire, jardins potagers, élevage, pêche. Éducation: alphabétisation, éducation nutritionnelle à l'école, cantines scolaires. Eau et assainissement: accès à l'eau potable, latrines, hygiène. Protection sociale: transferts monétaires, sécurité alimentaire, filets sociaux. Genre: autonomisation des femmes, éducation des filles. Les plateformes de coordination. Comités de nutrition aux niveaux national, provincial, local. Groupes techniques réunissant les partenaires (État, ONG, agences des Nations Unies). Plans d'action multisectoriels avec des objectifs communs. Exemple concret. Un programme de réduction de l'anémie chez les femmes enceintes pourrait combiner: Supplémentation en fer (santé). Promotion de la consommation de légumes-feuilles (agriculture, éducation). Déparasitage (santé). Accès à l'eau potable (eau et assainissement). Éducation nutritionnelle (éducation, santé). Aucune de ces interventions, seule, ne suffirait. Erreur fréquente. Travailler en silo sans coordination avec les autres secteurs est une erreur. La nutrition est transversale: son efficacité dépend de la cohérence entre les interventions de santé, d'agriculture, d'éducation et d'assainissement."]],"17":[["fr","Chapitre VII, Planification et suivi-évaluation. Fondements théoriques. Le cycle de projet en nutrition. Un programme de nutrition communautaire suit un cycle en plusieurs étapes: 1. Identification. Connaître la situation: évaluer l'état nutritionnel, identifier les problèmes prioritaires, analyser les causes, cartographier les acteurs et les ressources. 2. Planification. Définir: Les objectifs (général et spécifiques). Les activités et les responsables. Le budget et les ressources. Le calendrier. Les indicateurs de suivi. 3. Mise en œuvre. Réalisation des activités: formations, campagnes de supplémentation, jardins potagers, éducation nutritionnelle, etc. 4. Suivi. Collecte régulière de données pour vérifier que les activités se déroulent comme prévu et pour ajuster en cours de route. Indicateurs de processus (activités réalisées, nombre de bénéficiaires). 5. Évaluation. Mesure des résultats (changements de comportement, couverture) et de l'impact (amélioration de l'état nutritionnel). L'évaluation peut être à mi-parcours ou finale. Les indicateurs. Type d'indicateur. Exemple. Processus. Nombre de mères formées, nombre de séances réalisées. Résultats. pour cent de mères pratiquant l'allaitement exclusif, pour cent de familles ayant un jardin potager. Impact. Prévalence de la malnutrition aiguë, prévalence de l'anémie. À retenir. Un programme de nutrition communautaire suit un cycle: identification, planification, mise en œuvre, suivi, évaluation. Les indicateurs de processus, de résultats et d'impact permettent de mesurer les progrès et d'ajuster."]],"18":[["fr","Synthèse, De l'évaluation à l'intervention. Synthèse générale. Les compétences du technicien en nutrition communautaire. Comprendre les concepts: nutrition, alimentation, nutriments, sécurité alimentaire, déterminants de la malnutrition. Connaître les besoins nutritionnels et les groupes fonctionnels d'aliments. Identifier les problèmes nutritionnels: malnutrition aiguë (marasme, kwashiorkor), chronique (retard de croissance), carences en micronutriments (fer, vitamine A, iode). Évaluer: enquêtes alimentaires, mesures anthropométriques, indicateurs. Intervenir: supplémentation, fortification, éducation nutritionnelle, jardins potagers, cantines scolaires. Communiquer: messages adaptés, canaux multiples, participation communautaire. Planifier et coordonner: approche multisectorielle, cycle de projet, suivi-évaluation. Tableau récapitulatif. Problème. Signes. Intervention clé. Marasme. Amaigrissement extrême, fonte musculaire. Réhabilitation nutritionnelle progressive. Kwashiorkor. Œdèmes, lésions cutanées, apathie. Prise en charge spécialisée, aliment thérapeutique. Retard de croissance. Taille basse pour l'âge. Prévention dans les 1000 premiers jours. Anémie ferriprive. Pâleur, fatigue. Supplémentation en fer, alimentation riche en fer plus vitamine C. Carence en vitamine A. Cécité nocturne, baisse immunité. Supplémentation, légumes-feuilles, fruits jaunes. Carence en iode. Goitre, retard mental. Sel iodé. Étude de cas (cas pédagogique). « Un élève de 4e nutrition communautaire à Kinshasa réalise une enquête alimentaire dans un quartier de Matete. Il constate une faible consommation de légumes et de fruits, et une prévalence élevée d'anémie chez les femmes enceintes. Il propose un programme combinant éducation nutritionnelle, jardin potager communautaire et supplémentation en fer. Il présente son plan à la classe. ». Analyse: la démarche est complète et multisectorielle. L'élève a identifié un problème (anémie), ses causes (faible consommation de légumes), et proposé une réponse combinée: éducation (changement de pratiques), jardin (disponibilité d'aliments protecteurs), supplémentation (action directe sur la carence). C'est exactement ce qu'on attend d'un technicien en nutrition communautaire."]],"19":[["fr","Évaluation finale, Nutrition Communautaire. Consigne. Répondez aux questions ci-dessous en sélectionnant la bonne réponse parmi les quatre propositions. Le QCM couvre l'ensemble du cours. Cliquez ensuite sur « Valider mes réponses » pour obtenir votre score."]]}};
+  var CACHE = "ecolia-cours-v1";                       // même cache que l'application
+  var PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  var PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+  var DL = '<svg viewBox="0 0 24 24"><path d="M11 3h2v9.2l3.6-3.6L18 10l-6 6-6-6 1.4-1.4L11 12.2V3zM5 19h14v2H5z"/></svg>';
+  var OK = '<svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>';
+  // Réparation du quiz : certains cours stockent les choix sous "opts" (ou autre) au lieu de "options"
+  try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+      questions.forEach(function (q) {
+        if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+        if (q.text === undefined) q.text = q.question || q.q || q.enonce || q.titre || "";
+        if (typeof q.correct === "undefined") {
+          if (typeof q.answer !== "undefined") q.correct = q.answer;
+          else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+        }
+      });
+    }
+  } catch (e) {}
+  var synth = window.speechSynthesis || null;
+  var HAS_CACHE = !!(window.caches && window.caches.open);
+  var NATIVE = false;           // APK ECOLIA : pont Java "CoursInterface" (fichiers dans le dossier de l'application)
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  var LATER = "ecolia_audio_later_" + CFG.code;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+  function init() {
+    if (document.getElementById("ecolia-audio-btn")) return;
+
+    // ---------- éléments de l'interface ----------
+    var btn = document.createElement("button");
+    btn.id = "ecolia-audio-btn"; btn.type = "button"; btn.className = "ecolia-off";
+    btn.setAttribute("aria-label", "Écouter la leçon"); btn.innerHTML = PLAY;
+    var dlBtn = document.createElement("button");
+    dlBtn.id = "ecolia-dl-btn"; dlBtn.type = "button"; dlBtn.className = "ecolia-off";
+    dlBtn.innerHTML = DL;
+    var host = document.querySelector(".header-right");
+    if (host) { host.insertBefore(dlBtn, host.firstChild); host.insertBefore(btn, dlBtn); }   // dans la barre du haut : ne scrolle jamais
+    else { btn.className += " ecolia-fixed"; document.body.appendChild(btn); }
+
+    var banner = document.createElement("div");
+    banner.id = "ecolia-audio-banner";
+    banner.innerHTML = '<span class="eab-txt"></span><span class="eab-act"></span><div class="eab-bar"><i></i></div>';
+    var content = document.getElementById("content");
+    if (content && content.parentNode) content.parentNode.insertBefore(banner, content);
+    else document.body.insertBefore(banner, document.body.firstChild);
+    var txtEl = banner.querySelector(".eab-txt"), actEl = banner.querySelector(".eab-act");
+    var barEl = banner.querySelector(".eab-bar"), barI = barEl.firstChild;
+
+    var audio = new Audio();            // un seul élément Audio, réutilisé (exigé par les navigateurs mobiles)
+    audio.preload = "auto";
+    var st = { idx: -1, auto: false, advancing: false, mode: null, speaking: false, token: 0, chunks: [], ci: 0, blobUrl: null, playTok: 0 };
+    var dl = { state: "none", cached: 0, busy: false, cancel: false };   // none | partial | full
+    var bnMode = null, hideTimer = null;
+    if (synth && synth.getVoices) { try { synth.getVoices(); } catch (e) {} }
+
+    function cur() {
+      try { if (typeof currentSlide === "number") return currentSlide; } catch (e) {}
+      return 0;
+    }
+    function hasMp3(i) { return CFG.available.indexOf(i + 1) !== -1; }
+    function fb(i) { return CFG.fallback && CFG.fallback[String(i + 1)]; }
+    function hasAudio(i) { return hasMp3(i) || (!!synth && !!fb(i)); }
+    function urlN(n) {   // dans l'APK la page est sur https://app.local : une adresse relative doit pointer vers le site
+      var b = CFG.base;
+      if (NATIVE && !/^https?:/i.test(b)) b = "https://ecolia-course.github.io/" + b.replace(/^(\.\.\/|\.\/)+/, "");
+      return new URL(b + nameN(n), location.href).href;
+    }
+    function setIcon(playing) { btn.innerHTML = playing ? PAUSE : PLAY; }
+    function isPlaying() { return st.mode === "mp3" ? !audio.paused : (st.mode === "tts" && st.speaking); }
+    function mo() { return "≈ " + CFG.sizeMo + " Mo"; }
+    function nameN(n) { return "audio_" + CFG.code + "_" + n + ".mp3"; }
+
+    // ====================================================================
+    //  Stockage hors ligne : 2 moteurs, même interface
+    //    - APK : fichiers du dossier de l'application (CoursInterface), servis par https://app.local/cours/
+    //    - Web : Cache Storage du navigateur (même cache que l'application web)
+    // ====================================================================
+    function nativeStore() {
+      var okKey = "ecolia_audio_ok_" + CFG.code;
+      function readOk() { try { return JSON.parse(lsGet(okKey) || "[]"); } catch (e) { return []; } }
+      function writeOk(a) { lsSet(okKey, JSON.stringify(a)); }
+      function exists(n) { try { return !!CoursInterface.exists(nameN(n)); } catch (e) { return false; } }
+      function local(n) { return location.origin + "/cours/" + nameN(n); }
+      function verify(n) {                                   // fichier complet ? (taille exacte connue à la génération)
+        return fetch(local(n), { cache: "no-store" }).then(function (r) { return r.blob(); }).then(function (b) {
+          var exp = CFG.sizes && CFG.sizes[String(n)];
+          return (b.size > 2000 && (!exp || b.size === exp)) ? b : null;
+        }).catch(function () { return null; });
+      }
+      return {
+        list: function () {
+          var ok = readOk().filter(exists); writeOk(ok); return Promise.resolve(ok);
+        },
+        get: function (n) { return exists(n) ? verify(n) : Promise.resolve(null); },
+        put: function (n) {
+          return new Promise(function (res, rej) {
+            try { CoursInterface.download(urlN(n), nameN(n)); } catch (e) { return rej(e); }
+            var t0 = Date.now();
+            function next() { if (Date.now() - t0 > 120000) rej(new Error("délai dépassé")); else setTimeout(poll, 800); }
+            function poll() {
+              if (!exists(n)) return next();
+              verify(n).then(function (b) {
+                if (!b) return next();
+                var ok = readOk(); if (ok.indexOf(n) < 0) ok.push(n); writeOk(ok); res();
+              });
+            }
+            setTimeout(poll, 800);
+          });
+        },
+        del: function (n) {
+          try { CoursInterface.delete(nameN(n)); } catch (e) {}
+          writeOk(readOk().filter(function (x) { return x !== n; }));
+          return Promise.resolve();
+        }
+      };
+    }
+    function cacheStore() {
+      return {
+        list: function () {
+          return caches.open(CACHE).then(function (c) {
+            return Promise.all(CFG.available.map(function (n) {
+              return c.match(urlN(n)).then(function (r) {
+                if (!r) return 0;
+                if ((r.headers.get("content-type") || "").indexOf("audio") !== 0) { c.delete(urlN(n)); return 0; }   // ancien contenu invalide
+                return n;
+              });
+            }));
+          }).then(function (a) { return a.filter(Boolean); });
+        },
+        get: function (n) {
+          return caches.open(CACHE).then(function (c) { return c.match(urlN(n)); })
+            .then(function (r) { return r ? r.blob() : null; }).then(function (b) { return b && b.size > 2000 ? b : null; });
+        },
+        put: function (n) {
+          var u = urlN(n);
+          return fetch(u, { cache: "no-store" }).then(function (r) {
+            if (!r.ok || r.status !== 200) throw new Error("HTTP " + r.status);
+            return r.blob();
+          }).then(function (b) {
+            if (b.size < 2000 || (b.type && b.type.indexOf("audio") !== 0 && b.type.indexOf("octet") < 0)) throw new Error("fichier invalide");
+            return caches.open(CACHE).then(function (c) { return c.put(u, new Response(b, { headers: { "Content-Type": "audio/mpeg" } })); });
+          });
+        },
+        del: function (n) { return caches.open(CACHE).then(function (c) { return c.delete(urlN(n)); }); }
+      };
+    }
+    var store = NATIVE ? nativeStore() : (HAS_CACHE ? cacheStore() : null);
+
+    // ====================================================================
+    //  Bannière : invitation, confirmations, progression
+    // ====================================================================
+    function showBanner(mode, text, buttons, pct) {
+      clearTimeout(hideTimer);
+      bnMode = mode;
+      txtEl.textContent = text;
+      actEl.innerHTML = "";
+      (buttons || []).forEach(function (b) {
+        var e = document.createElement("button");
+        e.type = "button"; e.textContent = b.label; if (b.pri) e.className = "pri";
+        e.addEventListener("click", function (ev) { ev.stopPropagation(); b.fn(); });
+        actEl.appendChild(e);
+      });
+      if (typeof pct === "number") { barEl.style.display = "block"; barI.style.width = pct + "%"; }
+      else barEl.style.display = "none";
+      banner.classList.add("on");
+    }
+    function hideBanner() { clearTimeout(hideTimer); bnMode = null; banner.classList.remove("on"); }
+    function flash(text) { showBanner("info", text, []); hideTimer = setTimeout(hideBanner, 4000); }
+
+    function refreshUI() {
+      var show = !!store && CFG.available.length > 0;
+      dlBtn.classList.toggle("ecolia-off", !show);
+      dlBtn.classList.toggle("ecolia-full", dl.state === "full");
+      dlBtn.innerHTML = dl.state === "full" ? OK : DL;
+      dlBtn.setAttribute("aria-label", dl.state === "full" ? "Audios téléchargés : supprimer" : "Télécharger les audios");
+      dlBtn.title = dlBtn.getAttribute("aria-label");
+    }
+    function refreshCacheState(done) {
+      if (!store) { dl.state = "none"; refreshUI(); if (done) done(); return; }
+      store.list().then(function (ok) {
+        dl.cached = ok.length;
+        dl.state = dl.cached === 0 ? "none" : (dl.cached >= CFG.available.length ? "full" : "partial");
+      }).catch(function () { dl.state = "none"; }).then(function () { refreshUI(); if (done) done(); });
+    }
+
+    function askDownload(fromInvite) {
+      var left = CFG.available.length - dl.cached;
+      var txt = dl.state === "partial"
+        ? "Il reste " + left + " audio(s) à télécharger pour écouter ce cours sans internet."
+        : "🔊 Télécharger les audios de ce cours (" + mo() + ") pour les écouter sans internet ? Wi-Fi recommandé.";
+      showBanner(fromInvite ? "invite" : "confirm", txt, [
+        { label: fromInvite ? "Plus tard" : "Annuler", fn: function () { if (fromInvite) lsSet(LATER, "1"); hideBanner(); } },
+        { label: "Télécharger", pri: true, fn: startDownload }
+      ]);
+    }
+    function askDelete() {
+      showBanner("confirm", "Supprimer les audios téléchargés de ce cours (" + mo() + ") ? Vous pourrez toujours les écouter en ligne.", [
+        { label: "Annuler", fn: hideBanner },
+        { label: "Supprimer", pri: true, fn: doDelete }
+      ]);
+    }
+
+    function startDownload() {
+      if (dl.busy || !store) return;
+      dl.busy = true; dl.cancel = false;
+      var total = CFG.available.length, done = 0, quota = false, fails = 0, todo = [];
+      store.list().then(function (have) {
+        CFG.available.forEach(function (n) { if (have.indexOf(n) < 0) todo.push(n); });
+        done = total - todo.length;
+        function paint() {
+          var msg = "Téléchargement des audios : " + done + " / " + total;
+          if (bnMode === "progress") {                  // met à jour sans recréer les boutons (sinon un appui peut être perdu)
+            txtEl.textContent = msg; barI.style.width = Math.round(done / total * 100) + "%";
+          } else {
+            showBanner("progress", msg, [
+              { label: "Annuler", fn: function () { dl.cancel = true; } }
+            ], Math.round(done / total * 100));
+          }
+        }
+        paint();
+        function worker() {
+          if (dl.cancel || quota || !todo.length) return Promise.resolve();
+          var n = todo.shift();
+          return store.put(n).then(function () { done++; paint(); }).catch(function (e) {
+            if (e && (e.name === "QuotaExceededError" || /quota/i.test(String(e.message)))) quota = true;
+            fails++;
+          }).then(worker);
+        }
+        return Promise.all([worker(), worker()]);
+      }).catch(function () { fails++; }).then(function () {
+        dl.busy = false;
+        refreshCacheState(function () {
+          if (dl.state === "full") flash("✓ Audios téléchargés : le cours se lit maintenant sans internet.");
+          else if (dl.cancel) flash("Téléchargement interrompu (" + dl.cached + " / " + total + "). Vous pourrez reprendre plus tard.");
+          else showBanner("error", quota ? "Espace insuffisant sur l'appareil. Libérez de la place puis réessayez."
+            : "Certains audios n'ont pas pu être téléchargés (connexion ?).", [
+            { label: "Fermer", fn: hideBanner }, { label: "Réessayer", pri: true, fn: startDownload }
+          ]);
+        });
+      });
+    }
+    function doDelete() {
+      if (!store) return;
+      Promise.all(CFG.available.map(function (n) { return store.del(n); })).catch(function () {}).then(function () {
+        lsDel(LATER);
+        refreshCacheState(function () { flash("Audios supprimés de cet appareil."); });
+      });
+    }
+
+    dlBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (dl.busy) return;
+      if (dl.state === "full") askDelete(); else askDownload(false);
+    });
+
+    // ====================================================================
+    //  Voix intégrée au téléphone (hors ligne, sans limite)
+    // ====================================================================
+    function pickVoice(lang) {
+      var vs = [];
+      try { vs = synth.getVoices() || []; } catch (e) {}
+      var pre = lang === "en" ? "en" : "fr", best = null;
+      for (var k = 0; k < vs.length; k++) {
+        var v = vs[k];
+        if ((v.lang || "").toLowerCase().indexOf(pre) !== 0) continue;
+        if (!best || (v.localService && !best.localService)) best = v;
+      }
+      return best;
+    }
+    function hardSplit(text, max) {
+      var out = [];
+      while (text.length > max) {
+        var cut = text.lastIndexOf(" ", max);
+        if (cut < 40) cut = max;
+        out.push(text.slice(0, cut)); text = text.slice(cut).replace(/^\s+/, "");
+      }
+      if (text) out.push(text);
+      return out;
+    }
+    function buildChunks(segs) {                  // morceaux courts : évite l'arrêt des longs textes sur Chrome
+      var out = [];
+      segs.forEach(function (s) {
+        var cur2 = "", parts = s[1].match(/[^.!?;:]+[.!?;:]*\s*/g) || [s[1]];
+        parts.forEach(function (p) {
+          if (cur2 && (cur2 + p).length > 160) { out.push({ lang: s[0], text: cur2.trim() }); cur2 = p; }
+          else cur2 += p;
+        });
+        if (cur2.trim()) out.push({ lang: s[0], text: cur2.trim() });
+      });
+      var res = [];
+      out.forEach(function (c) { hardSplit(c.text, 190).forEach(function (t) { res.push({ lang: c.lang, text: t }); }); });
+      return res;
+    }
+    function speakFrom(tk) {
+      if (tk !== st.token) return;
+      if (st.ci >= st.chunks.length) {
+        st.speaking = false; st.mode = null; st.ci = 0; setIcon(false);
+        if (st.auto) goNext();
+        return;
+      }
+      var c = st.chunks[st.ci];
+      var u = new SpeechSynthesisUtterance(c.text);
+      u.lang = c.lang === "en" ? "en-US" : "fr-FR";
+      var v = pickVoice(c.lang);
+      if (v) { u.voice = v; u.lang = v.lang; }
+      u.rate = 0.95;
+      u.onend = function () { if (tk !== st.token) return; st.ci++; speakFrom(tk); };
+      u.onerror = function () { if (tk !== st.token) return; st.speaking = false; setIcon(false); st.auto = false; };
+      synth.speak(u);
+    }
+    function startTts(from) {
+      st.token++;
+      var tk = st.token;
+      st.mode = "tts"; st.speaking = true; st.ci = from || 0; setIcon(true);
+      var busy = false;
+      try { busy = synth.speaking || synth.pending; synth.cancel(); } catch (e) {}
+      if (busy) setTimeout(function () { speakFrom(tk); }, 120);   // laisse cancel() se terminer
+      else speakFrom(tk);                                          // sinon tout de suite (exigé par iOS)
+    }
+    function playVoice() {
+      if (!(synth && fb(st.idx))) { st.auto = false; return false; }
+      if (!st.chunks.length) st.chunks = buildChunks(fb(st.idx));
+      startTts(st.ci);
+      return true;
+    }
+
+    // ====================================================================
+    //  Lecture
+    // ====================================================================
+    function freeBlob() { if (st.blobUrl) { try { URL.revokeObjectURL(st.blobUrl); } catch (e) {} st.blobUrl = null; } }
+    function stopAll() {
+      st.playTok++;
+      try { audio.pause(); audio.currentTime = 0; } catch (e) {}
+      st.token++;
+      try { if (synth) synth.cancel(); } catch (e) {}
+      st.speaking = false; st.mode = null; st.chunks = []; st.ci = 0;
+      setIcon(false);
+    }
+    function pauseNow() {
+      if (st.mode === "mp3") audio.pause();
+      else if (st.mode === "tts") {
+        st.token++;
+        try { synth.cancel(); } catch (e) {}
+        st.speaking = false; setIcon(false);      // st.ci conservé : la reprise repart de la phrase en cours
+      }
+    }
+    function startAudio(src, tok) {
+      if (tok !== st.playTok) return;
+      if (audio.getAttribute("data-src") !== src) { audio.setAttribute("data-src", src); audio.src = src; }
+      var p = audio.play();
+      if (p && p.catch) p.catch(function (err) {
+        console.warn("ECOLIA audio :", err);
+        if (tok !== st.playTok) return;
+        if (!(err && err.name === "NotAllowedError") && playVoice()) return;   // lecture impossible : voix du téléphone
+        setIcon(false); st.auto = false;
+      });
+    }
+    function playCurrent() {
+      var i = st.idx;
+      if (hasMp3(i)) {
+        var tok = ++st.playTok, u = urlN(i + 1);
+        st.mode = "mp3";
+        if (!navigator.onLine && dl.state === "none") { st.mode = null; if (playVoice()) return; }   // hors ligne et non téléchargé
+        if (store && dl.state !== "none") {                     // téléchargé : lecture locale, sans réseau
+          store.get(i + 1)
+            .then(function (b) {
+              if (tok !== st.playTok) return;
+              if (b) { freeBlob(); st.blobUrl = URL.createObjectURL(new Blob([b], { type: "audio/mpeg" })); startAudio(st.blobUrl, tok); }
+              else startAudio(u, tok);
+            }).catch(function () { startAudio(u, tok); });
+        } else startAudio(u, tok);                              // sinon lecture en ligne (appel immédiat, exigé par iOS)
+      } else if (!playVoice()) {
+        st.auto = false;
+      }
+    }
+
+    function onSlideChange(i) {
+      var wasAdvancing = st.advancing;
+      st.advancing = false;
+      st.idx = i;
+      btn.classList.toggle("ecolia-off", !hasAudio(i));
+      stopAll();
+      audio.removeAttribute("data-src");
+      freeBlob();
+      if (bnMode === "invite" && i !== 0) hideBanner();       // l'invitation n'apparaît qu'à la première slide
+      if (wasAdvancing && st.auto) setTimeout(playCurrent, 500);   // enchaînement automatique
+      else st.auto = false;                                         // changement manuel : on coupe tout
+    }
+    function goNext() {
+      if (st.idx + 1 >= CFG.count) { st.auto = false; return; }
+      st.advancing = true;
+      if (typeof nextSlide === "function") nextSlide();
+      else { var nb = document.getElementById("nextBtn"); if (nb) nb.click(); }
+      setTimeout(function () { st.advancing = false; }, 4000);
+    }
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var i = cur();
+      if (i !== st.idx) onSlideChange(i);
+      if (isPlaying()) { st.auto = false; pauseNow(); }
+      else { st.auto = true; playCurrent(); }
+    });
+    audio.addEventListener("play", function () { setIcon(true); });
+    audio.addEventListener("pause", function () { if (st.mode === "mp3") setIcon(false); });
+    audio.addEventListener("error", function () {
+      if (st.mode === "mp3" && playVoice()) return;            // fichier introuvable / hors ligne : voix du téléphone
+      setIcon(false); st.auto = false;
+    });
+    audio.addEventListener("ended", function () { setIcon(false); if (st.auto) goNext(); });
+    window.addEventListener("pagehide", function () { stopAll(); freeBlob(); });
+
+    // ---------- démarrage ----------
+    refreshCacheState(function () {
+      if (store && CFG.available.length && dl.state !== "full" && navigator.onLine && cur() === 0 && !lsGet(LATER)) askDownload(true);
+    });
+    st.idx = -1;
+    setInterval(function () { var i = cur(); if (i !== st.idx) onSlideChange(i); }, 250);   // suit la slide affichée
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+<!-- ECOLIA_AUDIO_PLAYER_END -->
+</body>
+</html>

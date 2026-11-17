@@ -1,0 +1,2060 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="rouge">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>ECOLIA — Dessin Batiment D A O4</title>
+<style>
+[data-theme="bleu"]   { --p1:#0d2b4f; --p2:#1565c0; --p3:#07172e; --p4:#12437a; --p5:#5b8fd0; --bg:#e8f0fb; --bg2:#cfdff5; --bd:#a9c3e8; --soft:#dde8f7; --btn:#2a67b0; }
+[data-theme="vert"]   { --p1:#14442e; --p2:#2e7d32; --p3:#0b2b1a; --p4:#1f5c3a; --p5:#4f9a6b; --bg:#e8f5ec; --bg2:#c8e6d2; --bd:#a5cdb2; --soft:#dcefe2; --btn:#2f7a4f; }
+[data-theme="violet"] { --p1:#2d1b4e; --p2:#6a1b9a; --p3:#1a0f2e; --p4:#4a148c; --p5:#9c6fd0; --bg:#f1e9fb; --bg2:#dccbf2; --bd:#c4a8e6; --soft:#e8ddf6; --btn:#7e3fb2; }
+[data-theme="rouge"]  { --p1:#4a1010; --p2:#b71c1c; --p3:#2b0a0a; --p4:#8e1b1b; --p5:#d9706a; --bg:#fbeaea; --bg2:#f3cdcb; --bd:#e8a9a5; --soft:#f8dede; --btn:#a62a2a; }
+[data-theme="orange"] { --p1:#4e2a0c; --p2:#ef6c00; --p3:#2e1604; --p4:#b34a00; --p5:#f0a15a; --bg:#fff1e0; --bg2:#fbdcb8; --bd:#f3c08a; --soft:#fdebd6; --btn:#c9650a; }
+[data-theme="teal"]   { --p1:#0b3a3a; --p2:#00796b; --p3:#062626; --p4:#00574b; --p5:#4db6ac; --bg:#e0f2f1; --bg2:#b2dfdb; --bd:#80cbc4; --soft:#d5ecea; --btn:#26897d; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:linear-gradient(160deg,var(--p1) 0%,var(--p2) 50%,var(--p3) 100%); display:flex; justify-content:center; align-items:center; padding:8px; }
+.container { width:100%; max-width:1400px; background:#fefdf8; border-radius:20px; overflow:hidden; display:flex; flex-direction:column; height:100%; max-height:100vh; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.progress-bar { height:4px; background:var(--bg2); flex-shrink:0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--p5),var(--p4)); width:0%; transition:width 0.3s; }
+.header { padding:10px 16px; background:var(--bg); border-bottom:1px solid var(--bd); display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+.header h1 { color:var(--p4); font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box { display:flex; background:white; border-radius:20px; padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.search-box input { border:none; padding:6px 10px; border-radius:20px; outline:none; width:130px; font-size:0.8rem; }
+.search-box button { background:none; border:none; cursor:pointer; padding:4px 8px; font-size:0.85rem; color:var(--p2); }
+.badge { background:var(--p5); color:white; padding:4px 10px; border-radius:20px; font-weight:bold; font-size:0.75rem; }
+.search-nav { display:none; gap:4px; background:var(--bg2); padding:2px 8px; border-radius:20px; align-items:center; font-size:0.75rem; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:0.9rem; color:var(--p4); padding:2px 4px; }
+.content { padding:28px 32px; flex:1; overflow-y:auto; background:#fff; scroll-behavior:smooth; line-height:1.85; }
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.slide-title { color:var(--p1); font-size:1.5rem; font-weight:700; padding-bottom:12px; margin-bottom:20px; border-bottom:2px solid var(--p5); }
+.slide-content { color:var(--p3); font-size:1rem; }
+.empty-state { display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-height:60vh; padding:40px 20px; gap:18px; }
+.empty-state .icon { width:72px; height:72px; border-radius:50%; background:var(--bg); border:2px solid var(--bd); display:flex; align-items:center; justify-content:center; color:var(--p2); font-size:2rem; font-weight:300; }
+.empty-state h2 { color:var(--p1); font-size:1.4rem; font-weight:700; margin:0; }
+.empty-state p { color:#666; font-size:0.95rem; max-width:520px; line-height:1.7; }
+.empty-state .tag { display:inline-block; padding:6px 14px; background:var(--bg); color:var(--p4); border:1px solid var(--bd); border-radius:20px; font-size:0.8rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; }
+.bloc { padding:18px 22px; border-radius:12px; margin:22px 0; line-height:1.85; }
+.bloc-label { font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; opacity:0.7; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:var(--bg); border-left:4px solid var(--p5); }
+.theorie .bloc-label { color:var(--p4); }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.sources { background:#f5f5f5; padding:12px 16px; border-radius:10px; margin-top:26px; font-size:0.82rem; color:#666; border-left:3px solid #999; line-height:1.6; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:var(--p1); }
+.quiz-container { padding:22px; background:var(--bg); border-radius:16px; }
+.quiz-question { background:white; border-radius:10px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.quiz-question p { font-weight:600; margin-bottom:10px; color:var(--p1); }
+.quiz-question label { display:block; padding:8px 10px; margin:4px 0; border-radius:6px; cursor:pointer; transition:background 0.2s; }
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit { background:var(--btn); color:white; border:none; padding:12px 24px; border-radius:30px; font-size:1rem; cursor:pointer; font-weight:600; margin-top:14px; }
+.quiz-result { margin-top:16px; font-weight:600; }
+.controls { padding:8px 16px; background:#fafafa; border-top:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0; }
+.nav-btn { background:white; color:var(--p4); border:1px solid #ccc; padding:8px 14px; border-radius:8px; font-size:0.82rem; cursor:pointer; font-weight:500; }
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:var(--soft); }
+.content::-webkit-scrollbar-thumb { background:var(--p5); border-radius:3px; }
+@media (max-width:600px) { body { padding:0; } .container { border-radius:0; max-height:100vh; } .content { padding:20px 18px; } .slide-title { font-size:1.25rem; } .search-box input { width:90px; } .header h1 { font-size:0.85rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="header">
+<h1 id="pageTitle">ECOLIA</h1>
+<div class="header-right">
+<div class="search-box">
+<input id="searchInput" placeholder="Rechercher" type="text"/>
+<button id="searchBtn">⌕</button>
+</div>
+<div class="search-nav" id="searchNav">
+<button id="prevResultBtn">‹</button>
+<span id="resultCounter">0/0</span>
+<button id="nextResultBtn">›</button>
+</div>
+<span class="badge" id="slideCounter">0/0</span>
+</div>
+</div>
+<div class="content" id="content"></div>
+<div class="controls">
+<button class="nav-btn" id="prevBtn">← Précédent</button>
+<span class="counter" id="counter">—</span>
+<button class="nav-btn" id="nextBtn">Suivant →</button>
+</div>
+</div>
+<script>
+const COURSE_TITLE = "Dessin de Bâtiment et DAO (Dessin Assisté par Ordinateur)";
+const slides = [
+  {
+    title: "Sommaire — Dessin de Bâtiment et DAO",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Présentation du cours</div>
+        <h3>Bienvenue en Dessin de Bâtiment et DAO</h3>
+        <p>Ce cours de 4<sup>e</sup> année des Humanités Techniques Industrielles vous prépare à <strong>lire, comprendre et produire des plans de bâtiment et de génie civil</strong>. Vous apprendrez les normes du dessin technique (formats, échelles, cotation, symboles), la lecture des plans (situation, masse, fondation, étage, façade, coupe, détail), la production manuelle, puis l'utilisation d'un <strong>logiciel de DAO (Dessin Assisté par Ordinateur)</strong> pour dessiner, modifier, coter et imprimer des plans professionnels.</p>
+        <p>La DAO est aujourd'hui incontournable dans les bureaux d'études, les cabinets d'architecture et les entreprises de construction. Un technicien A2 qui maîtrise le dessin de bâtiment et un logiciel de DAO est un atout précieux pour la conception, l'exécution et le contrôle des ouvrages en RDC.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Objectifs d'apprentissage</div>
+        <ul>
+          <li>Appliquer les normes du dessin de bâtiment (formats, échelles, traits, cotation, symboles, hachures).</li>
+          <li>Lire et interpréter tous les types de plans (situation, masse, fondation, étage, façade, coupe, détail).</li>
+          <li>Produire des plans de bâtiment à la main.</li>
+          <li>Utiliser un logiciel de DAO pour dessiner, modifier et coter.</li>
+          <li>Produire des plans de coffrage et de ferraillage.</li>
+          <li>Réaliser des métrés à partir des plans.</li>
+          <li>Imprimer et présenter un dossier graphique complet.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Plan du cours</div>
+        <ol>
+          <li>Chapitre I — Les normes du dessin de bâtiment</li>
+          <li>Chapitre II — Les plans de bâtiment</li>
+          <li>Chapitre III — Le dessin de bâtiment à la main</li>
+          <li>Chapitre IV — Les plans de génie civil</li>
+          <li>Chapitre V — Introduction à la DAO</li>
+          <li>Chapitre VI — La production de plans avec DAO</li>
+          <li>Chapitre VII — Les métrés assistés</li>
+          <li>Chapitre VIII — Projet et dossier graphique</li>
+        </ol>
+      </div>
+
+      <div class="sources">
+        <div class="bloc-label">Sources du cours</div>
+        <p>Programme National de l'Enseignement Technique, option Construction, Cycle Long (EPSP/EDIDEPS, 2007) ; Fiches pédagogiques officielles <em>Dessin de Génie Civil</em> et <em>Initiation à l'Informatique</em>, 4<sup>e</sup> année, option Construction (Édition 2025) ; normes ISO de dessin technique ; manuels AutoCAD et LibreCAD.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Pourquoi le dessin de bâtiment et la DAO ?",
+    content: `
+      <div class="bloc cas">
+        <div class="bloc-label">Situation-problème</div>
+        <h3>Une école à concevoir et à construire à Kinshasa</h3>
+        <p>Un bureau d'études de Kinshasa reçoit la commande d'une école primaire de six salles de classe. Le chef de projet convoque un technicien A2 et lui demande : « Peux-tu dessiner le plan d'étage et la coupe, calculer les surfaces et préparer le dossier graphique pour le chantier ? »</p>
+        <p>Sans dessin, pas de construction possible : le maçon ne saura pas où monter les murs, l'électricien ne saura pas où passer les câbles, le métreur ne saura pas combien de matériaux commander. Le <strong>plan est le langage commun</strong> de tous les acteurs du chantier. La DAO permet de le produire rapidement, proprement et de le modifier facilement.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le dessin, langage universel du bâtiment</h3>
+        <p>Le <strong>dessin de bâtiment</strong> est la représentation graphique normalisée d'un ouvrage (bâtiment, infrastructure). Il permet :</p>
+        <ul>
+          <li>de <strong>concevoir</strong> l'ouvrage (esquisse, avant-projet) ;</li>
+          <li>de <strong>chiffrer</strong> les quantités et les coûts (métrés, devis) ;</li>
+          <li>d'<strong>exécuter</strong> les travaux (plans d'exécution) ;</li>
+          <li>de <strong>contrôler</strong> la conformité.</li>
+        </ul>
+        <p>La <strong>DAO (Dessin Assisté par Ordinateur)</strong> remplace progressivement le dessin à la main dans les bureaux d'études : elle est plus précise, plus rapide, plus facile à modifier et à dupliquer.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Dessin = langage commun de tous les acteurs du chantier.</li>
+          <li>Concevoir, chiffrer, exécuter, contrôler.</li>
+          <li>DAO : précision, rapidité, facilité de modification.</li>
+          <li>Compétence très recherchée en RDC.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Les formats et les échelles",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les formats de papier</h3>
+        <p>Les formats de dessin sont normalisés (norme ISO 216). Le format de base est le <strong>A0</strong> (1 m²). Chaque format inférieur est obtenu en divisant le précédent par deux :</p>
+        <table>
+          <thead>
+            <tr><th>Format</th><th>Dimensions (mm)</th><th>Surface</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>A0</td><td>841 × 1189</td><td>1 m²</td></tr>
+            <tr><td>A1</td><td>594 × 841</td><td>0,5 m²</td></tr>
+            <tr><td>A2</td><td>420 × 594</td><td>0,25 m²</td></tr>
+            <tr><td>A3</td><td>297 × 420</td><td>0,125 m²</td></tr>
+            <tr><td>A4</td><td>210 × 297</td><td>0,0625 m²</td></tr>
+          </tbody>
+        </table>
+        <p>En atelier et sur chantier, on utilise surtout le <strong>A3</strong> (pour les plans détaillés) et le <strong>A4</strong> (pour les notes et les vues rapides).</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les échelles</div>
+        <p>L'<strong>échelle</strong> est le rapport entre la dimension sur le plan et la dimension réelle :</p>
+        <p><strong>Échelle = Dimension sur le plan / Dimension réelle</strong></p>
+        <table>
+          <thead>
+            <tr><th>Échelle</th><th>Usage typique</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1/200</td><td>Plan de masse, plan de situation</td></tr>
+            <tr><td>1/100</td><td>Plan d'étage, plan de fondation</td></tr>
+            <tr><td>1/50</td><td>Plan de détail, sanitaires, escaliers</td></tr>
+            <tr><td>1/20 ou 1/10</td><td>Détails de ferraillage, assemblages</td></tr>
+          </tbody>
+        </table>
+        <p>Le format 1/100 est le plus courant en bâtiment : <strong>1 cm sur le plan = 1 m réel</strong>.</p>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Exemple corrigé</div>
+        <p><strong>Donnée :</strong> un mur de 5 m de long sur un plan au 1/100.<br>
+        <strong>Question :</strong> quelle longueur sur le papier ?<br>
+        <strong>Calcul :</strong> 5 m = 500 cm réels ÷ 100 = <strong>5 cm</strong>.<br>
+        <strong>Interprétation :</strong> le mur sera dessiné sur 5 cm de long. Inversement, un segment de 5 cm sur le plan au 1/100 représente 5 m réels.</p>
+      </div>
+
+      <figure>
+        <img data-image-id="dessinbatimentdao4_img01" alt="Comparaison des échelles 1/100, 1/50 et 1/200 sur un même plan de bâtiment.">
+        <figcaption>Les échelles du dessin de bâtiment.</figcaption>
+      </figure>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Formats normalisés : A0 à A4 ; A3 et A4 en atelier.</li>
+          <li>Échelles : 1/200, 1/100, 1/50, 1/20.</li>
+          <li>1/100 : 1 cm = 1 m réel.</li>
+          <li>Toujours vérifier l'échelle avant de mesurer.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Les traits et les écritures",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les quatre types de traits</h3>
+        <table>
+          <thead>
+            <tr><th>Type de trait</th><th>Représentation</th><th>Usage</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Trait fort continu</strong></td><td>Épais et plein</td><td>Contours et arêtes vues (murs, éléments structurels).</td></tr>
+            <tr><td><strong>Trait fin continu</strong></td><td>Mince et plein</td><td>Cotation, hachures, lignes de rappel, texte.</td></tr>
+            <tr><td><strong>Trait interrompu</strong></td><td>Pointillés</td><td>Arêtes cachées (éléments en dessous ou à l'intérieur).</td></tr>
+            <tr><td><strong>Trait mixte</strong></td><td>Longs traits et points alternés</td><td>Axes de symétrie, axes de repérage.</td></tr>
+          </tbody>
+        </table>
+        <p>L'épaisseur des traits doit être <strong>homogène</strong> : un trait fort est généralement 2 fois plus épais qu'un trait fin. Un plan aux traits incohérents est illisible et mal interprété.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les écritures</div>
+        <p>Les écritures doivent être :</p>
+        <ul>
+          <li><strong>lisibles</strong> : grandeur suffisante (2 à 5 mm selon la cote) ;</li>
+          <li><strong>normalisées</strong> : lettres droites, chiffres identiques ;</li>
+          <li><strong>en majuscules</strong> pour les titres et les légendes importantes ;</li>
+          <li><strong>en minuscules</strong> pour les annotations courantes.</li>
+        </ul>
+        <p>En DAO, on utilise des styles de texte normalisés (par exemple ISOCP, Arial, ROMANS) qui garantissent la lisibilité à l'impression.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Utiliser le <strong>mauvais trait</strong> pour représenter un élément. Par exemple : dessiner un mur en trait fin ou une cote en trait fort. Résultat : le plan devient ambigu ; le lecteur ne sait pas ce qui est structurel, ce qui est caché, ce qui est coté. <strong>Chaque trait a un rôle précis.</strong></p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Fort : contours vus.</li>
+          <li>Fin : cotation, hachures.</li>
+          <li>Interrompu : arêtes cachées.</li>
+          <li>Mixte : axes.</li>
+          <li>Écritures lisibles et normalisées.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — La cotation et les symboles",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>La cotation</h3>
+        <p>La <strong>cotation</strong> indique les dimensions réelles de l'ouvrage sur le plan. Ses règles :</p>
+        <ul>
+          <li>Les cotes sont exprimées en <strong>millimètres</strong> (sauf indication contraire).</li>
+          <li>Les <strong>lignes de cote</strong> sont fines, terminées par des flèches.</li>
+          <li>Les <strong>lignes de rappel</strong> prolongent les arêtes mesurées.</li>
+          <li>Les chiffres sont placés <strong>au-dessus</strong> de la ligne de cote (ou dans son prolongement).</li>
+          <li>Les cotes doivent être <strong>complètes</strong> (toutes les dimensions utiles) et <strong>non redondantes</strong> (pas de double cote d'une même dimension).</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les symboles du bâtiment</div>
+        <table>
+          <thead>
+            <tr><th>Élément</th><th>Symbole conventionnel</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Porte</td><td>Ouverture dans le mur + arc de cercle (sens d'ouverture) + trait droit (battant).</td></tr>
+            <tr><td>Fenêtre</td><td>Ouverture rectangulaire + double trait (représentant les vitrages).</td></tr>
+            <tr><td>Escalier</td><td>Suite de marches + flèche indiquant le sens de montée.</td></tr>
+            <tr><td>Sanitaires</td><td>Symboles normalisés (WC, lavabo, baignoire, évier).</td></tr>
+            <tr><td>Appareils électriques</td><td>Symboles normalisés (prise, interrupteur, luminaire).</td></tr>
+            <tr><td>Ventilation</td><td>Grille ou bouche avec flèche.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Une cote <strong>manquante</strong> rend le plan inutilisable : le maçon ne sait pas quelle longueur de mur monter. Une cote <strong>redondante</strong> (par exemple écrire la même longueur sur deux vues) peut créer des contradictions si les deux valeurs diffèrent. <strong>La cotation doit être exhaustive et cohérente.</strong></p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Cotes en mm, lignes fines, flèches, chiffres au-dessus.</li>
+          <li>Exhaustives et non redondantes.</li>
+          <li>Symboles : portes, fenêtres, escaliers, sanitaires.</li>
+          <li>Un plan sans cotes est inutilisable.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Les hachures",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Représenter les matériaux</h3>
+        <p>Les <strong>hachures</strong> sont des motifs graphiques qui représentent les matériaux en coupe. Elles sont normalisées (norme ISO 128) pour éviter les confusions :</p>
+        <table>
+          <thead>
+            <tr><th>Matériau</th><th>Hachures conventionnelles</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Béton non armé</td><td>Petits triangles ou mouchetés.</td></tr>
+            <tr><td>Béton armé</td><td>Mouchetés avec de petits cercles (aciers).</td></tr>
+            <tr><td>Briques / maçonnerie</td><td>Traits obliques à 45°.</td></tr>
+            <tr><td>Bois</td><td>Traits ondulés ou fibres.</td></tr>
+            <tr><td>Acier</td><td>Traits fins serrés, orientés.</td></tr>
+            <tr><td>Terre / remblai</td><td>Petits traits obliques croisés.</td></tr>
+            <tr><td>Isolant</td><td>Motif en zigzag ou en vagues.</td></tr>
+          </tbody>
+        </table>
+        <p>L'échelle des hachures doit être <strong>adaptée</strong> au plan : trop serrées, elles deviennent illisibles ; trop espacées, elles ne représentent plus rien.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Rôle pédagogique</div>
+        <p>Sur une coupe, les hachures permettent d'identifier immédiatement les matériaux utilisés (béton armé, brique, isolant). Sur un plan de ferraillage, des cercles pleins représentent les aciers. Un plan bien hachuré se lit d'un coup d'œil ; un plan sans hachures demande des annotations partout.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Hachures = matériaux en coupe.</li>
+          <li>Normalisées : béton, brique, bois, acier, terre.</li>
+          <li>Échelle adaptée au plan.</li>
+          <li>Lisibilité immédiate.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — Plan de situation et plan de masse",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le plan de situation</h3>
+        <p>Le <strong>plan de situation</strong> (échelle 1/500 à 1/2000) montre <strong>l'emplacement du bâtiment</strong> dans son environnement :</p>
+        <ul>
+          <li>la parcelle et ses limites ;</li>
+          <li>les voies de circulation (rues, routes) ;</li>
+          <li>les bâtiments voisins ;</li>
+          <li>l'orientation (rose des vents, nord).</li>
+        </ul>
+        <p>Il permet de situer le projet dans la ville ou le quartier, de vérifier l'accès et l'orientation.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Le plan de masse</div>
+        <p>Le <strong>plan de masse</strong> (échelle 1/200 à 1/500) montre <strong>l'implantation du bâtiment sur la parcelle</strong> :</p>
+        <ul>
+          <li>la position du bâtiment sur le terrain (reculs, limites) ;</li>
+          <li>les accès (portails, allées) ;</li>
+          <li>les terrassements et les aménagements extérieurs ;</li>
+          <li>les réseaux (eau, électricité, assainissement) ;</li>
+          <li>les arbres, les zones vertes, les parkings.</li>
+        </ul>
+        <p>Il sert à positionner l'ouvrage sur le terrain, à préparer le chantier et à vérifier la conformité aux règles d'urbanisme.</p>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Confondre <strong>plan de situation</strong> et <strong>plan de masse</strong>. Le premier situe le terrain dans la ville (environnement large) ; le second implante le bâtiment sur la parcelle (échelle du terrain). Le plan de situation est à petite échelle (1/2000) ; le plan de masse à plus grande échelle (1/200 à 1/500).</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Plan de situation : emplacement dans la ville (1/500 à 1/2000).</li>
+          <li>Plan de masse : implantation sur le terrain (1/200 à 1/500).</li>
+          <li>Reculs, accès, réseaux, aménagements.</li>
+          <li>Ne pas confondre les deux échelles.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — Plan de fondation et plan d'étage",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le plan de fondation</h3>
+        <p>Le <strong>plan de fondation</strong> (échelle 1/50 à 1/100) montre la partie enterrée de l'ouvrage :</p>
+        <ul>
+          <li>la position et les dimensions des <strong>semelles</strong> (isolées ou filantes) ;</li>
+          <li>les <strong>longrines</strong> (poutres basses) ;</li>
+          <li>les <strong>puits</strong> et <strong>pieux</strong> le cas échéant ;</li>
+          <li>les <strong>cotes d'implantation</strong> ;</li>
+          <li>les <strong>niveaux</strong> (fond de fouille, arase).</li>
+        </ul>
+        <p>C'est le plan le plus critique : une erreur ici compromet toute la structure.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Le plan d'étage</div>
+        <p>Le <strong>plan d'étage</strong> (échelle 1/50 à 1/100) est la vue de dessus du niveau, montrant :</p>
+        <ul>
+          <li>les <strong>murs</strong> (porteurs et cloisons) avec leurs épaisseurs ;</li>
+          <li>les <strong>portes</strong> (ouverture + arc) ;</li>
+          <li>les <strong>fenêtres</strong> (double trait) ;</li>
+          <li>les <strong>escaliers</strong> (marches + flèche) ;</li>
+          <li>les <strong>sanitaires</strong> et les équipements fixes ;</li>
+          <li>les <strong>cotes</strong> intérieures et extérieures ;</li>
+          <li>les <strong>niveaux</strong> de sol.</li>
+        </ul>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Application RDC</div>
+        <p>Sur un chantier à Kinshasa, le plan d'étage d'une école doit indiquer :</p>
+        <ul>
+          <li>les salles de classe de dimensions normalisées (par exemple 7 × 8 m) ;</li>
+          <li>les couloirs de circulation (largeur 1,50 m minimum) ;</li>
+          <li>les escaliers et les sorties de secours ;</li>
+          <li>les sanitaires (adaptés au nombre d'élèves) ;</li>
+          <li>les fenêtres (ventilation et éclairage naturels).</li>
+        </ul>
+        <p>Le plan d'étage sert de base à tous les corps de métier (maçonnerie, électricité, plomberie, peinture).</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Plan de fondation : semelles, longrines, puits, niveaux.</li>
+          <li>Plan d'étage : murs, portes, fenêtres, escaliers, sanitaires.</li>
+          <li>Échelle 1/50 à 1/100.</li>
+          <li>Documents de base pour tous les corps de métier.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — Façade et coupe",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>La façade (élévation)</h3>
+        <p>La <strong>façade</strong> est une vue extérieure du bâtiment, projetée sur un plan vertical. Elle montre :</p>
+        <ul>
+          <li>les <strong>murs extérieurs</strong> ;</li>
+          <li>les <strong>ouvertures</strong> (portes, fenêtres) et leur position en hauteur ;</li>
+          <li>les <strong>toitures</strong> (pente, matériau) ;</li>
+          <li>les <strong>modénatures</strong> (corniches, bandeaux) ;</li>
+          <li>les <strong>niveaux</strong> (hauteur d'étage, hauteur totale).</li>
+        </ul>
+        <p>On distingue la <strong>façade principale</strong> (souvent celle de l'entrée) et les <strong>façades secondaires</strong> (latérales et arrière).</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">La coupe</div>
+        <p>La <strong>coupe</strong> est une vue en tranche du bâtiment selon un plan de coupe vertical. Elle montre :</p>
+        <ul>
+          <li>les <strong>niveaux</strong> (fondation, rez-de-chaussée, étages, toiture) ;</li>
+          <li>les <strong>planchers</strong> avec leur épaisseur ;</li>
+          <li>les <strong>murs</strong> coupés (hachurés selon le matériau) ;</li>
+          <li>la <strong>charpente</strong> et la couverture ;</li>
+          <li>les <strong>escaliers</strong> en coupe ;</li>
+          <li>les <strong>cotes verticales</strong> (hauteurs).</li>
+        </ul>
+        <p>La coupe complète la lecture du plan d'étage : ce que l'on voit de dessus, on le voit en tranche sur la coupe.</p>
+      </div>
+
+      <figure>
+        <img data-image-id="dessinbatimentdao4_img02" alt="Exemple de coupe de bâtiment montrant les niveaux, planchers, toiture et cotation verticale.">
+        <figcaption>La coupe : comprendre la structure du bâtiment.</figcaption>
+      </figure>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Sur une coupe, oublier de représenter les <strong>hachures de matériaux</strong> ou les <strong>niveaux</strong>. Résultat : on ne sait pas si le mur est en brique ou en béton, ni à quelle hauteur se trouve chaque plancher. La coupe doit être <strong>complète et cotée</strong> en hauteur.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Façade = vue extérieure (murs, ouvertures, toiture).</li>
+          <li>Coupe = vue en tranche (niveaux, planchers, hachures).</li>
+          <li>Complémentaires du plan d'étage.</li>
+          <li>Cotation verticale obligatoire sur la coupe.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre IV — Plans de coffrage et de ferraillage",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Deux plans complémentaires</h3>
+        <p>Pour les ouvrages en béton armé, deux plans sont indispensables :</p>
+        <table>
+          <thead>
+            <tr><th>Plan</th><th>Contenu</th><th>Utilisé par</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Plan de coffrage</strong></td><td>Forme, dimensions et position des éléments à couler (poteaux, poutres, planchers, voiles). Épaisseurs, réservations, niveaux.</td><td>Coffreur.</td></tr>
+            <tr><td><strong>Plan de ferraillage</strong></td><td>Position, diamètre, espacement et longueur des armatures. Nomenclature des aciers, recouvrements, ancrages.</td><td>Ferrailleur.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <figure>
+        <img data-image-id="dessinbatimentdao4_img03" alt="Plan de ferraillage d'une poutre en béton armé montrant la position des armatures longitudinales et des étriers.">
+        <figcaption>Le plan de ferraillage : position des aciers.</figcaption>
+      </figure>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Contenu détaillé</div>
+        <p><strong>Plan de coffrage</strong> :</p>
+        <ul>
+          <li>plan de repérage des poteaux (numéro, dimensions) ;</li>
+          <li>vue en plan des poutres (largeur, hauteur) ;</li>
+          <li>coupe transversale type ;</li>
+          <li>niveaux de fond de coffrage et d'arase.</li>
+        </ul>
+        <p><strong>Plan de ferraillage</strong> :</p>
+        <ul>
+          <li>nombre, diamètre et longueur des barres (aciers longitudinaux) ;</li>
+          <li>position et espacement des étriers ou cadres ;</li>
+          <li>recouvrements et ancrages ;</li>
+          <li>nomenclature (tableau récapitulatif des aciers).</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Négliger la <strong>coordination entre coffrage et ferraillage</strong>. Un acier mal positionné peut ne pas tenir dans le coffrage prévu, ou pire, être trop près du parement (enrobage insuffisant) → corrosion prématurée. Le ferrailleur et le coffreur doivent travailler à partir des deux plans simultanément.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Coffrage = forme (coffreur).</li>
+          <li>Ferraillage = aciers (ferrailleur).</li>
+          <li>Les deux plans sont complémentaires.</li>
+          <li>Coordination obligatoire.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — Le dessin de bâtiment à la main",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les instruments du dessinateur</h3>
+        <ul>
+          <li><strong>Planche à dessin</strong> : surface plane sur laquelle on fixe la feuille.</li>
+          <li><strong>Règle parallèle</strong> ou <strong>té</strong> : pour tracer des horizontales.</li>
+          <li><strong>Équerre 45° et 30/60°</strong> : pour tracer les angles et les perpendiculaires.</li>
+          <li><strong>Compas</strong> : pour tracer cercles et arcs.</li>
+          <li><strong>Rapporteur</strong> : pour les angles quelconques.</li>
+          <li><strong>Crayons</strong> : H (dur, traits fins), HB (traits moyens), B (tendre, traits gras).</li>
+          <li><strong>Gomme</strong> : pour corriger.</li>
+          <li><strong>Papier calque</strong> : pour superposer et reproduire.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">La réalisation d'un plan d'étage à la main</div>
+        <ol>
+          <li><strong>Préparer</strong> la feuille (bordure, cartouche, orientation).</li>
+          <li><strong>Tracer les axes</strong> des murs avec le trait mixte.</li>
+          <li><strong>Tracer les murs</strong> avec le trait fort (épaisseurs).</li>
+          <li><strong>Placer les ouvertures</strong> : portes (ouverture + arc), fenêtres (double trait).</li>
+          <li><strong>Dessiner les escaliers</strong> (marches + flèche).</li>
+          <li><strong>Dessiner les sanitaires</strong> (symboles normalisés).</li>
+          <li><strong>Coter</strong> les dimensions intérieures et extérieures.</li>
+          <li><strong>Ajouter la légende</strong> et le cartouche.</li>
+        </ol>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">La réalisation d'une coupe à la main</div>
+        <ol>
+          <li>Choisir le <strong>plan de coupe</strong> (souvent transversal pour voir les niveaux).</li>
+          <li>Tracer les <strong>niveaux</strong> horizontaux (sol, planchers, toiture).</li>
+          <li>Représenter les <strong>murs coupés</strong> (hachures du matériau).</li>
+          <li>Dessiner la <strong>charpente</strong> et la couverture.</li>
+          <li>Placer les <strong>escaliers</strong> en coupe.</li>
+          <li><strong>Coter</strong> les hauteurs.</li>
+        </ol>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Négliger la <strong>propreté du tracé</strong> : traits doubles, ratures, cotes illisibles, chiffres écrasés. Un plan sale est difficile à lire et sera rejeté par le chef de chantier. Le dessin à la main exige <strong>régularité et patience</strong>.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Instruments : planche, règle, équerre, compas, crayons.</li>
+          <li>Plan d'étage : axes → murs → ouvertures → escaliers → cotation.</li>
+          <li>Coupe : niveaux → murs coupés → charpente → escaliers → cotation.</li>
+          <li>Propreté du tracé indispensable.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre V — Introduction à la DAO : interface et calques",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Qu'est-ce que la DAO ?</h3>
+        <p>La <strong>DAO (Dessin Assisté par Ordinateur)</strong> est l'utilisation d'un logiciel pour produire, modifier et gérer des dessins techniques. Comparée au dessin à la main, elle offre :</p>
+        <ul>
+          <li>une <strong>précision parfaite</strong> (cotes exactes au mm) ;</li>
+          <li>une <strong>modification rapide</strong> (déplacer, copier, effacer) ;</li>
+          <li>une <strong>réutilisation</strong> d'éléments (blocs) ;</li>
+          <li>une <strong>impression homogène</strong> (épaisseurs, échelles).</li>
+        </ul>
+        <p>Logiciels courants : AutoCAD (référence professionnelle), ArchiCAD (architecture), Revit (BIM), et gratuits (FreeCAD, LibreCAD, QCAD).</p>
+      </div>
+
+      <figure>
+        <img data-image-id="dessinbatimentdao4_img04" alt="Interface d'un logiciel de DAO montrant la barre de menus, la zone de dessin, les calques et la barre d'outils.">
+        <figcaption>L'interface d'un logiciel de DAO.</figcaption>
+      </figure>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">L'interface d'un logiciel de DAO</div>
+        <ul>
+          <li><strong>Barre de menus</strong> : fichiers, édition, outils, affichage.</li>
+          <li><strong>Barre d'outils</strong> : boutons d'accès rapide aux commandes.</li>
+          <li><strong>Zone de dessin</strong> : la surface où l'on dessine.</li>
+          <li><strong>Ligne de commande</strong> : pour taper les commandes.</li>
+          <li><strong>Gestionnaire de calques</strong> : organisation des éléments.</li>
+          <li><strong>Barre d'état</strong> : coordonnées, zoom, résolution.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les calques</div>
+        <p>Un <strong>calque</strong> est une "couche" transparente sur laquelle on place des éléments d'une même catégorie (murs, portes, cotation, texte). Chaque calque a :</p>
+        <ul>
+          <li>un <strong>nom</strong> (ex. : "Murs", "Portes", "Cotation") ;</li>
+          <li>une <strong>couleur</strong> ;</li>
+          <li>un <strong>type de trait</strong> ;</li>
+          <li>une <strong>épaisseur</strong>.</li>
+        </ul>
+        <p>L'organisation en calques permet :</p>
+        <ul>
+          <li>de <strong>masquer</strong> ou d'afficher certaines catégories ;</li>
+          <li>de <strong>verrouiller</strong> les calques (éviter de modifier par erreur) ;</li>
+          <li>de <strong>modifier</strong> toutes les cotes ou tous les textes en une seule fois ;</li>
+          <li>d'<strong>imprimer</strong> facilement en noir et blanc ou en couleur.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Dessiner sans organiser les calques : tout sur un seul calque, aucune hiérarchie. Résultat : impossible de masquer les cotes, de modifier un élément sans toucher aux autres, ou d'imprimer proprement. <strong>Un plan professionnel a toujours des calques organisés.</strong></p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>DAO : précision, rapidité, réutilisation, impression homogène.</li>
+          <li>Interface : menus, outils, zone de dessin, calques.</li>
+          <li>Calques = organisation par catégorie.</li>
+          <li>Toujours organiser avant de dessiner.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre V — Les outils de dessin et de modification",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les outils de dessin</h3>
+        <table>
+          <thead>
+            <tr><th>Outil</th><th>Rôle</th><th>Commande AutoCAD</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Ligne</strong></td><td>Segment droit entre deux points.</td><td>LIGNE / LINE</td></tr>
+            <tr><td><strong>Polyligne</strong></td><td>Suite de segments et d'arcs formant une seule entité.</td><td>POLYLIGN / PLINE</td></tr>
+            <tr><td><strong>Cercle</strong></td><td>Cercle défini par centre et rayon.</td><td>CERCLE / CIRCLE</td></tr>
+            <tr><td><strong>Arc</strong></td><td>Arc de cercle par trois points ou centre + angle.</td><td>ARC / ARC</td></tr>
+            <tr><td><strong>Rectangle</strong></td><td>Rectangle par deux coins opposés.</td><td>RECTANG / RECTANG</td></tr>
+            <tr><td><strong>Texte</strong></td><td>Annotation simple ou multiligne.</td><td>TEXTE / TEXT</td></tr>
+            <tr><td><strong>Hachures</strong></td><td>Remplissage d'une zone par un motif.</td><td>HACHURE / HATCH</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les outils de modification</div>
+        <table>
+          <thead>
+            <tr><th>Outil</th><th>Rôle</th><th>Commande AutoCAD</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Déplacer</strong></td><td>Translation d'un élément.</td><td>DEPLACER / MOVE</td></tr>
+            <tr><td><strong>Copier</strong></td><td>Duplication.</td><td>COPIER / COPY</td></tr>
+            <tr><td><strong>Rotation</strong></td><td>Rotation autour d'un point.</td><td>ROTATION / ROTATE</td></tr>
+            <tr><td><strong>Échelle</strong></td><td>Homothétie (agrandir/réduire).</td><td>ECHELLE / SCALE</td></tr>
+            <tr><td><strong>Miroir</strong></td><td>Symétrie par rapport à un axe.</td><td>MIROIR / MIRROR</td></tr>
+            <tr><td><strong>Décalage</strong></td><td>Création de parallèles à distance.</td><td>DECALER / OFFSET</td></tr>
+            <tr><td><strong>Ajuster</strong></td><td>Couper ou prolonger jusqu'à une limite.</td><td>AJUSTER / TRIM</td></tr>
+            <tr><td><strong>Prolonger</strong></td><td>Étendre un élément jusqu'à une limite.</td><td>PROLONGER / EXTEND</td></tr>
+            <tr><td><strong>Raccorder</strong></td><td>Arrondir un angle (congé).</td><td>RACCORD / FILLET</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Astuce pratique</div>
+        <p>Pour dessiner les murs d'un plan, on trace d'abord les axes avec la commande <strong>DECALER</strong> (décalage de 5 cm de chaque côté pour un mur de 10 cm). On utilise ensuite <strong>AJUSTER</strong> ou <strong>PROLONGER</strong> pour fermer les angles. Cette méthode est plus rapide et plus précise que de tracer chaque mur indépendamment.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Dessin : ligne, polyligne, cercle, arc, rectangle, texte, hachures.</li>
+          <li>Modification : déplacer, copier, rotation, échelle, miroir, décalage, ajuster.</li>
+          <li>Décalage + ajuster = tracé rapide des murs.</li>
+          <li>Maîtriser les commandes = gagner du temps.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VI — Cotation, hachures et blocs en DAO",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>La cotation en DAO</h3>
+        <p>Les logiciels de DAO proposent des outils de cotation automatique :</p>
+        <ul>
+          <li><strong>Cote linéaire</strong> : distance horizontale ou verticale.</li>
+          <li><strong>Cote alignée</strong> : distance le long d'un segment quelconque.</li>
+          <li><strong>Cote angulaire</strong> : angle entre deux lignes.</li>
+          <li><strong>Cote radiale / diamétrale</strong> : rayon ou diamètre d'un arc/cercle.</li>
+        </ul>
+        <p>On définit un <strong>style de cote</strong> (taille des flèches, hauteur du texte, précision) qui garantit la cohérence de toutes les cotes du plan.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les hachures en DAO</div>
+        <p>La commande <strong>HACHURE</strong> permet de remplir une zone par un motif. On choisit :</p>
+        <ul>
+          <li>le <strong>motif</strong> (béton, brique, bois, acier) ;</li>
+          <li>l'<strong>échelle</strong> (adaptée au plan : plus le plan est grand, plus l'échelle est élevée) ;</li>
+          <li>l'<strong>angle</strong> (souvent 45°) ;</li>
+          <li>la <strong>couleur</strong> (par calque).</li>
+        </ul>
+        <p>Un bon hachurage facilite la lecture du plan en distinguant instantanément les matériaux.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les blocs en DAO</div>
+        <p>Un <strong>bloc</strong> est un ensemble d'éléments regroupés en une seule entité réutilisable. On crée des blocs pour :</p>
+        <ul>
+          <li>les <strong>portes</strong> (avec leur arc d'ouverture) ;</li>
+          <li>les <strong>fenêtres</strong> (double trait) ;</li>
+          <li>les <strong>sanitaires</strong> (WC, lavabo) ;</li>
+          <li>les <strong>symboles électriques</strong> (prise, interrupteur) ;</li>
+          <li>les <strong>meubles</strong> (tables, chaises, lits).</li>
+        </ul>
+        <p>Insérer un bloc est instantané : on le place, on le tourne, on le redimensionne. Les blocs évitent de redessiner les mêmes éléments cent fois.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Hachurer à une <strong>échelle inadaptée</strong> : les hachures deviennent si denses qu'elles forment un aplat noir, ou si espacées qu'elles ne ressemblent plus à rien. Toujours ajuster l'échelle du motif au type de plan (par exemple, hachures plus fines au 1/50 qu'au 1/200).</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Cotation : linéaire, alignée, angulaire, radiale.</li>
+          <li>Style de cote = cohérence.</li>
+          <li>Hachures : motif, échelle, angle, couleur.</li>
+          <li>Blocs : réutilisation des éléments.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VI — Mise en page et impression",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>La mise en page</h3>
+        <p>La <strong>mise en page</strong> (ou présentation, "layout" en anglais) prépare le dessin pour l'impression. Elle comporte :</p>
+        <ul>
+          <li>le choix du <strong>format</strong> (A4, A3, A2) ;</li>
+          <li>la définition de l'<strong>échelle</strong> d'impression (1/100, 1/50) ;</li>
+          <li>la disposition des <strong>vues</strong> (plan, coupe, façade) ;</li>
+          <li>le <strong>cartouche</strong> : nom du projet, échelle, date, auteur, numéro de plan ;</li>
+          <li>la <strong>légende</strong> et la <strong>nomenclature</strong>.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">L'impression</div>
+        <p>Avant d'imprimer, il faut vérifier :</p>
+        <ul>
+          <li>le <strong>format</strong> du papier (A3 pour un plan d'étage détaillé) ;</li>
+          <li>l'<strong>échelle</strong> (1/100, 1/50 selon le plan) ;</li>
+          <li>les <strong>épaisseurs de traits</strong> (trait fort pour les murs, trait fin pour les cotes) ;</li>
+          <li>les <strong>couleurs</strong> ou le noir et blanc (selon l'usage) ;</li>
+          <li>l'<strong>aperçu avant impression</strong> (pour éviter les mauvaises surprises).</li>
+        </ul>
+        <p>L'impression peut se faire sur imprimante classique (A4) ou sur <strong>traceur</strong> (A1, A0).</p>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Imprimer sans vérifier l'échelle. Résultat : le plan sort à une échelle incorrecte (par exemple 1/80 au lieu de 1/100). Sur le chantier, les cotes sont fausses, l'ouvrage est mal construit. <strong>Il faut toujours mesurer une cote de référence sur le tirage papier pour vérifier l'échelle.</strong></p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Mise en page : format, échelle, cartouche, légende.</li>
+          <li>Vérifier avant impression : format, échelle, traits, couleurs.</li>
+          <li>Traceur pour les grands formats.</li>
+          <li>Toujours contrôler l'échelle du tirage.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VII — Les métrés assistés",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le métré à partir du plan</h3>
+        <p>Le <strong>métré</strong> consiste à calculer les quantités de matériaux et d'ouvrages nécessaires à partir des plans :</p>
+        <ul>
+          <li><strong>surfaces</strong> (murs, planchers) en m² ;</li>
+          <li><strong>volumes</strong> (béton, terrassement) en m³ ;</li>
+          <li><strong>longueurs</strong> (linéaux, câbles) en m ;</li>
+          <li><strong>quantités</strong> (parpaings, sacs de ciment, barres d'acier).</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">L'assistance DAO</div>
+        <p>Les logiciels de DAO offrent des outils de mesure automatique :</p>
+        <ul>
+          <li><strong>distance</strong> entre deux points ;</li>
+          <li><strong>surface</strong> d'une zone (polygone fermé) ;</li>
+          <li><strong>volume</strong> (par extrusion de surface) ;</li>
+          <li><strong>nomenclatures</strong> (tableaux récapitulatifs des blocs et des quantités).</li>
+        </ul>
+        <p>On peut ainsi générer rapidement un <strong>tableau de métré</strong> à partir du plan, en évitant les erreurs de report et en gagnant un temps considérable.</p>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Exemple corrigé</div>
+        <p><strong>Donnée :</strong> sur un plan au 1/100, une pièce rectangulaire mesure 5 cm × 4 cm.<br>
+        <strong>Étape 1 :</strong> dimensions réelles : 5 cm × 100 = 5 m ; 4 cm × 100 = 4 m.<br>
+        <strong>Étape 2 :</strong> surface = 5 × 4 = <strong>20 m²</strong>.<br>
+        <strong>Application :</strong> pour carreler la pièce avec des carreaux de 40 × 40 cm (0,16 m² chacun), il faut 20 / 0,16 = 125 carreaux, plus 5-10 % de pertes → 130 à 138 carreaux.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Oublier de <strong>convertir les unités</strong> ou de respecter l'<strong>échelle</strong>. Une surface calculée sur le plan (en cm²) doit être convertie en m² réels : multiplier par (échelle)². Au 1/100, une surface de 1 cm² sur le plan correspond à 1 m² réel.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Métré = quantités (surfaces, volumes, longueurs).</li>
+          <li>DAO : mesure automatique, nomenclatures.</li>
+          <li>Convertir les unités et respecter l'échelle.</li>
+          <li>Prévoir 5-10 % de pertes.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VIII — Le projet et le dossier graphique",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le dossier graphique complet</h3>
+        <p>Un <strong>dossier graphique</strong> est l'ensemble des plans qui décrivent un projet. Il comporte typiquement :</p>
+        <ol>
+          <li><strong>Plan de situation</strong> (1/1000 ou 1/2000).</li>
+          <li><strong>Plan de masse</strong> (1/500 ou 1/200).</li>
+          <li><strong>Plan de fondation</strong> (1/50 ou 1/100).</li>
+          <li><strong>Plans d'étage</strong> (1/50 ou 1/100).</li>
+          <li><strong>Coupes</strong> (1/50 ou 1/100).</li>
+          <li><strong>Façades</strong> (1/50 ou 1/100).</li>
+          <li><strong>Plans de détail</strong> (1/20 ou 1/10).</li>
+          <li><strong>Plans de coffrage et de ferraillage</strong> (1/50 ou 1/20).</li>
+          <li><strong>Nomenclatures et légendes</strong>.</li>
+        </ol>
+      </div>
+
+      <figure>
+        <img data-image-id="dessinbatimentdao4_img05" alt="Exemple de dossier graphique complet comprenant un plan de situation, un plan d'étage, une coupe, une façade et des détails.">
+        <figcaption>Le dossier graphique : un ensemble cohérent de plans.</figcaption>
+      </figure>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">La démarche de projet</div>
+        <ol>
+          <li><strong>Analyse du besoin</strong> : programme, surface, budget, contraintes du terrain.</li>
+          <li><strong>Esquisse</strong> : premières idées, croquis rapides.</li>
+          <li><strong>Avant-projet</strong> : plans au 1/100, choix techniques.</li>
+          <li><strong>Projet d'exécution</strong> : plans détaillés, notes de calcul.</li>
+          <li><strong>Contrôle</strong> : vérifier la cohérence, l'exhaustivité, la lisibilité.</li>
+          <li><strong>Présentation</strong> : dossier assemblé, cartouche, légende, échelle.</li>
+        </ol>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Le contrôle du dossier</div>
+        <ul>
+          <li><strong>Cohérence</strong> : mêmes cotes entre plan et coupe, mêmes niveaux.</li>
+          <li><strong>Exhaustivité</strong> : toutes les vues nécessaires sont présentes.</li>
+          <li><strong>Lisibilité</strong> : traits nets, texte clair, légende.</li>
+          <li><strong>Normalisation</strong> : échelles, cotation, symboles conformes.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Rendre un <strong>dossier incomplet ou incohérent</strong>. Par exemple : le plan d'étage montre un mur à 3 m, la coupe montre le même mur à 2,80 m. Ou : il manque le plan de fondation. Le chantier ne peut pas démarrer, ou pire, il démarre avec des erreurs qui coûteront cher. <strong>Un dossier doit être vérifié avant remise.</strong></p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Dossier = ensemble de plans (situation, masse, fondation, étage, coupe, façade, détails).</li>
+          <li>Démarche : analyse → esquisse → avant-projet → exécution → contrôle → présentation.</li>
+          <li>Cohérence, exhaustivité, lisibilité.</li>
+          <li>Un dossier incomplet bloque le chantier.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Applications RDC — Le dessin de bâtiment en contexte congolais",
+    content: `
+      <div class="bloc cas">
+        <div class="bloc-label">Contextualisation</div>
+        <h3>La DAO dans les bureaux d'études congolais</h3>
+        <p>À Kinshasa, Lubumbashi, Goma et Bukavu, les bureaux d'études et les cabinets d'architecture utilisent de plus en plus la DAO pour produire leurs plans. Les entreprises de construction (bâtiments, routes, ouvrages d'art) ont besoin de dessinateurs pour :</p>
+        <ul>
+          <li>produire les plans d'exécution à partir des plans d'architecte ;</li>
+          <li>mettre à jour les plans après modifications ;</li>
+          <li>préparer les dossiers de consultation des entreprises ;</li>
+          <li>calculer les métrés pour les devis.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Défis et solutions</div>
+        <p><strong>Défis :</strong></p>
+        <ul>
+          <li>Coût des licences AutoCAD (élevé).</li>
+          <li>Manque de formation à la DAO dans certaines écoles.</li>
+          <li>Pannes d'électricité (délestages) qui interrompent le travail.</li>
+          <li>Ordinateurs parfois anciens ou peu performants.</li>
+        </ul>
+        <p><strong>Solutions :</strong></p>
+        <ul>
+          <li>Utiliser des logiciels gratuits (LibreCAD, FreeCAD, QCAD) qui offrent des fonctionnalités suffisantes pour le dessin de bâtiment.</li>
+          <li>Se former en autodidacte (tutoriels en ligne, exercices).</li>
+          <li>Prévoir un onduleur ou un groupe électrogène.</li>
+          <li>Travailler sur des fichiers légers, organiser les calques.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Intégration des matériaux locaux</div>
+        <p>Les plans doivent intégrer les <strong>dimensions des matériaux locaux</strong> :</p>
+        <ul>
+          <li>briques artisanales (dimensions variables) ;</li>
+          <li>parpaings standard (15 × 20 × 40 cm) ;</li>
+          <li>bois de charpente (sections commerciales) ;</li>
+          <li>tôles galvanisées (longueurs standard).</li>
+        </ul>
+        <p>Un plan qui prévoit des matériaux non disponibles localement sera un cauchemar pour le chantier. Le dessinateur doit <strong>connaître les matériaux du marché congolais</strong>.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Débouchés</div>
+        <ul>
+          <li><strong>Dessinateur en bâtiment</strong>.</li>
+          <li><strong>Dessinateur-projeteur</strong> (bureau d'études).</li>
+          <li><strong>Technicien de bureau d'études</strong>.</li>
+          <li><strong>Assistant d'architecte</strong>.</li>
+          <li><strong>Métreur</strong>.</li>
+          <li><strong>Chef de chantier</strong>.</li>
+          <li>Poursuite d'études en <strong>génie civil</strong> ou en <strong>architecture</strong>.</li>
+        </ul>
+      </div>
+
+      <div class="sources">
+        <div class="bloc-label">Sources</div>
+        <p>Fiches pédagogiques officielles Dessin de Génie Civil et Initiation à l'Informatique (Édition 2025) ; Programme National de l'Enseignement Technique, option Construction (2007).</p>
+      </div>
+    `
+  },
+  {
+    title: "Synthèse générale du cours",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Ce qu'il faut retenir</div>
+        <h3>Les idées maîtresses</h3>
+        <ol>
+          <li><strong>Dessin = langage commun</strong> de tous les acteurs du chantier.</li>
+          <li><strong>Formats</strong> : A0 à A4 ; <strong>échelles</strong> : 1/200, 1/100, 1/50, 1/20.</li>
+          <li><strong>Traits</strong> : fort (contours), fin (cotes), interrompu (caché), mixte (axes).</li>
+          <li><strong>Cotation</strong> : exhaustive, non redondante, en mm.</li>
+          <li><strong>Hachures</strong> : représentation des matériaux.</li>
+          <li><strong>Plans</strong> : situation, masse, fondation, étage, façade, coupe, détail.</li>
+          <li><strong>Coffrage</strong> (forme) et <strong>ferraillage</strong> (aciers) pour le béton armé.</li>
+          <li><strong>DAO</strong> : interface, calques, outils de dessin et de modification.</li>
+          <li><strong>Cotation et hachures en DAO</strong> : outils automatiques + styles.</li>
+          <li><strong>Blocs</strong> : réutilisation des portes, fenêtres, symboles.</li>
+          <li><strong>Mise en page</strong> : format, échelle, cartouche, impression.</li>
+          <li><strong>Métrés</strong> : surfaces, volumes, longueurs, avec conversion d'unités.</li>
+          <li><strong>Dossier graphique</strong> : cohérent, exhaustif, lisible.</li>
+        </ol>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les erreurs à ne plus commettre</div>
+        <ul>
+          <li>Oublier une cote ou coter deux fois la même dimension.</li>
+          <li>Confondre plan de situation et plan de masse.</li>
+          <li>Confondre plan de coffrage et plan de ferraillage.</li>
+          <li>Dessiner en DAO sans organiser les calques.</li>
+          <li>Hachurer à une échelle inadaptée.</li>
+          <li>Imprimer sans vérifier l'échelle.</li>
+          <li>Oublier de convertir les unités dans les métrés.</li>
+          <li>Rendre un dossier incomplet ou incohérent.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Tableau récapitulatif des commandes DAO essentielles</div>
+        <table>
+          <thead>
+            <tr><th>Commande</th><th>Rôle</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>LIGNE / LINE</td><td>Segment droit</td></tr>
+            <tr><td>POLYLIGN / PLINE</td><td>Suite de segments et d'arcs</td></tr>
+            <tr><td>CERCLE / CIRCLE</td><td>Cercle</td></tr>
+            <tr><td>RECTANG / RECTANG</td><td>Rectangle</td></tr>
+            <tr><td>DEPLACER / MOVE</td><td>Translation</td></tr>
+            <tr><td>COPIER / COPY</td><td>Duplication</td></tr>
+            <tr><td>DECALER / OFFSET</td><td>Parallèles</td></tr>
+            <tr><td>AJUSTER / TRIM</td><td>Couper</td></tr>
+            <tr><td>PROLONGER / EXTEND</td><td>Étendre</td></tr>
+            <tr><td>HACHURE / HATCH</td><td>Remplir une zone</td></tr>
+            <tr><td>COTE / DIM</td><td>Cotation</td></tr>
+            <tr><td>BLOC / BLOCK</td><td>Créer un bloc</td></tr>
+          </tbody>
+        </table>
+      </div>
+    `
+  },
+  {
+    title: "Évaluation finale — Dessin de Bâtiment et DAO",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Consigne</div>
+        <p>Répondez aux 22 questions ci-dessous. Chaque question a une seule bonne réponse. Cliquez sur « Valider mes réponses » pour obtenir votre score. Bonne chance !</p>
+      </div>
+
+      <div class="quiz-container">
+        <div id="quizQuestions"></div>
+        <button id="submitQuiz" class="quiz-btn-submit">
+          Valider mes réponses
+        </button>
+        <div id="quizResult" class="quiz-result"></div>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Conseil</div>
+        <p>En cas d'erreur, relisez la diapositive correspondante. Les questions couvrent les normes, les plans, la DAO, les métrés et le dossier graphique.</p>
+      </div>
+    `
+  }
+];
+const questions = [
+  {
+    text: "Le dessin de bâtiment sert à :",
+    options: [
+      "Représenter graphiquement un ouvrage de manière normalisée",
+      "Calculer les forces dans une poutre",
+      "Couler le béton sur le chantier",
+      "Planifier le chantier"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le format de papier A3 est :",
+    options: [
+      "Plus petit que A2",
+      "Plus grand que A1",
+      "Identique à A4",
+      "Plus grand que A0"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'échelle 1/100 signifie :",
+    options: [
+      "1 cm sur le plan correspond à 1 m réel",
+      "1 cm correspond à 100 m réels",
+      "1 m correspond à 100 m réels",
+      "1 mm correspond à 1 m réel"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le trait fort continu sert à représenter :",
+    options: [
+      "Les contours et arêtes vues",
+      "Les cotes et hachures",
+      "Les arêtes cachées",
+      "Les axes de symétrie"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le trait interrompu sert à représenter :",
+    options: [
+      "Les arêtes cachées",
+      "Les contours",
+      "Les cotes",
+      "Les axes"
+    ],
+    correct: 0
+  },
+  {
+    text: "La cotation s'exprime généralement en :",
+    options: [
+      "Millimètres",
+      "Centimètres",
+      "Mètres",
+      "Pouces"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le plan de situation montre :",
+    options: [
+      "L'emplacement du bâtiment dans son environnement (ville, quartier)",
+      "La forme des semelles",
+      "Le ferraillage des poutres",
+      "Les sanitaires d'un étage"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le plan de masse montre :",
+    options: [
+      "L'implantation du bâtiment sur la parcelle avec accès et réseaux",
+      "La façade du bâtiment",
+      "La coupe verticale",
+      "Le ferraillage"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le plan d'étage montre :",
+    options: [
+      "La vue de dessus d'un niveau (murs, portes, fenêtres)",
+      "Le bâtiment en tranche",
+      "La toiture",
+      "Le ferraillage des poutres"
+    ],
+    correct: 0
+  },
+  {
+    text: "La façade est :",
+    options: [
+      "Une vue extérieure du bâtiment (élévation)",
+      "Une coupe transversale",
+      "Un plan de fondation",
+      "Un plan de ferraillage"
+    ],
+    correct: 0
+  },
+  {
+    text: "La coupe montre :",
+    options: [
+      "Le bâtiment en tranche avec les niveaux et les planchers",
+      "La vue de dessus",
+      "La façade principale",
+      "Le ferraillage"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le plan de coffrage montre :",
+    options: [
+      "La forme et les dimensions des éléments à couler",
+      "La position des aciers",
+      "La toiture",
+      "Les finitions"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le plan de ferraillage montre :",
+    options: [
+      "La position, le diamètre et l'espacement des aciers",
+      "La forme du coffrage",
+      "La toiture",
+      "Les murs"
+    ],
+    correct: 0
+  },
+  {
+    text: "Les calques dans un logiciel de DAO servent à :",
+    options: [
+      "Organiser les éléments du dessin par catégorie",
+      "Colorer le fond de la zone de dessin",
+      "Calculer les métrés automatiquement",
+      "Imprimer le plan"
+    ],
+    correct: 0
+  },
+  {
+    text: "Les blocs en DAO servent à :",
+    options: [
+      "Réutiliser des éléments (portes, fenêtres, symboles)",
+      "Calculer les surfaces",
+      "Modifier l'échelle du plan",
+      "Coter automatiquement"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'outil de cotation en DAO sert à :",
+    options: [
+      "Ajouter automatiquement les dimensions",
+      "Dessiner les murs",
+      "Hachurer les matériaux",
+      "Imprimer le plan"
+    ],
+    correct: 0
+  },
+  {
+    text: "Avant d'imprimer un plan, il faut vérifier :",
+    options: [
+      "Le format, l'échelle et l'épaisseur des traits",
+      "La couleur du papier",
+      "Le prix de l'impression",
+      "Le nombre de pages du dossier"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le métré consiste à :",
+    options: [
+      "Calculer les quantités à partir des plans",
+      "Dessiner les plans",
+      "Imprimer le dossier",
+      "Coter les plans"
+    ],
+    correct: 0
+  },
+  {
+    text: "Un logiciel gratuit de DAO est :",
+    options: [
+      "LibreCAD",
+      "AutoCAD uniquement",
+      "ArchiCAD uniquement",
+      "Photoshop"
+    ],
+    correct: 0
+  },
+  {
+    text: "Un dossier graphique doit être :",
+    options: [
+      "Complet et cohérent",
+      "Réduit à une seule façade",
+      "Uniquement composé de croquis",
+      "Sans cartouche"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'échelle 1/50 est utilisée pour :",
+    options: [
+      "Les plans de détail (sanitaires, escaliers)",
+      "Les plans de situation",
+      "Les plans de masse",
+      "Les cartes routières"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'objectif principal du cours de dessin de bâtiment et DAO en 4ᵉ Humanité Technique est de :",
+    options: [
+      "Lire, produire et contrôler des plans de bâtiment à la main et en DAO",
+      "Remplacer l'architecte dans tous ses projets",
+      "Couler le béton sur chantier",
+      "Planifier les achats de matériaux"
+    ],
+    correct: 0
+  }
+];
+
+try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+        questions.forEach(function (q) {
+            if (!q.text) q.text = q.question || q.q || q.enonce || q.titre || "";
+            if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+            if (typeof q.correct === "undefined") {
+                if (typeof q.answer !== "undefined") q.correct = q.answer;
+                else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+            }
+        });
+    }
+} catch (e) {}
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+const pageTitle = document.getElementById('pageTitle');
+pageTitle.textContent = "ECOLIA · " + COURSE_TITLE;
+document.title = "ECOLIA — " + COURSE_TITLE;
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim() || slides.length === 0) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp("(" + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ")", 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderEmptyState() {
+    contentDiv.innerHTML = '<div class="empty-state"><div class="icon">·</div><span class="tag">Bientôt disponible</span><h2>' + COURSE_TITLE + '</h2><p>Ce cours est en préparation. Le contenu sera ajouté prochainement.</p></div>';
+    slideCounterSpan.textContent = '0/0';
+    progressFill.style.width = '0%';
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    counterSpan.textContent = '—';
+}
+
+function renderQuiz() {
+    const qc = document.getElementById('quizQuestions');
+    if (!qc) return;
+    if (typeof questions === 'undefined' || questions.length === 0) {
+        qc.innerHTML = '<p style="color:#666;font-style:italic;">Quiz bientot disponible.</p>';
+        return;
+    }
+    let html = '';
+    questions.forEach((q, i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o, k) => {
+            html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>';
+        });
+        html += '</div>';
+    });
+    qc.innerHTML = html;
+    const submitBtn = document.getElementById('submitQuiz');
+    if (submitBtn) {
+        submitBtn.onclick = () => {
+            let score = 0;
+            questions.forEach((q, i) => {
+                const s = document.querySelector('input[name="q' + i + '"]:checked');
+                if (s && parseInt(s.value) === q.correct) score++;
+            });
+            const pct = Math.round(score/questions.length*100);
+            document.getElementById('quizResult').innerHTML =
+                '<div style="background:var(--bg2);padding:16px;border-radius:10px;margin-top:14px;">' +
+                '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong></div>';
+        };
+    }
+}
+
+function renderSlide(index, keepHighlight) {
+    if (keepHighlight === undefined) keepHighlight = true;
+    if (slides.length === 0) { renderEmptyState(); return; }
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    if (index === slides.length - 1) renderQuiz();
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    if (slides.length === 0) return;
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (slides.length && currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (slides.length && currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+<!-- ECOLIA_IMAGE_LOADER_START -->
+<script>
+(function () {
+  var SITE = "https://ecolia-course.github.io/";
+  var NATIVE = false;
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function abs(u) { return /^(https?:|data:|blob:)/i.test(u) ? u : (NATIVE ? SITE + u.replace(/^(\.\/|\/)+/, "") : u); }
+  function ext(u) { var m = String(u).split("?")[0].match(/\.(jpe?g|png|gif|webp|svg)$/i); return m ? m[1].toLowerCase() : "jpg"; }
+  function hide(img) { img.onerror = null; img.style.display = "none"; }
+  var table = null, queue = [], queued = {}, running = false;
+  function enqueue(full, fn) {
+    if (queued[fn]) return;
+    queued[fn] = 1; queue.push([full, fn]);
+    if (!running) { running = true; setTimeout(next, 2500); }
+  }
+  function next() {
+    if (!queue.length) { running = false; return; }
+    if (!navigator.onLine) { running = false; return; }
+    var q = queue.shift(), t0 = Date.now();
+    try { CoursInterface.download(q[0], q[1]); } catch (e) { return setTimeout(next, 500); }
+    (function wait() {
+      var ok = false;
+      try { ok = !!CoursInterface.exists(q[1]); } catch (e) {}
+      if (ok) setTimeout(next, 1500);
+      else if (Date.now() - t0 > 40000) next();
+      else setTimeout(wait, 700);
+    })();
+  }
+  function exists(fn) { try { return !!CoursInterface.exists(fn); } catch (e) { return false; } }
+  function show(img) {
+    if (!table || img.getAttribute("data-ecolia-done")) return;
+    var id = img.getAttribute("data-image-id");
+    var url = table[id];
+    if (typeof url !== "string" || !url.length) { console.warn("ECOLIA : image absente du JSON :", id); return; }
+    img.setAttribute("data-ecolia-done", "1");
+    if (!NATIVE) { img.onerror = function () { hide(img); }; img.setAttribute("src", url); return; }
+    var full = abs(url), fn = "img_" + id + "." + ext(url);
+    if (exists(fn)) {
+      img.onerror = function () {
+        try { CoursInterface["delete"](fn); } catch (e) {}
+        queued[fn] = 0;
+        img.onerror = function () { hide(img); };
+        img.setAttribute("src", full);
+      };
+      img.setAttribute("src", "https://app.local/cours/" + fn);
+    } else {
+      img.onerror = function () { hide(img); };
+      img.setAttribute("src", full);
+      enqueue(full, fn);
+    }
+  }
+  function scan(root) {
+    if (!root || !root.querySelectorAll) return;
+    if (root.matches && root.matches("img[data-image-id]")) show(root);
+    root.querySelectorAll("img[data-image-id]").forEach(show);
+  }
+  function prefetchAll() {
+    var ids = {};
+    try { JSON.stringify(slides).replace(/data-image-id=\\?"([^"\\]+)/g, function (m, id) { ids[id] = 1; }); } catch (e) {}
+    Object.keys(ids).forEach(function (id) {
+      var url = table[id];
+      if (typeof url !== "string" || !url.length) return;
+      var fn = "img_" + id + "." + ext(url);
+      if (!exists(fn)) enqueue(abs(url), fn);
+    });
+  }
+  function start(tbl) {
+    table = tbl;
+    scan(document.body);
+    new MutationObserver(function (muts) {
+      muts.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.nodeType === 1) scan(n); }); });
+    }).observe(document.body, { childList: true, subtree: true });
+    if (NATIVE) prefetchAll();
+  }
+  var JSON_URL = NATIVE ? SITE + "images_ecolia.json" : "images_ecolia.json";
+  var KEY = "ecolia_images_json";
+  fetch(JSON_URL, NATIVE ? { cache: "no-cache" } : undefined)
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (table) { if (NATIVE) lsSet(KEY, JSON.stringify(table)); start(table); })
+    .catch(function (e) {
+      var saved = null;
+      if (NATIVE) { try { saved = JSON.parse(lsGet(KEY) || "null"); } catch (x) {} }
+      if (saved) start(saved);
+      else console.warn("ECOLIA : JSON des images indisponible.", e);
+    });
+})();
+</script>
+<!-- ECOLIA_IMAGE_LOADER_END -->
+
+
+
+<!-- ECOLIA_AUDIO_PLAYER_START -->
+<style>
+  #ecolia-audio-btn, #ecolia-dl-btn {
+    width: 30px; height: 30px; min-width: 30px; padding: 0; margin: 0 4px 0 0;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    cursor: pointer; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent; outline: none;
+  }
+  #ecolia-audio-btn { border: none; background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-dl-btn { border: 1.5px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb); }
+  #ecolia-dl-btn.ecolia-full { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-btn.ecolia-fixed { position: fixed; top: 8px; left: 8px; z-index: 2147483000; }
+  #ecolia-audio-btn:active, #ecolia-dl-btn:active { transform: scale(.92); }
+  #ecolia-audio-btn svg, #ecolia-dl-btn svg { width: 15px; height: 15px; fill: currentColor; pointer-events: none; }
+  #ecolia-audio-btn.ecolia-off, #ecolia-dl-btn.ecolia-off { display: none; }
+  #ecolia-audio-banner {
+    display: none; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0;
+    padding: 8px 14px; font-size: .82rem; line-height: 1.35;
+    background: var(--soft, #eef3fb); color: var(--p1, #123); border-bottom: 1px solid var(--bd, #c9d6ea);
+  }
+  #ecolia-audio-banner.on { display: flex; }
+  #ecolia-audio-banner .eab-txt { flex: 1 1 180px; }
+  #ecolia-audio-banner .eab-act { display: flex; gap: 6px; flex-wrap: wrap; }
+  #ecolia-audio-banner button {
+    border: 1px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb);
+    border-radius: 16px; padding: 5px 12px; font-size: .8rem; cursor: pointer;
+  }
+  #ecolia-audio-banner button.pri { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-banner .eab-bar { display: none; flex-basis: 100%; height: 4px; border-radius: 2px; overflow: hidden; background: var(--bd, #c9d6ea); }
+  #ecolia-audio-banner .eab-bar i { display: block; height: 100%; width: 0; background: var(--p2, #2563eb); transition: width .2s; }
+</style>
+<script>
+(function () {
+  var CFG = {"code":"DessinBatimentDAO4","base":"https://ecolia-course.github.io/ecolia-media/audio_files/","available":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],"count":20,"sizeMo":20,"sizes":{"1":1034112,"2":860160,"3":1271424,"4":886848,"5":887616,"6":698880,"7":916224,"8":933696,"9":868224,"10":853440,"11":1120896,"12":1253568,"13":1201728,"14":1103616,"15":885120,"16":1150656,"17":1207104,"18":1038528,"19":1196928,"20":225984},"fallback":{"1":[["fr","Sommaire, Dessin de Bâtiment et DAO. Présentation du cours. Bienvenue en Dessin de Bâtiment et DAO. Ce cours de 4e année des Humanités Techniques Industrielles vous prépare à lire, comprendre et produire des plans de bâtiment et de génie civil. Vous apprendrez les normes du dessin technique (formats, échelles, cotation, symboles), la lecture des plans (situation, masse, fondation, étage, façade, coupe, détail), la production manuelle, puis l'utilisation d'un logiciel de DAO (Dessin Assisté par Ordinateur) pour dessiner, modifier, coter et imprimer des plans professionnels. La DAO est aujourd'hui incontournable dans les bureaux d'études, les cabinets d'architecture et les entreprises de construction. Un technicien A2 qui maîtrise le dessin de bâtiment et un logiciel de DAO est un atout précieux pour la conception, l'exécution et le contrôle des ouvrages en R D C. Objectifs d'apprentissage. Appliquer les normes du dessin de bâtiment (formats, échelles, traits, cotation, symboles, hachures). Lire et interpréter tous les types de plans (situation, masse, fondation, étage, façade, coupe, détail). Produire des plans de bâtiment à la main. Utiliser un logiciel de DAO pour dessiner, modifier et coter. Produire des plans de coffrage et de ferraillage. Réaliser des métrés à partir des plans. Imprimer et présenter un dossier graphique complet. Plan du cours. Chapitre I, Les normes du dessin de bâtiment. Chapitre II, Les plans de bâtiment. Chapitre III, Le dessin de bâtiment à la main. Chapitre IV, Les plans de génie civil. Chapitre V, Introduction à la DAO. Chapitre VI, La production de plans avec DAO. Chapitre VII, Les métrés assistés. Chapitre VIII, Projet et dossier graphique."]],"2":[["fr","Chapitre I, Pourquoi le dessin de bâtiment et la DAO? Situation-problème. Une école à concevoir et à construire à Kinshasa. Un bureau d'études de Kinshasa reçoit la commande d'une école primaire de six salles de classe. Le chef de projet convoque un technicien A2 et lui demande: « Peux-tu dessiner le plan d'étage et la coupe, calculer les surfaces et préparer le dossier graphique pour le chantier? ». Sans dessin, pas de construction possible: le maçon ne saura pas où monter les murs, l'électricien ne saura pas où passer les câbles, le métreur ne saura pas combien de matériaux commander. Le plan est le langage commun de tous les acteurs du chantier. La DAO permet de le produire rapidement, proprement et de le modifier facilement. Fondements théoriques. Le dessin, langage universel du bâtiment. Le dessin de bâtiment est la représentation graphique normalisée d'un ouvrage (bâtiment, infrastructure). Il permet: de concevoir l'ouvrage (esquisse, avant-projet); de chiffrer les quantités et les coûts (métrés, devis); d'exécuter les travaux (plans d'exécution); de contrôler la conformité. La DAO (Dessin Assisté par Ordinateur) remplace progressivement le dessin à la main dans les bureaux d'études: elle est plus précise, plus rapide, plus facile à modifier et à dupliquer. Points clés. Dessin égale langage commun de tous les acteurs du chantier. Concevoir, chiffrer, exécuter, contrôler. DAO: précision, rapidité, facilité de modification. Compétence très recherchée en R D C."]],"3":[["fr","Chapitre I, Les formats et les échelles. Fondements théoriques. Les formats de papier. Les formats de dessin sont normalisés (norme ISO 216). Le format de base est le A0 (1 mètres carrés). Chaque format inférieur est obtenu en divisant le précédent par deux: Format. Dimensions (mm). Surface. A0. 841 multiplié par 1189. 1 mètres carrés. A1. 594 multiplié par 841. 0,5 mètres carrés. A2. 420 multiplié par 594. 0,25 mètres carrés. A3. 297 multiplié par 420. 0,125 mètres carrés. A4. 210 multiplié par 297. 0,0625 mètres carrés. En atelier et sur chantier, on utilise surtout le A3 (pour les plans détaillés) et le A4 (pour les notes et les vues rapides). Les échelles. L'échelle est le rapport entre la dimension sur le plan et la dimension réelle: Échelle égale Dimension sur le plan ou Dimension réelle. Échelle. Usage typique. 1 sur 200. Plan de masse, plan de situation. 1 sur 100. Plan d'étage, plan de fondation. 1 sur 50. Plan de détail, sanitaires, escaliers. 1 sur 20 ou 1 sur 10. Détails de ferraillage, assemblages. Le format 1 sur 100 est le plus courant en bâtiment: 1 centimètres sur le plan égale 1 mètres réel. Exemple corrigé. Donnée: un mur de 5 mètres de long sur un plan au 1 sur 100. Question: quelle longueur sur le papier? Calcul: 5 mètres égale 500 centimètres réels divisé par 100 égale 5 centimètres. Interprétation: le mur sera dessiné sur 5 centimètres de long. Inversement, un segment de 5 centimètres sur le plan au 1 sur 100 représente 5 mètres réels. Les échelles du dessin de bâtiment. Points clés. Formats normalisés: A0 à A4; A3 et A4 en atelier. Échelles: 1 sur 200, 1 sur 100, 1 sur 50, 1 sur 20. 1 sur 100: 1 centimètres égale 1 mètres réel. Toujours vérifier l'échelle avant de mesurer."]],"4":[["fr","Chapitre I, Les traits et les écritures. Fondements théoriques. Les quatre types de traits. Type de trait. Représentation. Usage. Trait fort continu. Épais et plein. Contours et arêtes vues (murs, éléments structurels). Trait fin continu. Mince et plein. Cotation, hachures, lignes de rappel, texte. Trait interrompu. Pointillés. Arêtes cachées (éléments en dessous ou à l'intérieur). Trait mixte. Longs traits et points alternés. Axes de symétrie, axes de repérage. L'épaisseur des traits doit être homogène: un trait fort est généralement 2 fois plus épais qu'un trait fin. Un plan aux traits incohérents est illisible et mal interprété. Les écritures. Les écritures doivent être: lisibles: grandeur suffisante (2 à 5 millimètres selon la cote); normalisées: lettres droites, chiffres identiques; en majuscules pour les titres et les légendes importantes; en minuscules pour les annotations courantes. En DAO, on utilise des styles de texte normalisés (par exemple ISOCP, Arial, ROMANS) qui garantissent la lisibilité à l'impression. Erreur fréquente. Utiliser le mauvais trait pour représenter un élément. Par exemple: dessiner un mur en trait fin ou une cote en trait fort. Résultat: le plan devient ambigu; le lecteur ne sait pas ce qui est structurel, ce qui est caché, ce qui est coté. Chaque trait a un rôle précis. Points clés. Fort: contours vus. Fin: cotation, hachures. Interrompu: arêtes cachées. Mixte: axes. Écritures lisibles et normalisées."]],"5":[["fr","Chapitre I, La cotation et les symboles. Fondements théoriques. La cotation. La cotation indique les dimensions réelles de l'ouvrage sur le plan. Ses règles: Les cotes sont exprimées en millimètres (sauf indication contraire). Les lignes de cote sont fines, terminées par des flèches. Les lignes de rappel prolongent les arêtes mesurées. Les chiffres sont placés au-dessus de la ligne de cote (ou dans son prolongement). Les cotes doivent être complètes (toutes les dimensions utiles) et non redondantes (pas de double cote d'une même dimension). Les symboles du bâtiment. Élément. Symbole conventionnel. Porte. Ouverture dans le mur plus arc de cercle (sens d'ouverture) plus trait droit (battant). Fenêtre. Ouverture rectangulaire plus double trait (représentant les vitrages). Escalier. Suite de marches plus flèche indiquant le sens de montée. Sanitaires. Symboles normalisés (WC, lavabo, baignoire, évier). Appareils électriques. Symboles normalisés (prise, interrupteur, luminaire). Ventilation. Grille ou bouche avec flèche. Erreur fréquente. Une cote manquante rend le plan inutilisable: le maçon ne sait pas quelle longueur de mur monter. Une cote redondante (par exemple écrire la même longueur sur deux vues) peut créer des contradictions si les deux valeurs diffèrent. La cotation doit être exhaustive et cohérente. Points clés. Cotes en mm, lignes fines, flèches, chiffres au-dessus. Exhaustives et non redondantes. Symboles: portes, fenêtres, escaliers, sanitaires. Un plan sans cotes est inutilisable."]],"6":[["fr","Chapitre I, Les hachures. Fondements théoriques. Représenter les matériaux. Les hachures sont des motifs graphiques qui représentent les matériaux en coupe. Elles sont normalisées (norme ISO 128) pour éviter les confusions: Matériau. Hachures conventionnelles. Béton non armé. Petits triangles ou mouchetés. Béton armé. Mouchetés avec de petits cercles (aciers). Briques ou maçonnerie. Traits obliques à 45 degrés. Bois. Traits ondulés ou fibres. Acier. Traits fins serrés, orientés. Terre ou remblai. Petits traits obliques croisés. Isolant. Motif en zigzag ou en vagues. L'échelle des hachures doit être adaptée au plan: trop serrées, elles deviennent illisibles; trop espacées, elles ne représentent plus rien. Rôle pédagogique. Sur une coupe, les hachures permettent d'identifier immédiatement les matériaux utilisés (béton armé, brique, isolant). Sur un plan de ferraillage, des cercles pleins représentent les aciers. Un plan bien hachuré se lit d'un coup d'œil; un plan sans hachures demande des annotations partout. Points clés. Hachures égale matériaux en coupe. Normalisées: béton, brique, bois, acier, terre. Échelle adaptée au plan. Lisibilité immédiate."]],"7":[["fr","Chapitre II, Plan de situation et plan de masse. Fondements théoriques. Le plan de situation. Le plan de situation (échelle 1 sur 500 à 1 sur 2000) montre l'emplacement du bâtiment dans son environnement: la parcelle et ses limites; les voies de circulation (rues, routes); les bâtiments voisins; l'orientation (rose des vents, nord). Il permet de situer le projet dans la ville ou le quartier, de vérifier l'accès et l'orientation. Le plan de masse. Le plan de masse (échelle 1 sur 200 à 1 sur 500) montre l'implantation du bâtiment sur la parcelle: la position du bâtiment sur le terrain (reculs, limites); les accès (portails, allées); les terrassements et les aménagements extérieurs; les réseaux (eau, électricité, assainissement); les arbres, les zones vertes, les parkings. Il sert à positionner l'ouvrage sur le terrain, à préparer le chantier et à vérifier la conformité aux règles d'urbanisme. Erreur fréquente. Confondre plan de situation et plan de masse. Le premier situe le terrain dans la ville (environnement large); le second implante le bâtiment sur la parcelle (échelle du terrain). Le plan de situation est à petite échelle (1 sur 2000); le plan de masse à plus grande échelle (1 sur 200 à 1 sur 500). Points clés. Plan de situation: emplacement dans la ville (1 sur 500 à 1 sur 2000). Plan de masse: implantation sur le terrain (1 sur 200 à 1 sur 500). Reculs, accès, réseaux, aménagements. Ne pas confondre les deux échelles."]],"8":[["fr","Chapitre II, Plan de fondation et plan d'étage. Fondements théoriques. Le plan de fondation. Le plan de fondation (échelle 1 sur 50 à 1 sur 100) montre la partie enterrée de l'ouvrage: la position et les dimensions des semelles (isolées ou filantes); les longrines (poutres basses); les puits et pieux le cas échéant; les cotes d'implantation; les niveaux (fond de fouille, arase). C'est le plan le plus critique: une erreur ici compromet toute la structure. Le plan d'étage. Le plan d'étage (échelle 1 sur 50 à 1 sur 100) est la vue de dessus du niveau, montrant: les murs (porteurs et cloisons) avec leurs épaisseurs; les portes (ouverture plus arc); les fenêtres (double trait); les escaliers (marches plus flèche); les sanitaires et les équipements fixes; les cotes intérieures et extérieures; les niveaux de sol. Application R D C. Sur un chantier à Kinshasa, le plan d'étage d'une école doit indiquer: les salles de classe de dimensions normalisées (par exemple 7 multiplié par 8 mètres); les couloirs de circulation (largeur 1,50 mètres minimum); les escaliers et les sorties de secours; les sanitaires (adaptés au nombre d'élèves); les fenêtres (ventilation et éclairage naturels). Le plan d'étage sert de base à tous les corps de métier (maçonnerie, électricité, plomberie, peinture). Points clés. Plan de fondation: semelles, longrines, puits, niveaux. Plan d'étage: murs, portes, fenêtres, escaliers, sanitaires. Échelle 1 sur 50 à 1 sur 100. Documents de base pour tous les corps de métier."]],"9":[["fr","Chapitre II, Façade et coupe. Fondements théoriques. La façade (élévation). La façade est une vue extérieure du bâtiment, projetée sur un plan vertical. Elle montre: les murs extérieurs; les ouvertures (portes, fenêtres) et leur position en hauteur; les toitures (pente, matériau); les modénatures (corniches, bandeaux); les niveaux (hauteur d'étage, hauteur totale). On distingue la façade principale (souvent celle de l'entrée) et les façades secondaires (latérales et arrière). La coupe. La coupe est une vue en tranche du bâtiment selon un plan de coupe vertical. Elle montre: les niveaux (fondation, rez-de-chaussée, étages, toiture); les planchers avec leur épaisseur; les murs coupés (hachurés selon le matériau); la charpente et la couverture; les escaliers en coupe; les cotes verticales (hauteurs). La coupe complète la lecture du plan d'étage: ce que l'on voit de dessus, on le voit en tranche sur la coupe. La coupe: comprendre la structure du bâtiment. Erreur fréquente. Sur une coupe, oublier de représenter les hachures de matériaux ou les niveaux. Résultat: on ne sait pas si le mur est en brique ou en béton, ni à quelle hauteur se trouve chaque plancher. La coupe doit être complète et cotée en hauteur. Points clés. Façade égale vue extérieure (murs, ouvertures, toiture). Coupe égale vue en tranche (niveaux, planchers, hachures). Complémentaires du plan d'étage. Cotation verticale obligatoire sur la coupe."]],"10":[["fr","Chapitre IV, Plans de coffrage et de ferraillage. Fondements théoriques. Deux plans complémentaires. Pour les ouvrages en béton armé, deux plans sont indispensables: Plan. Contenu. Utilisé par. Plan de coffrage. Forme, dimensions et position des éléments à couler (poteaux, poutres, planchers, voiles). Épaisseurs, réservations, niveaux. Coffreur. Plan de ferraillage. Position, diamètre, espacement et longueur des armatures. Nomenclature des aciers, recouvrements, ancrages. Ferrailleur. Le plan de ferraillage: position des aciers. Contenu détaillé. Plan de coffrage: plan de repérage des poteaux (numéro, dimensions); vue en plan des poutres (largeur, hauteur); coupe transversale type; niveaux de fond de coffrage et d'arase. Plan de ferraillage: nombre, diamètre et longueur des barres (aciers longitudinaux); position et espacement des étriers ou cadres; recouvrements et ancrages; nomenclature (tableau récapitulatif des aciers). Erreur fréquente. Négliger la coordination entre coffrage et ferraillage. Un acier mal positionné peut ne pas tenir dans le coffrage prévu, ou pire, être trop près du parement (enrobage insuffisant), donc corrosion prématurée. Le ferrailleur et le coffreur doivent travailler à partir des deux plans simultanément. Points clés. Coffrage égale forme (coffreur). Ferraillage égale aciers (ferrailleur). Les deux plans sont complémentaires. Coordination obligatoire."]],"11":[["fr","Chapitre III, Le dessin de bâtiment à la main. Fondements théoriques. Les instruments du dessinateur. Planche à dessin: surface plane sur laquelle on fixe la feuille. Règle parallèle ou té: pour tracer des horizontales. Équerre 45 degrés et 30 sur 60 degrés: pour tracer les angles et les perpendiculaires. Compas: pour tracer cercles et arcs. Rapporteur: pour les angles quelconques. Crayons: H (dur, traits fins), HB (traits moyens), B (tendre, traits gras). Gomme: pour corriger. Papier calque: pour superposer et reproduire. La réalisation d'un plan d'étage à la main. Préparer la feuille (bordure, cartouche, orientation). Tracer les axes des murs avec le trait mixte. Tracer les murs avec le trait fort (épaisseurs). Placer les ouvertures: portes (ouverture plus arc), fenêtres (double trait). Dessiner les escaliers (marches plus flèche). Dessiner les sanitaires (symboles normalisés). Coter les dimensions intérieures et extérieures. Ajouter la légende et le cartouche. La réalisation d'une coupe à la main. Choisir le plan de coupe (souvent transversal pour voir les niveaux). Tracer les niveaux horizontaux (sol, planchers, toiture). Représenter les murs coupés (hachures du matériau). Dessiner la charpente et la couverture. Placer les escaliers en coupe. Coter les hauteurs. Erreur fréquente. Négliger la propreté du tracé: traits doubles, ratures, cotes illisibles, chiffres écrasés. Un plan sale est difficile à lire et sera rejeté par le chef de chantier. Le dessin à la main exige régularité et patience. Points clés. Instruments: planche, règle, équerre, compas, crayons. Plan d'étage: axes, donc murs, donc ouvertures, donc escaliers, donc cotation. Coupe: niveaux, donc murs coupés, donc charpente, donc escaliers, donc cotation. Propreté du tracé indispensable."]],"12":[["fr","Chapitre V, Introduction à la DAO: interface et calques. Fondements théoriques. Qu'est-ce que la DAO? La DAO (Dessin Assisté par Ordinateur) est l'utilisation d'un logiciel pour produire, modifier et gérer des dessins techniques. Comparée au dessin à la main, elle offre: une précision parfaite (cotes exactes au mm); une modification rapide (déplacer, copier, effacer); une réutilisation d'éléments (blocs); une impression homogène (épaisseurs, échelles). Logiciels courants: AutoCAD (référence professionnelle), ArchiCAD (architecture), Revit (BIM), et gratuits (FreeCAD, LibreCAD, QCAD). L'interface d'un logiciel de DAO. L'interface d'un logiciel de DAO. Barre de menus: fichiers, édition, outils, affichage. Barre d'outils: boutons d'accès rapide aux commandes. Zone de dessin: la surface où l'on dessine. Ligne de commande: pour taper les commandes. Gestionnaire de calques: organisation des éléments. Barre d'état: coordonnées, zoom, résolution. Les calques. Un calque est une \"couche\" transparente sur laquelle on place des éléments d'une même catégorie (murs, portes, cotation, texte). Chaque calque a: un nom (ex.: \"Murs\", \"Portes\", \"Cotation\"); une couleur; un type de trait; une épaisseur. L'organisation en calques permet: de masquer ou d'afficher certaines catégories; de verrouiller les calques (éviter de modifier par erreur); de modifier toutes les cotes ou tous les textes en une seule fois; d'imprimer facilement en noir et blanc ou en couleur. Erreur fréquente. Dessiner sans organiser les calques: tout sur un seul calque, aucune hiérarchie. Résultat: impossible de masquer les cotes, de modifier un élément sans toucher aux autres, ou d'imprimer proprement. Un plan professionnel a toujours des calques organisés. Points clés. DAO: précision, rapidité, réutilisation, impression homogène. Interface: menus, outils, zone de dessin, calques. Calques égale organisation par catégorie. Toujours organiser avant de dessiner."]],"13":[["fr","Chapitre V, Les outils de dessin et de modification. Fondements théoriques. Les outils de dessin. Outil. Rôle. Commande AutoCAD. Ligne. Segment droit entre deux points. LIGNE ou LINE. Polyligne. Suite de segments et d'arcs formant une seule entité. POLYLIGN ou PLINE. Cercle. Cercle défini par centre et rayon. CERCLE ou CIRCLE. Arc. Arc de cercle par trois points ou centre plus angle. ARC ou ARC. Rectangle. Rectangle par deux coins opposés. RECTANG ou RECTANG. Texte. Annotation simple ou multiligne. TEXTE ou TEXT. Hachures. Remplissage d'une zone par un motif. HACHURE ou HATCH. Les outils de modification. Outil. Rôle. Commande AutoCAD. Déplacer. Translation d'un élément. DEPLACER ou MOVE. Copier. Duplication. COPIER ou COPY. Rotation. Rotation autour d'un point. ROTATION ou ROTATE. Échelle. Homothétie (agrandir ou réduire). ECHELLE ou SCALE. Miroir. Symétrie par rapport à un axe. MIROIR ou MIRROR. Décalage. Création de parallèles à distance. DECALER ou OFFSET. Ajuster. Couper ou prolonger jusqu'à une limite. AJUSTER ou TRIM. Prolonger. Étendre un élément jusqu'à une limite. PROLONGER ou EXTEND. Raccorder. Arrondir un angle (congé). RACCORD ou FILLET. Astuce pratique. Pour dessiner les murs d'un plan, on trace d'abord les axes avec la commande DECALER (décalage de 5 centimètres de chaque côté pour un mur de 10 centimètres). On utilise ensuite AJUSTER ou PROLONGER pour fermer les angles. Cette méthode est plus rapide et plus précise que de tracer chaque mur indépendamment. Points clés. Dessin: ligne, polyligne, cercle, arc, rectangle, texte, hachures. Modification: déplacer, copier, rotation, échelle, miroir, décalage, ajuster. Décalage plus ajuster égale tracé rapide des murs. Maîtriser les commandes égale gagner du temps."]],"14":[["fr","Chapitre VI, Cotation, hachures et blocs en DAO. Fondements théoriques. La cotation en DAO. Les logiciels de DAO proposent des outils de cotation automatique: Cote linéaire: distance horizontale ou verticale. Cote alignée: distance le long d'un segment quelconque. Cote angulaire: angle entre deux lignes. Cote radiale ou diamétrale: rayon ou diamètre d'un arc ou cercle. On définit un style de cote (taille des flèches, hauteur du texte, précision) qui garantit la cohérence de toutes les cotes du plan. Les hachures en DAO. La commande HACHURE permet de remplir une zone par un motif. On choisit: le motif (béton, brique, bois, acier); l'échelle (adaptée au plan: plus le plan est grand, plus l'échelle est élevée); l'angle (souvent 45 degrés); la couleur (par calque). Un bon hachurage facilite la lecture du plan en distinguant instantanément les matériaux. Les blocs en DAO. Un bloc est un ensemble d'éléments regroupés en une seule entité réutilisable. On crée des blocs pour: les portes (avec leur arc d'ouverture); les fenêtres (double trait); les sanitaires (WC, lavabo); les symboles électriques (prise, interrupteur); les meubles (tables, chaises, lits). Insérer un bloc est instantané: on le place, on le tourne, on le redimensionne. Les blocs évitent de redessiner les mêmes éléments cent fois. Erreur fréquente. Hachurer à une échelle inadaptée: les hachures deviennent si denses qu'elles forment un aplat noir, ou si espacées qu'elles ne ressemblent plus à rien. Toujours ajuster l'échelle du motif au type de plan (par exemple, hachures plus fines au 1 sur 50 qu'au 1 sur 200). Points clés. Cotation: linéaire, alignée, angulaire, radiale. Style de cote égale cohérence. Hachures: motif, échelle, angle, couleur. Blocs: réutilisation des éléments."]],"15":[["fr","Chapitre VI, Mise en page et impression. Fondements théoriques. La mise en page. La mise en page (ou présentation, \"layout\" en anglais) prépare le dessin pour l'impression. Elle comporte: le choix du format (A4, A3, A2); la définition de l'échelle d'impression (1 sur 100, 1 sur 50); la disposition des vues (plan, coupe, façade); le cartouche: nom du projet, échelle, date, auteur, numéro de plan; la légende et la nomenclature. L'impression. Avant d'imprimer, il faut vérifier: le format du papier (A3 pour un plan d'étage détaillé); l'échelle (1 sur 100, 1 sur 50 selon le plan); les épaisseurs de traits (trait fort pour les murs, trait fin pour les cotes); les couleurs ou le noir et blanc (selon l'usage); l'aperçu avant impression (pour éviter les mauvaises surprises). L'impression peut se faire sur imprimante classique (A4) ou sur traceur (A1, A0). Erreur fréquente. Imprimer sans vérifier l'échelle. Résultat: le plan sort à une échelle incorrecte (par exemple 1 sur 80 au lieu de 1 sur 100). Sur le chantier, les cotes sont fausses, l'ouvrage est mal construit. Il faut toujours mesurer une cote de référence sur le tirage papier pour vérifier l'échelle. Points clés. Mise en page: format, échelle, cartouche, légende. Vérifier avant impression: format, échelle, traits, couleurs. Traceur pour les grands formats. Toujours contrôler l'échelle du tirage."]],"16":[["fr","Chapitre VII, Les métrés assistés. Fondements théoriques. Le métré à partir du plan. Le métré consiste à calculer les quantités de matériaux et d'ouvrages nécessaires à partir des plans: surfaces (murs, planchers) en m au carré; volumes (béton, terrassement) en m au cube; longueurs (linéaux, câbles) en m; quantités (parpaings, sacs de ciment, barres d'acier). L'assistance DAO. Les logiciels de DAO offrent des outils de mesure automatique: distance entre deux points; surface d'une zone (polygone fermé); volume (par extrusion de surface); nomenclatures (tableaux récapitulatifs des blocs et des quantités). On peut ainsi générer rapidement un tableau de métré à partir du plan, en évitant les erreurs de report et en gagnant un temps considérable. Exemple corrigé. Donnée: sur un plan au 1 sur 100, une pièce rectangulaire mesure 5 centimètres multiplié par 4 centimètres. Étape 1: dimensions réelles: 5 centimètres multiplié par 100 égale 5 mètres; 4 centimètres multiplié par 100 égale 4 mètres. Étape 2: surface égale 5 multiplié par 4 égale 20 mètres carrés. Application: pour carreler la pièce avec des carreaux de 40 multiplié par 40 centimètres (0,16 mètres carrés chacun), il faut 20 sur 0,16 égale 125 carreaux, plus 5-10 pour cent de pertes, donc 130 à 138 carreaux. Erreur fréquente. Oublier de convertir les unités ou de respecter l'échelle. Une surface calculée sur le plan (en cm au carré ) doit être convertie en m au carré réels: multiplier par (échelle) au carré. Au 1 sur 100, une surface de 1 centimètres carrés sur le plan correspond à 1 mètres carrés réel. Points clés. Métré égale quantités (surfaces, volumes, longueurs). DAO: mesure automatique, nomenclatures. Convertir les unités et respecter l'échelle. Prévoir 5-10 pour cent de pertes."]],"17":[["fr","Chapitre VIII, Le projet et le dossier graphique. Fondements théoriques. Le dossier graphique complet. Un dossier graphique est l'ensemble des plans qui décrivent un projet. Il comporte typiquement: Plan de situation (1 sur 1000 ou 1 sur 2000). Plan de masse (1 sur 500 ou 1 sur 200). Plan de fondation (1 sur 50 ou 1 sur 100). Plans d'étage (1 sur 50 ou 1 sur 100). Coupes (1 sur 50 ou 1 sur 100). Façades (1 sur 50 ou 1 sur 100). Plans de détail (1 sur 20 ou 1 sur 10). Plans de coffrage et de ferraillage (1 sur 50 ou 1 sur 20). Nomenclatures et légendes. Le dossier graphique: un ensemble cohérent de plans. La démarche de projet. Analyse du besoin: programme, surface, budget, contraintes du terrain. Esquisse: premières idées, croquis rapides. Avant-projet: plans au 1 sur 100, choix techniques. Projet d'exécution: plans détaillés, notes de calcul. Contrôle: vérifier la cohérence, l'exhaustivité, la lisibilité. Présentation: dossier assemblé, cartouche, légende, échelle. Le contrôle du dossier. Cohérence: mêmes cotes entre plan et coupe, mêmes niveaux. Exhaustivité: toutes les vues nécessaires sont présentes. Lisibilité: traits nets, texte clair, légende. Normalisation: échelles, cotation, symboles conformes. Erreur fréquente. Rendre un dossier incomplet ou incohérent. Par exemple: le plan d'étage montre un mur à 3 mètres, la coupe montre le même mur à 2,80 mètres. Ou: il manque le plan de fondation. Le chantier ne peut pas démarrer, ou pire, il démarre avec des erreurs qui coûteront cher. Un dossier doit être vérifié avant remise. Points clés. Dossier égale ensemble de plans (situation, masse, fondation, étage, coupe, façade, détails). Démarche: analyse, donc esquisse, donc avant-projet, donc exécution, donc contrôle, donc présentation. Cohérence, exhaustivité, lisibilité. Un dossier incomplet bloque le chantier."]],"18":[["fr","Applications R D C, Le dessin de bâtiment en contexte congolais. Contextualisation. La DAO dans les bureaux d'études congolais. À Kinshasa, Lubumbashi, Goma et Bukavu, les bureaux d'études et les cabinets d'architecture utilisent de plus en plus la DAO pour produire leurs plans. Les entreprises de construction (bâtiments, routes, ouvrages d'art) ont besoin de dessinateurs pour: produire les plans d'exécution à partir des plans d'architecte; mettre à jour les plans après modifications; préparer les dossiers de consultation des entreprises; calculer les métrés pour les devis. Défis et solutions. Défis: Coût des licences AutoCAD (élevé). Manque de formation à la DAO dans certaines écoles. Pannes d'électricité (délestages) qui interrompent le travail. Ordinateurs parfois anciens ou peu performants. Solutions: Utiliser des logiciels gratuits (LibreCAD, FreeCAD, QCAD) qui offrent des fonctionnalités suffisantes pour le dessin de bâtiment. Se former en autodidacte (tutoriels en ligne, exercices). Prévoir un onduleur ou un groupe électrogène. Travailler sur des fichiers légers, organiser les calques. Intégration des matériaux locaux. Les plans doivent intégrer les dimensions des matériaux locaux: briques artisanales (dimensions variables); parpaings standard (15 multiplié par 20 multiplié par 40 centimètres); bois de charpente (sections commerciales); tôles galvanisées (longueurs standard). Un plan qui prévoit des matériaux non disponibles localement sera un cauchemar pour le chantier. Le dessinateur doit connaître les matériaux du marché congolais. Débouchés. Dessinateur en bâtiment. Dessinateur-projeteur (bureau d'études). Technicien de bureau d'études. Assistant d'architecte. Métreur. Chef de chantier. Poursuite d'études en génie civil ou en architecture."]],"19":[["fr","Synthèse générale du cours. Ce qu'il faut retenir. Les idées maîtresses. Dessin égale langage commun de tous les acteurs du chantier. Formats: A0 à A4; échelles: 1 sur 200, 1 sur 100, 1 sur 50, 1 sur 20. Traits: fort (contours), fin (cotes), interrompu (caché), mixte (axes). Cotation: exhaustive, non redondante, en mm. Hachures: représentation des matériaux. Plans: situation, masse, fondation, étage, façade, coupe, détail. Coffrage (forme) et ferraillage (aciers) pour le béton armé. DAO: interface, calques, outils de dessin et de modification. Cotation et hachures en DAO: outils automatiques plus styles. Blocs: réutilisation des portes, fenêtres, symboles. Mise en page: format, échelle, cartouche, impression. Métrés: surfaces, volumes, longueurs, avec conversion d'unités. Dossier graphique: cohérent, exhaustif, lisible. Les erreurs à ne plus commettre. Oublier une cote ou coter deux fois la même dimension. Confondre plan de situation et plan de masse. Confondre plan de coffrage et plan de ferraillage. Dessiner en DAO sans organiser les calques. Hachurer à une échelle inadaptée. Imprimer sans vérifier l'échelle. Oublier de convertir les unités dans les métrés. Rendre un dossier incomplet ou incohérent. Tableau récapitulatif des commandes DAO essentielles. Commande. Rôle. LIGNE ou LINE. Segment droit. POLYLIGN ou PLINE. Suite de segments et d'arcs. CERCLE ou CIRCLE. Cercle. RECTANG ou RECTANG. Rectangle. DEPLACER ou MOVE. Translation. COPIER ou COPY. Duplication. DECALER ou OFFSET. Parallèles. AJUSTER ou TRIM. Couper. PROLONGER ou EXTEND. Étendre. HACHURE ou HATCH. Remplir une zone. COTE ou DIM. Cotation. BLOC ou BLOCK. Créer un bloc."]],"20":[["fr","Évaluation finale, Dessin de Bâtiment et DAO. Consigne. Répondez aux 22 questions ci-dessous. Chaque question a une seule bonne réponse. Cliquez sur « Valider mes réponses » pour obtenir votre score. Bonne chance! Conseil. En cas d'erreur, relisez la diapositive correspondante. Les questions couvrent les normes, les plans, la DAO, les métrés et le dossier graphique."]]}};
+  var CACHE = "ecolia-cours-v1";                       // même cache que l'application
+  var PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  var PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+  var DL = '<svg viewBox="0 0 24 24"><path d="M11 3h2v9.2l3.6-3.6L18 10l-6 6-6-6 1.4-1.4L11 12.2V3zM5 19h14v2H5z"/></svg>';
+  var OK = '<svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>';
+  // Réparation du quiz : certains cours stockent les choix sous "opts" (ou autre) au lieu de "options"
+  try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+      questions.forEach(function (q) {
+        if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+        if (q.text === undefined) q.text = q.question || q.q || q.enonce || q.titre || "";
+        if (typeof q.correct === "undefined") {
+          if (typeof q.answer !== "undefined") q.correct = q.answer;
+          else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+        }
+      });
+    }
+  } catch (e) {}
+  var synth = window.speechSynthesis || null;
+  var HAS_CACHE = !!(window.caches && window.caches.open);
+  var NATIVE = false;           // APK ECOLIA : pont Java "CoursInterface" (fichiers dans le dossier de l'application)
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  var LATER = "ecolia_audio_later_" + CFG.code;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+  function init() {
+    if (document.getElementById("ecolia-audio-btn")) return;
+
+    // ---------- éléments de l'interface ----------
+    var btn = document.createElement("button");
+    btn.id = "ecolia-audio-btn"; btn.type = "button"; btn.className = "ecolia-off";
+    btn.setAttribute("aria-label", "Écouter la leçon"); btn.innerHTML = PLAY;
+    var dlBtn = document.createElement("button");
+    dlBtn.id = "ecolia-dl-btn"; dlBtn.type = "button"; dlBtn.className = "ecolia-off";
+    dlBtn.innerHTML = DL;
+    var host = document.querySelector(".header-right");
+    if (host) { host.insertBefore(dlBtn, host.firstChild); host.insertBefore(btn, dlBtn); }   // dans la barre du haut : ne scrolle jamais
+    else { btn.className += " ecolia-fixed"; document.body.appendChild(btn); }
+
+    var banner = document.createElement("div");
+    banner.id = "ecolia-audio-banner";
+    banner.innerHTML = '<span class="eab-txt"></span><span class="eab-act"></span><div class="eab-bar"><i></i></div>';
+    var content = document.getElementById("content");
+    if (content && content.parentNode) content.parentNode.insertBefore(banner, content);
+    else document.body.insertBefore(banner, document.body.firstChild);
+    var txtEl = banner.querySelector(".eab-txt"), actEl = banner.querySelector(".eab-act");
+    var barEl = banner.querySelector(".eab-bar"), barI = barEl.firstChild;
+
+    var audio = new Audio();            // un seul élément Audio, réutilisé (exigé par les navigateurs mobiles)
+    audio.preload = "auto";
+    var st = { idx: -1, auto: false, advancing: false, mode: null, speaking: false, token: 0, chunks: [], ci: 0, blobUrl: null, playTok: 0 };
+    var dl = { state: "none", cached: 0, busy: false, cancel: false };   // none | partial | full
+    var bnMode = null, hideTimer = null;
+    if (synth && synth.getVoices) { try { synth.getVoices(); } catch (e) {} }
+
+    function cur() {
+      try { if (typeof currentSlide === "number") return currentSlide; } catch (e) {}
+      return 0;
+    }
+    function hasMp3(i) { return CFG.available.indexOf(i + 1) !== -1; }
+    function fb(i) { return CFG.fallback && CFG.fallback[String(i + 1)]; }
+    function hasAudio(i) { return hasMp3(i) || (!!synth && !!fb(i)); }
+    function urlN(n) {   // dans l'APK la page est sur https://app.local : une adresse relative doit pointer vers le site
+      var b = CFG.base;
+      if (NATIVE && !/^https?:/i.test(b)) b = "https://ecolia-course.github.io/" + b.replace(/^(\.\.\/|\.\/)+/, "");
+      return new URL(b + nameN(n), location.href).href;
+    }
+    function setIcon(playing) { btn.innerHTML = playing ? PAUSE : PLAY; }
+    function isPlaying() { return st.mode === "mp3" ? !audio.paused : (st.mode === "tts" && st.speaking); }
+    function mo() { return "≈ " + CFG.sizeMo + " Mo"; }
+    function nameN(n) { return "audio_" + CFG.code + "_" + n + ".mp3"; }
+
+    // ====================================================================
+    //  Stockage hors ligne : 2 moteurs, même interface
+    //    - APK : fichiers du dossier de l'application (CoursInterface), servis par https://app.local/cours/
+    //    - Web : Cache Storage du navigateur (même cache que l'application web)
+    // ====================================================================
+    function nativeStore() {
+      var okKey = "ecolia_audio_ok_" + CFG.code;
+      function readOk() { try { return JSON.parse(lsGet(okKey) || "[]"); } catch (e) { return []; } }
+      function writeOk(a) { lsSet(okKey, JSON.stringify(a)); }
+      function exists(n) { try { return !!CoursInterface.exists(nameN(n)); } catch (e) { return false; } }
+      function local(n) { return location.origin + "/cours/" + nameN(n); }
+      function verify(n) {                                   // fichier complet ? (taille exacte connue à la génération)
+        return fetch(local(n), { cache: "no-store" }).then(function (r) { return r.blob(); }).then(function (b) {
+          var exp = CFG.sizes && CFG.sizes[String(n)];
+          return (b.size > 2000 && (!exp || b.size === exp)) ? b : null;
+        }).catch(function () { return null; });
+      }
+      return {
+        list: function () {
+          var ok = readOk().filter(exists); writeOk(ok); return Promise.resolve(ok);
+        },
+        get: function (n) { return exists(n) ? verify(n) : Promise.resolve(null); },
+        put: function (n) {
+          return new Promise(function (res, rej) {
+            try { CoursInterface.download(urlN(n), nameN(n)); } catch (e) { return rej(e); }
+            var t0 = Date.now();
+            function next() { if (Date.now() - t0 > 120000) rej(new Error("délai dépassé")); else setTimeout(poll, 800); }
+            function poll() {
+              if (!exists(n)) return next();
+              verify(n).then(function (b) {
+                if (!b) return next();
+                var ok = readOk(); if (ok.indexOf(n) < 0) ok.push(n); writeOk(ok); res();
+              });
+            }
+            setTimeout(poll, 800);
+          });
+        },
+        del: function (n) {
+          try { CoursInterface.delete(nameN(n)); } catch (e) {}
+          writeOk(readOk().filter(function (x) { return x !== n; }));
+          return Promise.resolve();
+        }
+      };
+    }
+    function cacheStore() {
+      return {
+        list: function () {
+          return caches.open(CACHE).then(function (c) {
+            return Promise.all(CFG.available.map(function (n) {
+              return c.match(urlN(n)).then(function (r) {
+                if (!r) return 0;
+                if ((r.headers.get("content-type") || "").indexOf("audio") !== 0) { c.delete(urlN(n)); return 0; }   // ancien contenu invalide
+                return n;
+              });
+            }));
+          }).then(function (a) { return a.filter(Boolean); });
+        },
+        get: function (n) {
+          return caches.open(CACHE).then(function (c) { return c.match(urlN(n)); })
+            .then(function (r) { return r ? r.blob() : null; }).then(function (b) { return b && b.size > 2000 ? b : null; });
+        },
+        put: function (n) {
+          var u = urlN(n);
+          return fetch(u, { cache: "no-store" }).then(function (r) {
+            if (!r.ok || r.status !== 200) throw new Error("HTTP " + r.status);
+            return r.blob();
+          }).then(function (b) {
+            if (b.size < 2000 || (b.type && b.type.indexOf("audio") !== 0 && b.type.indexOf("octet") < 0)) throw new Error("fichier invalide");
+            return caches.open(CACHE).then(function (c) { return c.put(u, new Response(b, { headers: { "Content-Type": "audio/mpeg" } })); });
+          });
+        },
+        del: function (n) { return caches.open(CACHE).then(function (c) { return c.delete(urlN(n)); }); }
+      };
+    }
+    var store = NATIVE ? nativeStore() : (HAS_CACHE ? cacheStore() : null);
+
+    // ====================================================================
+    //  Bannière : invitation, confirmations, progression
+    // ====================================================================
+    function showBanner(mode, text, buttons, pct) {
+      clearTimeout(hideTimer);
+      bnMode = mode;
+      txtEl.textContent = text;
+      actEl.innerHTML = "";
+      (buttons || []).forEach(function (b) {
+        var e = document.createElement("button");
+        e.type = "button"; e.textContent = b.label; if (b.pri) e.className = "pri";
+        e.addEventListener("click", function (ev) { ev.stopPropagation(); b.fn(); });
+        actEl.appendChild(e);
+      });
+      if (typeof pct === "number") { barEl.style.display = "block"; barI.style.width = pct + "%"; }
+      else barEl.style.display = "none";
+      banner.classList.add("on");
+    }
+    function hideBanner() { clearTimeout(hideTimer); bnMode = null; banner.classList.remove("on"); }
+    function flash(text) { showBanner("info", text, []); hideTimer = setTimeout(hideBanner, 4000); }
+
+    function refreshUI() {
+      var show = !!store && CFG.available.length > 0;
+      dlBtn.classList.toggle("ecolia-off", !show);
+      dlBtn.classList.toggle("ecolia-full", dl.state === "full");
+      dlBtn.innerHTML = dl.state === "full" ? OK : DL;
+      dlBtn.setAttribute("aria-label", dl.state === "full" ? "Audios téléchargés : supprimer" : "Télécharger les audios");
+      dlBtn.title = dlBtn.getAttribute("aria-label");
+    }
+    function refreshCacheState(done) {
+      if (!store) { dl.state = "none"; refreshUI(); if (done) done(); return; }
+      store.list().then(function (ok) {
+        dl.cached = ok.length;
+        dl.state = dl.cached === 0 ? "none" : (dl.cached >= CFG.available.length ? "full" : "partial");
+      }).catch(function () { dl.state = "none"; }).then(function () { refreshUI(); if (done) done(); });
+    }
+
+    function askDownload(fromInvite) {
+      var left = CFG.available.length - dl.cached;
+      var txt = dl.state === "partial"
+        ? "Il reste " + left + " audio(s) à télécharger pour écouter ce cours sans internet."
+        : "🔊 Télécharger les audios de ce cours (" + mo() + ") pour les écouter sans internet ? Wi-Fi recommandé.";
+      showBanner(fromInvite ? "invite" : "confirm", txt, [
+        { label: fromInvite ? "Plus tard" : "Annuler", fn: function () { if (fromInvite) lsSet(LATER, "1"); hideBanner(); } },
+        { label: "Télécharger", pri: true, fn: startDownload }
+      ]);
+    }
+    function askDelete() {
+      showBanner("confirm", "Supprimer les audios téléchargés de ce cours (" + mo() + ") ? Vous pourrez toujours les écouter en ligne.", [
+        { label: "Annuler", fn: hideBanner },
+        { label: "Supprimer", pri: true, fn: doDelete }
+      ]);
+    }
+
+    function startDownload() {
+      if (dl.busy || !store) return;
+      dl.busy = true; dl.cancel = false;
+      var total = CFG.available.length, done = 0, quota = false, fails = 0, todo = [];
+      store.list().then(function (have) {
+        CFG.available.forEach(function (n) { if (have.indexOf(n) < 0) todo.push(n); });
+        done = total - todo.length;
+        function paint() {
+          var msg = "Téléchargement des audios : " + done + " / " + total;
+          if (bnMode === "progress") {                  // met à jour sans recréer les boutons (sinon un appui peut être perdu)
+            txtEl.textContent = msg; barI.style.width = Math.round(done / total * 100) + "%";
+          } else {
+            showBanner("progress", msg, [
+              { label: "Annuler", fn: function () { dl.cancel = true; } }
+            ], Math.round(done / total * 100));
+          }
+        }
+        paint();
+        function worker() {
+          if (dl.cancel || quota || !todo.length) return Promise.resolve();
+          var n = todo.shift();
+          return store.put(n).then(function () { done++; paint(); }).catch(function (e) {
+            if (e && (e.name === "QuotaExceededError" || /quota/i.test(String(e.message)))) quota = true;
+            fails++;
+          }).then(worker);
+        }
+        return Promise.all([worker(), worker()]);
+      }).catch(function () { fails++; }).then(function () {
+        dl.busy = false;
+        refreshCacheState(function () {
+          if (dl.state === "full") flash("✓ Audios téléchargés : le cours se lit maintenant sans internet.");
+          else if (dl.cancel) flash("Téléchargement interrompu (" + dl.cached + " / " + total + "). Vous pourrez reprendre plus tard.");
+          else showBanner("error", quota ? "Espace insuffisant sur l'appareil. Libérez de la place puis réessayez."
+            : "Certains audios n'ont pas pu être téléchargés (connexion ?).", [
+            { label: "Fermer", fn: hideBanner }, { label: "Réessayer", pri: true, fn: startDownload }
+          ]);
+        });
+      });
+    }
+    function doDelete() {
+      if (!store) return;
+      Promise.all(CFG.available.map(function (n) { return store.del(n); })).catch(function () {}).then(function () {
+        lsDel(LATER);
+        refreshCacheState(function () { flash("Audios supprimés de cet appareil."); });
+      });
+    }
+
+    dlBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (dl.busy) return;
+      if (dl.state === "full") askDelete(); else askDownload(false);
+    });
+
+    // ====================================================================
+    //  Voix intégrée au téléphone (hors ligne, sans limite)
+    // ====================================================================
+    function pickVoice(lang) {
+      var vs = [];
+      try { vs = synth.getVoices() || []; } catch (e) {}
+      var pre = lang === "en" ? "en" : "fr", best = null;
+      for (var k = 0; k < vs.length; k++) {
+        var v = vs[k];
+        if ((v.lang || "").toLowerCase().indexOf(pre) !== 0) continue;
+        if (!best || (v.localService && !best.localService)) best = v;
+      }
+      return best;
+    }
+    function hardSplit(text, max) {
+      var out = [];
+      while (text.length > max) {
+        var cut = text.lastIndexOf(" ", max);
+        if (cut < 40) cut = max;
+        out.push(text.slice(0, cut)); text = text.slice(cut).replace(/^\s+/, "");
+      }
+      if (text) out.push(text);
+      return out;
+    }
+    function buildChunks(segs) {                  // morceaux courts : évite l'arrêt des longs textes sur Chrome
+      var out = [];
+      segs.forEach(function (s) {
+        var cur2 = "", parts = s[1].match(/[^.!?;:]+[.!?;:]*\s*/g) || [s[1]];
+        parts.forEach(function (p) {
+          if (cur2 && (cur2 + p).length > 160) { out.push({ lang: s[0], text: cur2.trim() }); cur2 = p; }
+          else cur2 += p;
+        });
+        if (cur2.trim()) out.push({ lang: s[0], text: cur2.trim() });
+      });
+      var res = [];
+      out.forEach(function (c) { hardSplit(c.text, 190).forEach(function (t) { res.push({ lang: c.lang, text: t }); }); });
+      return res;
+    }
+    function speakFrom(tk) {
+      if (tk !== st.token) return;
+      if (st.ci >= st.chunks.length) {
+        st.speaking = false; st.mode = null; st.ci = 0; setIcon(false);
+        if (st.auto) goNext();
+        return;
+      }
+      var c = st.chunks[st.ci];
+      var u = new SpeechSynthesisUtterance(c.text);
+      u.lang = c.lang === "en" ? "en-US" : "fr-FR";
+      var v = pickVoice(c.lang);
+      if (v) { u.voice = v; u.lang = v.lang; }
+      u.rate = 0.95;
+      u.onend = function () { if (tk !== st.token) return; st.ci++; speakFrom(tk); };
+      u.onerror = function () { if (tk !== st.token) return; st.speaking = false; setIcon(false); st.auto = false; };
+      synth.speak(u);
+    }
+    function startTts(from) {
+      st.token++;
+      var tk = st.token;
+      st.mode = "tts"; st.speaking = true; st.ci = from || 0; setIcon(true);
+      var busy = false;
+      try { busy = synth.speaking || synth.pending; synth.cancel(); } catch (e) {}
+      if (busy) setTimeout(function () { speakFrom(tk); }, 120);   // laisse cancel() se terminer
+      else speakFrom(tk);                                          // sinon tout de suite (exigé par iOS)
+    }
+    function playVoice() {
+      if (!(synth && fb(st.idx))) { st.auto = false; return false; }
+      if (!st.chunks.length) st.chunks = buildChunks(fb(st.idx));
+      startTts(st.ci);
+      return true;
+    }
+
+    // ====================================================================
+    //  Lecture
+    // ====================================================================
+    function freeBlob() { if (st.blobUrl) { try { URL.revokeObjectURL(st.blobUrl); } catch (e) {} st.blobUrl = null; } }
+    function stopAll() {
+      st.playTok++;
+      try { audio.pause(); audio.currentTime = 0; } catch (e) {}
+      st.token++;
+      try { if (synth) synth.cancel(); } catch (e) {}
+      st.speaking = false; st.mode = null; st.chunks = []; st.ci = 0;
+      setIcon(false);
+    }
+    function pauseNow() {
+      if (st.mode === "mp3") audio.pause();
+      else if (st.mode === "tts") {
+        st.token++;
+        try { synth.cancel(); } catch (e) {}
+        st.speaking = false; setIcon(false);      // st.ci conservé : la reprise repart de la phrase en cours
+      }
+    }
+    function startAudio(src, tok) {
+      if (tok !== st.playTok) return;
+      if (audio.getAttribute("data-src") !== src) { audio.setAttribute("data-src", src); audio.src = src; }
+      var p = audio.play();
+      if (p && p.catch) p.catch(function (err) {
+        console.warn("ECOLIA audio :", err);
+        if (tok !== st.playTok) return;
+        if (!(err && err.name === "NotAllowedError") && playVoice()) return;   // lecture impossible : voix du téléphone
+        setIcon(false); st.auto = false;
+      });
+    }
+    function playCurrent() {
+      var i = st.idx;
+      if (hasMp3(i)) {
+        var tok = ++st.playTok, u = urlN(i + 1);
+        st.mode = "mp3";
+        if (!navigator.onLine && dl.state === "none") { st.mode = null; if (playVoice()) return; }   // hors ligne et non téléchargé
+        if (store && dl.state !== "none") {                     // téléchargé : lecture locale, sans réseau
+          store.get(i + 1)
+            .then(function (b) {
+              if (tok !== st.playTok) return;
+              if (b) { freeBlob(); st.blobUrl = URL.createObjectURL(new Blob([b], { type: "audio/mpeg" })); startAudio(st.blobUrl, tok); }
+              else startAudio(u, tok);
+            }).catch(function () { startAudio(u, tok); });
+        } else startAudio(u, tok);                              // sinon lecture en ligne (appel immédiat, exigé par iOS)
+      } else if (!playVoice()) {
+        st.auto = false;
+      }
+    }
+
+    function onSlideChange(i) {
+      var wasAdvancing = st.advancing;
+      st.advancing = false;
+      st.idx = i;
+      btn.classList.toggle("ecolia-off", !hasAudio(i));
+      stopAll();
+      audio.removeAttribute("data-src");
+      freeBlob();
+      if (bnMode === "invite" && i !== 0) hideBanner();       // l'invitation n'apparaît qu'à la première slide
+      if (wasAdvancing && st.auto) setTimeout(playCurrent, 500);   // enchaînement automatique
+      else st.auto = false;                                         // changement manuel : on coupe tout
+    }
+    function goNext() {
+      if (st.idx + 1 >= CFG.count) { st.auto = false; return; }
+      st.advancing = true;
+      if (typeof nextSlide === "function") nextSlide();
+      else { var nb = document.getElementById("nextBtn"); if (nb) nb.click(); }
+      setTimeout(function () { st.advancing = false; }, 4000);
+    }
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var i = cur();
+      if (i !== st.idx) onSlideChange(i);
+      if (isPlaying()) { st.auto = false; pauseNow(); }
+      else { st.auto = true; playCurrent(); }
+    });
+    audio.addEventListener("play", function () { setIcon(true); });
+    audio.addEventListener("pause", function () { if (st.mode === "mp3") setIcon(false); });
+    audio.addEventListener("error", function () {
+      if (st.mode === "mp3" && playVoice()) return;            // fichier introuvable / hors ligne : voix du téléphone
+      setIcon(false); st.auto = false;
+    });
+    audio.addEventListener("ended", function () { setIcon(false); if (st.auto) goNext(); });
+    window.addEventListener("pagehide", function () { stopAll(); freeBlob(); });
+
+    // ---------- démarrage ----------
+    refreshCacheState(function () {
+      if (store && CFG.available.length && dl.state !== "full" && navigator.onLine && cur() === 0 && !lsGet(LATER)) askDownload(true);
+    });
+    st.idx = -1;
+    setInterval(function () { var i = cur(); if (i !== st.idx) onSlideChange(i); }, 250);   // suit la slide affichée
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+<!-- ECOLIA_AUDIO_PLAYER_END -->
+</body>
+</html>

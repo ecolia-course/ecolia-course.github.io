@@ -1,0 +1,1536 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="teal">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>ECOLIA — Petrochimie4</title>
+<style>
+[data-theme="bleu"]   { --p1:#0d2b4f; --p2:#1565c0; --p3:#07172e; --p4:#12437a; --p5:#5b8fd0; --bg:#e8f0fb; --bg2:#cfdff5; --bd:#a9c3e8; --soft:#dde8f7; --btn:#2a67b0; }
+[data-theme="vert"]   { --p1:#14442e; --p2:#2e7d32; --p3:#0b2b1a; --p4:#1f5c3a; --p5:#4f9a6b; --bg:#e8f5ec; --bg2:#c8e6d2; --bd:#a5cdb2; --soft:#dcefe2; --btn:#2f7a4f; }
+[data-theme="violet"] { --p1:#2d1b4e; --p2:#6a1b9a; --p3:#1a0f2e; --p4:#4a148c; --p5:#9c6fd0; --bg:#f1e9fb; --bg2:#dccbf2; --bd:#c4a8e6; --soft:#e8ddf6; --btn:#7e3fb2; }
+[data-theme="rouge"]  { --p1:#4a1010; --p2:#b71c1c; --p3:#2b0a0a; --p4:#8e1b1b; --p5:#d9706a; --bg:#fbeaea; --bg2:#f3cdcb; --bd:#e8a9a5; --soft:#f8dede; --btn:#a62a2a; }
+[data-theme="orange"] { --p1:#4e2a0c; --p2:#ef6c00; --p3:#2e1604; --p4:#b34a00; --p5:#f0a15a; --bg:#fff1e0; --bg2:#fbdcb8; --bd:#f3c08a; --soft:#fdebd6; --btn:#c9650a; }
+[data-theme="teal"]   { --p1:#0b3a3a; --p2:#00796b; --p3:#062626; --p4:#00574b; --p5:#4db6ac; --bg:#e0f2f1; --bg2:#b2dfdb; --bd:#80cbc4; --soft:#d5ecea; --btn:#26897d; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:linear-gradient(160deg,var(--p1) 0%,var(--p2) 50%,var(--p3) 100%); display:flex; justify-content:center; align-items:center; padding:8px; }
+.container { width:100%; max-width:1400px; background:#fefdf8; border-radius:20px; overflow:hidden; display:flex; flex-direction:column; height:100%; max-height:100vh; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.progress-bar { height:4px; background:var(--bg2); flex-shrink:0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--p5),var(--p4)); width:0%; transition:width 0.3s; }
+.header { padding:10px 16px; background:var(--bg); border-bottom:1px solid var(--bd); display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+.header h1 { color:var(--p4); font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box { display:flex; background:white; border-radius:20px; padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.search-box input { border:none; padding:6px 10px; border-radius:20px; outline:none; width:130px; font-size:0.8rem; }
+.search-box button { background:none; border:none; cursor:pointer; padding:4px 8px; font-size:0.85rem; color:var(--p2); }
+.badge { background:var(--p5); color:white; padding:4px 10px; border-radius:20px; font-weight:bold; font-size:0.75rem; }
+.search-nav { display:none; gap:4px; background:var(--bg2); padding:2px 8px; border-radius:20px; align-items:center; font-size:0.75rem; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:0.9rem; color:var(--p4); padding:2px 4px; }
+.content { padding:28px 32px; flex:1; overflow-y:auto; background:#fff; scroll-behavior:smooth; line-height:1.85; }
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.slide-title { color:var(--p1); font-size:1.5rem; font-weight:700; padding-bottom:12px; margin-bottom:20px; border-bottom:2px solid var(--p5); }
+.slide-content { color:var(--p3); font-size:1rem; }
+.empty-state { display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-height:60vh; padding:40px 20px; gap:18px; }
+.empty-state .icon { width:72px; height:72px; border-radius:50%; background:var(--bg); border:2px solid var(--bd); display:flex; align-items:center; justify-content:center; color:var(--p2); font-size:2rem; font-weight:300; }
+.empty-state h2 { color:var(--p1); font-size:1.4rem; font-weight:700; margin:0; }
+.empty-state p { color:#666; font-size:0.95rem; max-width:520px; line-height:1.7; }
+.empty-state .tag { display:inline-block; padding:6px 14px; background:var(--bg); color:var(--p4); border:1px solid var(--bd); border-radius:20px; font-size:0.8rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; }
+.bloc { padding:18px 22px; border-radius:12px; margin:22px 0; line-height:1.85; }
+.bloc-label { font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; opacity:0.7; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:var(--bg); border-left:4px solid var(--p5); }
+.theorie .bloc-label { color:var(--p4); }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.sources { background:#f5f5f5; padding:12px 16px; border-radius:10px; margin-top:26px; font-size:0.82rem; color:#666; border-left:3px solid #999; line-height:1.6; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:var(--p1); }
+.quiz-container { padding:22px; background:var(--bg); border-radius:16px; }
+.quiz-question { background:white; border-radius:10px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.quiz-question p { font-weight:600; margin-bottom:10px; color:var(--p1); }
+.quiz-question label { display:block; padding:8px 10px; margin:4px 0; border-radius:6px; cursor:pointer; transition:background 0.2s; }
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit { background:var(--btn); color:white; border:none; padding:12px 24px; border-radius:30px; font-size:1rem; cursor:pointer; font-weight:600; margin-top:14px; }
+.quiz-result { margin-top:16px; font-weight:600; }
+.controls { padding:8px 16px; background:#fafafa; border-top:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0; }
+.nav-btn { background:white; color:var(--p4); border:1px solid #ccc; padding:8px 14px; border-radius:8px; font-size:0.82rem; cursor:pointer; font-weight:500; }
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:var(--soft); }
+.content::-webkit-scrollbar-thumb { background:var(--p5); border-radius:3px; }
+@media (max-width:600px) { body { padding:0; } .container { border-radius:0; max-height:100vh; } .content { padding:20px 18px; } .slide-title { font-size:1.25rem; } .search-box input { width:90px; } .header h1 { font-size:0.85rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="header">
+<h1 id="pageTitle">ECOLIA</h1>
+<div class="header-right">
+<div class="search-box">
+<input id="searchInput" placeholder="Rechercher" type="text"/>
+<button id="searchBtn">⌕</button>
+</div>
+<div class="search-nav" id="searchNav">
+<button id="prevResultBtn">‹</button>
+<span id="resultCounter">0/0</span>
+<button id="nextResultBtn">›</button>
+</div>
+<span class="badge" id="slideCounter">0/0</span>
+</div>
+</div>
+<div class="content" id="content"></div>
+<div class="controls">
+<button class="nav-btn" id="prevBtn">← Précédent</button>
+<span class="counter" id="counter">—</span>
+<button class="nav-btn" id="nextBtn">Suivant →</button>
+</div>
+</div>
+<script>
+const COURSE_TITLE = "Pétrochimie (Chimie des Hydrocarbures et Procédés Industriels)";
+const slides = [
+  {
+    title: "Sommaire — Pétrochimie",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Présentation du cours</div>
+        <h3>Pétrochimie : des hydrocarbures aux produits du quotidien</h3>
+        <p>Ce cours de Pétrochimie de la 4e Humanité Technique Industrielle vous fait découvrir comment le pétrole brut et le gaz naturel sont transformés en une multitude de produits chimiques, de matières plastiques, de fibres et de carburants. Vous étudierez les procédés industriels qui se déroulent dans une raffinerie et dans une usine pétrochimique, depuis la molécule jusqu'au produit fini.</p>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Objectifs d'apprentissage</div>
+        <h3>À la fin de ce cours, vous serez capable de :</h3>
+        <ul>
+          <li>Définir la pétrochimie et identifier ses matières premières (naphta, gaz naturel, LGN).</li>
+          <li>Expliquer les grands procédés de conversion primaire : vapocraquage et reformage catalytique.</li>
+          <li>Nommer les grands intermédiaires (éthylène, propylène, butadiène, BTX) et leurs dérivés.</li>
+          <li>Décrire les principaux polymères et le mécanisme de la polymérisation industrielle.</li>
+          <li>Expliquer les étapes du raffinage : distillation, craquage, reformage, hydrocraquage, cokéfaction.</li>
+          <li>Caractériser les produits pétroliers (essence, gasoil, lubrifiants, bitumes) et leurs essais de qualité.</li>
+          <li>Analyser les risques industriels (ATEX, SIS) et les mesures de sécurité en raffinerie.</li>
+          <li>Situer la pétrochimie dans le contexte congolais : SOCIR à Muanda, gaz du lac Kivu, réserves nationales.</li>
+        </ul>
+      </div>
+      <div class="bloc exemple">
+        <div class="bloc-label">Plan des chapitres</div>
+        <h3>Les huit chapitres du programme</h3>
+        <ol>
+          <li>Définition, histoire et importance de la pétrochimie</li>
+          <li>Les matières premières (feedstocks)</li>
+          <li>Les grands procédés de conversion primaire</li>
+          <li>Les grands intermédiaires pétrochimiques</li>
+          <li>Les dérivés et les polymères</li>
+          <li>Le raffinage du pétrole</li>
+          <li>Les produits pétroliers</li>
+          <li>Sécurité, environnement et applications en RDC</li>
+        </ol>
+        <p><strong>Compétence visée :</strong> lire et expliquer un schéma de procédé pétrochimique, relier une molécule de départ à un produit fini, et appliquer les règles de sécurité propres aux installations classées.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Pourquoi la pétrochimie ?",
+    content: `
+      <div class="bloc cas">
+        <div class="bloc-label">Situation-problème</div>
+        <h3>Un objet banal, plusieurs produits pétrochimiques</h3>
+        <p>Prenez une bouteille d'eau en plastique posée sur votre table. En apparence, c'est un objet simple. Pourtant, elle est fabriquée à partir de <strong>PET</strong> (polyéthylène téréphtalate), un polymère issu de la pétrochimie. Le bouchon est en <strong>polyéthylène</strong> ou en <strong>polypropylène</strong>, l'étiquette en <strong>polypropylène</strong> imprimé avec des encres à base de solvants pétrochimiques. Comment le pétrole brut, matière première noire et visqueuse, peut-il aboutir à une bouteille transparente et légère ?</p>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>La pétrochimie au cœur de l'économie moderne</h3>
+        <p>La pétrochimie est l'industrie qui transforme les <strong>hydrocarbures</strong> (molécules composées de carbone et d'hydrogène) issus du pétrole et du gaz naturel en produits chimiques de base. Ces produits servent ensuite à fabriquer des matières plastiques, des fibres textiles synthétiques, des détergents, des peintures, des solvants, des médicaments, des cosmétiques et bien d'autres objets du quotidien.</p>
+        <p>La pétrochimie occupe une place charnière : elle relie l'industrie pétrolière (raffinage) à l'industrie chimique. Sans elle, la plupart des matériaux modernes n'existeraient pas. Son essor est spectaculaire après la Seconde Guerre mondiale, lorsqu'on a compris comment transformer les sous-produits du raffinage en matériaux nouveaux.</p>
+      </div>
+      <div class="bloc exemple">
+        <div class="bloc-label">Exemple concret</div>
+        <h3>Du pétrole à l'ordinateur</h3>
+        <p>Un ordinateur contient un boîtier en <strong>ABS</strong> (acrylonitrile-butadiène-styrène), un écran en <strong>polycarbonate</strong>, des câbles gainés de <strong>PVC</strong>, un clavier en <strong>ABS</strong>. Tous ces matériaux proviennent de la pétrochimie. Le pétrole brut qui sort du sol n'est donc pas seulement un carburant : c'est aussi la source d'innombrables objets techniques.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Définition et place dans l'industrie",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Définition officielle</div>
+        <h3>Qu'est-ce que la pétrochimie ?</h3>
+        <p>La <strong>pétrochimie</strong> est la branche de la chimie industrielle qui utilise les <strong>coupes pétrolières</strong> et le <strong>gaz naturel</strong> comme matières premières pour produire des <strong>intermédiaires chimiques</strong> (éthylène, propylène, benzène…) et des <strong>produits finis</strong> (plastiques, fibres, élastomères, solvants).</p>
+        <p>Elle se distingue du <strong>raffinage</strong> : le raffinage sépare et transforme le pétrole brut en carburants et en coupes ; la pétrochimie utilise certaines de ces coupes pour fabriquer des molécules chimiques. Les deux activités sont complémentaires et souvent intégrées sur un même site industriel.</p>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Place dans la chaîne industrielle</div>
+        <h3>Trois étages successifs</h3>
+        <table>
+          <thead>
+            <tr><th>Étage</th><th>Activité</th><th>Produits</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1. Raffinage</td><td>Séparation et conversion du brut</td><td>Naphta, gazoles, essence, bitumes</td></tr>
+            <tr><td>2. Pétrochimie de base</td><td>Conversion primaire (vapocraquage, reformage)</td><td>Éthylène, propylène, butadiène, BTX</td></tr>
+            <tr><td>3. Pétrochimie de dérivés</td><td>Polymérisation, synthèse organique</td><td>PE, PP, PVC, PS, fibres, élastomères</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>La pétrochimie transforme les hydrocarbures en produits chimiques. Elle ne se confond pas avec le raffinage, mais s'appuie sur lui. Son champ couvre aussi bien le pétrole que le gaz naturel.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — Les matières premières (feedstocks)",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Vue d'ensemble</div>
+        <h3>Les charges de la pétrochimie</h3>
+        <p>On appelle <strong>feedstocks</strong> (charges) les matières premières introduites dans les procédés pétrochimiques. Elles proviennent principalement de trois sources : les coupes pétrolières issues du raffinage, le gaz naturel et ses liquides associés (LGN), et certains produits de spécialité.</p>
+        <ul>
+          <li><strong>Coupes pétrolières :</strong> gaz de raffinerie, <strong>naphta</strong> (coupe la plus importante pour le vapocraquage), gazoles.</li>
+          <li><strong>Gaz naturel :</strong> <strong>méthane</strong> (pour le gaz de synthèse H₂ + CO), <strong>éthane</strong> et <strong>propane</strong> (charges de choix pour produire de l'éthylène).</li>
+          <li><strong>Lubrifiants et solvants :</strong> produits de spécialité servant de base à des formulations plus complexes.</li>
+          <li><strong>Paraffines et bitumes :</strong> sous-produits des huiles, utilisés pour les bougies, les emballages, les routes.</li>
+        </ul>
+      </div>
+      <div class="bloc exemple">
+        <div class="bloc-label">Exemple comparatif</div>
+        <h3>Naphta ou essence ?</h3>
+        <p>Le <strong>naphta</strong> est une coupe intermédiaire dont le point d'ébullition se situe entre celui de l'essence légère et celui du kérosène. Il est destiné principalement à la pétrochimie (vapocraquage) et au reformage. L'<strong>essence</strong> est un produit fini pour moteurs à allumage commandé, caractérisé par son indice d'octane. Confondre les deux est une erreur fréquente : ce ne sont pas les mêmes fractions ni les mêmes usages.</p>
+      </div>
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Le naphta est la charge phare du vapocraquage ; l'éthane et le propane sont des charges légères de choix ; le méthane sert surtout à produire du gaz de synthèse.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — Le vapocraquage",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Principe</div>
+        <h3>Casser les molécules à la vapeur</h3>
+        <p>Le <strong>vapocraquage</strong> (ou craquage à la vapeur) est un procédé thermique qui casse les molécules de <strong>naphta</strong> ou d'<strong>éthane</strong> à haute température (800–850 °C) en présence de vapeur d'eau. La vapeur d'eau joue plusieurs rôles : elle dilue les hydrocarbures, abaisse la pression partielle, réduit les réactions secondaires et limite le dépôt de coke dans les fours.</p>
+        <p>Le produit principal est l'<strong>éthylène</strong> (C₂H₄), avec du <strong>propylène</strong> (C₃H₆), du butadiène, des aromatiques et de l'hydrogène comme coproduits.</p>
+      </div>
+      <div class="bloc exemple">
+        <div class="bloc-label">Schéma simplifié</div>
+        <h3>Les quatre étapes du vapocraquage</h3>
+        <ol>
+          <li><strong>Four de craquage :</strong> le naphta mélangé à la vapeur est chauffé à 800–850 °C pendant quelques dixièmes de seconde.</li>
+          <li><strong>Trempe :</strong> refroidissement brutal pour arrêter la réaction et éviter la dégradation des produits.</li>
+          <li><strong>Compression :</strong> les gaz sont comprimés pour faciliter la séparation.</li>
+          <li><strong>Séparation :</strong> distillation à basse température pour séparer éthylène, propylène, butadiène, hydrogène et coupes lourdes.</li>
+        </ol>
+        <figure>
+          <img data-image-id="petrochimie4_img01" alt="Schéma du vapocraquage : four, trempe, compression et séparation de l'éthylène" />
+          <figcaption>Le vapocraquage : du naphta à l'éthylène.</figcaption>
+        </figure>
+      </div>
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Vapocraquage = haute température + vapeur d'eau → oléfines légères, surtout éthylène. C'est le procédé qui alimente la majorité de la pétrochimie mondiale.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — Le reformage catalytique",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Principe</div>
+        <h3>Fabriquer des aromatiques</h3>
+        <p>Le <strong>reformage catalytique</strong> transforme les <strong>naphtènes</strong> et les <strong>paraffines</strong> du naphta en <strong>aromatiques</strong> (benzène, toluène, xylènes) et en hydrogène, en présence d'un catalyseur au platine supporté sur alumine (Pt/Al₂O₃) et sous pression d'hydrogène.</p>
+        <p>Ce procédé est essentiel pour produire des essences à haut indice d'octane et pour fournir les aromatiques (BTX) utilisés en pétrochimie.</p>
+      </div>
+      <div class="bloc exemple">
+        <div class="bloc-label">Comparaison</div>
+        <h3>Vapocraquage ou reformage ?</h3>
+        <table>
+          <thead>
+            <tr><th>Critère</th><th>Vapocraquage</th><th>Reformage catalytique</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Charge</td><td>Naphta, éthane</td><td>Naphta lourd</td></tr>
+            <tr><td>Conditions</td><td>800–850 °C, vapeur d'eau</td><td>450–550 °C, catalyseur Pt, H₂</td></tr>
+            <tr><td>Produits principaux</td><td>Éthylène, propylène</td><td>Aromatiques, hydrogène</td></tr>
+          </tbody>
+        </table>
+        <p>Erreur fréquente : croire que les deux procédés produisent les mêmes molécules. Le vapocraquage produit des <strong>oléfines</strong> (éthylène, propylène), le reformage produit des <strong>aromatiques</strong> (benzène, toluène, xylènes).</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre IV — Les grands intermédiaires",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Les briques de la pétrochimie</div>
+        <h3>Éthylène, propylène, butadiène, BTX</h3>
+        <ul>
+          <li><strong>Éthylène (C₂H₄)</strong> : produit de base le plus important ; sert au polyéthylène, à l'oxyde d'éthylène, au chlorure de vinyle (PVC), au styrène.</li>
+          <li><strong>Propylène (C₃H₆)</strong> : polypropylène, acrylonitrile, oxyde de propylène, isopropanol.</li>
+          <li><strong>Butadiène (C₄H₆)</strong> : caoutchouc synthétique (SBR, polybutadiène).</li>
+          <li><strong>Aromatiques (BTX)</strong> : <strong>benzène</strong> (styrène, phénol, nylon), <strong>toluène</strong> (solvants, TNT), <strong>xylènes</strong> (acide téréphtalique pour le PET).</li>
+        </ul>
+      </div>
+      <div class="bloc exemple">
+        <div class="bloc-label">Application numérique</div>
+        <h3>Calculer un rendement</h3>
+        <p>Une unité de vapocraquage traite 100 tonnes de naphta par jour et produit 30 tonnes d'éthylène. Quel est le rendement massique en éthylène ?</p>
+        <p><strong>Données :</strong> masse de charge = 100 t ; masse d'éthylène = 30 t.</p>
+        <p><strong>Formule :</strong> rendement (%) = (masse de produit / masse de charge) × 100.</p>
+        <p><strong>Calcul :</strong> (30 / 100) × 100 = 30 %.</p>
+        <p><strong>Interprétation :</strong> 30 % de la masse de naphta est convertie en éthylène. Le reste part en coproduits (propylène, butadiène, aromatiques, gaz de queue).</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre V — Les polymères",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Définition</div>
+        <h3>Qu'est-ce qu'un polymère ?</h3>
+        <p>Un <strong>polymère</strong> est une macromolécule formée par la répétition d'unités structurales appelées <strong>monomères</strong>. La réaction qui assemble les monomères s'appelle la <strong>polymérisation</strong>. On distingue :</p>
+        <ul>
+          <li>La <strong>polymérisation en chaîne</strong> (radicalaire ou ionique), qui concerne surtout les oléfines (éthylène, propylène, styrène).</li>
+          <li>La <strong>polycondensation</strong> (polymérisation par étapes), qui libère une petite molécule (eau, méthanol) ; exemple : le PET.</li>
+        </ul>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Les grands polymères</div>
+        <h3>Panorama des matières plastiques</h3>
+        <table>
+          <thead>
+            <tr><th>Polymère</th><th>Monomère</th><th>Usages typiques</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Polyéthylène (PEBD, PEHD)</td><td>Éthylène</td><td>Emballages, tuyaux, films</td></tr>
+            <tr><td>Polypropylène (PP)</td><td>Propylène</td><td>Pièces automobiles, textiles</td></tr>
+            <tr><td>Polystyrène (PS)</td><td>Styrène</td><td>Emballages, isolation</td></tr>
+            <tr><td>PVC</td><td>Chlorure de vinyle</td><td>Tubes, câbles, revêtements</td></tr>
+            <tr><td>PET</td><td>Éthylène glycol + acide téréphtalique</td><td>Bouteilles, fibres polyester</td></tr>
+          </tbody>
+        </table>
+        <p>Erreur fréquente : croire qu'un polymère est un produit naturel. La plupart des polymères industriels sont synthétiques et issus de la pétrochimie (sauf le caoutchouc naturel et quelques biopolymères).</p>
+      </div>
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Le monomère est la brique ; le polymère est le mur. La polymérisation en chaîne concerne les oléfines ; la polycondensation concerne les polyesters et les polyamides.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre V — Fibres synthétiques, élastomères et additifs",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Trois familles complémentaires</div>
+        <h3>Fibres, élastomères, additifs</h3>
+        <ul>
+          <li><strong>Fibres synthétiques :</strong> polyester, nylon (polyamide), acrylique. Utilisées dans l'habillement, les textiles techniques, les cordages.</li>
+          <li><strong>Élastomères :</strong> caoutchoucs synthétiques (SBR, EPDM, polybutadiène) pour les pneumatiques, les joints, les courroies.</li>
+          <li><strong>Additifs :</strong> substances ajoutées aux polymères pour modifier leurs propriétés : stabilisants (anti-UV, anti-oxydants), plastifiants (souplesse), colorants, retardateurs de flamme, charges minérales.</li>
+        </ul>
+      </div>
+      <div class="bloc exemple">
+        <div class="bloc-label">Exemple professionnel</div>
+        <h3>La gaine d'un câble électrique</h3>
+        <p>La gaine extérieure d'un câble électrique est souvent en <strong>PVC plastifié</strong>. Le PVC apporte la résistance mécanique et l'isolation électrique ; le plastifiant apporte la souplesse nécessaire au câblage ; un stabilisant protège contre le vieillissement thermique et UV ; un retardateur de flamme limite la propagation d'un incendie. Chaque additif a un rôle précis : sans lui, le câble serait cassant, inflammable ou se dégraderait en quelques mois.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VI — La distillation atmosphérique",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Composition du brut</div>
+        <h3>Un mélange complexe d'hydrocarbures</h3>
+        <p>Le <strong>pétrole brut</strong> est un mélange d'<strong>alcanes</strong>, de <strong>naphtènes</strong> et d'<strong>aromatiques</strong>, avec des impuretés (soufre, azote, métaux, sels). Sa composition et ses propriétés physico-chimiques (densité, viscosité, teneur en soufre) conditionnent le choix des procédés de raffinage.</p>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Principe</div>
+        <h3>Séparer par point d'ébullition</h3>
+        <p>La <strong>distillation atmosphérique</strong> sépare le brut en <strong>fractions</strong> selon leur point d'ébullition, dans une colonne fonctionnant à pression atmosphérique. Les fractions légères sortent en haut, les fractions lourdes en bas.</p>
+        <table>
+          <thead>
+            <tr><th>Fraction</th><th>Plage d'ébullition</th><th>Usage</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Gaz de raffinerie</td><td>&lt; 20 °C</td><td>Combustible, GPL</td></tr>
+            <tr><td>Essences</td><td>20–180 °C</td><td>Carburant auto</td></tr>
+            <tr><td>Naphta</td><td>180–220 °C</td><td>Pétrochimie, reformage</td></tr>
+            <tr><td>Kérosène</td><td>220–250 °C</td><td>Carburéacteur aviation</td></tr>
+            <tr><td>Gasoil</td><td>250–350 °C</td><td>Carburant diesel, chauffage</td></tr>
+            <tr><td>Résidu atmosphérique</td><td>&gt; 350 °C</td><td>Distillation sous vide, bitumes</td></tr>
+          </tbody>
+        </table>
+        <figure>
+          <img data-image-id="petrochimie4_img02" alt="Colonne de distillation atmosphérique avec les coupes : gaz, essence, naphta, kérosène, gasoil, résidu" />
+          <figcaption>La distillation atmosphérique du pétrole brut.</figcaption>
+        </figure>
+      </div>
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>La distillation est une <strong>séparation physique</strong>, pas une transformation chimique. Elle ne modifie pas les molécules : elle les trie par taille et par point d'ébullition.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VI — Distillation sous vide et craquage",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Distillation sous vide</div>
+        <h3>Pourquoi travailler sous vide ?</h3>
+        <p>À pression atmosphérique, chauffer le résidu au-delà de 350 °C provoquerait son <strong>craquage thermique</strong> (décomposition indésirable). En abaissant la pression, on abaisse la température d'ébullition : on peut ainsi distiller les coupes lourdes sans les dégrader. On récupère des <strong>gasoils sous vide</strong> utilisés comme charges de craquage ou pour fabriquer des lubrifiants.</p>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Les procédés de craquage</div>
+        <h3>Transformer les molécules lourdes en molécules légères</h3>
+        <ul>
+          <li><strong>Craquage thermique</strong> (visbreaking, coking) : décomposition par la chaleur seule.</li>
+          <li><strong>Craquage catalytique (FCC)</strong> : décomposition en présence d'un catalyseur zéolithique ; produit des essences de haute qualité et des gaz oléfiniques.</li>
+          <li><strong>Hydrocraquage</strong> : craquage en présence d'hydrogène ; améliore la qualité des coupes moyennes.</li>
+          <li><strong>Isomérisation</strong> : réarrangement des molécules pour améliorer l'indice d'octane des essences.</li>
+          <li><strong>Cokéfaction</strong> : conversion des résidus lourds en coke et en produits légers.</li>
+        </ul>
+      </div>
+      <div class="bloc exemple">
+        <div class="bloc-label">Erreur fréquente</div>
+        <h3>Distillation ≠ craquage</h3>
+        <p>La <strong>distillation</strong> est une séparation physique : on trie les molécules sans les casser. Le <strong>craquage</strong> est une transformation chimique : on casse les grosses molécules en petites. Ce sont deux étapes distinctes du raffinage, souvent confondues par les élèves.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VI — Reformage, hydrocraquage, cokéfaction",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Les procédés de finition</div>
+        <h3>Améliorer la qualité des coupes</h3>
+        <p>Après distillation et craquage, les coupes doivent souvent être améliorées :</p>
+        <ul>
+          <li><strong>Reformage catalytique :</strong> transforme les naphtènes en aromatiques ; améliore l'indice d'octane ; produit de l'hydrogène utile à l'hydrotraitement.</li>
+          <li><strong>Hydrocraquage :</strong> casse les molécules lourdes en présence d'hydrogène ; produit des gasoils et des essences de très bonne qualité, pauvres en soufre.</li>
+          <li><strong>Isomérisation :</strong> transforme les paraffines linéaires en paraffines ramifiées, à indice d'octane plus élevé.</li>
+          <li><strong>Cokéfaction :</strong> traite les résidus les plus lourds pour produire du coke (utilisé en métallurgie ou comme combustible) et des coupes légères.</li>
+        </ul>
+      </div>
+      <div class="bloc exemple">
+        <div class="bloc-label">Enchaînement typique</div>
+        <h3>Du brut au carburant</h3>
+        <p>Brut → distillation atmosphérique → naphta lourd → reformage catalytique → essence à haut indice d'octane. Résidu atmosphérique → distillation sous vide → gasoil sous vide → hydrocraquage → gasoil moteur. Résidu sous vide → cokéfaction → coke + coupes légères.</p>
+      </div>
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Le raffinage combine séparations physiques (distillations) et transformations chimiques (craquage, reformage, hydrocraquage) pour maximiser la valeur des produits et respecter les spécifications.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VII — Les produits pétroliers",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Les carburants</div>
+        <h3>Essence, gasoil, carburéacteur</h3>
+        <ul>
+          <li><strong>Essence :</strong> carburant des moteurs à allumage commandé ; caractérisée par l'<strong>indice d'octane</strong> (résistance au cliquetis) et la volatilité.</li>
+          <li><strong>Gasoil :</strong> carburant des moteurs diesel ; caractérisé par l'<strong>indice de cétane</strong> (facilité d'auto-inflammation) et le point de trouble (tenue au froid).</li>
+          <li><strong>Carburéacteur (kérosène) :</strong> carburant de l'aviation ; point de congélation très bas, grande pureté.</li>
+        </ul>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Lubrifiants, fuels, bitumes</div>
+        <h3>Les autres produits</h3>
+        <ul>
+          <li><strong>Lubrifiants :</strong> huiles de base + additifs ; propriétés : viscosité, onctuosité, point d'écoulement, résistance à l'oxydation.</li>
+          <li><strong>Fuels (mazout) :</strong> utilisés pour la production d'énergie (centrales, chaudières).</li>
+          <li><strong>Bitumes :</strong> utilisés pour les routes et l'étanchéité.</li>
+          <li><strong>Paraffines et solvants :</strong> bougies, emballages, peintures, dégraissants.</li>
+        </ul>
+      </div>
+      <div class="bloc exemple">
+        <div class="bloc-label">Essais de qualité</div>
+        <h3>Les normes ASTM</h3>
+        <p>Les produits pétroliers sont contrôlés par des essais normalisés : point éclair (risque d'inflammation), viscosité (comportement à l'écoulement), teneur en soufre (protection de l'environnement et des catalyseurs), indice d'octane (essence), indice de cétane (gasoil). Négliger l'indice d'octane d'une essence provoque le <strong>cliquetis</strong> du moteur et peut l'endommager.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VIII — Sécurité en raffinerie",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Les risques industriels</div>
+        <h3>Incendie, explosion, toxicité</h3>
+        <p>Les raffineries et les usines pétrochimiques manipulent des produits <strong>inflammables</strong> (hydrocarbures légers), <strong>toxiques</strong> (H₂S, CO) et opèrent à des <strong>pressions et températures élevées</strong>. Les risques majeurs sont l'incendie, l'explosion et l'intoxication.</p>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Les zones ATEX</div>
+        <h3>Prévenir les atmosphères explosives</h3>
+        <p>Une <strong>zone ATEX</strong> (ATmosphère EXplosive) est une zone où une atmosphère explosive peut se former : mélange d'air et de gaz, de vapeurs ou de poussières inflammables. La réglementation ATEX en RDC impose d'identifier et de classer ces zones, et d'y utiliser des équipements électriques certifiés « antidéflagrants ». Une simple étincelle peut y provoquer un accident majeur.</p>
+        <figure>
+          <img data-image-id="petrochimie4_img04" alt="Panneau ATEX et équipement de sécurité en zone pétrochimique" />
+          <figcaption>Les zones ATEX : prévenir les explosions.</figcaption>
+        </figure>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Le SIS</div>
+        <h3>Système de sécurité instrumenté</h3>
+        <p>Le <strong>SIS</strong> (Safety Instrumented System) est un ensemble de capteurs, de logiques et d'actionneurs qui détectent une situation dangereuse et déclenchent automatiquement une action de sécurité : arrêt d'urgence, fermeture de vannes, mise à l'évent. Il est indépendant du système de conduite normal. S'y ajoutent la détection de gaz, les arrêts d'urgence manuels et les équipements de protection individuelle (EPI).</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VIII — Environnement et gestion des effluents",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Gestion des effluents</div>
+        <h3>Réduire l'impact environnemental</h3>
+        <ul>
+          <li><strong>Eaux de procédé :</strong> traitement en station d'épuration avant rejet (élimination des hydrocarbures, des phénols, des sulfures).</li>
+          <li><strong>Gaz de cheminée :</strong> désulfuration, réduction des NOx, captage des particules.</li>
+          <li><strong>Déchets solides :</strong> valorisation ou élimination contrôlée (coke, catalyseurs usés, boues).</li>
+        </ul>
+        <p>La conformité à la <strong>loi sur la qualité de l'environnement</strong> en RDC impose des normes de rejet et des contrôles réguliers.</p>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Chimie verte et économie circulaire</div>
+        <h3>La pétrochimie de demain</h3>
+        <p>La <strong>chimie verte</strong> vise à réduire l'impact environnemental des procédés : utilisation de charges renouvelables (biomasse), catalyseurs plus sélectifs, solvants moins toxiques, procédés économes en énergie. L'<strong>économie circulaire</strong> favorise le <strong>recyclage des plastiques</strong> (mécanique et chimique) pour réintroduire les polymères en fin de vie dans le cycle de production.</p>
+      </div>
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Sécurité et environnement ne sont pas des options : ils font partie intégrante de la conception et de l'exploitation d'une raffinerie. Les zones ATEX, le SIS et le traitement des effluents sont des exigences réglementaires et techniques.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VIII — La SOCIR à Muanda",
+    content: `
+      <div class="bloc cas">
+        <div class="bloc-label">Contexte congolais</div>
+        <h3>La raffinerie SOCIR</h3>
+        <p>La <strong>SOCIR</strong> (Société Congolaise des Industries de Raffinage) est la seule raffinerie de la République Démocratique du Congo. Elle est située à <strong>Muanda</strong>, dans la province du Kongo-Central, à l'embouchure du fleuve Congo. Elle traite le brut et produit du GPL, de l'essence, du gasoil, du fuel et des bitumes.</p>
+        <p>Pour les élèves de l'option Pétrochimie, la SOCIR est un site de référence : les visites guidées et les stages y sont recommandés par le programme national. Les opérations de raffinage (distillation, craquage, reformage) y sont observables à l'échelle industrielle.</p>
+        <figure>
+          <img data-image-id="petrochimie4_img03" alt="Vue de la raffinerie SOCIR à Muanda au Kongo-Central" />
+          <figcaption>La raffinerie SOCIR à Muanda.</figcaption>
+        </figure>
+      </div>
+      <div class="bloc exemple">
+        <div class="bloc-label">Application professionnelle</div>
+        <h3>Un technicien à la SOCIR</h3>
+        <p>Un technicien en pétrochimie à la SOCIR peut être affecté à la surveillance d'une unité de distillation, au contrôle qualité en laboratoire (indice d'octane, point éclair), à la maintenance des équipements ou à la sécurité industrielle (zones ATEX, SIS). Il doit connaître les schémas de procédé, les consignes de sécurité et les procédures d'urgence.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VIII — Le gaz du lac Kivu",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Une ressource stratégique</div>
+        <h3>Méthane et CO₂ dissous</h3>
+        <p>Le <strong>lac Kivu</strong>, partagé entre la RDC et le Rwanda, contient d'immenses réserves de <strong>méthane</strong> (CH₄) et de <strong>dioxyde de carbone</strong> (CO₂) dissous dans ses eaux profondes. Quatre blocs gaziers ont été délimités en 2022. L'exploitation du méthane peut alimenter des centrales électriques et servir de matière première à la pétrochimie, notamment pour produire de l'<strong>ammoniac</strong> (NH₃) et des <strong>engrais</strong>.</p>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Potentiel pétrochimique</div>
+        <h3>Du méthane aux engrais</h3>
+        <p>Le méthane peut être converti en <strong>gaz de synthèse</strong> (mélange H₂ + CO) par reformage à la vapeur. Ce gaz de synthèse sert ensuite à produire de l'ammoniac (par réaction avec l'azote de l'air), puis des engrais azotés (urée, nitrate d'ammonium). Cette voie est stratégique pour l'agriculture congolaise.</p>
+      </div>
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Le gaz du lac Kivu est une opportunité pour l'électricité et la pétrochimie (ammoniac, engrais). Les projets d'exploitation (Symbion Power, GasMeth) sont en cours.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VIII — Réserves et formation en RDC",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Les réserves pétrolières</div>
+        <h3>Cuvette congolaise, Grands Lacs, Bas-Congo</h3>
+        <p>Le programme national souligne le potentiel pétrolier de la RDC : la <strong>Cuvette congolaise</strong>, les <strong>Grands Lacs</strong> et le <strong>Bas-Congo</strong> recèlent des réserves encore partiellement exploitées. La formation de techniciens qualifiés est une priorité pour développer le secteur.</p>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Formation et débouchés</div>
+        <h3>Se former aux métiers du pétrole</h3>
+        <p>L'accord énergétique entre la RDC et l'Algérie (2026) prévoit la formation de cadres congolais aux métiers du pétrole et du gaz, notamment via l'Institut Algérien du Pétrole. L'Université de Kinshasa propose une faculté de Pétrole, Gaz et Énergies Nouvelles.</p>
+        <p><strong>Débouchés :</strong> technicien de laboratoire industriel, opérateur en raffinerie, technicien en pétrochimie, agent de sécurité industrielle, puis études supérieures en génie des procédés, raffinage et pétrochimie.</p>
+      </div>
+    `
+  },
+  {
+    title: "Synthèse — Du brut au produit fini",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Récapitulatif général</div>
+        <h3>Le grand enchaînement</h3>
+        <ol>
+          <li><strong>Extraction :</strong> pétrole brut et gaz naturel.</li>
+          <li><strong>Raffinage :</strong> distillation atmosphérique et sous vide → coupes (naphta, kérosène, gasoil, résidu).</li>
+          <li><strong>Conversion :</strong> vapocraquage (oléfines) et reformage (aromatiques) → grands intermédiaires.</li>
+          <li><strong>Pétrochimie de dérivés :</strong> polymérisation, synthèse → plastiques, fibres, élastomères, additifs.</li>
+          <li><strong>Produits finis :</strong> carburants, lubrifiants, bitumes, matériaux.</li>
+        </ol>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Points clés à retenir</div>
+        <h3>Les notions essentielles</h3>
+        <ul>
+          <li>Pétrochimie = chimie dérivée du pétrole ET du gaz naturel.</li>
+          <li>Naphta = charge phare du vapocraquage ; éthane et propane = charges légères de choix.</li>
+          <li>Vapocraquage → oléfines (éthylène, propylène) ; reformage → aromatiques (BTX).</li>
+          <li>Polymérisation en chaîne (oléfines) vs polycondensation (PET, polyamides).</li>
+          <li>Distillation = séparation physique ; craquage = transformation chimique.</li>
+          <li>Indice d'octane → essence ; indice de cétane → gasoil.</li>
+          <li>Zone ATEX = atmosphère explosive ; SIS = système de sécurité instrumenté.</li>
+          <li>RDC : SOCIR à Muanda, gaz du lac Kivu, réserves de la Cuvette congolaise.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Évaluation finale — Pétrochimie",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Consignes</div>
+        <p>Répondez aux questions suivantes en choisissant une seule bonne réponse parmi les quatre propositions. Le résultat s'affiche après validation.</p>
+      </div>
+      <div class="quiz-container">
+        <div id="quizQuestions"></div>
+        <button id="submitQuiz" class="quiz-btn-submit">
+          Valider mes réponses
+        </button>
+        <div id="quizResult" class="quiz-result"></div>
+      </div>
+    `
+  }
+];
+const questions = [
+  {
+    text: "La pétrochimie est :",
+    options: [
+      "La chimie dérivée du pétrole et du gaz naturel",
+      "La chimie des minerais",
+      "La chimie des aliments",
+      "La chimie de l'eau"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le naphta est utilisé principalement pour :",
+    options: [
+      "Le vapocraquage",
+      "La distillation",
+      "Le reformage",
+      "La cokéfaction"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le vapocraquage produit principalement :",
+    options: [
+      "De l'éthylène",
+      "Du benzène",
+      "Du bitume",
+      "Du gasoil"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le reformage catalytique produit :",
+    options: [
+      "Des aromatiques",
+      "De l'éthylène",
+      "Du propylène",
+      "Du coke"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'éthylène est utilisé pour produire :",
+    options: [
+      "Le polyéthylène",
+      "Le PVC uniquement",
+      "Le bitume",
+      "Le gasoil"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le benzène est un :",
+    options: [
+      "Aromatique",
+      "Oléfine",
+      "Alcane",
+      "Alcyne"
+    ],
+    correct: 0
+  },
+  {
+    text: "La distillation atmosphérique sépare le brut en :",
+    options: [
+      "Fractions selon leur point d'ébullition",
+      "Polymères",
+      "Additifs",
+      "Catalyseurs"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le craquage catalytique (FCC) produit :",
+    options: [
+      "Des essences de haute qualité",
+      "Du bitume",
+      "Du naphta uniquement",
+      "De l'éthylène uniquement"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'indice d'octane caractérise :",
+    options: [
+      "L'essence",
+      "Le gasoil",
+      "Le bitume",
+      "Le lubrifiant"
+    ],
+    correct: 0
+  },
+  {
+    text: "Les lubrifiants sont caractérisés par :",
+    options: [
+      "La viscosité",
+      "L'indice d'octane",
+      "Le point de trouble",
+      "La teneur en soufre"
+    ],
+    correct: 0
+  },
+  {
+    text: "Une zone ATEX est une zone :",
+    options: [
+      "À risque d'atmosphère explosive",
+      "À risque de radiation",
+      "À risque d'inondation",
+      "À risque sismique"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le SIS est un :",
+    options: [
+      "Système de sécurité instrumenté",
+      "Système d'irrigation",
+      "Système informatique",
+      "Système de stockage"
+    ],
+    correct: 0
+  },
+  {
+    text: "La SOCIR se trouve à :",
+    options: [
+      "Muanda",
+      "Kinshasa",
+      "Lubumbashi",
+      "Goma"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le gaz du lac Kivu est principalement du :",
+    options: [
+      "Méthane",
+      "Propane",
+      "Butane",
+      "Éthylène"
+    ],
+    correct: 0
+  },
+  {
+    text: "La pétrochimie « verte » utilise :",
+    options: [
+      "La biomasse",
+      "Le charbon",
+      "Le pétrole brut",
+      "Le gaz naturel uniquement"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le polyéthylène est un :",
+    options: [
+      "Polymère",
+      "Aromatique",
+      "Oléfine",
+      "Additif"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le craquage thermique utilise :",
+    options: [
+      "La chaleur",
+      "Un catalyseur",
+      "L'eau",
+      "L'oxygène"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le reformage catalytique utilise :",
+    options: [
+      "Un catalyseur au platine",
+      "Un catalyseur au nickel",
+      "Aucun catalyseur",
+      "De l'eau"
+    ],
+    correct: 0
+  },
+  {
+    text: "Les bitumes sont utilisés pour :",
+    options: [
+      "Les routes",
+      "Les bougies",
+      "Les plastiques",
+      "Les médicaments"
+    ],
+    correct: 0
+  },
+  {
+    text: "La gestion des effluents en raffinerie vise à :",
+    options: [
+      "Protéger l'environnement",
+      "Augmenter la production",
+      "Réduire les coûts",
+      "Accélérer les procédés"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le programme national de pétrochimie en RDC date de :",
+    options: [
+      "2004",
+      "1986",
+      "2014",
+      "2025"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'objectif principal de la pétrochimie en 4e Humanité Technique est de :",
+    options: [
+      "Comprendre les procédés de transformation des hydrocarbures",
+      "Remplacer l'ingénieur",
+      "Fabriquer des voitures",
+      "Construire des raffineries"
+    ],
+    correct: 0
+  }
+];
+
+try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+        questions.forEach(function (q) {
+            if (!q.text) q.text = q.question || q.q || q.enonce || q.titre || "";
+            if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+            if (typeof q.correct === "undefined") {
+                if (typeof q.answer !== "undefined") q.correct = q.answer;
+                else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+            }
+        });
+    }
+} catch (e) {}
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+const pageTitle = document.getElementById('pageTitle');
+pageTitle.textContent = "ECOLIA · " + COURSE_TITLE;
+document.title = "ECOLIA — " + COURSE_TITLE;
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim() || slides.length === 0) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp("(" + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ")", 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderEmptyState() {
+    contentDiv.innerHTML = '<div class="empty-state"><div class="icon">·</div><span class="tag">Bientôt disponible</span><h2>' + COURSE_TITLE + '</h2><p>Ce cours est en préparation. Le contenu sera ajouté prochainement.</p></div>';
+    slideCounterSpan.textContent = '0/0';
+    progressFill.style.width = '0%';
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    counterSpan.textContent = '—';
+}
+
+function renderQuiz() {
+    const qc = document.getElementById('quizQuestions');
+    if (!qc) return;
+    if (typeof questions === 'undefined' || questions.length === 0) {
+        qc.innerHTML = '<p style="color:#666;font-style:italic;">Quiz bientot disponible.</p>';
+        return;
+    }
+    let html = '';
+    questions.forEach((q, i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o, k) => {
+            html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>';
+        });
+        html += '</div>';
+    });
+    qc.innerHTML = html;
+    const submitBtn = document.getElementById('submitQuiz');
+    if (submitBtn) {
+        submitBtn.onclick = () => {
+            let score = 0;
+            questions.forEach((q, i) => {
+                const s = document.querySelector('input[name="q' + i + '"]:checked');
+                if (s && parseInt(s.value) === q.correct) score++;
+            });
+            const pct = Math.round(score/questions.length*100);
+            document.getElementById('quizResult').innerHTML =
+                '<div style="background:var(--bg2);padding:16px;border-radius:10px;margin-top:14px;">' +
+                '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong></div>';
+        };
+    }
+}
+
+function renderSlide(index, keepHighlight) {
+    if (keepHighlight === undefined) keepHighlight = true;
+    if (slides.length === 0) { renderEmptyState(); return; }
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    if (index === slides.length - 1) renderQuiz();
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    if (slides.length === 0) return;
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (slides.length && currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (slides.length && currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+<!-- ECOLIA_IMAGE_LOADER_START -->
+<script>
+(function () {
+  var SITE = "https://ecolia-course.github.io/";
+  var NATIVE = false;
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function abs(u) { return /^(https?:|data:|blob:)/i.test(u) ? u : (NATIVE ? SITE + u.replace(/^(\.\/|\/)+/, "") : u); }
+  function ext(u) { var m = String(u).split("?")[0].match(/\.(jpe?g|png|gif|webp|svg)$/i); return m ? m[1].toLowerCase() : "jpg"; }
+  function hide(img) { img.onerror = null; img.style.display = "none"; }
+  var table = null, queue = [], queued = {}, running = false;
+  function enqueue(full, fn) {
+    if (queued[fn]) return;
+    queued[fn] = 1; queue.push([full, fn]);
+    if (!running) { running = true; setTimeout(next, 2500); }
+  }
+  function next() {
+    if (!queue.length) { running = false; return; }
+    if (!navigator.onLine) { running = false; return; }
+    var q = queue.shift(), t0 = Date.now();
+    try { CoursInterface.download(q[0], q[1]); } catch (e) { return setTimeout(next, 500); }
+    (function wait() {
+      var ok = false;
+      try { ok = !!CoursInterface.exists(q[1]); } catch (e) {}
+      if (ok) setTimeout(next, 1500);
+      else if (Date.now() - t0 > 40000) next();
+      else setTimeout(wait, 700);
+    })();
+  }
+  function exists(fn) { try { return !!CoursInterface.exists(fn); } catch (e) { return false; } }
+  function show(img) {
+    if (!table || img.getAttribute("data-ecolia-done")) return;
+    var id = img.getAttribute("data-image-id");
+    var url = table[id];
+    if (typeof url !== "string" || !url.length) { console.warn("ECOLIA : image absente du JSON :", id); return; }
+    img.setAttribute("data-ecolia-done", "1");
+    if (!NATIVE) { img.onerror = function () { hide(img); }; img.setAttribute("src", url); return; }
+    var full = abs(url), fn = "img_" + id + "." + ext(url);
+    if (exists(fn)) {
+      img.onerror = function () {
+        try { CoursInterface["delete"](fn); } catch (e) {}
+        queued[fn] = 0;
+        img.onerror = function () { hide(img); };
+        img.setAttribute("src", full);
+      };
+      img.setAttribute("src", "https://app.local/cours/" + fn);
+    } else {
+      img.onerror = function () { hide(img); };
+      img.setAttribute("src", full);
+      enqueue(full, fn);
+    }
+  }
+  function scan(root) {
+    if (!root || !root.querySelectorAll) return;
+    if (root.matches && root.matches("img[data-image-id]")) show(root);
+    root.querySelectorAll("img[data-image-id]").forEach(show);
+  }
+  function prefetchAll() {
+    var ids = {};
+    try { JSON.stringify(slides).replace(/data-image-id=\\?"([^"\\]+)/g, function (m, id) { ids[id] = 1; }); } catch (e) {}
+    Object.keys(ids).forEach(function (id) {
+      var url = table[id];
+      if (typeof url !== "string" || !url.length) return;
+      var fn = "img_" + id + "." + ext(url);
+      if (!exists(fn)) enqueue(abs(url), fn);
+    });
+  }
+  function start(tbl) {
+    table = tbl;
+    scan(document.body);
+    new MutationObserver(function (muts) {
+      muts.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.nodeType === 1) scan(n); }); });
+    }).observe(document.body, { childList: true, subtree: true });
+    if (NATIVE) prefetchAll();
+  }
+  var JSON_URL = NATIVE ? SITE + "images_ecolia.json" : "images_ecolia.json";
+  var KEY = "ecolia_images_json";
+  fetch(JSON_URL, NATIVE ? { cache: "no-cache" } : undefined)
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (table) { if (NATIVE) lsSet(KEY, JSON.stringify(table)); start(table); })
+    .catch(function (e) {
+      var saved = null;
+      if (NATIVE) { try { saved = JSON.parse(lsGet(KEY) || "null"); } catch (x) {} }
+      if (saved) start(saved);
+      else console.warn("ECOLIA : JSON des images indisponible.", e);
+    });
+})();
+</script>
+<!-- ECOLIA_IMAGE_LOADER_END -->
+
+
+
+<!-- ECOLIA_AUDIO_PLAYER_START -->
+<style>
+  #ecolia-audio-btn, #ecolia-dl-btn {
+    width: 30px; height: 30px; min-width: 30px; padding: 0; margin: 0 4px 0 0;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    cursor: pointer; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent; outline: none;
+  }
+  #ecolia-audio-btn { border: none; background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-dl-btn { border: 1.5px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb); }
+  #ecolia-dl-btn.ecolia-full { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-btn.ecolia-fixed { position: fixed; top: 8px; left: 8px; z-index: 2147483000; }
+  #ecolia-audio-btn:active, #ecolia-dl-btn:active { transform: scale(.92); }
+  #ecolia-audio-btn svg, #ecolia-dl-btn svg { width: 15px; height: 15px; fill: currentColor; pointer-events: none; }
+  #ecolia-audio-btn.ecolia-off, #ecolia-dl-btn.ecolia-off { display: none; }
+  #ecolia-audio-banner {
+    display: none; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0;
+    padding: 8px 14px; font-size: .82rem; line-height: 1.35;
+    background: var(--soft, #eef3fb); color: var(--p1, #123); border-bottom: 1px solid var(--bd, #c9d6ea);
+  }
+  #ecolia-audio-banner.on { display: flex; }
+  #ecolia-audio-banner .eab-txt { flex: 1 1 180px; }
+  #ecolia-audio-banner .eab-act { display: flex; gap: 6px; flex-wrap: wrap; }
+  #ecolia-audio-banner button {
+    border: 1px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb);
+    border-radius: 16px; padding: 5px 12px; font-size: .8rem; cursor: pointer;
+  }
+  #ecolia-audio-banner button.pri { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-banner .eab-bar { display: none; flex-basis: 100%; height: 4px; border-radius: 2px; overflow: hidden; background: var(--bd, #c9d6ea); }
+  #ecolia-audio-banner .eab-bar i { display: block; height: 100%; width: 0; background: var(--p2, #2563eb); transition: width .2s; }
+</style>
+<script>
+(function () {
+  var CFG = {"code":"Petrochimie4","base":"https://ecolia-course.github.io/ecolia-media/audio_files/","available":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],"count":20,"sizeMo":15,"sizes":{"1":1124352,"2":977472,"3":792192,"4":820224,"5":764544,"6":641280,"7":783360,"8":839232,"9":659136,"10":828672,"11":754176,"12":761280,"13":777024,"14":747264,"15":702336,"16":676608,"17":633984,"18":543360,"19":806016,"20":104832},"fallback":{"1":[["fr","Sommaire, Pétrochimie. Présentation du cours. Pétrochimie: des hydrocarbures aux produits du quotidien. Ce cours de Pétrochimie de la 4e Humanité Technique Industrielle vous fait découvrir comment le pétrole brut et le gaz naturel sont transformés en une multitude de produits chimiques, de matières plastiques, de fibres et de carburants. Vous étudierez les procédés industriels qui se déroulent dans une raffinerie et dans une usine pétrochimique, depuis la molécule jusqu'au produit fini. Objectifs d'apprentissage. À la fin de ce cours, vous serez capable de: Définir la pétrochimie et identifier ses matières premières (naphta, gaz naturel, LGN). Expliquer les grands procédés de conversion primaire: vapocraquage et reformage catalytique. Nommer les grands intermédiaires (éthylène, propylène, butadiène, BTX) et leurs dérivés. Décrire les principaux polymères et le mécanisme de la polymérisation industrielle. Expliquer les étapes du raffinage: distillation, craquage, reformage, hydrocraquage, cokéfaction. Caractériser les produits pétroliers (essence, gasoil, lubrifiants, bitumes) et leurs essais de qualité. Analyser les risques industriels (ATEX, SIS) et les mesures de sécurité en raffinerie. Situer la pétrochimie dans le contexte congolais: SOCIR à Muanda, gaz du lac Kivu, réserves nationales. Plan des chapitres. Les huit chapitres du programme. Définition, histoire et importance de la pétrochimie. Les matières premières (feedstocks). Les grands procédés de conversion primaire. Les grands intermédiaires pétrochimiques. Les dérivés et les polymères. Le raffinage du pétrole. Les produits pétroliers. Sécurité, environnement et applications en R D C. Compétence visée: lire et expliquer un schéma de procédé pétrochimique, relier une molécule de départ à un produit fini, et appliquer les règles de sécurité propres aux installations classées."]],"2":[["fr","Chapitre I, Pourquoi la pétrochimie? Situation-problème. Un objet banal, plusieurs produits pétrochimiques. Prenez une bouteille d'eau en plastique posée sur votre table. En apparence, c'est un objet simple. Pourtant, elle est fabriquée à partir de PET (polyéthylène téréphtalate), un polymère issu de la pétrochimie. Le bouchon est en polyéthylène ou en polypropylène, l'étiquette en polypropylène imprimé avec des encres à base de solvants pétrochimiques. Comment le pétrole brut, matière première noire et visqueuse, peut-il aboutir à une bouteille transparente et légère? Fondements théoriques. La pétrochimie au cœur de l'économie moderne. La pétrochimie est l'industrie qui transforme les hydrocarbures (molécules composées de carbone et d'hydrogène) issus du pétrole et du gaz naturel en produits chimiques de base. Ces produits servent ensuite à fabriquer des matières plastiques, des fibres textiles synthétiques, des détergents, des peintures, des solvants, des médicaments, des cosmétiques et bien d'autres objets du quotidien. La pétrochimie occupe une place charnière: elle relie l'industrie pétrolière (raffinage) à l'industrie chimique. Sans elle, la plupart des matériaux modernes n'existeraient pas. Son essor est spectaculaire après la Seconde Guerre mondiale, lorsqu'on a compris comment transformer les sous-produits du raffinage en matériaux nouveaux. Exemple concret. Du pétrole à l'ordinateur. Un ordinateur contient un boîtier en ABS (acrylonitrile-butadiène-styrène), un écran en polycarbonate, des câbles gainés de PVC, un clavier en ABS. Tous ces matériaux proviennent de la pétrochimie. Le pétrole brut qui sort du sol n'est donc pas seulement un carburant: c'est aussi la source d'innombrables objets techniques."]],"3":[["fr","Chapitre I, Définition et place dans l'industrie. Définition officielle. Qu'est-ce que la pétrochimie? La pétrochimie est la branche de la chimie industrielle qui utilise les coupes pétrolières et le gaz naturel comme matières premières pour produire des intermédiaires chimiques (éthylène, propylène, benzène…) et des produits finis (plastiques, fibres, élastomères, solvants). Elle se distingue du raffinage: le raffinage sépare et transforme le pétrole brut en carburants et en coupes; la pétrochimie utilise certaines de ces coupes pour fabriquer des molécules chimiques. Les deux activités sont complémentaires et souvent intégrées sur un même site industriel. Place dans la chaîne industrielle. Trois étages successifs. Étage. Activité. Produits. 1. Raffinage. Séparation et conversion du brut. Naphta, gazoles, essence, bitumes. 2. Pétrochimie de base. Conversion primaire (vapocraquage, reformage). Éthylène, propylène, butadiène, BTX. 3. Pétrochimie de dérivés. Polymérisation, synthèse organique. PE, PP, PVC, PS, fibres, élastomères. À retenir. La pétrochimie transforme les hydrocarbures en produits chimiques. Elle ne se confond pas avec le raffinage, mais s'appuie sur lui. Son champ couvre aussi bien le pétrole que le gaz naturel."]],"4":[["fr","Chapitre II, Les matières premières (feedstocks). Vue d'ensemble. Les charges de la pétrochimie. On appelle feedstocks (charges) les matières premières introduites dans les procédés pétrochimiques. Elles proviennent principalement de trois sources: les coupes pétrolières issues du raffinage, le gaz naturel et ses liquides associés (LGN), et certains produits de spécialité. Coupes pétrolières: gaz de raffinerie, naphta (coupe la plus importante pour le vapocraquage), gazoles. Gaz naturel: méthane (pour le gaz de synthèse H2 plus CO), éthane et propane (charges de choix pour produire de l'éthylène). Lubrifiants et solvants: produits de spécialité servant de base à des formulations plus complexes. Paraffines et bitumes: sous-produits des huiles, utilisés pour les bougies, les emballages, les routes. Exemple comparatif. Naphta ou essence? Le naphta est une coupe intermédiaire dont le point d'ébullition se situe entre celui de l'essence légère et celui du kérosène. Il est destiné principalement à la pétrochimie (vapocraquage) et au reformage. L'essence est un produit fini pour moteurs à allumage commandé, caractérisé par son indice d'octane. Confondre les deux est une erreur fréquente: ce ne sont pas les mêmes fractions ni les mêmes usages. À retenir. Le naphta est la charge phare du vapocraquage; l'éthane et le propane sont des charges légères de choix; le méthane sert surtout à produire du gaz de synthèse."]],"5":[["fr","Chapitre III, Le vapocraquage. Principe. Casser les molécules à la vapeur. Le vapocraquage (ou craquage à la vapeur) est un procédé thermique qui casse les molécules de naphta ou d'éthane à haute température (800–850 degrés Celsius) en présence de vapeur d'eau. La vapeur d'eau joue plusieurs rôles: elle dilue les hydrocarbures, abaisse la pression partielle, réduit les réactions secondaires et limite le dépôt de coke dans les fours. Le produit principal est l'éthylène (C2 H4), avec du propylène (C3 H6), du butadiène, des aromatiques et de l'hydrogène comme coproduits. Schéma simplifié. Les quatre étapes du vapocraquage. Four de craquage: le naphta mélangé à la vapeur est chauffé à 800–850 degrés Celsius pendant quelques dixièmes de seconde. Trempe: refroidissement brutal pour arrêter la réaction et éviter la dégradation des produits. Compression: les gaz sont comprimés pour faciliter la séparation. Séparation: distillation à basse température pour séparer éthylène, propylène, butadiène, hydrogène et coupes lourdes. Le vapocraquage: du naphta à l'éthylène. À retenir. Vapocraquage égale haute température plus vapeur d'eau, donc oléfines légères, surtout éthylène. C'est le procédé qui alimente la majorité de la pétrochimie mondiale."]],"6":[["fr","Chapitre III, Le reformage catalytique. Principe. Fabriquer des aromatiques. Le reformage catalytique transforme les naphtènes et les paraffines du naphta en aromatiques (benzène, toluène, xylènes) et en hydrogène, en présence d'un catalyseur au platine supporté sur alumine (Pt ou Al2 O3) et sous pression d'hydrogène. Ce procédé est essentiel pour produire des essences à haut indice d'octane et pour fournir les aromatiques (BTX) utilisés en pétrochimie. Comparaison. Vapocraquage ou reformage? Critère. Vapocraquage. Reformage catalytique. Charge. Naphta, éthane. Naphta lourd. Conditions. 800–850 degrés Celsius, vapeur d'eau. 450–550 degrés Celsius, catalyseur Pt, H2. Produits principaux. Éthylène, propylène. Aromatiques, hydrogène. Erreur fréquente: croire que les deux procédés produisent les mêmes molécules. Le vapocraquage produit des oléfines (éthylène, propylène), le reformage produit des aromatiques (benzène, toluène, xylènes)."]],"7":[["fr","Chapitre IV, Les grands intermédiaires. Les briques de la pétrochimie. Éthylène, propylène, butadiène, BTX. Éthylène (C2 H4): produit de base le plus important; sert au polyéthylène, à l'oxyde d'éthylène, au chlorure de vinyle (PVC), au styrène. Propylène (C3 H6): polypropylène, acrylonitrile, oxyde de propylène, isopropanol. Butadiène (C4 H6): caoutchouc synthétique (SBR, polybutadiène). Aromatiques (BTX): benzène (styrène, phénol, nylon), toluène (solvants, TNT), xylènes (acide téréphtalique pour le PET). Application numérique. Calculer un rendement. Une unité de vapocraquage traite 100 tonnes de naphta par jour et produit 30 tonnes d'éthylène. Quel est le rendement massique en éthylène? Données: masse de charge égale 100 t; masse d'éthylène égale 30 t. Formule: rendement ( pour cent ) égale (masse de produit ou masse de charge) multiplié par 100. Calcul: (30 sur 100) multiplié par 100 égale 30 pour cent. Interprétation: 30 pour cent de la masse de naphta est convertie en éthylène. Le reste part en coproduits (propylène, butadiène, aromatiques, gaz de queue)."]],"8":[["fr","Chapitre V, Les polymères. Définition. Qu'est-ce qu'un polymère? Un polymère est une macromolécule formée par la répétition d'unités structurales appelées monomères. La réaction qui assemble les monomères s'appelle la polymérisation. On distingue: La polymérisation en chaîne (radicalaire ou ionique), qui concerne surtout les oléfines (éthylène, propylène, styrène). La polycondensation (polymérisation par étapes), qui libère une petite molécule (eau, méthanol); exemple: le PET. Les grands polymères. Panorama des matières plastiques. Polymère. Monomère. Usages typiques. Polyéthylène (PEBD, PEHD). Éthylène. Emballages, tuyaux, films. Polypropylène (PP). Propylène. Pièces automobiles, textiles. Polystyrène (PS). Styrène. Emballages, isolation. PVC. Chlorure de vinyle. Tubes, câbles, revêtements. PET. Éthylène glycol plus acide téréphtalique. Bouteilles, fibres polyester. Erreur fréquente: croire qu'un polymère est un produit naturel. La plupart des polymères industriels sont synthétiques et issus de la pétrochimie (sauf le caoutchouc naturel et quelques biopolymères). À retenir. Le monomère est la brique; le polymère est le mur. La polymérisation en chaîne concerne les oléfines; la polycondensation concerne les polyesters et les polyamides."]],"9":[["fr","Chapitre V, Fibres synthétiques, élastomères et additifs. Trois familles complémentaires. Fibres, élastomères, additifs. Fibres synthétiques: polyester, nylon (polyamide), acrylique. Utilisées dans l'habillement, les textiles techniques, les cordages. Élastomères: caoutchoucs synthétiques (SBR, EPDM, polybutadiène) pour les pneumatiques, les joints, les courroies. Additifs: substances ajoutées aux polymères pour modifier leurs propriétés: stabilisants (anti-UV, anti-oxydants), plastifiants (souplesse), colorants, retardateurs de flamme, charges minérales. Exemple professionnel. La gaine d'un câble électrique. La gaine extérieure d'un câble électrique est souvent en PVC plastifié. Le PVC apporte la résistance mécanique et l'isolation électrique; le plastifiant apporte la souplesse nécessaire au câblage; un stabilisant protège contre le vieillissement thermique et UV; un retardateur de flamme limite la propagation d'un incendie. Chaque additif a un rôle précis: sans lui, le câble serait cassant, inflammable ou se dégraderait en quelques mois."]],"10":[["fr","Chapitre VI, La distillation atmosphérique. Composition du brut. Un mélange complexe d'hydrocarbures. Le pétrole brut est un mélange d'alcanes, de naphtènes et d'aromatiques, avec des impuretés (soufre, azote, métaux, sels). Sa composition et ses propriétés physico-chimiques (densité, viscosité, teneur en soufre) conditionnent le choix des procédés de raffinage. Principe. Séparer par point d'ébullition. La distillation atmosphérique sépare le brut en fractions selon leur point d'ébullition, dans une colonne fonctionnant à pression atmosphérique. Les fractions légères sortent en haut, les fractions lourdes en bas. Fraction. Plage d'ébullition. Usage. Gaz de raffinerie. inférieur à 20 degrés Celsius. Combustible, GPL. Essences. 20–180 degrés Celsius. Carburant auto. Naphta. 180–220 degrés Celsius. Pétrochimie, reformage. Kérosène. 220–250 degrés Celsius. Carburéacteur aviation. Gasoil. 250–350 degrés Celsius. Carburant diesel, chauffage. Résidu atmosphérique. supérieur à 350 degrés Celsius. Distillation sous vide, bitumes. La distillation atmosphérique du pétrole brut. À retenir. La distillation est une séparation physique, pas une transformation chimique. Elle ne modifie pas les molécules: elle les trie par taille et par point d'ébullition."]],"11":[["fr","Chapitre VI, Distillation sous vide et craquage. Distillation sous vide. Pourquoi travailler sous vide? À pression atmosphérique, chauffer le résidu au-delà de 350 degrés Celsius provoquerait son craquage thermique (décomposition indésirable). En abaissant la pression, on abaisse la température d'ébullition: on peut ainsi distiller les coupes lourdes sans les dégrader. On récupère des gasoils sous vide utilisés comme charges de craquage ou pour fabriquer des lubrifiants. Les procédés de craquage. Transformer les molécules lourdes en molécules légères. Craquage thermique (visbreaking, coking): décomposition par la chaleur seule. Craquage catalytique (FCC): décomposition en présence d'un catalyseur zéolithique; produit des essences de haute qualité et des gaz oléfiniques. Hydrocraquage: craquage en présence d'hydrogène; améliore la qualité des coupes moyennes. Isomérisation: réarrangement des molécules pour améliorer l'indice d'octane des essences. Cokéfaction: conversion des résidus lourds en coke et en produits légers. Erreur fréquente. Distillation différent de craquage. La distillation est une séparation physique: on trie les molécules sans les casser. Le craquage est une transformation chimique: on casse les grosses molécules en petites. Ce sont deux étapes distinctes du raffinage, souvent confondues par les élèves."]],"12":[["fr","Chapitre VI, Reformage, hydrocraquage, cokéfaction. Les procédés de finition. Améliorer la qualité des coupes. Après distillation et craquage, les coupes doivent souvent être améliorées: Reformage catalytique: transforme les naphtènes en aromatiques; améliore l'indice d'octane; produit de l'hydrogène utile à l'hydrotraitement. Hydrocraquage: casse les molécules lourdes en présence d'hydrogène; produit des gasoils et des essences de très bonne qualité, pauvres en soufre. Isomérisation: transforme les paraffines linéaires en paraffines ramifiées, à indice d'octane plus élevé. Cokéfaction: traite les résidus les plus lourds pour produire du coke (utilisé en métallurgie ou comme combustible) et des coupes légères. Enchaînement typique. Du brut au carburant. Brut, donc distillation atmosphérique, donc naphta lourd, donc reformage catalytique, donc essence à haut indice d'octane. Résidu atmosphérique, donc distillation sous vide, donc gasoil sous vide, donc hydrocraquage, donc gasoil moteur. Résidu sous vide, donc cokéfaction, donc coke plus coupes légères. À retenir. Le raffinage combine séparations physiques (distillations) et transformations chimiques (craquage, reformage, hydrocraquage) pour maximiser la valeur des produits et respecter les spécifications."]],"13":[["fr","Chapitre VII, Les produits pétroliers. Les carburants. Essence, gasoil, carburéacteur. Essence: carburant des moteurs à allumage commandé; caractérisée par l'indice d'octane (résistance au cliquetis) et la volatilité. Gasoil: carburant des moteurs diesel; caractérisé par l'indice de cétane (facilité d'auto-inflammation) et le point de trouble (tenue au froid). Carburéacteur (kérosène): carburant de l'aviation; point de congélation très bas, grande pureté. Lubrifiants, fuels, bitumes. Les autres produits. Lubrifiants: huiles de base plus additifs; propriétés: viscosité, onctuosité, point d'écoulement, résistance à l'oxydation. Fuels (mazout): utilisés pour la production d'énergie (centrales, chaudières). Bitumes: utilisés pour les routes et l'étanchéité. Paraffines et solvants: bougies, emballages, peintures, dégraissants. Essais de qualité. Les normes ASTM. Les produits pétroliers sont contrôlés par des essais normalisés: point éclair (risque d'inflammation), viscosité (comportement à l'écoulement), teneur en soufre (protection de l'environnement et des catalyseurs), indice d'octane (essence), indice de cétane (gasoil). Négliger l'indice d'octane d'une essence provoque le cliquetis du moteur et peut l'endommager."]],"14":[["fr","Chapitre VIII, Sécurité en raffinerie. Les risques industriels. Incendie, explosion, toxicité. Les raffineries et les usines pétrochimiques manipulent des produits inflammables (hydrocarbures légers), toxiques (H2 S, CO) et opèrent à des pressions et températures élevées. Les risques majeurs sont l'incendie, l'explosion et l'intoxication. Les zones ATEX. Prévenir les atmosphères explosives. Une zone ATEX (ATmosphère EXplosive) est une zone où une atmosphère explosive peut se former: mélange d'air et de gaz, de vapeurs ou de poussières inflammables. La réglementation ATEX en R D C impose d'identifier et de classer ces zones, et d'y utiliser des équipements électriques certifiés « antidéflagrants ». Une simple étincelle peut y provoquer un accident majeur. Les zones ATEX: prévenir les explosions. Le SIS. Système de sécurité instrumenté. Le SIS (Safety Instrumented System) est un ensemble de capteurs, de logiques et d'actionneurs qui détectent une situation dangereuse et déclenchent automatiquement une action de sécurité: arrêt d'urgence, fermeture de vannes, mise à l'évent. Il est indépendant du système de conduite normal. S'y ajoutent la détection de gaz, les arrêts d'urgence manuels et les équipements de protection individuelle (EPI)."]],"15":[["fr","Chapitre VIII, Environnement et gestion des effluents. Gestion des effluents. Réduire l'impact environnemental. Eaux de procédé: traitement en station d'épuration avant rejet (élimination des hydrocarbures, des phénols, des sulfures). Gaz de cheminée: désulfuration, réduction des NOx, captage des particules. Déchets solides: valorisation ou élimination contrôlée (coke, catalyseurs usés, boues). La conformité à la loi sur la qualité de l'environnement en R D C impose des normes de rejet et des contrôles réguliers. Chimie verte et économie circulaire. La pétrochimie de demain. La chimie verte vise à réduire l'impact environnemental des procédés: utilisation de charges renouvelables (biomasse), catalyseurs plus sélectifs, solvants moins toxiques, procédés économes en énergie. L'économie circulaire favorise le recyclage des plastiques (mécanique et chimique) pour réintroduire les polymères en fin de vie dans le cycle de production. À retenir. Sécurité et environnement ne sont pas des options: ils font partie intégrante de la conception et de l'exploitation d'une raffinerie. Les zones ATEX, le SIS et le traitement des effluents sont des exigences réglementaires et techniques."]],"16":[["fr","Chapitre VIII, La SOCIR à Muanda. Contexte congolais. La raffinerie SOCIR. La SOCIR (Société Congolaise des Industries de Raffinage) est la seule raffinerie de la République Démocratique du Congo. Elle est située à Muanda, dans la province du Kongo-Central, à l'embouchure du fleuve Congo. Elle traite le brut et produit du GPL, de l'essence, du gasoil, du fuel et des bitumes. Pour les élèves de l'option Pétrochimie, la SOCIR est un site de référence: les visites guidées et les stages y sont recommandés par le programme national. Les opérations de raffinage (distillation, craquage, reformage) y sont observables à l'échelle industrielle. La raffinerie SOCIR à Muanda. Application professionnelle. Un technicien à la SOCIR. Un technicien en pétrochimie à la SOCIR peut être affecté à la surveillance d'une unité de distillation, au contrôle qualité en laboratoire (indice d'octane, point éclair), à la maintenance des équipements ou à la sécurité industrielle (zones ATEX, SIS). Il doit connaître les schémas de procédé, les consignes de sécurité et les procédures d'urgence."]],"17":[["fr","Chapitre VIII, Le gaz du lac Kivu. Une ressource stratégique. Méthane et C O2 dissous. Le lac Kivu, partagé entre la R D C et le Rwanda, contient d'immenses réserves de méthane (C H4) et de dioxyde de carbone (C O2) dissous dans ses eaux profondes. Quatre blocs gaziers ont été délimités en 2022. L'exploitation du méthane peut alimenter des centrales électriques et servir de matière première à la pétrochimie, notamment pour produire de l'ammoniac (N H3) et des engrais. Potentiel pétrochimique. Du méthane aux engrais. Le méthane peut être converti en gaz de synthèse (mélange H2 plus CO) par reformage à la vapeur. Ce gaz de synthèse sert ensuite à produire de l'ammoniac (par réaction avec l'azote de l'air), puis des engrais azotés (urée, nitrate d'ammonium). Cette voie est stratégique pour l'agriculture congolaise. À retenir. Le gaz du lac Kivu est une opportunité pour l'électricité et la pétrochimie (ammoniac, engrais). Les projets d'exploitation (Symbion Power, GasMeth) sont en cours."]],"18":[["fr","Chapitre VIII, Réserves et formation en R D C. Les réserves pétrolières. Cuvette congolaise, Grands Lacs, Bas-Congo. Le programme national souligne le potentiel pétrolier de la R D C: la Cuvette congolaise, les Grands Lacs et le Bas-Congo recèlent des réserves encore partiellement exploitées. La formation de techniciens qualifiés est une priorité pour développer le secteur. Formation et débouchés. Se former aux métiers du pétrole. L'accord énergétique entre la R D C et l'Algérie (2026) prévoit la formation de cadres congolais aux métiers du pétrole et du gaz, notamment via l'Institut Algérien du Pétrole. L'Université de Kinshasa propose une faculté de Pétrole, Gaz et Énergies Nouvelles. Débouchés: technicien de laboratoire industriel, opérateur en raffinerie, technicien en pétrochimie, agent de sécurité industrielle, puis études supérieures en génie des procédés, raffinage et pétrochimie."]],"19":[["fr","Synthèse, Du brut au produit fini. Récapitulatif général. Le grand enchaînement. Extraction: pétrole brut et gaz naturel. Raffinage: distillation atmosphérique et sous vide, donc coupes (naphta, kérosène, gasoil, résidu). Conversion: vapocraquage (oléfines) et reformage (aromatiques), donc grands intermédiaires. Pétrochimie de dérivés: polymérisation, synthèse, donc plastiques, fibres, élastomères, additifs. Produits finis: carburants, lubrifiants, bitumes, matériaux. Points clés à retenir. Les notions essentielles. Pétrochimie égale chimie dérivée du pétrole ET du gaz naturel. Naphta égale charge phare du vapocraquage; éthane et propane égale charges légères de choix. Vapocraquage, donc oléfines (éthylène, propylène); reformage, donc aromatiques (BTX). Polymérisation en chaîne (oléfines) vs polycondensation (PET, polyamides). Distillation égale séparation physique; craquage égale transformation chimique. Indice d'octane, donc essence; indice de cétane, donc gasoil. Zone ATEX égale atmosphère explosive; SIS égale système de sécurité instrumenté. R D C: SOCIR à Muanda, gaz du lac Kivu, réserves de la Cuvette congolaise."]],"20":[["fr","Évaluation finale, Pétrochimie. Consignes. Répondez aux questions suivantes en choisissant une seule bonne réponse parmi les quatre propositions. Le résultat s'affiche après validation."]]}};
+  var CACHE = "ecolia-cours-v1";                       // même cache que l'application
+  var PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  var PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+  var DL = '<svg viewBox="0 0 24 24"><path d="M11 3h2v9.2l3.6-3.6L18 10l-6 6-6-6 1.4-1.4L11 12.2V3zM5 19h14v2H5z"/></svg>';
+  var OK = '<svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>';
+  // Réparation du quiz : certains cours stockent les choix sous "opts" (ou autre) au lieu de "options"
+  try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+      questions.forEach(function (q) {
+        if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+        if (q.text === undefined) q.text = q.question || q.q || q.enonce || q.titre || "";
+        if (typeof q.correct === "undefined") {
+          if (typeof q.answer !== "undefined") q.correct = q.answer;
+          else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+        }
+      });
+    }
+  } catch (e) {}
+  var synth = window.speechSynthesis || null;
+  var HAS_CACHE = !!(window.caches && window.caches.open);
+  var NATIVE = false;           // APK ECOLIA : pont Java "CoursInterface" (fichiers dans le dossier de l'application)
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  var LATER = "ecolia_audio_later_" + CFG.code;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+  function init() {
+    if (document.getElementById("ecolia-audio-btn")) return;
+
+    // ---------- éléments de l'interface ----------
+    var btn = document.createElement("button");
+    btn.id = "ecolia-audio-btn"; btn.type = "button"; btn.className = "ecolia-off";
+    btn.setAttribute("aria-label", "Écouter la leçon"); btn.innerHTML = PLAY;
+    var dlBtn = document.createElement("button");
+    dlBtn.id = "ecolia-dl-btn"; dlBtn.type = "button"; dlBtn.className = "ecolia-off";
+    dlBtn.innerHTML = DL;
+    var host = document.querySelector(".header-right");
+    if (host) { host.insertBefore(dlBtn, host.firstChild); host.insertBefore(btn, dlBtn); }   // dans la barre du haut : ne scrolle jamais
+    else { btn.className += " ecolia-fixed"; document.body.appendChild(btn); }
+
+    var banner = document.createElement("div");
+    banner.id = "ecolia-audio-banner";
+    banner.innerHTML = '<span class="eab-txt"></span><span class="eab-act"></span><div class="eab-bar"><i></i></div>';
+    var content = document.getElementById("content");
+    if (content && content.parentNode) content.parentNode.insertBefore(banner, content);
+    else document.body.insertBefore(banner, document.body.firstChild);
+    var txtEl = banner.querySelector(".eab-txt"), actEl = banner.querySelector(".eab-act");
+    var barEl = banner.querySelector(".eab-bar"), barI = barEl.firstChild;
+
+    var audio = new Audio();            // un seul élément Audio, réutilisé (exigé par les navigateurs mobiles)
+    audio.preload = "auto";
+    var st = { idx: -1, auto: false, advancing: false, mode: null, speaking: false, token: 0, chunks: [], ci: 0, blobUrl: null, playTok: 0 };
+    var dl = { state: "none", cached: 0, busy: false, cancel: false };   // none | partial | full
+    var bnMode = null, hideTimer = null;
+    if (synth && synth.getVoices) { try { synth.getVoices(); } catch (e) {} }
+
+    function cur() {
+      try { if (typeof currentSlide === "number") return currentSlide; } catch (e) {}
+      return 0;
+    }
+    function hasMp3(i) { return CFG.available.indexOf(i + 1) !== -1; }
+    function fb(i) { return CFG.fallback && CFG.fallback[String(i + 1)]; }
+    function hasAudio(i) { return hasMp3(i) || (!!synth && !!fb(i)); }
+    function urlN(n) {   // dans l'APK la page est sur https://app.local : une adresse relative doit pointer vers le site
+      var b = CFG.base;
+      if (NATIVE && !/^https?:/i.test(b)) b = "https://ecolia-course.github.io/" + b.replace(/^(\.\.\/|\.\/)+/, "");
+      return new URL(b + nameN(n), location.href).href;
+    }
+    function setIcon(playing) { btn.innerHTML = playing ? PAUSE : PLAY; }
+    function isPlaying() { return st.mode === "mp3" ? !audio.paused : (st.mode === "tts" && st.speaking); }
+    function mo() { return "≈ " + CFG.sizeMo + " Mo"; }
+    function nameN(n) { return "audio_" + CFG.code + "_" + n + ".mp3"; }
+
+    // ====================================================================
+    //  Stockage hors ligne : 2 moteurs, même interface
+    //    - APK : fichiers du dossier de l'application (CoursInterface), servis par https://app.local/cours/
+    //    - Web : Cache Storage du navigateur (même cache que l'application web)
+    // ====================================================================
+    function nativeStore() {
+      var okKey = "ecolia_audio_ok_" + CFG.code;
+      function readOk() { try { return JSON.parse(lsGet(okKey) || "[]"); } catch (e) { return []; } }
+      function writeOk(a) { lsSet(okKey, JSON.stringify(a)); }
+      function exists(n) { try { return !!CoursInterface.exists(nameN(n)); } catch (e) { return false; } }
+      function local(n) { return location.origin + "/cours/" + nameN(n); }
+      function verify(n) {                                   // fichier complet ? (taille exacte connue à la génération)
+        return fetch(local(n), { cache: "no-store" }).then(function (r) { return r.blob(); }).then(function (b) {
+          var exp = CFG.sizes && CFG.sizes[String(n)];
+          return (b.size > 2000 && (!exp || b.size === exp)) ? b : null;
+        }).catch(function () { return null; });
+      }
+      return {
+        list: function () {
+          var ok = readOk().filter(exists); writeOk(ok); return Promise.resolve(ok);
+        },
+        get: function (n) { return exists(n) ? verify(n) : Promise.resolve(null); },
+        put: function (n) {
+          return new Promise(function (res, rej) {
+            try { CoursInterface.download(urlN(n), nameN(n)); } catch (e) { return rej(e); }
+            var t0 = Date.now();
+            function next() { if (Date.now() - t0 > 120000) rej(new Error("délai dépassé")); else setTimeout(poll, 800); }
+            function poll() {
+              if (!exists(n)) return next();
+              verify(n).then(function (b) {
+                if (!b) return next();
+                var ok = readOk(); if (ok.indexOf(n) < 0) ok.push(n); writeOk(ok); res();
+              });
+            }
+            setTimeout(poll, 800);
+          });
+        },
+        del: function (n) {
+          try { CoursInterface.delete(nameN(n)); } catch (e) {}
+          writeOk(readOk().filter(function (x) { return x !== n; }));
+          return Promise.resolve();
+        }
+      };
+    }
+    function cacheStore() {
+      return {
+        list: function () {
+          return caches.open(CACHE).then(function (c) {
+            return Promise.all(CFG.available.map(function (n) {
+              return c.match(urlN(n)).then(function (r) {
+                if (!r) return 0;
+                if ((r.headers.get("content-type") || "").indexOf("audio") !== 0) { c.delete(urlN(n)); return 0; }   // ancien contenu invalide
+                return n;
+              });
+            }));
+          }).then(function (a) { return a.filter(Boolean); });
+        },
+        get: function (n) {
+          return caches.open(CACHE).then(function (c) { return c.match(urlN(n)); })
+            .then(function (r) { return r ? r.blob() : null; }).then(function (b) { return b && b.size > 2000 ? b : null; });
+        },
+        put: function (n) {
+          var u = urlN(n);
+          return fetch(u, { cache: "no-store" }).then(function (r) {
+            if (!r.ok || r.status !== 200) throw new Error("HTTP " + r.status);
+            return r.blob();
+          }).then(function (b) {
+            if (b.size < 2000 || (b.type && b.type.indexOf("audio") !== 0 && b.type.indexOf("octet") < 0)) throw new Error("fichier invalide");
+            return caches.open(CACHE).then(function (c) { return c.put(u, new Response(b, { headers: { "Content-Type": "audio/mpeg" } })); });
+          });
+        },
+        del: function (n) { return caches.open(CACHE).then(function (c) { return c.delete(urlN(n)); }); }
+      };
+    }
+    var store = NATIVE ? nativeStore() : (HAS_CACHE ? cacheStore() : null);
+
+    // ====================================================================
+    //  Bannière : invitation, confirmations, progression
+    // ====================================================================
+    function showBanner(mode, text, buttons, pct) {
+      clearTimeout(hideTimer);
+      bnMode = mode;
+      txtEl.textContent = text;
+      actEl.innerHTML = "";
+      (buttons || []).forEach(function (b) {
+        var e = document.createElement("button");
+        e.type = "button"; e.textContent = b.label; if (b.pri) e.className = "pri";
+        e.addEventListener("click", function (ev) { ev.stopPropagation(); b.fn(); });
+        actEl.appendChild(e);
+      });
+      if (typeof pct === "number") { barEl.style.display = "block"; barI.style.width = pct + "%"; }
+      else barEl.style.display = "none";
+      banner.classList.add("on");
+    }
+    function hideBanner() { clearTimeout(hideTimer); bnMode = null; banner.classList.remove("on"); }
+    function flash(text) { showBanner("info", text, []); hideTimer = setTimeout(hideBanner, 4000); }
+
+    function refreshUI() {
+      var show = !!store && CFG.available.length > 0;
+      dlBtn.classList.toggle("ecolia-off", !show);
+      dlBtn.classList.toggle("ecolia-full", dl.state === "full");
+      dlBtn.innerHTML = dl.state === "full" ? OK : DL;
+      dlBtn.setAttribute("aria-label", dl.state === "full" ? "Audios téléchargés : supprimer" : "Télécharger les audios");
+      dlBtn.title = dlBtn.getAttribute("aria-label");
+    }
+    function refreshCacheState(done) {
+      if (!store) { dl.state = "none"; refreshUI(); if (done) done(); return; }
+      store.list().then(function (ok) {
+        dl.cached = ok.length;
+        dl.state = dl.cached === 0 ? "none" : (dl.cached >= CFG.available.length ? "full" : "partial");
+      }).catch(function () { dl.state = "none"; }).then(function () { refreshUI(); if (done) done(); });
+    }
+
+    function askDownload(fromInvite) {
+      var left = CFG.available.length - dl.cached;
+      var txt = dl.state === "partial"
+        ? "Il reste " + left + " audio(s) à télécharger pour écouter ce cours sans internet."
+        : "🔊 Télécharger les audios de ce cours (" + mo() + ") pour les écouter sans internet ? Wi-Fi recommandé.";
+      showBanner(fromInvite ? "invite" : "confirm", txt, [
+        { label: fromInvite ? "Plus tard" : "Annuler", fn: function () { if (fromInvite) lsSet(LATER, "1"); hideBanner(); } },
+        { label: "Télécharger", pri: true, fn: startDownload }
+      ]);
+    }
+    function askDelete() {
+      showBanner("confirm", "Supprimer les audios téléchargés de ce cours (" + mo() + ") ? Vous pourrez toujours les écouter en ligne.", [
+        { label: "Annuler", fn: hideBanner },
+        { label: "Supprimer", pri: true, fn: doDelete }
+      ]);
+    }
+
+    function startDownload() {
+      if (dl.busy || !store) return;
+      dl.busy = true; dl.cancel = false;
+      var total = CFG.available.length, done = 0, quota = false, fails = 0, todo = [];
+      store.list().then(function (have) {
+        CFG.available.forEach(function (n) { if (have.indexOf(n) < 0) todo.push(n); });
+        done = total - todo.length;
+        function paint() {
+          var msg = "Téléchargement des audios : " + done + " / " + total;
+          if (bnMode === "progress") {                  // met à jour sans recréer les boutons (sinon un appui peut être perdu)
+            txtEl.textContent = msg; barI.style.width = Math.round(done / total * 100) + "%";
+          } else {
+            showBanner("progress", msg, [
+              { label: "Annuler", fn: function () { dl.cancel = true; } }
+            ], Math.round(done / total * 100));
+          }
+        }
+        paint();
+        function worker() {
+          if (dl.cancel || quota || !todo.length) return Promise.resolve();
+          var n = todo.shift();
+          return store.put(n).then(function () { done++; paint(); }).catch(function (e) {
+            if (e && (e.name === "QuotaExceededError" || /quota/i.test(String(e.message)))) quota = true;
+            fails++;
+          }).then(worker);
+        }
+        return Promise.all([worker(), worker()]);
+      }).catch(function () { fails++; }).then(function () {
+        dl.busy = false;
+        refreshCacheState(function () {
+          if (dl.state === "full") flash("✓ Audios téléchargés : le cours se lit maintenant sans internet.");
+          else if (dl.cancel) flash("Téléchargement interrompu (" + dl.cached + " / " + total + "). Vous pourrez reprendre plus tard.");
+          else showBanner("error", quota ? "Espace insuffisant sur l'appareil. Libérez de la place puis réessayez."
+            : "Certains audios n'ont pas pu être téléchargés (connexion ?).", [
+            { label: "Fermer", fn: hideBanner }, { label: "Réessayer", pri: true, fn: startDownload }
+          ]);
+        });
+      });
+    }
+    function doDelete() {
+      if (!store) return;
+      Promise.all(CFG.available.map(function (n) { return store.del(n); })).catch(function () {}).then(function () {
+        lsDel(LATER);
+        refreshCacheState(function () { flash("Audios supprimés de cet appareil."); });
+      });
+    }
+
+    dlBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (dl.busy) return;
+      if (dl.state === "full") askDelete(); else askDownload(false);
+    });
+
+    // ====================================================================
+    //  Voix intégrée au téléphone (hors ligne, sans limite)
+    // ====================================================================
+    function pickVoice(lang) {
+      var vs = [];
+      try { vs = synth.getVoices() || []; } catch (e) {}
+      var pre = lang === "en" ? "en" : "fr", best = null;
+      for (var k = 0; k < vs.length; k++) {
+        var v = vs[k];
+        if ((v.lang || "").toLowerCase().indexOf(pre) !== 0) continue;
+        if (!best || (v.localService && !best.localService)) best = v;
+      }
+      return best;
+    }
+    function hardSplit(text, max) {
+      var out = [];
+      while (text.length > max) {
+        var cut = text.lastIndexOf(" ", max);
+        if (cut < 40) cut = max;
+        out.push(text.slice(0, cut)); text = text.slice(cut).replace(/^\s+/, "");
+      }
+      if (text) out.push(text);
+      return out;
+    }
+    function buildChunks(segs) {                  // morceaux courts : évite l'arrêt des longs textes sur Chrome
+      var out = [];
+      segs.forEach(function (s) {
+        var cur2 = "", parts = s[1].match(/[^.!?;:]+[.!?;:]*\s*/g) || [s[1]];
+        parts.forEach(function (p) {
+          if (cur2 && (cur2 + p).length > 160) { out.push({ lang: s[0], text: cur2.trim() }); cur2 = p; }
+          else cur2 += p;
+        });
+        if (cur2.trim()) out.push({ lang: s[0], text: cur2.trim() });
+      });
+      var res = [];
+      out.forEach(function (c) { hardSplit(c.text, 190).forEach(function (t) { res.push({ lang: c.lang, text: t }); }); });
+      return res;
+    }
+    function speakFrom(tk) {
+      if (tk !== st.token) return;
+      if (st.ci >= st.chunks.length) {
+        st.speaking = false; st.mode = null; st.ci = 0; setIcon(false);
+        if (st.auto) goNext();
+        return;
+      }
+      var c = st.chunks[st.ci];
+      var u = new SpeechSynthesisUtterance(c.text);
+      u.lang = c.lang === "en" ? "en-US" : "fr-FR";
+      var v = pickVoice(c.lang);
+      if (v) { u.voice = v; u.lang = v.lang; }
+      u.rate = 0.95;
+      u.onend = function () { if (tk !== st.token) return; st.ci++; speakFrom(tk); };
+      u.onerror = function () { if (tk !== st.token) return; st.speaking = false; setIcon(false); st.auto = false; };
+      synth.speak(u);
+    }
+    function startTts(from) {
+      st.token++;
+      var tk = st.token;
+      st.mode = "tts"; st.speaking = true; st.ci = from || 0; setIcon(true);
+      var busy = false;
+      try { busy = synth.speaking || synth.pending; synth.cancel(); } catch (e) {}
+      if (busy) setTimeout(function () { speakFrom(tk); }, 120);   // laisse cancel() se terminer
+      else speakFrom(tk);                                          // sinon tout de suite (exigé par iOS)
+    }
+    function playVoice() {
+      if (!(synth && fb(st.idx))) { st.auto = false; return false; }
+      if (!st.chunks.length) st.chunks = buildChunks(fb(st.idx));
+      startTts(st.ci);
+      return true;
+    }
+
+    // ====================================================================
+    //  Lecture
+    // ====================================================================
+    function freeBlob() { if (st.blobUrl) { try { URL.revokeObjectURL(st.blobUrl); } catch (e) {} st.blobUrl = null; } }
+    function stopAll() {
+      st.playTok++;
+      try { audio.pause(); audio.currentTime = 0; } catch (e) {}
+      st.token++;
+      try { if (synth) synth.cancel(); } catch (e) {}
+      st.speaking = false; st.mode = null; st.chunks = []; st.ci = 0;
+      setIcon(false);
+    }
+    function pauseNow() {
+      if (st.mode === "mp3") audio.pause();
+      else if (st.mode === "tts") {
+        st.token++;
+        try { synth.cancel(); } catch (e) {}
+        st.speaking = false; setIcon(false);      // st.ci conservé : la reprise repart de la phrase en cours
+      }
+    }
+    function startAudio(src, tok) {
+      if (tok !== st.playTok) return;
+      if (audio.getAttribute("data-src") !== src) { audio.setAttribute("data-src", src); audio.src = src; }
+      var p = audio.play();
+      if (p && p.catch) p.catch(function (err) {
+        console.warn("ECOLIA audio :", err);
+        if (tok !== st.playTok) return;
+        if (!(err && err.name === "NotAllowedError") && playVoice()) return;   // lecture impossible : voix du téléphone
+        setIcon(false); st.auto = false;
+      });
+    }
+    function playCurrent() {
+      var i = st.idx;
+      if (hasMp3(i)) {
+        var tok = ++st.playTok, u = urlN(i + 1);
+        st.mode = "mp3";
+        if (!navigator.onLine && dl.state === "none") { st.mode = null; if (playVoice()) return; }   // hors ligne et non téléchargé
+        if (store && dl.state !== "none") {                     // téléchargé : lecture locale, sans réseau
+          store.get(i + 1)
+            .then(function (b) {
+              if (tok !== st.playTok) return;
+              if (b) { freeBlob(); st.blobUrl = URL.createObjectURL(new Blob([b], { type: "audio/mpeg" })); startAudio(st.blobUrl, tok); }
+              else startAudio(u, tok);
+            }).catch(function () { startAudio(u, tok); });
+        } else startAudio(u, tok);                              // sinon lecture en ligne (appel immédiat, exigé par iOS)
+      } else if (!playVoice()) {
+        st.auto = false;
+      }
+    }
+
+    function onSlideChange(i) {
+      var wasAdvancing = st.advancing;
+      st.advancing = false;
+      st.idx = i;
+      btn.classList.toggle("ecolia-off", !hasAudio(i));
+      stopAll();
+      audio.removeAttribute("data-src");
+      freeBlob();
+      if (bnMode === "invite" && i !== 0) hideBanner();       // l'invitation n'apparaît qu'à la première slide
+      if (wasAdvancing && st.auto) setTimeout(playCurrent, 500);   // enchaînement automatique
+      else st.auto = false;                                         // changement manuel : on coupe tout
+    }
+    function goNext() {
+      if (st.idx + 1 >= CFG.count) { st.auto = false; return; }
+      st.advancing = true;
+      if (typeof nextSlide === "function") nextSlide();
+      else { var nb = document.getElementById("nextBtn"); if (nb) nb.click(); }
+      setTimeout(function () { st.advancing = false; }, 4000);
+    }
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var i = cur();
+      if (i !== st.idx) onSlideChange(i);
+      if (isPlaying()) { st.auto = false; pauseNow(); }
+      else { st.auto = true; playCurrent(); }
+    });
+    audio.addEventListener("play", function () { setIcon(true); });
+    audio.addEventListener("pause", function () { if (st.mode === "mp3") setIcon(false); });
+    audio.addEventListener("error", function () {
+      if (st.mode === "mp3" && playVoice()) return;            // fichier introuvable / hors ligne : voix du téléphone
+      setIcon(false); st.auto = false;
+    });
+    audio.addEventListener("ended", function () { setIcon(false); if (st.auto) goNext(); });
+    window.addEventListener("pagehide", function () { stopAll(); freeBlob(); });
+
+    // ---------- démarrage ----------
+    refreshCacheState(function () {
+      if (store && CFG.available.length && dl.state !== "full" && navigator.onLine && cur() === 0 && !lsGet(LATER)) askDownload(true);
+    });
+    st.idx = -1;
+    setInterval(function () { var i = cur(); if (i !== st.idx) onSlideChange(i); }, 250);   // suit la slide affichée
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+<!-- ECOLIA_AUDIO_PLAYER_END -->
+</body>
+</html>

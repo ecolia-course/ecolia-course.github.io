@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="vert">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>ECOLIA — Redaction Admin4</title>
+<style>
+[data-theme="bleu"]   { --p1:#0d2b4f; --p2:#1565c0; --p3:#07172e; --p4:#12437a; --p5:#5b8fd0; --bg:#e8f0fb; --bg2:#cfdff5; --bd:#a9c3e8; --soft:#dde8f7; --btn:#2a67b0; }
+[data-theme="vert"]   { --p1:#14442e; --p2:#2e7d32; --p3:#0b2b1a; --p4:#1f5c3a; --p5:#4f9a6b; --bg:#e8f5ec; --bg2:#c8e6d2; --bd:#a5cdb2; --soft:#dcefe2; --btn:#2f7a4f; }
+[data-theme="violet"] { --p1:#2d1b4e; --p2:#6a1b9a; --p3:#1a0f2e; --p4:#4a148c; --p5:#9c6fd0; --bg:#f1e9fb; --bg2:#dccbf2; --bd:#c4a8e6; --soft:#e8ddf6; --btn:#7e3fb2; }
+[data-theme="rouge"]  { --p1:#4a1010; --p2:#b71c1c; --p3:#2b0a0a; --p4:#8e1b1b; --p5:#d9706a; --bg:#fbeaea; --bg2:#f3cdcb; --bd:#e8a9a5; --soft:#f8dede; --btn:#a62a2a; }
+[data-theme="orange"] { --p1:#4e2a0c; --p2:#ef6c00; --p3:#2e1604; --p4:#b34a00; --p5:#f0a15a; --bg:#fff1e0; --bg2:#fbdcb8; --bd:#f3c08a; --soft:#fdebd6; --btn:#c9650a; }
+[data-theme="teal"]   { --p1:#0b3a3a; --p2:#00796b; --p3:#062626; --p4:#00574b; --p5:#4db6ac; --bg:#e0f2f1; --bg2:#b2dfdb; --bd:#80cbc4; --soft:#d5ecea; --btn:#26897d; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:linear-gradient(160deg,var(--p1) 0%,var(--p2) 50%,var(--p3) 100%); display:flex; justify-content:center; align-items:center; padding:8px; }
+.container { width:100%; max-width:1400px; background:#fefdf8; border-radius:20px; overflow:hidden; display:flex; flex-direction:column; height:100%; max-height:100vh; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.progress-bar { height:4px; background:var(--bg2); flex-shrink:0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--p5),var(--p4)); width:0%; transition:width 0.3s; }
+.header { padding:10px 16px; background:var(--bg); border-bottom:1px solid var(--bd); display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+.header h1 { color:var(--p4); font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box { display:flex; background:white; border-radius:20px; padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.search-box input { border:none; padding:6px 10px; border-radius:20px; outline:none; width:130px; font-size:0.8rem; }
+.search-box button { background:none; border:none; cursor:pointer; padding:4px 8px; font-size:0.85rem; color:var(--p2); }
+.badge { background:var(--p5); color:white; padding:4px 10px; border-radius:20px; font-weight:bold; font-size:0.75rem; }
+.search-nav { display:none; gap:4px; background:var(--bg2); padding:2px 8px; border-radius:20px; align-items:center; font-size:0.75rem; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:0.9rem; color:var(--p4); padding:2px 4px; }
+.content { padding:28px 32px; flex:1; overflow-y:auto; background:#fff; scroll-behavior:smooth; line-height:1.85; }
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.slide-title { color:var(--p1); font-size:1.5rem; font-weight:700; padding-bottom:12px; margin-bottom:20px; border-bottom:2px solid var(--p5); }
+.slide-content { color:var(--p3); font-size:1rem; }
+.empty-state { display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-height:60vh; padding:40px 20px; gap:18px; }
+.empty-state .icon { width:72px; height:72px; border-radius:50%; background:var(--bg); border:2px solid var(--bd); display:flex; align-items:center; justify-content:center; color:var(--p2); font-size:2rem; font-weight:300; }
+.empty-state h2 { color:var(--p1); font-size:1.4rem; font-weight:700; margin:0; }
+.empty-state p { color:#666; font-size:0.95rem; max-width:520px; line-height:1.7; }
+.empty-state .tag { display:inline-block; padding:6px 14px; background:var(--bg); color:var(--p4); border:1px solid var(--bd); border-radius:20px; font-size:0.8rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; }
+.bloc { padding:18px 22px; border-radius:12px; margin:22px 0; line-height:1.85; }
+.bloc-label { font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; opacity:0.7; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:var(--bg); border-left:4px solid var(--p5); }
+.theorie .bloc-label { color:var(--p4); }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.sources { background:#f5f5f5; padding:12px 16px; border-radius:10px; margin-top:26px; font-size:0.82rem; color:#666; border-left:3px solid #999; line-height:1.6; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:var(--p1); }
+.quiz-container { padding:22px; background:var(--bg); border-radius:16px; }
+.quiz-question { background:white; border-radius:10px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.quiz-question p { font-weight:600; margin-bottom:10px; color:var(--p1); }
+.quiz-question label { display:block; padding:8px 10px; margin:4px 0; border-radius:6px; cursor:pointer; transition:background 0.2s; }
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit { background:var(--btn); color:white; border:none; padding:12px 24px; border-radius:30px; font-size:1rem; cursor:pointer; font-weight:600; margin-top:14px; }
+.quiz-result { margin-top:16px; font-weight:600; }
+.controls { padding:8px 16px; background:#fafafa; border-top:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0; }
+.nav-btn { background:white; color:var(--p4); border:1px solid #ccc; padding:8px 14px; border-radius:8px; font-size:0.82rem; cursor:pointer; font-weight:500; }
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:var(--soft); }
+.content::-webkit-scrollbar-thumb { background:var(--p5); border-radius:3px; }
+@media (max-width:600px) { body { padding:0; } .container { border-radius:0; max-height:100vh; } .content { padding:20px 18px; } .slide-title { font-size:1.25rem; } .search-box input { width:90px; } .header h1 { font-size:0.85rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="header">
+<h1 id="pageTitle">ECOLIA</h1>
+<div class="header-right">
+<div class="search-box">
+<input id="searchInput" placeholder="Rechercher" type="text"/>
+<button id="searchBtn">⌕</button>
+</div>
+<div class="search-nav" id="searchNav">
+<button id="prevResultBtn">‹</button>
+<span id="resultCounter">0/0</span>
+<button id="nextResultBtn">›</button>
+</div>
+<span class="badge" id="slideCounter">0/0</span>
+</div>
+</div>
+<div class="content" id="content"></div>
+<div class="controls">
+<button class="nav-btn" id="prevBtn">← Précédent</button>
+<span class="counter" id="counter">—</span>
+<button class="nav-btn" id="nextBtn">Suivant →</button>
+</div>
+</div>
+<script>
+const COURSE_TITLE = "Rédaction Administrative";
+const slides = [
+  {
+    title: "Sommaire — Rédaction Administrative",
+    content: `
+      <div class="bloc resume">
+        <h3>Bienvenue dans le cours de Rédaction Administrative</h3>
+        <p>Ce cours de <strong>Rédaction Administrative</strong> s'adresse aux élèves de la 4<sup>e</sup> année des Humanités, option Secrétariat-Administration, et reste utile aux options Commerciale et Gestion. Il vous apprendra à rédiger avec rigueur et professionnalisme les principaux documents administratifs utilisés dans les entreprises et les administrations, en respectant les normes de présentation, de style et de confidentialité.</p>
+        <h4>Objectifs du cours</h4>
+        <ul>
+          <li>Maîtriser le style et les règles de présentation administrative.</li>
+          <li>Rédiger une note de service.</li>
+          <li>Rédiger un bordereau d'envoi.</li>
+          <li>Rédiger une lettre administrative.</li>
+          <li>Rédiger un compte rendu de réunion.</li>
+          <li>Rédiger un procès-verbal.</li>
+          <li>Rédiger un rapport avec analyse et recommandations.</li>
+        </ul>
+        <h4>Les grands chapitres du cours</h4>
+        <ol>
+          <li>Les règles générales de la rédaction administrative.</li>
+          <li>La note de service.</li>
+          <li>Le bordereau d'envoi.</li>
+          <li>La lettre administrative.</li>
+          <li>Le compte rendu.</li>
+          <li>Le procès-verbal.</li>
+          <li>Le rapport.</li>
+          <li>La gestion et l'archivage des documents administratifs.</li>
+        </ol>
+        <p><strong>Compétences visées :</strong> à la fin de ce cours, vous serez capable de rédiger les principaux documents administratifs internes et externes d'une organisation, et de gérer l'information écrite. Ce cours complète la Correspondance Commerciale (tournée vers les partenaires externes) et prépare aux métiers du secrétariat et de l'administration.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 1 — Pourquoi la rédaction administrative ?",
+    content: `
+      <div class="bloc cas">
+        <div class="bloc-label">Situation-problème</div>
+        <h3>Une décision jamais écrite</h3>
+        <p>Dans une PME de Kinshasa, le directeur annonce oralement lors d'une réunion informelle que les horaires changent à partir de lundi. Certains employés n'ont pas entendu, d'autres ont compris une autre heure. Lundi matin, la moitié du personnel arrive en retard. Le directeur s'énerve : « Je l'avais dit ! » Mais personne ne peut prouver ce qui a été dit, ni quand, ni à qui.</p>
+        <p><strong>Question de départ :</strong> Comment éviter ce type de dysfonctionnement et faire circuler l'information de manière fiable dans une organisation ?</p>
+        <p>La <strong>rédaction administrative</strong> répond à ce besoin : elle fixe les décisions par écrit, assure la traçabilité et garantit que chacun reçoit la même information. Pour un futur professionnel du secrétariat ou de l'administration, c'est une compétence quotidienne.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 1 — Le style administratif",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Cinq qualités essentielles</h3>
+        <p>Le style administratif se distingue du style littéraire ou familier. Cinq qualités sont exigées :</p>
+        <ul>
+          <li><strong>Clarté :</strong> phrases courtes, vocabulaire précis, une idée par paragraphe.</li>
+          <li><strong>Concision :</strong> aller à l'essentiel, éviter les formules inutiles.</li>
+          <li><strong>Neutralité :</strong> éviter les émotions, les opinions personnelles et les jugements de valeur.</li>
+          <li><strong>Courtoisie :</strong> respecter le destinataire, même en cas de désaccord.</li>
+          <li><strong>Objectivité :</strong> rapporter les faits sans les déformer.</li>
+        </ul>
+        <p>Le registre est <strong>soutenu</strong> : on évite les abréviations (thx, svp), les émojis et les familiarités.</p>
+        <p><strong>Erreur fréquente :</strong> utiliser un ton familier ou introduire des opinions personnelles dans un document administratif. Le document engage l'organisation, pas seulement son rédacteur.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 1 — La présentation des documents administratifs",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Une structure normalisée</h3>
+        <p>La plupart des documents administratifs partagent une structure commune :</p>
+        <ul>
+          <li><strong>En-tête :</strong> nom de l'organisation, service émetteur, coordonnées.</li>
+          <li><strong>Références :</strong> numéro du document, référence au courrier précédent.</li>
+          <li><strong>Lieu et date.</strong></li>
+          <li><strong>Destinataire(s) :</strong> nom, fonction, service.</li>
+          <li><strong>Objet :</strong> résumé précis du contenu.</li>
+          <li><strong>Corps :</strong> développement du message.</li>
+          <li><strong>Signature :</strong> nom et fonction du responsable.</li>
+          <li><strong>Annexes :</strong> documents joints, le cas échéant.</li>
+          <li><strong>Mention de confidentialité :</strong> si le document est réservé.</li>
+        </ul>
+        <p><strong>Erreur fréquente :</strong> omettre l'objet ou la mention de confidentialité. Un document sans objet est difficile à classer ; un document sensible sans mention peut être diffusé à tort.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 2 — La note de service",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Communiquer en interne</h3>
+        <p>La <strong>note de service</strong> est un document interne par lequel la direction ou un responsable communique une information, une instruction ou une consigne à un ou plusieurs services ou membres du personnel.</p>
+        <figure>
+          <img src="redactionadmin4_img01" alt="Modèle annoté d'une note de service avec en-tête, mention NOTE DE SERVICE, numéro, date, objet, destinataires, corps et signature." />
+          <figcaption>L'anatomie d'une note de service</figcaption>
+        </figure>
+        <h4>Structure</h4>
+        <ul>
+          <li><strong>En-tête :</strong> nom de l'organisation.</li>
+          <li><strong>Mention « NOTE DE SERVICE »</strong> et numéro.</li>
+          <li><strong>Date.</strong></li>
+          <li><strong>Objet :</strong> résumé précis.</li>
+          <li><strong>Destinataires :</strong> services ou personnes concernés.</li>
+          <li><strong>Corps :</strong> information, instruction ou consigne.</li>
+          <li><strong>Signature</strong> du responsable.</li>
+        </ul>
+        <h4>Exemple</h4>
+        <p>« NOTE DE SERVICE n° 12/2025</p>
+        <p>Objet : Horaires d'ouverture pendant les fêtes de fin d'année.</p>
+        <p>Le personnel est informé que les bureaux seront fermés du 24 au 26 décembre. La permanence sera assurée par le service comptabilité. »</p>
+        <p><strong>Erreur fréquente :</strong> omettre l'objet ou les destinataires. Une note de service doit être claire sur <em>qui</em> est concerné et sur <em>ce qui est demandé</em>.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 3 — Le bordereau d'envoi",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Prouver la transmission</h3>
+        <p>Le <strong>bordereau d'envoi</strong> est un document qui accompagne l'envoi de pièces ou de documents à un service ou à une administration. Il liste les documents transmis et sert de <strong>preuve de transmission</strong>.</p>
+        <h4>Mentions obligatoires</h4>
+        <ul>
+          <li>Nom de l'organisme expéditeur.</li>
+          <li>Date d'envoi.</li>
+          <li>Destinataire (nom, fonction, service).</li>
+          <li>Liste précise des pièces jointes (nature, nombre).</li>
+          <li>Signature de l'expéditeur.</li>
+        </ul>
+        <h4>Exemple</h4>
+        <p>« BORDEREAU D'ENVOI</p>
+        <p>À l'attention du Directeur provincial de l'Éducation.</p>
+        <p>Objet : transmission des dossiers des élèves finalistes.</p>
+        <p>Pièces jointes : 45 dossiers complets.</p>
+        <p>Date : [date]. Signature : [signature]. »</p>
+        <p><strong>Erreur fréquente :</strong> ne pas lister précisément les pièces. En cas de litige, le bordereau est la preuve de ce qui a été envoyé.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 4 — La lettre administrative",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>S'adresser à une administration</h3>
+        <p>La <strong>lettre administrative</strong> est une lettre adressée à une administration publique ou à un organisme officiel, dans le cadre d'une démarche administrative : demande, transmission, réponse, réclamation.</p>
+        <h4>Structure</h4>
+        <ul>
+          <li><strong>En-tête :</strong> nom et coordonnées de l'expéditeur.</li>
+          <li><strong>Lieu et date.</strong></li>
+          <li><strong>Destinataire :</strong> nom, fonction, adresse.</li>
+          <li><strong>Objet.</strong></li>
+          <li><strong>Formule d'appel :</strong> « Monsieur le Directeur, », « Madame la Ministre, ».</li>
+          <li><strong>Corps :</strong> rappel du contexte, demande, arguments.</li>
+          <li><strong>Formule de politesse.</strong></li>
+          <li><strong>Signature.</strong></li>
+          <li><strong>Annexes.</strong></li>
+        </ul>
+        <h4>Différence avec la lettre commerciale</h4>
+        <p>La lettre administrative s'adresse à une <strong>autorité publique</strong> ; le ton est plus formel, les références aux textes réglementaires sont fréquentes. La lettre commerciale s'adresse à un <strong>partenaire d'affaires</strong> (client, fournisseur).</p>
+        <h4>Exemple</h4>
+        <p>« Monsieur le Directeur provincial de l'EPSP,</p>
+        <p>Objet : demande de stage pour les élèves de 4<sup>e</sup> année commerciale.</p>
+        <p>Nous sollicitons votre accord pour accueillir nos élèves en stage dans vos services… »</p>
+        <p><strong>Erreur fréquente :</strong> oublier de mentionner la fonction du destinataire. Une lettre administrative mal adressée peut être rejetée ou retardée.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 5 — Le compte rendu",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Relater les débats objectivement</h3>
+        <p>Le <strong>compte rendu</strong> est un document qui relate de manière objective les débats et les décisions d'une réunion, sans les interpréter.</p>
+        <figure>
+          <img src="redactionadmin4_img02" alt="Modèle de compte rendu de réunion avec participants, ordre du jour, résumé des discussions et décisions." />
+          <figcaption>Un compte rendu objectif et structuré</figcaption>
+        </figure>
+        <h4>Structure</h4>
+        <ul>
+          <li><strong>En-tête :</strong> nom de l'organisation et service.</li>
+          <li><strong>Date et lieu</strong> de la réunion.</li>
+          <li><strong>Participants :</strong> présents, absents, excusés.</li>
+          <li><strong>Ordre du jour.</strong></li>
+          <li><strong>Résumé des discussions</strong> point par point.</li>
+          <li><strong>Décisions prises.</strong></li>
+          <li><strong>Actions à suivre :</strong> qui fait quoi, pour quand.</li>
+          <li><strong>Signature</strong> du rédacteur.</li>
+        </ul>
+        <p><strong>Objectivité :</strong> le compte rendu rapporte les faits ; il ne prend pas parti et ne juge pas.</p>
+        <h4>Exemple</h4>
+        <p>« Réunion du conseil de classe du 15 mars 2025. Ordre du jour : résultats du trimestre. Décisions : mise en place de séances de rattrapage pour les élèves en difficulté. Actions à suivre : les enseignants concernés préparent les exercices avant le 30 mars. »</p>
+        <p><strong>Erreur fréquente :</strong> introduire des opinions personnelles ou des commentaires non sollicités. Le compte rendu doit rester factuel.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 6 — Le procès-verbal",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Constater officiellement</h3>
+        <p>Le <strong>procès-verbal (PV)</strong> est un document officiel qui constate les faits, les décisions ou les débats d'une réunion ou d'une assemblée, avec une <strong>valeur juridique</strong>. Il est souvent signé par les participants.</p>
+        <h4>Structure</h4>
+        <ul>
+          <li><strong>En-tête.</strong></li>
+          <li><strong>Date et lieu.</strong></li>
+          <li><strong>Participants.</strong></li>
+          <li><strong>Ordre du jour.</strong></li>
+          <li><strong>Résumé des débats.</strong></li>
+          <li><strong>Décisions votées</strong> (avec résultats des votes si nécessaire).</li>
+          <li><strong>Signatures</strong> des participants.</li>
+        </ul>
+        <h4>Valeur juridique</h4>
+        <p>Le PV fait foi en cas de contestation. Il doit être rédigé avec une grande rigueur : une erreur peut avoir des conséquences juridiques.</p>
+        <h4>Différence avec le compte rendu</h4>
+        <p>Le PV a une <strong>valeur juridique</strong> et est <strong>signé</strong> ; le compte rendu est plus informatif et peut être moins formel.</p>
+        <p><strong>Erreur fréquente :</strong> confondre compte rendu et procès-verbal. Le PV engage la responsabilité des signataires.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 7 — Le rapport",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Analyser et recommander</h3>
+        <p>Le <strong>rapport</strong> est un document développé qui présente l'analyse d'une situation ou d'un problème, et propose des <strong>recommandations</strong>.</p>
+        <figure>
+          <img src="redactionadmin4_img03" alt="Structure d'un rapport : introduction, analyse, recommandations, conclusion." />
+          <figcaption>Du constat à la recommandation</figcaption>
+        </figure>
+        <h4>Structure</h4>
+        <ul>
+          <li><strong>En-tête.</strong></li>
+          <li><strong>Introduction :</strong> contexte, objet du rapport.</li>
+          <li><strong>Développement :</strong> présentation des faits, analyse, causes, conséquences.</li>
+          <li><strong>Recommandations :</strong> solutions proposées, hiérarchisées.</li>
+          <li><strong>Conclusion.</strong></li>
+          <li><strong>Annexes :</strong> tableaux, graphiques, documents justificatifs.</li>
+        </ul>
+        <h4>Exemple</h4>
+        <p>« Rapport sur la gestion des stocks de fournitures au service commercial : constat d'une rupture fréquente de papier, analyse des causes (délai de commande trop long, absence de stock de sécurité), recommandations (mettre en place un stock d'alerte, négocier un délai de livraison plus court). »</p>
+        <p><strong>Erreur fréquente :</strong> se limiter à un constat sans proposer de recommandations. Un rapport doit aider à la décision.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 8 — La gestion et l'archivage des documents",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Conserver et protéger l'information</h3>
+        <p><strong>Le registre de courrier.</strong> Enregistrement des courriers arrivée et départ : date, expéditeur/destinataire, objet, service destinataire.</p>
+        <p><strong>Le classement.</strong> Méthodes alphabétique, numérique, chronologique, thématique. Chaque méthode a ses avantages selon le volume et la nature des documents.</p>
+        <p><strong>L'archivage.</strong> Conservation des documents dans des conditions de sécurité : locaux secs, protections contre l'incendie, accès contrôlé. On distingue :</p>
+        <ul>
+          <li><strong>Archives courantes :</strong> documents fréquemment consultés.</li>
+          <li><strong>Archives intermédiaires :</strong> documents consultés occasionnellement.</li>
+          <li><strong>Archives définitives :</strong> documents à conserver durablement (obligations légales, mémoire de l'organisation).</li>
+        </ul>
+        <p><strong>La confidentialité.</strong> Certains documents sont sensibles (dossiers du personnel, documents financiers) : l'accès doit être limité aux personnes autorisées.</p>
+        <p><strong>Erreur fréquente :</strong> négliger l'archivage. Des documents mal conservés peuvent entraîner des pertes d'information ou des préjudices juridiques.</p>
+      </div>
+    `
+  },
+  {
+    title: "Méthode — Rédiger un rapport complet",
+    content: `
+      <div class="bloc exemple">
+        <div class="bloc-label">Méthode</div>
+        <h3>Du constat à la recommandation</h3>
+        <p><strong>Situation.</strong> Le directeur d'une école de Goma constate une augmentation des absences des élèves de 4<sup>e</sup> année. Il demande un rapport.</p>
+        <h4>Étape 1 — Collecter les données</h4>
+        <p>Relevés d'absences, entretiens avec les enseignants, informations sur les causes possibles (transport, santé, motivation).</p>
+        <h4>Étape 2 — Rédiger l'introduction</h4>
+        <p>Contexte : « Le présent rapport a pour objet d'analyser l'augmentation des absences des élèves de 4<sup>e</sup> année au cours du trimestre écoulé. »</p>
+        <h4>Étape 3 — Présenter les faits</h4>
+        <p>« Le taux d'absentéisme est passé de 5 % à 12 % entre janvier et mars. Les absences concernent principalement les élèves résidant en périphérie. »</p>
+        <h4>Étape 4 — Analyser les causes</h4>
+        <p>« Trois causes principales se dégagent : les difficultés de transport, la malnutrition, le manque de motivation lié à l'absence de perspectives. »</p>
+        <h4>Étape 5 — Formuler des recommandations</h4>
+        <p>« Nous recommandons : (1) la mise en place d'un service de transport scolaire ; (2) un partenariat avec une cantine ; (3) des séances de motivation animées par des anciens élèves. »</p>
+        <h4>Étape 6 — Rédiger la conclusion</h4>
+        <p>« L'absentéisme est un phénomène multifactoriel. Les mesures proposées visent à y remédier durablement. »</p>
+        <p><strong>Erreur à éviter :</strong> se limiter à un constat sans proposer de recommandations concrètes.</p>
+      </div>
+    `
+  },
+  {
+    title: "Synthèse — Communiquer et documenter pour agir",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Synthèse</div>
+        <h3>Ce qu'il faut retenir</h3>
+        <p>La rédaction administrative est l'outil de communication écrite interne et officielle d'une organisation. Elle fixe les décisions, trace les échanges et garantit la cohérence de l'information.</p>
+        <ul>
+          <li><strong>Style :</strong> clarté, concision, neutralité, courtoisie, objectivité.</li>
+          <li><strong>Note de service :</strong> communication interne.</li>
+          <li><strong>Bordereau d'envoi :</strong> preuve de transmission.</li>
+          <li><strong>Lettre administrative :</strong> vers une autorité publique.</li>
+          <li><strong>Compte rendu :</strong> informatif, objectif.</li>
+          <li><strong>Procès-verbal :</strong> valeur juridique, signé.</li>
+          <li><strong>Rapport :</strong> analyse + recommandations.</li>
+          <li><strong>Archivage :</strong> registre, classement, confidentialité.</li>
+        </ul>
+        <p>Dans le contexte congolais, la maîtrise de la rédaction administrative aide les organisations à se professionnaliser et à sécuriser leurs décisions.</p>
+      </div>
+    `
+  },
+  {
+    title: "Évaluation finale — Rédaction Administrative",
+    content: `
+      <p>Répondez aux questions suivantes pour vérifier votre compréhension du cours. Une seule réponse est correcte par question.</p>
+      <div class="quiz-container">
+        <div id="quizQuestions"></div>
+        <button id="submitQuiz" class="quiz-btn-submit">
+          Valider mes réponses
+        </button>
+        <div id="quizResult" class="quiz-result"></div>
+      </div>
+    `
+  }
+];
+const questions = [
+  {
+    text: "Le style administratif exige :",
+    options: [
+      "Des phrases longues",
+      "La clarté, la concision et la neutralité",
+      "Un ton familier",
+      "Des émotions"
+    ],
+    correct: 1
+  },
+  {
+    text: "La note de service est :",
+    options: [
+      "Un document externe",
+      "Un document interne de communication",
+      "Une facture",
+      "Un contrat"
+    ],
+    correct: 1
+  },
+  {
+    text: "Le bordereau d'envoi sert à :",
+    options: [
+      "Accompagner et lister les pièces transmises",
+      "Facturer",
+      "Payer",
+      "Archiver"
+    ],
+    correct: 0
+  },
+  {
+    text: "La lettre administrative s'adresse :",
+    options: [
+      "À un client",
+      "À une administration publique",
+      "À un fournisseur",
+      "À un ami"
+    ],
+    correct: 1
+  },
+  {
+    text: "Le compte rendu doit être :",
+    options: [
+      "Subjectif",
+      "Objectif et factuel",
+      "Poétique",
+      "Familier"
+    ],
+    correct: 1
+  },
+  {
+    text: "Le procès-verbal a :",
+    options: [
+      "Une valeur juridique",
+      "Aucune valeur",
+      "Une valeur commerciale",
+      "Une valeur publicitaire"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le rapport contient :",
+    options: [
+      "Uniquement un constat",
+      "Une analyse et des recommandations",
+      "Uniquement des chiffres",
+      "Une histoire fictive"
+    ],
+    correct: 1
+  },
+  {
+    text: "Le registre de courrier sert à :",
+    options: [
+      "Enregistrer les courriers arrivée et départ",
+      "Calculer la TVA",
+      "Rédiger les notes",
+      "Archiver les factures"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'archivage consiste à :",
+    options: [
+      "Jeter les documents",
+      "Classer et conserver les documents",
+      "Vendre les documents",
+      "Modifier les documents"
+    ],
+    correct: 1
+  },
+  {
+    text: "La confidentialité concerne :",
+    options: [
+      "Tous les documents",
+      "Certains documents sensibles",
+      "Uniquement les factures",
+      "Uniquement les notes de service"
+    ],
+    correct: 1
+  },
+  {
+    text: "La note de service est diffusée :",
+    options: [
+      "En interne",
+      "Aux clients",
+      "Aux fournisseurs",
+      "À l'administration fiscale"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le compte rendu et le procès-verbal se distinguent par :",
+    options: [
+      "Leur longueur",
+      "La valeur juridique du PV et sa signature",
+      "Leur couleur",
+      "Leur prix"
+    ],
+    correct: 1
+  },
+  {
+    text: "Une lettre administrative doit mentionner :",
+    options: [
+      "La fonction du destinataire",
+      "Uniquement le nom",
+      "Le prix",
+      "La couleur"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le rapport doit proposer :",
+    options: [
+      "Des recommandations",
+      "Uniquement des critiques",
+      "Des poèmes",
+      "Des publicités"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le style administratif évite :",
+    options: [
+      "La clarté",
+      "Les émotions et les opinions personnelles",
+      "La concision",
+      "La courtoisie"
+    ],
+    correct: 1
+  },
+  {
+    text: "Un document confidentiel doit être :",
+    options: [
+      "Diffusé à tous",
+      "Réservé aux destinataires autorisés",
+      "Affiché",
+      "Publié"
+    ],
+    correct: 1
+  },
+  {
+    text: "La note de service commence par :",
+    options: [
+      "Une formule de politesse",
+      "L'objet et les destinataires",
+      "Une facture",
+      "Un poème"
+    ],
+    correct: 1
+  },
+  {
+    text: "Le bordereau d'envoi est une preuve :",
+    options: [
+      "De paiement",
+      "De transmission de documents",
+      "De vente",
+      "De stock"
+    ],
+    correct: 1
+  },
+  {
+    text: "L'archivage définitif concerne :",
+    options: [
+      "Les documents à conserver durablement",
+      "Les brouillons",
+      "Les publicités",
+      "Les notes de service"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'objectif principal de la rédaction administrative en 4e Humanité est de :",
+    options: [
+      "Remplacer le français",
+      "Rédiger professionnellement les documents internes et administratifs",
+      "Étudier la littérature",
+      "Gérer les stocks"
+    ],
+    correct: 1
+  }
+];
+
+try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+        questions.forEach(function (q) {
+            if (!q.text) q.text = q.question || q.q || q.enonce || q.titre || "";
+            if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+            if (typeof q.correct === "undefined") {
+                if (typeof q.answer !== "undefined") q.correct = q.answer;
+                else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+            }
+        });
+    }
+} catch (e) {}
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+const pageTitle = document.getElementById('pageTitle');
+pageTitle.textContent = "ECOLIA · " + COURSE_TITLE;
+document.title = "ECOLIA — " + COURSE_TITLE;
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim() || slides.length === 0) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp("(" + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ")", 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderEmptyState() {
+    contentDiv.innerHTML = '<div class="empty-state"><div class="icon">·</div><span class="tag">Bientôt disponible</span><h2>' + COURSE_TITLE + '</h2><p>Ce cours est en préparation. Le contenu sera ajouté prochainement.</p></div>';
+    slideCounterSpan.textContent = '0/0';
+    progressFill.style.width = '0%';
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    counterSpan.textContent = '—';
+}
+
+function renderQuiz() {
+    const qc = document.getElementById('quizQuestions');
+    if (!qc) return;
+    if (typeof questions === 'undefined' || questions.length === 0) {
+        qc.innerHTML = '<p style="color:#666;font-style:italic;">Quiz bientot disponible.</p>';
+        return;
+    }
+    let html = '';
+    questions.forEach((q, i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o, k) => {
+            html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>';
+        });
+        html += '</div>';
+    });
+    qc.innerHTML = html;
+    const submitBtn = document.getElementById('submitQuiz');
+    if (submitBtn) {
+        submitBtn.onclick = () => {
+            let score = 0;
+            questions.forEach((q, i) => {
+                const s = document.querySelector('input[name="q' + i + '"]:checked');
+                if (s && parseInt(s.value) === q.correct) score++;
+            });
+            const pct = Math.round(score/questions.length*100);
+            document.getElementById('quizResult').innerHTML =
+                '<div style="background:var(--bg2);padding:16px;border-radius:10px;margin-top:14px;">' +
+                '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong></div>';
+        };
+    }
+}
+
+function renderSlide(index, keepHighlight) {
+    if (keepHighlight === undefined) keepHighlight = true;
+    if (slides.length === 0) { renderEmptyState(); return; }
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    if (index === slides.length - 1) renderQuiz();
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    if (slides.length === 0) return;
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (slides.length && currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (slides.length && currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+<!-- ECOLIA_IMAGE_LOADER_START -->
+<script>
+(function () {
+  var SITE = "https://ecolia-course.github.io/";
+  var NATIVE = false;
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function abs(u) { return /^(https?:|data:|blob:)/i.test(u) ? u : (NATIVE ? SITE + u.replace(/^(\.\/|\/)+/, "") : u); }
+  function ext(u) { var m = String(u).split("?")[0].match(/\.(jpe?g|png|gif|webp|svg)$/i); return m ? m[1].toLowerCase() : "jpg"; }
+  function hide(img) { img.onerror = null; img.style.display = "none"; }
+  var table = null, queue = [], queued = {}, running = false;
+  function enqueue(full, fn) {
+    if (queued[fn]) return;
+    queued[fn] = 1; queue.push([full, fn]);
+    if (!running) { running = true; setTimeout(next, 2500); }
+  }
+  function next() {
+    if (!queue.length) { running = false; return; }
+    if (!navigator.onLine) { running = false; return; }
+    var q = queue.shift(), t0 = Date.now();
+    try { CoursInterface.download(q[0], q[1]); } catch (e) { return setTimeout(next, 500); }
+    (function wait() {
+      var ok = false;
+      try { ok = !!CoursInterface.exists(q[1]); } catch (e) {}
+      if (ok) setTimeout(next, 1500);
+      else if (Date.now() - t0 > 40000) next();
+      else setTimeout(wait, 700);
+    })();
+  }
+  function exists(fn) { try { return !!CoursInterface.exists(fn); } catch (e) { return false; } }
+  function show(img) {
+    if (!table || img.getAttribute("data-ecolia-done")) return;
+    var id = img.getAttribute("data-image-id");
+    var url = table[id];
+    if (typeof url !== "string" || !url.length) { console.warn("ECOLIA : image absente du JSON :", id); return; }
+    img.setAttribute("data-ecolia-done", "1");
+    if (!NATIVE) { img.onerror = function () { hide(img); }; img.setAttribute("src", url); return; }
+    var full = abs(url), fn = "img_" + id + "." + ext(url);
+    if (exists(fn)) {
+      img.onerror = function () {
+        try { CoursInterface["delete"](fn); } catch (e) {}
+        queued[fn] = 0;
+        img.onerror = function () { hide(img); };
+        img.setAttribute("src", full);
+      };
+      img.setAttribute("src", "https://app.local/cours/" + fn);
+    } else {
+      img.onerror = function () { hide(img); };
+      img.setAttribute("src", full);
+      enqueue(full, fn);
+    }
+  }
+  function scan(root) {
+    if (!root || !root.querySelectorAll) return;
+    if (root.matches && root.matches("img[data-image-id]")) show(root);
+    root.querySelectorAll("img[data-image-id]").forEach(show);
+  }
+  function prefetchAll() {
+    var ids = {};
+    try { JSON.stringify(slides).replace(/data-image-id=\\?"([^"\\]+)/g, function (m, id) { ids[id] = 1; }); } catch (e) {}
+    Object.keys(ids).forEach(function (id) {
+      var url = table[id];
+      if (typeof url !== "string" || !url.length) return;
+      var fn = "img_" + id + "." + ext(url);
+      if (!exists(fn)) enqueue(abs(url), fn);
+    });
+  }
+  function start(tbl) {
+    table = tbl;
+    scan(document.body);
+    new MutationObserver(function (muts) {
+      muts.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.nodeType === 1) scan(n); }); });
+    }).observe(document.body, { childList: true, subtree: true });
+    if (NATIVE) prefetchAll();
+  }
+  var JSON_URL = NATIVE ? SITE + "images_ecolia.json" : "images_ecolia.json";
+  var KEY = "ecolia_images_json";
+  fetch(JSON_URL, NATIVE ? { cache: "no-cache" } : undefined)
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (table) { if (NATIVE) lsSet(KEY, JSON.stringify(table)); start(table); })
+    .catch(function (e) {
+      var saved = null;
+      if (NATIVE) { try { saved = JSON.parse(lsGet(KEY) || "null"); } catch (x) {} }
+      if (saved) start(saved);
+      else console.warn("ECOLIA : JSON des images indisponible.", e);
+    });
+})();
+</script>
+<!-- ECOLIA_IMAGE_LOADER_END -->
+
+
+
+<!-- ECOLIA_AUDIO_PLAYER_START -->
+<style>
+  #ecolia-audio-btn, #ecolia-dl-btn {
+    width: 30px; height: 30px; min-width: 30px; padding: 0; margin: 0 4px 0 0;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    cursor: pointer; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent; outline: none;
+  }
+  #ecolia-audio-btn { border: none; background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-dl-btn { border: 1.5px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb); }
+  #ecolia-dl-btn.ecolia-full { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-btn.ecolia-fixed { position: fixed; top: 8px; left: 8px; z-index: 2147483000; }
+  #ecolia-audio-btn:active, #ecolia-dl-btn:active { transform: scale(.92); }
+  #ecolia-audio-btn svg, #ecolia-dl-btn svg { width: 15px; height: 15px; fill: currentColor; pointer-events: none; }
+  #ecolia-audio-btn.ecolia-off, #ecolia-dl-btn.ecolia-off { display: none; }
+  #ecolia-audio-banner {
+    display: none; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0;
+    padding: 8px 14px; font-size: .82rem; line-height: 1.35;
+    background: var(--soft, #eef3fb); color: var(--p1, #123); border-bottom: 1px solid var(--bd, #c9d6ea);
+  }
+  #ecolia-audio-banner.on { display: flex; }
+  #ecolia-audio-banner .eab-txt { flex: 1 1 180px; }
+  #ecolia-audio-banner .eab-act { display: flex; gap: 6px; flex-wrap: wrap; }
+  #ecolia-audio-banner button {
+    border: 1px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb);
+    border-radius: 16px; padding: 5px 12px; font-size: .8rem; cursor: pointer;
+  }
+  #ecolia-audio-banner button.pri { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-banner .eab-bar { display: none; flex-basis: 100%; height: 4px; border-radius: 2px; overflow: hidden; background: var(--bd, #c9d6ea); }
+  #ecolia-audio-banner .eab-bar i { display: block; height: 100%; width: 0; background: var(--p2, #2563eb); transition: width .2s; }
+</style>
+<script>
+(function () {
+  var CFG = {"code":"RedactionAdmin4","base":"https://ecolia-course.github.io/ecolia-media/audio_files/","available":[1,2,3,4,5,6,7,8,9,10,11,12,13,14],"count":14,"sizeMo":8,"sizes":{"1":780480,"2":482688,"3":494592,"4":467904,"5":559296,"6":486720,"7":713088,"8":607680,"9":499584,"10":544512,"11":621888,"12":789312,"13":494592,"14":91776},"fallback":{"1":[["fr","Sommaire, Rédaction Administrative. Bienvenue dans le cours de Rédaction Administrative. Ce cours de Rédaction Administrative s'adresse aux élèves de la 4e année des Humanités, option Secrétariat-Administration, et reste utile aux options Commerciale et Gestion. Il vous apprendra à rédiger avec rigueur et professionnalisme les principaux documents administratifs utilisés dans les entreprises et les administrations, en respectant les normes de présentation, de style et de confidentialité. Objectifs du cours. Maîtriser le style et les règles de présentation administrative. Rédiger une note de service. Rédiger un bordereau d'envoi. Rédiger une lettre administrative. Rédiger un compte rendu de réunion. Rédiger un procès-verbal. Rédiger un rapport avec analyse et recommandations. Les grands chapitres du cours. Les règles générales de la rédaction administrative. La note de service. Le bordereau d'envoi. La lettre administrative. Le compte rendu. Le procès-verbal. Le rapport. La gestion et l'archivage des documents administratifs. Compétences visées: à la fin de ce cours, vous serez capable de rédiger les principaux documents administratifs internes et externes d'une organisation, et de gérer l'information écrite. Ce cours complète la Correspondance Commerciale (tournée vers les partenaires externes) et prépare aux métiers du secrétariat et de l'administration."]],"2":[["fr","Chapitre 1, Pourquoi la rédaction administrative? Situation-problème. Une décision jamais écrite. Dans une PME de Kinshasa, le directeur annonce oralement lors d'une réunion informelle que les horaires changent à partir de lundi. Certains employés n'ont pas entendu, d'autres ont compris une autre heure. Lundi matin, la moitié du personnel arrive en retard. Le directeur s'énerve: « Je l'avais dit! » Mais personne ne peut prouver ce qui a été dit, ni quand, ni à qui. Question de départ: Comment éviter ce type de dysfonctionnement et faire circuler l'information de manière fiable dans une organisation? La rédaction administrative répond à ce besoin: elle fixe les décisions par écrit, assure la traçabilité et garantit que chacun reçoit la même information. Pour un futur professionnel du secrétariat ou de l'administration, c'est une compétence quotidienne."]],"3":[["fr","Chapitre 1, Le style administratif. Fondements théoriques. Cinq qualités essentielles. Le style administratif se distingue du style littéraire ou familier. Cinq qualités sont exigées: Clarté: phrases courtes, vocabulaire précis, une idée par paragraphe. Concision: aller à l'essentiel, éviter les formules inutiles. Neutralité: éviter les émotions, les opinions personnelles et les jugements de valeur. Courtoisie: respecter le destinataire, même en cas de désaccord. Objectivité: rapporter les faits sans les déformer. Le registre est soutenu: on évite les abréviations (thx, svp), les émojis et les familiarités. Erreur fréquente: utiliser un ton familier ou introduire des opinions personnelles dans un document administratif. Le document engage l'organisation, pas seulement son rédacteur."]],"4":[["fr","Chapitre 1, La présentation des documents administratifs. Fondements théoriques. Une structure normalisée. La plupart des documents administratifs partagent une structure commune: En-tête: nom de l'organisation, service émetteur, coordonnées. Références: numéro du document, référence au courrier précédent. Lieu et date. Destinataire(s): nom, fonction, service. Objet: résumé précis du contenu. Corps: développement du message. Signature: nom et fonction du responsable. Annexes: documents joints, le cas échéant. Mention de confidentialité: si le document est réservé. Erreur fréquente: omettre l'objet ou la mention de confidentialité. Un document sans objet est difficile à classer; un document sensible sans mention peut être diffusé à tort."]],"5":[["fr","Chapitre 2, La note de service. Fondements théoriques. Communiquer en interne. La note de service est un document interne par lequel la direction ou un responsable communique une information, une instruction ou une consigne à un ou plusieurs services ou membres du personnel. L'anatomie d'une note de service. Structure. En-tête: nom de l'organisation. Mention « NOTE DE SERVICE » et numéro. Date. Objet: résumé précis. Destinataires: services ou personnes concernés. Corps: information, instruction ou consigne. Signature du responsable. Exemple. « NOTE DE SERVICE n° 12 sur 2025. Objet: Horaires d'ouverture pendant les fêtes de fin d'année. Le personnel est informé que les bureaux seront fermés du 24 au 26 décembre. La permanence sera assurée par le service comptabilité. ». Erreur fréquente: omettre l'objet ou les destinataires. Une note de service doit être claire sur qui est concerné et sur ce qui est demandé."]],"6":[["fr","Chapitre 3, Le bordereau d'envoi. Fondements théoriques. Prouver la transmission. Le bordereau d'envoi est un document qui accompagne l'envoi de pièces ou de documents à un service ou à une administration. Il liste les documents transmis et sert de preuve de transmission. Mentions obligatoires. Nom de l'organisme expéditeur. Date d'envoi. Destinataire (nom, fonction, service). Liste précise des pièces jointes (nature, nombre). Signature de l'expéditeur. Exemple. « BORDEREAU D'ENVOI. À l'attention du Directeur provincial de l'Éducation. Objet: transmission des dossiers des élèves finalistes. Pièces jointes: 45 dossiers complets. Date: [date]. Signature: [signature]. ». Erreur fréquente: ne pas lister précisément les pièces. En cas de litige, le bordereau est la preuve de ce qui a été envoyé."]],"7":[["fr","Chapitre 4, La lettre administrative. Fondements théoriques. S'adresser à une administration. La lettre administrative est une lettre adressée à une administration publique ou à un organisme officiel, dans le cadre d'une démarche administrative: demande, transmission, réponse, réclamation. Structure. En-tête: nom et coordonnées de l'expéditeur. Lieu et date. Destinataire: nom, fonction, adresse. Objet. Formule d'appel: « Monsieur le Directeur, », « Madame la Ministre, ». Corps: rappel du contexte, demande, arguments. Formule de politesse. Signature. Annexes. Différence avec la lettre commerciale. La lettre administrative s'adresse à une autorité publique; le ton est plus formel, les références aux textes réglementaires sont fréquentes. La lettre commerciale s'adresse à un partenaire d'affaires (client, fournisseur). Exemple. « Monsieur le Directeur provincial de l'EPSP, Objet: demande de stage pour les élèves de 4e année commerciale. Nous sollicitons votre accord pour accueillir nos élèves en stage dans vos services… ». Erreur fréquente: oublier de mentionner la fonction du destinataire. Une lettre administrative mal adressée peut être rejetée ou retardée."]],"8":[["fr","Chapitre 5, Le compte rendu. Fondements théoriques. Relater les débats objectivement. Le compte rendu est un document qui relate de manière objective les débats et les décisions d'une réunion, sans les interpréter. Un compte rendu objectif et structuré. Structure. En-tête: nom de l'organisation et service. Date et lieu de la réunion. Participants: présents, absents, excusés. Ordre du jour. Résumé des discussions point par point. Décisions prises. Actions à suivre: qui fait quoi, pour quand. Signature du rédacteur. Objectivité: le compte rendu rapporte les faits; il ne prend pas parti et ne juge pas. Exemple. « Réunion du conseil de classe du 15 mars 2025. Ordre du jour: résultats du trimestre. Décisions: mise en place de séances de rattrapage pour les élèves en difficulté. Actions à suivre: les enseignants concernés préparent les exercices avant le 30 mars. ». Erreur fréquente: introduire des opinions personnelles ou des commentaires non sollicités. Le compte rendu doit rester factuel."]],"9":[["fr","Chapitre 6, Le procès-verbal. Fondements théoriques. Constater officiellement. Le procès-verbal (PV) est un document officiel qui constate les faits, les décisions ou les débats d'une réunion ou d'une assemblée, avec une valeur juridique. Il est souvent signé par les participants. Structure. En-tête. Date et lieu. Participants. Ordre du jour. Résumé des débats. Décisions votées (avec résultats des votes si nécessaire). Signatures des participants. Valeur juridique. Le PV fait foi en cas de contestation. Il doit être rédigé avec une grande rigueur: une erreur peut avoir des conséquences juridiques. Différence avec le compte rendu. Le PV a une valeur juridique et est signé; le compte rendu est plus informatif et peut être moins formel. Erreur fréquente: confondre compte rendu et procès-verbal. Le PV engage la responsabilité des signataires."]],"10":[["fr","Chapitre 7, Le rapport. Fondements théoriques. Analyser et recommander. Le rapport est un document développé qui présente l'analyse d'une situation ou d'un problème, et propose des recommandations. Du constat à la recommandation. Structure. En-tête. Introduction: contexte, objet du rapport. Développement: présentation des faits, analyse, causes, conséquences. Recommandations: solutions proposées, hiérarchisées. Conclusion. Annexes: tableaux, graphiques, documents justificatifs. Exemple. « Rapport sur la gestion des stocks de fournitures au service commercial: constat d'une rupture fréquente de papier, analyse des causes (délai de commande trop long, absence de stock de sécurité), recommandations (mettre en place un stock d'alerte, négocier un délai de livraison plus court). ». Erreur fréquente: se limiter à un constat sans proposer de recommandations. Un rapport doit aider à la décision."]],"11":[["fr","Chapitre 8, La gestion et l'archivage des documents. Fondements théoriques. Conserver et protéger l'information. Le registre de courrier. Enregistrement des courriers arrivée et départ: date, expéditeur ou destinataire, objet, service destinataire. Le classement. Méthodes alphabétique, numérique, chronologique, thématique. Chaque méthode a ses avantages selon le volume et la nature des documents. L'archivage. Conservation des documents dans des conditions de sécurité: locaux secs, protections contre l'incendie, accès contrôlé. On distingue: Archives courantes: documents fréquemment consultés. Archives intermédiaires: documents consultés occasionnellement. Archives définitives: documents à conserver durablement (obligations légales, mémoire de l'organisation). La confidentialité. Certains documents sont sensibles (dossiers du personnel, documents financiers): l'accès doit être limité aux personnes autorisées. Erreur fréquente: négliger l'archivage. Des documents mal conservés peuvent entraîner des pertes d'information ou des préjudices juridiques."]],"12":[["fr","Méthode, Rédiger un rapport complet. Méthode. Du constat à la recommandation. Situation. Le directeur d'une école de Goma constate une augmentation des absences des élèves de 4e année. Il demande un rapport. Étape 1, Collecter les données. Relevés d'absences, entretiens avec les enseignants, informations sur les causes possibles (transport, santé, motivation). Étape 2, Rédiger l'introduction. Contexte: « Le présent rapport a pour objet d'analyser l'augmentation des absences des élèves de 4e année au cours du trimestre écoulé. ». Étape 3, Présenter les faits. « Le taux d'absentéisme est passé de 5 pour cent à 12 pour cent entre janvier et mars. Les absences concernent principalement les élèves résidant en périphérie. ». Étape 4, Analyser les causes. « Trois causes principales se dégagent: les difficultés de transport, la malnutrition, le manque de motivation lié à l'absence de perspectives. ». Étape 5, Formuler des recommandations. « Nous recommandons: (1) la mise en place d'un service de transport scolaire; (2) un partenariat avec une cantine; (3) des séances de motivation animées par des anciens élèves. ». Étape 6, Rédiger la conclusion. « L'absentéisme est un phénomène multifactoriel. Les mesures proposées visent à y remédier durablement. ». Erreur à éviter: se limiter à un constat sans proposer de recommandations concrètes."]],"13":[["fr","Synthèse, Communiquer et documenter pour agir. Synthèse. Ce qu'il faut retenir. La rédaction administrative est l'outil de communication écrite interne et officielle d'une organisation. Elle fixe les décisions, trace les échanges et garantit la cohérence de l'information. Style: clarté, concision, neutralité, courtoisie, objectivité. Note de service: communication interne. Bordereau d'envoi: preuve de transmission. Lettre administrative: vers une autorité publique. Compte rendu: informatif, objectif. Procès-verbal: valeur juridique, signé. Rapport: analyse plus recommandations. Archivage: registre, classement, confidentialité. Dans le contexte congolais, la maîtrise de la rédaction administrative aide les organisations à se professionnaliser et à sécuriser leurs décisions."]],"14":[["fr","Évaluation finale, Rédaction Administrative. Répondez aux questions suivantes pour vérifier votre compréhension du cours. Une seule réponse est correcte par question."]]}};
+  var CACHE = "ecolia-cours-v1";                       // même cache que l'application
+  var PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  var PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+  var DL = '<svg viewBox="0 0 24 24"><path d="M11 3h2v9.2l3.6-3.6L18 10l-6 6-6-6 1.4-1.4L11 12.2V3zM5 19h14v2H5z"/></svg>';
+  var OK = '<svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>';
+  // Réparation du quiz : certains cours stockent les choix sous "opts" (ou autre) au lieu de "options"
+  try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+      questions.forEach(function (q) {
+        if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+        if (q.text === undefined) q.text = q.question || q.q || q.enonce || q.titre || "";
+        if (typeof q.correct === "undefined") {
+          if (typeof q.answer !== "undefined") q.correct = q.answer;
+          else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+        }
+      });
+    }
+  } catch (e) {}
+  var synth = window.speechSynthesis || null;
+  var HAS_CACHE = !!(window.caches && window.caches.open);
+  var NATIVE = false;           // APK ECOLIA : pont Java "CoursInterface" (fichiers dans le dossier de l'application)
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  var LATER = "ecolia_audio_later_" + CFG.code;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+  function init() {
+    if (document.getElementById("ecolia-audio-btn")) return;
+
+    // ---------- éléments de l'interface ----------
+    var btn = document.createElement("button");
+    btn.id = "ecolia-audio-btn"; btn.type = "button"; btn.className = "ecolia-off";
+    btn.setAttribute("aria-label", "Écouter la leçon"); btn.innerHTML = PLAY;
+    var dlBtn = document.createElement("button");
+    dlBtn.id = "ecolia-dl-btn"; dlBtn.type = "button"; dlBtn.className = "ecolia-off";
+    dlBtn.innerHTML = DL;
+    var host = document.querySelector(".header-right");
+    if (host) { host.insertBefore(dlBtn, host.firstChild); host.insertBefore(btn, dlBtn); }   // dans la barre du haut : ne scrolle jamais
+    else { btn.className += " ecolia-fixed"; document.body.appendChild(btn); }
+
+    var banner = document.createElement("div");
+    banner.id = "ecolia-audio-banner";
+    banner.innerHTML = '<span class="eab-txt"></span><span class="eab-act"></span><div class="eab-bar"><i></i></div>';
+    var content = document.getElementById("content");
+    if (content && content.parentNode) content.parentNode.insertBefore(banner, content);
+    else document.body.insertBefore(banner, document.body.firstChild);
+    var txtEl = banner.querySelector(".eab-txt"), actEl = banner.querySelector(".eab-act");
+    var barEl = banner.querySelector(".eab-bar"), barI = barEl.firstChild;
+
+    var audio = new Audio();            // un seul élément Audio, réutilisé (exigé par les navigateurs mobiles)
+    audio.preload = "auto";
+    var st = { idx: -1, auto: false, advancing: false, mode: null, speaking: false, token: 0, chunks: [], ci: 0, blobUrl: null, playTok: 0 };
+    var dl = { state: "none", cached: 0, busy: false, cancel: false };   // none | partial | full
+    var bnMode = null, hideTimer = null;
+    if (synth && synth.getVoices) { try { synth.getVoices(); } catch (e) {} }
+
+    function cur() {
+      try { if (typeof currentSlide === "number") return currentSlide; } catch (e) {}
+      return 0;
+    }
+    function hasMp3(i) { return CFG.available.indexOf(i + 1) !== -1; }
+    function fb(i) { return CFG.fallback && CFG.fallback[String(i + 1)]; }
+    function hasAudio(i) { return hasMp3(i) || (!!synth && !!fb(i)); }
+    function urlN(n) {   // dans l'APK la page est sur https://app.local : une adresse relative doit pointer vers le site
+      var b = CFG.base;
+      if (NATIVE && !/^https?:/i.test(b)) b = "https://ecolia-course.github.io/" + b.replace(/^(\.\.\/|\.\/)+/, "");
+      return new URL(b + nameN(n), location.href).href;
+    }
+    function setIcon(playing) { btn.innerHTML = playing ? PAUSE : PLAY; }
+    function isPlaying() { return st.mode === "mp3" ? !audio.paused : (st.mode === "tts" && st.speaking); }
+    function mo() { return "≈ " + CFG.sizeMo + " Mo"; }
+    function nameN(n) { return "audio_" + CFG.code + "_" + n + ".mp3"; }
+
+    // ====================================================================
+    //  Stockage hors ligne : 2 moteurs, même interface
+    //    - APK : fichiers du dossier de l'application (CoursInterface), servis par https://app.local/cours/
+    //    - Web : Cache Storage du navigateur (même cache que l'application web)
+    // ====================================================================
+    function nativeStore() {
+      var okKey = "ecolia_audio_ok_" + CFG.code;
+      function readOk() { try { return JSON.parse(lsGet(okKey) || "[]"); } catch (e) { return []; } }
+      function writeOk(a) { lsSet(okKey, JSON.stringify(a)); }
+      function exists(n) { try { return !!CoursInterface.exists(nameN(n)); } catch (e) { return false; } }
+      function local(n) { return location.origin + "/cours/" + nameN(n); }
+      function verify(n) {                                   // fichier complet ? (taille exacte connue à la génération)
+        return fetch(local(n), { cache: "no-store" }).then(function (r) { return r.blob(); }).then(function (b) {
+          var exp = CFG.sizes && CFG.sizes[String(n)];
+          return (b.size > 2000 && (!exp || b.size === exp)) ? b : null;
+        }).catch(function () { return null; });
+      }
+      return {
+        list: function () {
+          var ok = readOk().filter(exists); writeOk(ok); return Promise.resolve(ok);
+        },
+        get: function (n) { return exists(n) ? verify(n) : Promise.resolve(null); },
+        put: function (n) {
+          return new Promise(function (res, rej) {
+            try { CoursInterface.download(urlN(n), nameN(n)); } catch (e) { return rej(e); }
+            var t0 = Date.now();
+            function next() { if (Date.now() - t0 > 120000) rej(new Error("délai dépassé")); else setTimeout(poll, 800); }
+            function poll() {
+              if (!exists(n)) return next();
+              verify(n).then(function (b) {
+                if (!b) return next();
+                var ok = readOk(); if (ok.indexOf(n) < 0) ok.push(n); writeOk(ok); res();
+              });
+            }
+            setTimeout(poll, 800);
+          });
+        },
+        del: function (n) {
+          try { CoursInterface.delete(nameN(n)); } catch (e) {}
+          writeOk(readOk().filter(function (x) { return x !== n; }));
+          return Promise.resolve();
+        }
+      };
+    }
+    function cacheStore() {
+      return {
+        list: function () {
+          return caches.open(CACHE).then(function (c) {
+            return Promise.all(CFG.available.map(function (n) {
+              return c.match(urlN(n)).then(function (r) {
+                if (!r) return 0;
+                if ((r.headers.get("content-type") || "").indexOf("audio") !== 0) { c.delete(urlN(n)); return 0; }   // ancien contenu invalide
+                return n;
+              });
+            }));
+          }).then(function (a) { return a.filter(Boolean); });
+        },
+        get: function (n) {
+          return caches.open(CACHE).then(function (c) { return c.match(urlN(n)); })
+            .then(function (r) { return r ? r.blob() : null; }).then(function (b) { return b && b.size > 2000 ? b : null; });
+        },
+        put: function (n) {
+          var u = urlN(n);
+          return fetch(u, { cache: "no-store" }).then(function (r) {
+            if (!r.ok || r.status !== 200) throw new Error("HTTP " + r.status);
+            return r.blob();
+          }).then(function (b) {
+            if (b.size < 2000 || (b.type && b.type.indexOf("audio") !== 0 && b.type.indexOf("octet") < 0)) throw new Error("fichier invalide");
+            return caches.open(CACHE).then(function (c) { return c.put(u, new Response(b, { headers: { "Content-Type": "audio/mpeg" } })); });
+          });
+        },
+        del: function (n) { return caches.open(CACHE).then(function (c) { return c.delete(urlN(n)); }); }
+      };
+    }
+    var store = NATIVE ? nativeStore() : (HAS_CACHE ? cacheStore() : null);
+
+    // ====================================================================
+    //  Bannière : invitation, confirmations, progression
+    // ====================================================================
+    function showBanner(mode, text, buttons, pct) {
+      clearTimeout(hideTimer);
+      bnMode = mode;
+      txtEl.textContent = text;
+      actEl.innerHTML = "";
+      (buttons || []).forEach(function (b) {
+        var e = document.createElement("button");
+        e.type = "button"; e.textContent = b.label; if (b.pri) e.className = "pri";
+        e.addEventListener("click", function (ev) { ev.stopPropagation(); b.fn(); });
+        actEl.appendChild(e);
+      });
+      if (typeof pct === "number") { barEl.style.display = "block"; barI.style.width = pct + "%"; }
+      else barEl.style.display = "none";
+      banner.classList.add("on");
+    }
+    function hideBanner() { clearTimeout(hideTimer); bnMode = null; banner.classList.remove("on"); }
+    function flash(text) { showBanner("info", text, []); hideTimer = setTimeout(hideBanner, 4000); }
+
+    function refreshUI() {
+      var show = !!store && CFG.available.length > 0;
+      dlBtn.classList.toggle("ecolia-off", !show);
+      dlBtn.classList.toggle("ecolia-full", dl.state === "full");
+      dlBtn.innerHTML = dl.state === "full" ? OK : DL;
+      dlBtn.setAttribute("aria-label", dl.state === "full" ? "Audios téléchargés : supprimer" : "Télécharger les audios");
+      dlBtn.title = dlBtn.getAttribute("aria-label");
+    }
+    function refreshCacheState(done) {
+      if (!store) { dl.state = "none"; refreshUI(); if (done) done(); return; }
+      store.list().then(function (ok) {
+        dl.cached = ok.length;
+        dl.state = dl.cached === 0 ? "none" : (dl.cached >= CFG.available.length ? "full" : "partial");
+      }).catch(function () { dl.state = "none"; }).then(function () { refreshUI(); if (done) done(); });
+    }
+
+    function askDownload(fromInvite) {
+      var left = CFG.available.length - dl.cached;
+      var txt = dl.state === "partial"
+        ? "Il reste " + left + " audio(s) à télécharger pour écouter ce cours sans internet."
+        : "🔊 Télécharger les audios de ce cours (" + mo() + ") pour les écouter sans internet ? Wi-Fi recommandé.";
+      showBanner(fromInvite ? "invite" : "confirm", txt, [
+        { label: fromInvite ? "Plus tard" : "Annuler", fn: function () { if (fromInvite) lsSet(LATER, "1"); hideBanner(); } },
+        { label: "Télécharger", pri: true, fn: startDownload }
+      ]);
+    }
+    function askDelete() {
+      showBanner("confirm", "Supprimer les audios téléchargés de ce cours (" + mo() + ") ? Vous pourrez toujours les écouter en ligne.", [
+        { label: "Annuler", fn: hideBanner },
+        { label: "Supprimer", pri: true, fn: doDelete }
+      ]);
+    }
+
+    function startDownload() {
+      if (dl.busy || !store) return;
+      dl.busy = true; dl.cancel = false;
+      var total = CFG.available.length, done = 0, quota = false, fails = 0, todo = [];
+      store.list().then(function (have) {
+        CFG.available.forEach(function (n) { if (have.indexOf(n) < 0) todo.push(n); });
+        done = total - todo.length;
+        function paint() {
+          var msg = "Téléchargement des audios : " + done + " / " + total;
+          if (bnMode === "progress") {                  // met à jour sans recréer les boutons (sinon un appui peut être perdu)
+            txtEl.textContent = msg; barI.style.width = Math.round(done / total * 100) + "%";
+          } else {
+            showBanner("progress", msg, [
+              { label: "Annuler", fn: function () { dl.cancel = true; } }
+            ], Math.round(done / total * 100));
+          }
+        }
+        paint();
+        function worker() {
+          if (dl.cancel || quota || !todo.length) return Promise.resolve();
+          var n = todo.shift();
+          return store.put(n).then(function () { done++; paint(); }).catch(function (e) {
+            if (e && (e.name === "QuotaExceededError" || /quota/i.test(String(e.message)))) quota = true;
+            fails++;
+          }).then(worker);
+        }
+        return Promise.all([worker(), worker()]);
+      }).catch(function () { fails++; }).then(function () {
+        dl.busy = false;
+        refreshCacheState(function () {
+          if (dl.state === "full") flash("✓ Audios téléchargés : le cours se lit maintenant sans internet.");
+          else if (dl.cancel) flash("Téléchargement interrompu (" + dl.cached + " / " + total + "). Vous pourrez reprendre plus tard.");
+          else showBanner("error", quota ? "Espace insuffisant sur l'appareil. Libérez de la place puis réessayez."
+            : "Certains audios n'ont pas pu être téléchargés (connexion ?).", [
+            { label: "Fermer", fn: hideBanner }, { label: "Réessayer", pri: true, fn: startDownload }
+          ]);
+        });
+      });
+    }
+    function doDelete() {
+      if (!store) return;
+      Promise.all(CFG.available.map(function (n) { return store.del(n); })).catch(function () {}).then(function () {
+        lsDel(LATER);
+        refreshCacheState(function () { flash("Audios supprimés de cet appareil."); });
+      });
+    }
+
+    dlBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (dl.busy) return;
+      if (dl.state === "full") askDelete(); else askDownload(false);
+    });
+
+    // ====================================================================
+    //  Voix intégrée au téléphone (hors ligne, sans limite)
+    // ====================================================================
+    function pickVoice(lang) {
+      var vs = [];
+      try { vs = synth.getVoices() || []; } catch (e) {}
+      var pre = lang === "en" ? "en" : "fr", best = null;
+      for (var k = 0; k < vs.length; k++) {
+        var v = vs[k];
+        if ((v.lang || "").toLowerCase().indexOf(pre) !== 0) continue;
+        if (!best || (v.localService && !best.localService)) best = v;
+      }
+      return best;
+    }
+    function hardSplit(text, max) {
+      var out = [];
+      while (text.length > max) {
+        var cut = text.lastIndexOf(" ", max);
+        if (cut < 40) cut = max;
+        out.push(text.slice(0, cut)); text = text.slice(cut).replace(/^\s+/, "");
+      }
+      if (text) out.push(text);
+      return out;
+    }
+    function buildChunks(segs) {                  // morceaux courts : évite l'arrêt des longs textes sur Chrome
+      var out = [];
+      segs.forEach(function (s) {
+        var cur2 = "", parts = s[1].match(/[^.!?;:]+[.!?;:]*\s*/g) || [s[1]];
+        parts.forEach(function (p) {
+          if (cur2 && (cur2 + p).length > 160) { out.push({ lang: s[0], text: cur2.trim() }); cur2 = p; }
+          else cur2 += p;
+        });
+        if (cur2.trim()) out.push({ lang: s[0], text: cur2.trim() });
+      });
+      var res = [];
+      out.forEach(function (c) { hardSplit(c.text, 190).forEach(function (t) { res.push({ lang: c.lang, text: t }); }); });
+      return res;
+    }
+    function speakFrom(tk) {
+      if (tk !== st.token) return;
+      if (st.ci >= st.chunks.length) {
+        st.speaking = false; st.mode = null; st.ci = 0; setIcon(false);
+        if (st.auto) goNext();
+        return;
+      }
+      var c = st.chunks[st.ci];
+      var u = new SpeechSynthesisUtterance(c.text);
+      u.lang = c.lang === "en" ? "en-US" : "fr-FR";
+      var v = pickVoice(c.lang);
+      if (v) { u.voice = v; u.lang = v.lang; }
+      u.rate = 0.95;
+      u.onend = function () { if (tk !== st.token) return; st.ci++; speakFrom(tk); };
+      u.onerror = function () { if (tk !== st.token) return; st.speaking = false; setIcon(false); st.auto = false; };
+      synth.speak(u);
+    }
+    function startTts(from) {
+      st.token++;
+      var tk = st.token;
+      st.mode = "tts"; st.speaking = true; st.ci = from || 0; setIcon(true);
+      var busy = false;
+      try { busy = synth.speaking || synth.pending; synth.cancel(); } catch (e) {}
+      if (busy) setTimeout(function () { speakFrom(tk); }, 120);   // laisse cancel() se terminer
+      else speakFrom(tk);                                          // sinon tout de suite (exigé par iOS)
+    }
+    function playVoice() {
+      if (!(synth && fb(st.idx))) { st.auto = false; return false; }
+      if (!st.chunks.length) st.chunks = buildChunks(fb(st.idx));
+      startTts(st.ci);
+      return true;
+    }
+
+    // ====================================================================
+    //  Lecture
+    // ====================================================================
+    function freeBlob() { if (st.blobUrl) { try { URL.revokeObjectURL(st.blobUrl); } catch (e) {} st.blobUrl = null; } }
+    function stopAll() {
+      st.playTok++;
+      try { audio.pause(); audio.currentTime = 0; } catch (e) {}
+      st.token++;
+      try { if (synth) synth.cancel(); } catch (e) {}
+      st.speaking = false; st.mode = null; st.chunks = []; st.ci = 0;
+      setIcon(false);
+    }
+    function pauseNow() {
+      if (st.mode === "mp3") audio.pause();
+      else if (st.mode === "tts") {
+        st.token++;
+        try { synth.cancel(); } catch (e) {}
+        st.speaking = false; setIcon(false);      // st.ci conservé : la reprise repart de la phrase en cours
+      }
+    }
+    function startAudio(src, tok) {
+      if (tok !== st.playTok) return;
+      if (audio.getAttribute("data-src") !== src) { audio.setAttribute("data-src", src); audio.src = src; }
+      var p = audio.play();
+      if (p && p.catch) p.catch(function (err) {
+        console.warn("ECOLIA audio :", err);
+        if (tok !== st.playTok) return;
+        if (!(err && err.name === "NotAllowedError") && playVoice()) return;   // lecture impossible : voix du téléphone
+        setIcon(false); st.auto = false;
+      });
+    }
+    function playCurrent() {
+      var i = st.idx;
+      if (hasMp3(i)) {
+        var tok = ++st.playTok, u = urlN(i + 1);
+        st.mode = "mp3";
+        if (!navigator.onLine && dl.state === "none") { st.mode = null; if (playVoice()) return; }   // hors ligne et non téléchargé
+        if (store && dl.state !== "none") {                     // téléchargé : lecture locale, sans réseau
+          store.get(i + 1)
+            .then(function (b) {
+              if (tok !== st.playTok) return;
+              if (b) { freeBlob(); st.blobUrl = URL.createObjectURL(new Blob([b], { type: "audio/mpeg" })); startAudio(st.blobUrl, tok); }
+              else startAudio(u, tok);
+            }).catch(function () { startAudio(u, tok); });
+        } else startAudio(u, tok);                              // sinon lecture en ligne (appel immédiat, exigé par iOS)
+      } else if (!playVoice()) {
+        st.auto = false;
+      }
+    }
+
+    function onSlideChange(i) {
+      var wasAdvancing = st.advancing;
+      st.advancing = false;
+      st.idx = i;
+      btn.classList.toggle("ecolia-off", !hasAudio(i));
+      stopAll();
+      audio.removeAttribute("data-src");
+      freeBlob();
+      if (bnMode === "invite" && i !== 0) hideBanner();       // l'invitation n'apparaît qu'à la première slide
+      if (wasAdvancing && st.auto) setTimeout(playCurrent, 500);   // enchaînement automatique
+      else st.auto = false;                                         // changement manuel : on coupe tout
+    }
+    function goNext() {
+      if (st.idx + 1 >= CFG.count) { st.auto = false; return; }
+      st.advancing = true;
+      if (typeof nextSlide === "function") nextSlide();
+      else { var nb = document.getElementById("nextBtn"); if (nb) nb.click(); }
+      setTimeout(function () { st.advancing = false; }, 4000);
+    }
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var i = cur();
+      if (i !== st.idx) onSlideChange(i);
+      if (isPlaying()) { st.auto = false; pauseNow(); }
+      else { st.auto = true; playCurrent(); }
+    });
+    audio.addEventListener("play", function () { setIcon(true); });
+    audio.addEventListener("pause", function () { if (st.mode === "mp3") setIcon(false); });
+    audio.addEventListener("error", function () {
+      if (st.mode === "mp3" && playVoice()) return;            // fichier introuvable / hors ligne : voix du téléphone
+      setIcon(false); st.auto = false;
+    });
+    audio.addEventListener("ended", function () { setIcon(false); if (st.auto) goNext(); });
+    window.addEventListener("pagehide", function () { stopAll(); freeBlob(); });
+
+    // ---------- démarrage ----------
+    refreshCacheState(function () {
+      if (store && CFG.available.length && dl.state !== "full" && navigator.onLine && cur() === 0 && !lsGet(LATER)) askDownload(true);
+    });
+    st.idx = -1;
+    setInterval(function () { var i = cur(); if (i !== st.idx) onSlideChange(i); }, 250);   // suit la slide affichée
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+<!-- ECOLIA_AUDIO_PLAYER_END -->
+</body>
+</html>

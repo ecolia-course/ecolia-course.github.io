@@ -1,0 +1,2111 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="rouge">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>ECOLIA — Pathologie Medicale4</title>
+<style>
+[data-theme="bleu"]   { --p1:#0d2b4f; --p2:#1565c0; --p3:#07172e; --p4:#12437a; --p5:#5b8fd0; --bg:#e8f0fb; --bg2:#cfdff5; --bd:#a9c3e8; --soft:#dde8f7; --btn:#2a67b0; }
+[data-theme="vert"]   { --p1:#14442e; --p2:#2e7d32; --p3:#0b2b1a; --p4:#1f5c3a; --p5:#4f9a6b; --bg:#e8f5ec; --bg2:#c8e6d2; --bd:#a5cdb2; --soft:#dcefe2; --btn:#2f7a4f; }
+[data-theme="violet"] { --p1:#2d1b4e; --p2:#6a1b9a; --p3:#1a0f2e; --p4:#4a148c; --p5:#9c6fd0; --bg:#f1e9fb; --bg2:#dccbf2; --bd:#c4a8e6; --soft:#e8ddf6; --btn:#7e3fb2; }
+[data-theme="rouge"]  { --p1:#4a1010; --p2:#b71c1c; --p3:#2b0a0a; --p4:#8e1b1b; --p5:#d9706a; --bg:#fbeaea; --bg2:#f3cdcb; --bd:#e8a9a5; --soft:#f8dede; --btn:#a62a2a; }
+[data-theme="orange"] { --p1:#4e2a0c; --p2:#ef6c00; --p3:#2e1604; --p4:#b34a00; --p5:#f0a15a; --bg:#fff1e0; --bg2:#fbdcb8; --bd:#f3c08a; --soft:#fdebd6; --btn:#c9650a; }
+[data-theme="teal"]   { --p1:#0b3a3a; --p2:#00796b; --p3:#062626; --p4:#00574b; --p5:#4db6ac; --bg:#e0f2f1; --bg2:#b2dfdb; --bd:#80cbc4; --soft:#d5ecea; --btn:#26897d; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:linear-gradient(160deg,var(--p1) 0%,var(--p2) 50%,var(--p3) 100%); display:flex; justify-content:center; align-items:center; padding:8px; }
+.container { width:100%; max-width:1400px; background:#fefdf8; border-radius:20px; overflow:hidden; display:flex; flex-direction:column; height:100%; max-height:100vh; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.progress-bar { height:4px; background:var(--bg2); flex-shrink:0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--p5),var(--p4)); width:0%; transition:width 0.3s; }
+.header { padding:10px 16px; background:var(--bg); border-bottom:1px solid var(--bd); display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+.header h1 { color:var(--p4); font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box { display:flex; background:white; border-radius:20px; padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.search-box input { border:none; padding:6px 10px; border-radius:20px; outline:none; width:130px; font-size:0.8rem; }
+.search-box button { background:none; border:none; cursor:pointer; padding:4px 8px; font-size:0.85rem; color:var(--p2); }
+.badge { background:var(--p5); color:white; padding:4px 10px; border-radius:20px; font-weight:bold; font-size:0.75rem; }
+.search-nav { display:none; gap:4px; background:var(--bg2); padding:2px 8px; border-radius:20px; align-items:center; font-size:0.75rem; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:0.9rem; color:var(--p4); padding:2px 4px; }
+.content { padding:28px 32px; flex:1; overflow-y:auto; background:#fff; scroll-behavior:smooth; line-height:1.85; }
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.slide-title { color:var(--p1); font-size:1.5rem; font-weight:700; padding-bottom:12px; margin-bottom:20px; border-bottom:2px solid var(--p5); }
+.slide-content { color:var(--p3); font-size:1rem; }
+.empty-state { display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-height:60vh; padding:40px 20px; gap:18px; }
+.empty-state .icon { width:72px; height:72px; border-radius:50%; background:var(--bg); border:2px solid var(--bd); display:flex; align-items:center; justify-content:center; color:var(--p2); font-size:2rem; font-weight:300; }
+.empty-state h2 { color:var(--p1); font-size:1.4rem; font-weight:700; margin:0; }
+.empty-state p { color:#666; font-size:0.95rem; max-width:520px; line-height:1.7; }
+.empty-state .tag { display:inline-block; padding:6px 14px; background:var(--bg); color:var(--p4); border:1px solid var(--bd); border-radius:20px; font-size:0.8rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; }
+.bloc { padding:18px 22px; border-radius:12px; margin:22px 0; line-height:1.85; }
+.bloc-label { font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; opacity:0.7; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:var(--bg); border-left:4px solid var(--p5); }
+.theorie .bloc-label { color:var(--p4); }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.sources { background:#f5f5f5; padding:12px 16px; border-radius:10px; margin-top:26px; font-size:0.82rem; color:#666; border-left:3px solid #999; line-height:1.6; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:var(--p1); }
+.quiz-container { padding:22px; background:var(--bg); border-radius:16px; }
+.quiz-question { background:white; border-radius:10px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.quiz-question p { font-weight:600; margin-bottom:10px; color:var(--p1); }
+.quiz-question label { display:block; padding:8px 10px; margin:4px 0; border-radius:6px; cursor:pointer; transition:background 0.2s; }
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit { background:var(--btn); color:white; border:none; padding:12px 24px; border-radius:30px; font-size:1rem; cursor:pointer; font-weight:600; margin-top:14px; }
+.quiz-result { margin-top:16px; font-weight:600; }
+.controls { padding:8px 16px; background:#fafafa; border-top:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0; }
+.nav-btn { background:white; color:var(--p4); border:1px solid #ccc; padding:8px 14px; border-radius:8px; font-size:0.82rem; cursor:pointer; font-weight:500; }
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:var(--soft); }
+.content::-webkit-scrollbar-thumb { background:var(--p5); border-radius:3px; }
+@media (max-width:600px) { body { padding:0; } .container { border-radius:0; max-height:100vh; } .content { padding:20px 18px; } .slide-title { font-size:1.25rem; } .search-box input { width:90px; } .header h1 { font-size:0.85rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="header">
+<h1 id="pageTitle">ECOLIA</h1>
+<div class="header-right">
+<div class="search-box">
+<input id="searchInput" placeholder="Rechercher" type="text"/>
+<button id="searchBtn">⌕</button>
+</div>
+<div class="search-nav" id="searchNav">
+<button id="prevResultBtn">‹</button>
+<span id="resultCounter">0/0</span>
+<button id="nextResultBtn">›</button>
+</div>
+<span class="badge" id="slideCounter">0/0</span>
+</div>
+</div>
+<div class="content" id="content"></div>
+<div class="controls">
+<button class="nav-btn" id="prevBtn">← Précédent</button>
+<span class="counter" id="counter">—</span>
+<button class="nav-btn" id="nextBtn">Suivant →</button>
+</div>
+</div>
+<script>
+const COURSE_TITLE = "Pathologie Médicale (Maladies Infectieuses et Chroniques)";
+const slides = [
+  {
+    title: "Sommaire — Pathologie Médicale",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Bienvenue</div>
+        <h3>La pathologie médicale : reconnaître, comprendre, agir</h3>
+        <p>La <strong>pathologie médicale</strong> est l'étude des maladies, de leurs causes, de leurs mécanismes et de leurs manifestations cliniques. Pour l'infirmier A2, elle est indispensable : elle permet de <strong>reconnaître</strong> les maladies courantes, de <strong>comprendre</strong> ce qui se passe dans le corps du patient, d'<strong>appliquer</strong> les soins de base, d'<strong>éduquer</strong> le patient et sa famille, et de <strong>référer</strong> à temps en cas de signe de gravité.</p>
+        <p>Ce cours s'adresse aux élèves de 4<sup>e</sup> Humanité de la section ITM (Institut Technique Médical), filière Soins Infirmiers. Il se concentre sur les maladies prioritaires en RDC : paludisme, tuberculose, VIH/sida, maladies diarrhéiques, infections respiratoires, hypertension, diabète, drépanocytose, asthme.</p>
+        <p><strong>Important :</strong> ce cours est une initiation. La prescription et les actes médicaux relèvent du médecin. L'infirmier reconnaît, applique les soins infirmiers, éduque, surveille et réfère. Il ne pose pas de diagnostic médical définitif et ne prescrit pas.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Objectifs d'apprentissage</div>
+        <p>À la fin de ce cours, l'élève doit être capable de :</p>
+        <ol>
+          <li>Utiliser le vocabulaire médical et la démarche diagnostique infirmière.</li>
+          <li>Réaliser une anamnèse et un examen clinique simple.</li>
+          <li>Identifier les signes cliniques des maladies infectieuses prioritaires (paludisme, tuberculose, VIH, diarrhées, infections respiratoires).</li>
+          <li>Identifier les signes cliniques des maladies chroniques courantes (HTA, diabète, drépanocytose, asthme).</li>
+          <li>Comprendre les mécanismes physiopathologiques essentiels.</li>
+          <li>Appliquer les mesures de prévention et d'éducation du patient.</li>
+          <li>Référer le patient en cas de signe de gravité.</li>
+        </ol>
+      </div>
+
+      <div class="bloc cas">
+        <div class="bloc-label">Grands chapitres du cours</div>
+        <ul>
+          <li><strong>Chapitre I</strong> — Les bases de la pathologie médicale.</li>
+          <li><strong>Chapitre II</strong> — Le paludisme.</li>
+          <li><strong>Chapitre III</strong> — La tuberculose.</li>
+          <li><strong>Chapitre IV</strong> — Le VIH/sida et les infections opportunistes.</li>
+          <li><strong>Chapitre V</strong> — Les maladies diarrhéiques et la déshydratation.</li>
+          <li><strong>Chapitre VI</strong> — Les infections respiratoires aiguës.</li>
+          <li><strong>Chapitre VII</strong> — L'hypertension artérielle et le diabète.</li>
+          <li><strong>Chapitre VIII</strong> — La drépanocytose et l'asthme.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Pourquoi la pathologie médicale ?",
+    content: `
+      <div class="bloc cas">
+        <div class="bloc-label">Situation-problème</div>
+        <p>Une mère amène son enfant de 3 ans au centre de santé. L'enfant a de la fièvre depuis deux jours, des vomissements et des selles liquides. L'infirmier observe : l'enfant est somnolent, ses yeux sont enfoncés, sa bouche est sèche. Un autre enfant arrive, avec une fièvre et des convulsions. Un troisième patient, un homme de 50 ans, se plaint de toux persistante et de sueurs nocturnes depuis un mois. Comment l'infirmier peut-il reconnaître la gravité de chaque cas et agir en conséquence ?</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les maladies prioritaires en RDC</h3>
+        <p>En RDC, certaines maladies pèsent particulièrement sur la santé publique :</p>
+        <ul>
+          <li><strong>Le paludisme</strong> : première cause de morbidité et de mortalité, surtout chez les enfants de moins de 5 ans et les femmes enceintes.</li>
+          <li><strong>La tuberculose</strong> : maladie infectieuse contagieuse, dont la RDC fait partie des pays à forte charge.</li>
+          <li><strong>Le VIH/sida</strong> : pandémie qui touche des millions de personnes.</li>
+          <li><strong>Les maladies diarrhéiques</strong> : cause majeure de mortalité infantile via la déshydratation.</li>
+          <li><strong>Les infections respiratoires aiguës</strong> : pneumonies, en particulier chez le jeune enfant.</li>
+          <li><strong>Les maladies chroniques émergentes</strong> : hypertension, diabète, asthme, drépanocytose.</li>
+        </ul>
+
+        <h3>Les compétences de l'infirmier A2</h3>
+        <p>Le référentiel de compétences infirmières de la RDC définit quatre grandes familles de compétences attendues :</p>
+        <ol>
+          <li><strong>Communiquer</strong> de manière professionnelle.</li>
+          <li><strong>Analyser</strong> une situation clinique (anamnèse, observation, constantes).</li>
+          <li><strong>Réaliser</strong> des prestations de soins (gestes, éducation, prévention).</li>
+          <li><strong>Manager</strong> les ressources à sa disposition (matériel, temps, équipe).</li>
+        </ol>
+        <p>La pathologie médicale est le socle de la deuxième compétence : pour analyser, il faut connaître les maladies.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>La pathologie médicale permet de reconnaître les maladies, de comprendre leurs mécanismes et d'agir. En RDC, le paludisme, la tuberculose, le VIH, les diarrhées, les infections respiratoires et les maladies chroniques sont prioritaires. L'infirmier A2 est un acteur clé de la première ligne.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Définitions et vocabulaire médical",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les mots-clés de la pathologie</h3>
+
+        <h4>Santé</h4>
+        <p>État de complet bien-être physique, mental et social, et non simplement absence de maladie (définition de l'OMS).</p>
+
+        <h4>Maladie</h4>
+        <p>Altération de l'état de santé, caractérisée par un ensemble de signes et de symptômes, et liée à une cause (étiologie) et à un mécanisme (pathogénie).</p>
+
+        <h4>Étiologie</h4>
+        <p>Étude des <strong>causes</strong> d'une maladie. Exemples : l'étiologie du paludisme est un parasite (<em>Plasmodium</em>), l'étiologie de la tuberculose est une bactérie (<em>Mycobacterium tuberculosis</em>).</p>
+
+        <h4>Pathogénie</h4>
+        <p>Étude du <strong>mécanisme</strong> par lequel une cause produit une maladie. Exemple : le <em>Plasmodium</em> détruit les globules rouges, provoquant anémie et fièvre.</p>
+
+        <h4>Symptôme</h4>
+        <p>Manifestation <strong>subjective</strong> ressentie par le patient : douleur, fatigue, nausée, vertige. Le symptôme n'est pas observable par le soignant, il est rapporté.</p>
+
+        <h4>Signe clinique</h4>
+        <p>Manifestation <strong>objective</strong> observée par le soignant : fièvre mesurée, rash cutané, pâleur, œdème. Le signe est visible, palpable ou mesurable.</p>
+
+        <h4>Syndrome</h4>
+        <p>Ensemble de signes et de symptômes qui apparaissent ensemble et caractérisent une maladie. Exemples : syndrome grippal, syndrome diarrhéique, syndrome anémique.</p>
+
+        <h4>Diagnostic</h4>
+        <p>Identification de la maladie à partir de l'ensemble des données cliniques, biologiques et d'imagerie. En pratique infirmière, on parle de <strong>diagnostic infirmier</strong> : identification des problèmes de santé que l'infirmier peut prendre en charge.</p>
+
+        <h4>Pronostic</h4>
+        <p>Prévision de l'évolution de la maladie (favorable, réservé, sombre).</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Confondre <strong>symptôme</strong> (subjectif, ressenti par le patient) et <strong>signe clinique</strong> (objectif, observé par le soignant) est une erreur fréquente. La douleur est un symptôme ; la fièvre mesurée est un signe. Le diagnostic infirmier s'appuie sur les deux.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — La démarche diagnostique infirmière",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Quatre étapes pour comprendre une situation clinique</h3>
+        <p>Face à un patient, l'infirmier suit une démarche structurée, en quatre temps.</p>
+
+        <h4>1. L'anamnèse</h4>
+        <p>C'est l'<strong>interrogatoire</strong> structuré du patient ou de son entourage. Il recueille :</p>
+        <ul>
+          <li><strong>L'identité</strong> : nom, âge, sexe, profession, provenance.</li>
+          <li><strong>Le motif</strong> de consultation : que ressent le patient ?</li>
+          <li><strong>L'histoire de la maladie</strong> : date de début, évolution, facteurs déclenchants.</li>
+          <li><strong>Les antécédents</strong> : maladies passées, hospitalisations, chirurgies.</li>
+          <li><strong>Les traitements</strong> en cours (y compris les plantes).</li>
+          <li><strong>Le mode de vie</strong> : alimentation, tabac, alcool, habitat, hygiène.</li>
+          <li><strong>Les antécédents familiaux</strong> : HTA, diabète, drépanocytose, tuberculose.</li>
+        </ul>
+
+        <h4>2. L'examen clinique</h4>
+        <p>Il repose sur les <strong>quatre gestes</strong> classiques :</p>
+        <ul>
+          <li><strong>Inspection</strong> : observer (couleur de la peau, état de conscience, position).</li>
+          <li><strong>Palpation</strong> : toucher (abdomen, ganglions, pouls).</li>
+          <li><strong>Percussion</strong> : tapoter (sonorité du thorax, de l'abdomen).</li>
+          <li><strong>Auscultation</strong> : écouter (cœur, poumons, intestins).</li>
+        </ul>
+        <p>On y ajoute la <strong>prise des constantes vitales</strong> : température, pouls, tension artérielle, fréquence respiratoire, saturation en oxygène (si disponible), glycémie (si indiquée).</p>
+
+        <h4>3. L'analyse des données</h4>
+        <p>L'infirmier regroupe les informations : quels signes vont ensemble ? Quel problème prioritaire se dessine ? Faut-il alerter immédiatement ?</p>
+
+        <h4>4. Le référencement</h4>
+        <p>Si le problème dépasse ses compétences, l'infirmier <strong>réfère</strong> au médecin ou vers un niveau de soins approprié, en transmettant une information claire et concise.</p>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Application</div>
+        <p><strong>Cas :</strong> une fièvre inexpliquée se déclare dans le quartier de Matongé à Kinshasa.</p>
+        <p><strong>Anamnèse :</strong> date de début, symptômes associés (céphalées, courbatures, vomissements), contacts avec d'autres malades, antécédents, prise de médicaments ou de plantes.</p>
+        <p><strong>Examen :</strong> prise de température (39 °C), pouls (110/min), tension, état de conscience, pâleur.</p>
+        <p><strong>Analyse :</strong> tableau évoquant un paludisme. Faut-il un TDR ? Faut-il référer ?</p>
+        <p><strong>Référencement :</strong> orientation vers le laboratoire pour TDR et vers le médecin pour la suite de la prise en charge.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Quatre étapes : anamnèse, examen clinique, analyse, référencement. L'anamnèse fournit souvent la clé du diagnostic. L'examen clinique et les constantes confirment. L'analyse permet de prioriser. Le référencement assure la sécurité du patient.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — Le paludisme : épidémiologie et cycle",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Une endémie meurtrière</h3>
+        <p>Le <strong>paludisme</strong> est une maladie parasitaire transmise par la piqûre de la femelle du moustique <em>Anopheles</em>. C'est l'une des grandes endémies meurtrières en RDC, avec un impact socio-économique majeur : absentéisme scolaire et professionnel, baisse de la productivité, coûts de santé élevés.</p>
+        <p>La RDC est l'un des pays les plus touchés au monde. Les groupes les plus vulnérables sont :</p>
+        <ul>
+          <li>Les <strong>enfants de moins de 5 ans</strong>.</li>
+          <li>Les <strong>femmes enceintes</strong>.</li>
+          <li>Les <strong>personnes immunodéprimées</strong> (VIH, malnutrition).</li>
+        </ul>
+
+        <h4>Le cycle du parasite</h4>
+        <p>Le parasite responsable est un protozoaire du genre <em>Plasmodium</em>. Les principales espèces sont <em>P. falciparum</em> (la plus dangereuse, dominante en RDC), <em>P. malariae</em>, <em>P. ovale</em>, <em>P. vivax</em>.</p>
+        <ol>
+          <li>Le moustique <strong>anophèle femelle</strong> pique un humain infecté et ingère des gamétocytes (formes sexuées du parasite).</li>
+          <li>Dans l'estomac du moustique, les gamètes fusionnent et forment des sporozoïtes.</li>
+          <li>Le moustique pique un autre humain et injecte les sporozoïtes.</li>
+          <li>Les sporozoïtes gagnent le foie et s'y multiplient (phase hépatique).</li>
+          <li>Puis ils passent dans le sang et infectent les globules rouges (phase sanguine), qui éclatent : c'est ce qui provoque la fièvre et l'anémie.</li>
+        </ol>
+
+        <h4>La physiopathologie simplifiée</h4>
+        <ul>
+          <li>La destruction des globules rouges provoque <strong>l'anémie</strong>.</li>
+          <li>La libération de déchets parasitaires provoque la <strong>fièvre</strong> et les <strong>frissons</strong>.</li>
+          <li>Dans les formes graves, les globules rouges infectés obstruent les capillaires du cerveau (paludisme cérébral) ou d'autres organes (reins, poumons).</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Le paludisme est transmis par l'anophèle femelle. Le parasite (<em>Plasmodium</em>) détruit les globules rouges. Les enfants de moins de 5 ans et les femmes enceintes sont les plus vulnérables. Le cycle comporte une phase hépatique et une phase sanguine.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — Le paludisme : signes cliniques et formes graves",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Reconnaître le paludisme</h3>
+
+        <h4>Forme simple (non compliquée)</h4>
+        <p>Le tableau classique associe :</p>
+        <ul>
+          <li><strong>Fièvre</strong> élevée, souvent avec des accès cycliques (frissons → chaleur → sueurs).</li>
+          <li><strong>Céphalées</strong> (maux de tête).</li>
+          <li><strong>Courbatures</strong>, douleurs musculaires.</li>
+          <li><strong>Asthénie</strong> (fatigue intense).</li>
+          <li>Parfois : nausées, vomissements, diarrhée.</li>
+          <li>Chez l'enfant : fièvre, vomissements, irritabilité.</li>
+        </ul>
+
+        <h4>Formes graves</h4>
+        <p>Les formes graves mettent la vie en danger. Les signes d'alerte sont :</p>
+        <ul>
+          <li><strong>Convulsions</strong> (chez l'enfant, signe de paludisme cérébral).</li>
+          <li><strong>Troubles de la conscience</strong> : somnolence, coma.</li>
+          <li><strong>Anémie sévère</strong> : pâleur intense, essoufflement.</li>
+          <li><strong>Détresse respiratoire</strong> : respiration rapide et difficile.</li>
+          <li><strong>Hypoglycémie</strong> : sueurs froides, tremblements.</li>
+          <li><strong>Ictère</strong> (jaunisse), <strong>urines noires</strong> (fièvre bilieuse hémoglobinurique).</li>
+          <li><strong>Hémorragies</strong> ou <strong>insuffisance rénale</strong>.</li>
+        </ul>
+
+        <h4>Le paludisme de la femme enceinte</h4>
+        <p>Chez la femme enceinte, le paludisme peut provoquer :</p>
+        <ul>
+          <li><strong>Anémie maternelle</strong> sévère.</li>
+          <li><strong>Avortement spontané</strong>, accouchement prématuré.</li>
+          <li><strong>Faible poids de naissance</strong>.</li>
+          <li><strong>Paludisme congénital</strong> du nouveau-né.</li>
+        </ul>
+
+        <h4>Le rôle de l'infirmier</h4>
+        <ul>
+          <li>Prendre la température, observer les signes de gravité.</li>
+          <li>Alerter immédiatement le médecin devant toute convulsion, tout trouble de conscience.</li>
+          <li>Préparer le patient pour le test de diagnostic rapide (TDR).</li>
+          <li>Éduquer la famille sur la prévention.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Minimiser une fièvre chez un enfant est une erreur grave. Une fièvre avec convulsions, somnolence ou pâleur intense peut être un paludisme grave, potentiellement mortel. Ces signes imposent un référencement immédiat.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — Le paludisme : diagnostic et traitement",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le diagnostic</h3>
+        <p>Le diagnostic du paludisme doit être <strong>confirmé biologiquement</strong> avant de traiter. Deux examens sont utilisés :</p>
+        <ul>
+          <li><strong>Le Test de Diagnostic Rapide (TDR)</strong> : rapide (15 – 20 minutes), ne nécessite pas de microscope, adapté aux structures périphériques.</li>
+          <li><strong>La goutte épaisse et le frottis sanguin</strong> : examen au microscope, permet d'identifier l'espèce et de quantifier la parasitémie.</li>
+        </ul>
+        <p>Chez l'enfant, le TDR est souvent utilisé en première intention. En cas de négativité alors que la suspicion persiste, une goutte épaisse est recommandée.</p>
+
+        <h3>Le traitement selon les directives du PNLP</h3>
+        <p>Le <strong>Programme National de Lutte contre le Paludisme (PNLP)</strong> publie des directives actualisées. Selon les directives nationales :</p>
+
+        <h4>Paludisme simple</h4>
+        <p>Traitement par <strong>Combinaisons Thérapeutiques à base d'Artémisinine (CTA)</strong>, par exemple artéméther-luméfantrine. Les CTA sont dosées en fonction du poids :</p>
+        <ul>
+          <li>Prise matin et soir pendant 3 jours.</li>
+          <li>Prise avec un repas contenant des graisses (améliore l'absorption de la luméfantrine).</li>
+          <li>Respect strict des 3 jours : un traitement incomplet favorise la résistance.</li>
+        </ul>
+
+        <h4>Paludisme grave</h4>
+        <p>Traitement par voie injectable :</p>
+        <ul>
+          <li><strong>Artésunate injectable</strong> (première intention) en IV ou IM, selon le protocole.</li>
+          <li><strong>Quinine</strong> en perfusion (alternative).</li>
+        </ul>
+        <p>Le patient doit être hospitalisé et surveillé étroitement : conscience, diurèse, glycémie, température.</p>
+
+        <h4>Contre-indications et précautions</h4>
+        <ul>
+          <li>Certaines CTA sont contre-indiquées au <strong>premier trimestre de la grossesse</strong>.</li>
+          <li>La quinine peut provoquer une hypoglycémie (surveiller la glycémie).</li>
+          <li>Vérifier les interactions médicamenteuses.</li>
+        </ul>
+
+        <h4>Rôle de l'infirmier</h4>
+        <ul>
+          <li>Calculer la dose selon le poids.</li>
+          <li>Vérifier les 5 B (Bon médicament, Bonne dose, Bonne voie, Bon moment, Bon patient).</li>
+          <li>Expliquer le traitement à la famille.</li>
+          <li>Surveiller les effets indésirables et noter l'heure d'administration.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Traiter une fièvre à l'aveugle sans confirmation biologique est une erreur grave. Le diagnostic doit être confirmé (TDR ou goutte épaisse). En l'absence de confirmation, on risque de traiter inutilement un paludisme et de laisser évoluer une autre maladie.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — Le paludisme : prévention",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Prévenir plutôt que guérir</h3>
+        <p>La prévention du paludisme repose sur plusieurs axes complémentaires.</p>
+
+        <h4>1. La lutte contre les moustiques</h4>
+        <ul>
+          <li><strong>Moustiquaires imprégnées d'insecticide à longue durée d'action (MILDA)</strong> : dormir sous une MILDA chaque nuit. C'est la mesure la plus efficace.</li>
+          <li><strong>Répulsifs cutanés</strong> et <strong>sprays</strong> dans les maisons.</li>
+          <li><strong>Élimination des eaux stagnantes</strong> : les moustiques se reproduisent dans l'eau stagnante (caniveaux, flaques, récipients abandonnés, pneus).</li>
+          <li><strong>Assainissement</strong> : évacuer les eaux usées, nettoyer les alentours des habitations.</li>
+        </ul>
+
+        <h4>2. La chimioprophylaxie</h4>
+        <p>Chez la femme enceinte, un traitement préventif intermittent (TPI) est recommandé dans le cadre des consultations prénatales. Il consiste à prendre un antipaludique à intervalles réguliers, sous contrôle médical.</p>
+
+        <h4>3. Le traitement précoce et efficace</h4>
+        <p>Consulter dès les premiers signes, faire confirmer le diagnostic, respecter le traitement. Un paludisme traité tôt évite les formes graves et réduit la transmission.</p>
+
+        <h4>4. L'éducation sanitaire</h4>
+        <p>L'infirmier doit sensibiliser les familles et les communautés :</p>
+        <ul>
+          <li>Utiliser la MILDA chaque nuit, pour tous les membres de la famille.</li>
+          <li>Consulter rapidement en cas de fièvre.</li>
+          <li>Éliminer les gîtes larvaires autour de la maison.</li>
+          <li>Poursuivre le traitement jusqu'au bout.</li>
+        </ul>
+
+        <h4>5. Le vaccin antipaludique</h4>
+        <p>Un vaccin antipaludique (RTS,S/AS01) est progressivement introduit dans certains pays, en complément des autres mesures. Son déploiement reste limité et doit s'ajouter à la prévention classique.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>MILDA, lutte contre les eaux stagnantes, TPI chez la femme enceinte, traitement précoce, éducation sanitaire. Ces mesures combinées sont les plus efficaces. Le vaccin est un complément, pas un remplacement.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — La tuberculose : contagion et signes",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Une maladie contagieuse</h3>
+        <p>La <strong>tuberculose</strong> est une maladie infectieuse causée par <em>Mycobacterium tuberculosis</em>, communément appelé bacille de Koch (BK). Elle touche principalement les poumons (tuberculose pulmonaire), mais peut atteindre d'autres organes (ganglions, os, reins, méninges).</p>
+
+        <h4>La transmission</h4>
+        <p>La tuberculose se transmet par voie aérienne : un patient bacillifère tousse, projette des gouttelettes de salive contenant le bacille. Ces gouttelettes sont inhalées par une personne saine, qui peut être contaminée. Attention :</p>
+        <ul>
+          <li>Ne pas confondre <strong>infection</strong> (bacille présent, mais pas de maladie) et <strong>maladie tuberculeuse</strong> (symptômes présents).</li>
+          <li>La contagion nécessite un contact prolongé et rapproché (famille, promiscuité, lieu fermé).</li>
+          <li>Une tuberculose non pulmonaire (ganglionnaire, osseuse) n'est généralement pas contagieuse.</li>
+        </ul>
+
+        <h4>Signes cliniques</h4>
+        <p>Les signes classiques de la tuberculose pulmonaire sont :</p>
+        <ul>
+          <li><strong>Toux persistante</strong> depuis plus de 2 semaines (parfois avec crachats, parfois avec sang - hémoptysie).</li>
+          <li><strong>Fièvre</strong> modérée, souvent vespérale (le soir).</li>
+          <li><strong>Sueurs nocturnes</strong> abondantes.</li>
+          <li><strong>Amaigrissement</strong> progressif, perte d'appétit.</li>
+          <li><strong>Asthénie</strong> (fatigue intense).</li>
+          <li>Parfois : douleur thoracique, essoufflement.</li>
+        </ul>
+
+        <h4>Facteurs de risque</h4>
+        <ul>
+          <li>Vivre dans un lieu surpeuplé, mal ventilé.</li>
+          <li>Être immunodéprimé (VIH, malnutrition, diabète).</li>
+          <li>Être en contact étroit avec un patient bacillifère.</li>
+          <li>Fumer, consommer de l'alcool.</li>
+          <li>Ne pas être vacciné par le BCG.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>La tuberculose se transmet par voie aérienne. Les signes classiques sont : toux persistante > 2 semaines, fièvre, sueurs nocturnes, amaigrissement. Le contact prolongé et la promiscuité favorisent la contagion.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — La tuberculose : diagnostic et traitement",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le diagnostic</h3>
+        <p>Le diagnostic de la tuberculose repose sur plusieurs examens :</p>
+        <ul>
+          <li><strong>La bacilloscopie</strong> : examen microscopique des crachats (recherche du bacille de Koch). Examen simple, disponible en périphérie.</li>
+          <li><strong>Le test moléculaire GeneXpert</strong> : détecte l'ADN du bacille, plus sensible et rapide. Permet aussi de détecter la résistance à la rifampicine.</li>
+          <li><strong>La radiographie du thorax</strong> : montre les lésions pulmonaires.</li>
+          <li><strong>La culture</strong> : plus longue, réservée aux cas complexes.</li>
+        </ul>
+
+        <h3>Le traitement</h3>
+        <p>Le traitement de la tuberculose associe plusieurs médicaments antituberculeux, pendant plusieurs mois. Le schéma standard comporte :</p>
+        <ul>
+          <li><strong>Phase intensive</strong> (2 mois) : quatre médicaments — rifampicine (R), isoniazide (H), pyrazinamide (Z), éthambutol (E).</li>
+          <li><strong>Phase de continuation</strong> (4 mois) : deux médicaments — rifampicine (R), isoniazide (H).</li>
+        </ul>
+        <p>Selon les directives nationales, le traitement est gratuit dans les centres de diagnostic et de traitement (CDT). La prise est quotidienne, et l'observance est <strong>cruciale</strong>.</p>
+
+        <h3>L'observance</h3>
+        <p>L'<strong>observance</strong> est le respect strict du traitement par le patient. En tuberculose, elle est vitale :</p>
+        <ul>
+          <li>Un traitement incomplet ne guérit pas.</li>
+          <li>Il favorise l'apparition de <strong>bacilles résistants</strong> (tuberculose multirésistante, TB-MR), beaucoup plus difficiles à traiter.</li>
+          <li>Le patient continue à contaminer les autres.</li>
+        </ul>
+        <p>Le <strong>traitement directement observé (TDO)</strong> est une stratégie recommandée : un soignant ou un agent formé vérifie la prise du médicament.</p>
+
+        <h3>Les effets indésirables</h3>
+        <ul>
+          <li><strong>Rifampicine</strong> : urines orangées (bénin), hépatotoxicité, interactions médicamenteuses (contraceptifs, ARV).</li>
+          <li><strong>Isoniazide</strong> : hépatotoxicité, neuropathie (prévenue par la vitamine B6).</li>
+          <li><strong>Pyrazinamide</strong> : hépatotoxicité, hyperuricémie.</li>
+          <li><strong>Éthambutol</strong> : toxicité oculaire (baisse de la vision), surveillance ophtalmologique.</li>
+        </ul>
+
+        <h3>La prévention</h3>
+        <ul>
+          <li><strong>Vaccin BCG</strong> à la naissance (protection contre les formes graves de l'enfant).</li>
+          <li><strong>Dépistage des contacts</strong> : toute personne vivant avec un patient bacillifère doit être dépistée.</li>
+          <li><strong>Aération des locaux</strong>.</li>
+          <li><strong>Éducation</strong> : le patient doit se couvrir la bouche quand il tousse, ne pas cracher au sol.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Interrompre le traitement antituberculeux parce qu'on se sent mieux est une erreur grave. La tuberculose exige 6 mois de traitement. Un arrêt prématuré expose à la rechute et à la résistance.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre IV — Le VIH/sida : transmission et phases",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le VIH et le sida</h3>
+        <p>Le <strong>VIH</strong> (virus de l'immunodéficience humaine) attaque le système immunitaire, en particulier les lymphocytes T CD4. Le <strong>sida</strong> (syndrome d'immunodéficience acquise) est le stade avancé de l'infection, quand l'immunité est effondrée et que les infections opportunistes se multiplient.</p>
+
+        <h4>La transmission</h4>
+        <p>Le VIH se transmet par trois grandes voies :</p>
+        <ul>
+          <li><strong>Voie sexuelle</strong> : rapports non protégés (voie dominante).</li>
+          <li><strong>Voie sanguine</strong> : transfusion de sang contaminé, échange de seringues, objets tranchants souillés.</li>
+          <li><strong>Voie mère-enfant</strong> : grossesse, accouchement, allaitement (sans prévention).</li>
+        </ul>
+        <p><strong>Le VIH ne se transmet pas</strong> par : poignée de main, câlin, toux, éternuement, piqûre de moustique, piscine, toilettes partagées, vaisselle, nourriture.</p>
+
+        <h4>Les phases de l'infection</h4>
+        <ol>
+          <li><strong>Primo-infection</strong> : 2 à 4 semaines après la contamination, syndrome pseudo-grippal (fièvre, ganglions, éruption, fatigue). Souvent méconnu.</li>
+          <li><strong>Phase asymptomatique</strong> : peut durer des années. Le virus se multiplie mais la personne n'a pas de symptômes.</li>
+          <li><strong>Phase symptomatique</strong> : apparition de signes (amaigrissement, fièvre persistante, diarrhée chronique, candidose, zona, tuberculose, etc.).</li>
+          <li><strong>Sida</strong> : stade final, quand les infections opportunistes et certains cancers se développent.</li>
+        </ol>
+
+        <h4>Les infections opportunistes</h4>
+        <p>Ce sont des infections qui ne se développent que parce que l'immunité est effondrée :</p>
+        <ul>
+          <li><strong>Tuberculose</strong> (première cause de mortalité chez les personnes vivant avec le VIH).</li>
+          <li><strong>Candidose</strong> buccale ou œsophagienne.</li>
+          <li><strong>Pneumocystose</strong>.</li>
+          <li><strong>Toxoplasmose cérébrale</strong>.</li>
+          <li><strong>Cryptococcose</strong>.</li>
+          <li><strong>Certains cancers</strong> (sarcome de Kaposi, lymphomes).</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Le VIH se transmet par voie sexuelle, sanguine et mère-enfant. Il ne se transmet pas par contact quotidien. Les phases vont de la primo-infection au sida. Les infections opportunistes signent l'effondrement immunitaire.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre IV — Le VIH/sida : prévention et accompagnement",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Prévention de la transmission</h3>
+        <ul>
+          <li><strong>Préservatifs masculins et féminins</strong> : barrière efficace contre le VIH et les autres IST.</li>
+          <li><strong>Dépistage</strong> : connaître son statut, c'est pouvoir se soigner et éviter de transmettre.</li>
+          <li><strong>Traitement antirétroviral (ARV)</strong> : réduire la charge virale jusqu'à la rendre indétectable (notion de « U = U » : Indétectable = Intransmissible).</li>
+          <li><strong>PTME (Prévention de la Transmission Mère-Enfant)</strong> : dépistage prénatal, ARV chez la mère séropositive, protocoles adaptés.</li>
+          <li><strong>Prévention de la transmission sanguine</strong> : sécurisation des transfusions, usage de seringues à usage unique, matériel stérile.</li>
+        </ul>
+
+        <h3>Prise en charge et accompagnement</h3>
+        <p>Les <strong>antirétroviraux (ARV)</strong> sont regroupés en plusieurs classes. La trithérapie (association de trois molécules) est le standard. Les objectifs :</p>
+        <ul>
+          <li>Réduire la charge virale (idéalement indétectable).</li>
+          <li>Remonter les lymphocytes CD4 (immunité).</li>
+          <li>Prévenir les infections opportunistes.</li>
+          <li>Améliorer la qualité et la durée de vie.</li>
+        </ul>
+
+        <h4>Rôle de l'infirmier</h4>
+        <ul>
+          <li><strong>Accompagner</strong> le patient tout au long du parcours de soins.</li>
+          <li><strong>Éduquer</strong> sur l'observance des ARV : une prise irrégulière favorise les résistances.</li>
+          <li><strong>Surveiller</strong> les effets indésirables et les infections opportunistes.</li>
+          <li><strong>Soutenir</strong> psychologiquement : l'annonce d'un résultat positif est un moment difficile.</li>
+          <li><strong>Lutter contre la stigmatisation</strong> et la discrimination.</li>
+          <li><strong>Orienter</strong> vers les structures adaptées (centres de traitement ambulatoire, associations de patients).</li>
+        </ul>
+
+        <h4>Le soutien psychologique et social</h4>
+        <p>Vivre avec le VIH exige un accompagnement global : information, soutien, confidentialité. Le rôle de l'infirmier est de créer un climat de confiance, sans jugement, pour que le patient puisse s'exprimer et adhérer au traitement.</p>
+
+        <h4>L'observance</h4>
+        <p>Comme pour la tuberculose, l'observance des ARV est cruciale : un traitement irrégulier laisse le virus se multiplier et développer des résistances. L'infirmier doit expliquer, simplifier la prise (horaires, pilulier), soutenir et suivre.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Préservatif, dépistage, ARV, PTME, sécurisation des transfusions. L'infirmier accompagne, éduque, surveille, soutient et lutte contre la stigmatisation. L'observance des ARV est aussi cruciale que celle des antituberculeux.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre V — Les maladies diarrhéiques et la déshydratation",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Une cause majeure de mortalité infantile</h3>
+        <p>Les <strong>maladies diarrhéiques</strong> sont une cause majeure de morbidité et de mortalité dans les pays à faibles revenus, en particulier chez les enfants de moins de 5 ans. Elles provoquent une perte d'eau et d'électrolytes qui peut être mortelle en quelques jours si elle n'est pas corrigée.</p>
+
+        <h4>Les causes</h4>
+        <ul>
+          <li><strong>Infections</strong> : bactéries (E. coli, <em>Shigella</em>, <em>Salmonella</em>, <em>Vibrio cholerae</em>), virus (rotavirus), parasites (<em>Giardia</em>, <em>Entamoeba</em>).</li>
+          <li><strong>Eau contaminée</strong> et <strong>aliments souillés</strong>.</li>
+          <li><strong>Manque d'hygiène</strong> (mains sales).</li>
+          <li><strong>Malnutrition</strong> (fragilise le tube digestif).</li>
+          <li><strong>Médicaments</strong> (antibiotiques, effet secondaire).</li>
+        </ul>
+
+        <h4>Signes cliniques</h4>
+        <ul>
+          <li><strong>Diarrhée</strong> : selles liquides fréquentes.</li>
+          <li><strong>Vomissements</strong> (pas toujours).</li>
+          <li><strong>Fièvre</strong>, douleurs abdominales.</li>
+          <li><strong>Signes de déshydratation</strong> : soif intense, bouche sèche, yeux enfoncés, peau qui garde le pli, diminution des urines, léthargie.</li>
+        </ul>
+
+        <h4>Les degrés de déshydratation</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Degré</th>
+              <th>Signes</th>
+              <th>Conduite à tenir</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Déshydratation légère</strong></td>
+              <td>Soif, bouche légèrement sèche, aucun autre signe.</td>
+              <td>Réhydratation orale à domicile (SRO).</td>
+            </tr>
+            <tr>
+              <td><strong>Déshydratation modérée</strong></td>
+              <td>Yeux enfoncés, bouche sèche, pli cutané persistant, soif intense.</td>
+              <td>Réhydratation orale surveillée, sous SRO (Plan B).</td>
+            </tr>
+            <tr>
+              <td><strong>Déshydratation sévère</strong></td>
+              <td>Somnolence, léthargie, incapacité à boire, yeux très enfoncés, pli cutané très lent.</td>
+              <td>Réhydratation intraveineuse urgente (Plan C), transfert.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Les diarrhées sont une cause majeure de mortalité infantile. La déshydratation est la complication principale. Les signes : yeux enfoncés, bouche sèche, pli cutané, léthargie. Plus la déshydratation est sévère, plus la prise en charge est urgente.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre V — La réhydratation orale (SRO)",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Un geste qui sauve</h3>
+        <p>La <strong>réhydratation orale</strong> est le traitement de première ligne de la déshydratation légère à modérée. Elle repose sur les <strong>Sels de Réhydratation Orale (SRO)</strong>, qui contiennent de l'eau, du sel, du sucre et des minéraux dans des proportions équilibrées.</p>
+
+        <h4>Technique de préparation du SRO</h4>
+        <ol>
+          <li><strong>Se laver les mains</strong> et utiliser un récipient propre.</li>
+          <li>Verser <strong>1 litre d'eau propre</strong> (eau potable, bouillie puis refroidie).</li>
+          <li>Verser <strong>tout le contenu d'un sachet de SRO</strong> dans l'eau.</li>
+          <li><strong>Mélanger</strong> soigneusement jusqu'à dissolution complète.</li>
+          <li>Utiliser dans les <strong>24 heures</strong> (jeter le reste au-delà).</li>
+        </ol>
+        <p><strong>Attention :</strong> ne jamais modifier les proportions (ni plus de sucre, ni plus de sel), ne jamais utiliser d'eau non potable, ne jamais conserver le SRO au-delà de 24 heures.</p>
+
+        <h4>Administration</h4>
+        <ul>
+          <li>Donner à boire <strong>par petites quantités fréquentes</strong> (à la cuillère, à la seringue, au verre).</li>
+          <li>Après chaque selle liquide, redonner du SRO.</li>
+          <li>Si l'enfant vomit, attendre 10 minutes puis reprendre plus lentement.</li>
+          <li><strong>Surveiller</strong> : signes de déshydratation, urines, poids, conscience.</li>
+        </ul>
+
+        <h4>Quand passer à la voie veineuse ?</h4>
+        <ul>
+          <li>Déshydratation sévère.</li>
+          <li>Incapacité à boire (léthargie, coma).</li>
+          <li>Vomissements incoercibles.</li>
+          <li>Échec de la réhydratation orale après 4 à 6 heures.</li>
+        </ul>
+
+        <h4>Prévention des récidives</h4>
+        <ul>
+          <li>Allaitement maternel exclusif jusqu'à 6 mois.</li>
+          <li>Lavage des mains au savon.</li>
+          <li>Eau potable (bouillie, traitée, ou en bouteille).</li>
+          <li>Hygiène alimentaire (aliments bien cuits, conservés correctement).</li>
+          <li>Vaccination contre le rotavirus (selon disponibilité).</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Ne pas respecter les proportions du SRO (trop ou pas assez de sucre ou de sel) est une erreur grave : une solution trop sucrée attire l'eau dans l'intestin et aggrave la diarrhée ; une solution trop salée provoque une hypernatrémie. <strong>Toujours respecter un sachet pour un litre d'eau propre.</strong></p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VI — Les infections respiratoires aiguës",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>La pneumonie : une urgence fréquente</h3>
+        <p>Les <strong>infections respiratoires aiguës (IRA)</strong> sont une cause majeure de morbidité et de mortalité, surtout chez l'enfant de moins de 5 ans. La <strong>pneumonie</strong> est la forme la plus grave.</p>
+
+        <h4>Définition</h4>
+        <p>La <strong>pneumonie</strong> est une infection des poumons (alvéoles), souvent bactérienne (<em>Streptococcus pneumoniae</em>, <em>Haemophilus influenzae</em>). Elle peut être virale (grippe, VRS) ou fongique.</p>
+
+        <h4>Signes cliniques</h4>
+        <ul>
+          <li><strong>Fièvre</strong> élevée.</li>
+          <li><strong>Toux</strong> productive ou sèche.</li>
+          <li><strong>Difficultés respiratoires</strong> : respiration rapide (polypnée), tirage.</li>
+          <li><strong>Douleur thoracique</strong>.</li>
+          <li><strong>Asthénie</strong>, anorexie.</li>
+          <li>Chez le nourrisson : difficultés à téter, geignement.</li>
+        </ul>
+
+        <h4>Signes de gravité</h4>
+        <p>Les signes suivants imposent une référence immédiate :</p>
+        <ul>
+          <li><strong>Tirage intercostal</strong> (creusement entre les côtes à chaque inspiration).</li>
+          <li><strong>Battement des ailes du nez</strong>.</li>
+          <li><strong>Cyanose</strong> (coloration bleutée des lèvres).</li>
+          <li><strong>Respiration très rapide</strong> (≥ 50/min chez le nourrisson de 2 à 11 mois).</li>
+          <li><strong>Difficulté à boire ou à téter</strong>, vomissements incoercibles.</li>
+          <li><strong>Somnolence</strong>, convulsions.</li>
+        </ul>
+
+        <h4>Conduite à tenir</h4>
+        <ul>
+          <li>Référer <strong>immédiatement</strong> au centre de santé le plus proche.</li>
+          <li>Ne pas donner d'antibiotique sans prescription médicale.</li>
+          <li>Position demi-assise, oxygène si disponible.</li>
+          <li>Surveiller l'état respiratoire et la conscience.</li>
+        </ul>
+
+        <h4>Prévention</h4>
+        <ul>
+          <li><strong>Vaccination</strong> : pneumocoque, <em>Haemophilus influenzae</em> b, grippe, rougeole, coqueluche.</li>
+          <li><strong>Allaitement maternel</strong> (protection immunitaire).</li>
+          <li><strong>Lutte contre la pollution de l'air intérieur</strong> (fumée de bois, tabac).</li>
+          <li><strong>Hygiène des mains</strong>, aération des locaux.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Attendre pour référer un enfant qui présente un tirage intercostal est une erreur grave. La pneumonie sévère peut tuer en 24 à 48 heures. Le tirage, la cyanose, la difficulté à boire sont des urgences absolues.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VII — L'hypertension artérielle",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Une maladie chronique silencieuse</h3>
+        <p>L'<strong>hypertension artérielle (HTA)</strong> est une pression artérielle élevée de façon persistante. On parle d'HTA quand la pression artérielle est supérieure ou égale à 140/90 mmHg à plusieurs reprises. C'est une maladie chronique fréquente, souvent silencieuse, qui peut entraîner des complications graves.</p>
+
+        <h4>Facteurs de risque</h4>
+        <ul>
+          <li><strong>Alimentation riche en sel</strong>.</li>
+          <li><strong>Obésité</strong> et surpoids.</li>
+          <li><strong>Sédentarité</strong> (manque d'activité physique).</li>
+          <li><strong>Tabac</strong>, <strong>alcool</strong>.</li>
+          <li><strong>Stress</strong> chronique.</li>
+          <li><strong>Antécédents familiaux</strong> d'HTA.</li>
+          <li><strong>Diabète</strong>, maladies rénales.</li>
+          <li><strong>Âge</strong>.</li>
+        </ul>
+
+        <h4>Signes cliniques</h4>
+        <p>L'HTA est souvent <strong>asymptomatique</strong> pendant des années. Quand elle se manifeste :</p>
+        <ul>
+          <li><strong>Céphalées</strong> (souvent occipitales, le matin).</li>
+          <li><strong>Vertiges</strong>.</li>
+          <li><strong>Acouphènes</strong> (sifflements d'oreille).</li>
+          <li><strong>Palpitations</strong>.</li>
+          <li><strong>Essoufflement</strong> à l'effort.</li>
+          <li>Parfois : saignements de nez (épistaxis).</li>
+        </ul>
+
+        <h4>Complications</h4>
+        <ul>
+          <li><strong>AVC</strong> (accident vasculaire cérébral).</li>
+          <li><strong>Infarctus du myocarde</strong>.</li>
+          <li><strong>Insuffisance cardiaque</strong>.</li>
+          <li><strong>Insuffisance rénale</strong>.</li>
+          <li><strong>Atteinte des yeux</strong> (rétinopathie).</li>
+        </ul>
+
+        <h4>Rôle de l'infirmier</h4>
+        <ul>
+          <li><strong>Mesurer la tension</strong> correctement (patient assis, repos de 5 min, brassard adapté).</li>
+          <li><strong>Éduquer</strong> : réduire le sel, augmenter l'activité physique, perdre du poids, arrêter le tabac, limiter l'alcool.</li>
+          <li><strong>Accompagner</strong> l'observance du traitement.</li>
+          <li><strong>Surveiller</strong> l'apparition de complications.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>L'HTA est souvent silencieuse. Facteurs de risque : sel, obésité, sédentarité, tabac, alcool. Complications : AVC, infarctus, insuffisance rénale. L'infirmier mesure, éduque et accompagne.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VII — Le diabète",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Un trouble du sucre sanguin</h3>
+        <p>Le <strong>diabète</strong> est une maladie chronique caractérisée par une hyperglycémie (taux de sucre dans le sang trop élevé). Il résulte d'un défaut de sécrétion d'insuline (diabète de type 1) ou d'une résistance à l'insuline (diabète de type 2, le plus fréquent).</p>
+
+        <h4>Signes cliniques</h4>
+        <p>Les signes classiques sont :</p>
+        <ul>
+          <li><strong>Soif intense</strong> (polydipsie).</li>
+          <li><strong>Urines fréquentes</strong> (polyurie), y compris la nuit.</li>
+          <li><strong>Amaigrissement</strong> malgré un appétit augmenté.</li>
+          <li><strong>Fatigue</strong>.</li>
+          <li><strong>Infections récurrentes</strong> (urinaires, cutanées, candidose).</li>
+          <li><strong>Cicatrisation lente</strong>.</li>
+          <li>Parfois : <strong>vision floue</strong>.</li>
+        </ul>
+
+        <h4>Complications</h4>
+        <ul>
+          <li><strong>Complications aiguës</strong> :
+            <ul>
+              <li><strong>Hypoglycémie</strong> (sueurs, tremblements, confusion, coma) — liée au traitement.</li>
+              <li><strong>Acidocétose</strong> (diabète de type 1 décompensé).</li>
+              <li><strong>Coma hyperosmolaire</strong> (sujet âgé, déshydratation).</li>
+            </ul>
+          </li>
+          <li><strong>Complications chroniques</strong> :
+            <ul>
+              <li><strong>Neuropathie</strong> (perte de sensibilité).</li>
+              <li><strong>Rétinopathie</strong> (atteinte de la vision).</li>
+              <li><strong>Néphropathie</strong> (atteinte rénale).</li>
+              <li><strong>Pied diabétique</strong> (plaie qui ne guérit pas, risque d'amputation).</li>
+              <li><strong>Complications cardiovasculaires</strong> (infarctus, AVC).</li>
+            </ul>
+          </li>
+        </ul>
+
+        <h4>Rôle de l'infirmier</h4>
+        <ul>
+          <li><strong>Éduquer</strong> sur l'alimentation (limiter les sucres simples, préférer les glucides complexes).</li>
+          <li><strong>Encourager</strong> l'activité physique régulière.</li>
+          <li><strong>Surveiller la glycémie</strong> (si équipement disponible).</li>
+          <li><strong>Soigner les pieds</strong> : inspection quotidienne, éviter les blessures, couper les ongles correctement, chaussures adaptées.</li>
+          <li><strong>Accompagner l'observance</strong> du traitement.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Diabète = hyperglycémie. Signes : soif, polyurie, amaigrissement, fatigue. Complications aiguës (hypoglycémie, acidocétose) et chroniques (neuropathie, rétinopathie, néphropathie, pied diabétique). L'éducation et les soins des pieds sont essentiels.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VIII — La drépanocytose",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Une maladie génétique de l'hémoglobine</h3>
+        <p>La <strong>drépanocytose</strong> est une maladie génétique héréditaire de l'hémoglobine. Les globules rouges prennent une forme de faucille (drépanocytes), ce qui les rend fragiles et les empêche de circuler correctement dans les petits vaisseaux. La maladie est transmise par les deux parents (transmission autosomique récessive).</p>
+
+        <h4>Les signes cliniques</h4>
+        <ul>
+          <li><strong>Crises vaso-occlusives</strong> : douleurs intenses (os, articulations, abdomen), souvent déclenchées par le froid, la déshydratation, l'effort, l'infection.</li>
+          <li><strong>Anémie chronique</strong> : pâleur, fatigue, essoufflement.</li>
+          <li><strong>Infections fréquentes</strong> (surtout à pneumocoque), car la rate est fragilisée.</li>
+          <li><strong>Ictère</strong> (jaunisse), lié à la destruction des globules rouges.</li>
+          <li><strong>Retard de croissance</strong> chez l'enfant.</li>
+          <li><strong>Complications</strong> : syndrome thoracique aigu, AVC, priapisme, ulcères de jambe.</li>
+        </ul>
+
+        <h4>Les examens</h4>
+        <ul>
+          <li><strong>Test de dépistage néonatal</strong> (électrophorèse de l'hémoglobine).</li>
+          <li><strong>Numération formule sanguine</strong> (anémie).</li>
+          <li><strong>Électrophorèse de l'hémoglobine</strong> (confirme le diagnostic).</li>
+        </ul>
+
+        <h4>La prise en charge</h4>
+        <ul>
+          <li><strong>Hydratation abondante</strong> (éviter les crises).</li>
+          <li><strong>Antalgiques</strong> puissants en cas de crise (sur prescription).</li>
+          <li><strong>Éviter le froid</strong>, les efforts intenses, les infections.</li>
+          <li><strong>Vaccination</strong> renforcée (pneumocoque, Haemophilus, hépatite B, grippe).</li>
+          <li><strong>Acide folique</strong> (stimule la production de globules rouges).</li>
+          <li><strong>Transfusions</strong> dans les formes graves.</li>
+          <li><strong>Hydroxyurée</strong> (réduit les crises, sur prescription spécialisée).</li>
+        </ul>
+
+        <h4>Rôle de l'infirmier</h4>
+        <ul>
+          <li>Reconnaître les signes de crise.</li>
+          <li>Éduquer le patient et sa famille sur l'hydratation, la vaccination, l'évitement du froid.</li>
+          <li>Accompagner lors des hospitalisations.</li>
+          <li>Orienter vers les centres spécialisés.</li>
+          <li>Lutter contre la stigmatisation.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Maladie génétique de l'hémoglobine. Crises douloureuses, anémie chronique, infections. Hydratation, vaccination, éviter le froid. L'infirmier reconnaît les crises, éduque et accompagne.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VIII — L'asthme",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Une maladie inflammatoire des bronches</h3>
+        <p>L'<strong>asthme</strong> est une maladie inflammatoire chronique des bronches. Elle se caractérise par une obstruction variable et réversible des voies aériennes, qui provoque des crises de dyspnée sifflante.</p>
+
+        <h4>Les facteurs déclenchants</h4>
+        <ul>
+          <li><strong>Allergènes</strong> : poussière, acariens, poils d'animaux, pollens, moisissures.</li>
+          <li><strong>Infections respiratoires</strong> (rhume, grippe).</li>
+          <li><strong>Effort physique</strong> (asthme d'effort).</li>
+          <li><strong>Fumée de tabac</strong>, pollution, fumée de bois.</li>
+          <li><strong>Froid</strong>, changement de temps.</li>
+          <li><strong>Stress</strong>, émotions fortes.</li>
+          <li><strong>Certains médicaments</strong> (aspirine, AINS).</li>
+        </ul>
+
+        <h4>Signes cliniques</h4>
+        <ul>
+          <li><strong>Dyspnée sifflante</strong> (respiration difficile avec sifflements).</li>
+          <li><strong>Toux</strong> sèche, surtout la nuit et au réveil.</li>
+          <li><strong>Oppression thoracique</strong>.</li>
+          <li><strong>Difficulté à expirer</strong>.</li>
+          <li>Anxiété, sueurs.</li>
+        </ul>
+
+        <h4>Crise d'asthme grave</h4>
+        <p>Signes de gravité :</p>
+        <ul>
+          <li>Impossibilité de parler ou de finir une phrase.</li>
+          <li>Cyanose.</li>
+          <li>Tirage intense, balancement thoraco-abdominal.</li>
+          <li>Bradycardie, troubles de conscience.</li>
+          <li>Silence auscultatoire (absence de sifflements, signe de gravité extrême).</li>
+        </ul>
+        <p><strong>Urgence absolue</strong> : alerter, transférer immédiatement.</p>
+
+        <h4>Prise en charge</h4>
+        <ul>
+          <li><strong>Bronchodilatateurs</strong> (salbutamol) en spray ou en nébulisation, à action rapide.</li>
+          <li><strong>Corticoïdes inhalés</strong> en traitement de fond (sur prescription).</li>
+          <li>Éviter les allergènes.</li>
+          <li>Éducation à la gestion des crises.</li>
+        </ul>
+
+        <h4>Rôle de l'infirmier</h4>
+        <ul>
+          <li>Position demi-assise en cas de crise.</li>
+          <li>Administrer les bronchodilatateurs selon prescription.</li>
+          <li>Éduquer sur la reconnaissance des signes de gravité.</li>
+          <li>Aider le patient à identifier ses déclencheurs.</li>
+          <li>Encourager l'observance du traitement de fond.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Négliger une crise d'asthme « qui passe » est une erreur. Certaines crises s'aggravent rapidement et peuvent être mortelles. Une crise qui ne cède pas au bronchodilatateur, ou qui s'accompagne d'une impossibilité de parler, est une urgence absolue.</p>
+      </div>
+    `
+  },
+  {
+    title: "Synthèse — Reconnaître, soigner, éduquer, référer",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Synthèse générale</div>
+        <h3>Les quatre compétences de l'infirmier en pathologie</h3>
+        <ol>
+          <li><strong>Reconnaître</strong> : identifier les signes cliniques des maladies courantes.</li>
+          <li><strong>Soigner</strong> : appliquer les gestes de soins infirmiers (SRO, prise de constantes, préparation des médicaments).</li>
+          <li><strong>Éduquer</strong> : sensibiliser le patient et sa famille à la prévention, à l'observance, à l'hygiène.</li>
+          <li><strong>Référer</strong> : orienter au bon moment vers le médecin ou un niveau de soins approprié.</li>
+        </ol>
+
+        <h3>Tableau récapitulatif</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Maladie</th>
+              <th>Signes clés</th>
+              <th>Réflexe infirmier</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Paludisme</td><td>Fièvre, frissons, céphalées</td><td>TDR, CTA, MILDA</td></tr>
+            <tr><td>Paludisme grave</td><td>Convulsions, coma, anémie sévère</td><td>Référer en urgence, artésunate</td></tr>
+            <tr><td>Tuberculose</td><td>Toux > 2 semaines, sueurs nocturnes, amaigrissement</td><td>Dépistage, TDO, observance</td></tr>
+            <tr><td>VIH</td><td>Phase asymptomatique puis infections opportunistes</td><td>Dépistage, ARV, accompagnement</td></tr>
+            <tr><td>Diarrhée</td><td>Selles liquides, déshydratation</td><td>SRO, surveiller, éduquer hygiène</td></tr>
+            <tr><td>Pneumonie</td><td>Fièvre, toux, tirage</td><td>Référer, surveiller</td></tr>
+            <tr><td>HTA</td><td>Souvent silencieuse, céphalées</td><td>Mesurer TA, éduquer</td></tr>
+            <tr><td>Diabète</td><td>Soif, polyurie, amaigrissement</td><td>Éduquer, soins des pieds</td></tr>
+            <tr><td>Drépanocytose</td><td>Crises douloureuses, anémie</td><td>Hydratation, vaccination, antalgiques</td></tr>
+            <tr><td>Asthme</td><td>Dyspnée sifflante, toux nocturne</td><td>Position, bronchodilatateur, référer si grave</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bloc cas">
+        <div class="bloc-label">Étude de cas (cas pédagogique)</div>
+        <p>« Un infirmier A2 dans un centre de santé de Kinshasa reçoit une mère et son enfant de 3 ans. L'enfant a de la fièvre, des vomissements et des selles liquides. L'infirmier réalise une anamnèse, prend les constantes, constate des signes de déshydratation modérée. Il administre du SRO, réfère l'enfant au médecin et explique à la mère les règles d'hygiène pour éviter la récidive. »</p>
+        <p><strong>Analyse :</strong> la démarche est exemplaire. L'infirmier a réalisé une anamnèse, identifié un syndrome diarrhéique avec déshydratation modérée, administré le traitement de première ligne (SRO), référé au médecin pour confirmation et prescription, et éduqué la famille sur la prévention. C'est exactement l'enchaînement attendu : reconnaître, soigner, éduquer, référer.</p>
+      </div>
+
+      <div class="bloc sources">
+        <div class="bloc-label">Sources du cours</div>
+        <ul>
+          <li>Sciences-Africa, <em>Pathologie Médicale</em>, 4<sup>e</sup> Année des Humanités, Curriculum Officiel APC – MINEPST RDC.</li>
+          <li>Parent F., <em>Référentiel de compétences infirmières en RDC</em>, ULB/PROMES (2006).</li>
+          <li>PNLP RDC — Descriptif des unités d'enseignement de la lutte antipaludique dans les ITM.</li>
+          <li>OMS, PNMLS, PNLS — documents de politique sanitaire en RDC.</li>
+          <li>Manuels Scolaires RDC, <em>Fiches pédagogiques — Cours de Pathologie Générale</em>, Édition 2025.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Évaluation finale — Pathologie Médicale",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Consigne</div>
+        <p>Répondez aux questions ci-dessous en sélectionnant la bonne réponse parmi les quatre propositions. Le QCM couvre l'ensemble du cours. Cliquez ensuite sur « Valider mes réponses » pour obtenir votre score.</p>
+      </div>
+
+      <div class="quiz-container">
+        <div id="quizQuestions"></div>
+        <button id="submitQuiz" class="quiz-btn-submit">
+          Valider mes réponses
+        </button>
+        <div id="quizResult" class="quiz-result"></div>
+      </div>
+    `
+  }
+];
+const questions = [
+  {
+    text: "La pathologie médicale étudie :",
+    options: [
+      "Les maladies, leurs causes et leurs mécanismes",
+      "L'anatomie normale du corps",
+      "La technique chirurgicale",
+      "La pharmacie hospitalière"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'étiologie est l'étude :",
+    options: [
+      "Des causes d'une maladie",
+      "Des symptômes",
+      "Des traitements",
+      "Des diagnostics"
+    ],
+    correct: 0
+  },
+  {
+    text: "La pathogénie est l'étude :",
+    options: [
+      "Des causes d'une maladie",
+      "Du mécanisme de développement de la maladie",
+      "Des médicaments",
+      "De l'anatomie"
+    ],
+    correct: 1
+  },
+  {
+    text: "Un symptôme est une manifestation :",
+    options: [
+      "Subjective ressentie par le patient",
+      "Objective observée par le soignant",
+      "Mesurée au laboratoire",
+      "Uniquement visible sur une radiographie"
+    ],
+    correct: 0
+  },
+  {
+    text: "Un signe clinique est une manifestation :",
+    options: [
+      "Subjective ressentie par le patient",
+      "Objective observée par le soignant",
+      "Uniquement biologique",
+      "Uniquement imagée"
+    ],
+    correct: 1
+  },
+  {
+    text: "La démarche diagnostique infirmière commence par :",
+    options: [
+      "L'anamnèse (interrogatoire)",
+      "L'examen radiologique",
+      "La prescription",
+      "La chirurgie"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le paludisme est transmis par :",
+    options: [
+      "L'anophèle femelle",
+      "La mouche tsé-tsé",
+      "Les tiques",
+      "L'eau stagnante seule"
+    ],
+    correct: 0
+  },
+  {
+    text: "Parmi les groupes suivants, lequel est le plus vulnérable au paludisme ?",
+    options: [
+      "Les enfants de moins de 5 ans et les femmes enceintes",
+      "Les adolescents",
+      "Les adultes sportifs",
+      "Les personnes âgées uniquement"
+    ],
+    correct: 0
+  },
+  {
+    text: "Un signe de gravité du paludisme chez l'enfant est :",
+    options: [
+      "Les convulsions",
+      "Un simple rhume",
+      "Une toux sèche",
+      "Une éruption cutanée légère"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le traitement de première ligne du paludisme simple en RDC est :",
+    options: [
+      "Les Combinaisons Thérapeutiques à base d'Artémisinine (CTA)",
+      "La chloroquine",
+      "L'amoxicilline",
+      "La rifampicine"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le traitement du paludisme grave repose sur :",
+    options: [
+      "L'artésunate injectable ou la quinine",
+      "Les CTA uniquement",
+      "Le paracétamol",
+      "Les antibiotiques"
+    ],
+    correct: 0
+  },
+  {
+    text: "La mesure de prévention la plus efficace contre le paludisme est :",
+    options: [
+      "La moustiquaire imprégnée d'insecticide (MILDA)",
+      "Le lavage des mains",
+      "La vaccination BCG",
+      "Les antibiotiques en prévention"
+    ],
+    correct: 0
+  },
+  {
+    text: "La tuberculose se transmet par :",
+    options: [
+      "Voie aérienne (gouttelettes de salive)",
+      "Voie sexuelle",
+      "L'eau de boisson",
+      "Les aliments souillés"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le signe cardinal de la tuberculose pulmonaire est :",
+    options: [
+      "Une toux persistante depuis plus de 2 semaines",
+      "Une diarrhée aiguë",
+      "Une éruption cutanée",
+      "Une paralysie des jambes"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'observance du traitement antituberculeux est cruciale parce qu'elle :",
+    options: [
+      "Évite l'apparition de résistances",
+      "Réduit le coût du traitement",
+      "Permet de réduire la dose",
+      "Évite les vomissements"
+    ],
+    correct: 0
+  },
+  {
+    text: "La transmission du VIH se fait par :",
+    options: [
+      "Voie sexuelle, sanguine et mère-enfant",
+      "Voie aérienne",
+      "L'eau de boisson",
+      "Les poignées de main"
+    ],
+    correct: 0
+  },
+  {
+    text: "La première cause de mortalité chez les personnes vivant avec le VIH est :",
+    options: [
+      "La tuberculose",
+      "Le paludisme",
+      "La grippe",
+      "La rougeole"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le SRO signifie :",
+    options: [
+      "Solution de Réhydratation Orale",
+      "Solution de Réanimation Ostéopathique",
+      "Sérum Ringer Oral",
+      "Solution de Réhydratation Osmotique"
+    ],
+    correct: 0
+  },
+  {
+    text: "Parmi les signes suivants, lequel est un signe de déshydratation chez l'enfant ?",
+    options: [
+      "Les yeux enfoncés",
+      "La peau chaude et humide",
+      "L'appétit augmenté",
+      "L'envie fréquente d'uriner"
+    ],
+    correct: 0
+  },
+  {
+    text: "Face à un enfant qui présente un tirage intercostal, l'infirmier doit :",
+    options: [
+      "Référer immédiatement au centre de santé",
+      "Attendre 48 heures",
+      "Donner uniquement du paracétamol",
+      "Envoyer l'enfant à l'école"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'hypertension artérielle se définit par une pression artérielle supérieure ou égale à :",
+    options: [
+      "140/90 mmHg à plusieurs reprises",
+      "100/60 mmHg",
+      "120/80 mmHg une seule fois",
+      "160/100 mmHg au repos uniquement"
+    ],
+    correct: 0
+  },
+  {
+    text: "Parmi les facteurs de risque de l'HTA, on peut citer :",
+    options: [
+      "Alimentation riche en sel, obésité, sédentarité",
+      "Alimentation riche en fibres",
+      "Activité physique intense",
+      "Consommation de fruits et légumes"
+    ],
+    correct: 0
+  },
+  {
+    text: "Parmi les complications du diabète, on peut citer :",
+    options: [
+      "Le pied diabétique, la rétinopathie, la néphropathie",
+      "L'asthme",
+      "La drépanocytose",
+      "La tuberculose"
+    ],
+    correct: 0
+  },
+  {
+    text: "La drépanocytose est une maladie :",
+    options: [
+      "Génétique de l'hémoglobine",
+      "Infectieuse",
+      "Carencielle",
+      "Auto-immune"
+    ],
+    correct: 0
+  },
+  {
+    text: "Parmi les mesures suivantes, laquelle prévient les crises de drépanocytose ?",
+    options: [
+      "L'hydratation abondante",
+      "L'exposition prolongée au froid",
+      "L'arrêt de toute vaccination",
+      "L'effort physique intense"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'asthme est une maladie :",
+    options: [
+      "Inflammatoire chronique des bronches",
+      "Infectieuse aiguë",
+      "Cardiaque",
+      "Rénale"
+    ],
+    correct: 0
+  },
+  {
+    text: "Un signe de gravité d'une crise d'asthme est :",
+    options: [
+      "L'impossibilité de parler ou de finir une phrase",
+      "Une toux légère",
+      "Un simple écoulement nasal",
+      "Une fatigue passagère"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'infirmier A2 doit référer un patient en cas de :",
+    options: [
+      "Signe de gravité (convulsions, détresse respiratoire, coma)",
+      "Simple rhume sans fièvre",
+      "Fatigue légère",
+      "Toux sèche isolée"
+    ],
+    correct: 0
+  },
+  {
+    text: "Parmi les quatre compétences attendues de l'infirmier en pathologie médicale, laquelle est correcte ?",
+    options: [
+      "Reconnaître, soigner, éduquer, référer",
+      "Diagnostiquer, opérer, prescrire, hospitaliser",
+      "Vendre, acheter, stocker, compter",
+      "Ignorer, reporter, oublier, déléguer"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'objectif principal de la pathologie médicale en 4<sup>e</sup> Humanité ITM est de rendre l'élève capable de :",
+    options: [
+      "Reconnaître les maladies et participer à leur prise en charge infirmière",
+      "Remplacer le médecin dans toutes les situations",
+      "Vendre des médicaments",
+      "Fabriquer des médicaments"
+    ],
+    correct: 0
+  }
+];
+
+try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+        questions.forEach(function (q) {
+            if (!q.text) q.text = q.question || q.q || q.enonce || q.titre || "";
+            if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+            if (typeof q.correct === "undefined") {
+                if (typeof q.answer !== "undefined") q.correct = q.answer;
+                else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+            }
+        });
+    }
+} catch (e) {}
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+const pageTitle = document.getElementById('pageTitle');
+pageTitle.textContent = "ECOLIA · " + COURSE_TITLE;
+document.title = "ECOLIA — " + COURSE_TITLE;
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim() || slides.length === 0) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp("(" + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ")", 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderEmptyState() {
+    contentDiv.innerHTML = '<div class="empty-state"><div class="icon">·</div><span class="tag">Bientôt disponible</span><h2>' + COURSE_TITLE + '</h2><p>Ce cours est en préparation. Le contenu sera ajouté prochainement.</p></div>';
+    slideCounterSpan.textContent = '0/0';
+    progressFill.style.width = '0%';
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    counterSpan.textContent = '—';
+}
+
+function renderQuiz() {
+    const qc = document.getElementById('quizQuestions');
+    if (!qc) return;
+    if (typeof questions === 'undefined' || questions.length === 0) {
+        qc.innerHTML = '<p style="color:#666;font-style:italic;">Quiz bientot disponible.</p>';
+        return;
+    }
+    let html = '';
+    questions.forEach((q, i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o, k) => {
+            html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>';
+        });
+        html += '</div>';
+    });
+    qc.innerHTML = html;
+    const submitBtn = document.getElementById('submitQuiz');
+    if (submitBtn) {
+        submitBtn.onclick = () => {
+            let score = 0;
+            questions.forEach((q, i) => {
+                const s = document.querySelector('input[name="q' + i + '"]:checked');
+                if (s && parseInt(s.value) === q.correct) score++;
+            });
+            const pct = Math.round(score/questions.length*100);
+            document.getElementById('quizResult').innerHTML =
+                '<div style="background:var(--bg2);padding:16px;border-radius:10px;margin-top:14px;">' +
+                '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong></div>';
+        };
+    }
+}
+
+function renderSlide(index, keepHighlight) {
+    if (keepHighlight === undefined) keepHighlight = true;
+    if (slides.length === 0) { renderEmptyState(); return; }
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    if (index === slides.length - 1) renderQuiz();
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    if (slides.length === 0) return;
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (slides.length && currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (slides.length && currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+<!-- ECOLIA_IMAGE_LOADER_START -->
+<script>
+(function () {
+  var SITE = "https://ecolia-course.github.io/";
+  var NATIVE = false;
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function abs(u) { return /^(https?:|data:|blob:)/i.test(u) ? u : (NATIVE ? SITE + u.replace(/^(\.\/|\/)+/, "") : u); }
+  function ext(u) { var m = String(u).split("?")[0].match(/\.(jpe?g|png|gif|webp|svg)$/i); return m ? m[1].toLowerCase() : "jpg"; }
+  function hide(img) { img.onerror = null; img.style.display = "none"; }
+  var table = null, queue = [], queued = {}, running = false;
+  function enqueue(full, fn) {
+    if (queued[fn]) return;
+    queued[fn] = 1; queue.push([full, fn]);
+    if (!running) { running = true; setTimeout(next, 2500); }
+  }
+  function next() {
+    if (!queue.length) { running = false; return; }
+    if (!navigator.onLine) { running = false; return; }
+    var q = queue.shift(), t0 = Date.now();
+    try { CoursInterface.download(q[0], q[1]); } catch (e) { return setTimeout(next, 500); }
+    (function wait() {
+      var ok = false;
+      try { ok = !!CoursInterface.exists(q[1]); } catch (e) {}
+      if (ok) setTimeout(next, 1500);
+      else if (Date.now() - t0 > 40000) next();
+      else setTimeout(wait, 700);
+    })();
+  }
+  function exists(fn) { try { return !!CoursInterface.exists(fn); } catch (e) { return false; } }
+  function show(img) {
+    if (!table || img.getAttribute("data-ecolia-done")) return;
+    var id = img.getAttribute("data-image-id");
+    var url = table[id];
+    if (typeof url !== "string" || !url.length) { console.warn("ECOLIA : image absente du JSON :", id); return; }
+    img.setAttribute("data-ecolia-done", "1");
+    if (!NATIVE) { img.onerror = function () { hide(img); }; img.setAttribute("src", url); return; }
+    var full = abs(url), fn = "img_" + id + "." + ext(url);
+    if (exists(fn)) {
+      img.onerror = function () {
+        try { CoursInterface["delete"](fn); } catch (e) {}
+        queued[fn] = 0;
+        img.onerror = function () { hide(img); };
+        img.setAttribute("src", full);
+      };
+      img.setAttribute("src", "https://app.local/cours/" + fn);
+    } else {
+      img.onerror = function () { hide(img); };
+      img.setAttribute("src", full);
+      enqueue(full, fn);
+    }
+  }
+  function scan(root) {
+    if (!root || !root.querySelectorAll) return;
+    if (root.matches && root.matches("img[data-image-id]")) show(root);
+    root.querySelectorAll("img[data-image-id]").forEach(show);
+  }
+  function prefetchAll() {
+    var ids = {};
+    try { JSON.stringify(slides).replace(/data-image-id=\\?"([^"\\]+)/g, function (m, id) { ids[id] = 1; }); } catch (e) {}
+    Object.keys(ids).forEach(function (id) {
+      var url = table[id];
+      if (typeof url !== "string" || !url.length) return;
+      var fn = "img_" + id + "." + ext(url);
+      if (!exists(fn)) enqueue(abs(url), fn);
+    });
+  }
+  function start(tbl) {
+    table = tbl;
+    scan(document.body);
+    new MutationObserver(function (muts) {
+      muts.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.nodeType === 1) scan(n); }); });
+    }).observe(document.body, { childList: true, subtree: true });
+    if (NATIVE) prefetchAll();
+  }
+  var JSON_URL = NATIVE ? SITE + "images_ecolia.json" : "images_ecolia.json";
+  var KEY = "ecolia_images_json";
+  fetch(JSON_URL, NATIVE ? { cache: "no-cache" } : undefined)
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (table) { if (NATIVE) lsSet(KEY, JSON.stringify(table)); start(table); })
+    .catch(function (e) {
+      var saved = null;
+      if (NATIVE) { try { saved = JSON.parse(lsGet(KEY) || "null"); } catch (x) {} }
+      if (saved) start(saved);
+      else console.warn("ECOLIA : JSON des images indisponible.", e);
+    });
+})();
+</script>
+<!-- ECOLIA_IMAGE_LOADER_END -->
+
+
+
+<!-- ECOLIA_AUDIO_PLAYER_START -->
+<style>
+  #ecolia-audio-btn, #ecolia-dl-btn {
+    width: 30px; height: 30px; min-width: 30px; padding: 0; margin: 0 4px 0 0;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    cursor: pointer; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent; outline: none;
+  }
+  #ecolia-audio-btn { border: none; background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-dl-btn { border: 1.5px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb); }
+  #ecolia-dl-btn.ecolia-full { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-btn.ecolia-fixed { position: fixed; top: 8px; left: 8px; z-index: 2147483000; }
+  #ecolia-audio-btn:active, #ecolia-dl-btn:active { transform: scale(.92); }
+  #ecolia-audio-btn svg, #ecolia-dl-btn svg { width: 15px; height: 15px; fill: currentColor; pointer-events: none; }
+  #ecolia-audio-btn.ecolia-off, #ecolia-dl-btn.ecolia-off { display: none; }
+  #ecolia-audio-banner {
+    display: none; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0;
+    padding: 8px 14px; font-size: .82rem; line-height: 1.35;
+    background: var(--soft, #eef3fb); color: var(--p1, #123); border-bottom: 1px solid var(--bd, #c9d6ea);
+  }
+  #ecolia-audio-banner.on { display: flex; }
+  #ecolia-audio-banner .eab-txt { flex: 1 1 180px; }
+  #ecolia-audio-banner .eab-act { display: flex; gap: 6px; flex-wrap: wrap; }
+  #ecolia-audio-banner button {
+    border: 1px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb);
+    border-radius: 16px; padding: 5px 12px; font-size: .8rem; cursor: pointer;
+  }
+  #ecolia-audio-banner button.pri { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-banner .eab-bar { display: none; flex-basis: 100%; height: 4px; border-radius: 2px; overflow: hidden; background: var(--bd, #c9d6ea); }
+  #ecolia-audio-banner .eab-bar i { display: block; height: 100%; width: 0; background: var(--p2, #2563eb); transition: width .2s; }
+</style>
+<script>
+(function () {
+  var CFG = {"code":"PathologieMedicale4","base":"https://ecolia-course.github.io/ecolia-media/audio_files/","available":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21],"count":21,"sizeMo":24,"sizes":{"1":1244544,"2":1221504,"3":1117440,"4":1526016,"5":1048896,"6":985152,"7":1294464,"8":1038528,"9":1059456,"10":1474752,"11":1182528,"12":1375296,"13":1068288,"14":1107456,"15":1104768,"16":981120,"17":1054464,"18":1142016,"19":1093248,"20":1364352,"21":157632},"fallback":{"1":[["fr","Sommaire, Pathologie Médicale. Bienvenue. La pathologie médicale: reconnaître, comprendre, agir. La pathologie médicale est l'étude des maladies, de leurs causes, de leurs mécanismes et de leurs manifestations cliniques. Pour l'infirmier A2, elle est indispensable: elle permet de reconnaître les maladies courantes, de comprendre ce qui se passe dans le corps du patient, d'appliquer les soins de base, d'éduquer le patient et sa famille, et de référer à temps en cas de signe de gravité. Ce cours s'adresse aux élèves de 4e Humanité de la section ITM (Institut Technique Médical), filière Soins Infirmiers. Il se concentre sur les maladies prioritaires en R D C: paludisme, tuberculose, VIH ou sida, maladies diarrhéiques, infections respiratoires, hypertension, diabète, drépanocytose, asthme. Important: ce cours est une initiation. La prescription et les actes médicaux relèvent du médecin. L'infirmier reconnaît, applique les soins infirmiers, éduque, surveille et réfère. Il ne pose pas de diagnostic médical définitif et ne prescrit pas. Objectifs d'apprentissage. À la fin de ce cours, l'élève doit être capable de: Utiliser le vocabulaire médical et la démarche diagnostique infirmière. Réaliser une anamnèse et un examen clinique simple. Identifier les signes cliniques des maladies infectieuses prioritaires (paludisme, tuberculose, VIH, diarrhées, infections respiratoires). Identifier les signes cliniques des maladies chroniques courantes (HTA, diabète, drépanocytose, asthme). Comprendre les mécanismes physiopathologiques essentiels. Appliquer les mesures de prévention et d'éducation du patient. Référer le patient en cas de signe de gravité. Grands chapitres du cours. Chapitre I, Les bases de la pathologie médicale. Chapitre II, Le paludisme. Chapitre III, La tuberculose. Chapitre IV, Le VIH ou sida et les infections opportunistes. Chapitre V, Les maladies diarrhéiques et la déshydratation. Chapitre VI, Les infections respiratoires aiguës. Chapitre VII, L'hypertension artérielle et le diabète. Chapitre VIII, La drépanocytose et l'asthme."]],"2":[["fr","Chapitre I, Pourquoi la pathologie médicale? Situation-problème. Une mère amène son enfant de 3 ans au centre de santé. L'enfant a de la fièvre depuis deux jours, des vomissements et des selles liquides. L'infirmier observe: l'enfant est somnolent, ses yeux sont enfoncés, sa bouche est sèche. Un autre enfant arrive, avec une fièvre et des convulsions. Un troisième patient, un homme de 50 ans, se plaint de toux persistante et de sueurs nocturnes depuis un mois. Comment l'infirmier peut-il reconnaître la gravité de chaque cas et agir en conséquence? Fondements théoriques. Les maladies prioritaires en R D C. En R D C, certaines maladies pèsent particulièrement sur la santé publique: Le paludisme: première cause de morbidité et de mortalité, surtout chez les enfants de moins de 5 ans et les femmes enceintes. La tuberculose: maladie infectieuse contagieuse, dont la R D C fait partie des pays à forte charge. Le VIH ou sida: pandémie qui touche des millions de personnes. Les maladies diarrhéiques: cause majeure de mortalité infantile via la déshydratation. Les infections respiratoires aiguës: pneumonies, en particulier chez le jeune enfant. Les maladies chroniques émergentes: hypertension, diabète, asthme, drépanocytose. Les compétences de l'infirmier A2. Le référentiel de compétences infirmières de la R D C définit quatre grandes familles de compétences attendues: Communiquer de manière professionnelle. Analyser une situation clinique (anamnèse, observation, constantes). Réaliser des prestations de soins (gestes, éducation, prévention). Manager les ressources à sa disposition (matériel, temps, équipe). La pathologie médicale est le socle de la deuxième compétence: pour analyser, il faut connaître les maladies. À retenir. La pathologie médicale permet de reconnaître les maladies, de comprendre leurs mécanismes et d'agir. En R D C, le paludisme, la tuberculose, le VIH, les diarrhées, les infections respiratoires et les maladies chroniques sont prioritaires. L'infirmier A2 est un acteur clé de la première ligne."]],"3":[["fr","Chapitre I, Définitions et vocabulaire médical. Fondements théoriques. Les mots-clés de la pathologie. Santé. État de complet bien-être physique, mental et social, et non simplement absence de maladie (définition de l'OMS). Maladie. Altération de l'état de santé, caractérisée par un ensemble de signes et de symptômes, et liée à une cause (étiologie) et à un mécanisme (pathogénie). Étiologie. Étude des causes d'une maladie. Exemples: l'étiologie du paludisme est un parasite (Plasmodium), l'étiologie de la tuberculose est une bactérie (Mycobacterium tuberculosis). Pathogénie. Étude du mécanisme par lequel une cause produit une maladie. Exemple: le Plasmodium détruit les globules rouges, provoquant anémie et fièvre. Symptôme. Manifestation subjective ressentie par le patient: douleur, fatigue, nausée, vertige. Le symptôme n'est pas observable par le soignant, il est rapporté. Signe clinique. Manifestation objective observée par le soignant: fièvre mesurée, rash cutané, pâleur, œdème. Le signe est visible, palpable ou mesurable. Syndrome. Ensemble de signes et de symptômes qui apparaissent ensemble et caractérisent une maladie. Exemples: syndrome grippal, syndrome diarrhéique, syndrome anémique. Diagnostic. Identification de la maladie à partir de l'ensemble des données cliniques, biologiques et d'imagerie. En pratique infirmière, on parle de diagnostic infirmier: identification des problèmes de santé que l'infirmier peut prendre en charge. Pronostic. Prévision de l'évolution de la maladie (favorable, réservé, sombre). Erreur fréquente. Confondre symptôme (subjectif, ressenti par le patient) et signe clinique (objectif, observé par le soignant) est une erreur fréquente. La douleur est un symptôme; la fièvre mesurée est un signe. Le diagnostic infirmier s'appuie sur les deux."]],"4":[["fr","Chapitre I, La démarche diagnostique infirmière. Fondements théoriques. Quatre étapes pour comprendre une situation clinique. Face à un patient, l'infirmier suit une démarche structurée, en quatre temps. 1. L'anamnèse. C'est l'interrogatoire structuré du patient ou de son entourage. Il recueille: L'identité: nom, âge, sexe, profession, provenance. Le motif de consultation: que ressent le patient? L'histoire de la maladie: date de début, évolution, facteurs déclenchants. Les antécédents: maladies passées, hospitalisations, chirurgies. Les traitements en cours (y compris les plantes). Le mode de vie: alimentation, tabac, alcool, habitat, hygiène. Les antécédents familiaux: HTA, diabète, drépanocytose, tuberculose. 2. L'examen clinique. Il repose sur les quatre gestes classiques: Inspection: observer (couleur de la peau, état de conscience, position). Palpation: toucher (abdomen, ganglions, pouls). Percussion: tapoter (sonorité du thorax, de l'abdomen). Auscultation: écouter (cœur, poumons, intestins). On y ajoute la prise des constantes vitales: température, pouls, tension artérielle, fréquence respiratoire, saturation en oxygène (si disponible), glycémie (si indiquée). 3. L'analyse des données. L'infirmier regroupe les informations: quels signes vont ensemble? Quel problème prioritaire se dessine? Faut-il alerter immédiatement? 4. Le référencement. Si le problème dépasse ses compétences, l'infirmier réfère au médecin ou vers un niveau de soins approprié, en transmettant une information claire et concise. Application. Cas: une fièvre inexpliquée se déclare dans le quartier de Matongé à Kinshasa. Anamnèse: date de début, symptômes associés (céphalées, courbatures, vomissements), contacts avec d'autres malades, antécédents, prise de médicaments ou de plantes. Examen: prise de température (39 degrés Celsius), pouls (110/min), tension, état de conscience, pâleur. Analyse: tableau évoquant un paludisme. Faut-il un TDR? Faut-il référer? Référencement: orientation vers le laboratoire pour TDR et vers le médecin pour la suite de la prise en charge. À retenir. Quatre étapes: anamnèse, examen clinique, analyse, référencement. L'anamnèse fournit souvent la clé du diagnostic. L'examen clinique et les constantes confirment. L'analyse permet de prioriser. Le référencement assure la sécurité du patient."]],"5":[["fr","Chapitre II, Le paludisme: épidémiologie et cycle. Fondements théoriques. Une endémie meurtrière. Le paludisme est une maladie parasitaire transmise par la piqûre de la femelle du moustique Anopheles. C'est l'une des grandes endémies meurtrières en R D C, avec un impact socio-économique majeur: absentéisme scolaire et professionnel, baisse de la productivité, coûts de santé élevés. La R D C est l'un des pays les plus touchés au monde. Les groupes les plus vulnérables sont: Les enfants de moins de 5 ans. Les femmes enceintes. Les personnes immunodéprimées (VIH, malnutrition). Le cycle du parasite. Le parasite responsable est un protozoaire du genre Plasmodium. Les principales espèces sont P. falciparum (la plus dangereuse, dominante en R D C), P. malariae, P. ovale, P. vivax. Le moustique anophèle femelle pique un humain infecté et ingère des gamétocytes (formes sexuées du parasite). Dans l'estomac du moustique, les gamètes fusionnent et forment des sporozoïtes. Le moustique pique un autre humain et injecte les sporozoïtes. Les sporozoïtes gagnent le foie et s'y multiplient (phase hépatique). Puis ils passent dans le sang et infectent les globules rouges (phase sanguine), qui éclatent: c'est ce qui provoque la fièvre et l'anémie. La physiopathologie simplifiée. La destruction des globules rouges provoque l'anémie. La libération de déchets parasitaires provoque la fièvre et les frissons. Dans les formes graves, les globules rouges infectés obstruent les capillaires du cerveau (paludisme cérébral) ou d'autres organes (reins, poumons). À retenir. Le paludisme est transmis par l'anophèle femelle. Le parasite (Plasmodium) détruit les globules rouges. Les enfants de moins de 5 ans et les femmes enceintes sont les plus vulnérables. Le cycle comporte une phase hépatique et une phase sanguine."]],"6":[["fr","Chapitre II, Le paludisme: signes cliniques et formes graves. Fondements théoriques. Reconnaître le paludisme. Forme simple (non compliquée). Le tableau classique associe: Fièvre élevée, souvent avec des accès cycliques (frissons, donc chaleur, donc sueurs). Céphalées (maux de tête). Courbatures, douleurs musculaires. Asthénie (fatigue intense). Parfois: nausées, vomissements, diarrhée. Chez l'enfant: fièvre, vomissements, irritabilité. Formes graves. Les formes graves mettent la vie en danger. Les signes d'alerte sont: Convulsions (chez l'enfant, signe de paludisme cérébral). Troubles de la conscience: somnolence, coma. Anémie sévère: pâleur intense, essoufflement. Détresse respiratoire: respiration rapide et difficile. Hypoglycémie: sueurs froides, tremblements. Ictère (jaunisse), urines noires (fièvre bilieuse hémoglobinurique). Hémorragies ou insuffisance rénale. Le paludisme de la femme enceinte. Chez la femme enceinte, le paludisme peut provoquer: Anémie maternelle sévère. Avortement spontané, accouchement prématuré. Faible poids de naissance. Paludisme congénital du nouveau-né. Le rôle de l'infirmier. Prendre la température, observer les signes de gravité. Alerter immédiatement le médecin devant toute convulsion, tout trouble de conscience. Préparer le patient pour le test de diagnostic rapide (TDR). Éduquer la famille sur la prévention. Erreur fréquente. Minimiser une fièvre chez un enfant est une erreur grave. Une fièvre avec convulsions, somnolence ou pâleur intense peut être un paludisme grave, potentiellement mortel. Ces signes imposent un référencement immédiat."]],"7":[["fr","Chapitre II, Le paludisme: diagnostic et traitement. Fondements théoriques. Le diagnostic. Le diagnostic du paludisme doit être confirmé biologiquement avant de traiter. Deux examens sont utilisés: Le Test de Diagnostic Rapide (TDR): rapide (15 moins 20 minutes), ne nécessite pas de microscope, adapté aux structures périphériques. La goutte épaisse et le frottis sanguin: examen au microscope, permet d'identifier l'espèce et de quantifier la parasitémie. Chez l'enfant, le TDR est souvent utilisé en première intention. En cas de négativité alors que la suspicion persiste, une goutte épaisse est recommandée. Le traitement selon les directives du PNLP. Le Programme National de Lutte contre le Paludisme (PNLP) publie des directives actualisées. Selon les directives nationales: Paludisme simple. Traitement par Combinaisons Thérapeutiques à base d'Artémisinine (CTA), par exemple artéméther-luméfantrine. Les CTA sont dosées en fonction du poids: Prise matin et soir pendant 3 jours. Prise avec un repas contenant des graisses (améliore l'absorption de la luméfantrine). Respect strict des 3 jours: un traitement incomplet favorise la résistance. Paludisme grave. Traitement par voie injectable: Artésunate injectable (première intention) en IV ou IM, selon le protocole. Quinine en perfusion (alternative). Le patient doit être hospitalisé et surveillé étroitement: conscience, diurèse, glycémie, température. Contre-indications et précautions. Certaines CTA sont contre-indiquées au premier trimestre de la grossesse. La quinine peut provoquer une hypoglycémie (surveiller la glycémie). Vérifier les interactions médicamenteuses. Rôle de l'infirmier. Calculer la dose selon le poids. Vérifier les 5 B (Bon médicament, Bonne dose, Bonne voie, Bon moment, Bon patient). Expliquer le traitement à la famille. Surveiller les effets indésirables et noter l'heure d'administration. Erreur fréquente. Traiter une fièvre à l'aveugle sans confirmation biologique est une erreur grave. Le diagnostic doit être confirmé (TDR ou goutte épaisse). En l'absence de confirmation, on risque de traiter inutilement un paludisme et de laisser évoluer une autre maladie."]],"8":[["fr","Chapitre II, Le paludisme: prévention. Fondements théoriques. Prévenir plutôt que guérir. La prévention du paludisme repose sur plusieurs axes complémentaires. 1. La lutte contre les moustiques. Moustiquaires imprégnées d'insecticide à longue durée d'action (MILDA): dormir sous une MILDA chaque nuit. C'est la mesure la plus efficace. Répulsifs cutanés et sprays dans les maisons. Élimination des eaux stagnantes: les moustiques se reproduisent dans l'eau stagnante (caniveaux, flaques, récipients abandonnés, pneus). Assainissement: évacuer les eaux usées, nettoyer les alentours des habitations. 2. La chimioprophylaxie. Chez la femme enceinte, un traitement préventif intermittent (TPI) est recommandé dans le cadre des consultations prénatales. Il consiste à prendre un antipaludique à intervalles réguliers, sous contrôle médical. 3. Le traitement précoce et efficace. Consulter dès les premiers signes, faire confirmer le diagnostic, respecter le traitement. Un paludisme traité tôt évite les formes graves et réduit la transmission. 4. L'éducation sanitaire. L'infirmier doit sensibiliser les familles et les communautés: Utiliser la MILDA chaque nuit, pour tous les membres de la famille. Consulter rapidement en cas de fièvre. Éliminer les gîtes larvaires autour de la maison. Poursuivre le traitement jusqu'au bout. 5. Le vaccin antipaludique. Un vaccin antipaludique (RTS,S ou A S01) est progressivement introduit dans certains pays, en complément des autres mesures. Son déploiement reste limité et doit s'ajouter à la prévention classique. À retenir. MILDA, lutte contre les eaux stagnantes, TPI chez la femme enceinte, traitement précoce, éducation sanitaire. Ces mesures combinées sont les plus efficaces. Le vaccin est un complément, pas un remplacement."]],"9":[["fr","Chapitre III, La tuberculose: contagion et signes. Fondements théoriques. Une maladie contagieuse. La tuberculose est une maladie infectieuse causée par Mycobacterium tuberculosis, communément appelé bacille de Koch (BK). Elle touche principalement les poumons (tuberculose pulmonaire), mais peut atteindre d'autres organes (ganglions, os, reins, méninges). La transmission. La tuberculose se transmet par voie aérienne: un patient bacillifère tousse, projette des gouttelettes de salive contenant le bacille. Ces gouttelettes sont inhalées par une personne saine, qui peut être contaminée. Attention: Ne pas confondre infection (bacille présent, mais pas de maladie) et maladie tuberculeuse (symptômes présents). La contagion nécessite un contact prolongé et rapproché (famille, promiscuité, lieu fermé). Une tuberculose non pulmonaire (ganglionnaire, osseuse) n'est généralement pas contagieuse. Signes cliniques. Les signes classiques de la tuberculose pulmonaire sont: Toux persistante depuis plus de 2 semaines (parfois avec crachats, parfois avec sang, hémoptysie). Fièvre modérée, souvent vespérale (le soir). Sueurs nocturnes abondantes. Amaigrissement progressif, perte d'appétit. Asthénie (fatigue intense). Parfois: douleur thoracique, essoufflement. Facteurs de risque. Vivre dans un lieu surpeuplé, mal ventilé. Être immunodéprimé (VIH, malnutrition, diabète). Être en contact étroit avec un patient bacillifère. Fumer, consommer de l'alcool. Ne pas être vacciné par le BCG. À retenir. La tuberculose se transmet par voie aérienne. Les signes classiques sont: toux persistante supérieur à 2 semaines, fièvre, sueurs nocturnes, amaigrissement. Le contact prolongé et la promiscuité favorisent la contagion."]],"10":[["fr","Chapitre III, La tuberculose: diagnostic et traitement. Fondements théoriques. Le diagnostic. Le diagnostic de la tuberculose repose sur plusieurs examens: La bacilloscopie: examen microscopique des crachats (recherche du bacille de Koch). Examen simple, disponible en périphérie. Le test moléculaire GeneXpert: détecte l'ADN du bacille, plus sensible et rapide. Permet aussi de détecter la résistance à la rifampicine. La radiographie du thorax: montre les lésions pulmonaires. La culture: plus longue, réservée aux cas complexes. Le traitement. Le traitement de la tuberculose associe plusieurs médicaments antituberculeux, pendant plusieurs mois. Le schéma standard comporte: Phase intensive (2 mois): quatre médicaments, rifampicine (R), isoniazide (H), pyrazinamide (Z), éthambutol (E). Phase de continuation (4 mois): deux médicaments, rifampicine (R), isoniazide (H). Selon les directives nationales, le traitement est gratuit dans les centres de diagnostic et de traitement (CDT). La prise est quotidienne, et l'observance est cruciale. L'observance. L'observance est le respect strict du traitement par le patient. En tuberculose, elle est vitale: Un traitement incomplet ne guérit pas. Il favorise l'apparition de bacilles résistants (tuberculose multirésistante, TB-MR), beaucoup plus difficiles à traiter. Le patient continue à contaminer les autres. Le traitement directement observé (TDO) est une stratégie recommandée: un soignant ou un agent formé vérifie la prise du médicament. Les effets indésirables. Rifampicine: urines orangées (bénin), hépatotoxicité, interactions médicamenteuses (contraceptifs, ARV). Isoniazide: hépatotoxicité, neuropathie (prévenue par la vitamine B6). Pyrazinamide: hépatotoxicité, hyperuricémie. Éthambutol: toxicité oculaire (baisse de la vision), surveillance ophtalmologique. La prévention. Vaccin BCG à la naissance (protection contre les formes graves de l'enfant). Dépistage des contacts: toute personne vivant avec un patient bacillifère doit être dépistée. Aération des locaux. Éducation: le patient doit se couvrir la bouche quand il tousse, ne pas cracher au sol. Erreur fréquente. Interrompre le traitement antituberculeux parce qu'on se sent mieux est une erreur grave. La tuberculose exige 6 mois de traitement. Un arrêt prématuré expose à la rechute et à la résistance."]],"11":[["fr","Chapitre IV, Le VIH ou sida: transmission et phases. Fondements théoriques. Le VIH et le sida. Le VIH (virus de l'immunodéficience humaine) attaque le système immunitaire, en particulier les lymphocytes T C D4. Le sida (syndrome d'immunodéficience acquise) est le stade avancé de l'infection, quand l'immunité est effondrée et que les infections opportunistes se multiplient. La transmission. Le VIH se transmet par trois grandes voies: Voie sexuelle: rapports non protégés (voie dominante). Voie sanguine: transfusion de sang contaminé, échange de seringues, objets tranchants souillés. Voie mère-enfant: grossesse, accouchement, allaitement (sans prévention). Le VIH ne se transmet pas par: poignée de main, câlin, toux, éternuement, piqûre de moustique, piscine, toilettes partagées, vaisselle, nourriture. Les phases de l'infection. Primo-infection: 2 à 4 semaines après la contamination, syndrome pseudo-grippal (fièvre, ganglions, éruption, fatigue). Souvent méconnu. Phase asymptomatique: peut durer des années. Le virus se multiplie mais la personne n'a pas de symptômes. Phase symptomatique: apparition de signes (amaigrissement, fièvre persistante, diarrhée chronique, candidose, zona, tuberculose, etc.). Sida: stade final, quand les infections opportunistes et certains cancers se développent. Les infections opportunistes. Ce sont des infections qui ne se développent que parce que l'immunité est effondrée: Tuberculose (première cause de mortalité chez les personnes vivant avec le VIH). Candidose buccale ou œsophagienne. Pneumocystose. Toxoplasmose cérébrale. Cryptococcose. Certains cancers (sarcome de Kaposi, lymphomes). À retenir. Le VIH se transmet par voie sexuelle, sanguine et mère-enfant. Il ne se transmet pas par contact quotidien. Les phases vont de la primo-infection au sida. Les infections opportunistes signent l'effondrement immunitaire."]],"12":[["fr","Chapitre IV, Le VIH ou sida: prévention et accompagnement. Fondements théoriques. Prévention de la transmission. Préservatifs masculins et féminins: barrière efficace contre le VIH et les autres IST. Dépistage: connaître son statut, c'est pouvoir se soigner et éviter de transmettre. Traitement antirétroviral (ARV): réduire la charge virale jusqu'à la rendre indétectable (notion de « U égale U »: Indétectable égale Intransmissible). PTME (Prévention de la Transmission Mère-Enfant): dépistage prénatal, ARV chez la mère séropositive, protocoles adaptés. Prévention de la transmission sanguine: sécurisation des transfusions, usage de seringues à usage unique, matériel stérile. Prise en charge et accompagnement. Les antirétroviraux (ARV) sont regroupés en plusieurs classes. La trithérapie (association de trois molécules) est le standard. Les objectifs: Réduire la charge virale (idéalement indétectable). Remonter les lymphocytes C D4 (immunité). Prévenir les infections opportunistes. Améliorer la qualité et la durée de vie. Rôle de l'infirmier. Accompagner le patient tout au long du parcours de soins. Éduquer sur l'observance des ARV: une prise irrégulière favorise les résistances. Surveiller les effets indésirables et les infections opportunistes. Soutenir psychologiquement: l'annonce d'un résultat positif est un moment difficile. Lutter contre la stigmatisation et la discrimination. Orienter vers les structures adaptées (centres de traitement ambulatoire, associations de patients). Le soutien psychologique et social. Vivre avec le VIH exige un accompagnement global: information, soutien, confidentialité. Le rôle de l'infirmier est de créer un climat de confiance, sans jugement, pour que le patient puisse s'exprimer et adhérer au traitement. L'observance. Comme pour la tuberculose, l'observance des ARV est cruciale: un traitement irrégulier laisse le virus se multiplier et développer des résistances. L'infirmier doit expliquer, simplifier la prise (horaires, pilulier), soutenir et suivre. À retenir. Préservatif, dépistage, ARV, PTME, sécurisation des transfusions. L'infirmier accompagne, éduque, surveille, soutient et lutte contre la stigmatisation. L'observance des ARV est aussi cruciale que celle des antituberculeux."]],"13":[["fr","Chapitre V, Les maladies diarrhéiques et la déshydratation. Fondements théoriques. Une cause majeure de mortalité infantile. Les maladies diarrhéiques sont une cause majeure de morbidité et de mortalité dans les pays à faibles revenus, en particulier chez les enfants de moins de 5 ans. Elles provoquent une perte d'eau et d'électrolytes qui peut être mortelle en quelques jours si elle n'est pas corrigée. Les causes. Infections: bactéries (E. coli, Shigella, Salmonella, Vibrio cholerae), virus (rotavirus), parasites (Giardia, Entamoeba). Eau contaminée et aliments souillés. Manque d'hygiène (mains sales). Malnutrition (fragilise le tube digestif). Médicaments (antibiotiques, effet secondaire). Signes cliniques. Diarrhée: selles liquides fréquentes. Vomissements (pas toujours). Fièvre, douleurs abdominales. Signes de déshydratation: soif intense, bouche sèche, yeux enfoncés, peau qui garde le pli, diminution des urines, léthargie. Les degrés de déshydratation. Degré. Signes. Conduite à tenir. Déshydratation légère. Soif, bouche légèrement sèche, aucun autre signe. Réhydratation orale à domicile (SRO). Déshydratation modérée. Yeux enfoncés, bouche sèche, pli cutané persistant, soif intense. Réhydratation orale surveillée, sous SRO (Plan B). Déshydratation sévère. Somnolence, léthargie, incapacité à boire, yeux très enfoncés, pli cutané très lent. Réhydratation intraveineuse urgente (Plan C), transfert. À retenir. Les diarrhées sont une cause majeure de mortalité infantile. La déshydratation est la complication principale. Les signes: yeux enfoncés, bouche sèche, pli cutané, léthargie. Plus la déshydratation est sévère, plus la prise en charge est urgente."]],"14":[["fr","Chapitre V, La réhydratation orale (SRO). Fondements théoriques. Un geste qui sauve. La réhydratation orale est le traitement de première ligne de la déshydratation légère à modérée. Elle repose sur les Sels de Réhydratation Orale (SRO), qui contiennent de l'eau, du sel, du sucre et des minéraux dans des proportions équilibrées. Technique de préparation du SRO. Se laver les mains et utiliser un récipient propre. Verser 1 litre d'eau propre (eau potable, bouillie puis refroidie). Verser tout le contenu d'un sachet de SRO dans l'eau. Mélanger soigneusement jusqu'à dissolution complète. Utiliser dans les 24 heures (jeter le reste au-delà). Attention: ne jamais modifier les proportions (ni plus de sucre, ni plus de sel), ne jamais utiliser d'eau non potable, ne jamais conserver le SRO au-delà de 24 heures. Administration. Donner à boire par petites quantités fréquentes (à la cuillère, à la seringue, au verre). Après chaque selle liquide, redonner du SRO. Si l'enfant vomit, attendre 10 minutes puis reprendre plus lentement. Surveiller: signes de déshydratation, urines, poids, conscience. Quand passer à la voie veineuse? Déshydratation sévère. Incapacité à boire (léthargie, coma). Vomissements incoercibles. Échec de la réhydratation orale après 4 à 6 heures. Prévention des récidives. Allaitement maternel exclusif jusqu'à 6 mois. Lavage des mains au savon. Eau potable (bouillie, traitée, ou en bouteille). Hygiène alimentaire (aliments bien cuits, conservés correctement). Vaccination contre le rotavirus (selon disponibilité). Erreur fréquente. Ne pas respecter les proportions du SRO (trop ou pas assez de sucre ou de sel) est une erreur grave: une solution trop sucrée attire l'eau dans l'intestin et aggrave la diarrhée; une solution trop salée provoque une hypernatrémie. Toujours respecter un sachet pour un litre d'eau propre."]],"15":[["fr","Chapitre VI, Les infections respiratoires aiguës. Fondements théoriques. La pneumonie: une urgence fréquente. Les infections respiratoires aiguës (IRA) sont une cause majeure de morbidité et de mortalité, surtout chez l'enfant de moins de 5 ans. La pneumonie est la forme la plus grave. Définition. La pneumonie est une infection des poumons (alvéoles), souvent bactérienne (Streptococcus pneumoniae, Haemophilus influenzae). Elle peut être virale (grippe, VRS) ou fongique. Signes cliniques. Fièvre élevée. Toux productive ou sèche. Difficultés respiratoires: respiration rapide (polypnée), tirage. Douleur thoracique. Asthénie, anorexie. Chez le nourrisson: difficultés à téter, geignement. Signes de gravité. Les signes suivants imposent une référence immédiate: Tirage intercostal (creusement entre les côtes à chaque inspiration). Battement des ailes du nez. Cyanose (coloration bleutée des lèvres). Respiration très rapide ( supérieur ou égal à 50/min chez le nourrisson de 2 à 11 mois). Difficulté à boire ou à téter, vomissements incoercibles. Somnolence, convulsions. Conduite à tenir. Référer immédiatement au centre de santé le plus proche. Ne pas donner d'antibiotique sans prescription médicale. Position demi-assise, oxygène si disponible. Surveiller l'état respiratoire et la conscience. Prévention. Vaccination: pneumocoque, Haemophilus influenzae b, grippe, rougeole, coqueluche. Allaitement maternel (protection immunitaire). Lutte contre la pollution de l'air intérieur (fumée de bois, tabac). Hygiène des mains, aération des locaux. Erreur fréquente. Attendre pour référer un enfant qui présente un tirage intercostal est une erreur grave. La pneumonie sévère peut tuer en 24 à 48 heures. Le tirage, la cyanose, la difficulté à boire sont des urgences absolues."]],"16":[["fr","Chapitre VII, L'hypertension artérielle. Fondements théoriques. Une maladie chronique silencieuse. L'hypertension artérielle (HTA) est une pression artérielle élevée de façon persistante. On parle d'HTA quand la pression artérielle est supérieure ou égale à 140 sur 90 mmHg à plusieurs reprises. C'est une maladie chronique fréquente, souvent silencieuse, qui peut entraîner des complications graves. Facteurs de risque. Alimentation riche en sel. Obésité et surpoids. Sédentarité (manque d'activité physique). Tabac, alcool. Stress chronique. Antécédents familiaux d'HTA. Diabète, maladies rénales. Âge. Signes cliniques. L'HTA est souvent asymptomatique pendant des années. Quand elle se manifeste: Céphalées (souvent occipitales, le matin). Vertiges. Acouphènes (sifflements d'oreille). Palpitations. Essoufflement à l'effort. Parfois: saignements de nez (épistaxis). Complications. AVC (accident vasculaire cérébral). Infarctus du myocarde. Insuffisance cardiaque. Insuffisance rénale. Atteinte des yeux (rétinopathie). Rôle de l'infirmier. Mesurer la tension correctement (patient assis, repos de 5 minutes, brassard adapté). Éduquer: réduire le sel, augmenter l'activité physique, perdre du poids, arrêter le tabac, limiter l'alcool. Accompagner l'observance du traitement. Surveiller l'apparition de complications. À retenir. L'HTA est souvent silencieuse. Facteurs de risque: sel, obésité, sédentarité, tabac, alcool. Complications: AVC, infarctus, insuffisance rénale. L'infirmier mesure, éduque et accompagne."]],"17":[["fr","Chapitre VII, Le diabète. Fondements théoriques. Un trouble du sucre sanguin. Le diabète est une maladie chronique caractérisée par une hyperglycémie (taux de sucre dans le sang trop élevé). Il résulte d'un défaut de sécrétion d'insuline (diabète de type 1) ou d'une résistance à l'insuline (diabète de type 2, le plus fréquent). Signes cliniques. Les signes classiques sont: Soif intense (polydipsie). Urines fréquentes (polyurie), y compris la nuit. Amaigrissement malgré un appétit augmenté. Fatigue. Infections récurrentes (urinaires, cutanées, candidose). Cicatrisation lente. Parfois: vision floue. Complications. Complications aiguës: Hypoglycémie (sueurs, tremblements, confusion, coma), liée au traitement. Acidocétose (diabète de type 1 décompensé). Coma hyperosmolaire (sujet âgé, déshydratation). Complications chroniques: Neuropathie (perte de sensibilité). Rétinopathie (atteinte de la vision). Néphropathie (atteinte rénale). Pied diabétique (plaie qui ne guérit pas, risque d'amputation). Complications cardiovasculaires (infarctus, AVC). Rôle de l'infirmier. Éduquer sur l'alimentation (limiter les sucres simples, préférer les glucides complexes). Encourager l'activité physique régulière. Surveiller la glycémie (si équipement disponible). Soigner les pieds: inspection quotidienne, éviter les blessures, couper les ongles correctement, chaussures adaptées. Accompagner l'observance du traitement. À retenir. Diabète égale hyperglycémie. Signes: soif, polyurie, amaigrissement, fatigue. Complications aiguës (hypoglycémie, acidocétose) et chroniques (neuropathie, rétinopathie, néphropathie, pied diabétique). L'éducation et les soins des pieds sont essentiels."]],"18":[["fr","Chapitre VIII, La drépanocytose. Fondements théoriques. Une maladie génétique de l'hémoglobine. La drépanocytose est une maladie génétique héréditaire de l'hémoglobine. Les globules rouges prennent une forme de faucille (drépanocytes), ce qui les rend fragiles et les empêche de circuler correctement dans les petits vaisseaux. La maladie est transmise par les deux parents (transmission autosomique récessive). Les signes cliniques. Crises vaso-occlusives: douleurs intenses (os, articulations, abdomen), souvent déclenchées par le froid, la déshydratation, l'effort, l'infection. Anémie chronique: pâleur, fatigue, essoufflement. Infections fréquentes (surtout à pneumocoque), car la rate est fragilisée. Ictère (jaunisse), lié à la destruction des globules rouges. Retard de croissance chez l'enfant. Complications: syndrome thoracique aigu, AVC, priapisme, ulcères de jambe. Les examens. Test de dépistage néonatal (électrophorèse de l'hémoglobine). Numération formule sanguine (anémie). Électrophorèse de l'hémoglobine (confirme le diagnostic). La prise en charge. Hydratation abondante (éviter les crises). Antalgiques puissants en cas de crise (sur prescription). Éviter le froid, les efforts intenses, les infections. Vaccination renforcée (pneumocoque, Haemophilus, hépatite B, grippe). Acide folique (stimule la production de globules rouges). Transfusions dans les formes graves. Hydroxyurée (réduit les crises, sur prescription spécialisée). Rôle de l'infirmier. Reconnaître les signes de crise. Éduquer le patient et sa famille sur l'hydratation, la vaccination, l'évitement du froid. Accompagner lors des hospitalisations. Orienter vers les centres spécialisés. Lutter contre la stigmatisation. À retenir. Maladie génétique de l'hémoglobine. Crises douloureuses, anémie chronique, infections. Hydratation, vaccination, éviter le froid. L'infirmier reconnaît les crises, éduque et accompagne."]],"19":[["fr","Chapitre VIII, L'asthme. Fondements théoriques. Une maladie inflammatoire des bronches. L'asthme est une maladie inflammatoire chronique des bronches. Elle se caractérise par une obstruction variable et réversible des voies aériennes, qui provoque des crises de dyspnée sifflante. Les facteurs déclenchants. Allergènes: poussière, acariens, poils d'animaux, pollens, moisissures. Infections respiratoires (rhume, grippe). Effort physique (asthme d'effort). Fumée de tabac, pollution, fumée de bois. Froid, changement de temps. Stress, émotions fortes. Certains médicaments (aspirine, AINS). Signes cliniques. Dyspnée sifflante (respiration difficile avec sifflements). Toux sèche, surtout la nuit et au réveil. Oppression thoracique. Difficulté à expirer. Anxiété, sueurs. Crise d'asthme grave. Signes de gravité: Impossibilité de parler ou de finir une phrase. Cyanose. Tirage intense, balancement thoraco-abdominal. Bradycardie, troubles de conscience. Silence auscultatoire (absence de sifflements, signe de gravité extrême). Urgence absolue: alerter, transférer immédiatement. Prise en charge. Bronchodilatateurs (salbutamol) en spray ou en nébulisation, à action rapide. Corticoïdes inhalés en traitement de fond (sur prescription). Éviter les allergènes. Éducation à la gestion des crises. Rôle de l'infirmier. Position demi-assise en cas de crise. Administrer les bronchodilatateurs selon prescription. Éduquer sur la reconnaissance des signes de gravité. Aider le patient à identifier ses déclencheurs. Encourager l'observance du traitement de fond. Erreur fréquente. Négliger une crise d'asthme « qui passe » est une erreur. Certaines crises s'aggravent rapidement et peuvent être mortelles. Une crise qui ne cède pas au bronchodilatateur, ou qui s'accompagne d'une impossibilité de parler, est une urgence absolue."]],"20":[["fr","Synthèse, Reconnaître, soigner, éduquer, référer. Synthèse générale. Les quatre compétences de l'infirmier en pathologie. Reconnaître: identifier les signes cliniques des maladies courantes. Soigner: appliquer les gestes de soins infirmiers (SRO, prise de constantes, préparation des médicaments). Éduquer: sensibiliser le patient et sa famille à la prévention, à l'observance, à l'hygiène. Référer: orienter au bon moment vers le médecin ou un niveau de soins approprié. Tableau récapitulatif. Maladie. Signes clés. Réflexe infirmier. Paludisme. Fièvre, frissons, céphalées. TDR, CTA, MILDA. Paludisme grave. Convulsions, coma, anémie sévère. Référer en urgence, artésunate. Tuberculose. Toux supérieur à 2 semaines, sueurs nocturnes, amaigrissement. Dépistage, TDO, observance. VIH. Phase asymptomatique puis infections opportunistes. Dépistage, ARV, accompagnement. Diarrhée. Selles liquides, déshydratation. SRO, surveiller, éduquer hygiène. Pneumonie. Fièvre, toux, tirage. Référer, surveiller. HTA. Souvent silencieuse, céphalées. Mesurer TA, éduquer. Diabète. Soif, polyurie, amaigrissement. Éduquer, soins des pieds. Drépanocytose. Crises douloureuses, anémie. Hydratation, vaccination, antalgiques. Asthme. Dyspnée sifflante, toux nocturne. Position, bronchodilatateur, référer si grave. Étude de cas (cas pédagogique). « Un infirmier A2 dans un centre de santé de Kinshasa reçoit une mère et son enfant de 3 ans. L'enfant a de la fièvre, des vomissements et des selles liquides. L'infirmier réalise une anamnèse, prend les constantes, constate des signes de déshydratation modérée. Il administre du SRO, réfère l'enfant au médecin et explique à la mère les règles d'hygiène pour éviter la récidive. ». Analyse: la démarche est exemplaire. L'infirmier a réalisé une anamnèse, identifié un syndrome diarrhéique avec déshydratation modérée, administré le traitement de première ligne (SRO), référé au médecin pour confirmation et prescription, et éduqué la famille sur la prévention. C'est exactement l'enchaînement attendu: reconnaître, soigner, éduquer, référer."]],"21":[["fr","Évaluation finale, Pathologie Médicale. Consigne. Répondez aux questions ci-dessous en sélectionnant la bonne réponse parmi les quatre propositions. Le QCM couvre l'ensemble du cours. Cliquez ensuite sur « Valider mes réponses » pour obtenir votre score."]]}};
+  var CACHE = "ecolia-cours-v1";                       // même cache que l'application
+  var PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  var PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+  var DL = '<svg viewBox="0 0 24 24"><path d="M11 3h2v9.2l3.6-3.6L18 10l-6 6-6-6 1.4-1.4L11 12.2V3zM5 19h14v2H5z"/></svg>';
+  var OK = '<svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>';
+  // Réparation du quiz : certains cours stockent les choix sous "opts" (ou autre) au lieu de "options"
+  try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+      questions.forEach(function (q) {
+        if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+        if (q.text === undefined) q.text = q.question || q.q || q.enonce || q.titre || "";
+        if (typeof q.correct === "undefined") {
+          if (typeof q.answer !== "undefined") q.correct = q.answer;
+          else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+        }
+      });
+    }
+  } catch (e) {}
+  var synth = window.speechSynthesis || null;
+  var HAS_CACHE = !!(window.caches && window.caches.open);
+  var NATIVE = false;           // APK ECOLIA : pont Java "CoursInterface" (fichiers dans le dossier de l'application)
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  var LATER = "ecolia_audio_later_" + CFG.code;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+  function init() {
+    if (document.getElementById("ecolia-audio-btn")) return;
+
+    // ---------- éléments de l'interface ----------
+    var btn = document.createElement("button");
+    btn.id = "ecolia-audio-btn"; btn.type = "button"; btn.className = "ecolia-off";
+    btn.setAttribute("aria-label", "Écouter la leçon"); btn.innerHTML = PLAY;
+    var dlBtn = document.createElement("button");
+    dlBtn.id = "ecolia-dl-btn"; dlBtn.type = "button"; dlBtn.className = "ecolia-off";
+    dlBtn.innerHTML = DL;
+    var host = document.querySelector(".header-right");
+    if (host) { host.insertBefore(dlBtn, host.firstChild); host.insertBefore(btn, dlBtn); }   // dans la barre du haut : ne scrolle jamais
+    else { btn.className += " ecolia-fixed"; document.body.appendChild(btn); }
+
+    var banner = document.createElement("div");
+    banner.id = "ecolia-audio-banner";
+    banner.innerHTML = '<span class="eab-txt"></span><span class="eab-act"></span><div class="eab-bar"><i></i></div>';
+    var content = document.getElementById("content");
+    if (content && content.parentNode) content.parentNode.insertBefore(banner, content);
+    else document.body.insertBefore(banner, document.body.firstChild);
+    var txtEl = banner.querySelector(".eab-txt"), actEl = banner.querySelector(".eab-act");
+    var barEl = banner.querySelector(".eab-bar"), barI = barEl.firstChild;
+
+    var audio = new Audio();            // un seul élément Audio, réutilisé (exigé par les navigateurs mobiles)
+    audio.preload = "auto";
+    var st = { idx: -1, auto: false, advancing: false, mode: null, speaking: false, token: 0, chunks: [], ci: 0, blobUrl: null, playTok: 0 };
+    var dl = { state: "none", cached: 0, busy: false, cancel: false };   // none | partial | full
+    var bnMode = null, hideTimer = null;
+    if (synth && synth.getVoices) { try { synth.getVoices(); } catch (e) {} }
+
+    function cur() {
+      try { if (typeof currentSlide === "number") return currentSlide; } catch (e) {}
+      return 0;
+    }
+    function hasMp3(i) { return CFG.available.indexOf(i + 1) !== -1; }
+    function fb(i) { return CFG.fallback && CFG.fallback[String(i + 1)]; }
+    function hasAudio(i) { return hasMp3(i) || (!!synth && !!fb(i)); }
+    function urlN(n) {   // dans l'APK la page est sur https://app.local : une adresse relative doit pointer vers le site
+      var b = CFG.base;
+      if (NATIVE && !/^https?:/i.test(b)) b = "https://ecolia-course.github.io/" + b.replace(/^(\.\.\/|\.\/)+/, "");
+      return new URL(b + nameN(n), location.href).href;
+    }
+    function setIcon(playing) { btn.innerHTML = playing ? PAUSE : PLAY; }
+    function isPlaying() { return st.mode === "mp3" ? !audio.paused : (st.mode === "tts" && st.speaking); }
+    function mo() { return "≈ " + CFG.sizeMo + " Mo"; }
+    function nameN(n) { return "audio_" + CFG.code + "_" + n + ".mp3"; }
+
+    // ====================================================================
+    //  Stockage hors ligne : 2 moteurs, même interface
+    //    - APK : fichiers du dossier de l'application (CoursInterface), servis par https://app.local/cours/
+    //    - Web : Cache Storage du navigateur (même cache que l'application web)
+    // ====================================================================
+    function nativeStore() {
+      var okKey = "ecolia_audio_ok_" + CFG.code;
+      function readOk() { try { return JSON.parse(lsGet(okKey) || "[]"); } catch (e) { return []; } }
+      function writeOk(a) { lsSet(okKey, JSON.stringify(a)); }
+      function exists(n) { try { return !!CoursInterface.exists(nameN(n)); } catch (e) { return false; } }
+      function local(n) { return location.origin + "/cours/" + nameN(n); }
+      function verify(n) {                                   // fichier complet ? (taille exacte connue à la génération)
+        return fetch(local(n), { cache: "no-store" }).then(function (r) { return r.blob(); }).then(function (b) {
+          var exp = CFG.sizes && CFG.sizes[String(n)];
+          return (b.size > 2000 && (!exp || b.size === exp)) ? b : null;
+        }).catch(function () { return null; });
+      }
+      return {
+        list: function () {
+          var ok = readOk().filter(exists); writeOk(ok); return Promise.resolve(ok);
+        },
+        get: function (n) { return exists(n) ? verify(n) : Promise.resolve(null); },
+        put: function (n) {
+          return new Promise(function (res, rej) {
+            try { CoursInterface.download(urlN(n), nameN(n)); } catch (e) { return rej(e); }
+            var t0 = Date.now();
+            function next() { if (Date.now() - t0 > 120000) rej(new Error("délai dépassé")); else setTimeout(poll, 800); }
+            function poll() {
+              if (!exists(n)) return next();
+              verify(n).then(function (b) {
+                if (!b) return next();
+                var ok = readOk(); if (ok.indexOf(n) < 0) ok.push(n); writeOk(ok); res();
+              });
+            }
+            setTimeout(poll, 800);
+          });
+        },
+        del: function (n) {
+          try { CoursInterface.delete(nameN(n)); } catch (e) {}
+          writeOk(readOk().filter(function (x) { return x !== n; }));
+          return Promise.resolve();
+        }
+      };
+    }
+    function cacheStore() {
+      return {
+        list: function () {
+          return caches.open(CACHE).then(function (c) {
+            return Promise.all(CFG.available.map(function (n) {
+              return c.match(urlN(n)).then(function (r) {
+                if (!r) return 0;
+                if ((r.headers.get("content-type") || "").indexOf("audio") !== 0) { c.delete(urlN(n)); return 0; }   // ancien contenu invalide
+                return n;
+              });
+            }));
+          }).then(function (a) { return a.filter(Boolean); });
+        },
+        get: function (n) {
+          return caches.open(CACHE).then(function (c) { return c.match(urlN(n)); })
+            .then(function (r) { return r ? r.blob() : null; }).then(function (b) { return b && b.size > 2000 ? b : null; });
+        },
+        put: function (n) {
+          var u = urlN(n);
+          return fetch(u, { cache: "no-store" }).then(function (r) {
+            if (!r.ok || r.status !== 200) throw new Error("HTTP " + r.status);
+            return r.blob();
+          }).then(function (b) {
+            if (b.size < 2000 || (b.type && b.type.indexOf("audio") !== 0 && b.type.indexOf("octet") < 0)) throw new Error("fichier invalide");
+            return caches.open(CACHE).then(function (c) { return c.put(u, new Response(b, { headers: { "Content-Type": "audio/mpeg" } })); });
+          });
+        },
+        del: function (n) { return caches.open(CACHE).then(function (c) { return c.delete(urlN(n)); }); }
+      };
+    }
+    var store = NATIVE ? nativeStore() : (HAS_CACHE ? cacheStore() : null);
+
+    // ====================================================================
+    //  Bannière : invitation, confirmations, progression
+    // ====================================================================
+    function showBanner(mode, text, buttons, pct) {
+      clearTimeout(hideTimer);
+      bnMode = mode;
+      txtEl.textContent = text;
+      actEl.innerHTML = "";
+      (buttons || []).forEach(function (b) {
+        var e = document.createElement("button");
+        e.type = "button"; e.textContent = b.label; if (b.pri) e.className = "pri";
+        e.addEventListener("click", function (ev) { ev.stopPropagation(); b.fn(); });
+        actEl.appendChild(e);
+      });
+      if (typeof pct === "number") { barEl.style.display = "block"; barI.style.width = pct + "%"; }
+      else barEl.style.display = "none";
+      banner.classList.add("on");
+    }
+    function hideBanner() { clearTimeout(hideTimer); bnMode = null; banner.classList.remove("on"); }
+    function flash(text) { showBanner("info", text, []); hideTimer = setTimeout(hideBanner, 4000); }
+
+    function refreshUI() {
+      var show = !!store && CFG.available.length > 0;
+      dlBtn.classList.toggle("ecolia-off", !show);
+      dlBtn.classList.toggle("ecolia-full", dl.state === "full");
+      dlBtn.innerHTML = dl.state === "full" ? OK : DL;
+      dlBtn.setAttribute("aria-label", dl.state === "full" ? "Audios téléchargés : supprimer" : "Télécharger les audios");
+      dlBtn.title = dlBtn.getAttribute("aria-label");
+    }
+    function refreshCacheState(done) {
+      if (!store) { dl.state = "none"; refreshUI(); if (done) done(); return; }
+      store.list().then(function (ok) {
+        dl.cached = ok.length;
+        dl.state = dl.cached === 0 ? "none" : (dl.cached >= CFG.available.length ? "full" : "partial");
+      }).catch(function () { dl.state = "none"; }).then(function () { refreshUI(); if (done) done(); });
+    }
+
+    function askDownload(fromInvite) {
+      var left = CFG.available.length - dl.cached;
+      var txt = dl.state === "partial"
+        ? "Il reste " + left + " audio(s) à télécharger pour écouter ce cours sans internet."
+        : "🔊 Télécharger les audios de ce cours (" + mo() + ") pour les écouter sans internet ? Wi-Fi recommandé.";
+      showBanner(fromInvite ? "invite" : "confirm", txt, [
+        { label: fromInvite ? "Plus tard" : "Annuler", fn: function () { if (fromInvite) lsSet(LATER, "1"); hideBanner(); } },
+        { label: "Télécharger", pri: true, fn: startDownload }
+      ]);
+    }
+    function askDelete() {
+      showBanner("confirm", "Supprimer les audios téléchargés de ce cours (" + mo() + ") ? Vous pourrez toujours les écouter en ligne.", [
+        { label: "Annuler", fn: hideBanner },
+        { label: "Supprimer", pri: true, fn: doDelete }
+      ]);
+    }
+
+    function startDownload() {
+      if (dl.busy || !store) return;
+      dl.busy = true; dl.cancel = false;
+      var total = CFG.available.length, done = 0, quota = false, fails = 0, todo = [];
+      store.list().then(function (have) {
+        CFG.available.forEach(function (n) { if (have.indexOf(n) < 0) todo.push(n); });
+        done = total - todo.length;
+        function paint() {
+          var msg = "Téléchargement des audios : " + done + " / " + total;
+          if (bnMode === "progress") {                  // met à jour sans recréer les boutons (sinon un appui peut être perdu)
+            txtEl.textContent = msg; barI.style.width = Math.round(done / total * 100) + "%";
+          } else {
+            showBanner("progress", msg, [
+              { label: "Annuler", fn: function () { dl.cancel = true; } }
+            ], Math.round(done / total * 100));
+          }
+        }
+        paint();
+        function worker() {
+          if (dl.cancel || quota || !todo.length) return Promise.resolve();
+          var n = todo.shift();
+          return store.put(n).then(function () { done++; paint(); }).catch(function (e) {
+            if (e && (e.name === "QuotaExceededError" || /quota/i.test(String(e.message)))) quota = true;
+            fails++;
+          }).then(worker);
+        }
+        return Promise.all([worker(), worker()]);
+      }).catch(function () { fails++; }).then(function () {
+        dl.busy = false;
+        refreshCacheState(function () {
+          if (dl.state === "full") flash("✓ Audios téléchargés : le cours se lit maintenant sans internet.");
+          else if (dl.cancel) flash("Téléchargement interrompu (" + dl.cached + " / " + total + "). Vous pourrez reprendre plus tard.");
+          else showBanner("error", quota ? "Espace insuffisant sur l'appareil. Libérez de la place puis réessayez."
+            : "Certains audios n'ont pas pu être téléchargés (connexion ?).", [
+            { label: "Fermer", fn: hideBanner }, { label: "Réessayer", pri: true, fn: startDownload }
+          ]);
+        });
+      });
+    }
+    function doDelete() {
+      if (!store) return;
+      Promise.all(CFG.available.map(function (n) { return store.del(n); })).catch(function () {}).then(function () {
+        lsDel(LATER);
+        refreshCacheState(function () { flash("Audios supprimés de cet appareil."); });
+      });
+    }
+
+    dlBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (dl.busy) return;
+      if (dl.state === "full") askDelete(); else askDownload(false);
+    });
+
+    // ====================================================================
+    //  Voix intégrée au téléphone (hors ligne, sans limite)
+    // ====================================================================
+    function pickVoice(lang) {
+      var vs = [];
+      try { vs = synth.getVoices() || []; } catch (e) {}
+      var pre = lang === "en" ? "en" : "fr", best = null;
+      for (var k = 0; k < vs.length; k++) {
+        var v = vs[k];
+        if ((v.lang || "").toLowerCase().indexOf(pre) !== 0) continue;
+        if (!best || (v.localService && !best.localService)) best = v;
+      }
+      return best;
+    }
+    function hardSplit(text, max) {
+      var out = [];
+      while (text.length > max) {
+        var cut = text.lastIndexOf(" ", max);
+        if (cut < 40) cut = max;
+        out.push(text.slice(0, cut)); text = text.slice(cut).replace(/^\s+/, "");
+      }
+      if (text) out.push(text);
+      return out;
+    }
+    function buildChunks(segs) {                  // morceaux courts : évite l'arrêt des longs textes sur Chrome
+      var out = [];
+      segs.forEach(function (s) {
+        var cur2 = "", parts = s[1].match(/[^.!?;:]+[.!?;:]*\s*/g) || [s[1]];
+        parts.forEach(function (p) {
+          if (cur2 && (cur2 + p).length > 160) { out.push({ lang: s[0], text: cur2.trim() }); cur2 = p; }
+          else cur2 += p;
+        });
+        if (cur2.trim()) out.push({ lang: s[0], text: cur2.trim() });
+      });
+      var res = [];
+      out.forEach(function (c) { hardSplit(c.text, 190).forEach(function (t) { res.push({ lang: c.lang, text: t }); }); });
+      return res;
+    }
+    function speakFrom(tk) {
+      if (tk !== st.token) return;
+      if (st.ci >= st.chunks.length) {
+        st.speaking = false; st.mode = null; st.ci = 0; setIcon(false);
+        if (st.auto) goNext();
+        return;
+      }
+      var c = st.chunks[st.ci];
+      var u = new SpeechSynthesisUtterance(c.text);
+      u.lang = c.lang === "en" ? "en-US" : "fr-FR";
+      var v = pickVoice(c.lang);
+      if (v) { u.voice = v; u.lang = v.lang; }
+      u.rate = 0.95;
+      u.onend = function () { if (tk !== st.token) return; st.ci++; speakFrom(tk); };
+      u.onerror = function () { if (tk !== st.token) return; st.speaking = false; setIcon(false); st.auto = false; };
+      synth.speak(u);
+    }
+    function startTts(from) {
+      st.token++;
+      var tk = st.token;
+      st.mode = "tts"; st.speaking = true; st.ci = from || 0; setIcon(true);
+      var busy = false;
+      try { busy = synth.speaking || synth.pending; synth.cancel(); } catch (e) {}
+      if (busy) setTimeout(function () { speakFrom(tk); }, 120);   // laisse cancel() se terminer
+      else speakFrom(tk);                                          // sinon tout de suite (exigé par iOS)
+    }
+    function playVoice() {
+      if (!(synth && fb(st.idx))) { st.auto = false; return false; }
+      if (!st.chunks.length) st.chunks = buildChunks(fb(st.idx));
+      startTts(st.ci);
+      return true;
+    }
+
+    // ====================================================================
+    //  Lecture
+    // ====================================================================
+    function freeBlob() { if (st.blobUrl) { try { URL.revokeObjectURL(st.blobUrl); } catch (e) {} st.blobUrl = null; } }
+    function stopAll() {
+      st.playTok++;
+      try { audio.pause(); audio.currentTime = 0; } catch (e) {}
+      st.token++;
+      try { if (synth) synth.cancel(); } catch (e) {}
+      st.speaking = false; st.mode = null; st.chunks = []; st.ci = 0;
+      setIcon(false);
+    }
+    function pauseNow() {
+      if (st.mode === "mp3") audio.pause();
+      else if (st.mode === "tts") {
+        st.token++;
+        try { synth.cancel(); } catch (e) {}
+        st.speaking = false; setIcon(false);      // st.ci conservé : la reprise repart de la phrase en cours
+      }
+    }
+    function startAudio(src, tok) {
+      if (tok !== st.playTok) return;
+      if (audio.getAttribute("data-src") !== src) { audio.setAttribute("data-src", src); audio.src = src; }
+      var p = audio.play();
+      if (p && p.catch) p.catch(function (err) {
+        console.warn("ECOLIA audio :", err);
+        if (tok !== st.playTok) return;
+        if (!(err && err.name === "NotAllowedError") && playVoice()) return;   // lecture impossible : voix du téléphone
+        setIcon(false); st.auto = false;
+      });
+    }
+    function playCurrent() {
+      var i = st.idx;
+      if (hasMp3(i)) {
+        var tok = ++st.playTok, u = urlN(i + 1);
+        st.mode = "mp3";
+        if (!navigator.onLine && dl.state === "none") { st.mode = null; if (playVoice()) return; }   // hors ligne et non téléchargé
+        if (store && dl.state !== "none") {                     // téléchargé : lecture locale, sans réseau
+          store.get(i + 1)
+            .then(function (b) {
+              if (tok !== st.playTok) return;
+              if (b) { freeBlob(); st.blobUrl = URL.createObjectURL(new Blob([b], { type: "audio/mpeg" })); startAudio(st.blobUrl, tok); }
+              else startAudio(u, tok);
+            }).catch(function () { startAudio(u, tok); });
+        } else startAudio(u, tok);                              // sinon lecture en ligne (appel immédiat, exigé par iOS)
+      } else if (!playVoice()) {
+        st.auto = false;
+      }
+    }
+
+    function onSlideChange(i) {
+      var wasAdvancing = st.advancing;
+      st.advancing = false;
+      st.idx = i;
+      btn.classList.toggle("ecolia-off", !hasAudio(i));
+      stopAll();
+      audio.removeAttribute("data-src");
+      freeBlob();
+      if (bnMode === "invite" && i !== 0) hideBanner();       // l'invitation n'apparaît qu'à la première slide
+      if (wasAdvancing && st.auto) setTimeout(playCurrent, 500);   // enchaînement automatique
+      else st.auto = false;                                         // changement manuel : on coupe tout
+    }
+    function goNext() {
+      if (st.idx + 1 >= CFG.count) { st.auto = false; return; }
+      st.advancing = true;
+      if (typeof nextSlide === "function") nextSlide();
+      else { var nb = document.getElementById("nextBtn"); if (nb) nb.click(); }
+      setTimeout(function () { st.advancing = false; }, 4000);
+    }
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var i = cur();
+      if (i !== st.idx) onSlideChange(i);
+      if (isPlaying()) { st.auto = false; pauseNow(); }
+      else { st.auto = true; playCurrent(); }
+    });
+    audio.addEventListener("play", function () { setIcon(true); });
+    audio.addEventListener("pause", function () { if (st.mode === "mp3") setIcon(false); });
+    audio.addEventListener("error", function () {
+      if (st.mode === "mp3" && playVoice()) return;            // fichier introuvable / hors ligne : voix du téléphone
+      setIcon(false); st.auto = false;
+    });
+    audio.addEventListener("ended", function () { setIcon(false); if (st.auto) goNext(); });
+    window.addEventListener("pagehide", function () { stopAll(); freeBlob(); });
+
+    // ---------- démarrage ----------
+    refreshCacheState(function () {
+      if (store && CFG.available.length && dl.state !== "full" && navigator.onLine && cur() === 0 && !lsGet(LATER)) askDownload(true);
+    });
+    st.idx = -1;
+    setInterval(function () { var i = cur(); if (i !== st.idx) onSlideChange(i); }, 250);   // suit la slide affichée
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+<!-- ECOLIA_AUDIO_PLAYER_END -->
+</body>
+</html>

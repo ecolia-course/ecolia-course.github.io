@@ -1,0 +1,2003 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="bleu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>ECOLIA — Genie Rural4</title>
+<style>
+[data-theme="bleu"]   { --p1:#0d2b4f; --p2:#1565c0; --p3:#07172e; --p4:#12437a; --p5:#5b8fd0; --bg:#e8f0fb; --bg2:#cfdff5; --bd:#a9c3e8; --soft:#dde8f7; --btn:#2a67b0; }
+[data-theme="vert"]   { --p1:#14442e; --p2:#2e7d32; --p3:#0b2b1a; --p4:#1f5c3a; --p5:#4f9a6b; --bg:#e8f5ec; --bg2:#c8e6d2; --bd:#a5cdb2; --soft:#dcefe2; --btn:#2f7a4f; }
+[data-theme="violet"] { --p1:#2d1b4e; --p2:#6a1b9a; --p3:#1a0f2e; --p4:#4a148c; --p5:#9c6fd0; --bg:#f1e9fb; --bg2:#dccbf2; --bd:#c4a8e6; --soft:#e8ddf6; --btn:#7e3fb2; }
+[data-theme="rouge"]  { --p1:#4a1010; --p2:#b71c1c; --p3:#2b0a0a; --p4:#8e1b1b; --p5:#d9706a; --bg:#fbeaea; --bg2:#f3cdcb; --bd:#e8a9a5; --soft:#f8dede; --btn:#a62a2a; }
+[data-theme="orange"] { --p1:#4e2a0c; --p2:#ef6c00; --p3:#2e1604; --p4:#b34a00; --p5:#f0a15a; --bg:#fff1e0; --bg2:#fbdcb8; --bd:#f3c08a; --soft:#fdebd6; --btn:#c9650a; }
+[data-theme="teal"]   { --p1:#0b3a3a; --p2:#00796b; --p3:#062626; --p4:#00574b; --p5:#4db6ac; --bg:#e0f2f1; --bg2:#b2dfdb; --bd:#80cbc4; --soft:#d5ecea; --btn:#26897d; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:linear-gradient(160deg,var(--p1) 0%,var(--p2) 50%,var(--p3) 100%); display:flex; justify-content:center; align-items:center; padding:8px; }
+.container { width:100%; max-width:1400px; background:#fefdf8; border-radius:20px; overflow:hidden; display:flex; flex-direction:column; height:100%; max-height:100vh; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.progress-bar { height:4px; background:var(--bg2); flex-shrink:0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--p5),var(--p4)); width:0%; transition:width 0.3s; }
+.header { padding:10px 16px; background:var(--bg); border-bottom:1px solid var(--bd); display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+.header h1 { color:var(--p4); font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box { display:flex; background:white; border-radius:20px; padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.search-box input { border:none; padding:6px 10px; border-radius:20px; outline:none; width:130px; font-size:0.8rem; }
+.search-box button { background:none; border:none; cursor:pointer; padding:4px 8px; font-size:0.85rem; color:var(--p2); }
+.badge { background:var(--p5); color:white; padding:4px 10px; border-radius:20px; font-weight:bold; font-size:0.75rem; }
+.search-nav { display:none; gap:4px; background:var(--bg2); padding:2px 8px; border-radius:20px; align-items:center; font-size:0.75rem; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:0.9rem; color:var(--p4); padding:2px 4px; }
+.content { padding:28px 32px; flex:1; overflow-y:auto; background:#fff; scroll-behavior:smooth; line-height:1.85; }
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.slide-title { color:var(--p1); font-size:1.5rem; font-weight:700; padding-bottom:12px; margin-bottom:20px; border-bottom:2px solid var(--p5); }
+.slide-content { color:var(--p3); font-size:1rem; }
+.empty-state { display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-height:60vh; padding:40px 20px; gap:18px; }
+.empty-state .icon { width:72px; height:72px; border-radius:50%; background:var(--bg); border:2px solid var(--bd); display:flex; align-items:center; justify-content:center; color:var(--p2); font-size:2rem; font-weight:300; }
+.empty-state h2 { color:var(--p1); font-size:1.4rem; font-weight:700; margin:0; }
+.empty-state p { color:#666; font-size:0.95rem; max-width:520px; line-height:1.7; }
+.empty-state .tag { display:inline-block; padding:6px 14px; background:var(--bg); color:var(--p4); border:1px solid var(--bd); border-radius:20px; font-size:0.8rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; }
+.bloc { padding:18px 22px; border-radius:12px; margin:22px 0; line-height:1.85; }
+.bloc-label { font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; opacity:0.7; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:var(--bg); border-left:4px solid var(--p5); }
+.theorie .bloc-label { color:var(--p4); }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.sources { background:#f5f5f5; padding:12px 16px; border-radius:10px; margin-top:26px; font-size:0.82rem; color:#666; border-left:3px solid #999; line-height:1.6; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:var(--p1); }
+.quiz-container { padding:22px; background:var(--bg); border-radius:16px; }
+.quiz-question { background:white; border-radius:10px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.quiz-question p { font-weight:600; margin-bottom:10px; color:var(--p1); }
+.quiz-question label { display:block; padding:8px 10px; margin:4px 0; border-radius:6px; cursor:pointer; transition:background 0.2s; }
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit { background:var(--btn); color:white; border:none; padding:12px 24px; border-radius:30px; font-size:1rem; cursor:pointer; font-weight:600; margin-top:14px; }
+.quiz-result { margin-top:16px; font-weight:600; }
+.controls { padding:8px 16px; background:#fafafa; border-top:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0; }
+.nav-btn { background:white; color:var(--p4); border:1px solid #ccc; padding:8px 14px; border-radius:8px; font-size:0.82rem; cursor:pointer; font-weight:500; }
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:var(--soft); }
+.content::-webkit-scrollbar-thumb { background:var(--p5); border-radius:3px; }
+@media (max-width:600px) { body { padding:0; } .container { border-radius:0; max-height:100vh; } .content { padding:20px 18px; } .slide-title { font-size:1.25rem; } .search-box input { width:90px; } .header h1 { font-size:0.85rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="header">
+<h1 id="pageTitle">ECOLIA</h1>
+<div class="header-right">
+<div class="search-box">
+<input id="searchInput" placeholder="Rechercher" type="text"/>
+<button id="searchBtn">⌕</button>
+</div>
+<div class="search-nav" id="searchNav">
+<button id="prevResultBtn">‹</button>
+<span id="resultCounter">0/0</span>
+<button id="nextResultBtn">›</button>
+</div>
+<span class="badge" id="slideCounter">0/0</span>
+</div>
+</div>
+<div class="content" id="content"></div>
+<div class="controls">
+<button class="nav-btn" id="prevBtn">← Précédent</button>
+<span class="counter" id="counter">—</span>
+<button class="nav-btn" id="nextBtn">Suivant →</button>
+</div>
+</div>
+<script>
+const COURSE_TITLE = "Génie Rural (Aménagements, Hydraulique Agricole et Constructions Rurales)";
+const slides = [
+  {
+    title: "Sommaire — Génie Rural",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Bienvenue</div>
+        <h3>Le génie rural : aménager l'espace rural pour produire durablement</h3>
+        <p>Le <strong>génie rural</strong> est l'ensemble des techniques et des connaissances scientifiques appliquées à l'aménagement de l'espace rural, à la maîtrise de l'eau, à la mécanisation agricole et aux constructions nécessaires à la production et à la vie rurales. Sans aménagement, l'agriculteur reste dépendant des aléas climatiques, travaille dans des conditions difficiles et perd une partie de ses récoltes.</p>
+        <p>Ce cours s'adresse aux élèves de 4<sup>e</sup> Humanité de la section Agricole (Option Agriculture Générale). Il vise à former un futur technicien A2 capable de <strong>concevoir</strong>, <strong>réaliser</strong> et <strong>gérer</strong> les infrastructures rurales et les aménagements simples nécessaires à une production durable, dans le contexte congolais.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Objectifs d'apprentissage</div>
+        <p>À la fin de ce cours, l'élève doit être capable de :</p>
+        <ol>
+          <li>Maîtriser les notions de base d'hydraulique agricole (débit, pression, hauteur de chute, perte de charge).</li>
+          <li>Choisir une pompe adaptée à un usage agricole et l'entretenir.</li>
+          <li>Concevoir et entretenir un système d'irrigation simple (gravitaire, aspersion, goutte-à-goutte).</li>
+          <li>Concevoir et entretenir un système de drainage.</li>
+          <li>Aménager un bas-fond pour la production agricole.</li>
+          <li>Utiliser et entretenir les équipements de mécanisation agricole.</li>
+          <li>Concevoir et construire des bâtiments ruraux simples (étables, poulaillers, magasins de stockage, hangars).</li>
+          <li>Entretenir les pistes rurales et les ouvrages d'art simples.</li>
+          <li>Calculer les coûts et évaluer la faisabilité technico-économique d'un aménagement.</li>
+        </ol>
+      </div>
+
+      <div class="bloc cas">
+        <div class="bloc-label">Grands chapitres du cours</div>
+        <ul>
+          <li><strong>Chapitre I</strong> — Introduction au génie rural.</li>
+          <li><strong>Chapitre II</strong> — Notions d'hydraulique agricole.</li>
+          <li><strong>Chapitre III</strong> — L'irrigation.</li>
+          <li><strong>Chapitre IV</strong> — Le drainage agricole.</li>
+          <li><strong>Chapitre V</strong> — L'aménagement des bas-fonds.</li>
+          <li><strong>Chapitre VI</strong> — La mécanisation agricole.</li>
+          <li><strong>Chapitre VII</strong> — Les constructions rurales.</li>
+          <li><strong>Chapitre VIII</strong> — Les pistes rurales et ouvrages d'art simples.</li>
+          <li><strong>Chapitre IX</strong> — L'évaluation technico-économique des aménagements.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Introduction au génie rural",
+    content: `
+      <div class="bloc cas">
+        <div class="bloc-label">Situation-problème</div>
+        <p>Dans un village de la plaine de la Ruzizi, les riziculteurs obtiennent des rendements faibles. En saison des pluies, l'eau stagne dans les rizières et les plants pourrissent. En saison sèche, l'eau manque et les plants flétrissent. Le village possède pourtant une rivière à 800 m et une motopompe qui n'a pas été entretenue depuis trois ans. Que faudrait-il faire pour transformer cette situation ?</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Qu'est-ce que le génie rural ?</h3>
+        <p>Le génie rural est l'ensemble des techniques et des connaissances scientifiques appliquées à l'aménagement de l'espace rural, à la maîtrise de l'eau, à la mécanisation agricole et aux constructions nécessaires à la production et à la vie rurales.</p>
+        <p>Il ne se limite pas aux constructions : il englobe :</p>
+        <ul>
+          <li>L'<strong>hydraulique agricole</strong> : irrigation, drainage, pompage.</li>
+          <li>L'<strong>aménagement des parcelles</strong> et des bas-fonds.</li>
+          <li>La <strong>mécanisation</strong> : motopompes, tracteurs, moulins, décortiqueuses.</li>
+          <li>Les <strong>constructions rurales</strong> : étables, poulaillers, magasins de stockage, silos, hangars.</li>
+          <li>Les <strong>pistes rurales</strong> et ouvrages d'art simples (dalots, ponceaux).</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Croire que le génie rural se limite à la construction d'abris ou de bâtiments est une erreur. Le génie rural concerne d'abord la <strong>maîtrise de l'eau</strong>, la <strong>mécanisation</strong> et l'<strong>aménagement du territoire rural</strong>. Un bâtiment sans eau, sans accès et sans équipement n'a qu'un intérêt limité.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Importance du génie rural pour le développement",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Pourquoi le génie rural est-il indispensable ?</h3>
+        <p>Le génie rural rend plusieurs services fondamentaux à l'agriculture et au monde rural :</p>
+
+        <h4>1. Augmenter la production</h4>
+        <p>L'irrigation permet de produire en saison sèche ; le drainage évite les pertes par excès d'eau ; les aménagements antiérosifs préservent la fertilité ; les équipements mécanisés permettent de cultiver de plus grandes surfaces.</p>
+
+        <h4>2. Réduire la pénibilité du travail</h4>
+        <p>Pompes, moulins, décortiqueuses, tracteurs remplacent des tâches manuelles longues et épuisantes. Le technicien rural dispose de plus de temps pour d'autres activités.</p>
+
+        <h4>3. Protéger les ressources naturelles</h4>
+        <p>Les cordons pierreux, les terrasses et les bandes enherbées limitent l'érosion. Le drainage des bas-fonds évite la stagnation. L'aménagement protège le sol, l'eau et la biodiversité.</p>
+
+        <h4>4. Améliorer les conditions de vie en milieu rural</h4>
+        <p>L'accès à l'eau, l'électrification rurale, les bâtiments d'élevage sains, les magasins de stockage et les pistes praticables améliorent directement la vie quotidienne des familles rurales.</p>
+
+        <h4>5. Réduire les pertes post-récolte</h4>
+        <p>Un magasin de stockage étanche et ventilé, des silos bien conçus, une piste carrossable en toute saison réduisent considérablement les pertes après la récolte — qui peuvent atteindre 30 à 40 % dans certaines zones enclavées de la RDC.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Le génie rural n'est pas une technique accessoire : il conditionne la productivité, la rentabilité et la durabilité de l'agriculture. Il améliore aussi directement les conditions de vie rurales.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — Le débit en hydraulique agricole",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le débit : quantité d'eau par unité de temps</h3>
+        <p>Le <strong>débit</strong> est la quantité d'eau qui s'écoule par unité de temps. Il s'exprime couramment en :</p>
+        <ul>
+          <li><strong>L/s</strong> (litres par seconde) : pour les petits débits (arrosage, pompe manuelle).</li>
+          <li><strong>m³/h</strong> (mètres cubes par heure) : pour les débits moyens (motopompes).</li>
+          <li><strong>m³/s</strong> (mètres cubes par seconde) : pour les rivières et grands canaux.</li>
+        </ul>
+
+        <h4>Formule fondamentale</h4>
+        <p>Le débit se calcule par la relation :</p>
+        <p><strong>Q = V / t</strong></p>
+        <p>où :</p>
+        <ul>
+          <li><strong>Q</strong> = débit (en L/s ou m³/h)</li>
+          <li><strong>V</strong> = volume d'eau écoulé (en litres ou en m³)</li>
+          <li><strong>t</strong> = temps d'écoulement (en secondes ou en heures)</li>
+        </ul>
+
+        <h4>Conversions à retenir</h4>
+        <ul>
+          <li>1 m³ = 1 000 L</li>
+          <li>1 heure = 3 600 secondes</li>
+          <li>1 L/s = 3,6 m³/h</li>
+        </ul>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Exercice corrigé</div>
+        <p><strong>Énoncé :</strong> un réservoir de 10 m³ se vide en 2 heures. Quel est le débit moyen ?</p>
+        <p><strong>Données :</strong> V = 10 m³ = 10 000 L ; t = 2 h = 7 200 s.</p>
+        <p><strong>Calcul en L/s :</strong> Q = 10 000 / 7 200 ≈ 1,39 L/s.</p>
+        <p><strong>Calcul en m³/h :</strong> Q = 10 / 2 = 5 m³/h.</p>
+        <p><strong>Vérification :</strong> 5 m³/h × 1 000 / 3 600 = 1,39 L/s. Les deux résultats sont cohérents.</p>
+        <p><strong>Interprétation :</strong> ce débit est suffisant pour alimenter un petit réseau goutte-à-goutte, mais insuffisant pour une irrigation par aspersion de grande surface.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Q = V / t. Le débit s'exprime en L/s ou m³/h. La conversion 1 L/s = 3,6 m³/h est indispensable pour dimensionner un système d'irrigation.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — La pression et la hauteur de chute",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>La pression</h3>
+        <p>La <strong>pression</strong> est la force exercée par l'eau sur une surface. Elle s'exprime en :</p>
+        <ul>
+          <li><strong>bars</strong> (1 bar ≈ 10 mètres de colonne d'eau).</li>
+          <li><strong>mètres de colonne d'eau (mCE)</strong> : hauteur d'eau qui crée cette pression.</li>
+          <li><strong>pascals (Pa)</strong> dans le système international : 1 bar = 100 000 Pa.</li>
+        </ul>
+        <p>La pression est indispensable pour :</p>
+        <ul>
+          <li>Faire monter l'eau dans les tuyaux.</li>
+          <li>Alimenter les asperseurs (qui exigent souvent 1 à 3 bars).</li>
+          <li>Faire fonctionner un goutte-à-goutte (0,5 à 1,5 bar).</li>
+        </ul>
+
+        <h3>La hauteur de chute</h3>
+        <p>La <strong>hauteur de chute</strong> (ou dénivelée) est la différence d'altitude entre le point de captage (réservoir, rivière) et le point d'utilisation (parcelle, asperseur).</p>
+        <p><strong>Relation fondamentale :</strong> une hauteur de 10 m d'eau correspond approximativement à une pression de 1 bar en bas de la colonne.</p>
+        <ul>
+          <li>Hauteur de 5 m → pression ≈ 0,5 bar.</li>
+          <li>Hauteur de 10 m → pression ≈ 1 bar.</li>
+          <li>Hauteur de 30 m → pression ≈ 3 bars.</li>
+        </ul>
+        <p>Cette relation est la base du dimensionnement des réseaux gravitaires : un réservoir placé sur une colline peut alimenter une parcelle en contrebas sans pompe, à condition de disposer de la hauteur suffisante.</p>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Application pratique</div>
+        <p>Un réservoir est placé sur une butte à 15 m au-dessus d'une parcelle maraîchère. Quelle pression approximative obtient-on au pied du réseau ?</p>
+        <p><strong>Réponse :</strong> 15 m / 10 m par bar = <strong>1,5 bar</strong> approximativement.</p>
+        <p><strong>Interprétation :</strong> cette pression est suffisante pour un réseau goutte-à-goutte (0,5 – 1,5 bar) mais insuffisante pour certains asperseurs qui demandent 2 à 3 bars. Il faudra choisir des asperseurs basse pression ou installer une pompe de surpression.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>10 m de hauteur d'eau ≈ 1 bar de pression. La hauteur de chute détermine la pression disponible dans un réseau gravitaire. Elle est un critère décisif du choix des équipements.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — La perte de charge",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Qu'est-ce que la perte de charge ?</h3>
+        <p>La <strong>perte de charge</strong> est la diminution de pression de l'eau le long d'un tuyau ou à travers un raccord, due aux frottements. Plus le tuyau est long, plus le diamètre est petit, plus la paroi est rugueuse, plus la perte de charge est élevée.</p>
+
+        <h4>Facteurs de la perte de charge</h4>
+        <ul>
+          <li><strong>Longueur du tuyau</strong> : plus le tuyau est long, plus la perte augmente.</li>
+          <li><strong>Diamètre du tuyau</strong> : plus le diamètre est petit, plus la perte augmente (la perte varie approximativement avec l'inverse de la puissance 5 du diamètre).</li>
+          <li><strong>Débit</strong> : plus le débit est fort, plus la perte augmente (proportionnelle au carré du débit).</li>
+          <li><strong>Rugosité</strong> : un tuyau en PVC lisse perd moins qu'un tuyau en fonte corrodée.</li>
+          <li><strong>Raccords et coudes</strong> : chaque coude, vanne ou réduction ajoute une perte locale.</li>
+        </ul>
+
+        <h4>Pourquoi est-ce important ?</h4>
+        <p>Si la perte de charge est trop élevée, l'eau peut arriver au point d'utilisation avec une pression insuffisante : les asperseurs n'arrosent pas correctement, les goutteurs ne coulent plus. Il faut alors augmenter le diamètre du tuyau, réduire la longueur ou augmenter la pression de départ (pompe).</p>
+
+        <h4>Règle pratique</h4>
+        <p>Pour une irrigation goutte-à-goutte, on vise généralement une perte de charge totale inférieure à 20 à 30 % de la pression d'entrée. Sur les longues rampes, on divise la parcelle en plusieurs secteurs ou l'on augmente le diamètre.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Négliger les pertes de charge dans le dimensionnement d'un réseau est l'une des erreurs les plus fréquentes en génie rural. Une installation apparemment bien dimensionnée en débit peut échouer à cause d'un tuyau trop long ou trop fin : l'eau n'arrive pas avec la pression voulue, les cultures du bout de la parcelle sont sous-irriguées.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — Les pompes : motopompes et pompes manuelles",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>À quoi sert une pompe ?</h3>
+        <p>Une <strong>pompe</strong> est un dispositif qui élève l'eau ou augmente sa pression. Elle permet de :</p>
+        <ul>
+          <li>Puiser l'eau dans une rivière, un puits, un forage.</li>
+          <li>Faire monter l'eau dans un réservoir surélevé.</li>
+          <li>Maintenir la pression dans un réseau d'irrigation.</li>
+        </ul>
+
+        <h4>Les principaux types de pompes</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Entraînement</th>
+              <th>Usage typique</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Pompe manuelle</td>
+              <td>Force humaine (levier, volant)</td>
+              <td>Petits débits, puits familiaux, usage domestique.</td>
+            </tr>
+            <tr>
+              <td>Motopompe à essence</td>
+              <td>Moteur à essence</td>
+              <td>Irrigation de petites et moyennes parcelles, chantiers mobiles.</td>
+            </tr>
+            <tr>
+              <td>Motopompe diesel</td>
+              <td>Moteur diesel</td>
+              <td>Irrigation de grandes surfaces, usage intensif, coût d'exploitation plus faible.</td>
+            </tr>
+            <tr>
+              <td>Électropompe</td>
+              <td>Moteur électrique</td>
+              <td>Usage fixe, en zone électrifiée ou avec panneaux solaires.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4>Critères de choix d'une pompe</h4>
+        <ul>
+          <li><strong>Débit souhaité</strong> (m³/h ou L/s) : dépend des besoins de la parcelle.</li>
+          <li><strong>Hauteur totale à remonter</strong> (hauteur d'aspiration + hauteur de refoulement + pertes de charge).</li>
+          <li><strong>Énergie disponible</strong> : essence, diesel, électricité, solaire.</li>
+          <li><strong>Robustesse et facilité d'entretien</strong>.</li>
+          <li><strong>Coût d'investissement et coût d'exploitation</strong> (carburant, pièces).</li>
+        </ul>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Application</div>
+        <p>Un agriculteur doit irriguer 0,5 ha de maraîchage avec un besoin d'environ 30 m³/jour. Il prélève dans une rivière à 5 m en contrebas d'une parcelle plane. Une motopompe d'un débit de 5 m³/h qui fonctionne 6 h/jour fournira 30 m³ : c'est suffisant. Une pompe manuelle de 0,5 m³/h nécessiterait 60 h de travail : c'est irréaliste. Le choix technique se porte donc sur une motopompe.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Une pompe élève l'eau ou augmente sa pression. Le choix dépend du débit, de la hauteur, de l'énergie disponible et du coût. La motopompe est l'équipement le plus répandu en milieu rural congolais.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — L'irrigation : définition et types",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Qu'est-ce que l'irrigation ?</h3>
+        <p>L'<strong>irrigation</strong> est l'apport artificiel d'eau aux cultures pour compléter les précipitations insuffisantes ou irrégulières, et assurer une production régulière.</p>
+        <p>Elle ne remplace pas la pluie : elle la complète. Irriguer sans tenir compte des besoins réels de la culture peut être aussi néfaste que l'absence d'eau (gaspillage, maladies fongiques, asphyxie des racines).</p>
+
+        <h4>Les trois grands types d'irrigation</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Principe</th>
+              <th>Avantages</th>
+              <th>Inconvénients</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Gravitaire</strong></td>
+              <td>L'eau s'écoule par gravité dans des rigoles ou par submersion.</td>
+              <td>Simple, économique en investissement, faible technicité.</td>
+              <td>Grande consommation d'eau, risque d'érosion, pertes par évaporation.</td>
+            </tr>
+            <tr>
+              <td><strong>Par aspersion</strong></td>
+              <td>L'eau est pulvérisée au-dessus des cultures par des asperseurs.</td>
+              <td>Bonne couverture, adaptée aux cultures basses.</td>
+              <td>Coût énergétique élevé, pertes par vent et évaporation, favorise maladies foliaires.</td>
+            </tr>
+            <tr>
+              <td><strong>Goutte-à-goutte</strong></td>
+              <td>L'eau est apportée au pied de chaque plante par des goutteurs.</td>
+              <td>Très économe en eau, limite les mauvaises herbes, adapté aux cultures de valeur.</td>
+              <td>Investissement initial élevé, nécessite filtres et entretien rigoureux.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4>Critères de choix</h4>
+        <ul>
+          <li>Type de culture (maraîchage, riz, arbres fruitiers…).</li>
+          <li>Type de sol et topographie.</li>
+          <li>Ressource en eau disponible.</li>
+          <li>Coût d'investissement et d'exploitation.</li>
+          <li>Compétence technique disponible pour l'entretien.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Trois grands types d'irrigation : gravitaire (économique, économe en équipement mais gourmand en eau), aspersion (bonne couverture, énergivore), goutte-à-goutte (très économe en eau, coûteux en investissement).</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — L'irrigation gravitaire",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le principe</h3>
+        <p>L'irrigation <strong>gravitaire</strong> utilise la pente du terrain pour faire circuler l'eau depuis un point haut (canal, rigole d'amenée) vers la parcelle à irriguer. Aucune pompe n'est nécessaire : c'est la gravité qui travaille.</p>
+
+        <h4>Deux techniques principales</h4>
+        <ul>
+          <li><strong>Irrigation par rigoles</strong> : l'eau circule dans des rigoles parallèles creusées entre les rangs de culture. Elle s'infiltre latéralement vers les racines.</li>
+          <li><strong>Irrigation par submersion</strong> : la parcelle est entourée de diguettes et recouverte d'une lame d'eau (riziculture principalement).</li>
+        </ul>
+
+        <h4>Conditions d'utilisation</h4>
+        <ul>
+          <li>Terrain en pente douce (0,2 % à 2 % idéalement).</li>
+          <li>Sol à bonne capacité de rétention (limoneux, argileux).</li>
+          <li>Disponibilité abondante d'eau (rivière, réservoir, forage à gros débit).</li>
+          <li>Main-d'œuvre disponible pour entretenir les rigoles.</li>
+        </ul>
+
+        <h4>Avantages et inconvénients</h4>
+        <p><strong>Avantages :</strong> faible coût d'installation, pas d'énergie nécessaire, simplicité technique, adaptée aux cultures traditionnelles.</p>
+        <p><strong>Inconvénients :</strong> grande consommation d'eau, risque d'érosion si le débit est trop fort, risque d'engorgement du sol, pertes par évaporation et infiltration profonde, propagation possible de mauvaises herbes le long des rigoles.</p>
+
+        <h4>Entretien</h4>
+        <ul>
+          <li>Curer régulièrement les rigoles pour éviter l'envasement.</li>
+          <li>Vérifier l'étanchéité des diguettes.</li>
+          <li>Éviter les fuites en réparant les berges.</li>
+          <li>Ajuster le débit d'entrée pour éviter l'érosion en tête de parcelle.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Laisser couler un débit trop fort dans les rigoles : l'eau ravine les parcelles, emporte la terre fine et crée des rigoles d'érosion. Il faut adapter le débit à la pente et à la capacité d'infiltration du sol.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — L'irrigation par aspersion",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le principe</h3>
+        <p>L'irrigation par <strong>aspersion</strong> consiste à projeter l'eau au-dessus des cultures, comme une pluie artificielle, à l'aide d'asperseurs alimentés sous pression.</p>
+
+        <h4>Éléments d'un système d'aspersion</h4>
+        <ul>
+          <li><strong>Source d'eau</strong> : rivière, puits, réservoir.</li>
+          <li><strong>Pompe</strong> : fournit la pression nécessaire (2 à 4 bars selon les asperseurs).</li>
+          <li><strong>Réseau de tuyaux</strong> : conduit l'eau vers les asperseurs (souvent en PVC ou en polyethylene).</li>
+          <li><strong>Asperseurs</strong> : dispositifs rotatifs ou fixes qui pulvérisent l'eau.</li>
+          <li><strong>Vannes de secteur</strong> : permettent d'irriguer une zone à la fois.</li>
+        </ul>
+
+        <h4>Conditions favorables</h4>
+        <ul>
+          <li>Parcelles planes ou peu pentues.</li>
+          <li>Cultures basses (céréales, maraîchage, prairies).</li>
+          <li>Vent faible (le vent déforme la répartition).</li>
+          <li>Disponibilité d'énergie pour la pompe.</li>
+        </ul>
+
+        <h4>Avantages</h4>
+        <ul>
+          <li>Bonne uniformité d'arrosage.</li>
+          <li>Possibilité d'irriguer des parcelles irrégulières.</li>
+          <li>Utilisable pour lutter contre le gel (aspersion antigel).</li>
+        </ul>
+
+        <h4>Inconvénients</h4>
+        <ul>
+          <li>Coût énergétique élevé (pompage + pression).</li>
+          <li>Pertes par évaporation et par dérive au vent.</li>
+          <li>Favorise les maladies foliaires (mouillage du feuillage).</li>
+          <li>Investissement initial élevé.</li>
+        </ul>
+
+        <h4>Entretien</h4>
+        <ul>
+          <li>Nettoyer les filtres et les buses d'asperseurs.</li>
+          <li>Vérifier la pression au manomètre.</li>
+          <li>Détecter et réparer les fuites.</li>
+          <li>Vidanger le réseau avant les périodes de gel (rare en RDC, sauf en altitude).</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>L'aspersion imite la pluie. Efficace sur les cultures basses, elle exige une pression (2 à 4 bars) et donc une pompe. Elle est plus coûteuse en énergie que le gravitaire mais couvre mieux la parcelle.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — L'irrigation goutte-à-goutte",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le principe</h3>
+        <p>L'irrigation <strong>goutte-à-goutte</strong> (ou micro-irrigation) apporte l'eau directement au pied de chaque plante, goutte après goutte, par l'intermédiaire de goutteurs insérés dans des tuyaux ou des rampes posés au sol.</p>
+
+        <h4>Éléments d'un système goutte-à-goutte</h4>
+        <ul>
+          <li><strong>Source d'eau</strong> et <strong>pompe</strong> (ou réservoir surélevé).</li>
+          <li><strong>Filtre</strong> (à sable ou à tamis) : retient les particules qui boucheraient les goutteurs.</li>
+          <li><strong>Injecteur d'engrais</strong> (fertigation) : permet d'apporter les nutriments avec l'eau.</li>
+          <li><strong>Rampe principale</strong> puis <strong>rampes secondaires</strong>.</li>
+          <li><strong>Goutteurs</strong> : débit de 1 à 8 L/h selon les modèles.</li>
+          <li><strong>Vannes de secteur</strong> : pour irriguer par zone.</li>
+        </ul>
+
+        <h4>Avantages</h4>
+        <ul>
+          <li>Économie d'eau de 30 à 60 % par rapport au gravitaire.</li>
+          <li>Pas de mouillage du feuillage → moins de maladies fongiques.</li>
+          <li>Moins de mauvaises herbes entre les rangs (le sol reste sec).</li>
+          <li>Possibilité de fertigation (apport d'engrais avec l'eau).</li>
+          <li>Adapté aux sols difficiles (sableux, pentus, caillouteux).</li>
+        </ul>
+
+        <h4>Inconvénients</h4>
+        <ul>
+          <li>Investissement initial élevé.</li>
+          <li>Entretien rigoureux obligatoire : un goutteur bouché prive la plante d'eau.</li>
+          <li>Sensible aux rongeurs qui percent les tuyaux.</li>
+          <li>Nécessite une eau propre (filtre indispensable).</li>
+        </ul>
+
+        <h4>Entretien</h4>
+        <ul>
+          <li>Nettoyer le filtre chaque semaine.</li>
+          <li>Purger les rampes en fin de saison.</li>
+          <li>Détecter les goutteurs bouchés (observation de la plante, débit).</li>
+          <li>Remplacer les tuyaux endommagés.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Le goutte-à-goutte est la technique la plus économe en eau, idéale pour le maraîchage et les cultures de valeur. Son point faible est l'entretien : sans filtre et sans nettoyage, les goutteurs se bouchent et l'installation devient inutile.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — Concevoir et entretenir un système d'irrigation",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Étapes de conception d'un système d'irrigation</h3>
+        <p>Concevoir un système d'irrigation, c'est répondre à une série de questions dans un ordre logique.</p>
+
+        <h4>1. Évaluer les besoins en eau des cultures</h4>
+        <p>Chaque culture a des besoins différents selon son stade de développement. On estime les besoins journaliers (mm/jour, c'est-à-dire L/m²/jour) à partir de références locales. Par exemple, une culture maraîchère en saison sèche peut demander 4 à 6 mm/jour, soit 40 à 60 m³/ha/jour.</p>
+
+        <h4>2. Évaluer la ressource disponible</h4>
+        <p>Quel est le débit de la source en saison sèche (étiage) ? Le volume disponible est-il suffisant pour couvrir la surface à irriguer sans assécher la source ?</p>
+
+        <h4>3. Choisir le type d'irrigation</h4>
+        <p>Selon la culture, le sol, la topographie, la ressource en eau et le budget : gravitaire, aspersion ou goutte-à-goutte.</p>
+
+        <h4>4. Dimensionner le réseau</h4>
+        <ul>
+          <li>Calculer le débit nécessaire (Q = surface × besoin journalier / temps d'arrosage).</li>
+          <li>Choisir le diamètre des tuyaux en fonction du débit et de la longueur (pertes de charge).</li>
+          <li>Choisir la pompe (débit + hauteur totale).</li>
+          <li>Prévoir les filtres, vannes et organes de régulation.</li>
+        </ul>
+
+        <h4>5. Estimer le coût</h4>
+        <p>Matériel (tuyaux, pompe, asperseurs, goutteurs), main-d'œuvre, énergie, entretien annuel.</p>
+
+        <h4>6. Prévoir l'entretien</h4>
+        <p>Un planning d'entretien précis (nettoyage des filtres, curage des canaux, réparation des fuites) évite les pannes et prolonge la durée de vie du système.</p>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Exemple de calcul</div>
+        <p><strong>Énoncé :</strong> une parcelle de 0,5 ha (5 000 m²) doit recevoir 4 mm/jour de lame d'eau. Quel est le volume journalier nécessaire ? Si l'on dispose d'une motopompe de 5 m³/h, combien d'heures faut-il pomper par jour ?</p>
+        <p><strong>Étape 1 — Volume journalier :</strong> 4 mm = 4 L/m²/jour. Volume = 5 000 m² × 4 L/m² = 20 000 L = 20 m³/jour.</p>
+        <p><strong>Étape 2 — Temps de pompage :</strong> t = 20 m³ / 5 m³/h = 4 h/jour.</p>
+        <p><strong>Interprétation :</strong> la motopompe doit fonctionner 4 heures par jour. Il faut vérifier que la source peut fournir 20 m³/jour sans s'épuiser.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Irriguer sans mesurer les besoins des cultures : le gaspillage d'eau et le risque de maladies fongiques augmentent, et le coût d'exploitation explose. Un système bien conçu se calcule, il ne s'improvise pas.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre IV — Le drainage agricole",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Qu'est-ce que le drainage ?</h3>
+        <p>Le <strong>drainage agricole</strong> est l'évacuation de l'excès d'eau du sol pour éviter l'asphyxie des racines et favoriser la production. Un sol engorgé manque d'oxygène : les racines ne respirent plus, les micro-organismes aérobies meurent, la matière organique fermente et libère des substances toxiques. La plante jaunit, s'étiole, meurt.</p>
+
+        <h3>Les techniques de drainage</h3>
+
+        <h4>1. Fossés à ciel ouvert</h4>
+        <p>Fossés creusés en périphérie ou à l'intérieur de la parcelle pour évacuer l'eau vers un exutoire (rivière, ravine). Simples, économiques, adaptés aux sols argileux et aux bas-fonds.</p>
+
+        <h4>2. Drains enterrés</h4>
+        <p>Tuyaux perforés (PVC, terre cuite, bambou) enterrés à 60–100 cm de profondeur, espacés de plusieurs mètres. L'eau s'infiltre par les perforations et s'écoule vers un exutoire. Plus coûteux mais plus durable et moins gênant pour les cultures.</p>
+
+        <h4>3. Drainage de surface</h4>
+        <p>Aménagement du terrain pour favoriser l'écoulement : billons, planches surélevées, pentes douces, rigoles de surface. Adapté aux cultures sensibles à l'excès d'eau (maraîchage).</p>
+
+        <h3>Entretien</h3>
+        <ul>
+          <li>Curage régulier des fossés (enlèvement de la vase et des herbes).</li>
+          <li>Vérification de l'écoulement des drains (débouché libre).</li>
+          <li>Prévention de l'obstruction (grillages aux exutoires, regard de visite).</li>
+          <li>Réparation des berges effondrées.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Négliger le drainage dans les zones humides : l'excès d'eau réduit les rendements, favorise les maladies (pourriture des racines, mildiou) et peut tuer les cultures. Dans un bas-fond, le drainage est aussi important que l'irrigation.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre V — L'aménagement des bas-fonds",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Qu'est-ce qu'un bas-fond ?</h3>
+        <p>Un <strong>bas-fond</strong> est une zone basse du relief, souvent humide, où l'eau s'accumule naturellement en saison des pluies. Bien aménagé, il devient une zone de production très intéressante : riziculture, maraîchage, cultures de contre-saison.</p>
+
+        <h4>Diagnostic préalable</h4>
+        <p>Avant tout aménagement, il faut étudier :</p>
+        <ul>
+          <li><strong>Topographie</strong> : pente, superficie, forme du bas-fond.</li>
+          <li><strong>Sol</strong> : texture, profondeur, fertilité, perméabilité.</li>
+          <li><strong>Hydrologie</strong> : source de l'eau, débit en saison sèche et en saison des pluies, hauteur d'inondation, vitesse d'écoulement.</li>
+          <li><strong>Contraintes</strong> : risque d'inondation, érosion en amont, envasement, accès.</li>
+          <li><strong>Usages actuels</strong> : qui utilise la zone ? pour quoi faire ?</li>
+        </ul>
+
+        <h4>Travaux d'aménagement</h4>
+        <ul>
+          <li><strong>Drainage</strong> : fossés pour évacuer l'excès d'eau vers un exutoire.</li>
+          <li><strong>Diguettes</strong> : petites levées de terre pour retenir l'eau d'irrigation ou bloquer la crue.</li>
+          <li><strong>Canaux d'irrigation</strong> : amener l'eau aux parcelles en saison sèche.</li>
+          <li><strong>Protection contre l'érosion</strong> : cordons pierreux, bandes enherbées en amont.</li>
+          <li><strong>Nivellement</strong> : aplanir les parcelles pour une meilleure répartition de l'eau.</li>
+          <li><strong>Ouvrages de régulation</strong> : petits barrages, seuils déversants, buses.</li>
+        </ul>
+
+        <h4>Mise en valeur</h4>
+        <ul>
+          <li>Choix des cultures adaptées : riz (submersion contrôlée), maraîchage (tomate, oignon, chou), maïs de contre-saison.</li>
+          <li>Calendrier cultural adapté au régime hydrique.</li>
+          <li>Gestion collective de l'eau (comité d'irrigants, règles de partage).</li>
+          <li>Entretien régulier des ouvrages.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Aménager un bas-fond sans étude préalable est une erreur coûteuse. Les travaux peuvent être inadaptés au régime hydrique (trop de drainage en amont, inondation en aval), ou déplacer le problème sans le résoudre. Le diagnostic préalable est indispensable.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VI — La mécanisation agricole",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Qu'est-ce que la mécanisation agricole ?</h3>
+        <p>La <strong>mécanisation agricole</strong> est l'utilisation d'équipements motorisés (ou améliorés) pour remplacer ou assister le travail humain et animal dans les opérations agricoles : préparation du sol, semis, irrigation, récolte, transformation, transport.</p>
+
+        <h4>Les principaux équipements</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Équipement</th>
+              <th>Usage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Motopompe</td><td>Irrigation, drainage, transfert d'eau</td></tr>
+            <tr><td>Tracteur</td><td>Labour, hersage, transport, semi-mécanisé</td></tr>
+            <tr><td>Moulin à grains</td><td>Mouture du maïs, du manioc, du mil</td></tr>
+            <tr><td>Décortiqueuse</td><td>Décorticage du riz, de l'arachide</td></tr>
+            <tr><td>Batteuse</td><td>Battage des céréales</td></tr>
+            <tr><td>Pulvérisateur</td><td>Application de produits phytosanitaires</td></tr>
+            <tr><td>Motoculteur</td><td>Labour léger, maraîchage</td></tr>
+          </tbody>
+        </table>
+
+        <h4>Entretien courant</h4>
+        <ul>
+          <li><strong>Nettoyage</strong> après chaque usage (surtout les équipements en contact avec les grains ou les produits).</li>
+          <li><strong>Graissage</strong> des pièces mobiles (roulements, axes, chaînes).</li>
+          <li><strong>Vidange</strong> de l'huile moteur à intervalles réguliers.</li>
+          <li><strong>Remplacement</strong> des pièces d'usure (courroies, filtres, bougies, lames).</li>
+          <li><strong>Stockage</strong> à l'abri de l'humidité et de la poussière.</li>
+        </ul>
+
+        <h4>Sécurité</h4>
+        <ul>
+          <li>Protéger les parties mobiles (courroies, pignons, arbres de transmission).</li>
+          <li>Former les utilisateurs (pas d'improvisation).</li>
+          <li>Porter des équipements de protection (gants, lunettes, chaussures fermées).</li>
+          <li>Ne jamais intervenir sur une machine en marche.</li>
+          <li>Ne pas laisser les enfants approcher.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Utiliser un équipement sans entretien régulier est une erreur coûteuse. Les pannes se multiplient, la durée de vie se raccourcit, les coûts de réparation explosent et la productivité chute. Un carnet d'entretien simple (date, opération, intervenant) est recommandé pour chaque machine.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VII — Les constructions rurales : étables et poulaillers",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les bâtiments d'élevage</h3>
+        <p>Un bon bâtiment d'élevage protège les animaux des intempéries, facilite le travail de l'éleveur et limite les maladies. Sa conception dépend de l'espèce, de l'effectif, du climat et des matériaux disponibles.</p>
+
+        <h4>L'étable (bovins)</h4>
+        <p>Une étable fonctionnelle doit comporter :</p>
+        <ul>
+          <li><strong>Orientation</strong> : est-ouest pour éviter l'ensoleillement direct (chaleur) et favoriser la ventilation.</li>
+          <li><strong>Ventilation</strong> : ouvertures hautes et latérales, sans courants d'air sur les animaux.</li>
+          <li><strong>Sol</strong> : légèrement incliné (2 %) pour l'écoulement des urines, en béton ou en terre battue stable.</li>
+          <li><strong>Abreuvoirs</strong> : accessibles, propres, en nombre suffisant.</li>
+          <li><strong>Auge</strong> : pour l'alimentation, à l'abri de la pluie.</li>
+          <li><strong>Aire d'exercice</strong> : espace extérieur clôturé.</li>
+          <li><strong>Fosse à fumier</strong> : pour stocker le fumier et produire du compost.</li>
+        </ul>
+
+        <h4>Le poulailler</h4>
+        <p>Un poulailler fonctionnel doit comporter :</p>
+        <ul>
+          <li><strong>Densité</strong> : 6 à 10 poulets/m² selon la race et le système.</li>
+          <li><strong>Ventilation</strong> : ouvertures grillagées (protection contre prédateurs).</li>
+          <li><strong>Éclairage</strong> : naturel en journée, complément artificiel possible en ponte.</li>
+          <li><strong>Nids</strong> : un nid pour 5 poules pondeuses.</li>
+          <li><strong>Perchoirs</strong> : pour le repos nocturne.</li>
+          <li><strong>Litière</strong> : paille, copeaux, balles de riz ; renouvellement régulier.</li>
+          <li><strong>Mangeoires et abreuvoirs</strong> : propres et accessibles.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Construire un bâtiment d'élevage sans ventilation ni orientation adaptée est une erreur fréquente. Les animaux souffrent de chaleur, l'humidité s'accumule, les maladies respiratoires explosent. Une étable ou un poulailler bien conçu coûte à peine plus cher qu'un bâtiment médiocre, mais évite des pertes considérables.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VII — Magasins de stockage, silos et hangars",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le magasin de stockage</h3>
+        <p>Le <strong>magasin de stockage</strong> conserve les récoltes (grains, tubercules, légumineuses) après la récolte, en les protégeant de l'humidité, des rongeurs, des insectes et du vol.</p>
+        <p>Caractéristiques essentielles :</p>
+        <ul>
+          <li><strong>Étanchéité</strong> : toit sans fuite, murs solides, sol surélevé.</li>
+          <li><strong>Ventilation</strong> : ouvertures grillagées hautes et basses pour renouveler l'air et évacuer l'humidité.</li>
+          <li><strong>Protection contre les rongeurs</strong> : grillages fins, bas de murs sans fissure, portes bien ajustées.</li>
+          <li><strong>Palettes surélevées</strong> : pour isoler les sacs du sol et limiter l'humidité et les insectes rampants.</li>
+          <li><strong>Protection contre le soleil direct</strong> : pour éviter les échauffements.</li>
+        </ul>
+
+        <h3>Le silo</h3>
+        <p>Le <strong>silo</strong> est un ouvrage de stockage de grande capacité, généralement vertical (métallique ou en béton), destiné aux grains secs (maïs, riz, blé, sorgho). Il assure une meilleure conservation que le magasin classique grâce à :</p>
+        <ul>
+          <li>Une ventilation contrôlée.</li>
+          <li>Une étanchéité renforcée.</li>
+          <li>Un contrôle de l'humidité et de la température.</li>
+          <li>Une protection contre les insectes et les rongeurs.</li>
+        </ul>
+
+        <h3>Le hangar</h3>
+        <p>Le <strong>hangar</strong> est une construction légère, ouverte sur les côtés, destinée à abriter le matériel agricole, les récoltes en cours de séchage, ou à servir d'atelier. Il peut être en charpente métallique, en bois ou en matériaux locaux.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Construire un magasin sans protection contre l'humidité et les rongeurs est une erreur grave : les pertes post-récolte peuvent atteindre 30 à 40 % dans un stockage mal conçu. Le coût d'un bon magasin est rapidement rentabilisé par les pertes évitées.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VIII — Pistes rurales et ouvrages d'art simples",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les pistes rurales</h3>
+        <p>Les <strong>pistes rurales</strong> sont des voies de desserte des zones de production agricole. Elles permettent l'écoulement des produits vers les marchés, l'approvisionnement en intrants et l'accès des services (santé, éducation, vulgarisation).</p>
+
+        <h4>Construction</h4>
+        <ul>
+          <li><strong>Choix du tracé</strong> : suivre le relief, éviter les zones inondables, minimiser les pentes fortes.</li>
+          <li><strong>Largeur</strong> : 4 à 6 m pour une circulation à double sens.</li>
+          <li><strong>Drainage</strong> : fossés latéraux, buses de traversée, radiers.</li>
+          <li><strong>Revêtement</strong> : terre stabilisée, gravier, latérite compactée (pistes rurales courantes en RDC).</li>
+        </ul>
+
+        <h4>Entretien</h4>
+        <ul>
+          <li>Débroussaillage régulier des abords.</li>
+          <li>Comblement des nids-de-poule avec de la latérite.</li>
+          <li>Curage des fossés de drainage.</li>
+          <li>Réparation rapide des dégradations après la saison des pluies.</li>
+        </ul>
+
+        <h3>Les ouvrages d'art simples</h3>
+        <p>Un <strong>ouvrage d'art</strong> est un ouvrage construit pour franchir un obstacle (cours d'eau, ravine, dépression) sans interrompre la voie.</p>
+        <ul>
+          <li><strong>Dalot</strong> : buse ou ensemble de buses en béton ou en acier sous la piste, pour laisser passer l'eau d'un petit ruisseau.</li>
+          <li><strong>Ponceau</strong> : petit pont pour franchir une ravine ou un ruisseau plus large.</li>
+          <li><strong>Radier</strong> : dallage en béton au fond d'un cours d'eau peu profond, permettant le passage en saison sèche.</li>
+          <li><strong>Buse</strong> : tuyau de gros diamètre en béton ou en tôle, utilisé comme dalot ou comme conduit.</li>
+        </ul>
+
+        <h4>Dimensionnement</h4>
+        <p>Le dalot doit être dimensionné pour laisser passer le débit de crue : un sous-dimensionnement provoque l'inondation de la piste ou son effondrement ; un surdimensionnement coûte inutilement cher. On estime le débit de crue à partir de la plus forte pluie observée dans la région et de la surface drainée.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Négliger l'entretien des pistes rurales : elles deviennent impraticables en saison des pluies, isolant les zones de production, provoquant la perte de récoltes périssables et faisant grimper les prix des denrées sur les marchés urbains. Une piste entretenue coûte bien moins cher qu'une piste à reconstruire.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre IX — L'évaluation technico-économique d'un aménagement",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Pourquoi évaluer avant de réaliser ?</h3>
+        <p>Tout aménagement coûte cher. Avant de lancer les travaux, il faut vérifier que le projet est <strong>techniquement faisable</strong>, <strong>économiquement rentable</strong> et <strong>socialement accepté</strong>. Une étude technico-économique préalable évite les investissements inutiles ou non remboursables.</p>
+
+        <h4>1. Le calcul des coûts</h4>
+        <p>On distingue :</p>
+        <ul>
+          <li><strong>Coût d'investissement</strong> (CAPEX) : matériaux, équipements, main-d'œuvre de construction, transport, études.</li>
+          <li><strong>Coût d'exploitation</strong> (OPEX) : énergie (carburant, électricité), main-d'œuvre permanente, entretien, pièces de rechange, assurances.</li>
+          <li><strong>Coût de renouvellement</strong> : remplacement des équipements en fin de vie.</li>
+        </ul>
+
+        <h4>2. La faisabilité technique</h4>
+        <p>Les solutions proposées sont-elles adaptées aux contraintes du milieu ? Le sol permet-il la construction ? La ressource en eau est-elle suffisante ? La main-d'œuvre qualifiée est-elle disponible ? Les matériaux sont-ils accessibles ?</p>
+
+        <h4>3. La faisabilité économique</h4>
+        <p>On compare les coûts totaux aux bénéfices attendus (augmentation de la production, réduction des pertes, gain de temps, valorisation de nouvelles terres).</p>
+
+        <h4>Indicateurs usuels</h4>
+        <ul>
+          <li><strong>Coût de l'aménagement par hectare</strong> : permet de comparer plusieurs options.</li>
+          <li><strong>Délai de retour sur investissement</strong> : nombre d'années nécessaires pour que les bénéfices cumulés égalent l'investissement.</li>
+          <li><strong>Marge brute annuelle</strong> : différence entre les recettes et les charges d'exploitation.</li>
+          <li><strong>Valeur actuelle nette (VAN)</strong> et <strong>taux de rentabilité interne (TRI)</strong> pour les projets complexes.</li>
+        </ul>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Exemple simplifié</div>
+        <p><strong>Énoncé :</strong> un agriculteur envisage un système goutte-à-goutte de 0,5 ha coûtant 2 500 USD. Il espère augmenter sa production de tomate de 4 t/an, vendues à 300 USD/t, soit 1 200 USD de recettes supplémentaires par an. Les charges d'exploitation (énergie, entretien, filtres) sont de 200 USD/an. Quel est le délai de retour sur investissement ?</p>
+        <p><strong>Calcul :</strong> Marge nette annuelle = 1 200 − 200 = 1 000 USD/an.</p>
+        <p><strong>Délai de retour</strong> = 2 500 / 1 000 = <strong>2,5 ans</strong>.</p>
+        <p><strong>Interprétation :</strong> si l'installation dure au moins 5 ans, elle est rentable. Il faut toutefois vérifier que la production supplémentaire est réaliste et que le prix de vente est stable.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Lancer un aménagement sans étude économique préalable est une erreur fréquente et coûteuse. L'investissement peut ne pas être rentable, ou l'agriculteur peut ne pas pouvoir rembourser le crédit contracté. Une évaluation honnête vaut mieux qu'un projet qui échoue.</p>
+      </div>
+    `
+  },
+  {
+    title: "Synthèse — Aménager pour produire durablement",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Synthèse générale</div>
+        <h3>Les neuf compétences du technicien en génie rural</h3>
+        <ol>
+          <li><strong>Comprendre l'hydraulique</strong> : débit, pression, hauteur de chute, perte de charge.</li>
+          <li><strong>Choisir une pompe</strong> adaptée au débit, à la hauteur et à l'énergie disponible.</li>
+          <li><strong>Concevoir une irrigation</strong> (gravitaire, aspersion, goutte-à-goutte) selon la culture, le sol, le budget.</li>
+          <li><strong>Concevoir un drainage</strong> adapté aux zones humides et aux bas-fonds.</li>
+          <li><strong>Aménager un bas-fond</strong> après diagnostic topographique, pédologique et hydrologique.</li>
+          <li><strong>Utiliser et entretenir</strong> les équipements de mécanisation en toute sécurité.</li>
+          <li><strong>Concevoir les bâtiments ruraux</strong> (étables, poulaillers, magasins, silos, hangars).</li>
+          <li><strong>Entretenir les pistes et ouvrages d'art</strong> pour désenclaver les zones de production.</li>
+          <li><strong>Évaluer la faisabilité</strong> technico-économique avant tout investissement.</li>
+        </ol>
+
+        <h3>Tableau récapitulatif</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Domaine</th>
+              <th>Objectif</th>
+              <th>Outil principal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Hydraulique</td>
+              <td>Maîtriser l'eau</td>
+              <td>Pompes, tuyaux, calculs de débit</td>
+            </tr>
+            <tr>
+              <td>Irrigation</td>
+              <td>Compléter la pluie</td>
+              <td>Gravitaire, aspersion, goutte-à-goutte</td>
+            </tr>
+            <tr>
+              <td>Drainage</td>
+              <td>Évacuer l'excès d'eau</td>
+              <td>Fossés, drains, billons</td>
+            </tr>
+            <tr>
+              <td>Bas-fonds</td>
+              <td>Valoriser les zones humides</td>
+              <td>Diguettes, canaux, ouvrages de régulation</td>
+            </tr>
+            <tr>
+              <td>Mécanisation</td>
+              <td>Réduire la pénibilité</td>
+              <td>Motopompes, moulins, tracteurs</td>
+            </tr>
+            <tr>
+              <td>Constructions</td>
+              <td>Protéger animaux et récoltes</td>
+              <td>Étables, poulaillers, magasins, silos</td>
+            </tr>
+            <tr>
+              <td>Pistes et ouvrages</td>
+              <td>Désenclaver</td>
+              <td>Pistes entretenues, dalots, ponceaux</td>
+            </tr>
+            <tr>
+              <td>Évaluation</td>
+              <td>Rentabiliser</td>
+              <td>Calcul des coûts, retour sur investissement</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bloc cas">
+        <div class="bloc-label">Étude de cas (cas pédagogique)</div>
+        <p>« Un élève de 4<sup>e</sup> génie rural à Kisangani conçoit un système d'irrigation goutte-à-goutte pour une parcelle maraîchère de 0,5 ha. Il calcule le débit nécessaire, choisit une motopompe, dimensionne les tuyaux, estime le coût et présente son projet à la classe. »</p>
+        <p><strong>Analyse :</strong> la démarche est correcte. Elle suit les étapes : besoin en eau, ressource disponible, choix du type d'irrigation, dimensionnement, estimation des coûts, évaluation de la rentabilité. Le projet est présentable devant un bailleur ou une coopérative.</p>
+      </div>
+
+      <div class="bloc sources">
+        <div class="bloc-label">Sources du cours</div>
+        <ul>
+          <li>Manuels Scolaires RDC, <em>Génie Rural, 4<sup>e</sup> Année, Option Agriculture Générale</em>, Édition 2025.</li>
+          <li>Fiches pédagogiques officielles — Cours de Génie Rural, 4<sup>e</sup> Année, Option Agriculture Générale, Édition 2025.</li>
+          <li>Curriculum de la Filière Agriculture Générale, MEPST/PEQPESU (2017).</li>
+          <li>FAO — références sur l'irrigation et la gestion de l'eau.</li>
+          <li>Ministère de l'Agriculture de la RDC, INERA, services techniques agricoles.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Évaluation finale — Génie Rural",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Consigne</div>
+        <p>Répondez aux questions ci-dessous en sélectionnant la bonne réponse parmi les quatre propositions. Le QCM couvre l'ensemble du cours. Cliquez ensuite sur « Valider mes réponses » pour obtenir votre score.</p>
+      </div>
+
+      <div class="quiz-container">
+        <div id="quizQuestions"></div>
+        <button id="submitQuiz" class="quiz-btn-submit">
+          Valider mes réponses
+        </button>
+        <div id="quizResult" class="quiz-result"></div>
+      </div>
+    `
+  }
+];
+const questions = [
+  {
+    text: "Le génie rural concerne :",
+    options: [
+      "Uniquement les cultures et les récoltes",
+      "Les aménagements, l'hydraulique agricole et les constructions rurales",
+      "Uniquement l'élevage",
+      "La médecine vétérinaire"
+    ],
+    correct: 1
+  },
+  {
+    text: "Le débit est défini comme :",
+    options: [
+      "La quantité d'eau par unité de temps",
+      "La pression dans le tuyau",
+      "La hauteur de chute",
+      "La longueur du réseau"
+    ],
+    correct: 0
+  },
+  {
+    text: "Un réservoir de 5 m³ se vide en 1 heure. Quel est le débit moyen en L/s ?",
+    options: [
+      "Environ 1,39 L/s",
+      "Environ 5 L/s",
+      "Environ 0,5 L/s",
+      "Environ 50 L/s"
+    ],
+    correct: 0
+  },
+  {
+    text: "La pression de l'eau s'exprime couramment en :",
+    options: [
+      "Litres et mètres cubes",
+      "Bars ou mètres de colonne d'eau",
+      "Kilogrammes et newtons",
+      "Degrés Celsius"
+    ],
+    correct: 1
+  },
+  {
+    text: "Une hauteur d'eau de 10 m correspond approximativement à une pression de :",
+    options: ["0,1 bar", "1 bar", "10 bars", "100 bars"],
+    correct: 1
+  },
+  {
+    text: "La perte de charge dans une canalisation est due principalement :",
+    options: [
+      "Au vent",
+      "Aux frottements de l'eau contre la paroi du tuyau",
+      "Au poids du réservoir",
+      "À la couleur du tuyau"
+    ],
+    correct: 1
+  },
+  {
+    text: "Parmi les facteurs suivants, lequel augmente la perte de charge ?",
+    options: [
+      "Un diamètre de tuyau plus grand",
+      "Un tuyau plus lisse",
+      "Un tuyau plus long et de plus petit diamètre",
+      "Une baisse du débit"
+    ],
+    correct: 2
+  },
+  {
+    text: "Une motopompe sert à :",
+    options: [
+      "Labourer le sol",
+      "Élever l'eau ou augmenter sa pression",
+      "Récolter les grains",
+      "Stocker les récoltes"
+    ],
+    correct: 1
+  },
+  {
+    text: "L'irrigation gravitaire utilise principalement :",
+    options: [
+      "La pente du terrain pour faire circuler l'eau",
+      "Une pompe à haute pression",
+      "Un système de goutteurs",
+      "Un asperseur rotatif"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'irrigation par aspersion :",
+    options: [
+      "Nécessite une pression et une pompe",
+      "Ne consomme aucune énergie",
+      "Est réservée au riz submergé",
+      "Ne mouille jamais le feuillage"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'irrigation goutte-à-goutte est particulièrement :",
+    options: [
+      "Économe en eau",
+      "Très gourmande en eau",
+      "Inadaptée au maraîchage",
+      "Sans nécessité de filtre"
+    ],
+    correct: 0
+  },
+  {
+    text: "Un filtre dans un système goutte-à-goutte sert à :",
+    options: [
+      "Chauffer l'eau",
+      "Retenir les particules qui boucheraient les goutteurs",
+      "Augmenter le débit",
+      "Fertiliser le sol"
+    ],
+    correct: 1
+  },
+  {
+    text: "Le drainage agricole a pour but :",
+    options: [
+      "D'évacuer l'excès d'eau du sol",
+      "D'apporter plus d'eau aux cultures",
+      "D'augmenter la salinité",
+      "De compacter le sol"
+    ],
+    correct: 0
+  },
+  {
+    text: "Un bas-fond est :",
+    options: [
+      "Une zone basse propice à l'aménagement agricole",
+      "Une montagne élevée",
+      "Un désert aride",
+      "Une forêt dense"
+    ],
+    correct: 0
+  },
+  {
+    text: "Avant d'aménager un bas-fond, il faut d'abord :",
+    options: [
+      "Réaliser un diagnostic topographique, pédologique et hydrologique",
+      "Creuser immédiatement des canaux",
+      "Planter des arbres",
+      "Construire un silo"
+    ],
+    correct: 0
+  },
+  {
+    text: "La mécanisation agricole comprend notamment :",
+    options: [
+      "Uniquement les tracteurs",
+      "Motopompes, tracteurs, moulins, décortiqueuses",
+      "Uniquement les moulins",
+      "Uniquement les pompes manuelles"
+    ],
+    correct: 1
+  },
+  {
+    text: "L'entretien courant d'une motopompe comprend :",
+    options: [
+      "Le nettoyage du filtre et la vidange de l'huile moteur",
+      "Le démontage complet après chaque usage",
+      "L'abandon en fin de saison",
+      "La peinture annuelle uniquement"
+    ],
+    correct: 0
+  },
+  {
+    text: "Une étable fonctionnelle doit comporter :",
+    options: [
+      "Une ventilation adaptée et une orientation favorisant l'ombre",
+      "Une fermeture totale sans ouverture",
+      "Une absence d'abreuvoir",
+      "Un sol parfaitement horizontal"
+    ],
+    correct: 0
+  },
+  {
+    text: "Un magasin de stockage doit être :",
+    options: [
+      "Étanche, ventilé et protégé contre les rongeurs",
+      "Humide et sombre",
+      "Ouvert aux rongeurs",
+      "Sans palettes pour les sacs"
+    ],
+    correct: 0
+  },
+  {
+    text: "Un silo sert principalement à stocker :",
+    options: [
+      "Les grains secs (maïs, riz)",
+      "Les animaux",
+      "L'eau d'irrigation",
+      "Les outils agricoles"
+    ],
+    correct: 0
+  },
+  {
+    text: "Une piste rurale bien entretenue permet surtout :",
+    options: [
+      "De désenclaver les zones de production",
+      "D'irriguer les parcelles",
+      "D'élever des animaux",
+      "De mesurer le pH du sol"
+    ],
+    correct: 0
+  },
+  {
+    text: "Parmi les ouvrages suivants, lequel est un ouvrage d'art simple ?",
+    options: [
+      "Un tracteur",
+      "Un dalot",
+      "Un moulin à grains",
+      "Une étable"
+    ],
+    correct: 1
+  },
+  {
+    text: "Une buse, dans une piste rurale, sert à :",
+    options: [
+      "Laisser passer l'eau d'un ruisseau sous la piste",
+      "Alimenter le bétail",
+      "Mesurer la pression",
+      "Filtrer l'eau d'irrigation"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'évaluation technico-économique d'un aménagement sert à :",
+    options: [
+      "Ignorer les coûts d'investissement",
+      "Vérifier sa faisabilité technique et sa rentabilité économique",
+      "Éviter les études préalables",
+      "Construire sans plan"
+    ],
+    correct: 1
+  },
+  {
+    text: "Le délai de retour sur investissement se calcule en divisant :",
+    options: [
+      "La marge nette annuelle par l'investissement initial",
+      "L'investissement initial par la marge nette annuelle",
+      "Les charges par les recettes",
+      "Le débit par la pression"
+    ],
+    correct: 1
+  },
+  {
+    text: "La plaine de la Ruzizi est une zone :",
+    options: [
+      "Rizicole irriguée",
+      "Désertique",
+      "Exclusivement minière",
+      "Sans activité agricole"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'objectif principal du génie rural en 4<sup>e</sup> Humanité agricole est de rendre l'élève capable de :",
+    options: [
+      "Concevoir, réaliser et gérer les infrastructures rurales et les aménagements simples",
+      "Étudier uniquement la littérature",
+      "Gérer un magasin de commerce",
+      "Construire des routes nationales"
+    ],
+    correct: 0
+  }
+];
+
+try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+        questions.forEach(function (q) {
+            if (!q.text) q.text = q.question || q.q || q.enonce || q.titre || "";
+            if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+            if (typeof q.correct === "undefined") {
+                if (typeof q.answer !== "undefined") q.correct = q.answer;
+                else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+            }
+        });
+    }
+} catch (e) {}
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+const pageTitle = document.getElementById('pageTitle');
+pageTitle.textContent = "ECOLIA · " + COURSE_TITLE;
+document.title = "ECOLIA — " + COURSE_TITLE;
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim() || slides.length === 0) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp("(" + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ")", 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderEmptyState() {
+    contentDiv.innerHTML = '<div class="empty-state"><div class="icon">·</div><span class="tag">Bientôt disponible</span><h2>' + COURSE_TITLE + '</h2><p>Ce cours est en préparation. Le contenu sera ajouté prochainement.</p></div>';
+    slideCounterSpan.textContent = '0/0';
+    progressFill.style.width = '0%';
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    counterSpan.textContent = '—';
+}
+
+function renderQuiz() {
+    const qc = document.getElementById('quizQuestions');
+    if (!qc) return;
+    if (typeof questions === 'undefined' || questions.length === 0) {
+        qc.innerHTML = '<p style="color:#666;font-style:italic;">Quiz bientot disponible.</p>';
+        return;
+    }
+    let html = '';
+    questions.forEach((q, i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o, k) => {
+            html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>';
+        });
+        html += '</div>';
+    });
+    qc.innerHTML = html;
+    const submitBtn = document.getElementById('submitQuiz');
+    if (submitBtn) {
+        submitBtn.onclick = () => {
+            let score = 0;
+            questions.forEach((q, i) => {
+                const s = document.querySelector('input[name="q' + i + '"]:checked');
+                if (s && parseInt(s.value) === q.correct) score++;
+            });
+            const pct = Math.round(score/questions.length*100);
+            document.getElementById('quizResult').innerHTML =
+                '<div style="background:var(--bg2);padding:16px;border-radius:10px;margin-top:14px;">' +
+                '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong></div>';
+        };
+    }
+}
+
+function renderSlide(index, keepHighlight) {
+    if (keepHighlight === undefined) keepHighlight = true;
+    if (slides.length === 0) { renderEmptyState(); return; }
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    if (index === slides.length - 1) renderQuiz();
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    if (slides.length === 0) return;
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (slides.length && currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (slides.length && currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+<!-- ECOLIA_IMAGE_LOADER_START -->
+<script>
+(function () {
+  var SITE = "https://ecolia-course.github.io/";
+  var NATIVE = false;
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function abs(u) { return /^(https?:|data:|blob:)/i.test(u) ? u : (NATIVE ? SITE + u.replace(/^(\.\/|\/)+/, "") : u); }
+  function ext(u) { var m = String(u).split("?")[0].match(/\.(jpe?g|png|gif|webp|svg)$/i); return m ? m[1].toLowerCase() : "jpg"; }
+  function hide(img) { img.onerror = null; img.style.display = "none"; }
+  var table = null, queue = [], queued = {}, running = false;
+  function enqueue(full, fn) {
+    if (queued[fn]) return;
+    queued[fn] = 1; queue.push([full, fn]);
+    if (!running) { running = true; setTimeout(next, 2500); }
+  }
+  function next() {
+    if (!queue.length) { running = false; return; }
+    if (!navigator.onLine) { running = false; return; }
+    var q = queue.shift(), t0 = Date.now();
+    try { CoursInterface.download(q[0], q[1]); } catch (e) { return setTimeout(next, 500); }
+    (function wait() {
+      var ok = false;
+      try { ok = !!CoursInterface.exists(q[1]); } catch (e) {}
+      if (ok) setTimeout(next, 1500);
+      else if (Date.now() - t0 > 40000) next();
+      else setTimeout(wait, 700);
+    })();
+  }
+  function exists(fn) { try { return !!CoursInterface.exists(fn); } catch (e) { return false; } }
+  function show(img) {
+    if (!table || img.getAttribute("data-ecolia-done")) return;
+    var id = img.getAttribute("data-image-id");
+    var url = table[id];
+    if (typeof url !== "string" || !url.length) { console.warn("ECOLIA : image absente du JSON :", id); return; }
+    img.setAttribute("data-ecolia-done", "1");
+    if (!NATIVE) { img.onerror = function () { hide(img); }; img.setAttribute("src", url); return; }
+    var full = abs(url), fn = "img_" + id + "." + ext(url);
+    if (exists(fn)) {
+      img.onerror = function () {
+        try { CoursInterface["delete"](fn); } catch (e) {}
+        queued[fn] = 0;
+        img.onerror = function () { hide(img); };
+        img.setAttribute("src", full);
+      };
+      img.setAttribute("src", "https://app.local/cours/" + fn);
+    } else {
+      img.onerror = function () { hide(img); };
+      img.setAttribute("src", full);
+      enqueue(full, fn);
+    }
+  }
+  function scan(root) {
+    if (!root || !root.querySelectorAll) return;
+    if (root.matches && root.matches("img[data-image-id]")) show(root);
+    root.querySelectorAll("img[data-image-id]").forEach(show);
+  }
+  function prefetchAll() {
+    var ids = {};
+    try { JSON.stringify(slides).replace(/data-image-id=\\?"([^"\\]+)/g, function (m, id) { ids[id] = 1; }); } catch (e) {}
+    Object.keys(ids).forEach(function (id) {
+      var url = table[id];
+      if (typeof url !== "string" || !url.length) return;
+      var fn = "img_" + id + "." + ext(url);
+      if (!exists(fn)) enqueue(abs(url), fn);
+    });
+  }
+  function start(tbl) {
+    table = tbl;
+    scan(document.body);
+    new MutationObserver(function (muts) {
+      muts.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.nodeType === 1) scan(n); }); });
+    }).observe(document.body, { childList: true, subtree: true });
+    if (NATIVE) prefetchAll();
+  }
+  var JSON_URL = NATIVE ? SITE + "images_ecolia.json" : "images_ecolia.json";
+  var KEY = "ecolia_images_json";
+  fetch(JSON_URL, NATIVE ? { cache: "no-cache" } : undefined)
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (table) { if (NATIVE) lsSet(KEY, JSON.stringify(table)); start(table); })
+    .catch(function (e) {
+      var saved = null;
+      if (NATIVE) { try { saved = JSON.parse(lsGet(KEY) || "null"); } catch (x) {} }
+      if (saved) start(saved);
+      else console.warn("ECOLIA : JSON des images indisponible.", e);
+    });
+})();
+</script>
+<!-- ECOLIA_IMAGE_LOADER_END -->
+
+
+
+<!-- ECOLIA_AUDIO_PLAYER_START -->
+<style>
+  #ecolia-audio-btn, #ecolia-dl-btn {
+    width: 30px; height: 30px; min-width: 30px; padding: 0; margin: 0 4px 0 0;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    cursor: pointer; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent; outline: none;
+  }
+  #ecolia-audio-btn { border: none; background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-dl-btn { border: 1.5px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb); }
+  #ecolia-dl-btn.ecolia-full { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-btn.ecolia-fixed { position: fixed; top: 8px; left: 8px; z-index: 2147483000; }
+  #ecolia-audio-btn:active, #ecolia-dl-btn:active { transform: scale(.92); }
+  #ecolia-audio-btn svg, #ecolia-dl-btn svg { width: 15px; height: 15px; fill: currentColor; pointer-events: none; }
+  #ecolia-audio-btn.ecolia-off, #ecolia-dl-btn.ecolia-off { display: none; }
+  #ecolia-audio-banner {
+    display: none; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0;
+    padding: 8px 14px; font-size: .82rem; line-height: 1.35;
+    background: var(--soft, #eef3fb); color: var(--p1, #123); border-bottom: 1px solid var(--bd, #c9d6ea);
+  }
+  #ecolia-audio-banner.on { display: flex; }
+  #ecolia-audio-banner .eab-txt { flex: 1 1 180px; }
+  #ecolia-audio-banner .eab-act { display: flex; gap: 6px; flex-wrap: wrap; }
+  #ecolia-audio-banner button {
+    border: 1px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb);
+    border-radius: 16px; padding: 5px 12px; font-size: .8rem; cursor: pointer;
+  }
+  #ecolia-audio-banner button.pri { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-banner .eab-bar { display: none; flex-basis: 100%; height: 4px; border-radius: 2px; overflow: hidden; background: var(--bd, #c9d6ea); }
+  #ecolia-audio-banner .eab-bar i { display: block; height: 100%; width: 0; background: var(--p2, #2563eb); transition: width .2s; }
+</style>
+<script>
+(function () {
+  var CFG = {"code":"GenieRural4","base":"https://ecolia-course.github.io/ecolia-media/audio_files/","available":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21],"count":21,"sizeMo":22,"sizes":{"1":1142784,"2":803520,"3":910080,"4":1066944,"5":1169280,"6":962496,"7":1123392,"8":942720,"9":962112,"10":922560,"11":928320,"12":1508352,"13":943296,"14":1043136,"15":1034880,"16":993600,"17":961920,"18":1141056,"19":1501056,"20":1247424,"21":154944},"fallback":{"1":[["fr","Sommaire, Génie Rural. Bienvenue. Le génie rural: aménager l'espace rural pour produire durablement. Le génie rural est l'ensemble des techniques et des connaissances scientifiques appliquées à l'aménagement de l'espace rural, à la maîtrise de l'eau, à la mécanisation agricole et aux constructions nécessaires à la production et à la vie rurales. Sans aménagement, l'agriculteur reste dépendant des aléas climatiques, travaille dans des conditions difficiles et perd une partie de ses récoltes. Ce cours s'adresse aux élèves de 4e Humanité de la section Agricole (Option Agriculture Générale). Il vise à former un futur technicien A2 capable de concevoir, réaliser et gérer les infrastructures rurales et les aménagements simples nécessaires à une production durable, dans le contexte congolais. Objectifs d'apprentissage. À la fin de ce cours, l'élève doit être capable de: Maîtriser les notions de base d'hydraulique agricole (débit, pression, hauteur de chute, perte de charge). Choisir une pompe adaptée à un usage agricole et l'entretenir. Concevoir et entretenir un système d'irrigation simple (gravitaire, aspersion, goutte-à-goutte). Concevoir et entretenir un système de drainage. Aménager un bas-fond pour la production agricole. Utiliser et entretenir les équipements de mécanisation agricole. Concevoir et construire des bâtiments ruraux simples (étables, poulaillers, magasins de stockage, hangars). Entretenir les pistes rurales et les ouvrages d'art simples. Calculer les coûts et évaluer la faisabilité technico-économique d'un aménagement. Grands chapitres du cours. Chapitre I, Introduction au génie rural. Chapitre II, Notions d'hydraulique agricole. Chapitre III, L'irrigation. Chapitre IV, Le drainage agricole. Chapitre V, L'aménagement des bas-fonds. Chapitre VI, La mécanisation agricole. Chapitre VII, Les constructions rurales. Chapitre VIII, Les pistes rurales et ouvrages d'art simples. Chapitre IX, L'évaluation technico-économique des aménagements."]],"2":[["fr","Chapitre I, Introduction au génie rural. Situation-problème. Dans un village de la plaine de la Ruzizi, les riziculteurs obtiennent des rendements faibles. En saison des pluies, l'eau stagne dans les rizières et les plants pourrissent. En saison sèche, l'eau manque et les plants flétrissent. Le village possède pourtant une rivière à 800 mètres et une motopompe qui n'a pas été entretenue depuis trois ans. Que faudrait-il faire pour transformer cette situation? Fondements théoriques. Qu'est-ce que le génie rural? Le génie rural est l'ensemble des techniques et des connaissances scientifiques appliquées à l'aménagement de l'espace rural, à la maîtrise de l'eau, à la mécanisation agricole et aux constructions nécessaires à la production et à la vie rurales. Il ne se limite pas aux constructions: il englobe: L'hydraulique agricole: irrigation, drainage, pompage. L'aménagement des parcelles et des bas-fonds. La mécanisation: motopompes, tracteurs, moulins, décortiqueuses. Les constructions rurales: étables, poulaillers, magasins de stockage, silos, hangars. Les pistes rurales et ouvrages d'art simples (dalots, ponceaux). Erreur fréquente. Croire que le génie rural se limite à la construction d'abris ou de bâtiments est une erreur. Le génie rural concerne d'abord la maîtrise de l'eau, la mécanisation et l'aménagement du territoire rural. Un bâtiment sans eau, sans accès et sans équipement n'a qu'un intérêt limité."]],"3":[["fr","Chapitre I, Importance du génie rural pour le développement. Fondements théoriques. Pourquoi le génie rural est-il indispensable? Le génie rural rend plusieurs services fondamentaux à l'agriculture et au monde rural: 1. Augmenter la production. L'irrigation permet de produire en saison sèche; le drainage évite les pertes par excès d'eau; les aménagements antiérosifs préservent la fertilité; les équipements mécanisés permettent de cultiver de plus grandes surfaces. 2. Réduire la pénibilité du travail. Pompes, moulins, décortiqueuses, tracteurs remplacent des tâches manuelles longues et épuisantes. Le technicien rural dispose de plus de temps pour d'autres activités. 3. Protéger les ressources naturelles. Les cordons pierreux, les terrasses et les bandes enherbées limitent l'érosion. Le drainage des bas-fonds évite la stagnation. L'aménagement protège le sol, l'eau et la biodiversité. 4. Améliorer les conditions de vie en milieu rural. L'accès à l'eau, l'électrification rurale, les bâtiments d'élevage sains, les magasins de stockage et les pistes praticables améliorent directement la vie quotidienne des familles rurales. 5. Réduire les pertes post-récolte. Un magasin de stockage étanche et ventilé, des silos bien conçus, une piste carrossable en toute saison réduisent considérablement les pertes après la récolte, qui peuvent atteindre 30 à 40 pour cent dans certaines zones enclavées de la R D C. À retenir. Le génie rural n'est pas une technique accessoire: il conditionne la productivité, la rentabilité et la durabilité de l'agriculture. Il améliore aussi directement les conditions de vie rurales."]],"4":[["fr","Chapitre II, Le débit en hydraulique agricole. Fondements théoriques. Le débit: quantité d'eau par unité de temps. Le débit est la quantité d'eau qui s'écoule par unité de temps. Il s'exprime couramment en: L ou s (litres par seconde): pour les petits débits (arrosage, pompe manuelle). m au cube /h (mètres cubes par heure): pour les débits moyens (motopompes). m au cube /s (mètres cubes par seconde): pour les rivières et grands canaux. Formule fondamentale. Le débit se calcule par la relation: Q égale V ou t. où: Q égale débit (en L ou s ou m au cube /h). V égale volume d'eau écoulé (en litres ou en m au cube ). t égale temps d'écoulement (en secondes ou en heures). Conversions à retenir. 1 mètres cubes égale 1 000 litres. 1 heure égale 3 600 secondes. 1 litres par seconde égale 3,6 mètres cubes ou h. Exercice corrigé. Énoncé: un réservoir de 10 mètres cubes se vide en 2 heures. Quel est le débit moyen? Données: V égale 10 mètres cubes égale 10 000 litres; t égale 2 heures égale 7 200 secondes. Calcul en L ou s: Q égale 10 000 sur 7 200 environ égal à 1,39 litres par seconde. Calcul en m au cube /h: Q égale 10 sur 2 égale 5 mètres cubes ou h. Vérification: 5 mètres cubes ou h multiplié par 1 000 sur 3 600 égale 1,39 litres par seconde. Les deux résultats sont cohérents. Interprétation: ce débit est suffisant pour alimenter un petit réseau goutte-à-goutte, mais insuffisant pour une irrigation par aspersion de grande surface. À retenir. Q égale V ou t. Le débit s'exprime en L ou s ou m au cube /h. La conversion 1 litres par seconde égale 3,6 mètres cubes ou h est indispensable pour dimensionner un système d'irrigation."]],"5":[["fr","Chapitre II, La pression et la hauteur de chute. Fondements théoriques. La pression. La pression est la force exercée par l'eau sur une surface. Elle s'exprime en: bars (1 bar environ égal à 10 mètres de colonne d'eau). mètres de colonne d'eau (mCE): hauteur d'eau qui crée cette pression. pascals (Pa) dans le système international: 1 bar égale 100 000 Pa. La pression est indispensable pour: Faire monter l'eau dans les tuyaux. Alimenter les asperseurs (qui exigent souvent 1 à 3 bars). Faire fonctionner un goutte-à-goutte (0,5 à 1,5 bar). La hauteur de chute. La hauteur de chute (ou dénivelée) est la différence d'altitude entre le point de captage (réservoir, rivière) et le point d'utilisation (parcelle, asperseur). Relation fondamentale: une hauteur de 10 mètres d'eau correspond approximativement à une pression de 1 bar en bas de la colonne. Hauteur de 5 mètres, donc pression environ égal à 0,5 bar. Hauteur de 10 mètres, donc pression environ égal à 1 bar. Hauteur de 30 mètres, donc pression environ égal à 3 bars. Cette relation est la base du dimensionnement des réseaux gravitaires: un réservoir placé sur une colline peut alimenter une parcelle en contrebas sans pompe, à condition de disposer de la hauteur suffisante. Application pratique. Un réservoir est placé sur une butte à 15 mètres au-dessus d'une parcelle maraîchère. Quelle pression approximative obtient-on au pied du réseau? Réponse: 15 mètres ou 10 mètres par bar égale 1,5 bar approximativement. Interprétation: cette pression est suffisante pour un réseau goutte-à-goutte (0,5 moins 1,5 bar) mais insuffisante pour certains asperseurs qui demandent 2 à 3 bars. Il faudra choisir des asperseurs basse pression ou installer une pompe de surpression. À retenir. 10 mètres de hauteur d'eau environ égal à 1 bar de pression. La hauteur de chute détermine la pression disponible dans un réseau gravitaire. Elle est un critère décisif du choix des équipements."]],"6":[["fr","Chapitre II, La perte de charge. Fondements théoriques. Qu'est-ce que la perte de charge? La perte de charge est la diminution de pression de l'eau le long d'un tuyau ou à travers un raccord, due aux frottements. Plus le tuyau est long, plus le diamètre est petit, plus la paroi est rugueuse, plus la perte de charge est élevée. Facteurs de la perte de charge. Longueur du tuyau: plus le tuyau est long, plus la perte augmente. Diamètre du tuyau: plus le diamètre est petit, plus la perte augmente (la perte varie approximativement avec l'inverse de la puissance 5 du diamètre). Débit: plus le débit est fort, plus la perte augmente (proportionnelle au carré du débit). Rugosité: un tuyau en PVC lisse perd moins qu'un tuyau en fonte corrodée. Raccords et coudes: chaque coude, vanne ou réduction ajoute une perte locale. Pourquoi est-ce important? Si la perte de charge est trop élevée, l'eau peut arriver au point d'utilisation avec une pression insuffisante: les asperseurs n'arrosent pas correctement, les goutteurs ne coulent plus. Il faut alors augmenter le diamètre du tuyau, réduire la longueur ou augmenter la pression de départ (pompe). Règle pratique. Pour une irrigation goutte-à-goutte, on vise généralement une perte de charge totale inférieure à 20 à 30 pour cent de la pression d'entrée. Sur les longues rampes, on divise la parcelle en plusieurs secteurs ou l'on augmente le diamètre. Erreur fréquente. Négliger les pertes de charge dans le dimensionnement d'un réseau est l'une des erreurs les plus fréquentes en génie rural. Une installation apparemment bien dimensionnée en débit peut échouer à cause d'un tuyau trop long ou trop fin: l'eau n'arrive pas avec la pression voulue, les cultures du bout de la parcelle sont sous-irriguées."]],"7":[["fr","Chapitre II, Les pompes: motopompes et pompes manuelles. Fondements théoriques. À quoi sert une pompe? Une pompe est un dispositif qui élève l'eau ou augmente sa pression. Elle permet de: Puiser l'eau dans une rivière, un puits, un forage. Faire monter l'eau dans un réservoir surélevé. Maintenir la pression dans un réseau d'irrigation. Les principaux types de pompes. Type. Entraînement. Usage typique. Pompe manuelle. Force humaine (levier, volant). Petits débits, puits familiaux, usage domestique. Motopompe à essence. Moteur à essence. Irrigation de petites et moyennes parcelles, chantiers mobiles. Motopompe diesel. Moteur diesel. Irrigation de grandes surfaces, usage intensif, coût d'exploitation plus faible. Électropompe. Moteur électrique. Usage fixe, en zone électrifiée ou avec panneaux solaires. Critères de choix d'une pompe. Débit souhaité (m au cube /h ou L ou s): dépend des besoins de la parcelle. Hauteur totale à remonter (hauteur d'aspiration plus hauteur de refoulement plus pertes de charge). Énergie disponible: essence, diesel, électricité, solaire. Robustesse et facilité d'entretien. Coût d'investissement et coût d'exploitation (carburant, pièces). Application. Un agriculteur doit irriguer 0,5 hectares de maraîchage avec un besoin d'environ 30 mètres cubes ou jour. Il prélève dans une rivière à 5 mètres en contrebas d'une parcelle plane. Une motopompe d'un débit de 5 mètres cubes ou h qui fonctionne 6 heures ou jour fournira 30 mètres cubes: c'est suffisant. Une pompe manuelle de 0,5 mètres cubes ou h nécessiterait 60 heures de travail: c'est irréaliste. Le choix technique se porte donc sur une motopompe. À retenir. Une pompe élève l'eau ou augmente sa pression. Le choix dépend du débit, de la hauteur, de l'énergie disponible et du coût. La motopompe est l'équipement le plus répandu en milieu rural congolais."]],"8":[["fr","Chapitre III, L'irrigation: définition et types. Fondements théoriques. Qu'est-ce que l'irrigation? L'irrigation est l'apport artificiel d'eau aux cultures pour compléter les précipitations insuffisantes ou irrégulières, et assurer une production régulière. Elle ne remplace pas la pluie: elle la complète. Irriguer sans tenir compte des besoins réels de la culture peut être aussi néfaste que l'absence d'eau (gaspillage, maladies fongiques, asphyxie des racines). Les trois grands types d'irrigation. Type. Principe. Avantages. Inconvénients. Gravitaire. L'eau s'écoule par gravité dans des rigoles ou par submersion. Simple, économique en investissement, faible technicité. Grande consommation d'eau, risque d'érosion, pertes par évaporation. Par aspersion. L'eau est pulvérisée au-dessus des cultures par des asperseurs. Bonne couverture, adaptée aux cultures basses. Coût énergétique élevé, pertes par vent et évaporation, favorise maladies foliaires. Goutte-à-goutte. L'eau est apportée au pied de chaque plante par des goutteurs. Très économe en eau, limite les mauvaises herbes, adapté aux cultures de valeur. Investissement initial élevé, nécessite filtres et entretien rigoureux. Critères de choix. Type de culture (maraîchage, riz, arbres fruitiers…). Type de sol et topographie. Ressource en eau disponible. Coût d'investissement et d'exploitation. Compétence technique disponible pour l'entretien. À retenir. Trois grands types d'irrigation: gravitaire (économique, économe en équipement mais gourmand en eau), aspersion (bonne couverture, énergivore), goutte-à-goutte (très économe en eau, coûteux en investissement)."]],"9":[["fr","Chapitre III, L'irrigation gravitaire. Fondements théoriques. Le principe. L'irrigation gravitaire utilise la pente du terrain pour faire circuler l'eau depuis un point haut (canal, rigole d'amenée) vers la parcelle à irriguer. Aucune pompe n'est nécessaire: c'est la gravité qui travaille. Deux techniques principales. Irrigation par rigoles: l'eau circule dans des rigoles parallèles creusées entre les rangs de culture. Elle s'infiltre latéralement vers les racines. Irrigation par submersion: la parcelle est entourée de diguettes et recouverte d'une lame d'eau (riziculture principalement). Conditions d'utilisation. Terrain en pente douce (0,2 pour cent à 2 pour cent idéalement). Sol à bonne capacité de rétention (limoneux, argileux). Disponibilité abondante d'eau (rivière, réservoir, forage à gros débit). Main-d'œuvre disponible pour entretenir les rigoles. Avantages et inconvénients. Avantages: faible coût d'installation, pas d'énergie nécessaire, simplicité technique, adaptée aux cultures traditionnelles. Inconvénients: grande consommation d'eau, risque d'érosion si le débit est trop fort, risque d'engorgement du sol, pertes par évaporation et infiltration profonde, propagation possible de mauvaises herbes le long des rigoles. Entretien. Curer régulièrement les rigoles pour éviter l'envasement. Vérifier l'étanchéité des diguettes. Éviter les fuites en réparant les berges. Ajuster le débit d'entrée pour éviter l'érosion en tête de parcelle. Erreur fréquente. Laisser couler un débit trop fort dans les rigoles: l'eau ravine les parcelles, emporte la terre fine et crée des rigoles d'érosion. Il faut adapter le débit à la pente et à la capacité d'infiltration du sol."]],"10":[["fr","Chapitre III, L'irrigation par aspersion. Fondements théoriques. Le principe. L'irrigation par aspersion consiste à projeter l'eau au-dessus des cultures, comme une pluie artificielle, à l'aide d'asperseurs alimentés sous pression. Éléments d'un système d'aspersion. Source d'eau: rivière, puits, réservoir. Pompe: fournit la pression nécessaire (2 à 4 bars selon les asperseurs). Réseau de tuyaux: conduit l'eau vers les asperseurs (souvent en PVC ou en polyethylene). Asperseurs: dispositifs rotatifs ou fixes qui pulvérisent l'eau. Vannes de secteur: permettent d'irriguer une zone à la fois. Conditions favorables. Parcelles planes ou peu pentues. Cultures basses (céréales, maraîchage, prairies). Vent faible (le vent déforme la répartition). Disponibilité d'énergie pour la pompe. Avantages. Bonne uniformité d'arrosage. Possibilité d'irriguer des parcelles irrégulières. Utilisable pour lutter contre le gel (aspersion antigel). Inconvénients. Coût énergétique élevé (pompage plus pression). Pertes par évaporation et par dérive au vent. Favorise les maladies foliaires (mouillage du feuillage). Investissement initial élevé. Entretien. Nettoyer les filtres et les buses d'asperseurs. Vérifier la pression au manomètre. Détecter et réparer les fuites. Vidanger le réseau avant les périodes de gel (rare en R D C, sauf en altitude). À retenir. L'aspersion imite la pluie. Efficace sur les cultures basses, elle exige une pression (2 à 4 bars) et donc une pompe. Elle est plus coûteuse en énergie que le gravitaire mais couvre mieux la parcelle."]],"11":[["fr","Chapitre III, L'irrigation goutte-à-goutte. Fondements théoriques. Le principe. L'irrigation goutte-à-goutte (ou micro-irrigation) apporte l'eau directement au pied de chaque plante, goutte après goutte, par l'intermédiaire de goutteurs insérés dans des tuyaux ou des rampes posés au sol. Éléments d'un système goutte-à-goutte. Source d'eau et pompe (ou réservoir surélevé). Filtre (à sable ou à tamis): retient les particules qui boucheraient les goutteurs. Injecteur d'engrais (fertigation): permet d'apporter les nutriments avec l'eau. Rampe principale puis rampes secondaires. Goutteurs: débit de 1 à 8 litres par heure selon les modèles. Vannes de secteur: pour irriguer par zone. Avantages. Économie d'eau de 30 à 60 pour cent par rapport au gravitaire. Pas de mouillage du feuillage, donc moins de maladies fongiques. Moins de mauvaises herbes entre les rangs (le sol reste sec). Possibilité de fertigation (apport d'engrais avec l'eau). Adapté aux sols difficiles (sableux, pentus, caillouteux). Inconvénients. Investissement initial élevé. Entretien rigoureux obligatoire: un goutteur bouché prive la plante d'eau. Sensible aux rongeurs qui percent les tuyaux. Nécessite une eau propre (filtre indispensable). Entretien. Nettoyer le filtre chaque semaine. Purger les rampes en fin de saison. Détecter les goutteurs bouchés (observation de la plante, débit). Remplacer les tuyaux endommagés. À retenir. Le goutte-à-goutte est la technique la plus économe en eau, idéale pour le maraîchage et les cultures de valeur. Son point faible est l'entretien: sans filtre et sans nettoyage, les goutteurs se bouchent et l'installation devient inutile."]],"12":[["fr","Chapitre III, Concevoir et entretenir un système d'irrigation. Fondements théoriques. Étapes de conception d'un système d'irrigation. Concevoir un système d'irrigation, c'est répondre à une série de questions dans un ordre logique. 1. Évaluer les besoins en eau des cultures. Chaque culture a des besoins différents selon son stade de développement. On estime les besoins journaliers (mm ou jour, c'est-à-dire L ou m au carré /jour) à partir de références locales. Par exemple, une culture maraîchère en saison sèche peut demander 4 à 6 millimètres ou jour, soit 40 à 60 mètres cubes ou ha ou jour. 2. Évaluer la ressource disponible. Quel est le débit de la source en saison sèche (étiage)? Le volume disponible est-il suffisant pour couvrir la surface à irriguer sans assécher la source? 3. Choisir le type d'irrigation. Selon la culture, le sol, la topographie, la ressource en eau et le budget: gravitaire, aspersion ou goutte-à-goutte. 4. Dimensionner le réseau. Calculer le débit nécessaire (Q égale surface multiplié par besoin journalier ou temps d'arrosage). Choisir le diamètre des tuyaux en fonction du débit et de la longueur (pertes de charge). Choisir la pompe (débit plus hauteur totale). Prévoir les filtres, vannes et organes de régulation. 5. Estimer le coût. Matériel (tuyaux, pompe, asperseurs, goutteurs), main-d'œuvre, énergie, entretien annuel. 6. Prévoir l'entretien. Un planning d'entretien précis (nettoyage des filtres, curage des canaux, réparation des fuites) évite les pannes et prolonge la durée de vie du système. Exemple de calcul. Énoncé: une parcelle de 0,5 hectares (5 000 mètres carrés) doit recevoir 4 millimètres ou jour de lame d'eau. Quel est le volume journalier nécessaire? Si l'on dispose d'une motopompe de 5 mètres cubes ou h, combien d'heures faut-il pomper par jour? Étape 1, Volume journalier: 4 millimètres égale 4 litres ou m au carré /jour. Volume égale 5 000 mètres carrés multiplié par 4 litres ou m au carré égale 20 000 litres égale 20 mètres cubes ou jour. Étape 2, Temps de pompage: t égale 20 mètres cubes ou 5 mètres cubes ou h égale 4 heures ou jour. Interprétation: la motopompe doit fonctionner 4 heures par jour. Il faut vérifier que la source peut fournir 20 mètres cubes ou jour sans s'épuiser. Erreur fréquente. Irriguer sans mesurer les besoins des cultures: le gaspillage d'eau et le risque de maladies fongiques augmentent, et le coût d'exploitation explose. Un système bien conçu se calcule, il ne s'improvise pas."]],"13":[["fr","Chapitre IV, Le drainage agricole. Fondements théoriques. Qu'est-ce que le drainage? Le drainage agricole est l'évacuation de l'excès d'eau du sol pour éviter l'asphyxie des racines et favoriser la production. Un sol engorgé manque d'oxygène: les racines ne respirent plus, les micro-organismes aérobies meurent, la matière organique fermente et libère des substances toxiques. La plante jaunit, s'étiole, meurt. Les techniques de drainage. 1. Fossés à ciel ouvert. Fossés creusés en périphérie ou à l'intérieur de la parcelle pour évacuer l'eau vers un exutoire (rivière, ravine). Simples, économiques, adaptés aux sols argileux et aux bas-fonds. 2. Drains enterrés. Tuyaux perforés (PVC, terre cuite, bambou) enterrés à 60–100 centimètres de profondeur, espacés de plusieurs mètres. L'eau s'infiltre par les perforations et s'écoule vers un exutoire. Plus coûteux mais plus durable et moins gênant pour les cultures. 3. Drainage de surface. Aménagement du terrain pour favoriser l'écoulement: billons, planches surélevées, pentes douces, rigoles de surface. Adapté aux cultures sensibles à l'excès d'eau (maraîchage). Entretien. Curage régulier des fossés (enlèvement de la vase et des herbes). Vérification de l'écoulement des drains (débouché libre). Prévention de l'obstruction (grillages aux exutoires, regard de visite). Réparation des berges effondrées. Erreur fréquente. Négliger le drainage dans les zones humides: l'excès d'eau réduit les rendements, favorise les maladies (pourriture des racines, mildiou) et peut tuer les cultures. Dans un bas-fond, le drainage est aussi important que l'irrigation."]],"14":[["fr","Chapitre V, L'aménagement des bas-fonds. Fondements théoriques. Qu'est-ce qu'un bas-fond? Un bas-fond est une zone basse du relief, souvent humide, où l'eau s'accumule naturellement en saison des pluies. Bien aménagé, il devient une zone de production très intéressante: riziculture, maraîchage, cultures de contre-saison. Diagnostic préalable. Avant tout aménagement, il faut étudier: Topographie: pente, superficie, forme du bas-fond. Sol: texture, profondeur, fertilité, perméabilité. Hydrologie: source de l'eau, débit en saison sèche et en saison des pluies, hauteur d'inondation, vitesse d'écoulement. Contraintes: risque d'inondation, érosion en amont, envasement, accès. Usages actuels: qui utilise la zone? pour quoi faire? Travaux d'aménagement. Drainage: fossés pour évacuer l'excès d'eau vers un exutoire. Diguettes: petites levées de terre pour retenir l'eau d'irrigation ou bloquer la crue. Canaux d'irrigation: amener l'eau aux parcelles en saison sèche. Protection contre l'érosion: cordons pierreux, bandes enherbées en amont. Nivellement: aplanir les parcelles pour une meilleure répartition de l'eau. Ouvrages de régulation: petits barrages, seuils déversants, buses. Mise en valeur. Choix des cultures adaptées: riz (submersion contrôlée), maraîchage (tomate, oignon, chou), maïs de contre-saison. Calendrier cultural adapté au régime hydrique. Gestion collective de l'eau (comité d'irrigants, règles de partage). Entretien régulier des ouvrages. Erreur fréquente. Aménager un bas-fond sans étude préalable est une erreur coûteuse. Les travaux peuvent être inadaptés au régime hydrique (trop de drainage en amont, inondation en aval), ou déplacer le problème sans le résoudre. Le diagnostic préalable est indispensable."]],"15":[["fr","Chapitre VI, La mécanisation agricole. Fondements théoriques. Qu'est-ce que la mécanisation agricole? La mécanisation agricole est l'utilisation d'équipements motorisés (ou améliorés) pour remplacer ou assister le travail humain et animal dans les opérations agricoles: préparation du sol, semis, irrigation, récolte, transformation, transport. Les principaux équipements. Équipement. Usage. Motopompe. Irrigation, drainage, transfert d'eau. Tracteur. Labour, hersage, transport, semi-mécanisé. Moulin à grains. Mouture du maïs, du manioc, du mil. Décortiqueuse. Décorticage du riz, de l'arachide. Batteuse. Battage des céréales. Pulvérisateur. Application de produits phytosanitaires. Motoculteur. Labour léger, maraîchage. Entretien courant. Nettoyage après chaque usage (surtout les équipements en contact avec les grains ou les produits). Graissage des pièces mobiles (roulements, axes, chaînes). Vidange de l'huile moteur à intervalles réguliers. Remplacement des pièces d'usure (courroies, filtres, bougies, lames). Stockage à l'abri de l'humidité et de la poussière. Sécurité. Protéger les parties mobiles (courroies, pignons, arbres de transmission). Former les utilisateurs (pas d'improvisation). Porter des équipements de protection (gants, lunettes, chaussures fermées). Ne jamais intervenir sur une machine en marche. Ne pas laisser les enfants approcher. Erreur fréquente. Utiliser un équipement sans entretien régulier est une erreur coûteuse. Les pannes se multiplient, la durée de vie se raccourcit, les coûts de réparation explosent et la productivité chute. Un carnet d'entretien simple (date, opération, intervenant) est recommandé pour chaque machine."]],"16":[["fr","Chapitre VII, Les constructions rurales: étables et poulaillers. Fondements théoriques. Les bâtiments d'élevage. Un bon bâtiment d'élevage protège les animaux des intempéries, facilite le travail de l'éleveur et limite les maladies. Sa conception dépend de l'espèce, de l'effectif, du climat et des matériaux disponibles. L'étable (bovins). Une étable fonctionnelle doit comporter: Orientation: est-ouest pour éviter l'ensoleillement direct (chaleur) et favoriser la ventilation. Ventilation: ouvertures hautes et latérales, sans courants d'air sur les animaux. Sol: légèrement incliné (2 pour cent ) pour l'écoulement des urines, en béton ou en terre battue stable. Abreuvoirs: accessibles, propres, en nombre suffisant. Auge: pour l'alimentation, à l'abri de la pluie. Aire d'exercice: espace extérieur clôturé. Fosse à fumier: pour stocker le fumier et produire du compost. Le poulailler. Un poulailler fonctionnel doit comporter: Densité: 6 à 10 poulets ou m au carré selon la race et le système. Ventilation: ouvertures grillagées (protection contre prédateurs). Éclairage: naturel en journée, complément artificiel possible en ponte. Nids: un nid pour 5 poules pondeuses. Perchoirs: pour le repos nocturne. Litière: paille, copeaux, balles de riz; renouvellement régulier. Mangeoires et abreuvoirs: propres et accessibles. Erreur fréquente. Construire un bâtiment d'élevage sans ventilation ni orientation adaptée est une erreur fréquente. Les animaux souffrent de chaleur, l'humidité s'accumule, les maladies respiratoires explosent. Une étable ou un poulailler bien conçu coûte à peine plus cher qu'un bâtiment médiocre, mais évite des pertes considérables."]],"17":[["fr","Chapitre VII, Magasins de stockage, silos et hangars. Fondements théoriques. Le magasin de stockage. Le magasin de stockage conserve les récoltes (grains, tubercules, légumineuses) après la récolte, en les protégeant de l'humidité, des rongeurs, des insectes et du vol. Caractéristiques essentielles: Étanchéité: toit sans fuite, murs solides, sol surélevé. Ventilation: ouvertures grillagées hautes et basses pour renouveler l'air et évacuer l'humidité. Protection contre les rongeurs: grillages fins, bas de murs sans fissure, portes bien ajustées. Palettes surélevées: pour isoler les sacs du sol et limiter l'humidité et les insectes rampants. Protection contre le soleil direct: pour éviter les échauffements. Le silo. Le silo est un ouvrage de stockage de grande capacité, généralement vertical (métallique ou en béton), destiné aux grains secs (maïs, riz, blé, sorgho). Il assure une meilleure conservation que le magasin classique grâce à: Une ventilation contrôlée. Une étanchéité renforcée. Un contrôle de l'humidité et de la température. Une protection contre les insectes et les rongeurs. Le hangar. Le hangar est une construction légère, ouverte sur les côtés, destinée à abriter le matériel agricole, les récoltes en cours de séchage, ou à servir d'atelier. Il peut être en charpente métallique, en bois ou en matériaux locaux. Erreur fréquente. Construire un magasin sans protection contre l'humidité et les rongeurs est une erreur grave: les pertes post-récolte peuvent atteindre 30 à 40 pour cent dans un stockage mal conçu. Le coût d'un bon magasin est rapidement rentabilisé par les pertes évitées."]],"18":[["fr","Chapitre VIII, Pistes rurales et ouvrages d'art simples. Fondements théoriques. Les pistes rurales. Les pistes rurales sont des voies de desserte des zones de production agricole. Elles permettent l'écoulement des produits vers les marchés, l'approvisionnement en intrants et l'accès des services (santé, éducation, vulgarisation). Construction. Choix du tracé: suivre le relief, éviter les zones inondables, minimiser les pentes fortes. Largeur: 4 à 6 mètres pour une circulation à double sens. Drainage: fossés latéraux, buses de traversée, radiers. Revêtement: terre stabilisée, gravier, latérite compactée (pistes rurales courantes en R D C). Entretien. Débroussaillage régulier des abords. Comblement des nids-de-poule avec de la latérite. Curage des fossés de drainage. Réparation rapide des dégradations après la saison des pluies. Les ouvrages d'art simples. Un ouvrage d'art est un ouvrage construit pour franchir un obstacle (cours d'eau, ravine, dépression) sans interrompre la voie. Dalot: buse ou ensemble de buses en béton ou en acier sous la piste, pour laisser passer l'eau d'un petit ruisseau. Ponceau: petit pont pour franchir une ravine ou un ruisseau plus large. Radier: dallage en béton au fond d'un cours d'eau peu profond, permettant le passage en saison sèche. Buse: tuyau de gros diamètre en béton ou en tôle, utilisé comme dalot ou comme conduit. Dimensionnement. Le dalot doit être dimensionné pour laisser passer le débit de crue: un sous-dimensionnement provoque l'inondation de la piste ou son effondrement; un surdimensionnement coûte inutilement cher. On estime le débit de crue à partir de la plus forte pluie observée dans la région et de la surface drainée. Erreur fréquente. Négliger l'entretien des pistes rurales: elles deviennent impraticables en saison des pluies, isolant les zones de production, provoquant la perte de récoltes périssables et faisant grimper les prix des denrées sur les marchés urbains. Une piste entretenue coûte bien moins cher qu'une piste à reconstruire."]],"19":[["fr","Chapitre IX, L'évaluation technico-économique d'un aménagement. Fondements théoriques. Pourquoi évaluer avant de réaliser? Tout aménagement coûte cher. Avant de lancer les travaux, il faut vérifier que le projet est techniquement faisable, économiquement rentable et socialement accepté. Une étude technico-économique préalable évite les investissements inutiles ou non remboursables. 1. Le calcul des coûts. On distingue: Coût d'investissement (CAPEX): matériaux, équipements, main-d'œuvre de construction, transport, études. Coût d'exploitation (OPEX): énergie (carburant, électricité), main-d'œuvre permanente, entretien, pièces de rechange, assurances. Coût de renouvellement: remplacement des équipements en fin de vie. 2. La faisabilité technique. Les solutions proposées sont-elles adaptées aux contraintes du milieu? Le sol permet-il la construction? La ressource en eau est-elle suffisante? La main-d'œuvre qualifiée est-elle disponible? Les matériaux sont-ils accessibles? 3. La faisabilité économique. On compare les coûts totaux aux bénéfices attendus (augmentation de la production, réduction des pertes, gain de temps, valorisation de nouvelles terres). Indicateurs usuels. Coût de l'aménagement par hectare: permet de comparer plusieurs options. Délai de retour sur investissement: nombre d'années nécessaires pour que les bénéfices cumulés égalent l'investissement. Marge brute annuelle: différence entre les recettes et les charges d'exploitation. Valeur actuelle nette (VAN) et taux de rentabilité interne (TRI) pour les projets complexes. Exemple simplifié. Énoncé: un agriculteur envisage un système goutte-à-goutte de 0,5 hectares coûtant 2 500 USD. Il espère augmenter sa production de tomate de 4 t ou an, vendues à 300 USD ou t, soit 1 200 USD de recettes supplémentaires par an. Les charges d'exploitation (énergie, entretien, filtres) sont de 200 USD ou an. Quel est le délai de retour sur investissement? Calcul: Marge nette annuelle égale 1 200 moins 200 égale 1 000 USD ou an. Délai de retour égale 2 500 sur 1 000 égale 2,5 ans. Interprétation: si l'installation dure au moins 5 ans, elle est rentable. Il faut toutefois vérifier que la production supplémentaire est réaliste et que le prix de vente est stable. Erreur fréquente. Lancer un aménagement sans étude économique préalable est une erreur fréquente et coûteuse. L'investissement peut ne pas être rentable, ou l'agriculteur peut ne pas pouvoir rembourser le crédit contracté. Une évaluation honnête vaut mieux qu'un projet qui échoue."]],"20":[["fr","Synthèse, Aménager pour produire durablement. Synthèse générale. Les neuf compétences du technicien en génie rural. Comprendre l'hydraulique: débit, pression, hauteur de chute, perte de charge. Choisir une pompe adaptée au débit, à la hauteur et à l'énergie disponible. Concevoir une irrigation (gravitaire, aspersion, goutte-à-goutte) selon la culture, le sol, le budget. Concevoir un drainage adapté aux zones humides et aux bas-fonds. Aménager un bas-fond après diagnostic topographique, pédologique et hydrologique. Utiliser et entretenir les équipements de mécanisation en toute sécurité. Concevoir les bâtiments ruraux (étables, poulaillers, magasins, silos, hangars). Entretenir les pistes et ouvrages d'art pour désenclaver les zones de production. Évaluer la faisabilité technico-économique avant tout investissement. Tableau récapitulatif. Domaine. Objectif. Outil principal. Hydraulique. Maîtriser l'eau. Pompes, tuyaux, calculs de débit. Irrigation. Compléter la pluie. Gravitaire, aspersion, goutte-à-goutte. Drainage. Évacuer l'excès d'eau. Fossés, drains, billons. Bas-fonds. Valoriser les zones humides. Diguettes, canaux, ouvrages de régulation. Mécanisation. Réduire la pénibilité. Motopompes, moulins, tracteurs. Constructions. Protéger animaux et récoltes. Étables, poulaillers, magasins, silos. Pistes et ouvrages. Désenclaver. Pistes entretenues, dalots, ponceaux. Évaluation. Rentabiliser. Calcul des coûts, retour sur investissement. Étude de cas (cas pédagogique). « Un élève de 4e génie rural à Kisangani conçoit un système d'irrigation goutte-à-goutte pour une parcelle maraîchère de 0,5 hectares. Il calcule le débit nécessaire, choisit une motopompe, dimensionne les tuyaux, estime le coût et présente son projet à la classe. ». Analyse: la démarche est correcte. Elle suit les étapes: besoin en eau, ressource disponible, choix du type d'irrigation, dimensionnement, estimation des coûts, évaluation de la rentabilité. Le projet est présentable devant un bailleur ou une coopérative."]],"21":[["fr","Évaluation finale, Génie Rural. Consigne. Répondez aux questions ci-dessous en sélectionnant la bonne réponse parmi les quatre propositions. Le QCM couvre l'ensemble du cours. Cliquez ensuite sur « Valider mes réponses » pour obtenir votre score."]]}};
+  var CACHE = "ecolia-cours-v1";                       // même cache que l'application
+  var PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  var PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+  var DL = '<svg viewBox="0 0 24 24"><path d="M11 3h2v9.2l3.6-3.6L18 10l-6 6-6-6 1.4-1.4L11 12.2V3zM5 19h14v2H5z"/></svg>';
+  var OK = '<svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>';
+  // Réparation du quiz : certains cours stockent les choix sous "opts" (ou autre) au lieu de "options"
+  try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+      questions.forEach(function (q) {
+        if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+        if (q.text === undefined) q.text = q.question || q.q || q.enonce || q.titre || "";
+        if (typeof q.correct === "undefined") {
+          if (typeof q.answer !== "undefined") q.correct = q.answer;
+          else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+        }
+      });
+    }
+  } catch (e) {}
+  var synth = window.speechSynthesis || null;
+  var HAS_CACHE = !!(window.caches && window.caches.open);
+  var NATIVE = false;           // APK ECOLIA : pont Java "CoursInterface" (fichiers dans le dossier de l'application)
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  var LATER = "ecolia_audio_later_" + CFG.code;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+  function init() {
+    if (document.getElementById("ecolia-audio-btn")) return;
+
+    // ---------- éléments de l'interface ----------
+    var btn = document.createElement("button");
+    btn.id = "ecolia-audio-btn"; btn.type = "button"; btn.className = "ecolia-off";
+    btn.setAttribute("aria-label", "Écouter la leçon"); btn.innerHTML = PLAY;
+    var dlBtn = document.createElement("button");
+    dlBtn.id = "ecolia-dl-btn"; dlBtn.type = "button"; dlBtn.className = "ecolia-off";
+    dlBtn.innerHTML = DL;
+    var host = document.querySelector(".header-right");
+    if (host) { host.insertBefore(dlBtn, host.firstChild); host.insertBefore(btn, dlBtn); }   // dans la barre du haut : ne scrolle jamais
+    else { btn.className += " ecolia-fixed"; document.body.appendChild(btn); }
+
+    var banner = document.createElement("div");
+    banner.id = "ecolia-audio-banner";
+    banner.innerHTML = '<span class="eab-txt"></span><span class="eab-act"></span><div class="eab-bar"><i></i></div>';
+    var content = document.getElementById("content");
+    if (content && content.parentNode) content.parentNode.insertBefore(banner, content);
+    else document.body.insertBefore(banner, document.body.firstChild);
+    var txtEl = banner.querySelector(".eab-txt"), actEl = banner.querySelector(".eab-act");
+    var barEl = banner.querySelector(".eab-bar"), barI = barEl.firstChild;
+
+    var audio = new Audio();            // un seul élément Audio, réutilisé (exigé par les navigateurs mobiles)
+    audio.preload = "auto";
+    var st = { idx: -1, auto: false, advancing: false, mode: null, speaking: false, token: 0, chunks: [], ci: 0, blobUrl: null, playTok: 0 };
+    var dl = { state: "none", cached: 0, busy: false, cancel: false };   // none | partial | full
+    var bnMode = null, hideTimer = null;
+    if (synth && synth.getVoices) { try { synth.getVoices(); } catch (e) {} }
+
+    function cur() {
+      try { if (typeof currentSlide === "number") return currentSlide; } catch (e) {}
+      return 0;
+    }
+    function hasMp3(i) { return CFG.available.indexOf(i + 1) !== -1; }
+    function fb(i) { return CFG.fallback && CFG.fallback[String(i + 1)]; }
+    function hasAudio(i) { return hasMp3(i) || (!!synth && !!fb(i)); }
+    function urlN(n) {   // dans l'APK la page est sur https://app.local : une adresse relative doit pointer vers le site
+      var b = CFG.base;
+      if (NATIVE && !/^https?:/i.test(b)) b = "https://ecolia-course.github.io/" + b.replace(/^(\.\.\/|\.\/)+/, "");
+      return new URL(b + nameN(n), location.href).href;
+    }
+    function setIcon(playing) { btn.innerHTML = playing ? PAUSE : PLAY; }
+    function isPlaying() { return st.mode === "mp3" ? !audio.paused : (st.mode === "tts" && st.speaking); }
+    function mo() { return "≈ " + CFG.sizeMo + " Mo"; }
+    function nameN(n) { return "audio_" + CFG.code + "_" + n + ".mp3"; }
+
+    // ====================================================================
+    //  Stockage hors ligne : 2 moteurs, même interface
+    //    - APK : fichiers du dossier de l'application (CoursInterface), servis par https://app.local/cours/
+    //    - Web : Cache Storage du navigateur (même cache que l'application web)
+    // ====================================================================
+    function nativeStore() {
+      var okKey = "ecolia_audio_ok_" + CFG.code;
+      function readOk() { try { return JSON.parse(lsGet(okKey) || "[]"); } catch (e) { return []; } }
+      function writeOk(a) { lsSet(okKey, JSON.stringify(a)); }
+      function exists(n) { try { return !!CoursInterface.exists(nameN(n)); } catch (e) { return false; } }
+      function local(n) { return location.origin + "/cours/" + nameN(n); }
+      function verify(n) {                                   // fichier complet ? (taille exacte connue à la génération)
+        return fetch(local(n), { cache: "no-store" }).then(function (r) { return r.blob(); }).then(function (b) {
+          var exp = CFG.sizes && CFG.sizes[String(n)];
+          return (b.size > 2000 && (!exp || b.size === exp)) ? b : null;
+        }).catch(function () { return null; });
+      }
+      return {
+        list: function () {
+          var ok = readOk().filter(exists); writeOk(ok); return Promise.resolve(ok);
+        },
+        get: function (n) { return exists(n) ? verify(n) : Promise.resolve(null); },
+        put: function (n) {
+          return new Promise(function (res, rej) {
+            try { CoursInterface.download(urlN(n), nameN(n)); } catch (e) { return rej(e); }
+            var t0 = Date.now();
+            function next() { if (Date.now() - t0 > 120000) rej(new Error("délai dépassé")); else setTimeout(poll, 800); }
+            function poll() {
+              if (!exists(n)) return next();
+              verify(n).then(function (b) {
+                if (!b) return next();
+                var ok = readOk(); if (ok.indexOf(n) < 0) ok.push(n); writeOk(ok); res();
+              });
+            }
+            setTimeout(poll, 800);
+          });
+        },
+        del: function (n) {
+          try { CoursInterface.delete(nameN(n)); } catch (e) {}
+          writeOk(readOk().filter(function (x) { return x !== n; }));
+          return Promise.resolve();
+        }
+      };
+    }
+    function cacheStore() {
+      return {
+        list: function () {
+          return caches.open(CACHE).then(function (c) {
+            return Promise.all(CFG.available.map(function (n) {
+              return c.match(urlN(n)).then(function (r) {
+                if (!r) return 0;
+                if ((r.headers.get("content-type") || "").indexOf("audio") !== 0) { c.delete(urlN(n)); return 0; }   // ancien contenu invalide
+                return n;
+              });
+            }));
+          }).then(function (a) { return a.filter(Boolean); });
+        },
+        get: function (n) {
+          return caches.open(CACHE).then(function (c) { return c.match(urlN(n)); })
+            .then(function (r) { return r ? r.blob() : null; }).then(function (b) { return b && b.size > 2000 ? b : null; });
+        },
+        put: function (n) {
+          var u = urlN(n);
+          return fetch(u, { cache: "no-store" }).then(function (r) {
+            if (!r.ok || r.status !== 200) throw new Error("HTTP " + r.status);
+            return r.blob();
+          }).then(function (b) {
+            if (b.size < 2000 || (b.type && b.type.indexOf("audio") !== 0 && b.type.indexOf("octet") < 0)) throw new Error("fichier invalide");
+            return caches.open(CACHE).then(function (c) { return c.put(u, new Response(b, { headers: { "Content-Type": "audio/mpeg" } })); });
+          });
+        },
+        del: function (n) { return caches.open(CACHE).then(function (c) { return c.delete(urlN(n)); }); }
+      };
+    }
+    var store = NATIVE ? nativeStore() : (HAS_CACHE ? cacheStore() : null);
+
+    // ====================================================================
+    //  Bannière : invitation, confirmations, progression
+    // ====================================================================
+    function showBanner(mode, text, buttons, pct) {
+      clearTimeout(hideTimer);
+      bnMode = mode;
+      txtEl.textContent = text;
+      actEl.innerHTML = "";
+      (buttons || []).forEach(function (b) {
+        var e = document.createElement("button");
+        e.type = "button"; e.textContent = b.label; if (b.pri) e.className = "pri";
+        e.addEventListener("click", function (ev) { ev.stopPropagation(); b.fn(); });
+        actEl.appendChild(e);
+      });
+      if (typeof pct === "number") { barEl.style.display = "block"; barI.style.width = pct + "%"; }
+      else barEl.style.display = "none";
+      banner.classList.add("on");
+    }
+    function hideBanner() { clearTimeout(hideTimer); bnMode = null; banner.classList.remove("on"); }
+    function flash(text) { showBanner("info", text, []); hideTimer = setTimeout(hideBanner, 4000); }
+
+    function refreshUI() {
+      var show = !!store && CFG.available.length > 0;
+      dlBtn.classList.toggle("ecolia-off", !show);
+      dlBtn.classList.toggle("ecolia-full", dl.state === "full");
+      dlBtn.innerHTML = dl.state === "full" ? OK : DL;
+      dlBtn.setAttribute("aria-label", dl.state === "full" ? "Audios téléchargés : supprimer" : "Télécharger les audios");
+      dlBtn.title = dlBtn.getAttribute("aria-label");
+    }
+    function refreshCacheState(done) {
+      if (!store) { dl.state = "none"; refreshUI(); if (done) done(); return; }
+      store.list().then(function (ok) {
+        dl.cached = ok.length;
+        dl.state = dl.cached === 0 ? "none" : (dl.cached >= CFG.available.length ? "full" : "partial");
+      }).catch(function () { dl.state = "none"; }).then(function () { refreshUI(); if (done) done(); });
+    }
+
+    function askDownload(fromInvite) {
+      var left = CFG.available.length - dl.cached;
+      var txt = dl.state === "partial"
+        ? "Il reste " + left + " audio(s) à télécharger pour écouter ce cours sans internet."
+        : "🔊 Télécharger les audios de ce cours (" + mo() + ") pour les écouter sans internet ? Wi-Fi recommandé.";
+      showBanner(fromInvite ? "invite" : "confirm", txt, [
+        { label: fromInvite ? "Plus tard" : "Annuler", fn: function () { if (fromInvite) lsSet(LATER, "1"); hideBanner(); } },
+        { label: "Télécharger", pri: true, fn: startDownload }
+      ]);
+    }
+    function askDelete() {
+      showBanner("confirm", "Supprimer les audios téléchargés de ce cours (" + mo() + ") ? Vous pourrez toujours les écouter en ligne.", [
+        { label: "Annuler", fn: hideBanner },
+        { label: "Supprimer", pri: true, fn: doDelete }
+      ]);
+    }
+
+    function startDownload() {
+      if (dl.busy || !store) return;
+      dl.busy = true; dl.cancel = false;
+      var total = CFG.available.length, done = 0, quota = false, fails = 0, todo = [];
+      store.list().then(function (have) {
+        CFG.available.forEach(function (n) { if (have.indexOf(n) < 0) todo.push(n); });
+        done = total - todo.length;
+        function paint() {
+          var msg = "Téléchargement des audios : " + done + " / " + total;
+          if (bnMode === "progress") {                  // met à jour sans recréer les boutons (sinon un appui peut être perdu)
+            txtEl.textContent = msg; barI.style.width = Math.round(done / total * 100) + "%";
+          } else {
+            showBanner("progress", msg, [
+              { label: "Annuler", fn: function () { dl.cancel = true; } }
+            ], Math.round(done / total * 100));
+          }
+        }
+        paint();
+        function worker() {
+          if (dl.cancel || quota || !todo.length) return Promise.resolve();
+          var n = todo.shift();
+          return store.put(n).then(function () { done++; paint(); }).catch(function (e) {
+            if (e && (e.name === "QuotaExceededError" || /quota/i.test(String(e.message)))) quota = true;
+            fails++;
+          }).then(worker);
+        }
+        return Promise.all([worker(), worker()]);
+      }).catch(function () { fails++; }).then(function () {
+        dl.busy = false;
+        refreshCacheState(function () {
+          if (dl.state === "full") flash("✓ Audios téléchargés : le cours se lit maintenant sans internet.");
+          else if (dl.cancel) flash("Téléchargement interrompu (" + dl.cached + " / " + total + "). Vous pourrez reprendre plus tard.");
+          else showBanner("error", quota ? "Espace insuffisant sur l'appareil. Libérez de la place puis réessayez."
+            : "Certains audios n'ont pas pu être téléchargés (connexion ?).", [
+            { label: "Fermer", fn: hideBanner }, { label: "Réessayer", pri: true, fn: startDownload }
+          ]);
+        });
+      });
+    }
+    function doDelete() {
+      if (!store) return;
+      Promise.all(CFG.available.map(function (n) { return store.del(n); })).catch(function () {}).then(function () {
+        lsDel(LATER);
+        refreshCacheState(function () { flash("Audios supprimés de cet appareil."); });
+      });
+    }
+
+    dlBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (dl.busy) return;
+      if (dl.state === "full") askDelete(); else askDownload(false);
+    });
+
+    // ====================================================================
+    //  Voix intégrée au téléphone (hors ligne, sans limite)
+    // ====================================================================
+    function pickVoice(lang) {
+      var vs = [];
+      try { vs = synth.getVoices() || []; } catch (e) {}
+      var pre = lang === "en" ? "en" : "fr", best = null;
+      for (var k = 0; k < vs.length; k++) {
+        var v = vs[k];
+        if ((v.lang || "").toLowerCase().indexOf(pre) !== 0) continue;
+        if (!best || (v.localService && !best.localService)) best = v;
+      }
+      return best;
+    }
+    function hardSplit(text, max) {
+      var out = [];
+      while (text.length > max) {
+        var cut = text.lastIndexOf(" ", max);
+        if (cut < 40) cut = max;
+        out.push(text.slice(0, cut)); text = text.slice(cut).replace(/^\s+/, "");
+      }
+      if (text) out.push(text);
+      return out;
+    }
+    function buildChunks(segs) {                  // morceaux courts : évite l'arrêt des longs textes sur Chrome
+      var out = [];
+      segs.forEach(function (s) {
+        var cur2 = "", parts = s[1].match(/[^.!?;:]+[.!?;:]*\s*/g) || [s[1]];
+        parts.forEach(function (p) {
+          if (cur2 && (cur2 + p).length > 160) { out.push({ lang: s[0], text: cur2.trim() }); cur2 = p; }
+          else cur2 += p;
+        });
+        if (cur2.trim()) out.push({ lang: s[0], text: cur2.trim() });
+      });
+      var res = [];
+      out.forEach(function (c) { hardSplit(c.text, 190).forEach(function (t) { res.push({ lang: c.lang, text: t }); }); });
+      return res;
+    }
+    function speakFrom(tk) {
+      if (tk !== st.token) return;
+      if (st.ci >= st.chunks.length) {
+        st.speaking = false; st.mode = null; st.ci = 0; setIcon(false);
+        if (st.auto) goNext();
+        return;
+      }
+      var c = st.chunks[st.ci];
+      var u = new SpeechSynthesisUtterance(c.text);
+      u.lang = c.lang === "en" ? "en-US" : "fr-FR";
+      var v = pickVoice(c.lang);
+      if (v) { u.voice = v; u.lang = v.lang; }
+      u.rate = 0.95;
+      u.onend = function () { if (tk !== st.token) return; st.ci++; speakFrom(tk); };
+      u.onerror = function () { if (tk !== st.token) return; st.speaking = false; setIcon(false); st.auto = false; };
+      synth.speak(u);
+    }
+    function startTts(from) {
+      st.token++;
+      var tk = st.token;
+      st.mode = "tts"; st.speaking = true; st.ci = from || 0; setIcon(true);
+      var busy = false;
+      try { busy = synth.speaking || synth.pending; synth.cancel(); } catch (e) {}
+      if (busy) setTimeout(function () { speakFrom(tk); }, 120);   // laisse cancel() se terminer
+      else speakFrom(tk);                                          // sinon tout de suite (exigé par iOS)
+    }
+    function playVoice() {
+      if (!(synth && fb(st.idx))) { st.auto = false; return false; }
+      if (!st.chunks.length) st.chunks = buildChunks(fb(st.idx));
+      startTts(st.ci);
+      return true;
+    }
+
+    // ====================================================================
+    //  Lecture
+    // ====================================================================
+    function freeBlob() { if (st.blobUrl) { try { URL.revokeObjectURL(st.blobUrl); } catch (e) {} st.blobUrl = null; } }
+    function stopAll() {
+      st.playTok++;
+      try { audio.pause(); audio.currentTime = 0; } catch (e) {}
+      st.token++;
+      try { if (synth) synth.cancel(); } catch (e) {}
+      st.speaking = false; st.mode = null; st.chunks = []; st.ci = 0;
+      setIcon(false);
+    }
+    function pauseNow() {
+      if (st.mode === "mp3") audio.pause();
+      else if (st.mode === "tts") {
+        st.token++;
+        try { synth.cancel(); } catch (e) {}
+        st.speaking = false; setIcon(false);      // st.ci conservé : la reprise repart de la phrase en cours
+      }
+    }
+    function startAudio(src, tok) {
+      if (tok !== st.playTok) return;
+      if (audio.getAttribute("data-src") !== src) { audio.setAttribute("data-src", src); audio.src = src; }
+      var p = audio.play();
+      if (p && p.catch) p.catch(function (err) {
+        console.warn("ECOLIA audio :", err);
+        if (tok !== st.playTok) return;
+        if (!(err && err.name === "NotAllowedError") && playVoice()) return;   // lecture impossible : voix du téléphone
+        setIcon(false); st.auto = false;
+      });
+    }
+    function playCurrent() {
+      var i = st.idx;
+      if (hasMp3(i)) {
+        var tok = ++st.playTok, u = urlN(i + 1);
+        st.mode = "mp3";
+        if (!navigator.onLine && dl.state === "none") { st.mode = null; if (playVoice()) return; }   // hors ligne et non téléchargé
+        if (store && dl.state !== "none") {                     // téléchargé : lecture locale, sans réseau
+          store.get(i + 1)
+            .then(function (b) {
+              if (tok !== st.playTok) return;
+              if (b) { freeBlob(); st.blobUrl = URL.createObjectURL(new Blob([b], { type: "audio/mpeg" })); startAudio(st.blobUrl, tok); }
+              else startAudio(u, tok);
+            }).catch(function () { startAudio(u, tok); });
+        } else startAudio(u, tok);                              // sinon lecture en ligne (appel immédiat, exigé par iOS)
+      } else if (!playVoice()) {
+        st.auto = false;
+      }
+    }
+
+    function onSlideChange(i) {
+      var wasAdvancing = st.advancing;
+      st.advancing = false;
+      st.idx = i;
+      btn.classList.toggle("ecolia-off", !hasAudio(i));
+      stopAll();
+      audio.removeAttribute("data-src");
+      freeBlob();
+      if (bnMode === "invite" && i !== 0) hideBanner();       // l'invitation n'apparaît qu'à la première slide
+      if (wasAdvancing && st.auto) setTimeout(playCurrent, 500);   // enchaînement automatique
+      else st.auto = false;                                         // changement manuel : on coupe tout
+    }
+    function goNext() {
+      if (st.idx + 1 >= CFG.count) { st.auto = false; return; }
+      st.advancing = true;
+      if (typeof nextSlide === "function") nextSlide();
+      else { var nb = document.getElementById("nextBtn"); if (nb) nb.click(); }
+      setTimeout(function () { st.advancing = false; }, 4000);
+    }
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var i = cur();
+      if (i !== st.idx) onSlideChange(i);
+      if (isPlaying()) { st.auto = false; pauseNow(); }
+      else { st.auto = true; playCurrent(); }
+    });
+    audio.addEventListener("play", function () { setIcon(true); });
+    audio.addEventListener("pause", function () { if (st.mode === "mp3") setIcon(false); });
+    audio.addEventListener("error", function () {
+      if (st.mode === "mp3" && playVoice()) return;            // fichier introuvable / hors ligne : voix du téléphone
+      setIcon(false); st.auto = false;
+    });
+    audio.addEventListener("ended", function () { setIcon(false); if (st.auto) goNext(); });
+    window.addEventListener("pagehide", function () { stopAll(); freeBlob(); });
+
+    // ---------- démarrage ----------
+    refreshCacheState(function () {
+      if (store && CFG.available.length && dl.state !== "full" && navigator.onLine && cur() === 0 && !lsGet(LATER)) askDownload(true);
+    });
+    st.idx = -1;
+    setInterval(function () { var i = cur(); if (i !== st.idx) onSlideChange(i); }, 250);   // suit la slide affichée
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+<!-- ECOLIA_AUDIO_PLAYER_END -->
+</body>
+</html>

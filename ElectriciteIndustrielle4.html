@@ -1,0 +1,2073 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="violet">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>ECOLIA — Electricite Industrielle4</title>
+<style>
+[data-theme="bleu"]   { --p1:#0d2b4f; --p2:#1565c0; --p3:#07172e; --p4:#12437a; --p5:#5b8fd0; --bg:#e8f0fb; --bg2:#cfdff5; --bd:#a9c3e8; --soft:#dde8f7; --btn:#2a67b0; }
+[data-theme="vert"]   { --p1:#14442e; --p2:#2e7d32; --p3:#0b2b1a; --p4:#1f5c3a; --p5:#4f9a6b; --bg:#e8f5ec; --bg2:#c8e6d2; --bd:#a5cdb2; --soft:#dcefe2; --btn:#2f7a4f; }
+[data-theme="violet"] { --p1:#2d1b4e; --p2:#6a1b9a; --p3:#1a0f2e; --p4:#4a148c; --p5:#9c6fd0; --bg:#f1e9fb; --bg2:#dccbf2; --bd:#c4a8e6; --soft:#e8ddf6; --btn:#7e3fb2; }
+[data-theme="rouge"]  { --p1:#4a1010; --p2:#b71c1c; --p3:#2b0a0a; --p4:#8e1b1b; --p5:#d9706a; --bg:#fbeaea; --bg2:#f3cdcb; --bd:#e8a9a5; --soft:#f8dede; --btn:#a62a2a; }
+[data-theme="orange"] { --p1:#4e2a0c; --p2:#ef6c00; --p3:#2e1604; --p4:#b34a00; --p5:#f0a15a; --bg:#fff1e0; --bg2:#fbdcb8; --bd:#f3c08a; --soft:#fdebd6; --btn:#c9650a; }
+[data-theme="teal"]   { --p1:#0b3a3a; --p2:#00796b; --p3:#062626; --p4:#00574b; --p5:#4db6ac; --bg:#e0f2f1; --bg2:#b2dfdb; --bd:#80cbc4; --soft:#d5ecea; --btn:#26897d; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:linear-gradient(160deg,var(--p1) 0%,var(--p2) 50%,var(--p3) 100%); display:flex; justify-content:center; align-items:center; padding:8px; }
+.container { width:100%; max-width:1400px; background:#fefdf8; border-radius:20px; overflow:hidden; display:flex; flex-direction:column; height:100%; max-height:100vh; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.progress-bar { height:4px; background:var(--bg2); flex-shrink:0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--p5),var(--p4)); width:0%; transition:width 0.3s; }
+.header { padding:10px 16px; background:var(--bg); border-bottom:1px solid var(--bd); display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+.header h1 { color:var(--p4); font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box { display:flex; background:white; border-radius:20px; padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.search-box input { border:none; padding:6px 10px; border-radius:20px; outline:none; width:130px; font-size:0.8rem; }
+.search-box button { background:none; border:none; cursor:pointer; padding:4px 8px; font-size:0.85rem; color:var(--p2); }
+.badge { background:var(--p5); color:white; padding:4px 10px; border-radius:20px; font-weight:bold; font-size:0.75rem; }
+.search-nav { display:none; gap:4px; background:var(--bg2); padding:2px 8px; border-radius:20px; align-items:center; font-size:0.75rem; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:0.9rem; color:var(--p4); padding:2px 4px; }
+.content { padding:28px 32px; flex:1; overflow-y:auto; background:#fff; scroll-behavior:smooth; line-height:1.85; }
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.slide-title { color:var(--p1); font-size:1.5rem; font-weight:700; padding-bottom:12px; margin-bottom:20px; border-bottom:2px solid var(--p5); }
+.slide-content { color:var(--p3); font-size:1rem; }
+.empty-state { display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-height:60vh; padding:40px 20px; gap:18px; }
+.empty-state .icon { width:72px; height:72px; border-radius:50%; background:var(--bg); border:2px solid var(--bd); display:flex; align-items:center; justify-content:center; color:var(--p2); font-size:2rem; font-weight:300; }
+.empty-state h2 { color:var(--p1); font-size:1.4rem; font-weight:700; margin:0; }
+.empty-state p { color:#666; font-size:0.95rem; max-width:520px; line-height:1.7; }
+.empty-state .tag { display:inline-block; padding:6px 14px; background:var(--bg); color:var(--p4); border:1px solid var(--bd); border-radius:20px; font-size:0.8rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; }
+.bloc { padding:18px 22px; border-radius:12px; margin:22px 0; line-height:1.85; }
+.bloc-label { font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; opacity:0.7; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:var(--bg); border-left:4px solid var(--p5); }
+.theorie .bloc-label { color:var(--p4); }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.sources { background:#f5f5f5; padding:12px 16px; border-radius:10px; margin-top:26px; font-size:0.82rem; color:#666; border-left:3px solid #999; line-height:1.6; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:var(--p1); }
+.quiz-container { padding:22px; background:var(--bg); border-radius:16px; }
+.quiz-question { background:white; border-radius:10px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.quiz-question p { font-weight:600; margin-bottom:10px; color:var(--p1); }
+.quiz-question label { display:block; padding:8px 10px; margin:4px 0; border-radius:6px; cursor:pointer; transition:background 0.2s; }
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit { background:var(--btn); color:white; border:none; padding:12px 24px; border-radius:30px; font-size:1rem; cursor:pointer; font-weight:600; margin-top:14px; }
+.quiz-result { margin-top:16px; font-weight:600; }
+.controls { padding:8px 16px; background:#fafafa; border-top:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0; }
+.nav-btn { background:white; color:var(--p4); border:1px solid #ccc; padding:8px 14px; border-radius:8px; font-size:0.82rem; cursor:pointer; font-weight:500; }
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:var(--soft); }
+.content::-webkit-scrollbar-thumb { background:var(--p5); border-radius:3px; }
+@media (max-width:600px) { body { padding:0; } .container { border-radius:0; max-height:100vh; } .content { padding:20px 18px; } .slide-title { font-size:1.25rem; } .search-box input { width:90px; } .header h1 { font-size:0.85rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="header">
+<h1 id="pageTitle">ECOLIA</h1>
+<div class="header-right">
+<div class="search-box">
+<input id="searchInput" placeholder="Rechercher" type="text"/>
+<button id="searchBtn">⌕</button>
+</div>
+<div class="search-nav" id="searchNav">
+<button id="prevResultBtn">‹</button>
+<span id="resultCounter">0/0</span>
+<button id="nextResultBtn">›</button>
+</div>
+<span class="badge" id="slideCounter">0/0</span>
+</div>
+</div>
+<div class="content" id="content"></div>
+<div class="controls">
+<button class="nav-btn" id="prevBtn">← Précédent</button>
+<span class="counter" id="counter">—</span>
+<button class="nav-btn" id="nextBtn">Suivant →</button>
+</div>
+</div>
+<script>
+const COURSE_TITLE = "Électricité Industrielle (Machines Tournantes, Transformateurs et Automatismes)";
+const slides = [
+  {
+    title: "Sommaire — Électricité Industrielle",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Présentation du cours</div>
+        <h3>Bienvenue en Électricité Industrielle</h3>
+        <p>Ce cours de 4<sup>e</sup> année des Humanités Techniques Industrielles vous prépare à <strong>comprendre, installer, maintenir et diagnostiquer</strong> les équipements électriques qui animent les systèmes de production. Il est la base indispensable du technicien A2 en mécanique générale, en électronique et en électricité.</p>
+        <p>À la fin du cours, vous saurez analyser un système triphasé, expliquer le fonctionnement d'un moteur asynchrone, choisir un mode de démarrage adapté, comprendre le rôle d'un transformateur, câbler un circuit de commande simple et conduire un dépannage méthodique en toute sécurité.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Objectifs d'apprentissage</div>
+        <ul>
+          <li>Analyser un système triphasé et réaliser les couplages étoile et triangle.</li>
+          <li>Expliquer le principe du champ tournant et le fonctionnement du moteur asynchrone triphasé.</li>
+          <li>Identifier les procédés de démarrage d'un moteur et leurs conditions d'utilisation.</li>
+          <li>Analyser le fonctionnement du transformateur monophasé et triphasé.</li>
+          <li>Décrire le principe et la variation de vitesse des machines à courant continu.</li>
+          <li>Concevoir et câbler un circuit de commande en logique câblée.</li>
+          <li>Appliquer les règles de sécurité et utiliser les dispositifs de protection.</li>
+          <li>Diagnostiquer une panne simple sur un équipement électrique industriel.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Plan du cours</div>
+        <ol>
+          <li>Chapitre I — Sécurité électrique et outillage</li>
+          <li>Chapitre II — Les systèmes triphasés</li>
+          <li>Chapitre III — Le moteur asynchrone triphasé : principe et constitution</li>
+          <li>Chapitre IV — Le moteur asynchrone triphasé : caractéristiques et démarrage</li>
+          <li>Chapitre V — Les transformateurs</li>
+          <li>Chapitre VI — Les machines à courant continu</li>
+          <li>Chapitre VII — Les circuits de commande et la logique câblée</li>
+          <li>Chapitre VIII — Le diagnostic et le dépannage</li>
+        </ol>
+      </div>
+
+      <div class="sources">
+        <div class="bloc-label">Sources du cours</div>
+        <p>Manuels Scolaires RDC, <em>Électricité Industrielle et Automatismes, 4<sup>e</sup> année, Option Mécanique Générale</em> (Édition 2025) ; Fiches pédagogiques officielles Électricité Industrielle et Automatismes (Édition 2025-2026) ; Sciences-Africa, <em>Électricité Industrielle 4<sup>e</sup> année</em>, Curriculum Officiel APC – MINEPST RDC.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Pourquoi l'électricité industrielle ?",
+    content: `
+      <div class="bloc cas">
+        <div class="bloc-label">Situation-problème</div>
+        <h3>Une usine de Kinshasa s'arrête</h3>
+        <p>Dans une usine agroalimentaire de Kinshasa, le convoyeur principal s'arrête brutalement. Le chef d'atelier fait appel au technicien de maintenance. Sans comprendre l'électricité industrielle, impossible d'identifier l'origine de la panne, de dépanner l'installation et de remettre la production en route. Le technicien doit savoir lire un schéma électrique, reconnaître un contacteur, un relais thermique, un moteur asynchrone et utiliser un multimètre en toute sécurité.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le rôle de l'électricité dans l'industrie</h3>
+        <p>Dans une usine moderne, presque toutes les machines sont entraînées par des <strong>moteurs électriques</strong> : pompes, convoyeurs, broyeurs, ventilateurs, compresseurs, broches de machines-outils. Ces moteurs sont alimentés par le <strong>réseau triphasé</strong>, protégés par des <strong>dispositifs de protection</strong> et commandés par des <strong>circuits de commande</strong>. Le technicien doit donc maîtriser simultanément :</p>
+        <ul>
+          <li>la production et la distribution de l'énergie (triphasé, transformateurs) ;</li>
+          <li>la conversion électromécanique (moteurs et génératrices) ;</li>
+          <li>la commande et la protection (contacteurs, relais, disjoncteurs) ;</li>
+          <li>la sécurité des personnes et du matériel.</li>
+        </ul>
+        <p>Ce cours « couronne le cycle de formation en électricité » : il prépare au métier d'électricien industriel, de technicien de maintenance, de tableautier ou de technicien en automatismes.</p>
+      </div>
+
+      <div class="sources">
+        <div class="bloc-label">Source</div>
+        <p>Manuels Scolaires RDC, <em>Électricité Industrielle et Automatismes, 4<sup>e</sup> année, Option Mécanique Générale</em> (Édition 2025).</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Les risques électriques",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les quatre grands risques électriques</h3>
+        <p>L'électricité ne se voit pas, ne s'entend pas et ne se sent pas. Elle tue silencieusement. Il faut donc identifier les risques avant toute intervention.</p>
+        <table>
+          <thead>
+            <tr><th>Risque</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Électrisation</strong></td><td>Passage du courant à travers le corps humain. Provoque contractions musculaires, brûlures internes, troubles cardiaques.</td></tr>
+            <tr><td><strong>Électrocution</strong></td><td>Électrisation mortelle. C'est la conséquence la plus grave d'une électrisation.</td></tr>
+            <tr><td><strong>Brûlures</strong></td><td>Liées à la chaleur de l'arc électrique ou au passage du courant dans les tissus.</td></tr>
+            <tr><td><strong>Incendies et explosions</strong></td><td>Un court-circuit ou une surcharge peut enflammer les isolants et provoquer un incendie d'armoire ou d'atelier.</td></tr>
+          </tbody>
+        </table>
+        <p>Le risque dépend de l'intensité du courant, de la durée de contact et du trajet dans le corps. Un contact direct (toucher une phase) est le plus dangereux ; un contact indirect (toucher une masse mise accidentellement sous tension) est plus fréquent en industrie.</p>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Exemple concret</div>
+        <p>Un ouvrier de Matete touche une carcasse de machine dont l'isolement est défectueux. La carcasse est portée au potentiel du secteur (220 V). L'ouvrier est électrisé : son corps devient un chemin pour le courant. Sans mise à la terre et sans différentiel, l'accident est mortel. <strong>Retenez :</strong> toute carcasse métallique doit être reliée à la terre, et toute installation doit être protégée par un différentiel.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Quatre risques majeurs : électrisation, électrocution, brûlures, incendie.</li>
+          <li>Contact direct = contact avec une pièce nue sous tension.</li>
+          <li>Contact indirect = contact avec une masse mise accidentellement sous tension.</li>
+          <li>Terre + différentiel = protection des personnes.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — EPI et consignation",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les équipements de protection individuelle (EPI)</h3>
+        <p>L'EPI ne protège que celui qui le porte, et seulement s'il est adapté au risque et en bon état. En électricité industrielle, les EPI indispensables sont :</p>
+        <ul>
+          <li><strong>Gants isolants</strong> adaptés à la tension (classe 00 pour la BT).</li>
+          <li><strong>Chaussures de sécurité</strong> et <strong>tapis isolant</strong> pour isoler les pieds du sol.</li>
+          <li><strong>Gilet isolant</strong> (gilet anti-arc) contre les arcs électriques.</li>
+          <li><strong>Lunettes</strong> ou <strong>visière</strong> contre les projections.</li>
+          <li><strong>Casque</strong> avec écran facial pour les interventions sous tension.</li>
+          <li><strong>Tournevis à manche isolé</strong>, pince isolée, outillage certifié 1000 V.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>La consignation : mettre l'installation en sécurité</h3>
+        <p>La <strong>consignation</strong> est la procédure obligatoire avant toute intervention sur une installation électrique. Elle comporte <strong>cinq étapes</strong> dans l'ordre :</p>
+        <ol>
+          <li><strong>Séparer</strong> : ouvrir le dispositif de sectionnement (disjoncteur, sectionneur) pour isoler l'installation.</li>
+          <li><strong>Condamner</strong> : cadenasser le dispositif en position ouverte pour empêcher toute refermeture accidentelle.</li>
+          <li><strong>Identifier</strong> : apposer une pancarte « Ne pas manœuvrer — Intervention en cours ».</li>
+          <li><strong>Vérifier l'absence de tension (VAT)</strong> : mesurer avec un VAT homologué entre chaque phase et entre phases et terre.</li>
+          <li><strong>Mettre à la terre et en court-circuit</strong> : poser les perches de terre pour évacuer toute charge résiduelle ou tout retour de tension.</li>
+        </ol>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Erreur fréquente</div>
+        <blockquote>« Je vais vite fait resserrer un fil, ça prend deux minutes. »</blockquote>
+        <p>Sans consignation, un tiers peut refermer le disjoncteur pendant l'intervention. C'est la <strong>première cause d'accident électrique mortel en atelier</strong>. La consignation n'est jamais une perte de temps : c'est la seule façon de rendre l'installation électriquement sûre.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <p>Consignation = <strong>S-C-I-V-M</strong> : Séparer, Condamner, Identifier, Vérifier l'absence de tension, Mettre à la terre. Aucun travail électrique sans consignation.</p>
+      </div>
+
+      <div class="sources">
+        <div class="bloc-label">Sources</div>
+        <p>Fiches pédagogiques officielles Électricité Industrielle et Automatismes (Édition 2025-2026) ; OMS, <em>Sécurité électrique</em>.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Les dispositifs de protection",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Protéger contre quoi ?</h3>
+        <p>Un circuit électrique industriel doit être protégé contre trois grands types de défauts :</p>
+        <ul>
+          <li>les <strong>surcharges</strong> : le courant dépasse légèrement le courant nominal pendant un temps long (moteur bloqué, convoyeur trop chargé) ;</li>
+          <li>les <strong>courts-circuits</strong> : le courant devient très élevé brutalement (contact entre phases, rupture d'isolement) ;</li>
+          <li>les <strong>défauts d'isolement</strong> : un courant fuit vers la masse, danger pour les personnes.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les principaux dispositifs</h3>
+        <table>
+          <thead>
+            <tr><th>Dispositif</th><th>Protège contre</th><th>Principe</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Fusible</strong></td><td>Courts-circuits, fortes surintensités</td><td>Un filament fond et ouvre le circuit.</td></tr>
+            <tr><td><strong>Disjoncteur magnéto-thermique</strong></td><td>Surcharges (thermique) et courts-circuits (magnétique)</td><td>Déclenchement automatique, réarmable.</td></tr>
+            <tr><td><strong>Relais thermique</strong></td><td>Surcharges prolongées du moteur</td><td>Lame bimétallique qui se déforme par échauffement et ouvre un contact de commande.</td></tr>
+            <tr><td><strong>Différentiel (DDR)</strong></td><td>Défauts d'isolement (protection des personnes)</td><td>Compare le courant entrant et sortant ; déclenche en cas de fuite (30 mA pour les personnes).</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Un fusible a grillé dans l'armoire. Un ouvrier, pour « gagner du temps », le remplace par un fusible de calibre supérieur. Résultat : le fusible ne protège plus le circuit, l'échauffement continue, un incendie se déclare. <strong>Règle absolue :</strong> un fusible qui a grillé doit toujours être remplacé par un fusible de <em>même calibre</em> et de même type, et la cause doit être recherchée.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Fusible : protection contre les courts-circuits.</li>
+          <li>Disjoncteur : surcharge + court-circuit.</li>
+          <li>Relais thermique : surcharge prolongée du moteur.</li>
+          <li>Différentiel : protection des personnes.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — Les systèmes triphasés : production et transport",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Pourquoi trois phases ?</h3>
+        <p>L'énergie électrique qui alimente l'industrie est produite, transportée et distribuée en <strong>triphasé</strong>. Un système triphasé est constitué de trois tensions sinusoïdales de même valeur efficace et déphasées de <strong>120°</strong> l'une par rapport à l'autre. Ce choix n'est pas arbitraire :</p>
+        <ul>
+          <li>il permet de transporter la même puissance avec moins de cuivre et des pertes réduites ;</li>
+          <li>il produit naturellement un <strong>champ magnétique tournant</strong> (indispensable aux moteurs) ;</li>
+          <li>il offre deux niveaux de tension (simple et composée) avec le même réseau ;</li>
+          <li>il permet de créer une tension continue par redressement avec moins d'ondulation.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>De la centrale à l'atelier</h3>
+        <p>En RDC, les <strong>centrales d'Inga</strong> et les autres centrales de la SNEL produisent l'énergie en moyenne tension (alternateurs triphasés). Cette énergie est <strong>élevée en très haute tension</strong> pour être transportée sur de longues distances avec peu de pertes (transformateurs élévateurs), puis <strong>abaissée</strong> dans les postes de distribution (transformateurs abaisseurs). Les usines reçoivent ensuite la moyenne tension (ex. 6 kV, 20 kV) et la ramènent à la basse tension industrielle (ex. 400/230 V) via leur propre poste de transformation.</p>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Application RDC</div>
+        <p>Un technicien de la SNEL à Kinshasa vérifie un départ moyenne tension. Il mesure trois tensions phase-neutre identiques (environ 230 V) et trois tensions entre phases identiques (environ 400 V). Le réseau est équilibré : les trois valeurs sont égales et le déphasage est régulier. Si une phase est inférieure aux deux autres, l'installation est <strong>déséquilibrée</strong> : il faut rechercher un défaut (départ surchargé, phase coupée, mauvais contact).</p>
+      </div>
+
+      <div class="sources">
+        <div class="bloc-label">Source</div>
+        <p>Manuels Scolaires RDC, <em>Électricité Industrielle et Automatismes, 4<sup>e</sup> année</em> (Édition 2025).</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — Tensions simples et composées",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Deux tensions sur le même réseau</h3>
+        <p>Dans un réseau triphasé, on distingue :</p>
+        <ul>
+          <li>la <strong>tension simple</strong>, notée <em>V</em>, mesurée entre une phase et le <strong>neutre</strong> ;</li>
+          <li>la <strong>tension composée</strong>, notée <em>U</em>, mesurée entre <strong>deux phases</strong>.</li>
+        </ul>
+        <p>Pour un système équilibré, la relation entre les deux est :</p>
+        <p><strong>U = V × √3</strong> &nbsp; soit approximativement &nbsp; <strong>U ≈ V × 1,732</strong></p>
+        <p>Inversement : <strong>V = U / √3</strong>.</p>
+      </div>
+
+      <figure>
+        <img data-image-id="electriciteindustrielle4_img01" alt="Schéma d'un réseau triphasé montrant les trois phases L1, L2, L3, le neutre N, la tension simple V entre phase et neutre, et la tension composée U entre deux phases.">
+        <figcaption>Tensions simples et composées dans un réseau triphasé équilibré.</figcaption>
+      </figure>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Exemple corrigé</div>
+        <p><strong>Donnée :</strong> un réseau triphasé a une tension composée U = 400 V.<br>
+        <strong>Question :</strong> quelle est la tension simple V ?<br>
+        <strong>Formule :</strong> V = U / √3.<br>
+        <strong>Calcul :</strong> V = 400 / 1,732 ≈ <strong>231 V</strong>.<br>
+        <strong>Interprétation :</strong> c'est la tension standard d'une prise domestique en triphasé 400/230 V. Chaque phase est à 231 V par rapport au neutre, et il y a 400 V entre deux phases.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Représentation de Fresnel</div>
+        <p>Sur un diagramme de Fresnel, les trois vecteurs V<sub>1</sub>, V<sub>2</sub>, V<sub>3</sub> forment une étoile à 120°. Le vecteur U<sub>12</sub> = V<sub>1</sub> − V<sub>2</sub> a pour longueur V × √3. C'est la démonstration géométrique de la relation U = V√3.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>V = tension phase-neutre (simple).</li>
+          <li>U = tension phase-phase (composée).</li>
+          <li>U = V√3 (réseau équilibré).</li>
+          <li>Ne jamais confondre les deux : un mauvais couplage peut détruire un moteur.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — Les couplages étoile et triangle",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Deux façons de brancher trois enroulements</h3>
+        <p>Un récepteur triphasé (moteur, transformateur, résistances) possède trois enroulements. On peut les brancher de deux manières :</p>
+        <h4>Couplage étoile (Y)</h4>
+        <p>Les trois extrémités (sorties) des enroulements sont reliées à un point commun appelé <strong>neutre</strong>. Chaque enroulement voit la <strong>tension simple V</strong>. Le courant dans chaque enroulement est égal au courant de ligne.</p>
+        <h4>Couplage triangle (Δ)</h4>
+        <p>Chaque enroulement est branché entre deux phases, en boucle fermée. Chaque enroulement voit la <strong>tension composée U</strong>. Le courant dans chaque enroulement est divisé par √3 par rapport au courant de ligne.</p>
+      </div>
+
+      <figure>
+        <img data-image-id="electriciteindustrielle4_img02" alt="Schéma comparatif des deux couplages d'un moteur triphasé : à gauche le couplage étoile avec un point neutre central, à droite le couplage triangle en boucle fermée.">
+        <figcaption>Les couplages étoile (Y) et triangle (Δ) d'un moteur triphasé.</figcaption>
+      </figure>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Comment choisir le couplage ?</h3>
+        <p>La plaque signalétique du moteur indique deux tensions, par exemple <strong>230 V Δ / 400 V Y</strong>. Cela signifie :</p>
+        <ul>
+          <li>si le réseau fournit 230 V entre phases, on couple en <strong>triangle</strong> (chaque enroulement reçoit 230 V) ;</li>
+          <li>si le réseau fournit 400 V entre phases, on couple en <strong>étoile</strong> (chaque enroulement reçoit 400/√3 ≈ 230 V).</li>
+        </ul>
+        <p>Chaque enroulement doit toujours recevoir sa tension nominale. Un mauvais couplage expose les enroulements à une tension trop élevée et les détruit en quelques secondes.</p>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Exemple corrigé</div>
+        <p><strong>Donnée :</strong> un moteur porte l'indication « 230 V Δ / 400 V Y ». Le réseau disponible est 230/400 V (U = 400 V, V = 230 V).<br>
+        <strong>Question :</strong> quel couplage adopter ?<br>
+        <strong>Raisonnement :</strong> en triangle, chaque enroulement recevrait U = 400 V &gt; 230 V : destruction. En étoile, chaque enroulement reçoit V = 230 V : correct.<br>
+        <strong>Réponse :</strong> couplage <strong>étoile</strong>.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Étoile : enroulements en commun au neutre, chaque enroulement voit V.</li>
+          <li>Triangle : enroulements en boucle, chaque enroulement voit U.</li>
+          <li>La plaque signalétique impose le couplage.</li>
+          <li>Un mauvais couplage détruit le moteur.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — Fonctionnement équilibré et déséquilibré",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le régime équilibré</h3>
+        <p>Un système triphasé est <strong>équilibré</strong> lorsque les trois courants ont la <strong>même valeur efficace</strong> et un <strong>déphasage régulier de 120°</strong>. Dans ce cas, la somme vectorielle des trois courants est nulle et le courant dans le neutre est nul. C'est le régime normal d'un moteur triphasé bien alimenté.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le régime déséquilibré</h3>
+        <p>Un système est <strong>déséquilibré</strong> quand les trois courants diffèrent en valeur efficace ou en déphasage. Les causes industrielles sont nombreuses :</p>
+        <ul>
+          <li>une phase coupée (fil rompu, fusible grillé) ;</li>
+          <li>un départ monophasé branché entre phase et neutre sur un réseau triphasé ;</li>
+          <li>un mauvais contact sur une borne (échauffement) ;</li>
+          <li>un enroulement défectueux dans un moteur.</li>
+        </ul>
+        <p>Conséquences : échauffement anormal du moteur, vibrations, bruit, perte de couple, déclenchement du relais thermique, destruction prématurée des enroulements.</p>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Diagnostic de terrain</div>
+        <p>Un moteur de pompe REGIDESO vibre et chauffe sans raison apparente. Le technicien mesure les trois courants de ligne avec une pince ampèremétrique : I<sub>1</sub> = 12 A, I<sub>2</sub> = 12 A, I<sub>3</sub> = 5 A. Le déséquilibre est flagrant. Il coupe, consigne, vérifie les fusibles : l'un est grillé. La phase 3 était absente ; le moteur tournait en monophasé déguisé, d'où l'échauffement. Après remplacement du fusible et vérification de la cause de sa fusion, le moteur retrouve un régime équilibré (12/12/12 A).</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Équilibré : 3 courants égaux, 120° d'écart, courant neutre nul.</li>
+          <li>Déséquilibré : échauffement, vibrations, perte de couple.</li>
+          <li>Mesurer les trois courants avec une pince ampèremétrique pour diagnostiquer.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — Le champ tournant (principe de Tesla)",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>L'idée géniale de Nikola Tesla</h3>
+        <p>Le <strong>champ tournant</strong> est la clé de tous les moteurs à courant alternatif. Il a été découvert par Nikola Tesla à la fin du XIX<sup>e</sup> siècle.</p>
+        <p>Imaginez trois enroulements identiques disposés dans le stator à <strong>120° l'un de l'autre</strong> (dans l'espace). Alimentez-les avec trois courants triphasés déphasés de <strong>120° dans le temps</strong>. Chaque enroulement crée un champ magnétique alternatif. La superposition des trois champs donne un <strong>champ magnétique unique, d'amplitude constante, qui tourne à une vitesse appelée vitesse de synchronisme</strong>.</p>
+        <p>Formule de la vitesse de synchronisme :</p>
+        <p><strong>N<sub>s</sub> = 60 × f / p</strong></p>
+        <p>avec N<sub>s</sub> en tr/min, f = fréquence du réseau en Hz (50 Hz en RDC), p = nombre de paires de pôles du bobinage.</p>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Exemple corrigé</div>
+        <p><strong>Donnée :</strong> un moteur triphasé possède 2 paires de pôles (4 pôles), alimenté en 50 Hz.<br>
+        <strong>Formule :</strong> N<sub>s</sub> = 60 × f / p = 60 × 50 / 2 = <strong>1500 tr/min</strong>.<br>
+        <strong>Interprétation :</strong> le champ tourne à 1500 tr/min. C'est la vitesse maximale théorique du rotor. Le rotor réel tournera légèrement moins vite : c'est le glissement.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Application au moteur asynchrone</div>
+        <p>Le champ tournant du stator <strong>traverse le rotor</strong>. Comme le rotor est initialement immobile, les conducteurs du rotor voient un champ magnétique variable : il s'y induit des courants (loi de Lenz-Faraday). Ces courants, dans le champ tournant, créent des forces électromagnétiques qui entraînent le rotor. Le rotor se met à tourner, mais <strong>toujours moins vite que le champ</strong> : sinon il n'y aurait plus de variation de flux, donc plus de courants induits, donc plus de couple. D'où le nom « asynchrone ».</p>
+      </div>
+
+      <div class="sources">
+        <div class="bloc-label">Source</div>
+        <p>Manuels Scolaires RDC, <em>Électricité Industrielle et Automatismes, 4<sup>e</sup> année</em> (Édition 2025).</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — Constitution du moteur asynchrone",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Deux parties principales</h3>
+        <h4>Le stator (partie fixe)</h4>
+        <ul>
+          <li>Carcasse métallique avec ailettes de refroidissement.</li>
+          <li>Tôles magnétiques empilées pour canaliser le flux.</li>
+          <li><strong>Trois enroulements</strong> décalés de 120° dans l'espace, alimentés par le réseau triphasé.</li>
+          <li>Plaque signalétique : tensions, courant, puissance, cos φ, vitesse, indice de protection.</li>
+        </ul>
+        <h4>Le rotor (partie tournante)</h4>
+        <p>Deux technologies existent :</p>
+        <ul>
+          <li><strong>Rotor à cage d'écureuil</strong> : barres conductrices logées dans les encoches du rotor et reliées par deux anneaux. C'est le plus répandu en industrie (robuste, sans entretien).</li>
+          <li><strong>Rotor à bagues</strong> (ou à bagues collectrices) : enroulements rotoriques accessibles via des bagues, permettant d'insérer des résistances pour modifier la caractéristique au démarrage.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Un point essentiel : le rotor n'est pas alimenté</h3>
+        <p>Contrairement au moteur à courant continu ou au moteur synchrone, le rotor du moteur asynchrone à cage <strong>n'est relié à aucune source électrique</strong>. Les courants rotoriques sont <strong>induits par le champ tournant</strong> du stator. C'est pour cela qu'il n'y a ni collecteur, ni balais, ni entretien de contact : le moteur à cage est le plus robuste et le plus utilisé dans l'industrie.</p>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Un élève confond « rotor à bagues » et « moteur à courant continu ». Le moteur à bagues reste un <strong>moteur asynchrone</strong> : le champ tournant est créé par le stator, et le rotor tourne moins vite que ce champ. Le collecteur à balais est le propre de la machine à courant continu. Ne confondez pas.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Stator = 3 enroulements en triphasé, décalés de 120°.</li>
+          <li>Rotor = cage d'écureuil (le plus courant) ou à bagues.</li>
+          <li>Rotor non alimenté : courants induits.</li>
+          <li>Pas de collecteur ni de balais sur un moteur à cage.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre IV — Glissement et couple",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le glissement</h3>
+        <p>Le rotor d'un moteur asynchrone tourne toujours <strong>moins vite</strong> que le champ tournant. L'écart relatif s'appelle le <strong>glissement</strong>, noté <em>g</em> :</p>
+        <p><strong>g = (N<sub>s</sub> − N) / N<sub>s</sub></strong></p>
+        <p>avec N<sub>s</sub> = vitesse de synchronisme (tr/min) et N = vitesse réelle du rotor (tr/min). Le glissement est souvent exprimé en pourcentage. En fonctionnement normal, il est faible : de quelques pour cent (2 à 6 %) pour un moteur standard.</p>
+        <p>Exemple : moteur 4 pôles, 50 Hz, N<sub>s</sub> = 1500 tr/min, N = 1440 tr/min &rarr; g = (1500 − 1440) / 1500 = 0,04 = <strong>4 %</strong>.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le couple moteur</h3>
+        <p>Le couple est la force de rotation du moteur. Il dépend du glissement selon une courbe caractéristique en forme de cloche :</p>
+        <ul>
+          <li>au démarrage (g = 1), le couple est le <strong>couple de démarrage</strong> ;</li>
+          <li>en accélérant, le couple augmente jusqu'à un <strong>couple maximal</strong> ;</li>
+          <li>au-delà, le moteur « décroche » : le couple chute et le moteur cale.</li>
+        </ul>
+        <p>Le couple utile N·m dépend de la puissance utile P (W) et de la vitesse angulaire ω (rad/s) :</p>
+        <p><strong>C = P / ω</strong> &nbsp; avec &nbsp; <strong>ω = 2πN / 60</strong>.</p>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Exemple corrigé</div>
+        <p><strong>Donnée :</strong> un moteur fournit une puissance utile P = 2,2 kW à N = 1440 tr/min.<br>
+        <strong>Étape 1 :</strong> ω = 2π × 1440 / 60 = 150,8 rad/s.<br>
+        <strong>Étape 2 :</strong> C = 2200 / 150,8 ≈ <strong>14,6 N·m</strong>.<br>
+        <strong>Interprétation :</strong> le moteur exerce un couple de 14,6 N·m sur sa charge à sa vitesse nominale.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>g = (N<sub>s</sub> − N) / N<sub>s</sub>.</li>
+          <li>Le glissement normal est faible (quelques %).</li>
+          <li>Couple maxi : au-delà, décrochage.</li>
+          <li>C = P / ω et ω = 2πN / 60.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre IV — Le démarrage direct (DOL)",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le démarrage le plus simple</h3>
+        <p>Le <strong>démarrage direct</strong>, ou <em>Direct On Line</em> (DOL), consiste à brancher le moteur directement sur le réseau triphasé. C'est le mode de démarrage le plus simple, le moins coûteux et le plus fiable : un contacteur, un bouton marche, un bouton arrêt, un relais thermique, et le tour est joué.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Avantages et inconvénients</div>
+        <table>
+          <thead>
+            <tr><th>Avantages</th><th>Inconvénients</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Très simple, peu de composants.</td><td><strong>Courant de démarrage très élevé</strong> : 4 à 8 fois le courant nominal (I<sub>d</sub> ≈ 4 à 8 × I<sub>n</sub>).</td></tr>
+            <tr><td>Couple de démarrage important.</td><td>Chute de tension sur le réseau au démarrage.</td></tr>
+            <tr><td>Coût minimal.</td><td>Contraintes mécaniques brutales (à-coup sur la charge).</td></tr>
+            <tr><td>Peu d'entretien.</td><td>Réservé aux moteurs de petite puissance et aux réseaux robustes.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Application</div>
+        <p>Un petit compresseur de 1,5 kW peut être démarré en direct sans problème sur un réseau bien dimensionné. Un moteur de 45 kW ne doit jamais être démarré en direct : le courant d'appel ferait chuter la tension et déclencherait les protections du départ, voire celles de tout le tableau. On utilise alors un démarrage étoile-triangle ou un démarrage progressif (variateurs).</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Démarrage direct = branchement sur le réseau.</li>
+          <li>Courant d'appel : 4 à 8 × I<sub>n</sub>.</li>
+          <li>Réservé aux petites puissances et aux réseaux robustes.</li>
+          <li>Ne jamais démarrer un fort moteur en direct sans vérifier le réseau.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre IV — Le démarrage étoile-triangle (Y-Δ)",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le principe</h3>
+        <p>Le démarrage étoile-triangle est un procédé qui permet de <strong>réduire le courant d'appel</strong> d'un moteur triphasé. L'idée : au démarrage, coupler le moteur en <strong>étoile</strong> (chaque enroulement reçoit V au lieu de U), puis, après quelques secondes, basculer en <strong>triangle</strong> (régime normal).</p>
+        <p>En étoile, chaque enroulement est soumis à une tension réduite d'un facteur √3. Or le courant dans un enroulement est proportionnel à la tension qu'il reçoit. En première approximation :</p>
+        <p><strong>I<sub>démarrage Y</sub> = I<sub>démarrage Δ</sub> / 3</strong></p>
+        <p>Le courant de démarrage est divisé par 3, et le couple également divisé par 3.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Mise en œuvre</div>
+        <ul>
+          <li>Le moteur doit être <strong>prévu pour le couplage triangle</strong> sur le réseau disponible (plaque : 400 V Δ / 690 V Y par exemple).</li>
+          <li>Il faut <strong>trois contacteurs</strong> : ligne (KM1), étoile (KM2), triangle (KM3).</li>
+          <li>Un <strong>temporisateur</strong> commande le passage de Y à Δ (typiquement 3 à 8 s).</li>
+          <li>Un <strong>verrouillage électrique et mécanique</strong> empêche KM2 et KM3 d'être fermés simultanément (sinon court-circuit entre phases).</li>
+        </ul>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Exemple chiffré</div>
+        <p>Un moteur absorbe 60 A en démarrage direct. En démarrage Y-Δ : I<sub>Y</sub> ≈ 60 / 3 = <strong>20 A</strong>. Le courant d'appel est divisé par trois. En contrepartie, le couple de démarrage est aussi divisé par trois : le moteur ne doit pas être trop chargé au démarrage (pompes centrifuges, ventilateurs : OK ; broyeurs chargés : non).</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Démarrage en Y puis passage en Δ.</li>
+          <li>Courant de démarrage divisé par 3.</li>
+          <li>Couple divisé par 3 : pas pour fortes charges.</li>
+          <li>Trois contacteurs + temporisateur + verrouillage obligatoires.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre V — Le transformateur monophasé",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Un transformateur, à quoi ça sert ?</h3>
+        <p>Un <strong>transformateur</strong> est un convertisseur statique (sans pièce mobile) qui modifie l'amplitude d'une tension alternative <strong>sans changer sa fréquence</strong>. Il est constitué de :</p>
+        <ul>
+          <li>un <strong>circuit magnétique</strong> en tôles feuilletées (pour limiter les pertes par courants de Foucault) ;</li>
+          <li>un <strong>enroulement primaire</strong> de N<sub>1</sub> spires, alimenté par la source ;</li>
+          <li>un <strong>enroulement secondaire</strong> de N<sub>2</sub> spires, qui alimente la charge.</li>
+        </ul>
+        <p>Le principe repose sur l'<strong>induction électromagnétique</strong> : le courant alternatif du primaire crée un flux magnétique alternatif dans le noyau, flux qui induit une tension dans le secondaire.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le rapport de transformation</h3>
+        <p>Le rapport de transformation <em>m</em> est défini par :</p>
+        <p><strong>m = N<sub>2</sub> / N<sub>1</sub> = U<sub>2</sub> / U<sub>1</sub> = I<sub>1</sub> / I<sub>2</sub></strong></p>
+        <ul>
+          <li>si m &gt; 1 : transformateur <strong>élévateur</strong> (U<sub>2</sub> &gt; U<sub>1</sub>) ;</li>
+          <li>si m &lt; 1 : transformateur <strong>abaisseur</strong> (U<sub>2</sub> &lt; U<sub>1</sub>) ;</li>
+          <li>si m = 1 : transformateur d'isolement.</li>
+        </ul>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Exemple corrigé</div>
+        <p><strong>Donnée :</strong> N<sub>1</sub> = 1000 spires, N<sub>2</sub> = 100 spires, U<sub>1</sub> = 230 V.<br>
+        <strong>Formule :</strong> m = N<sub>2</sub> / N<sub>1</sub>.<br>
+        <strong>Calcul :</strong> m = 100 / 1000 = 0,1 ; U<sub>2</sub> = m × U<sub>1</sub> = 0,1 × 230 = <strong>23 V</strong>.<br>
+        <strong>Interprétation :</strong> c'est un transformateur abaisseur : 230 V au primaire, 23 V au secondaire.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Attention aux pertes</div>
+        <p>Un transformateur réel n'est pas parfait. Il subit des <strong>pertes fer</strong> (dans le noyau, par hystérésis et courants de Foucault) et des <strong>pertes cuivre</strong> (par effet Joule dans les enroulements). Le rendement d'un transformateur industriel est élevé (souvent &gt; 95 %) mais jamais de 100 %. Ne confondez pas le rapport de transformation (qui est théorique) avec le rendement (qui traduit les pertes).</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>m = N<sub>2</sub>/N<sub>1</sub> = U<sub>2</sub>/U<sub>1</sub> = I<sub>1</sub>/I<sub>2</sub>.</li>
+          <li>Élévateur (m &gt; 1) ou abaisseur (m &lt; 1).</li>
+          <li>Pertes fer + pertes cuivre = rendement &lt; 100 %.</li>
+          <li>Ne pas confondre rapport et rendement.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre V — Le transformateur triphasé et le couplage Dyn11",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Trois enroulements par côté</h3>
+        <p>Un transformateur triphasé possède trois enroulements primaires et trois enroulements secondaires, généralement sur un noyau magnétique à trois colonnes. Chaque côté peut être couplé en <strong>étoile (Y)</strong>, en <strong>triangle (Δ)</strong> ou en <strong>zigzag (Z)</strong>. La combinaison des deux couplages définit le <strong>type de transformateur</strong>, désigné par un symbole normalisé.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Lecture du symbole normalisé</h3>
+        <p>Exemple : <strong>Dyn11</strong>.</p>
+        <ul>
+          <li><strong>D</strong> : primaire (HTA) en triangle (Δ).</li>
+          <li><strong>y</strong> : secondaire (BT) en étoile (Y) avec neutre sorti (d'où le « n » en minuscule).</li>
+          <li><strong>11</strong> : indice horaire = déphasage de 11 × 30° = 330° entre tension HT et BT (soit −30°).</li>
+        </ul>
+        <p>Le couplage Dyn11 est <strong>le plus utilisé pour la distribution publique basse tension</strong> en Europe et dans de nombreux pays : il permet de disposer d'un neutre en BT (pour les usages monophasés) tout en limitant les harmoniques côté HT.</p>
+      </div>
+
+      <figure>
+        <img data-image-id="electriciteindustrielle4_img03" alt="Schéma d'un transformateur triphasé avec primaire en triangle et secondaire en étoile avec neutre, illustrant le couplage Dyn11.">
+        <figcaption>Le transformateur triphasé Dyn11 et son couplage.</figcaption>
+      </figure>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Rôle dans le transport et la distribution</h3>
+        <p>À la sortie des centrales, un <strong>transformateur élévateur</strong> porte la tension à des centaines de kV. Cette très haute tension permet de transporter la puissance sur de longues distances avec des pertes en ligne réduites (les pertes par effet Joule sont proportionnelles au carré du courant ; élever U réduit I pour la même puissance, donc réduit les pertes). À l'arrivée, des <strong>transformateurs abaisseurs</strong> ramènent progressivement la tension aux niveaux utilisables (moyenne tension industrielle puis basse tension 400/230 V).</p>
+      </div>
+
+      <div class="sources">
+        <div class="bloc-label">Source</div>
+        <p>Fiches pédagogiques officielles Électricité Industrielle et Automatismes (Édition 2025-2026).</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VI — Les machines à courant continu : principe et constitution",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Une machine réversible</h3>
+        <p>La machine à courant continu (MCC) peut fonctionner dans les deux sens :</p>
+        <ul>
+          <li>en <strong>moteur</strong> : elle convertit l'énergie électrique en énergie mécanique ;</li>
+          <li>en <strong>génératrice</strong> (dynamo) : elle convertit l'énergie mécanique en énergie électrique.</li>
+        </ul>
+        <p>Elle repose sur l'interaction entre un <strong>champ magnétique</strong> et des <strong>courants dans un conducteur</strong> : un conducteur parcouru par un courant et placé dans un champ magnétique subit une force (force de Laplace). En disposant plusieurs conducteurs sur un rotor et en les alimentant dans un ordre précis via le collecteur, on crée un couple continu.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Constitution</h3>
+        <ul>
+          <li><strong>Stator (inducteur)</strong> : crée le champ magnétique. Peut être à aimants permanents ou bobiné (alimentation séparée = excitation séparée).</li>
+          <li><strong>Rotor (induit)</strong> : porte les conducteurs qui reçoivent le courant.</li>
+          <li><strong>Collecteur</strong> : ensemble de lames de cuivre solidaires du rotor, sur lesquelles frottent les balais.</li>
+          <li><strong>Balais</strong> : contacts fixes en graphite qui amènent le courant au collecteur.</li>
+        </ul>
+        <p>Le collecteur + balais jouent le rôle de <strong>commutateur mécanique</strong> : ils inversent le sens du courant dans un conducteur à l'instant où celui-ci passe sous le pôle opposé, ce qui maintient le couple toujours dans le même sens.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Fonctionnement en moteur</h3>
+        <p>Le couple moteur est proportionnel au courant d'induit : <strong>C = k × Φ × I</strong>, où Φ est le flux (créé par l'inducteur) et I le courant d'induit. La force électromotrice (f.é.m.) est proportionnelle à la vitesse : <strong>E = k × Φ × N</strong>. D'où la vitesse :</p>
+        <p><strong>N ≈ (U − R·I) / (k·Φ)</strong></p>
+        <p>En négligeant la chute ohmique : N ≈ U / (k·Φ). La vitesse dépend donc de la tension d'induit et du flux.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>MCC = machine réversible (moteur / génératrice).</li>
+          <li>Stator = inducteur, rotor = induit, collecteur + balais pour la commutation.</li>
+          <li>C = k·Φ·I et E = k·Φ·N.</li>
+          <li>La vitesse dépend de U et de Φ.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VI — Variation de vitesse des machines à courant continu",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Deux leviers : U et Φ</h3>
+        <p>À partir de la relation N ≈ U / (k·Φ), on déduit deux moyens de régler la vitesse d'un moteur à courant continu :</p>
+        <ul>
+          <li><strong>Agir sur la tension d'induit U</strong> : c'est la méthode principale pour les moteurs à excitation séparée. En augmentant U, N augmente. En diminuant U, N diminue. On utilise un <strong>variateur de vitesse</strong> (redresseur commandé ou hacheur) pour faire varier U progressivement.</li>
+          <li><strong>Agir sur le flux Φ</strong> : en réduisant le courant d'excitation (donc Φ), on augmente la vitesse. Cette méthode est utilisée pour dépasser la vitesse nominale (« défluxage »), mais elle réduit le couple disponible (C ∝ Φ).</li>
+        </ul>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Application industrielle</div>
+        <p>Un laminoir en RDC utilise un moteur à courant continu à excitation séparée. L'opérateur ajuste la vitesse du laminoir en tournant un potentiomètre relié à un variateur : le variateur fait varier la tension d'induit de 0 à 440 V, ce qui fait varier la vitesse de 0 à 1500 tr/min proportionnellement. Pour les passes à très faible charge, l'opérateur peut aussi réduire l'excitation pour monter au-delà de 1500 tr/min.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Réduire excessivement l'excitation d'un moteur à courant continu à excitation séparée en fonctionnement à vide. Comme N ≈ U / (k·Φ), si Φ tend vers zéro, N tend vers l'infini : c'est l'<strong>emballement</strong>, qui détruit la machine. Ne jamais couper l'excitation d'un moteur à excitation séparée en marche.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Vitesse réglable par U (méthode principale) ou par Φ (défluxage).</li>
+          <li>Réduire Φ augmente N, mais réduit le couple.</li>
+          <li>Ne jamais couper l'excitation en marche : emballement.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VII — Les composants de la logique câblée",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les composants essentiels</h3>
+        <p>La <strong>logique câblée</strong> est l'ensemble des circuits électriques qui commandent les moteurs et les actionneurs sans programme informatique (par opposition aux automates programmables). Elle repose sur des composants électromécaniques :</p>
+        <table>
+          <thead>
+            <tr><th>Composant</th><th>Rôle</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Contacteur</strong></td><td>Relais de puissance : sa bobine, alimentée en commande, ferme des contacts de puissance qui alimentent le moteur. Il assure à la fois la <strong>puissance</strong> et la <strong>commande</strong>.</td></tr>
+            <tr><td><strong>Relais thermique</strong></td><td>Protège le moteur contre les surcharges prolongées. Il ouvre un contact de commande quand le courant dépasse un seuil pendant un temps donné.</td></tr>
+            <tr><td><strong>Bouton-poussoir</strong></td><td>Marche (contact normalement ouvert) ou arrêt (contact normalement fermé).</td></tr>
+            <tr><td><strong>Fin de course</strong></td><td>Détecte la position d'un mobile (fin de course de sécurité, d'inversion, etc.).</td></tr>
+            <tr><td><strong>Relais auxiliaire</strong></td><td>Multipalier les contacts d'un signal de commande.</td></tr>
+            <tr><td><strong>Temporisateur</strong></td><td>Retarde la fermeture ou l'ouverture d'un contact après l'apparition d'un signal.</td></tr>
+            <tr><td><strong>Voyant</strong></td><td>Signale l'état d'un circuit (marche, défaut, présence tension).</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Deux schémas à distinguer</div>
+        <p>Tout circuit industriel se lit sur deux schémas complémentaires :</p>
+        <ul>
+          <li><strong>Le schéma de puissance</strong> : il montre le trajet du courant fort, du disjoncteur jusqu'au moteur, en passant par les contacts de puissance du contacteur et le relais thermique. Les fils y sont généralement épais.</li>
+          <li><strong>Le schéma de commande</strong> : il montre le circuit de commande (basse tension ou même tension, mais faible courant), avec les boutons, les bobines de contacteurs, les contacts auxiliaires, les temporisateurs, les voyants.</li>
+        </ul>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Repérage</div>
+        <p>Dans un schéma industriel, chaque composant porte une <strong>référence</strong> : KM1, KM2 pour les contacteurs ; Q1 pour un disjoncteur ; F1 pour un fusible ; FR1 pour un relais thermique ; S1, S2 pour les boutons-poussoirs. Cette codification facilite le câblage et le dépannage.</p>
+      </div>
+
+      <div class="sources">
+        <div class="bloc-label">Sources</div>
+        <p>Manuels Scolaires RDC, <em>Électricité Industrielle et Automatismes, 4<sup>e</sup> année</em> (Édition 2025) ; Fiches pédagogiques officielles Électricité Industrielle et Automatismes (Édition 2025-2026).</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VII — Le démarrage direct en logique câblée",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le circuit de commande minimum</h3>
+        <p>Pour commander un moteur en démarrage direct, il faut un circuit de commande comportant :</p>
+        <ul>
+          <li>un <strong>bouton marche S1</strong> (contact normalement ouvert, NO) ;</li>
+          <li>un <strong>bouton arrêt S2</strong> (contact normalement fermé, NC) ;</li>
+          <li>un <strong>contact auxiliaire d'auto-maintien</strong> du contacteur KM1, branché en parallèle sur S1 ;</li>
+          <li>un <strong>contact du relais thermique FR1</strong> (NC) ;</li>
+          <li>la <strong>bobine du contacteur KM1</strong>.</li>
+        </ul>
+        <p>Le schéma de commande est alimenté entre phase et neutre (ou entre deux phases). Quand on appuie sur S1 : la bobine KM1 est alimentée, les contacts de puissance se ferment et le moteur démarre. Le contact auxiliaire KM1 (branché en parallèle sur S1) se ferme aussi : on peut relâcher S1, la bobine reste alimentée. C'est l'<strong>auto-maintien</strong>.</p>
+      </div>
+
+      <figure>
+        <img data-image-id="electriciteindustrielle4_img04" alt="Schéma de commande d'un démarrage direct de moteur asynchrone : bouton marche S1, contact d'auto-maintien du contacteur KM1, bouton arrêt S2, contact du relais thermique FR1 et bobine du contacteur KM1.">
+        <figcaption>Circuit de commande d'un démarrage direct.</figcaption>
+      </figure>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Fonctionnement détaillé</div>
+        <ol>
+          <li>Appui sur S1 (marche) → bobine KM1 alimentée → fermeture des contacts de puissance KM1 → démarrage du moteur.</li>
+          <li>Fermeture du contact auxiliaire KM1 (auto-maintien) → la bobine reste alimentée même quand on relâche S1.</li>
+          <li>Appui sur S2 (arrêt) → la bobine KM1 n'est plus alimentée → ouverture des contacts de puissance → arrêt du moteur.</li>
+          <li>En cas de surcharge, le relais thermique FR1 ouvre son contact NC → la bobine KM1 n'est plus alimentée → arrêt automatique du moteur.</li>
+        </ol>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Auto-maintien = contact auxiliaire en parallèle sur le bouton marche.</li>
+          <li>Arrêt : bouton NC en série avec la bobine.</li>
+          <li>Relais thermique NC en série pour l'arrêt automatique.</li>
+          <li>Fonctionnement logique : marche OU auto-maintien, ET non arrêt, ET non défaut.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VII — L'inversion de sens et le verrouillage",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Inverser le sens de rotation</h3>
+        <p>Pour inverser le sens de rotation d'un moteur asynchrone triphasé, il suffit de <strong>permuter deux phases</strong> d'alimentation. En pratique, on utilise <strong>deux contacteurs</strong> : KM1 (sens avant) et KM2 (sens arrière). Chacun alimente le moteur avec deux phases croisées.</p>
+        <p>Le danger : si KM1 et KM2 sont fermés <strong>simultanément</strong>, deux phases du réseau sont mises en court-circuit direct. C'est pourquoi il faut absolument :</p>
+        <ul>
+          <li><strong>un verrouillage mécanique</strong> entre les deux contacteurs (une pièce physique empêche l'un de se fermer quand l'autre est fermé) ;</li>
+          <li><strong>un verrouillage électrique</strong> : un contact NC de KM1 est placé en série avec la bobine de KM2, et vice-versa.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Circuit d'inversion</div>
+        <ul>
+          <li>Deux boutons-poussoirs marche : S1 (avant), S3 (arrière).</li>
+          <li>Un bouton-poussoir arrêt : S2 (commun).</li>
+          <li>Un contact NC de KM1 en série avec la bobine KM2, et un contact NC de KM2 en série avec la bobine KM1 (verrouillage électrique).</li>
+          <li>Auto-maintien propre à chaque sens (contacts auxiliaires NO de KM1 et KM2).</li>
+        </ul>
+        <p>Ainsi, appuyer sur « arrière » pendant que le moteur tourne en « avant » n'a aucun effet tant qu'on n'a pas arrêté.</p>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Un élève oublie le verrouillage électrique en câblant un schéma d'inversion. Au premier appui simultané sur les deux boutons (fréquent sur un pupitre), les deux contacteurs se ferment et un arc électrique détruit le tableau. <strong>Règle absolue :</strong> dans un circuit d'inversion, verrouillage électrique <em>et</em> mécanique sont obligatoires. On ne remplace jamais l'un par l'autre.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Inversion = permutation de deux phases.</li>
+          <li>Deux contacteurs + verrouillage électrique + mécanique.</li>
+          <li>Sans verrouillage : court-circuit entre phases.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VIII — La méthode de dépannage structurée",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Dépanner, ce n'est pas deviner</h3>
+        <p>Dépanner, c'est <strong>raisonner méthodiquement</strong>. On ne remplace pas un composant au hasard : on observe, on formule des hypothèses, on teste, on répare, on vérifie. La méthode de dépannage comporte <strong>six étapes</strong> :</p>
+        <ol>
+          <li><strong>Observer les symptômes</strong> : que se passe-t-il exactement ? Le moteur ne démarre pas, démarre et s'arrête, chauffe, vibre, fait un bruit anormal ? Y a-t-il un voyant allumé ? Un relais déclenché ?</li>
+          <li><strong>Formuler des hypothèses</strong> : à partir des symptômes, lister les causes possibles (fusible, contacteur, relais thermique, fil desserré, moteur, commande).</li>
+          <li><strong>Tester</strong> : utiliser les outils de mesure (multimètre en continuité ou en tension, pince ampèremétrique, testeur de prise). Chaque test confirme ou élimine une hypothèse.</li>
+          <li><strong>Localiser la panne</strong> : isoler le composant défectueux.</li>
+          <li><strong>Réparer</strong> : remplacer, resserrer, reconfigurer, en respectant les règles de sécurité et les calibres d'origine.</li>
+          <li><strong>Vérifier le bon fonctionnement</strong> : remettre sous tension, contrôler courant, tension, bruit, échauffement, et documenter l'intervention.</li>
+        </ol>
+      </div>
+
+      <figure>
+        <img data-image-id="electriciteindustrielle4_img05" alt="Multimètre et pince ampèremétrique utilisés par un technicien pour diagnostiquer une panne électrique.">
+        <figcaption>Les outils du diagnostic électrique.</figcaption>
+      </figure>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les outils du dépanneur</div>
+        <ul>
+          <li><strong>Multimètre</strong> : mesure tension, courant (petits calibres), résistance, continuité, diodes.</li>
+          <li><strong>Pince ampèremétrique</strong> : mesure du courant sans couper le circuit (indispensable pour comparer les phases).</li>
+          <li><strong>Testeur de prise / VAT</strong> : vérification de l'absence de tension.</li>
+          <li><strong>Tournevis isolé, pinces, clés</strong> : pour les connexions.</li>
+          <li><strong>Documentation</strong> : schémas, notices, plaque signalétique du moteur.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Dépannage = observer, hypothèses, tester, localiser, réparer, vérifier.</li>
+          <li>Ne jamais remplacer au hasard.</li>
+          <li>Toujours vérifier l'absence de tension avant intervention.</li>
+        </ul>
+      </div>
+
+      <div class="sources">
+        <div class="bloc-label">Sources</div>
+        <p>Fiches pédagogiques officielles Électricité Industrielle et Automatismes (Édition 2025-2026).</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VIII — Les pannes courantes",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Tableau des pannes fréquentes</h3>
+        <table>
+          <thead>
+            <tr><th>Symptôme</th><th>Causes probables</th><th>Vérification</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Le moteur ne démarre pas</td><td>Fusible grillé, contacteur défaillant, relais thermique déclenché, bouton arrêt bloqué, fil desserré</td><td>VAT, continuité des fusibles, tension aux bornes de la bobine KM, état du relais</td></tr>
+            <tr><td>Le moteur chauffe</td><td>Surcharge mécanique, déséquilibre de phases, ventilation bouchée, roulements usés</td><td>Pince ampèremétrique sur les 3 phases, contrôle de la charge, nettoyage</td></tr>
+            <tr><td>Le moteur vibre</td><td>Déséquilibre, roulements usés, accouplement mal aligné, fixation desserrée</td><td>Mesures de courant, contrôle mécanique</td></tr>
+            <tr><td>Le relais thermique déclenche sans surcharge</td><td>Relais mal réglé, contacteur usé, court-circuit partiel</td><td>Vérifier le réglage, contrôler les résistances d'isolement</td></tr>
+            <tr><td>Le moteur tourne dans le mauvais sens</td><td>Deux phases inversées au branchement</td><td>Permuter deux phases</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Cas pratique</div>
+        <p>Un moteur de broyeur dans une mine du Katanga ne démarre plus. Le technicien suit la méthode :</p>
+        <ol>
+          <li>Il consigne le départ.</li>
+          <li>Il vérifie les fusibles : F1 est grillé.</li>
+          <li>Il remplace F1 par un fusible de même calibre et remet sous tension.</li>
+          <li>Le moteur redémarre mais le courant en phase 2 est de 18 A contre 12 A sur les autres phases. Déséquilibre.</li>
+          <li>Il coupe, resserre les bornes du moteur : un fil était desserré. Il resserre.</li>
+          <li>Le courant redevient équilibré (12/12/12 A). Le moteur tourne normalement.</li>
+        </ol>
+        <p>Le technicien a respecté la méthode et n'a pas simplement remplacé le fusible en laissant le déséquilibre.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Un symptôme peut avoir plusieurs causes : toujours tester.</li>
+          <li>Ne jamais remplacer un fusible par un calibre supérieur.</li>
+          <li>Comparer les trois courants avec une pince ampèremétrique.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Ancrage RDC — Applications et défis",
+    content: `
+      <div class="bloc cas">
+        <div class="bloc-label">Contextualisation</div>
+        <h3>L'électricité industrielle en RDC</h3>
+        <p>L'électricité industrielle prend tout son sens dans la réalité congolaise :</p>
+        <ul>
+          <li><strong>Réseau SNEL</strong> : production principalement par les centrales d'Inga, transport en haute tension, distribution en moyenne et basse tension. Comprendre le triphasé et les transformateurs est indispensable pour tout technicien intervenant sur ce réseau.</li>
+          <li><strong>Industrie minière</strong> (Katanga, Kasaï, Ituri) : broyeurs, convoyeurs, pompes, treuils — tous mus par des moteurs triphasés souvent de forte puissance.</li>
+          <li><strong>Agroalimentaire à Kinshasa</strong> : moulins, malaxeurs, chaînes d'emballage — circuits de commande simples mais critiques.</li>
+          <li><strong>REGIDESO</strong> : stations de pompage automatisées, où le démarrage et la protection des moteurs sont essentiels au service de l'eau potable.</li>
+        </ul>
+        <p>Les défis sont réels : coupures fréquentes, réseaux parfois déséquilibrés, matériel limité dans les ateliers scolaires, accidents électriques dans les installations mal protégées. Le technicien formé en électricité industrielle contribue directement à la fiabilité et à la sécurité des installations.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Débouchés</div>
+        <ul>
+          <li>Électricien industriel.</li>
+          <li>Technicien de maintenance.</li>
+          <li>Tableautier (câblage d'armoires).</li>
+          <li>Technicien en automatismes.</li>
+          <li>Poursuite d'études en électrotechnique ou en génie électrique.</li>
+        </ul>
+      </div>
+
+      <div class="sources">
+        <div class="bloc-label">Sources</div>
+        <p>Fiches pédagogiques officielles Électricité Industrielle et Automatismes (Édition 2025-2026) ; Sciences-Africa, <em>Électricité Industrielle 4<sup>e</sup> année</em>.</p>
+      </div>
+    `
+  },
+  {
+    title: "Synthèse générale du cours",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Ce qu'il faut retenir</div>
+        <h3>Les huit idées maîtresses</h3>
+        <ol>
+          <li><strong>Sécurité d'abord</strong> : EPI, consignation en cinq étapes (Séparer, Condamner, Identifier, VAT, Mise à la terre).</li>
+          <li><strong>Protections</strong> : fusible (court-circuit), disjoncteur (surcharge + court-circuit), relais thermique (surcharge moteur), différentiel (personnes).</li>
+          <li><strong>Triphasé</strong> : U = V√3, couplage étoile ou triangle selon la plaque du moteur.</li>
+          <li><strong>Champ tournant</strong> : créé par 3 enroulements décalés à 120°, N<sub>s</sub> = 60f/p.</li>
+          <li><strong>Moteur asynchrone</strong> : rotor non alimenté, courants induits, glissement g = (N<sub>s</sub> − N)/N<sub>s</sub>.</li>
+          <li><strong>Démarrage</strong> : DOL (simple mais fort courant), Y-Δ (courant divisé par 3, couple divisé par 3).</li>
+          <li><strong>Transformateur</strong> : m = N<sub>2</sub>/N<sub>1</sub> = U<sub>2</sub>/U<sub>1</sub>, Dyn11 pour la distribution BT.</li>
+          <li><strong>Logique câblée</strong> : auto-maintien, verrouillage, temporisation — base de l'automatisme.</li>
+        </ol>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les formules à connaître</div>
+        <table>
+          <thead>
+            <tr><th>Grandeur</th><th>Formule</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Tension composée / simple</td><td>U = V√3</td></tr>
+            <tr><td>Vitesse de synchronisme</td><td>N<sub>s</sub> = 60f / p</td></tr>
+            <tr><td>Glissement</td><td>g = (N<sub>s</sub> − N) / N<sub>s</sub></td></tr>
+            <tr><td>Couple utile</td><td>C = P / ω &nbsp; avec &nbsp; ω = 2πN / 60</td></tr>
+            <tr><td>Rapport de transformation</td><td>m = N<sub>2</sub>/N<sub>1</sub> = U<sub>2</sub>/U<sub>1</sub> = I<sub>1</sub>/I<sub>2</sub></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les erreurs à ne plus commettre</div>
+        <ul>
+          <li>Intervenir sans consignation.</li>
+          <li>Remplacer un fusible par un calibre supérieur.</li>
+          <li>Confondre tension simple et composée.</li>
+          <li>Coupler un moteur au mauvais couplage.</li>
+          <li>Démarrer un fort moteur en direct.</li>
+          <li>Oublier le verrouillage dans un circuit d'inversion.</li>
+          <li>Réduire excessivement l'excitation d'une MCC en marche.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Évaluation finale — Électricité Industrielle",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Consigne</div>
+        <p>Répondez aux 22 questions ci-dessous. Chaque question a une seule bonne réponse. Cliquez sur « Valider mes réponses » pour obtenir votre score. Bonne chance !</p>
+      </div>
+
+      <div class="quiz-container">
+        <div id="quizQuestions"></div>
+        <button id="submitQuiz" class="quiz-btn-submit">
+          Valider mes réponses
+        </button>
+        <div id="quizResult" class="quiz-result"></div>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Conseil</div>
+        <p>En cas d'erreur, relisez la diapositive correspondante du cours. Les questions balaient l'ensemble des chapitres : sécurité, triphasé, machines tournantes, transformateurs, logique câblée et dépannage.</p>
+      </div>
+    `
+  }
+];
+const questions = [
+  {
+    text: "La consignation consiste à :",
+    options: [
+      "Démarrer le moteur pour vérifier son état",
+      "Mettre l'installation en sécurité avant toute intervention",
+      "Augmenter la tension pour mieux voir",
+      "Changer les fusibles sans précaution"
+    ],
+    correct: 1
+  },
+  {
+    text: "La relation entre tension composée U et tension simple V dans un réseau équilibré est :",
+    options: [
+      "U = V / √3",
+      "U = V",
+      "U = V × √3",
+      "U = V × 3"
+    ],
+    correct: 2
+  },
+  {
+    text: "Le couplage étoile est utilisé lorsque :",
+    options: [
+      "Le moteur est prévu pour la tension composée",
+      "Le moteur est monophasé",
+      "Le moteur est à courant continu",
+      "Le moteur est prévu pour la tension simple"
+    ],
+    correct: 3
+  },
+  {
+    text: "Le champ tournant d'un moteur triphasé est créé par :",
+    options: [
+      "Trois enroulements décalés dans l'espace et alimentés en triphasé",
+      "Un seul enroulement alimenté en continu",
+      "Un aimant permanent fixe",
+      "Une batterie d'accumulateurs"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le glissement d'un moteur asynchrone se définit comme :",
+    options: [
+      "La vitesse du rotor",
+      "La tension d'alimentation",
+      "La différence relative entre la vitesse de synchronisme et la vitesse réelle du rotor",
+      "Le courant absorbé par le stator"
+    ],
+    correct: 2
+  },
+  {
+    text: "Le démarrage direct (DOL) présente principalement l'inconvénient :",
+    options: [
+      "D'un couple de démarrage trop faible",
+      "D'un courant de démarrage très élevé (4 à 8 fois le courant nominal)",
+      "D'une vitesse excessive en régime établi",
+      "D'un rendement nul"
+    ],
+    correct: 1
+  },
+  {
+    text: "Le démarrage étoile-triangle réduit le courant de démarrage d'un facteur :",
+    options: [
+      "3",
+      "2",
+      "4",
+      "10"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le rapport de transformation d'un transformateur est :",
+    options: [
+      "m = N₁ / N₂",
+      "m = U₁ / U₂",
+      "m = I₂ / I₁",
+      "m = N₂ / N₁"
+    ],
+    correct: 3
+  },
+  {
+    text: "Le couplage Dyn11 est principalement utilisé pour :",
+    options: [
+      "Les moteurs à courant continu",
+      "Les transformateurs de distribution basse tension",
+      "Les alternateurs de centrales",
+      "Les piles et batteries"
+    ],
+    correct: 1
+  },
+  {
+    text: "Un moteur à courant continu à excitation séparée se caractérise par :",
+    options: [
+      "Une vitesse rigoureusement fixe",
+      "Un couple indépendant du courant",
+      "Une vitesse réglable par la tension d'induit",
+      "Une alimentation exclusivement alternative"
+    ],
+    correct: 2
+  },
+  {
+    text: "Le contacteur est un composant :",
+    options: [
+      "De puissance et de commande",
+      "De mesure uniquement",
+      "De protection uniquement",
+      "De transformation"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'auto-maintien dans un circuit de commande sert à :",
+    options: [
+      "Arrêter automatiquement le moteur",
+      "Inverser le sens de rotation",
+      "Protéger contre les surcharges",
+      "Maintenir le contacteur fermé après relâchement du bouton marche"
+    ],
+    correct: 3
+  },
+  {
+    text: "Le verrouillage dans un circuit d'inversion de sens sert à :",
+    options: [
+      "Accélérer le moteur",
+      "Empêcher la fermeture simultanée des deux contacteurs (court-circuit entre phases)",
+      "Réduire le courant de démarrage",
+      "Augmenter le couple moteur"
+    ],
+    correct: 1
+  },
+  {
+    text: "La première étape de la méthode de dépannage est :",
+    options: [
+      "Remplacer le fusible suspect",
+      "Démarrer immédiatement le moteur",
+      "Observer les symptômes",
+      "Consigner l'installation"
+    ],
+    correct: 2
+  },
+  {
+    text: "Un relais thermique protège principalement contre :",
+    options: [
+      "Les surcharges prolongées",
+      "Les courts-circuits francs",
+      "Les surtensions",
+      "Les baisses de tension"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le réseau électrique de la SNEL est alimenté principalement par :",
+    options: [
+      "Les panneaux solaires",
+      "Les éoliennes",
+      "Les groupes électrogènes individuels",
+      "Les centrales hydroélectriques d'Inga"
+    ],
+    correct: 3
+  },
+  {
+    text: "La REGIDESO utilise, dans ses stations modernes, des systèmes de pompage :",
+    options: [
+      "Manuels à main",
+      "À vapeur",
+      "Automatisés avec démarrage et protection des moteurs",
+      "À essence uniquement"
+    ],
+    correct: 2
+  },
+  {
+    text: "Le démarrage étoile-triangle nécessite un composant de commande spécifique :",
+    options: [
+      "Un transformateur d'isolement",
+      "Un temporisateur pour passer de l'étoile au triangle",
+      "Un redresseur à diodes",
+      "Un onduleur triphasé"
+    ],
+    correct: 1
+  },
+  {
+    text: "Un multimètre permet de mesurer :",
+    options: [
+      "Tension, courant et résistance (et continuité)",
+      "Uniquement la tension",
+      "Uniquement le courant",
+      "Uniquement la résistance"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le couplage triangle est utilisé lorsque :",
+    options: [
+      "Le moteur est prévu pour la tension simple",
+      "Le moteur est monophasé",
+      "Le moteur est à courant continu",
+      "Le moteur est prévu pour la tension composée"
+    ],
+    correct: 3
+  },
+  {
+    text: "La sécurité électrique impose de travailler :",
+    options: [
+      "Sous tension pour gagner du temps",
+      "Sans EPI pour être plus à l'aise",
+      "Hors tension après consignation",
+      "Sans vérifier l'absence de tension"
+    ],
+    correct: 2
+  },
+  {
+    text: "L'objectif principal du cours d'électricité industrielle en 4ᵉ Humanité Technique est de :",
+    options: [
+      "Remplacer l'ingénieur électricien",
+      "Comprendre, installer, maintenir et diagnostiquer les équipements électriques industriels",
+      "Fabriquer des moteurs dans l'atelier",
+      "Construire de nouvelles centrales hydroélectriques"
+    ],
+    correct: 1
+  }
+];
+
+try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+        questions.forEach(function (q) {
+            if (!q.text) q.text = q.question || q.q || q.enonce || q.titre || "";
+            if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+            if (typeof q.correct === "undefined") {
+                if (typeof q.answer !== "undefined") q.correct = q.answer;
+                else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+            }
+        });
+    }
+} catch (e) {}
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+const pageTitle = document.getElementById('pageTitle');
+pageTitle.textContent = "ECOLIA · " + COURSE_TITLE;
+document.title = "ECOLIA — " + COURSE_TITLE;
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim() || slides.length === 0) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp("(" + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ")", 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderEmptyState() {
+    contentDiv.innerHTML = '<div class="empty-state"><div class="icon">·</div><span class="tag">Bientôt disponible</span><h2>' + COURSE_TITLE + '</h2><p>Ce cours est en préparation. Le contenu sera ajouté prochainement.</p></div>';
+    slideCounterSpan.textContent = '0/0';
+    progressFill.style.width = '0%';
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    counterSpan.textContent = '—';
+}
+
+function renderQuiz() {
+    const qc = document.getElementById('quizQuestions');
+    if (!qc) return;
+    if (typeof questions === 'undefined' || questions.length === 0) {
+        qc.innerHTML = '<p style="color:#666;font-style:italic;">Quiz bientot disponible.</p>';
+        return;
+    }
+    let html = '';
+    questions.forEach((q, i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o, k) => {
+            html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>';
+        });
+        html += '</div>';
+    });
+    qc.innerHTML = html;
+    const submitBtn = document.getElementById('submitQuiz');
+    if (submitBtn) {
+        submitBtn.onclick = () => {
+            let score = 0;
+            questions.forEach((q, i) => {
+                const s = document.querySelector('input[name="q' + i + '"]:checked');
+                if (s && parseInt(s.value) === q.correct) score++;
+            });
+            const pct = Math.round(score/questions.length*100);
+            document.getElementById('quizResult').innerHTML =
+                '<div style="background:var(--bg2);padding:16px;border-radius:10px;margin-top:14px;">' +
+                '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong></div>';
+        };
+    }
+}
+
+function renderSlide(index, keepHighlight) {
+    if (keepHighlight === undefined) keepHighlight = true;
+    if (slides.length === 0) { renderEmptyState(); return; }
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    if (index === slides.length - 1) renderQuiz();
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    if (slides.length === 0) return;
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (slides.length && currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (slides.length && currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+<!-- ECOLIA_IMAGE_LOADER_START -->
+<script>
+(function () {
+  var SITE = "https://ecolia-course.github.io/";
+  var NATIVE = false;
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function abs(u) { return /^(https?:|data:|blob:)/i.test(u) ? u : (NATIVE ? SITE + u.replace(/^(\.\/|\/)+/, "") : u); }
+  function ext(u) { var m = String(u).split("?")[0].match(/\.(jpe?g|png|gif|webp|svg)$/i); return m ? m[1].toLowerCase() : "jpg"; }
+  function hide(img) { img.onerror = null; img.style.display = "none"; }
+  var table = null, queue = [], queued = {}, running = false;
+  function enqueue(full, fn) {
+    if (queued[fn]) return;
+    queued[fn] = 1; queue.push([full, fn]);
+    if (!running) { running = true; setTimeout(next, 2500); }
+  }
+  function next() {
+    if (!queue.length) { running = false; return; }
+    if (!navigator.onLine) { running = false; return; }
+    var q = queue.shift(), t0 = Date.now();
+    try { CoursInterface.download(q[0], q[1]); } catch (e) { return setTimeout(next, 500); }
+    (function wait() {
+      var ok = false;
+      try { ok = !!CoursInterface.exists(q[1]); } catch (e) {}
+      if (ok) setTimeout(next, 1500);
+      else if (Date.now() - t0 > 40000) next();
+      else setTimeout(wait, 700);
+    })();
+  }
+  function exists(fn) { try { return !!CoursInterface.exists(fn); } catch (e) { return false; } }
+  function show(img) {
+    if (!table || img.getAttribute("data-ecolia-done")) return;
+    var id = img.getAttribute("data-image-id");
+    var url = table[id];
+    if (typeof url !== "string" || !url.length) { console.warn("ECOLIA : image absente du JSON :", id); return; }
+    img.setAttribute("data-ecolia-done", "1");
+    if (!NATIVE) { img.onerror = function () { hide(img); }; img.setAttribute("src", url); return; }
+    var full = abs(url), fn = "img_" + id + "." + ext(url);
+    if (exists(fn)) {
+      img.onerror = function () {
+        try { CoursInterface["delete"](fn); } catch (e) {}
+        queued[fn] = 0;
+        img.onerror = function () { hide(img); };
+        img.setAttribute("src", full);
+      };
+      img.setAttribute("src", "https://app.local/cours/" + fn);
+    } else {
+      img.onerror = function () { hide(img); };
+      img.setAttribute("src", full);
+      enqueue(full, fn);
+    }
+  }
+  function scan(root) {
+    if (!root || !root.querySelectorAll) return;
+    if (root.matches && root.matches("img[data-image-id]")) show(root);
+    root.querySelectorAll("img[data-image-id]").forEach(show);
+  }
+  function prefetchAll() {
+    var ids = {};
+    try { JSON.stringify(slides).replace(/data-image-id=\\?"([^"\\]+)/g, function (m, id) { ids[id] = 1; }); } catch (e) {}
+    Object.keys(ids).forEach(function (id) {
+      var url = table[id];
+      if (typeof url !== "string" || !url.length) return;
+      var fn = "img_" + id + "." + ext(url);
+      if (!exists(fn)) enqueue(abs(url), fn);
+    });
+  }
+  function start(tbl) {
+    table = tbl;
+    scan(document.body);
+    new MutationObserver(function (muts) {
+      muts.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.nodeType === 1) scan(n); }); });
+    }).observe(document.body, { childList: true, subtree: true });
+    if (NATIVE) prefetchAll();
+  }
+  var JSON_URL = NATIVE ? SITE + "images_ecolia.json" : "images_ecolia.json";
+  var KEY = "ecolia_images_json";
+  fetch(JSON_URL, NATIVE ? { cache: "no-cache" } : undefined)
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (table) { if (NATIVE) lsSet(KEY, JSON.stringify(table)); start(table); })
+    .catch(function (e) {
+      var saved = null;
+      if (NATIVE) { try { saved = JSON.parse(lsGet(KEY) || "null"); } catch (x) {} }
+      if (saved) start(saved);
+      else console.warn("ECOLIA : JSON des images indisponible.", e);
+    });
+})();
+</script>
+<!-- ECOLIA_IMAGE_LOADER_END -->
+
+
+
+<!-- ECOLIA_AUDIO_PLAYER_START -->
+<style>
+  #ecolia-audio-btn, #ecolia-dl-btn {
+    width: 30px; height: 30px; min-width: 30px; padding: 0; margin: 0 4px 0 0;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    cursor: pointer; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent; outline: none;
+  }
+  #ecolia-audio-btn { border: none; background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-dl-btn { border: 1.5px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb); }
+  #ecolia-dl-btn.ecolia-full { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-btn.ecolia-fixed { position: fixed; top: 8px; left: 8px; z-index: 2147483000; }
+  #ecolia-audio-btn:active, #ecolia-dl-btn:active { transform: scale(.92); }
+  #ecolia-audio-btn svg, #ecolia-dl-btn svg { width: 15px; height: 15px; fill: currentColor; pointer-events: none; }
+  #ecolia-audio-btn.ecolia-off, #ecolia-dl-btn.ecolia-off { display: none; }
+  #ecolia-audio-banner {
+    display: none; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0;
+    padding: 8px 14px; font-size: .82rem; line-height: 1.35;
+    background: var(--soft, #eef3fb); color: var(--p1, #123); border-bottom: 1px solid var(--bd, #c9d6ea);
+  }
+  #ecolia-audio-banner.on { display: flex; }
+  #ecolia-audio-banner .eab-txt { flex: 1 1 180px; }
+  #ecolia-audio-banner .eab-act { display: flex; gap: 6px; flex-wrap: wrap; }
+  #ecolia-audio-banner button {
+    border: 1px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb);
+    border-radius: 16px; padding: 5px 12px; font-size: .8rem; cursor: pointer;
+  }
+  #ecolia-audio-banner button.pri { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-banner .eab-bar { display: none; flex-basis: 100%; height: 4px; border-radius: 2px; overflow: hidden; background: var(--bd, #c9d6ea); }
+  #ecolia-audio-banner .eab-bar i { display: block; height: 100%; width: 0; background: var(--p2, #2563eb); transition: width .2s; }
+</style>
+<script>
+(function () {
+  var CFG = {"code":"ElectriciteIndustrielle4","base":"https://ecolia-course.github.io/ecolia-media/audio_files/","available":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26],"count":26,"sizeMo":27,"sizes":{"1":994176,"2":816384,"3":956736,"4":1092288,"5":993792,"6":1041792,"7":937920,"8":1207104,"9":1011072,"10":1038720,"11":1047936,"12":1238016,"13":832704,"14":1022592,"15":1289088,"16":1019904,"17":1294656,"18":1042176,"19":1119552,"20":1022400,"21":1030272,"22":1100352,"23":1041600,"24":779520,"25":1054848,"26":261696},"fallback":{"1":[["fr","Sommaire, Électricité Industrielle. Présentation du cours. Bienvenue en Électricité Industrielle. Ce cours de 4e année des Humanités Techniques Industrielles vous prépare à comprendre, installer, maintenir et diagnostiquer les équipements électriques qui animent les systèmes de production. Il est la base indispensable du technicien A2 en mécanique générale, en électronique et en électricité. À la fin du cours, vous saurez analyser un système triphasé, expliquer le fonctionnement d'un moteur asynchrone, choisir un mode de démarrage adapté, comprendre le rôle d'un transformateur, câbler un circuit de commande simple et conduire un dépannage méthodique en toute sécurité. Objectifs d'apprentissage. Analyser un système triphasé et réaliser les couplages étoile et triangle. Expliquer le principe du champ tournant et le fonctionnement du moteur asynchrone triphasé. Identifier les procédés de démarrage d'un moteur et leurs conditions d'utilisation. Analyser le fonctionnement du transformateur monophasé et triphasé. Décrire le principe et la variation de vitesse des machines à courant continu. Concevoir et câbler un circuit de commande en logique câblée. Appliquer les règles de sécurité et utiliser les dispositifs de protection. Diagnostiquer une panne simple sur un équipement électrique industriel. Plan du cours. Chapitre I, Sécurité électrique et outillage. Chapitre II, Les systèmes triphasés. Chapitre III, Le moteur asynchrone triphasé: principe et constitution. Chapitre IV, Le moteur asynchrone triphasé: caractéristiques et démarrage. Chapitre V, Les transformateurs. Chapitre VI, Les machines à courant continu. Chapitre VII, Les circuits de commande et la logique câblée. Chapitre VIII, Le diagnostic et le dépannage."]],"2":[["fr","Chapitre I, Pourquoi l'électricité industrielle? Situation-problème. Une usine de Kinshasa s'arrête. Dans une usine agroalimentaire de Kinshasa, le convoyeur principal s'arrête brutalement. Le chef d'atelier fait appel au technicien de maintenance. Sans comprendre l'électricité industrielle, impossible d'identifier l'origine de la panne, de dépanner l'installation et de remettre la production en route. Le technicien doit savoir lire un schéma électrique, reconnaître un contacteur, un relais thermique, un moteur asynchrone et utiliser un multimètre en toute sécurité. Fondements théoriques. Le rôle de l'électricité dans l'industrie. Dans une usine moderne, presque toutes les machines sont entraînées par des moteurs électriques: pompes, convoyeurs, broyeurs, ventilateurs, compresseurs, broches de machines-outils. Ces moteurs sont alimentés par le réseau triphasé, protégés par des dispositifs de protection et commandés par des circuits de commande. Le technicien doit donc maîtriser simultanément: la production et la distribution de l'énergie (triphasé, transformateurs); la conversion électromécanique (moteurs et génératrices); la commande et la protection (contacteurs, relais, disjoncteurs); la sécurité des personnes et du matériel. Ce cours « couronne le cycle de formation en électricité »: il prépare au métier d'électricien industriel, de technicien de maintenance, de tableautier ou de technicien en automatismes."]],"3":[["fr","Chapitre I, Les risques électriques. Fondements théoriques. Les quatre grands risques électriques. L'électricité ne se voit pas, ne s'entend pas et ne se sent pas. Elle tue silencieusement. Il faut donc identifier les risques avant toute intervention. Risque. Description. Électrisation. Passage du courant à travers le corps humain. Provoque contractions musculaires, brûlures internes, troubles cardiaques. Électrocution. Électrisation mortelle. C'est la conséquence la plus grave d'une électrisation. Brûlures. Liées à la chaleur de l'arc électrique ou au passage du courant dans les tissus. Incendies et explosions. Un court-circuit ou une surcharge peut enflammer les isolants et provoquer un incendie d'armoire ou d'atelier. Le risque dépend de l'intensité du courant, de la durée de contact et du trajet dans le corps. Un contact direct (toucher une phase) est le plus dangereux; un contact indirect (toucher une masse mise accidentellement sous tension) est plus fréquent en industrie. Exemple concret. Un ouvrier de Matete touche une carcasse de machine dont l'isolement est défectueux. La carcasse est portée au potentiel du secteur (220 V). L'ouvrier est électrisé: son corps devient un chemin pour le courant. Sans mise à la terre et sans différentiel, l'accident est mortel. Retenez: toute carcasse métallique doit être reliée à la terre, et toute installation doit être protégée par un différentiel. Points clés. Quatre risques majeurs: électrisation, électrocution, brûlures, incendie. Contact direct égale contact avec une pièce nue sous tension. Contact indirect égale contact avec une masse mise accidentellement sous tension. Terre plus différentiel égale protection des personnes."]],"4":[["fr","Chapitre I, EPI et consignation. Fondements théoriques. Les équipements de protection individuelle (EPI). L'EPI ne protège que celui qui le porte, et seulement s'il est adapté au risque et en bon état. En électricité industrielle, les EPI indispensables sont: Gants isolants adaptés à la tension (classe 00 pour la BT). Chaussures de sécurité et tapis isolant pour isoler les pieds du sol. Gilet isolant (gilet anti-arc) contre les arcs électriques. Lunettes ou visière contre les projections. Casque avec écran facial pour les interventions sous tension. Tournevis à manche isolé, pince isolée, outillage certifié 1000 V. Fondements théoriques. La consignation: mettre l'installation en sécurité. La consignation est la procédure obligatoire avant toute intervention sur une installation électrique. Elle comporte cinq étapes dans l'ordre: Séparer: ouvrir le dispositif de sectionnement (disjoncteur, sectionneur) pour isoler l'installation. Condamner: cadenasser le dispositif en position ouverte pour empêcher toute refermeture accidentelle. Identifier: apposer une pancarte « Ne pas manœuvrer, Intervention en cours ». Vérifier l'absence de tension (VAT): mesurer avec un VAT homologué entre chaque phase et entre phases et terre. Mettre à la terre et en court-circuit: poser les perches de terre pour évacuer toute charge résiduelle ou tout retour de tension. Erreur fréquente. « Je vais vite fait resserrer un fil, ça prend deux minutes. ». Sans consignation, un tiers peut refermer le disjoncteur pendant l'intervention. C'est la première cause d'accident électrique mortel en atelier. La consignation n'est jamais une perte de temps: c'est la seule façon de rendre l'installation électriquement sûre. Points clés. Consignation égale S-C-I-V-M: Séparer, Condamner, Identifier, Vérifier l'absence de tension, Mettre à la terre. Aucun travail électrique sans consignation."]],"5":[["fr","Chapitre I, Les dispositifs de protection. Fondements théoriques. Protéger contre quoi? Un circuit électrique industriel doit être protégé contre trois grands types de défauts: les surcharges: le courant dépasse légèrement le courant nominal pendant un temps long (moteur bloqué, convoyeur trop chargé); les courts-circuits: le courant devient très élevé brutalement (contact entre phases, rupture d'isolement); les défauts d'isolement: un courant fuit vers la masse, danger pour les personnes. Fondements théoriques. Les principaux dispositifs. Dispositif. Protège contre. Principe. Fusible. Courts-circuits, fortes surintensités. Un filament fond et ouvre le circuit. Disjoncteur magnéto-thermique. Surcharges (thermique) et courts-circuits (magnétique). Déclenchement automatique, réarmable. Relais thermique. Surcharges prolongées du moteur. Lame bimétallique qui se déforme par échauffement et ouvre un contact de commande. Différentiel (DDR). Défauts d'isolement (protection des personnes). Compare le courant entrant et sortant; déclenche en cas de fuite (30 mA pour les personnes). Erreur fréquente. Un fusible a grillé dans l'armoire. Un ouvrier, pour « gagner du temps », le remplace par un fusible de calibre supérieur. Résultat: le fusible ne protège plus le circuit, l'échauffement continue, un incendie se déclare. Règle absolue: un fusible qui a grillé doit toujours être remplacé par un fusible de même calibre et de même type, et la cause doit être recherchée. Points clés. Fusible: protection contre les courts-circuits. Disjoncteur: surcharge plus court-circuit. Relais thermique: surcharge prolongée du moteur. Différentiel: protection des personnes."]],"6":[["fr","Chapitre II, Les systèmes triphasés: production et transport. Fondements théoriques. Pourquoi trois phases? L'énergie électrique qui alimente l'industrie est produite, transportée et distribuée en triphasé. Un système triphasé est constitué de trois tensions sinusoïdales de même valeur efficace et déphasées de 120 degrés l'une par rapport à l'autre. Ce choix n'est pas arbitraire: il permet de transporter la même puissance avec moins de cuivre et des pertes réduites; il produit naturellement un champ magnétique tournant (indispensable aux moteurs); il offre deux niveaux de tension (simple et composée) avec le même réseau; il permet de créer une tension continue par redressement avec moins d'ondulation. Fondements théoriques. De la centrale à l'atelier. En R D C, les centrales d'Inga et les autres centrales de la SNEL produisent l'énergie en moyenne tension (alternateurs triphasés). Cette énergie est élevée en très haute tension pour être transportée sur de longues distances avec peu de pertes (transformateurs élévateurs), puis abaissée dans les postes de distribution (transformateurs abaisseurs). Les usines reçoivent ensuite la moyenne tension (ex. 6 kV, 20 kV) et la ramènent à la basse tension industrielle (ex. 400 sur 230 V) via leur propre poste de transformation. Application R D C. Un technicien de la SNEL à Kinshasa vérifie un départ moyenne tension. Il mesure trois tensions phase-neutre identiques (environ 230 V) et trois tensions entre phases identiques (environ 400 V). Le réseau est équilibré: les trois valeurs sont égales et le déphasage est régulier. Si une phase est inférieure aux deux autres, l'installation est déséquilibrée: il faut rechercher un défaut (départ surchargé, phase coupée, mauvais contact)."]],"7":[["fr","Chapitre II, Tensions simples et composées. Fondements théoriques. Deux tensions sur le même réseau. Dans un réseau triphasé, on distingue: la tension simple, notée V, mesurée entre une phase et le neutre; la tension composée, notée U, mesurée entre deux phases. Pour un système équilibré, la relation entre les deux est: U égale V multiplié par racine carrée de 3 soit approximativement U environ égal à V multiplié par 1,732. Inversement: V égale U ou racine carrée de 3. Tensions simples et composées dans un réseau triphasé équilibré. Exemple corrigé. Donnée: un réseau triphasé a une tension composée U égale 400 V. Question: quelle est la tension simple V? Formule: V égale U ou racine carrée de 3. Calcul: V égale 400 sur 1,732 environ égal à 231 V. Interprétation: c'est la tension standard d'une prise domestique en triphasé 400 sur 230 V. Chaque phase est à 231 V par rapport au neutre, et il y a 400 V entre deux phases. Représentation de Fresnel. Sur un diagramme de Fresnel, les trois vecteurs V1, V2, V3 forment une étoile à 120 degrés. Le vecteur U12 égale V1 moins V2 a pour longueur V multiplié par racine carrée de 3. C'est la démonstration géométrique de la relation U égale V racine carrée de 3. Points clés. V égale tension phase-neutre (simple). U égale tension phase-phase (composée). U égale V racine carrée de 3 (réseau équilibré). Ne jamais confondre les deux: un mauvais couplage peut détruire un moteur."]],"8":[["fr","Chapitre II, Les couplages étoile et triangle. Fondements théoriques. Deux façons de brancher trois enroulements. Un récepteur triphasé (moteur, transformateur, résistances) possède trois enroulements. On peut les brancher de deux manières: Couplage étoile (Y). Les trois extrémités (sorties) des enroulements sont reliées à un point commun appelé neutre. Chaque enroulement voit la tension simple V. Le courant dans chaque enroulement est égal au courant de ligne. Couplage triangle (Δ). Chaque enroulement est branché entre deux phases, en boucle fermée. Chaque enroulement voit la tension composée U. Le courant dans chaque enroulement est divisé par racine carrée de 3 par rapport au courant de ligne. Les couplages étoile (Y) et triangle (Δ) d'un moteur triphasé. Fondements théoriques. Comment choisir le couplage? La plaque signalétique du moteur indique deux tensions, par exemple 230 V Δ ou 400 V Y. Cela signifie: si le réseau fournit 230 V entre phases, on couple en triangle (chaque enroulement reçoit 230 V); si le réseau fournit 400 V entre phases, on couple en étoile (chaque enroulement reçoit 400/ racine carrée de 3 environ égal à 230 V). Chaque enroulement doit toujours recevoir sa tension nominale. Un mauvais couplage expose les enroulements à une tension trop élevée et les détruit en quelques secondes. Exemple corrigé. Donnée: un moteur porte l'indication « 230 V Δ ou 400 V Y ». Le réseau disponible est 230 sur 400 V (U égale 400 V, V égale 230 V). Question: quel couplage adopter? Raisonnement: en triangle, chaque enroulement recevrait U égale 400 V supérieur à 230 V: destruction. En étoile, chaque enroulement reçoit V égale 230 V: correct. Réponse: couplage étoile. Points clés. Étoile: enroulements en commun au neutre, chaque enroulement voit V. Triangle: enroulements en boucle, chaque enroulement voit U. La plaque signalétique impose le couplage. Un mauvais couplage détruit le moteur."]],"9":[["fr","Chapitre II, Fonctionnement équilibré et déséquilibré. Fondements théoriques. Le régime équilibré. Un système triphasé est équilibré lorsque les trois courants ont la même valeur efficace et un déphasage régulier de 120 degrés. Dans ce cas, la somme vectorielle des trois courants est nulle et le courant dans le neutre est nul. C'est le régime normal d'un moteur triphasé bien alimenté. Fondements théoriques. Le régime déséquilibré. Un système est déséquilibré quand les trois courants diffèrent en valeur efficace ou en déphasage. Les causes industrielles sont nombreuses: une phase coupée (fil rompu, fusible grillé); un départ monophasé branché entre phase et neutre sur un réseau triphasé; un mauvais contact sur une borne (échauffement); un enroulement défectueux dans un moteur. Conséquences: échauffement anormal du moteur, vibrations, bruit, perte de couple, déclenchement du relais thermique, destruction prématurée des enroulements. Diagnostic de terrain. Un moteur de pompe REGIDESO vibre et chauffe sans raison apparente. Le technicien mesure les trois courants de ligne avec une pince ampèremétrique: I1 égale 12 A, I2 égale 12 A, I3 égale 5 A. Le déséquilibre est flagrant. Il coupe, consigne, vérifie les fusibles: l'un est grillé. La phase 3 était absente; le moteur tournait en monophasé déguisé, d'où l'échauffement. Après remplacement du fusible et vérification de la cause de sa fusion, le moteur retrouve un régime équilibré (12 sur 12 sur 12 A). Points clés. Équilibré: 3 courants égaux, 120 degrés d'écart, courant neutre nul. Déséquilibré: échauffement, vibrations, perte de couple. Mesurer les trois courants avec une pince ampèremétrique pour diagnostiquer."]],"10":[["fr","Chapitre III, Le champ tournant (principe de Tesla). Fondements théoriques. L'idée géniale de Nikola Tesla. Le champ tournant est la clé de tous les moteurs à courant alternatif. Il a été découvert par Nikola Tesla à la fin du XIXe siècle. Imaginez trois enroulements identiques disposés dans le stator à 120 degrés l'un de l'autre (dans l'espace). Alimentez-les avec trois courants triphasés déphasés de 120 degrés dans le temps. Chaque enroulement crée un champ magnétique alternatif. La superposition des trois champs donne un champ magnétique unique, d'amplitude constante, qui tourne à une vitesse appelée vitesse de synchronisme. Formule de la vitesse de synchronisme: Ns égale 60 multiplié par f ou p. avec Ns en tr ou min, f égale fréquence du réseau en Hz (50 Hz en R D C), p égale nombre de paires de pôles du bobinage. Exemple corrigé. Donnée: un moteur triphasé possède 2 paires de pôles (4 pôles), alimenté en 50 Hz. Formule: Ns égale 60 multiplié par f ou p égale 60 multiplié par 50 sur 2 égale 1500 tr ou min. Interprétation: le champ tourne à 1500 tr ou min. C'est la vitesse maximale théorique du rotor. Le rotor réel tournera légèrement moins vite: c'est le glissement. Application au moteur asynchrone. Le champ tournant du stator traverse le rotor. Comme le rotor est initialement immobile, les conducteurs du rotor voient un champ magnétique variable: il s'y induit des courants (loi de Lenz-Faraday). Ces courants, dans le champ tournant, créent des forces électromagnétiques qui entraînent le rotor. Le rotor se met à tourner, mais toujours moins vite que le champ: sinon il n'y aurait plus de variation de flux, donc plus de courants induits, donc plus de couple. D'où le nom « asynchrone »."]],"11":[["fr","Chapitre III, Constitution du moteur asynchrone. Fondements théoriques. Deux parties principales. Le stator (partie fixe). Carcasse métallique avec ailettes de refroidissement. Tôles magnétiques empilées pour canaliser le flux. Trois enroulements décalés de 120 degrés dans l'espace, alimentés par le réseau triphasé. Plaque signalétique: tensions, courant, puissance, cos φ, vitesse, indice de protection. Le rotor (partie tournante). Deux technologies existent: Rotor à cage d'écureuil: barres conductrices logées dans les encoches du rotor et reliées par deux anneaux. C'est le plus répandu en industrie (robuste, sans entretien). Rotor à bagues (ou à bagues collectrices): enroulements rotoriques accessibles via des bagues, permettant d'insérer des résistances pour modifier la caractéristique au démarrage. Fondements théoriques. Un point essentiel: le rotor n'est pas alimenté. Contrairement au moteur à courant continu ou au moteur synchrone, le rotor du moteur asynchrone à cage n'est relié à aucune source électrique. Les courants rotoriques sont induits par le champ tournant du stator. C'est pour cela qu'il n'y a ni collecteur, ni balais, ni entretien de contact: le moteur à cage est le plus robuste et le plus utilisé dans l'industrie. Erreur fréquente. Un élève confond « rotor à bagues » et « moteur à courant continu ». Le moteur à bagues reste un moteur asynchrone: le champ tournant est créé par le stator, et le rotor tourne moins vite que ce champ. Le collecteur à balais est le propre de la machine à courant continu. Ne confondez pas. Points clés. Stator égale 3 enroulements en triphasé, décalés de 120 degrés. Rotor égale cage d'écureuil (le plus courant) ou à bagues. Rotor non alimenté: courants induits. Pas de collecteur ni de balais sur un moteur à cage."]],"12":[["fr","Chapitre IV, Glissement et couple. Fondements théoriques. Le glissement. Le rotor d'un moteur asynchrone tourne toujours moins vite que le champ tournant. L'écart relatif s'appelle le glissement, noté g: g égale (Ns moins N) ou Ns. avec Ns égale vitesse de synchronisme (tr ou min) et N égale vitesse réelle du rotor (tr ou min). Le glissement est souvent exprimé en pourcentage. En fonctionnement normal, il est faible: de quelques pour cent (2 à 6 pour cent ) pour un moteur standard. Exemple: moteur 4 pôles, 50 Hz, Ns égale 1500 tr ou min, N égale 1440 tr ou min, donc g égale (1500 moins 1440) ou 1500 égale 0,04 égale 4 pour cent. Fondements théoriques. Le couple moteur. Le couple est la force de rotation du moteur. Il dépend du glissement selon une courbe caractéristique en forme de cloche: au démarrage (g égale 1), le couple est le couple de démarrage; en accélérant, le couple augmente jusqu'à un couple maximal; au-delà, le moteur « décroche »: le couple chute et le moteur cale. Le couple utile N multiplié par m dépend de la puissance utile P (W) et de la vitesse angulaire ω (rad ou s): C égale P ou ω avec ω égale 2 pi N ou 60. Exemple corrigé. Donnée: un moteur fournit une puissance utile P égale 2,2 kW à N égale 1440 tr ou min. Étape 1: ω égale 2 pi multiplié par 1440 sur 60 égale 150,8 rad ou s. Étape 2: C égale 2200 sur 150,8 environ égal à 14,6 N multiplié par m. Interprétation: le moteur exerce un couple de 14,6 N multiplié par m sur sa charge à sa vitesse nominale. Points clés. g égale (Ns moins N) ou Ns. Le glissement normal est faible (quelques pour cent ). Couple maxi: au-delà, décrochage. C égale P ou ω et ω égale 2 pi N ou 60."]],"13":[["fr","Chapitre IV, Le démarrage direct (DOL). Fondements théoriques. Le démarrage le plus simple. Le démarrage direct, ou Direct On Line (DOL), consiste à brancher le moteur directement sur le réseau triphasé. C'est le mode de démarrage le plus simple, le moins coûteux et le plus fiable: un contacteur, un bouton marche, un bouton arrêt, un relais thermique, et le tour est joué. Avantages et inconvénients. Avantages. Inconvénients. Très simple, peu de composants. Courant de démarrage très élevé: 4 à 8 fois le courant nominal (Id environ égal à 4 à 8 multiplié par In). Couple de démarrage important. Chute de tension sur le réseau au démarrage. Coût minimal. Contraintes mécaniques brutales (à-coup sur la charge). Peu d'entretien. Réservé aux moteurs de petite puissance et aux réseaux robustes. Application. Un petit compresseur de 1,5 kW peut être démarré en direct sans problème sur un réseau bien dimensionné. Un moteur de 45 kW ne doit jamais être démarré en direct: le courant d'appel ferait chuter la tension et déclencherait les protections du départ, voire celles de tout le tableau. On utilise alors un démarrage étoile-triangle ou un démarrage progressif (variateurs). Points clés. Démarrage direct égale branchement sur le réseau. Courant d'appel: 4 à 8 multiplié par In. Réservé aux petites puissances et aux réseaux robustes. Ne jamais démarrer un fort moteur en direct sans vérifier le réseau."]],"14":[["fr","Chapitre IV, Le démarrage étoile-triangle (Y-Δ). Fondements théoriques. Le principe. Le démarrage étoile-triangle est un procédé qui permet de réduire le courant d'appel d'un moteur triphasé. L'idée: au démarrage, coupler le moteur en étoile (chaque enroulement reçoit V au lieu de U), puis, après quelques secondes, basculer en triangle (régime normal). En étoile, chaque enroulement est soumis à une tension réduite d'un facteur racine carrée de 3. Or le courant dans un enroulement est proportionnel à la tension qu'il reçoit. En première approximation: Idémarrage Y égale Idémarrage Δ ou 3. Le courant de démarrage est divisé par 3, et le couple également divisé par 3. Mise en œuvre. Le moteur doit être prévu pour le couplage triangle sur le réseau disponible (plaque: 400 V Δ ou 690 V Y par exemple). Il faut trois contacteurs: ligne (K M1), étoile (K M2), triangle (K M3). Un temporisateur commande le passage de Y à Δ (typiquement 3 à 8 secondes). Un verrouillage électrique et mécanique empêche K M2 et K M3 d'être fermés simultanément (sinon court-circuit entre phases). Exemple chiffré. Un moteur absorbe 60 A en démarrage direct. En démarrage Y-Δ: IY environ égal à 60 sur 3 égale 20 A. Le courant d'appel est divisé par trois. En contrepartie, le couple de démarrage est aussi divisé par trois: le moteur ne doit pas être trop chargé au démarrage (pompes centrifuges, ventilateurs: OK; broyeurs chargés: non). Points clés. Démarrage en Y puis passage en Δ. Courant de démarrage divisé par 3. Couple divisé par 3: pas pour fortes charges. Trois contacteurs plus temporisateur plus verrouillage obligatoires."]],"15":[["fr","Chapitre V, Le transformateur monophasé. Fondements théoriques. Un transformateur, à quoi ça sert? Un transformateur est un convertisseur statique (sans pièce mobile) qui modifie l'amplitude d'une tension alternative sans changer sa fréquence. Il est constitué de: un circuit magnétique en tôles feuilletées (pour limiter les pertes par courants de Foucault); un enroulement primaire de N1 spires, alimenté par la source; un enroulement secondaire de N2 spires, qui alimente la charge. Le principe repose sur l'induction électromagnétique: le courant alternatif du primaire crée un flux magnétique alternatif dans le noyau, flux qui induit une tension dans le secondaire. Fondements théoriques. Le rapport de transformation. Le rapport de transformation m est défini par: m égale N2 ou N1 égale U2 ou U1 égale I1 ou I2. si m supérieur à 1: transformateur élévateur (U2 supérieur à U1); si m inférieur à 1: transformateur abaisseur (U2 inférieur à U1); si m égale 1: transformateur d'isolement. Exemple corrigé. Donnée: N1 égale 1000 spires, N2 égale 100 spires, U1 égale 230 V. Formule: m égale N2 ou N1. Calcul: m égale 100 sur 1000 égale 0,1; U2 égale m multiplié par U1 égale 0,1 multiplié par 230 égale 23 V. Interprétation: c'est un transformateur abaisseur: 230 V au primaire, 23 V au secondaire. Attention aux pertes. Un transformateur réel n'est pas parfait. Il subit des pertes fer (dans le noyau, par hystérésis et courants de Foucault) et des pertes cuivre (par effet Joule dans les enroulements). Le rendement d'un transformateur industriel est élevé (souvent supérieur à 95 pour cent ) mais jamais de 100 pour cent. Ne confondez pas le rapport de transformation (qui est théorique) avec le rendement (qui traduit les pertes). Points clés. m égale N2/N1 égale U2/U1 égale I1/I2. Élévateur (m supérieur à 1) ou abaisseur (m inférieur à 1). Pertes fer plus pertes cuivre égale rendement inférieur à 100 pour cent. Ne pas confondre rapport et rendement."]],"16":[["fr","Chapitre V, Le transformateur triphasé et le couplage Dyn11. Fondements théoriques. Trois enroulements par côté. Un transformateur triphasé possède trois enroulements primaires et trois enroulements secondaires, généralement sur un noyau magnétique à trois colonnes. Chaque côté peut être couplé en étoile (Y), en triangle (Δ) ou en zigzag (Z). La combinaison des deux couplages définit le type de transformateur, désigné par un symbole normalisé. Fondements théoriques. Lecture du symbole normalisé. Exemple: Dyn11. D: primaire (HTA) en triangle (Δ). y: secondaire (BT) en étoile (Y) avec neutre sorti (d'où le « n » en minuscule). 11: indice horaire égale déphasage de 11 multiplié par 30 degrés égale 330 degrés entre tension HT et BT (soit moins 30 degrés). Le couplage Dyn11 est le plus utilisé pour la distribution publique basse tension en Europe et dans de nombreux pays: il permet de disposer d'un neutre en BT (pour les usages monophasés) tout en limitant les harmoniques côté HT. Le transformateur triphasé Dyn11 et son couplage. Fondements théoriques. Rôle dans le transport et la distribution. À la sortie des centrales, un transformateur élévateur porte la tension à des centaines de kV. Cette très haute tension permet de transporter la puissance sur de longues distances avec des pertes en ligne réduites (les pertes par effet Joule sont proportionnelles au carré du courant; élever U réduit I pour la même puissance, donc réduit les pertes). À l'arrivée, des transformateurs abaisseurs ramènent progressivement la tension aux niveaux utilisables (moyenne tension industrielle puis basse tension 400 sur 230 V)."]],"17":[["fr","Chapitre VI, Les machines à courant continu: principe et constitution. Fondements théoriques. Une machine réversible. La machine à courant continu (MCC) peut fonctionner dans les deux sens: en moteur: elle convertit l'énergie électrique en énergie mécanique; en génératrice (dynamo): elle convertit l'énergie mécanique en énergie électrique. Elle repose sur l'interaction entre un champ magnétique et des courants dans un conducteur: un conducteur parcouru par un courant et placé dans un champ magnétique subit une force (force de Laplace). En disposant plusieurs conducteurs sur un rotor et en les alimentant dans un ordre précis via le collecteur, on crée un couple continu. Fondements théoriques. Constitution. Stator (inducteur): crée le champ magnétique. Peut être à aimants permanents ou bobiné (alimentation séparée égale excitation séparée). Rotor (induit): porte les conducteurs qui reçoivent le courant. Collecteur: ensemble de lames de cuivre solidaires du rotor, sur lesquelles frottent les balais. Balais: contacts fixes en graphite qui amènent le courant au collecteur. Le collecteur plus balais jouent le rôle de commutateur mécanique: ils inversent le sens du courant dans un conducteur à l'instant où celui-ci passe sous le pôle opposé, ce qui maintient le couple toujours dans le même sens. Fondements théoriques. Fonctionnement en moteur. Le couple moteur est proportionnel au courant d'induit: C égale k multiplié par Φ multiplié par I, où Φ est le flux (créé par l'inducteur) et I le courant d'induit. La force électromotrice (f.é.m.) est proportionnelle à la vitesse: E égale k multiplié par Φ multiplié par N. D'où la vitesse: N environ égal à (U moins R multiplié par I) ou (k multiplié par Φ). En négligeant la chute ohmique: N environ égal à U ou (k multiplié par Φ). La vitesse dépend donc de la tension d'induit et du flux. Points clés. MCC égale machine réversible (moteur ou génératrice). Stator égale inducteur, rotor égale induit, collecteur plus balais pour la commutation. C égale k multiplié par Φ multiplié par I et E égale k multiplié par Φ multiplié par N. La vitesse dépend de U et de Φ."]],"18":[["fr","Chapitre VI, Variation de vitesse des machines à courant continu. Fondements théoriques. Deux leviers: U et Φ. À partir de la relation N environ égal à U ou (k multiplié par Φ), on déduit deux moyens de régler la vitesse d'un moteur à courant continu: Agir sur la tension d'induit U: c'est la méthode principale pour les moteurs à excitation séparée. En augmentant U, N augmente. En diminuant U, N diminue. On utilise un variateur de vitesse (redresseur commandé ou hacheur) pour faire varier U progressivement. Agir sur le flux Φ: en réduisant le courant d'excitation (donc Φ), on augmente la vitesse. Cette méthode est utilisée pour dépasser la vitesse nominale (« défluxage »), mais elle réduit le couple disponible (C ∝ Φ). Application industrielle. Un laminoir en R D C utilise un moteur à courant continu à excitation séparée. L'opérateur ajuste la vitesse du laminoir en tournant un potentiomètre relié à un variateur: le variateur fait varier la tension d'induit de 0 à 440 V, ce qui fait varier la vitesse de 0 à 1500 tr ou min proportionnellement. Pour les passes à très faible charge, l'opérateur peut aussi réduire l'excitation pour monter au-delà de 1500 tr ou min. Erreur fréquente. Réduire excessivement l'excitation d'un moteur à courant continu à excitation séparée en fonctionnement à vide. Comme N environ égal à U ou (k multiplié par Φ), si Φ tend vers zéro, N tend vers l'infini: c'est l'emballement, qui détruit la machine. Ne jamais couper l'excitation d'un moteur à excitation séparée en marche. Points clés. Vitesse réglable par U (méthode principale) ou par Φ (défluxage). Réduire Φ augmente N, mais réduit le couple. Ne jamais couper l'excitation en marche: emballement."]],"19":[["fr","Chapitre VII, Les composants de la logique câblée. Fondements théoriques. Les composants essentiels. La logique câblée est l'ensemble des circuits électriques qui commandent les moteurs et les actionneurs sans programme informatique (par opposition aux automates programmables). Elle repose sur des composants électromécaniques: Composant. Rôle. Contacteur. Relais de puissance: sa bobine, alimentée en commande, ferme des contacts de puissance qui alimentent le moteur. Il assure à la fois la puissance et la commande. Relais thermique. Protège le moteur contre les surcharges prolongées. Il ouvre un contact de commande quand le courant dépasse un seuil pendant un temps donné. Bouton-poussoir. Marche (contact normalement ouvert) ou arrêt (contact normalement fermé). Fin de course. Détecte la position d'un mobile (fin de course de sécurité, d'inversion, etc.). Relais auxiliaire. Multipalier les contacts d'un signal de commande. Temporisateur. Retarde la fermeture ou l'ouverture d'un contact après l'apparition d'un signal. Voyant. Signale l'état d'un circuit (marche, défaut, présence tension). Deux schémas à distinguer. Tout circuit industriel se lit sur deux schémas complémentaires: Le schéma de puissance: il montre le trajet du courant fort, du disjoncteur jusqu'au moteur, en passant par les contacts de puissance du contacteur et le relais thermique. Les fils y sont généralement épais. Le schéma de commande: il montre le circuit de commande (basse tension ou même tension, mais faible courant), avec les boutons, les bobines de contacteurs, les contacts auxiliaires, les temporisateurs, les voyants. Repérage. Dans un schéma industriel, chaque composant porte une référence: K M1, K M2 pour les contacteurs; Q1 pour un disjoncteur; F1 pour un fusible; F R1 pour un relais thermique; S1, S2 pour les boutons-poussoirs. Cette codification facilite le câblage et le dépannage."]],"20":[["fr","Chapitre VII, Le démarrage direct en logique câblée. Fondements théoriques. Le circuit de commande minimum. Pour commander un moteur en démarrage direct, il faut un circuit de commande comportant: un bouton marche S1 (contact normalement ouvert, NO); un bouton arrêt S2 (contact normalement fermé, NC); un contact auxiliaire d'auto-maintien du contacteur K M1, branché en parallèle sur S1; un contact du relais thermique F R1 (NC); la bobine du contacteur K M1. Le schéma de commande est alimenté entre phase et neutre (ou entre deux phases). Quand on appuie sur S1: la bobine K M1 est alimentée, les contacts de puissance se ferment et le moteur démarre. Le contact auxiliaire K M1 (branché en parallèle sur S1) se ferme aussi: on peut relâcher S1, la bobine reste alimentée. C'est l'auto-maintien. Circuit de commande d'un démarrage direct. Fonctionnement détaillé. Appui sur S1 (marche), donc bobine K M1 alimentée, donc fermeture des contacts de puissance K M1, donc démarrage du moteur. Fermeture du contact auxiliaire K M1 (auto-maintien), donc la bobine reste alimentée même quand on relâche S1. Appui sur S2 (arrêt), donc la bobine K M1 n'est plus alimentée, donc ouverture des contacts de puissance, donc arrêt du moteur. En cas de surcharge, le relais thermique F R1 ouvre son contact NC, donc la bobine K M1 n'est plus alimentée, donc arrêt automatique du moteur. Points clés. Auto-maintien égale contact auxiliaire en parallèle sur le bouton marche. Arrêt: bouton NC en série avec la bobine. Relais thermique NC en série pour l'arrêt automatique. Fonctionnement logique: marche OU auto-maintien, ET non arrêt, ET non défaut."]],"21":[["fr","Chapitre VII, L'inversion de sens et le verrouillage. Fondements théoriques. Inverser le sens de rotation. Pour inverser le sens de rotation d'un moteur asynchrone triphasé, il suffit de permuter deux phases d'alimentation. En pratique, on utilise deux contacteurs: K M1 (sens avant) et K M2 (sens arrière). Chacun alimente le moteur avec deux phases croisées. Le danger: si K M1 et K M2 sont fermés simultanément, deux phases du réseau sont mises en court-circuit direct. C'est pourquoi il faut absolument: un verrouillage mécanique entre les deux contacteurs (une pièce physique empêche l'un de se fermer quand l'autre est fermé); un verrouillage électrique: un contact NC de K M1 est placé en série avec la bobine de K M2, et vice-versa. Circuit d'inversion. Deux boutons-poussoirs marche: S1 (avant), S3 (arrière). Un bouton-poussoir arrêt: S2 (commun). Un contact NC de K M1 en série avec la bobine K M2, et un contact NC de K M2 en série avec la bobine K M1 (verrouillage électrique). Auto-maintien propre à chaque sens (contacts auxiliaires NO de K M1 et K M2). Ainsi, appuyer sur « arrière » pendant que le moteur tourne en « avant » n'a aucun effet tant qu'on n'a pas arrêté. Erreur fréquente. Un élève oublie le verrouillage électrique en câblant un schéma d'inversion. Au premier appui simultané sur les deux boutons (fréquent sur un pupitre), les deux contacteurs se ferment et un arc électrique détruit le tableau. Règle absolue: dans un circuit d'inversion, verrouillage électrique et mécanique sont obligatoires. On ne remplace jamais l'un par l'autre. Points clés. Inversion égale permutation de deux phases. Deux contacteurs plus verrouillage électrique plus mécanique. Sans verrouillage: court-circuit entre phases."]],"22":[["fr","Chapitre VIII, La méthode de dépannage structurée. Fondements théoriques. Dépanner, ce n'est pas deviner. Dépanner, c'est raisonner méthodiquement. On ne remplace pas un composant au hasard: on observe, on formule des hypothèses, on teste, on répare, on vérifie. La méthode de dépannage comporte six étapes: Observer les symptômes: que se passe-t-il exactement? Le moteur ne démarre pas, démarre et s'arrête, chauffe, vibre, fait un bruit anormal? Y a-t-il un voyant allumé? Un relais déclenché? Formuler des hypothèses: à partir des symptômes, lister les causes possibles (fusible, contacteur, relais thermique, fil desserré, moteur, commande). Tester: utiliser les outils de mesure (multimètre en continuité ou en tension, pince ampèremétrique, testeur de prise). Chaque test confirme ou élimine une hypothèse. Localiser la panne: isoler le composant défectueux. Réparer: remplacer, resserrer, reconfigurer, en respectant les règles de sécurité et les calibres d'origine. Vérifier le bon fonctionnement: remettre sous tension, contrôler courant, tension, bruit, échauffement, et documenter l'intervention. Les outils du diagnostic électrique. Les outils du dépanneur. Multimètre: mesure tension, courant (petits calibres), résistance, continuité, diodes. Pince ampèremétrique: mesure du courant sans couper le circuit (indispensable pour comparer les phases). Testeur de prise ou VAT: vérification de l'absence de tension. Tournevis isolé, pinces, clés: pour les connexions. Documentation: schémas, notices, plaque signalétique du moteur. Points clés. Dépannage égale observer, hypothèses, tester, localiser, réparer, vérifier. Ne jamais remplacer au hasard. Toujours vérifier l'absence de tension avant intervention."]],"23":[["fr","Chapitre VIII, Les pannes courantes. Fondements théoriques. Tableau des pannes fréquentes. Symptôme. Causes probables. Vérification. Le moteur ne démarre pas. Fusible grillé, contacteur défaillant, relais thermique déclenché, bouton arrêt bloqué, fil desserré. VAT, continuité des fusibles, tension aux bornes de la bobine KM, état du relais. Le moteur chauffe. Surcharge mécanique, déséquilibre de phases, ventilation bouchée, roulements usés. Pince ampèremétrique sur les 3 phases, contrôle de la charge, nettoyage. Le moteur vibre. Déséquilibre, roulements usés, accouplement mal aligné, fixation desserrée. Mesures de courant, contrôle mécanique. Le relais thermique déclenche sans surcharge. Relais mal réglé, contacteur usé, court-circuit partiel. Vérifier le réglage, contrôler les résistances d'isolement. Le moteur tourne dans le mauvais sens. Deux phases inversées au branchement. Permuter deux phases. Cas pratique. Un moteur de broyeur dans une mine du Katanga ne démarre plus. Le technicien suit la méthode: Il consigne le départ. Il vérifie les fusibles: F1 est grillé. Il remplace F1 par un fusible de même calibre et remet sous tension. Le moteur redémarre mais le courant en phase 2 est de 18 A contre 12 A sur les autres phases. Déséquilibre. Il coupe, resserre les bornes du moteur: un fil était desserré. Il resserre. Le courant redevient équilibré (12 sur 12 sur 12 A). Le moteur tourne normalement. Le technicien a respecté la méthode et n'a pas simplement remplacé le fusible en laissant le déséquilibre. Points clés. Un symptôme peut avoir plusieurs causes: toujours tester. Ne jamais remplacer un fusible par un calibre supérieur. Comparer les trois courants avec une pince ampèremétrique."]],"24":[["fr","Ancrage R D C, Applications et défis. Contextualisation. L'électricité industrielle en R D C. L'électricité industrielle prend tout son sens dans la réalité congolaise: Réseau SNEL: production principalement par les centrales d'Inga, transport en haute tension, distribution en moyenne et basse tension. Comprendre le triphasé et les transformateurs est indispensable pour tout technicien intervenant sur ce réseau. Industrie minière (Katanga, Kasaï, Ituri): broyeurs, convoyeurs, pompes, treuils, tous mus par des moteurs triphasés souvent de forte puissance. Agroalimentaire à Kinshasa: moulins, malaxeurs, chaînes d'emballage, circuits de commande simples mais critiques. REGIDESO: stations de pompage automatisées, où le démarrage et la protection des moteurs sont essentiels au service de l'eau potable. Les défis sont réels: coupures fréquentes, réseaux parfois déséquilibrés, matériel limité dans les ateliers scolaires, accidents électriques dans les installations mal protégées. Le technicien formé en électricité industrielle contribue directement à la fiabilité et à la sécurité des installations. Débouchés. Électricien industriel. Technicien de maintenance. Tableautier (câblage d'armoires). Technicien en automatismes. Poursuite d'études en électrotechnique ou en génie électrique."]],"25":[["fr","Synthèse générale du cours. Ce qu'il faut retenir. Les huit idées maîtresses. Sécurité d'abord: EPI, consignation en cinq étapes (Séparer, Condamner, Identifier, VAT, Mise à la terre). Protections: fusible (court-circuit), disjoncteur (surcharge plus court-circuit), relais thermique (surcharge moteur), différentiel (personnes). Triphasé: U égale V racine carrée de 3, couplage étoile ou triangle selon la plaque du moteur. Champ tournant: créé par 3 enroulements décalés à 120 degrés, Ns égale 60f ou p. Moteur asynchrone: rotor non alimenté, courants induits, glissement g égale (Ns moins N)/Ns. Démarrage: DOL (simple mais fort courant), Y-Δ (courant divisé par 3, couple divisé par 3). Transformateur: m égale N2/N1 égale U2/U1, Dyn11 pour la distribution BT. Logique câblée: auto-maintien, verrouillage, temporisation, base de l'automatisme. Les formules à connaître. Grandeur. Formule. Tension composée ou simple. U égale V racine carrée de 3. Vitesse de synchronisme. Ns égale 60f ou p. Glissement. g égale (Ns moins N) ou Ns. Couple utile. C égale P ou ω avec ω égale 2 pi N ou 60. Rapport de transformation. m égale N2/N1 égale U2/U1 égale I1/I2. Les erreurs à ne plus commettre. Intervenir sans consignation. Remplacer un fusible par un calibre supérieur. Confondre tension simple et composée. Coupler un moteur au mauvais couplage. Démarrer un fort moteur en direct. Oublier le verrouillage dans un circuit d'inversion. Réduire excessivement l'excitation d'une MCC en marche."]],"26":[["fr","Évaluation finale, Électricité Industrielle. Consigne. Répondez aux 22 questions ci-dessous. Chaque question a une seule bonne réponse. Cliquez sur « Valider mes réponses » pour obtenir votre score. Bonne chance! Conseil. En cas d'erreur, relisez la diapositive correspondante du cours. Les questions balaient l'ensemble des chapitres: sécurité, triphasé, machines tournantes, transformateurs, logique câblée et dépannage."]]}};
+  var CACHE = "ecolia-cours-v1";                       // même cache que l'application
+  var PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  var PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+  var DL = '<svg viewBox="0 0 24 24"><path d="M11 3h2v9.2l3.6-3.6L18 10l-6 6-6-6 1.4-1.4L11 12.2V3zM5 19h14v2H5z"/></svg>';
+  var OK = '<svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>';
+  // Réparation du quiz : certains cours stockent les choix sous "opts" (ou autre) au lieu de "options"
+  try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+      questions.forEach(function (q) {
+        if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+        if (q.text === undefined) q.text = q.question || q.q || q.enonce || q.titre || "";
+        if (typeof q.correct === "undefined") {
+          if (typeof q.answer !== "undefined") q.correct = q.answer;
+          else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+        }
+      });
+    }
+  } catch (e) {}
+  var synth = window.speechSynthesis || null;
+  var HAS_CACHE = !!(window.caches && window.caches.open);
+  var NATIVE = false;           // APK ECOLIA : pont Java "CoursInterface" (fichiers dans le dossier de l'application)
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  var LATER = "ecolia_audio_later_" + CFG.code;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+  function init() {
+    if (document.getElementById("ecolia-audio-btn")) return;
+
+    // ---------- éléments de l'interface ----------
+    var btn = document.createElement("button");
+    btn.id = "ecolia-audio-btn"; btn.type = "button"; btn.className = "ecolia-off";
+    btn.setAttribute("aria-label", "Écouter la leçon"); btn.innerHTML = PLAY;
+    var dlBtn = document.createElement("button");
+    dlBtn.id = "ecolia-dl-btn"; dlBtn.type = "button"; dlBtn.className = "ecolia-off";
+    dlBtn.innerHTML = DL;
+    var host = document.querySelector(".header-right");
+    if (host) { host.insertBefore(dlBtn, host.firstChild); host.insertBefore(btn, dlBtn); }   // dans la barre du haut : ne scrolle jamais
+    else { btn.className += " ecolia-fixed"; document.body.appendChild(btn); }
+
+    var banner = document.createElement("div");
+    banner.id = "ecolia-audio-banner";
+    banner.innerHTML = '<span class="eab-txt"></span><span class="eab-act"></span><div class="eab-bar"><i></i></div>';
+    var content = document.getElementById("content");
+    if (content && content.parentNode) content.parentNode.insertBefore(banner, content);
+    else document.body.insertBefore(banner, document.body.firstChild);
+    var txtEl = banner.querySelector(".eab-txt"), actEl = banner.querySelector(".eab-act");
+    var barEl = banner.querySelector(".eab-bar"), barI = barEl.firstChild;
+
+    var audio = new Audio();            // un seul élément Audio, réutilisé (exigé par les navigateurs mobiles)
+    audio.preload = "auto";
+    var st = { idx: -1, auto: false, advancing: false, mode: null, speaking: false, token: 0, chunks: [], ci: 0, blobUrl: null, playTok: 0 };
+    var dl = { state: "none", cached: 0, busy: false, cancel: false };   // none | partial | full
+    var bnMode = null, hideTimer = null;
+    if (synth && synth.getVoices) { try { synth.getVoices(); } catch (e) {} }
+
+    function cur() {
+      try { if (typeof currentSlide === "number") return currentSlide; } catch (e) {}
+      return 0;
+    }
+    function hasMp3(i) { return CFG.available.indexOf(i + 1) !== -1; }
+    function fb(i) { return CFG.fallback && CFG.fallback[String(i + 1)]; }
+    function hasAudio(i) { return hasMp3(i) || (!!synth && !!fb(i)); }
+    function urlN(n) {   // dans l'APK la page est sur https://app.local : une adresse relative doit pointer vers le site
+      var b = CFG.base;
+      if (NATIVE && !/^https?:/i.test(b)) b = "https://ecolia-course.github.io/" + b.replace(/^(\.\.\/|\.\/)+/, "");
+      return new URL(b + nameN(n), location.href).href;
+    }
+    function setIcon(playing) { btn.innerHTML = playing ? PAUSE : PLAY; }
+    function isPlaying() { return st.mode === "mp3" ? !audio.paused : (st.mode === "tts" && st.speaking); }
+    function mo() { return "≈ " + CFG.sizeMo + " Mo"; }
+    function nameN(n) { return "audio_" + CFG.code + "_" + n + ".mp3"; }
+
+    // ====================================================================
+    //  Stockage hors ligne : 2 moteurs, même interface
+    //    - APK : fichiers du dossier de l'application (CoursInterface), servis par https://app.local/cours/
+    //    - Web : Cache Storage du navigateur (même cache que l'application web)
+    // ====================================================================
+    function nativeStore() {
+      var okKey = "ecolia_audio_ok_" + CFG.code;
+      function readOk() { try { return JSON.parse(lsGet(okKey) || "[]"); } catch (e) { return []; } }
+      function writeOk(a) { lsSet(okKey, JSON.stringify(a)); }
+      function exists(n) { try { return !!CoursInterface.exists(nameN(n)); } catch (e) { return false; } }
+      function local(n) { return location.origin + "/cours/" + nameN(n); }
+      function verify(n) {                                   // fichier complet ? (taille exacte connue à la génération)
+        return fetch(local(n), { cache: "no-store" }).then(function (r) { return r.blob(); }).then(function (b) {
+          var exp = CFG.sizes && CFG.sizes[String(n)];
+          return (b.size > 2000 && (!exp || b.size === exp)) ? b : null;
+        }).catch(function () { return null; });
+      }
+      return {
+        list: function () {
+          var ok = readOk().filter(exists); writeOk(ok); return Promise.resolve(ok);
+        },
+        get: function (n) { return exists(n) ? verify(n) : Promise.resolve(null); },
+        put: function (n) {
+          return new Promise(function (res, rej) {
+            try { CoursInterface.download(urlN(n), nameN(n)); } catch (e) { return rej(e); }
+            var t0 = Date.now();
+            function next() { if (Date.now() - t0 > 120000) rej(new Error("délai dépassé")); else setTimeout(poll, 800); }
+            function poll() {
+              if (!exists(n)) return next();
+              verify(n).then(function (b) {
+                if (!b) return next();
+                var ok = readOk(); if (ok.indexOf(n) < 0) ok.push(n); writeOk(ok); res();
+              });
+            }
+            setTimeout(poll, 800);
+          });
+        },
+        del: function (n) {
+          try { CoursInterface.delete(nameN(n)); } catch (e) {}
+          writeOk(readOk().filter(function (x) { return x !== n; }));
+          return Promise.resolve();
+        }
+      };
+    }
+    function cacheStore() {
+      return {
+        list: function () {
+          return caches.open(CACHE).then(function (c) {
+            return Promise.all(CFG.available.map(function (n) {
+              return c.match(urlN(n)).then(function (r) {
+                if (!r) return 0;
+                if ((r.headers.get("content-type") || "").indexOf("audio") !== 0) { c.delete(urlN(n)); return 0; }   // ancien contenu invalide
+                return n;
+              });
+            }));
+          }).then(function (a) { return a.filter(Boolean); });
+        },
+        get: function (n) {
+          return caches.open(CACHE).then(function (c) { return c.match(urlN(n)); })
+            .then(function (r) { return r ? r.blob() : null; }).then(function (b) { return b && b.size > 2000 ? b : null; });
+        },
+        put: function (n) {
+          var u = urlN(n);
+          return fetch(u, { cache: "no-store" }).then(function (r) {
+            if (!r.ok || r.status !== 200) throw new Error("HTTP " + r.status);
+            return r.blob();
+          }).then(function (b) {
+            if (b.size < 2000 || (b.type && b.type.indexOf("audio") !== 0 && b.type.indexOf("octet") < 0)) throw new Error("fichier invalide");
+            return caches.open(CACHE).then(function (c) { return c.put(u, new Response(b, { headers: { "Content-Type": "audio/mpeg" } })); });
+          });
+        },
+        del: function (n) { return caches.open(CACHE).then(function (c) { return c.delete(urlN(n)); }); }
+      };
+    }
+    var store = NATIVE ? nativeStore() : (HAS_CACHE ? cacheStore() : null);
+
+    // ====================================================================
+    //  Bannière : invitation, confirmations, progression
+    // ====================================================================
+    function showBanner(mode, text, buttons, pct) {
+      clearTimeout(hideTimer);
+      bnMode = mode;
+      txtEl.textContent = text;
+      actEl.innerHTML = "";
+      (buttons || []).forEach(function (b) {
+        var e = document.createElement("button");
+        e.type = "button"; e.textContent = b.label; if (b.pri) e.className = "pri";
+        e.addEventListener("click", function (ev) { ev.stopPropagation(); b.fn(); });
+        actEl.appendChild(e);
+      });
+      if (typeof pct === "number") { barEl.style.display = "block"; barI.style.width = pct + "%"; }
+      else barEl.style.display = "none";
+      banner.classList.add("on");
+    }
+    function hideBanner() { clearTimeout(hideTimer); bnMode = null; banner.classList.remove("on"); }
+    function flash(text) { showBanner("info", text, []); hideTimer = setTimeout(hideBanner, 4000); }
+
+    function refreshUI() {
+      var show = !!store && CFG.available.length > 0;
+      dlBtn.classList.toggle("ecolia-off", !show);
+      dlBtn.classList.toggle("ecolia-full", dl.state === "full");
+      dlBtn.innerHTML = dl.state === "full" ? OK : DL;
+      dlBtn.setAttribute("aria-label", dl.state === "full" ? "Audios téléchargés : supprimer" : "Télécharger les audios");
+      dlBtn.title = dlBtn.getAttribute("aria-label");
+    }
+    function refreshCacheState(done) {
+      if (!store) { dl.state = "none"; refreshUI(); if (done) done(); return; }
+      store.list().then(function (ok) {
+        dl.cached = ok.length;
+        dl.state = dl.cached === 0 ? "none" : (dl.cached >= CFG.available.length ? "full" : "partial");
+      }).catch(function () { dl.state = "none"; }).then(function () { refreshUI(); if (done) done(); });
+    }
+
+    function askDownload(fromInvite) {
+      var left = CFG.available.length - dl.cached;
+      var txt = dl.state === "partial"
+        ? "Il reste " + left + " audio(s) à télécharger pour écouter ce cours sans internet."
+        : "🔊 Télécharger les audios de ce cours (" + mo() + ") pour les écouter sans internet ? Wi-Fi recommandé.";
+      showBanner(fromInvite ? "invite" : "confirm", txt, [
+        { label: fromInvite ? "Plus tard" : "Annuler", fn: function () { if (fromInvite) lsSet(LATER, "1"); hideBanner(); } },
+        { label: "Télécharger", pri: true, fn: startDownload }
+      ]);
+    }
+    function askDelete() {
+      showBanner("confirm", "Supprimer les audios téléchargés de ce cours (" + mo() + ") ? Vous pourrez toujours les écouter en ligne.", [
+        { label: "Annuler", fn: hideBanner },
+        { label: "Supprimer", pri: true, fn: doDelete }
+      ]);
+    }
+
+    function startDownload() {
+      if (dl.busy || !store) return;
+      dl.busy = true; dl.cancel = false;
+      var total = CFG.available.length, done = 0, quota = false, fails = 0, todo = [];
+      store.list().then(function (have) {
+        CFG.available.forEach(function (n) { if (have.indexOf(n) < 0) todo.push(n); });
+        done = total - todo.length;
+        function paint() {
+          var msg = "Téléchargement des audios : " + done + " / " + total;
+          if (bnMode === "progress") {                  // met à jour sans recréer les boutons (sinon un appui peut être perdu)
+            txtEl.textContent = msg; barI.style.width = Math.round(done / total * 100) + "%";
+          } else {
+            showBanner("progress", msg, [
+              { label: "Annuler", fn: function () { dl.cancel = true; } }
+            ], Math.round(done / total * 100));
+          }
+        }
+        paint();
+        function worker() {
+          if (dl.cancel || quota || !todo.length) return Promise.resolve();
+          var n = todo.shift();
+          return store.put(n).then(function () { done++; paint(); }).catch(function (e) {
+            if (e && (e.name === "QuotaExceededError" || /quota/i.test(String(e.message)))) quota = true;
+            fails++;
+          }).then(worker);
+        }
+        return Promise.all([worker(), worker()]);
+      }).catch(function () { fails++; }).then(function () {
+        dl.busy = false;
+        refreshCacheState(function () {
+          if (dl.state === "full") flash("✓ Audios téléchargés : le cours se lit maintenant sans internet.");
+          else if (dl.cancel) flash("Téléchargement interrompu (" + dl.cached + " / " + total + "). Vous pourrez reprendre plus tard.");
+          else showBanner("error", quota ? "Espace insuffisant sur l'appareil. Libérez de la place puis réessayez."
+            : "Certains audios n'ont pas pu être téléchargés (connexion ?).", [
+            { label: "Fermer", fn: hideBanner }, { label: "Réessayer", pri: true, fn: startDownload }
+          ]);
+        });
+      });
+    }
+    function doDelete() {
+      if (!store) return;
+      Promise.all(CFG.available.map(function (n) { return store.del(n); })).catch(function () {}).then(function () {
+        lsDel(LATER);
+        refreshCacheState(function () { flash("Audios supprimés de cet appareil."); });
+      });
+    }
+
+    dlBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (dl.busy) return;
+      if (dl.state === "full") askDelete(); else askDownload(false);
+    });
+
+    // ====================================================================
+    //  Voix intégrée au téléphone (hors ligne, sans limite)
+    // ====================================================================
+    function pickVoice(lang) {
+      var vs = [];
+      try { vs = synth.getVoices() || []; } catch (e) {}
+      var pre = lang === "en" ? "en" : "fr", best = null;
+      for (var k = 0; k < vs.length; k++) {
+        var v = vs[k];
+        if ((v.lang || "").toLowerCase().indexOf(pre) !== 0) continue;
+        if (!best || (v.localService && !best.localService)) best = v;
+      }
+      return best;
+    }
+    function hardSplit(text, max) {
+      var out = [];
+      while (text.length > max) {
+        var cut = text.lastIndexOf(" ", max);
+        if (cut < 40) cut = max;
+        out.push(text.slice(0, cut)); text = text.slice(cut).replace(/^\s+/, "");
+      }
+      if (text) out.push(text);
+      return out;
+    }
+    function buildChunks(segs) {                  // morceaux courts : évite l'arrêt des longs textes sur Chrome
+      var out = [];
+      segs.forEach(function (s) {
+        var cur2 = "", parts = s[1].match(/[^.!?;:]+[.!?;:]*\s*/g) || [s[1]];
+        parts.forEach(function (p) {
+          if (cur2 && (cur2 + p).length > 160) { out.push({ lang: s[0], text: cur2.trim() }); cur2 = p; }
+          else cur2 += p;
+        });
+        if (cur2.trim()) out.push({ lang: s[0], text: cur2.trim() });
+      });
+      var res = [];
+      out.forEach(function (c) { hardSplit(c.text, 190).forEach(function (t) { res.push({ lang: c.lang, text: t }); }); });
+      return res;
+    }
+    function speakFrom(tk) {
+      if (tk !== st.token) return;
+      if (st.ci >= st.chunks.length) {
+        st.speaking = false; st.mode = null; st.ci = 0; setIcon(false);
+        if (st.auto) goNext();
+        return;
+      }
+      var c = st.chunks[st.ci];
+      var u = new SpeechSynthesisUtterance(c.text);
+      u.lang = c.lang === "en" ? "en-US" : "fr-FR";
+      var v = pickVoice(c.lang);
+      if (v) { u.voice = v; u.lang = v.lang; }
+      u.rate = 0.95;
+      u.onend = function () { if (tk !== st.token) return; st.ci++; speakFrom(tk); };
+      u.onerror = function () { if (tk !== st.token) return; st.speaking = false; setIcon(false); st.auto = false; };
+      synth.speak(u);
+    }
+    function startTts(from) {
+      st.token++;
+      var tk = st.token;
+      st.mode = "tts"; st.speaking = true; st.ci = from || 0; setIcon(true);
+      var busy = false;
+      try { busy = synth.speaking || synth.pending; synth.cancel(); } catch (e) {}
+      if (busy) setTimeout(function () { speakFrom(tk); }, 120);   // laisse cancel() se terminer
+      else speakFrom(tk);                                          // sinon tout de suite (exigé par iOS)
+    }
+    function playVoice() {
+      if (!(synth && fb(st.idx))) { st.auto = false; return false; }
+      if (!st.chunks.length) st.chunks = buildChunks(fb(st.idx));
+      startTts(st.ci);
+      return true;
+    }
+
+    // ====================================================================
+    //  Lecture
+    // ====================================================================
+    function freeBlob() { if (st.blobUrl) { try { URL.revokeObjectURL(st.blobUrl); } catch (e) {} st.blobUrl = null; } }
+    function stopAll() {
+      st.playTok++;
+      try { audio.pause(); audio.currentTime = 0; } catch (e) {}
+      st.token++;
+      try { if (synth) synth.cancel(); } catch (e) {}
+      st.speaking = false; st.mode = null; st.chunks = []; st.ci = 0;
+      setIcon(false);
+    }
+    function pauseNow() {
+      if (st.mode === "mp3") audio.pause();
+      else if (st.mode === "tts") {
+        st.token++;
+        try { synth.cancel(); } catch (e) {}
+        st.speaking = false; setIcon(false);      // st.ci conservé : la reprise repart de la phrase en cours
+      }
+    }
+    function startAudio(src, tok) {
+      if (tok !== st.playTok) return;
+      if (audio.getAttribute("data-src") !== src) { audio.setAttribute("data-src", src); audio.src = src; }
+      var p = audio.play();
+      if (p && p.catch) p.catch(function (err) {
+        console.warn("ECOLIA audio :", err);
+        if (tok !== st.playTok) return;
+        if (!(err && err.name === "NotAllowedError") && playVoice()) return;   // lecture impossible : voix du téléphone
+        setIcon(false); st.auto = false;
+      });
+    }
+    function playCurrent() {
+      var i = st.idx;
+      if (hasMp3(i)) {
+        var tok = ++st.playTok, u = urlN(i + 1);
+        st.mode = "mp3";
+        if (!navigator.onLine && dl.state === "none") { st.mode = null; if (playVoice()) return; }   // hors ligne et non téléchargé
+        if (store && dl.state !== "none") {                     // téléchargé : lecture locale, sans réseau
+          store.get(i + 1)
+            .then(function (b) {
+              if (tok !== st.playTok) return;
+              if (b) { freeBlob(); st.blobUrl = URL.createObjectURL(new Blob([b], { type: "audio/mpeg" })); startAudio(st.blobUrl, tok); }
+              else startAudio(u, tok);
+            }).catch(function () { startAudio(u, tok); });
+        } else startAudio(u, tok);                              // sinon lecture en ligne (appel immédiat, exigé par iOS)
+      } else if (!playVoice()) {
+        st.auto = false;
+      }
+    }
+
+    function onSlideChange(i) {
+      var wasAdvancing = st.advancing;
+      st.advancing = false;
+      st.idx = i;
+      btn.classList.toggle("ecolia-off", !hasAudio(i));
+      stopAll();
+      audio.removeAttribute("data-src");
+      freeBlob();
+      if (bnMode === "invite" && i !== 0) hideBanner();       // l'invitation n'apparaît qu'à la première slide
+      if (wasAdvancing && st.auto) setTimeout(playCurrent, 500);   // enchaînement automatique
+      else st.auto = false;                                         // changement manuel : on coupe tout
+    }
+    function goNext() {
+      if (st.idx + 1 >= CFG.count) { st.auto = false; return; }
+      st.advancing = true;
+      if (typeof nextSlide === "function") nextSlide();
+      else { var nb = document.getElementById("nextBtn"); if (nb) nb.click(); }
+      setTimeout(function () { st.advancing = false; }, 4000);
+    }
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var i = cur();
+      if (i !== st.idx) onSlideChange(i);
+      if (isPlaying()) { st.auto = false; pauseNow(); }
+      else { st.auto = true; playCurrent(); }
+    });
+    audio.addEventListener("play", function () { setIcon(true); });
+    audio.addEventListener("pause", function () { if (st.mode === "mp3") setIcon(false); });
+    audio.addEventListener("error", function () {
+      if (st.mode === "mp3" && playVoice()) return;            // fichier introuvable / hors ligne : voix du téléphone
+      setIcon(false); st.auto = false;
+    });
+    audio.addEventListener("ended", function () { setIcon(false); if (st.auto) goNext(); });
+    window.addEventListener("pagehide", function () { stopAll(); freeBlob(); });
+
+    // ---------- démarrage ----------
+    refreshCacheState(function () {
+      if (store && CFG.available.length && dl.state !== "full" && navigator.onLine && cur() === 0 && !lsGet(LATER)) askDownload(true);
+    });
+    st.idx = -1;
+    setInterval(function () { var i = cur(); if (i !== st.idx) onSlideChange(i); }, 250);   // suit la slide affichée
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+<!-- ECOLIA_AUDIO_PLAYER_END -->
+</body>
+</html>

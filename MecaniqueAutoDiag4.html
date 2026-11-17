@@ -1,0 +1,1937 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="orange">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>ECOLIA — Mecanique Auto Diag4</title>
+<style>
+[data-theme="bleu"]   { --p1:#0d2b4f; --p2:#1565c0; --p3:#07172e; --p4:#12437a; --p5:#5b8fd0; --bg:#e8f0fb; --bg2:#cfdff5; --bd:#a9c3e8; --soft:#dde8f7; --btn:#2a67b0; }
+[data-theme="vert"]   { --p1:#14442e; --p2:#2e7d32; --p3:#0b2b1a; --p4:#1f5c3a; --p5:#4f9a6b; --bg:#e8f5ec; --bg2:#c8e6d2; --bd:#a5cdb2; --soft:#dcefe2; --btn:#2f7a4f; }
+[data-theme="violet"] { --p1:#2d1b4e; --p2:#6a1b9a; --p3:#1a0f2e; --p4:#4a148c; --p5:#9c6fd0; --bg:#f1e9fb; --bg2:#dccbf2; --bd:#c4a8e6; --soft:#e8ddf6; --btn:#7e3fb2; }
+[data-theme="rouge"]  { --p1:#4a1010; --p2:#b71c1c; --p3:#2b0a0a; --p4:#8e1b1b; --p5:#d9706a; --bg:#fbeaea; --bg2:#f3cdcb; --bd:#e8a9a5; --soft:#f8dede; --btn:#a62a2a; }
+[data-theme="orange"] { --p1:#4e2a0c; --p2:#ef6c00; --p3:#2e1604; --p4:#b34a00; --p5:#f0a15a; --bg:#fff1e0; --bg2:#fbdcb8; --bd:#f3c08a; --soft:#fdebd6; --btn:#c9650a; }
+[data-theme="teal"]   { --p1:#0b3a3a; --p2:#00796b; --p3:#062626; --p4:#00574b; --p5:#4db6ac; --bg:#e0f2f1; --bg2:#b2dfdb; --bd:#80cbc4; --soft:#d5ecea; --btn:#26897d; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:linear-gradient(160deg,var(--p1) 0%,var(--p2) 50%,var(--p3) 100%); display:flex; justify-content:center; align-items:center; padding:8px; }
+.container { width:100%; max-width:1400px; background:#fefdf8; border-radius:20px; overflow:hidden; display:flex; flex-direction:column; height:100%; max-height:100vh; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.progress-bar { height:4px; background:var(--bg2); flex-shrink:0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--p5),var(--p4)); width:0%; transition:width 0.3s; }
+.header { padding:10px 16px; background:var(--bg); border-bottom:1px solid var(--bd); display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+.header h1 { color:var(--p4); font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box { display:flex; background:white; border-radius:20px; padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.search-box input { border:none; padding:6px 10px; border-radius:20px; outline:none; width:130px; font-size:0.8rem; }
+.search-box button { background:none; border:none; cursor:pointer; padding:4px 8px; font-size:0.85rem; color:var(--p2); }
+.badge { background:var(--p5); color:white; padding:4px 10px; border-radius:20px; font-weight:bold; font-size:0.75rem; }
+.search-nav { display:none; gap:4px; background:var(--bg2); padding:2px 8px; border-radius:20px; align-items:center; font-size:0.75rem; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:0.9rem; color:var(--p4); padding:2px 4px; }
+.content { padding:28px 32px; flex:1; overflow-y:auto; background:#fff; scroll-behavior:smooth; line-height:1.85; }
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.slide-title { color:var(--p1); font-size:1.5rem; font-weight:700; padding-bottom:12px; margin-bottom:20px; border-bottom:2px solid var(--p5); }
+.slide-content { color:var(--p3); font-size:1rem; }
+.empty-state { display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-height:60vh; padding:40px 20px; gap:18px; }
+.empty-state .icon { width:72px; height:72px; border-radius:50%; background:var(--bg); border:2px solid var(--bd); display:flex; align-items:center; justify-content:center; color:var(--p2); font-size:2rem; font-weight:300; }
+.empty-state h2 { color:var(--p1); font-size:1.4rem; font-weight:700; margin:0; }
+.empty-state p { color:#666; font-size:0.95rem; max-width:520px; line-height:1.7; }
+.empty-state .tag { display:inline-block; padding:6px 14px; background:var(--bg); color:var(--p4); border:1px solid var(--bd); border-radius:20px; font-size:0.8rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; }
+.bloc { padding:18px 22px; border-radius:12px; margin:22px 0; line-height:1.85; }
+.bloc-label { font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; opacity:0.7; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:var(--bg); border-left:4px solid var(--p5); }
+.theorie .bloc-label { color:var(--p4); }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.sources { background:#f5f5f5; padding:12px 16px; border-radius:10px; margin-top:26px; font-size:0.82rem; color:#666; border-left:3px solid #999; line-height:1.6; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:var(--p1); }
+.quiz-container { padding:22px; background:var(--bg); border-radius:16px; }
+.quiz-question { background:white; border-radius:10px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.quiz-question p { font-weight:600; margin-bottom:10px; color:var(--p1); }
+.quiz-question label { display:block; padding:8px 10px; margin:4px 0; border-radius:6px; cursor:pointer; transition:background 0.2s; }
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit { background:var(--btn); color:white; border:none; padding:12px 24px; border-radius:30px; font-size:1rem; cursor:pointer; font-weight:600; margin-top:14px; }
+.quiz-result { margin-top:16px; font-weight:600; }
+.controls { padding:8px 16px; background:#fafafa; border-top:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0; }
+.nav-btn { background:white; color:var(--p4); border:1px solid #ccc; padding:8px 14px; border-radius:8px; font-size:0.82rem; cursor:pointer; font-weight:500; }
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:var(--soft); }
+.content::-webkit-scrollbar-thumb { background:var(--p5); border-radius:3px; }
+@media (max-width:600px) { body { padding:0; } .container { border-radius:0; max-height:100vh; } .content { padding:20px 18px; } .slide-title { font-size:1.25rem; } .search-box input { width:90px; } .header h1 { font-size:0.85rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="header">
+<h1 id="pageTitle">ECOLIA</h1>
+<div class="header-right">
+<div class="search-box">
+<input id="searchInput" placeholder="Rechercher" type="text"/>
+<button id="searchBtn">⌕</button>
+</div>
+<div class="search-nav" id="searchNav">
+<button id="prevResultBtn">‹</button>
+<span id="resultCounter">0/0</span>
+<button id="nextResultBtn">›</button>
+</div>
+<span class="badge" id="slideCounter">0/0</span>
+</div>
+</div>
+<div class="content" id="content"></div>
+<div class="controls">
+<button class="nav-btn" id="prevBtn">← Précédent</button>
+<span class="counter" id="counter">—</span>
+<button class="nav-btn" id="nextBtn">Suivant →</button>
+</div>
+</div>
+<script>
+const COURSE_TITLE = "Mécanique Automobile et Diagnostic (Technologie, Entretien et Dépannage)";
+const slides = [
+  {
+    title: "Sommaire — Mécanique Automobile et Diagnostic",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Présentation du cours</div>
+        <h3>Bienvenue en Mécanique Automobile et Diagnostic</h3>
+        <p>Ce cours de 4<sup>e</sup> année des Humanités Techniques Industrielles vous prépare à <strong>comprendre, entretenir et diagnostiquer</strong> les systèmes du véhicule automobile. Vous étudierez le moteur thermique, la transmission, le freinage, la suspension, la direction, les circuits électriques et le diagnostic assisté par <strong>OBD-II</strong>.</p>
+        <p>En RDC, le parc automobile est majoritairement composé de véhicules d'occasion soumis à des conditions difficiles : routes dégradées, chaleur, poussière, embouteillages. Le technicien A2 qui maîtrise la technologie automobile et le diagnostic est un acteur clé de la maintenance, de la sécurité et de la mobilité.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Objectifs d'apprentissage</div>
+        <ul>
+          <li>Décrire le fonctionnement des systèmes du véhicule (moteur, transmission, freinage, suspension, direction, circuits électriques).</li>
+          <li>Réaliser l'entretien courant (vidange, filtres, freins, pneumatiques, batterie).</li>
+          <li>Appliquer une méthode de diagnostic logique.</li>
+          <li>Utiliser les instruments de mesure et de diagnostic (multimètre, manomètre, valise OBD2).</li>
+          <li>Lire et interpréter les codes défaut.</li>
+          <li>Effectuer des réparations de premier niveau.</li>
+          <li>Appliquer les règles de sécurité en atelier.</li>
+          <li>Communiquer avec le client.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Plan du cours</div>
+        <ol>
+          <li>Chapitre I — Sécurité, outillage et organisation de l'atelier</li>
+          <li>Chapitre II — Le moteur thermique</li>
+          <li>Chapitre III — La transmission</li>
+          <li>Chapitre IV — Le freinage</li>
+          <li>Chapitre V — La suspension et la direction</li>
+          <li>Chapitre VI — Les circuits électriques et électroniques</li>
+          <li>Chapitre VII — Le diagnostic assisté par OBD2</li>
+          <li>Chapitre VIII — L'entretien préventif et la relation client</li>
+        </ol>
+      </div>
+
+      <div class="sources">
+        <div class="bloc-label">Sources du cours</div>
+        <p>Programme National de Mécanique Automobile, Cycle Long (EPSP, Kinshasa) ; Fiches pédagogiques officielles Technologie Automobile et Travaux Pratiques, option Mécanique Automobile (Édition 2025) ; Manuel de Moteurs Thermiques, 4<sup>e</sup> année (Édition 2025) ; Sciences-Africa, <em>Technologie Automobile 4<sup>e</sup> année</em> ; référentiel INPP (diagnostic OBD2).</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Pourquoi la mécanique automobile et le diagnostic ?",
+    content: `
+      <div class="bloc cas">
+        <div class="bloc-label">Situation-problème</div>
+        <h3>Un taxi surchauffe à Kinshasa</h3>
+        <p>Un taxi de Matonge tombe en panne sur l'avenue Kasa-Vubu. Le chauffeur signale une surchauffe moteur. Il ne sait pas si c'est le liquide de refroidissement, le thermostat, la pompe à eau ou un ventilateur défaillant. Un technicien formé identifie la cause en 20 minutes : thermostat bloqué fermé, radiateur partiellement bouché. Il remplace le thermostat, nettoie le radiateur, et le taxi repart.</p>
+        <p>Ce que le chauffeur ne peut pas faire, le <strong>technicien A2</strong> le fait : comprendre, diagnostiquer, réparer. Sa compétence évite l'arrêt prolongé, protège le moteur, et rend service au client. C'est le cœur du métier de mécanicien automobile.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Un métier de diagnostic</h3>
+        <p>La mécanique automobile moderne n'est plus uniquement manuelle : elle est aussi <strong>électronique</strong> et <strong>diagnostique</strong>. Un véhicule comporte :</p>
+        <ul>
+          <li>des <strong>systèmes mécaniques</strong> (moteur, transmission, freinage, suspension) ;</li>
+          <li>des <strong>systèmes électriques</strong> (batterie, alternateur, démarreur) ;</li>
+          <li>des <strong>systèmes électroniques</strong> (capteurs, calculateurs, bus de communication).</li>
+        </ul>
+        <p>Le technicien A2 doit maîtriser les trois niveaux, avec une démarche de <strong>diagnostic logique</strong> : observer, formuler des hypothèses, tester, réparer, vérifier.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Mécanique automobile = mécanique + électricité + électronique.</li>
+          <li>Démarche de diagnostic : observer, tester, réparer.</li>
+          <li>Compétence clé pour le parc automobile congolais.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — La sécurité en atelier automobile",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les risques du métier</h3>
+        <p>Un atelier automobile expose à de multiples dangers :</p>
+        <ul>
+          <li><strong>Chute du véhicule</strong> : cric qui cède, pont qui glisse.</li>
+          <li><strong>Brûlures</strong> : pièces chaudes (moteur, échappement), liquides bouillants.</li>
+          <li><strong>Projections</strong> : liquide de frein irritant, huiles chaudes, poussières.</li>
+          <li><strong>Électrisation</strong> : batteries, circuits haute tension (véhicules hybrides).</li>
+          <li><strong>Écrasement</strong> : pièces lourdes (moteur, boîte).</li>
+          <li><strong>Incendie</strong> : carburant, solvants, batteries.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les EPI et règles de base</div>
+        <ul>
+          <li><strong>Gants</strong> (mécaniciens et latex), <strong>lunettes</strong>, <strong>chaussures de sécurité</strong>, <strong>bleu de travail ajusté</strong>.</li>
+          <li><strong>Levage sécurisé</strong> : cric + chandelles, pont élévateur, fosse. Jamais travailler sous un véhicule tenu uniquement par un cric.</li>
+          <li><strong>Ventilation</strong> : ne pas respirer les gaz d'échappement, les vapeurs de solvants.</li>
+          <li><strong>Gestion des fluides</strong> : récupérer huiles, liquide de frein, batteries dans des bacs adaptés.</li>
+          <li><strong>Propreté</strong> : ranger les outils, nettoyer les flaques (risque de glissade, d'incendie).</li>
+          <li><strong>Débrancher la batterie</strong> avant toute intervention électrique.</li>
+        </ul>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Travailler sous un véhicule soulevé uniquement au cric. Le cric hydraulique peut perdre sa pression, glisser ou basculer. <strong>Il faut toujours sécuriser avec des chandelles</strong> ou utiliser un pont élévateur. Une chute de véhicule est mortelle.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>EPI : gants, lunettes, chaussures, bleu.</li>
+          <li>Levage : cric + chandelles (jamais cric seul).</li>
+          <li>Fluides : récupération et élimination.</li>
+          <li>Sécurité non négociable.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — Le moteur thermique : cycles et organes",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le cycle à 4 temps</h3>
+        <p>Un moteur thermique <strong>à 4 temps</strong> transforme l'énergie chimique du carburant en énergie mécanique. Le cycle comporte quatre phases :</p>
+        <ol>
+          <li><strong>Admission</strong> : le piston descend, la soupape d'admission s'ouvre, le mélange air-carburant entre.</li>
+          <li><strong>Compression</strong> : le piston remonte, les soupapes sont fermées, le mélange est comprimé.</li>
+          <li><strong>Combustion/détente</strong> : l'étincelle (essence) ou l'injection (diesel) enflamme le mélange ; la pression pousse le piston vers le bas.</li>
+          <li><strong>Échappement</strong> : le piston remonte, la soupape d'échappement s'ouvre, les gaz brûlés sortent.</li>
+        </ol>
+      </div>
+
+      <figure>
+        <img data-image-id="mecaniqueauto4_img01" alt="Schéma du moteur 4 temps montrant les phases d'admission, compression, combustion et échappement.">
+        <figcaption>Le cycle à 4 temps du moteur thermique.</figcaption>
+      </figure>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les organes du moteur</div>
+        <ul>
+          <li><strong>Organes fixes</strong> : bloc-cylindres, culasse, carter, joints.</li>
+          <li><strong>Organes mobiles</strong> : pistons, bielles, vilebrequin, arbre à cames, soupapes.</li>
+        </ul>
+        <p><strong>Essence</strong> : allumage commandé par bougie. <strong>Diesel</strong> : combustion spontanée par compression (pas de bougie, mais des bougies de préchauffage).</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>4 temps : admission, compression, combustion, échappement.</li>
+          <li>Essence : allumage par bougie ; diesel : compression.</li>
+          <li>Organes fixes + organes mobiles.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — Lubrification et refroidissement",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>La lubrification</h3>
+        <p>Le circuit de <strong>lubrification</strong> protège le moteur en réduisant les frottements entre les pièces mobiles. Ses éléments :</p>
+        <ul>
+          <li><strong>Carter d'huile</strong> : réserve d'huile.</li>
+          <li><strong>Pompe à huile</strong> : met l'huile sous pression.</li>
+          <li><strong>Filtre à huile</strong> : retient les impuretés.</li>
+          <li><strong>Circuit</strong> : canalisations vers les points à lubrifier (paliers, cylindres).</li>
+        </ul>
+        <p>En climat tropical, on choisit une huile adaptée à la chaleur : viscosité 15W-40 ou 20W-50 selon le moteur et le kilométrage.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Le refroidissement</div>
+        <p>Le circuit de <strong>refroidissement</strong> évacue la chaleur du moteur. Ses éléments :</p>
+        <ul>
+          <li><strong>Radiateur</strong> : échangeur thermique (eau/air).</li>
+          <li><strong>Pompe à eau</strong> : fait circuler le liquide.</li>
+          <li><strong>Thermostat</strong> : régule la température en ouvrant/fermant le circuit.</li>
+          <li><strong>Ventilateur</strong> : souffle l'air sur le radiateur.</li>
+          <li><strong>Liquide de refroidissement</strong> (antigel + eau) : transporte la chaleur.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Négliger le niveau d'huile ou de liquide de refroidissement. Un manque d'huile provoque une usure rapide (frottements) ; un manque de liquide de refroidissement provoque la <strong>surchauffe</strong> et peut détruire le moteur en quelques minutes. Ces vérifications font partie de l'entretien courant.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Lubrification : pompe, filtre, huile adaptée au climat.</li>
+          <li>Refroidissement : radiateur, pompe, thermostat, ventilateur.</li>
+          <li>Surveiller huile et liquide de refroidissement.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — La surchauffe moteur",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Un symptôme à prendre au sérieux</h3>
+        <p>La <strong>surchauffe</strong> se manifeste par l'aiguille de température qui monte dans le rouge, un voyant d'alerte, de la vapeur qui sort du capot, une perte de puissance. C'est un symptôme grave qui peut détruire le moteur (joint de culasse, culasse voilée, piston fondu).</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les causes fréquentes</div>
+        <ul>
+          <li><strong>Manque de liquide de refroidissement</strong> (fuite, niveau bas).</li>
+          <li><strong>Thermostat bloqué fermé</strong> : le liquide ne circule plus.</li>
+          <li><strong>Pompe à eau défaillante</strong> : le liquide ne circule plus.</li>
+          <li><strong>Radiateur bouché</strong> (calcaire, saletés, feuilles).</li>
+          <li><strong>Ventilateur en panne</strong> (moteur électrique, fusible, relais).</li>
+          <li><strong>Joint de culasse défectueux</strong> : passage de gaz dans le circuit.</li>
+          <li><strong>Courroie d'accessoires cassée</strong> : pompe à eau inactive.</li>
+        </ul>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Diagnostic structuré</div>
+        <p>Un taxi de Kinshasa surchauffe. Le technicien suit la méthode :</p>
+        <ol>
+          <li>Vérifier le niveau de liquide de refroidissement (bas ? fuite ?).</li>
+          <li>Contrôler le thermostat (démontage et test dans l'eau chaude).</li>
+          <li>Vérifier la pompe à eau (fuite, jeu, bruit).</li>
+          <li>Contrôler le radiateur (bouché ? nettoyage possible ?).</li>
+          <li>Tester le ventilateur (fonctionne-t-il quand le moteur chauffe ?).</li>
+          <li>Vérifier le joint de culasse (bulles dans le vase d'expansion, mayonnaise dans l'huile).</li>
+        </ol>
+        <p>Il identifie : thermostat bloqué fermé + radiateur partiellement bouché. Il remplace le thermostat, nettoie le radiateur, complète le liquide, fait un essai routier : température stable.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Continuer à rouler avec la surchauffe allumée. En quelques kilomètres, le joint de culasse peut lâcher : la réparation passe de quelques heures à plusieurs jours et le coût est multiplié. <strong>S'arrêter immédiatement et faire diagnostiquer.</strong></p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Surchauffe : symptôme grave.</li>
+          <li>Causes : liquide, thermostat, pompe, radiateur, ventilateur, joint de culasse.</li>
+          <li>Diagnostic structuré en 6 étapes.</li>
+          <li>Ne pas continuer à rouler.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — La transmission",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Transmettre le mouvement aux roues</h3>
+        <p>La transmission transmet le couple du moteur aux roues, en adaptant la vitesse et le couple. Ses éléments :</p>
+        <ul>
+          <li><strong>L'embrayage</strong> : disque, plateau presseur, butée. Il transmet ou interrompt le couple entre moteur et boîte. <strong>Usure</strong> : patinage, broutement, pédale dure.</li>
+          <li><strong>La boîte de vitesses</strong> : manuelle (pignons, synchros) ou automatique. Elle adapte le couple et la vitesse aux conditions de roulage.</li>
+          <li><strong>Les arbres de transmission</strong> : transmettent le mouvement aux roues (propulsion, traction, 4x4).</li>
+          <li><strong>Le différentiel</strong> : permet aux roues de tourner à des vitesses différentes dans les virages, tout en transmettant le couple.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Diagnostic et entretien</div>
+        <ul>
+          <li><strong>Bruits de boîte</strong> : pignons usés, roulements HS.</li>
+          <li><strong>Difficultés de passage de vitesses</strong> : synchros usés, commande mal réglée, embrayage défaillant.</li>
+          <li><strong>Fuites d'huile de boîte</strong> : joints spi, carters.</li>
+          <li><strong>Vibrations</strong> : arbres déséquilibrés, croisillons usés.</li>
+        </ul>
+        <p>L'entretien comprend le contrôle du niveau d'huile de boîte, le remplacement du disque d'embrayage à intervalles réguliers, et le diagnostic des bruits en essai routier.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Confondre un bruit de boîte de vitesses avec un bruit de roulement de roue. Le bruit de boîte apparaît quand on passe les vitesses ou qu'on accélère ; le bruit de roulement suit la vitesse du véhicule, même au point mort. <strong>Un essai routier attentif permet de distinguer les deux.</strong></p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Embrayage : transmet/interrompt le couple.</li>
+          <li>Boîte : adapte couple et vitesse.</li>
+          <li>Différentiel : vitesses différentes dans les virages.</li>
+          <li>Diagnostic : essai routier + écoute.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre IV — Le freinage",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le circuit hydraulique</h3>
+        <p>Le freinage transmet une force de la pédale aux roues via un <strong>circuit hydraulique</strong> :</p>
+        <ul>
+          <li><strong>Maître-cylindre</strong> : transforme la pression de la pédale en pression hydraulique.</li>
+          <li><strong>Tuyaux et flexibles</strong> : transportent le liquide.</li>
+          <li><strong>Étriers</strong> (freins à disque) ou <strong>cylindres de roue</strong> (freins à tambour) : actionnent les plaquettes ou les mâchoires.</li>
+          <li><strong>Disques et plaquettes</strong> (ou tambours et mâchoires) : créent le frottement.</li>
+          <li><strong>Liquide de frein</strong> : transmet la pression (DOT 3, DOT 4).</li>
+        </ul>
+      </div>
+
+      <figure>
+        <img data-image-id="mecaniqueauto4_img02" alt="Schéma du circuit de freinage hydraulique avec maître-cylindre, étriers et disques.">
+        <figcaption>Le circuit de freinage hydraulique.</figcaption>
+      </figure>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Freins à disque et à tambour</div>
+        <ul>
+          <li><strong>Freins à disque</strong> : plaquettes qui pincent un disque. Usure : épaisseur des plaquettes (minimum 2 mm), voilement du disque.</li>
+          <li><strong>Freins à tambour</strong> : mâchoires qui frottent contre un tambour. Usure : garnitures, diamètre du tambour.</li>
+        </ul>
+        <p>Le freinage est complété par l'<strong>ABS</strong> (antiblocage des roues) : des capteurs de vitesse de roue + un calculateur + un modulateur empêchent le blocage des roues lors d'un freinage d'urgence.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">La purge du circuit</div>
+        <p>Après toute intervention sur le circuit (remplacement d'un étrier, d'un maître-cylindre, d'un flexible), il faut <strong>purger</strong> le circuit pour éliminer l'air. L'air est compressible : la pédale devient molle et le freinage inefficace. La purge se fait roue par roue, en partant de la plus éloignée du maître-cylindre, avec un assistant qui actionne la pédale.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Négliger la purge après remplacement d'un étrier. La pédale devient molle, le freinage est inefficace : danger mortel. <strong>Tout remplacement sur le circuit hydraulique impose une purge complète.</strong> Le liquide de frein usagé doit être récupéré (polluant).</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Circuit hydraulique : maître-cylindre, étriers, disques.</li>
+          <li>Freins à disque / à tambour.</li>
+          <li>ABS : évite le blocage des roues.</li>
+          <li>Purge obligatoire après intervention.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre V — La suspension",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Confort et tenue de route</h3>
+        <p>La <strong>suspension</strong> relie les roues au châssis. Elle assure trois fonctions :</p>
+        <ul>
+          <li><strong>Confort</strong> : absorption des irrégularités de la route.</li>
+          <li><strong>Tenue de route</strong> : maintien du contact des roues avec le sol.</li>
+          <li><strong>Adhérence</strong> : transmission des efforts de freinage et d'accélération.</li>
+        </ul>
+        <p>Ses éléments :</p>
+        <ul>
+          <li><strong>Ressorts</strong> (hélicoïdaux ou à lames) : supportent le poids et absorbent les chocs.</li>
+          <li><strong>Amortisseurs</strong> : freinent les oscillations des ressorts.</li>
+          <li><strong>Rotules et silentblocs</strong> : articulations.</li>
+          <li><strong>Barre stabilisatrice</strong> : réduit le roulis en virage.</li>
+          <li><strong>Bras de suspension</strong> : maintiennent la géométrie.</li>
+        </ul>
+      </div>
+
+      <figure>
+        <img data-image-id="mecaniqueauto4_img05" alt="Schéma d'une suspension MacPherson montrant l'amortisseur, le ressort et la rotule.">
+        <figcaption>La suspension MacPherson.</figcaption>
+      </figure>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Adaptation à la RDC</div>
+        <p>En RDC, les routes dégradées (pistes du Kasaï, du Maniema, de la Ruzizi) sollicitent fortement la suspension. Les ressorts, amortisseurs et rotules s'usent plus vite. Un entretien régulier est indispensable :</p>
+        <ul>
+          <li>Vérifier les fuites d'amortisseur (traces d'huile).</li>
+          <li>Contrôler les rotules (jeu, bruit).</li>
+          <li>Inspecter les silentblocs (craquelures).</li>
+          <li>Vérifier l'usure régulière des pneumatiques (signe d'un problème de suspension ou de géométrie).</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Diagnostic</div>
+        <ul>
+          <li><strong>Bruits sur les bosses</strong> : rotules, silentblocs ou amortisseurs.</li>
+          <li><strong>Véhicule qui "pompe"</strong> après un choc : amortisseurs HS.</li>
+          <li><strong>Usure irrégulière des pneus</strong> : géométrie, rotules.</li>
+          <li><strong>Direction qui tire d'un côté</strong> : parallélisme, rotules, silentblocs.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Remplacer un seul amortisseur sans vérifier les autres ni les rotules. L'usure est souvent multiple (par essieu, et sur les articulations). Remplacer un amortisseur sur un train usé ne résout pas le problème et peut déséquilibrer le comportement.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Suspension : confort, tenue, adhérence.</li>
+          <li>Éléments : ressorts, amortisseurs, rotules, silentblocs.</li>
+          <li>En RDC, usure accélérée à cause des pistes.</li>
+          <li>Diagnostic : bruits, usure pneus, tenue de route.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre V — La direction",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Diriger le véhicule</h3>
+        <p>La <strong>direction</strong> permet de contrôler la trajectoire. Ses éléments :</p>
+        <ul>
+          <li><strong>Volant</strong> et colonne de direction.</li>
+          <li><strong>Crémaillère</strong> (direction à crémaillère, la plus courante) ou boîtier à vis sans fin (véhicules plus anciens).</li>
+          <li><strong>Rotules de direction</strong> : transmettent le mouvement aux roues.</li>
+          <li><strong>Bras et biellettes</strong> : relient la crémaillère aux fusées.</li>
+          <li><strong>Direction assistée</strong> : hydraulique ou électrique, réduit l'effort au volant.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">La géométrie de la direction</div>
+        <p>Le bon fonctionnement de la direction dépend de trois réglages principaux :</p>
+        <ul>
+          <li><strong>Parallélisme</strong> : orientation des roues avant l'une par rapport à l'autre. Un mauvais parallélisme use les pneus irrégulièrement et tire le véhicule d'un côté.</li>
+          <li><strong>Carrossage</strong> : inclinaison du plan de roue par rapport à la verticale.</li>
+          <li><strong>Chasse</strong> : angle de l'axe de pivotement de la roue par rapport à la verticale.</li>
+        </ul>
+        <p>Le réglage de la géométrie se fait avec un banc de géométrie (parallélisme laser ou informatique).</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Diagnostic</div>
+        <ul>
+          <li><strong>Volant dur</strong> : direction assistée défaillante, pression insuffisante.</li>
+          <li><strong>Jeu dans la direction</strong> : rotules usées, crémaillère usée.</li>
+          <li><strong>Véhicule qui tire d'un côté</strong> : parallélisme, pression des pneus, étrier grippé.</li>
+          <li><strong>Bruits au braquage</strong> : rotules, cardans, direction assistée.</li>
+          <li><strong>Volant qui vibre</strong> : équilibrage des roues, rotules, disques voilés.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Direction : volant, crémaillère, rotules.</li>
+          <li>Géométrie : parallélisme, carrossage, chasse.</li>
+          <li>Diagnostic : volant dur, jeu, tirage, vibrations.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VI — Les circuits électriques",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Batterie, alternateur, démarreur</h3>
+        <p>Le circuit électrique du véhicule repose sur trois éléments principaux :</p>
+        <ul>
+          <li><strong>La batterie</strong> : stocke l'énergie pour le démarrage et les accessoires. Tension typique : 12 V. Entretien : bornes propres, niveau d'électrolyte (batteries classiques), contrôle de la tension (12,6 V au repos).</li>
+          <li><strong>L'alternateur</strong> : recharge la batterie et alimente le véhicule en roulant. Tension de charge : 13,5 à 14,5 V. Le régulateur de tension est intégré.</li>
+          <li><strong>Le démarreur</strong> : lance le moteur en entraînant le volant moteur.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les capteurs et les calculateurs</div>
+        <p>Un véhicule moderne comporte de nombreux <strong>capteurs</strong> :</p>
+        <ul>
+          <li>Température (liquide de refroidissement, air).</li>
+          <li>Pression (huile, admission, carburant).</li>
+          <li>Position (papillon, vilebrequin, arbre à cames).</li>
+          <li>Vitesse de roue (ABS).</li>
+          <li>Sonde lambda (oxygène dans les gaz d'échappement).</li>
+        </ul>
+        <p>Les <strong>calculateurs</strong> traitent les signaux et commandent les actionneurs : calculateur moteur, ABS, airbag, climatisation.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Diagnostic électrique</div>
+        <ul>
+          <li><strong>Multimètre</strong> : tension, résistance, continuité.</li>
+          <li><strong>Test de la batterie</strong> : tension au repos (12,6 V), tension sous charge.</li>
+          <li><strong>Test de l'alternateur</strong> : tension de charge (13,5-14,5 V moteur tournant).</li>
+          <li><strong>Test de continuité</strong> : fils coupés, masses oxydées.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Remplacer un capteur sans vérifier le faisceau ou le connecteur. Une panne apparente de capteur peut venir d'un fil coupé, d'une masse oxydée, d'un connecteur humide. <strong>Toujours mesurer avant de remplacer.</strong></p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Batterie (12 V), alternateur (13,5-14,5 V), démarreur.</li>
+          <li>Capteurs : température, pression, position, vitesse, oxygène.</li>
+          <li>Calculateurs : moteur, ABS, airbag.</li>
+          <li>Diagnostic : multimètre, mesurer avant de remplacer.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VII — La norme OBD-II et la prise de diagnostic",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Qu'est-ce que l'OBD-II ?</h3>
+        <p><strong>OBD</strong> signifie <em>On-Board Diagnostics</em> (diagnostic embarqué). L'<strong>OBD-II</strong> est une norme internationale (depuis 1996 aux États-Unis, adoptée dans le monde) qui normalise :</p>
+        <ul>
+          <li>la <strong>prise de diagnostic</strong> (16 broches, trapézoïdale) ;</li>
+          <li>les <strong>protocoles de communication</strong> ;</li>
+          <li>les <strong>codes défaut</strong> (DTC, Diagnostic Trouble Codes) ;</li>
+          <li>les <strong>paramètres en temps réel</strong>.</li>
+        </ul>
+        <p>La prise OBD-II est généralement située <strong>sous le tableau de bord</strong>, côté conducteur, à proximité du volant.</p>
+      </div>
+
+      <figure>
+        <img data-image-id="mecaniqueauto4_img03" alt="Prise OBD-II 16 broches et valise de diagnostic connectée au véhicule.">
+        <figcaption>La prise OBD-II et la valise de diagnostic.</figcaption>
+      </figure>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">La valise de diagnostic</div>
+        <p>La <strong>valise de diagnostic</strong> (aussi appelée scanner) est un outil qui se connecte à la prise OBD-II et communique avec les calculateurs. Deux grandes familles :</p>
+        <ul>
+          <li><strong>Outils multimarques</strong> : Autel, Launch, Delphi. Couvrent de nombreuses marques et fonctionnalités.</li>
+          <li><strong>Outils constructeurs</strong> : spécifiques à une marque (Toyota Techstream, Mercedes Star Diagnostic, etc.).</li>
+        </ul>
+        <p>Fonctions principales :</p>
+        <ul>
+          <li>Lecture des codes défaut.</li>
+          <li>Effacement des codes après réparation.</li>
+          <li>Lecture des données en temps réel (régime, température, tension, etc.).</li>
+          <li>Tests d'actionneurs.</li>
+          <li>Codage des calculateurs (sur certains véhicules).</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Précautions</div>
+        <ul>
+          <li>Ne pas brancher la valise contact mis avant de vérifier la procédure du constructeur (certains véhicules exigent contact coupé).</li>
+          <li>Ne pas effacer les codes avant d'avoir noté et compris le diagnostic.</li>
+          <li>Vérifier la compatibilité de la valise avec le véhicule (protocole OBD-II, marque, année).</li>
+          <li>Mettre à jour la valise régulièrement (nouveaux modèles, nouveaux codes).</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>OBD-II : norme internationale de diagnostic embarqué.</li>
+          <li>Prise 16 broches sous le tableau de bord.</li>
+          <li>Valise : lecture/effacement des codes, données temps réel.</li>
+          <li>Ne pas effacer avant d'avoir diagnostiqué.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VII — Les codes défaut",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Quatre familles de codes</h3>
+        <p>Les <strong>codes défaut</strong> (DTC) sont standardisés. Leur première lettre indique la famille :</p>
+        <table>
+          <thead>
+            <tr><th>Lettre</th><th>Famille</th><th>Exemples de systèmes</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>P</strong></td><td>Powertrain (groupe motopropulseur)</td><td>Moteur, transmission, émissions.</td></tr>
+            <tr><td><strong>C</strong></td><td>Chassis (châssis)</td><td>Freinage, suspension, direction.</td></tr>
+            <tr><td><strong>B</strong></td><td>Body (carrosserie)</td><td>Airbag, ceintures, éclairage, climatisation.</td></tr>
+            <tr><td><strong>U</strong></td><td>Network (réseau de communication)</td><td>Bus CAN, modules électroniques.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <figure>
+        <img data-image-id="mecaniqueauto4_img04" alt="Écran de valise de diagnostic affichant plusieurs codes défaut avec leur description.">
+        <figcaption>Lecture des codes défaut sur la valise.</figcaption>
+      </figure>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Exemples courants</div>
+        <ul>
+          <li><strong>P0300</strong> : ratés d'allumage multiples (bougies, bobines, injecteurs).</li>
+          <li><strong>P0171</strong> : mélange trop pauvre (prise d'air, sonde lambda, injecteur).</li>
+          <li><strong>P0420</strong> : rendement du catalyseur insuffisant (sonde lambda, catalyseur).</li>
+          <li><strong>P0113</strong> : capteur de température d'air d'admission (signal trop élevé).</li>
+          <li><strong>C0035</strong> : capteur de vitesse de roue avant gauche (ABS).</li>
+          <li><strong>U0100</strong> : perte de communication avec le calculateur moteur.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Interprétation</div>
+        <p>Un code défaut indique une <strong>zone</strong> de dysfonctionnement, <strong>pas nécessairement la pièce à remplacer</strong>. Il faut confirmer par :</p>
+        <ul>
+          <li>la lecture des données en temps réel (paramètres) ;</li>
+          <li>des mesures (multimètre) ;</li>
+          <li>une inspection visuelle (faisceau, connecteur, durite) ;</li>
+          <li>un essai routier (si applicable).</li>
+        </ul>
+        <p>Ne jamais remplacer une pièce uniquement sur la base d'un code : la cause peut être ailleurs (fil coupé, masse oxydée, prise d'air).</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Effacer les codes défaut sans réparer pour "faire disparaître le voyant". La panne réapparaît et le client perd confiance. <strong>Effacer un code ne répare rien : c'est une mauvaise pratique professionnelle.</strong></p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>4 familles : P, C, B, U.</li>
+          <li>P = moteur/transmission ; C = châssis ; B = carrosserie ; U = réseau.</li>
+          <li>Un code = zone, pas pièce.</li>
+          <li>Confirmer par tests avant de réparer.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VII — Utilisation pratique de la valise",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>La démarche en 6 étapes</h3>
+        <ol>
+          <li><strong>Préparer</strong> le véhicule : contact mis (moteur tournant ou non selon la procédure), valise chargée, connecteur propre.</li>
+          <li><strong>Brancher</strong> la valise sur la prise OBD-II.</li>
+          <li><strong>Sélectionner</strong> le véhicule (marque, modèle, année, motorisation) ou lancer une lecture automatique.</li>
+          <li><strong>Lire</strong> les codes défaut (actuels et historiques).</li>
+          <li><strong>Interpréter</strong> les codes avec les données en temps réel.</li>
+          <li><strong>Réparer</strong>, puis effacer les codes et vérifier qu'ils ne réapparaissent pas après un cycle de conduite.</li>
+        </ol>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les données en temps réel</div>
+        <p>La valise peut afficher en direct :</p>
+        <ul>
+          <li>régime moteur (tr/min) ;</li>
+          <li>température du liquide de refroidissement (°C) ;</li>
+          <li>tension batterie (V) ;</li>
+          <li>position du papillon (%) ;</li>
+          <li>pression d'admission (kPa) ;</li>
+          <li>tension des sondes lambda (V) ;</li>
+          <li>avance à l'allumage (°).</li>
+        </ul>
+        <p>Ces données permettent de comprendre le comportement du moteur et de confirmer ou d'infirmer les hypothèses issues des codes défaut.</p>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Cas pratique</div>
+        <p>Un client se plaint d'un voyant moteur allumé et d'à-coups à l'accélération. Le technicien :</p>
+        <ol>
+          <li>Branche la valise, sélectionne le véhicule.</li>
+          <li>Lit un code <strong>P0300</strong> (ratés d'allumage multiples).</li>
+          <li>Consulte les données en temps réel : l'oxygène fluctue anormalement, le régime est instable.</li>
+          <li>Inspecte les bougies : l'une est très usée, une autre humide.</li>
+          <li>Remplace les bougies, vérifie les bobines.</li>
+          <li>Efface le code, fait un essai routier : pas de réapparition, comportement normal.</li>
+        </ol>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>6 étapes : préparer, brancher, sélectionner, lire, interpréter, réparer.</li>
+          <li>Données en temps réel = confirmation du diagnostic.</li>
+          <li>Effacement après réparation + essai.</li>
+          <li>Toujours vérifier avant de remplacer.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VIII — L'entretien préventif",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les opérations d'entretien courant</h3>
+        <table>
+          <thead>
+            <tr><th>Opération</th><th>Périodicité typique</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Vidange moteur + filtre à huile</td><td>10 000 à 15 000 km ou 1 an</td></tr>
+            <tr><td>Filtre à air</td><td>15 000 à 30 000 km</td></tr>
+            <tr><td>Filtre à carburant (diesel)</td><td>20 000 à 30 000 km</td></tr>
+            <tr><td>Bougies (essence)</td><td>30 000 à 60 000 km</td></tr>
+            <tr><td>Courroie de distribution</td><td>60 000 à 120 000 km selon constructeur</td></tr>
+            <tr><td>Liquide de frein</td><td>Tous les 2 ans</td></tr>
+            <tr><td>Plaquettes de frein</td><td>Selon usure (30 000 à 60 000 km)</td></tr>
+            <tr><td>Pneumatiques</td><td>Pression mensuelle, usure à surveiller</td></tr>
+          </tbody>
+        </table>
+        <p>Les intervalles dépendent du constructeur, du type d'utilisation et du climat. En RDC (routes dégradées, poussière, chaleur), les intervalles doivent être <strong>raccourcis</strong>.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Choix des lubrifiants</div>
+        <p>Le choix de l'huile dépend de :</p>
+        <ul>
+          <li>la <strong>viscosité</strong> (5W-30, 10W-40, 15W-40, 20W-50) : plus le second chiffre est élevé, plus l'huile résiste à chaud ;</li>
+          <li>la <strong>norme</strong> (API, ACEA) exigée par le constructeur ;</li>
+          <li>l'<strong>âge du moteur</strong> (huiles plus épaisses pour les moteurs usés).</li>
+        </ul>
+        <p>En climat tropical, on privilégie les huiles résistantes à haute température : 15W-40 ou 20W-50.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les pneumatiques</div>
+        <ul>
+          <li><strong>Pression</strong> : vérifiée mensuellement (à froid).</li>
+          <li><strong>Usure</strong> : témoins d'usure, profondeur des sculptures.</li>
+          <li><strong>Permutation</strong> : régulière pour une usure homogène.</li>
+          <li><strong>Géométrie</strong> : parallélisme et équilibrage.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Entretien : vidange, filtres, bougies, courroie, freins, pneus.</li>
+          <li>Intervalles à raccourcir en RDC.</li>
+          <li>Lubrifiants adaptés au climat tropical.</li>
+          <li>Pression et usure des pneus.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VIII — La relation client",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Un métier de service</h3>
+        <p>Le technicien automobile est en contact direct avec le client. La qualité de la relation conditionne la réputation du garage. Les étapes :</p>
+        <ol>
+          <li><strong>Accueil</strong> : écouter le client, noter les symptômes, poser des questions précises.</li>
+          <li><strong>Diagnostic</strong> : expliquer la démarche, ne pas promettre ce qui n'est pas possible.</li>
+          <li><strong>Explication</strong> : décrire les causes, les solutions, les délais.</li>
+          <li><strong>Devis</strong> : détailler les pièces, la main-d'œuvre, le total. Obtenir l'accord du client.</li>
+          <li><strong>Intervention</strong> : réaliser les travaux dans les délais annoncés.</li>
+          <li><strong>Restitution</strong> : expliquer ce qui a été fait, les conseils d'usage (entretien futur, précautions).</li>
+          <li><strong>Suivi</strong> : rappeler les échéances d'entretien.</li>
+        </ol>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Le devis</div>
+        <p>Un devis comporte :</p>
+        <ul>
+          <li>l'identification du véhicule (marque, modèle, immatriculation, kilométrage) ;</li>
+          <li>la description des travaux ;</li>
+          <li>la liste des pièces (désignation, quantité, prix unitaire) ;</li>
+          <li>la main-d'œuvre (heures, taux horaire) ;</li>
+          <li>les taxes ;</li>
+          <li>le total, la durée d'immobilisation, la garantie.</li>
+        </ul>
+        <p>Le devis protège à la fois le client (transparence) et le technicien (cadre de l'intervention).</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Proposer des réparations <strong>inutiles</strong> au client pour augmenter la facture. Cette pratique détruit la confiance et la réputation. Le technicien professionnel explique ce qui est nécessaire, distingue l'urgent du différable, et laisse le client décider.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Relation client = accueil, diagnostic, explication, devis, intervention, suivi.</li>
+          <li>Devis transparent = confiance.</li>
+          <li>Ne jamais proposer de réparations inutiles.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Applications RDC — Mécanique automobile en contexte congolais",
+    content: `
+      <div class="bloc cas">
+        <div class="bloc-label">Contextualisation</div>
+        <h3>Le parc automobile congolais</h3>
+        <p>Le parc automobile de la RDC est composé majoritairement de véhicules d'occasion importés (Toyota, Mercedes, Nissan, etc.), souvent âgés de plus de 10 ans. Les conditions d'utilisation sont difficiles :</p>
+        <ul>
+          <li><strong>routes dégradées</strong> (pistes, nids-de-poule) : usure accélérée de la suspension, des pneumatiques, des rotules ;</li>
+          <li><strong>chaleur tropicale</strong> : surchauffe fréquente, vieillissement des plastiques et des huiles ;</li>
+          <li><strong>poussière</strong> : encrassement des filtres, usure des moteurs ;</li>
+          <li><strong>embouteillages</strong> : usure des embrayages, des freins ;</li>
+          <li><strong>carburant de qualité variable</strong> : encrassement des injecteurs, des filtres.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les garages congolais</div>
+        <p>Les garages de Kinshasa (Matonge, marché de la Liberté), de Lubumbashi, de Goma et d'autres villes font face à des défis spécifiques :</p>
+        <ul>
+          <li>accès limité aux pièces d'origine (utilisation de pièces compatibles ou de récupération) ;</li>
+          <li>outillage parfois incomplet (fabrication locale d'outils spécifiques) ;</li>
+          <li>documentation technique rare (schémas, codes défaut).</li>
+        </ul>
+        <p>Les techniciens formés à la méthode de diagnostic et à l'OBD2 (grâce au soutien de l'INPP) sont mieux armés pour ces défis.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Débouchés</div>
+        <ul>
+          <li><strong>Mécanicien automobile</strong>.</li>
+          <li><strong>Électricien auto</strong>.</li>
+          <li><strong>Technicien de diagnostic</strong>.</li>
+          <li><strong>Chef d'atelier</strong>.</li>
+          <li><strong>Gérant de station-service</strong>.</li>
+          <li>Poursuite d'études en <strong>génie mécanique</strong> ou <strong>maintenance automobile</strong>.</li>
+        </ul>
+      </div>
+
+      <div class="sources">
+        <div class="bloc-label">Sources</div>
+        <p>Programme National de Mécanique Automobile, Cycle Long (EPSP) ; Fiches pédagogiques officielles Technologie Automobile et Travaux Pratiques (Édition 2025) ; référentiel INPP.</p>
+      </div>
+    `
+  },
+  {
+    title: "Synthèse générale du cours",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Ce qu'il faut retenir</div>
+        <h3>Les idées maîtresses</h3>
+        <ol>
+          <li><strong>Mécanique automobile</strong> = mécanique + électricité + électronique + diagnostic.</li>
+          <li><strong>Sécurité</strong> : EPI, levage avec chandelles, gestion des fluides.</li>
+          <li><strong>Moteur 4 temps</strong> : admission, compression, combustion, échappement.</li>
+          <li><strong>Lubrification</strong> (huile adaptée au climat) et <strong>refroidissement</strong> (radiateur, thermostat, pompe).</li>
+          <li><strong>Surchauffe</strong> : causes multiples, diagnostic structuré.</li>
+          <li><strong>Transmission</strong> : embrayage, boîte, différentiel.</li>
+          <li><strong>Freinage</strong> : circuit hydraulique, plaquettes, disques, ABS ; purge obligatoire après intervention.</li>
+          <li><strong>Suspension</strong> et <strong>direction</strong> : ressorts, amortisseurs, rotules, géométrie.</li>
+          <li><strong>Circuits électriques</strong> : batterie (12 V), alternateur (13,5-14,5 V), démarreur, capteurs, calculateurs.</li>
+          <li><strong>OBD-II</strong> : norme de diagnostic embarqué ; valise, codes défaut (P, C, B, U), données temps réel.</li>
+          <li><strong>Entretien préventif</strong> : vidange, filtres, bougies, courroie, freins, pneus.</li>
+          <li><strong>Relation client</strong> : accueil, diagnostic, devis transparent, suivi.</li>
+        </ol>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les erreurs à ne plus commettre</div>
+        <ul>
+          <li>Travailler sous un véhicule tenu uniquement par un cric.</li>
+          <li>Continuer à rouler avec une surchauffe.</li>
+          <li>Négliger la purge après une intervention sur le circuit de freinage.</li>
+          <li>Remplacer un capteur sans vérifier le faisceau.</li>
+          <li>Effacer un code défaut sans réparer.</li>
+          <li>Remplacer une pièce uniquement sur la base d'un code défaut.</li>
+          <li>Proposer des réparations inutiles au client.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Récapitulatif des codes défaut</div>
+        <table>
+          <thead>
+            <tr><th>Lettre</th><th>Système</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>P</td><td>Powertrain (moteur, transmission)</td></tr>
+            <tr><td>C</td><td>Chassis (châssis : freinage, suspension)</td></tr>
+            <tr><td>B</td><td>Body (carrosserie, airbag, éclairage)</td></tr>
+            <tr><td>U</td><td>Network (réseau de communication)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    `
+  },
+  {
+    title: "Évaluation finale — Mécanique Automobile et Diagnostic",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Consigne</div>
+        <p>Répondez aux 22 questions ci-dessous. Chaque question a une seule bonne réponse. Cliquez sur « Valider mes réponses » pour obtenir votre score. Bonne chance !</p>
+      </div>
+
+      <div class="quiz-container">
+        <div id="quizQuestions"></div>
+        <button id="submitQuiz" class="quiz-btn-submit">
+          Valider mes réponses
+        </button>
+        <div id="quizResult" class="quiz-result"></div>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Conseil</div>
+        <p>En cas d'erreur, relisez la diapositive correspondante. Les questions couvrent le moteur, la transmission, le freinage, la suspension, les circuits électriques, l'OBD2 et l'entretien.</p>
+      </div>
+    `
+  }
+];
+const questions = [
+  {
+    text: "La mécanique automobile étudie :",
+    options: [
+      "Les bâtiments et les routes",
+      "Les systèmes du véhicule (moteur, transmission, freinage, suspension)",
+      "Les machines-outils et l'usinage",
+      "Les circuits imprimés"
+    ],
+    correct: 1
+  },
+  {
+    text: "Le cycle du moteur 4 temps comprend dans l'ordre :",
+    options: [
+      "Admission, compression, combustion/détente, échappement",
+      "Admission, échappement, compression, combustion",
+      "Compression, admission, combustion, échappement",
+      "Combustion, admission, compression, échappement"
+    ],
+    correct: 0
+  },
+  {
+    text: "La surchauffe moteur peut être causée par :",
+    options: [
+      "Un excès d'huile",
+      "Des pneus sous-gonflés",
+      "Un manque de liquide de refroidissement",
+      "Un filtre à air neuf"
+    ],
+    correct: 2
+  },
+  {
+    text: "L'embrayage sert à :",
+    options: [
+      "Diriger le véhicule",
+      "Freiner les roues",
+      "Transmettre ou interrompre le couple moteur",
+      "Éclairer la route"
+    ],
+    correct: 2
+  },
+  {
+    text: "Le différentiel permet :",
+    options: [
+      "Aux roues de tourner à des vitesses différentes dans les virages",
+      "De freiner plus fort",
+      "De démarrer sans clé",
+      "D'augmenter la vitesse maximale"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le circuit de freinage hydraulique comprend :",
+    options: [
+      "Amortisseurs et ressorts",
+      "Maître-cylindre, étriers, disques",
+      "Rotules et crémaillère",
+      "Batterie et alternateur"
+    ],
+    correct: 1
+  },
+  {
+    text: "La purge du circuit de freinage sert à :",
+    options: [
+      "Ajouter de l'huile moteur",
+      "Gonfler les pneus",
+      "Éliminer l'air qui rend la pédale molle",
+      "Changer les plaquettes"
+    ],
+    correct: 2
+  },
+  {
+    text: "La suspension MacPherson comprend :",
+    options: [
+      "Amortisseur, ressort et rotule",
+      "Disque, étrier et plaquette",
+      "Boîte de vitesses et différentiel",
+      "Alternateur et démarreur"
+    ],
+    correct: 0
+  },
+  {
+    text: "En RDC, les routes dégradées sollicitent particulièrement :",
+    options: [
+      "L'autoradio",
+      "La suspension",
+      "Les essuie-glaces",
+      "Le klaxon"
+    ],
+    correct: 1
+  },
+  {
+    text: "La batterie d'un véhicule sert principalement à :",
+    options: [
+      "Freiner les roues",
+      "Diriger le véhicule",
+      "Stocker l'énergie pour le démarrage et les accessoires",
+      "Refroidir le moteur"
+    ],
+    correct: 2
+  },
+  {
+    text: "L'alternateur sert à :",
+    options: [
+      "Recharger la batterie et alimenter le véhicule en roulant",
+      "Démarrer le moteur",
+      "Freiner les roues",
+      "Diriger le véhicule"
+    ],
+    correct: 0
+  },
+  {
+    text: "La norme OBD-II concerne :",
+    options: [
+      "La peinture de la carrosserie",
+      "La pression des pneus",
+      "Le diagnostic embarqué du véhicule",
+      "La qualité du carburant"
+    ],
+    correct: 2
+  },
+  {
+    text: "La prise OBD-II se trouve généralement :",
+    options: [
+      "Dans le coffre",
+      "Sous le capot",
+      "Sous le tableau de bord, côté conducteur",
+      "Sur le toit"
+    ],
+    correct: 2
+  },
+  {
+    text: "Les codes défaut commençant par la lettre P concernent :",
+    options: [
+      "Le châssis",
+      "Le groupe motopropulseur (moteur, transmission)",
+      "La carrosserie",
+      "Le réseau de communication"
+    ],
+    correct: 1
+  },
+  {
+    text: "Les codes défaut commençant par la lettre C concernent :",
+    options: [
+      "Le châssis (freinage, suspension, direction)",
+      "Le moteur",
+      "La carrosserie",
+      "Le réseau"
+    ],
+    correct: 0
+  },
+  {
+    text: "Les codes défaut commençant par la lettre B concernent :",
+    options: [
+      "Le moteur",
+      "La carrosserie (airbag, éclairage, climatisation)",
+      "Le châssis",
+      "Le réseau"
+    ],
+    correct: 1
+  },
+  {
+    text: "Les codes défaut commençant par la lettre U concernent :",
+    options: [
+      "Le châssis",
+      "La carrosserie",
+      "Le moteur",
+      "Le réseau de communication entre calculateurs"
+    ],
+    correct: 3
+  },
+  {
+    text: "La valise de diagnostic permet de :",
+    options: [
+      "Peindre la carrosserie",
+      "Lire les codes défaut et les données en temps réel",
+      "Gonfler les pneus",
+      "Changer l'huile moteur"
+    ],
+    correct: 1
+  },
+  {
+    text: "Effacer un code défaut sans réparer la cause est :",
+    options: [
+      "Une excellente pratique",
+      "Une pratique recommandée pour gagner du temps",
+      "Une mauvaise pratique professionnelle : la panne réapparaît",
+      "Obligatoire avant toute réparation"
+    ],
+    correct: 2
+  },
+  {
+    text: "L'entretien préventif comprend notamment :",
+    options: [
+      "La réparation après panne",
+      "La vidange, les filtres et le contrôle des freins",
+      "Le remplacement du moteur",
+      "La peinture du véhicule"
+    ],
+    correct: 1
+  },
+  {
+    text: "En climat tropical, le choix des lubrifiants doit privilégier :",
+    options: [
+      "Des huiles résistantes aux hautes températures (15W-40, 20W-50)",
+      "Des huiles très fluides 0W-20 uniquement",
+      "De l'huile de friture recyclée",
+      "N'importe quelle huile disponible"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'objectif principal du cours de mécanique automobile et diagnostic en 4ᵉ Humanité Technique est de :",
+    options: [
+      "Remplacer l'ingénieur automobile",
+      "Fabriquer des voitures",
+      "Comprendre, entretenir et diagnostiquer les systèmes du véhicule",
+      "Construire des routes"
+    ],
+    correct: 2
+  }
+];
+
+try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+        questions.forEach(function (q) {
+            if (!q.text) q.text = q.question || q.q || q.enonce || q.titre || "";
+            if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+            if (typeof q.correct === "undefined") {
+                if (typeof q.answer !== "undefined") q.correct = q.answer;
+                else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+            }
+        });
+    }
+} catch (e) {}
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+const pageTitle = document.getElementById('pageTitle');
+pageTitle.textContent = "ECOLIA · " + COURSE_TITLE;
+document.title = "ECOLIA — " + COURSE_TITLE;
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim() || slides.length === 0) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp("(" + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ")", 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderEmptyState() {
+    contentDiv.innerHTML = '<div class="empty-state"><div class="icon">·</div><span class="tag">Bientôt disponible</span><h2>' + COURSE_TITLE + '</h2><p>Ce cours est en préparation. Le contenu sera ajouté prochainement.</p></div>';
+    slideCounterSpan.textContent = '0/0';
+    progressFill.style.width = '0%';
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    counterSpan.textContent = '—';
+}
+
+function renderQuiz() {
+    const qc = document.getElementById('quizQuestions');
+    if (!qc) return;
+    if (typeof questions === 'undefined' || questions.length === 0) {
+        qc.innerHTML = '<p style="color:#666;font-style:italic;">Quiz bientot disponible.</p>';
+        return;
+    }
+    let html = '';
+    questions.forEach((q, i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o, k) => {
+            html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>';
+        });
+        html += '</div>';
+    });
+    qc.innerHTML = html;
+    const submitBtn = document.getElementById('submitQuiz');
+    if (submitBtn) {
+        submitBtn.onclick = () => {
+            let score = 0;
+            questions.forEach((q, i) => {
+                const s = document.querySelector('input[name="q' + i + '"]:checked');
+                if (s && parseInt(s.value) === q.correct) score++;
+            });
+            const pct = Math.round(score/questions.length*100);
+            document.getElementById('quizResult').innerHTML =
+                '<div style="background:var(--bg2);padding:16px;border-radius:10px;margin-top:14px;">' +
+                '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong></div>';
+        };
+    }
+}
+
+function renderSlide(index, keepHighlight) {
+    if (keepHighlight === undefined) keepHighlight = true;
+    if (slides.length === 0) { renderEmptyState(); return; }
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    if (index === slides.length - 1) renderQuiz();
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    if (slides.length === 0) return;
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (slides.length && currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (slides.length && currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+<!-- ECOLIA_IMAGE_LOADER_START -->
+<script>
+(function () {
+  var SITE = "https://ecolia-course.github.io/";
+  var NATIVE = false;
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function abs(u) { return /^(https?:|data:|blob:)/i.test(u) ? u : (NATIVE ? SITE + u.replace(/^(\.\/|\/)+/, "") : u); }
+  function ext(u) { var m = String(u).split("?")[0].match(/\.(jpe?g|png|gif|webp|svg)$/i); return m ? m[1].toLowerCase() : "jpg"; }
+  function hide(img) { img.onerror = null; img.style.display = "none"; }
+  var table = null, queue = [], queued = {}, running = false;
+  function enqueue(full, fn) {
+    if (queued[fn]) return;
+    queued[fn] = 1; queue.push([full, fn]);
+    if (!running) { running = true; setTimeout(next, 2500); }
+  }
+  function next() {
+    if (!queue.length) { running = false; return; }
+    if (!navigator.onLine) { running = false; return; }
+    var q = queue.shift(), t0 = Date.now();
+    try { CoursInterface.download(q[0], q[1]); } catch (e) { return setTimeout(next, 500); }
+    (function wait() {
+      var ok = false;
+      try { ok = !!CoursInterface.exists(q[1]); } catch (e) {}
+      if (ok) setTimeout(next, 1500);
+      else if (Date.now() - t0 > 40000) next();
+      else setTimeout(wait, 700);
+    })();
+  }
+  function exists(fn) { try { return !!CoursInterface.exists(fn); } catch (e) { return false; } }
+  function show(img) {
+    if (!table || img.getAttribute("data-ecolia-done")) return;
+    var id = img.getAttribute("data-image-id");
+    var url = table[id];
+    if (typeof url !== "string" || !url.length) { console.warn("ECOLIA : image absente du JSON :", id); return; }
+    img.setAttribute("data-ecolia-done", "1");
+    if (!NATIVE) { img.onerror = function () { hide(img); }; img.setAttribute("src", url); return; }
+    var full = abs(url), fn = "img_" + id + "." + ext(url);
+    if (exists(fn)) {
+      img.onerror = function () {
+        try { CoursInterface["delete"](fn); } catch (e) {}
+        queued[fn] = 0;
+        img.onerror = function () { hide(img); };
+        img.setAttribute("src", full);
+      };
+      img.setAttribute("src", "https://app.local/cours/" + fn);
+    } else {
+      img.onerror = function () { hide(img); };
+      img.setAttribute("src", full);
+      enqueue(full, fn);
+    }
+  }
+  function scan(root) {
+    if (!root || !root.querySelectorAll) return;
+    if (root.matches && root.matches("img[data-image-id]")) show(root);
+    root.querySelectorAll("img[data-image-id]").forEach(show);
+  }
+  function prefetchAll() {
+    var ids = {};
+    try { JSON.stringify(slides).replace(/data-image-id=\\?"([^"\\]+)/g, function (m, id) { ids[id] = 1; }); } catch (e) {}
+    Object.keys(ids).forEach(function (id) {
+      var url = table[id];
+      if (typeof url !== "string" || !url.length) return;
+      var fn = "img_" + id + "." + ext(url);
+      if (!exists(fn)) enqueue(abs(url), fn);
+    });
+  }
+  function start(tbl) {
+    table = tbl;
+    scan(document.body);
+    new MutationObserver(function (muts) {
+      muts.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.nodeType === 1) scan(n); }); });
+    }).observe(document.body, { childList: true, subtree: true });
+    if (NATIVE) prefetchAll();
+  }
+  var JSON_URL = NATIVE ? SITE + "images_ecolia.json" : "images_ecolia.json";
+  var KEY = "ecolia_images_json";
+  fetch(JSON_URL, NATIVE ? { cache: "no-cache" } : undefined)
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (table) { if (NATIVE) lsSet(KEY, JSON.stringify(table)); start(table); })
+    .catch(function (e) {
+      var saved = null;
+      if (NATIVE) { try { saved = JSON.parse(lsGet(KEY) || "null"); } catch (x) {} }
+      if (saved) start(saved);
+      else console.warn("ECOLIA : JSON des images indisponible.", e);
+    });
+})();
+</script>
+<!-- ECOLIA_IMAGE_LOADER_END -->
+
+
+
+<!-- ECOLIA_AUDIO_PLAYER_START -->
+<style>
+  #ecolia-audio-btn, #ecolia-dl-btn {
+    width: 30px; height: 30px; min-width: 30px; padding: 0; margin: 0 4px 0 0;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    cursor: pointer; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent; outline: none;
+  }
+  #ecolia-audio-btn { border: none; background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-dl-btn { border: 1.5px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb); }
+  #ecolia-dl-btn.ecolia-full { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-btn.ecolia-fixed { position: fixed; top: 8px; left: 8px; z-index: 2147483000; }
+  #ecolia-audio-btn:active, #ecolia-dl-btn:active { transform: scale(.92); }
+  #ecolia-audio-btn svg, #ecolia-dl-btn svg { width: 15px; height: 15px; fill: currentColor; pointer-events: none; }
+  #ecolia-audio-btn.ecolia-off, #ecolia-dl-btn.ecolia-off { display: none; }
+  #ecolia-audio-banner {
+    display: none; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0;
+    padding: 8px 14px; font-size: .82rem; line-height: 1.35;
+    background: var(--soft, #eef3fb); color: var(--p1, #123); border-bottom: 1px solid var(--bd, #c9d6ea);
+  }
+  #ecolia-audio-banner.on { display: flex; }
+  #ecolia-audio-banner .eab-txt { flex: 1 1 180px; }
+  #ecolia-audio-banner .eab-act { display: flex; gap: 6px; flex-wrap: wrap; }
+  #ecolia-audio-banner button {
+    border: 1px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb);
+    border-radius: 16px; padding: 5px 12px; font-size: .8rem; cursor: pointer;
+  }
+  #ecolia-audio-banner button.pri { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-banner .eab-bar { display: none; flex-basis: 100%; height: 4px; border-radius: 2px; overflow: hidden; background: var(--bd, #c9d6ea); }
+  #ecolia-audio-banner .eab-bar i { display: block; height: 100%; width: 0; background: var(--p2, #2563eb); transition: width .2s; }
+</style>
+<script>
+(function () {
+  var CFG = {"code":"MecaniqueAutoDiag4","base":"https://ecolia-course.github.io/ecolia-media/audio_files/","available":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"count":19,"sizeMo":19,"sizes":{"1":1018368,"2":897024,"3":926592,"4":731520,"5":821376,"6":1111872,"7":955200,"8":1060608,"9":1138560,"10":907968,"11":1182336,"12":1124544,"13":1211904,"14":1047936,"15":1038336,"16":966336,"17":842112,"18":1118592,"19":262080},"fallback":{"1":[["fr","Sommaire, Mécanique Automobile et Diagnostic. Présentation du cours. Bienvenue en Mécanique Automobile et Diagnostic. Ce cours de 4e année des Humanités Techniques Industrielles vous prépare à comprendre, entretenir et diagnostiquer les systèmes du véhicule automobile. Vous étudierez le moteur thermique, la transmission, le freinage, la suspension, la direction, les circuits électriques et le diagnostic assisté par OBD-II. En R D C, le parc automobile est majoritairement composé de véhicules d'occasion soumis à des conditions difficiles: routes dégradées, chaleur, poussière, embouteillages. Le technicien A2 qui maîtrise la technologie automobile et le diagnostic est un acteur clé de la maintenance, de la sécurité et de la mobilité. Objectifs d'apprentissage. Décrire le fonctionnement des systèmes du véhicule (moteur, transmission, freinage, suspension, direction, circuits électriques). Réaliser l'entretien courant (vidange, filtres, freins, pneumatiques, batterie). Appliquer une méthode de diagnostic logique. Utiliser les instruments de mesure et de diagnostic (multimètre, manomètre, valise O B D2). Lire et interpréter les codes défaut. Effectuer des réparations de premier niveau. Appliquer les règles de sécurité en atelier. Communiquer avec le client. Plan du cours. Chapitre I, Sécurité, outillage et organisation de l'atelier. Chapitre II, Le moteur thermique. Chapitre III, La transmission. Chapitre IV, Le freinage. Chapitre V, La suspension et la direction. Chapitre VI, Les circuits électriques et électroniques. Chapitre VII, Le diagnostic assisté par O B D2. Chapitre VIII, L'entretien préventif et la relation client."]],"2":[["fr","Chapitre I, Pourquoi la mécanique automobile et le diagnostic? Situation-problème. Un taxi surchauffe à Kinshasa. Un taxi de Matonge tombe en panne sur l'avenue Kasa-Vubu. Le chauffeur signale une surchauffe moteur. Il ne sait pas si c'est le liquide de refroidissement, le thermostat, la pompe à eau ou un ventilateur défaillant. Un technicien formé identifie la cause en 20 minutes: thermostat bloqué fermé, radiateur partiellement bouché. Il remplace le thermostat, nettoie le radiateur, et le taxi repart. Ce que le chauffeur ne peut pas faire, le technicien A2 le fait: comprendre, diagnostiquer, réparer. Sa compétence évite l'arrêt prolongé, protège le moteur, et rend service au client. C'est le cœur du métier de mécanicien automobile. Fondements théoriques. Un métier de diagnostic. La mécanique automobile moderne n'est plus uniquement manuelle: elle est aussi électronique et diagnostique. Un véhicule comporte: des systèmes mécaniques (moteur, transmission, freinage, suspension); des systèmes électriques (batterie, alternateur, démarreur); des systèmes électroniques (capteurs, calculateurs, bus de communication). Le technicien A2 doit maîtriser les trois niveaux, avec une démarche de diagnostic logique: observer, formuler des hypothèses, tester, réparer, vérifier. Points clés. Mécanique automobile égale mécanique plus électricité plus électronique. Démarche de diagnostic: observer, tester, réparer. Compétence clé pour le parc automobile congolais."]],"3":[["fr","Chapitre I, La sécurité en atelier automobile. Fondements théoriques. Les risques du métier. Un atelier automobile expose à de multiples dangers: Chute du véhicule: cric qui cède, pont qui glisse. Brûlures: pièces chaudes (moteur, échappement), liquides bouillants. Projections: liquide de frein irritant, huiles chaudes, poussières. Électrisation: batteries, circuits haute tension (véhicules hybrides). Écrasement: pièces lourdes (moteur, boîte). Incendie: carburant, solvants, batteries. Les EPI et règles de base. Gants (mécaniciens et latex), lunettes, chaussures de sécurité, bleu de travail ajusté. Levage sécurisé: cric plus chandelles, pont élévateur, fosse. Jamais travailler sous un véhicule tenu uniquement par un cric. Ventilation: ne pas respirer les gaz d'échappement, les vapeurs de solvants. Gestion des fluides: récupérer huiles, liquide de frein, batteries dans des bacs adaptés. Propreté: ranger les outils, nettoyer les flaques (risque de glissade, d'incendie). Débrancher la batterie avant toute intervention électrique. Erreur fréquente. Travailler sous un véhicule soulevé uniquement au cric. Le cric hydraulique peut perdre sa pression, glisser ou basculer. Il faut toujours sécuriser avec des chandelles ou utiliser un pont élévateur. Une chute de véhicule est mortelle. Points clés. EPI: gants, lunettes, chaussures, bleu. Levage: cric plus chandelles (jamais cric seul). Fluides: récupération et élimination. Sécurité non négociable."]],"4":[["fr","Chapitre II, Le moteur thermique: cycles et organes. Fondements théoriques. Le cycle à 4 temps. Un moteur thermique à 4 temps transforme l'énergie chimique du carburant en énergie mécanique. Le cycle comporte quatre phases: Admission: le piston descend, la soupape d'admission s'ouvre, le mélange air-carburant entre. Compression: le piston remonte, les soupapes sont fermées, le mélange est comprimé. Combustion ou détente: l'étincelle (essence) ou l'injection (diesel) enflamme le mélange; la pression pousse le piston vers le bas. Échappement: le piston remonte, la soupape d'échappement s'ouvre, les gaz brûlés sortent. Le cycle à 4 temps du moteur thermique. Les organes du moteur. Organes fixes: bloc-cylindres, culasse, carter, joints. Organes mobiles: pistons, bielles, vilebrequin, arbre à cames, soupapes. Essence: allumage commandé par bougie. Diesel: combustion spontanée par compression (pas de bougie, mais des bougies de préchauffage). Points clés. 4 temps: admission, compression, combustion, échappement. Essence: allumage par bougie; diesel: compression. Organes fixes plus organes mobiles."]],"5":[["fr","Chapitre II, Lubrification et refroidissement. Fondements théoriques. La lubrification. Le circuit de lubrification protège le moteur en réduisant les frottements entre les pièces mobiles. Ses éléments: Carter d'huile: réserve d'huile. Pompe à huile: met l'huile sous pression. Filtre à huile: retient les impuretés. Circuit: canalisations vers les points à lubrifier (paliers, cylindres). En climat tropical, on choisit une huile adaptée à la chaleur: viscosité 15W-40 ou 20W-50 selon le moteur et le kilométrage. Le refroidissement. Le circuit de refroidissement évacue la chaleur du moteur. Ses éléments: Radiateur: échangeur thermique (eau ou air). Pompe à eau: fait circuler le liquide. Thermostat: régule la température en ouvrant ou fermant le circuit. Ventilateur: souffle l'air sur le radiateur. Liquide de refroidissement (antigel plus eau): transporte la chaleur. Erreur fréquente. Négliger le niveau d'huile ou de liquide de refroidissement. Un manque d'huile provoque une usure rapide (frottements); un manque de liquide de refroidissement provoque la surchauffe et peut détruire le moteur en quelques minutes. Ces vérifications font partie de l'entretien courant. Points clés. Lubrification: pompe, filtre, huile adaptée au climat. Refroidissement: radiateur, pompe, thermostat, ventilateur. Surveiller huile et liquide de refroidissement."]],"6":[["fr","Chapitre II, La surchauffe moteur. Fondements théoriques. Un symptôme à prendre au sérieux. La surchauffe se manifeste par l'aiguille de température qui monte dans le rouge, un voyant d'alerte, de la vapeur qui sort du capot, une perte de puissance. C'est un symptôme grave qui peut détruire le moteur (joint de culasse, culasse voilée, piston fondu). Les causes fréquentes. Manque de liquide de refroidissement (fuite, niveau bas). Thermostat bloqué fermé: le liquide ne circule plus. Pompe à eau défaillante: le liquide ne circule plus. Radiateur bouché (calcaire, saletés, feuilles). Ventilateur en panne (moteur électrique, fusible, relais). Joint de culasse défectueux: passage de gaz dans le circuit. Courroie d'accessoires cassée: pompe à eau inactive. Diagnostic structuré. Un taxi de Kinshasa surchauffe. Le technicien suit la méthode: Vérifier le niveau de liquide de refroidissement (bas? fuite?). Contrôler le thermostat (démontage et test dans l'eau chaude). Vérifier la pompe à eau (fuite, jeu, bruit). Contrôler le radiateur (bouché? nettoyage possible?). Tester le ventilateur (fonctionne-t-il quand le moteur chauffe?). Vérifier le joint de culasse (bulles dans le vase d'expansion, mayonnaise dans l'huile). Il identifie: thermostat bloqué fermé plus radiateur partiellement bouché. Il remplace le thermostat, nettoie le radiateur, complète le liquide, fait un essai routier: température stable. Erreur fréquente. Continuer à rouler avec la surchauffe allumée. En quelques kilomètres, le joint de culasse peut lâcher: la réparation passe de quelques heures à plusieurs jours et le coût est multiplié. S'arrêter immédiatement et faire diagnostiquer. Points clés. Surchauffe: symptôme grave. Causes: liquide, thermostat, pompe, radiateur, ventilateur, joint de culasse. Diagnostic structuré en 6 étapes. Ne pas continuer à rouler."]],"7":[["fr","Chapitre III, La transmission. Fondements théoriques. Transmettre le mouvement aux roues. La transmission transmet le couple du moteur aux roues, en adaptant la vitesse et le couple. Ses éléments: L'embrayage: disque, plateau presseur, butée. Il transmet ou interrompt le couple entre moteur et boîte. Usure: patinage, broutement, pédale dure. La boîte de vitesses: manuelle (pignons, synchros) ou automatique. Elle adapte le couple et la vitesse aux conditions de roulage. Les arbres de transmission: transmettent le mouvement aux roues (propulsion, traction, 4 multiplié par 4). Le différentiel: permet aux roues de tourner à des vitesses différentes dans les virages, tout en transmettant le couple. Diagnostic et entretien. Bruits de boîte: pignons usés, roulements HS. Difficultés de passage de vitesses: synchros usés, commande mal réglée, embrayage défaillant. Fuites d'huile de boîte: joints spi, carters. Vibrations: arbres déséquilibrés, croisillons usés. L'entretien comprend le contrôle du niveau d'huile de boîte, le remplacement du disque d'embrayage à intervalles réguliers, et le diagnostic des bruits en essai routier. Erreur fréquente. Confondre un bruit de boîte de vitesses avec un bruit de roulement de roue. Le bruit de boîte apparaît quand on passe les vitesses ou qu'on accélère; le bruit de roulement suit la vitesse du véhicule, même au point mort. Un essai routier attentif permet de distinguer les deux. Points clés. Embrayage: transmet ou interrompt le couple. Boîte: adapte couple et vitesse. Différentiel: vitesses différentes dans les virages. Diagnostic: essai routier plus écoute."]],"8":[["fr","Chapitre IV, Le freinage. Fondements théoriques. Le circuit hydraulique. Le freinage transmet une force de la pédale aux roues via un circuit hydraulique: Maître-cylindre: transforme la pression de la pédale en pression hydraulique. Tuyaux et flexibles: transportent le liquide. Étriers (freins à disque) ou cylindres de roue (freins à tambour): actionnent les plaquettes ou les mâchoires. Disques et plaquettes (ou tambours et mâchoires): créent le frottement. Liquide de frein: transmet la pression (DOT 3, DOT 4). Le circuit de freinage hydraulique. Freins à disque et à tambour. Freins à disque: plaquettes qui pincent un disque. Usure: épaisseur des plaquettes (minimum 2 millimètres), voilement du disque. Freins à tambour: mâchoires qui frottent contre un tambour. Usure: garnitures, diamètre du tambour. Le freinage est complété par l'ABS (antiblocage des roues): des capteurs de vitesse de roue plus un calculateur plus un modulateur empêchent le blocage des roues lors d'un freinage d'urgence. La purge du circuit. Après toute intervention sur le circuit (remplacement d'un étrier, d'un maître-cylindre, d'un flexible), il faut purger le circuit pour éliminer l'air. L'air est compressible: la pédale devient molle et le freinage inefficace. La purge se fait roue par roue, en partant de la plus éloignée du maître-cylindre, avec un assistant qui actionne la pédale. Erreur fréquente. Négliger la purge après remplacement d'un étrier. La pédale devient molle, le freinage est inefficace: danger mortel. Tout remplacement sur le circuit hydraulique impose une purge complète. Le liquide de frein usagé doit être récupéré (polluant). Points clés. Circuit hydraulique: maître-cylindre, étriers, disques. Freins à disque ou à tambour. ABS: évite le blocage des roues. Purge obligatoire après intervention."]],"9":[["fr","Chapitre V, La suspension. Fondements théoriques. Confort et tenue de route. La suspension relie les roues au châssis. Elle assure trois fonctions: Confort: absorption des irrégularités de la route. Tenue de route: maintien du contact des roues avec le sol. Adhérence: transmission des efforts de freinage et d'accélération. Ses éléments: Ressorts (hélicoïdaux ou à lames): supportent le poids et absorbent les chocs. Amortisseurs: freinent les oscillations des ressorts. Rotules et silentblocs: articulations. Barre stabilisatrice: réduit le roulis en virage. Bras de suspension: maintiennent la géométrie. La suspension MacPherson. Adaptation à la R D C. En R D C, les routes dégradées (pistes du Kasaï, du Maniema, de la Ruzizi) sollicitent fortement la suspension. Les ressorts, amortisseurs et rotules s'usent plus vite. Un entretien régulier est indispensable: Vérifier les fuites d'amortisseur (traces d'huile). Contrôler les rotules (jeu, bruit). Inspecter les silentblocs (craquelures). Vérifier l'usure régulière des pneumatiques (signe d'un problème de suspension ou de géométrie). Diagnostic. Bruits sur les bosses: rotules, silentblocs ou amortisseurs. Véhicule qui \"pompe\" après un choc: amortisseurs HS. Usure irrégulière des pneus: géométrie, rotules. Direction qui tire d'un côté: parallélisme, rotules, silentblocs. Erreur fréquente. Remplacer un seul amortisseur sans vérifier les autres ni les rotules. L'usure est souvent multiple (par essieu, et sur les articulations). Remplacer un amortisseur sur un train usé ne résout pas le problème et peut déséquilibrer le comportement. Points clés. Suspension: confort, tenue, adhérence. Éléments: ressorts, amortisseurs, rotules, silentblocs. En R D C, usure accélérée à cause des pistes. Diagnostic: bruits, usure pneus, tenue de route."]],"10":[["fr","Chapitre V, La direction. Fondements théoriques. Diriger le véhicule. La direction permet de contrôler la trajectoire. Ses éléments: Volant et colonne de direction. Crémaillère (direction à crémaillère, la plus courante) ou boîtier à vis sans fin (véhicules plus anciens). Rotules de direction: transmettent le mouvement aux roues. Bras et biellettes: relient la crémaillère aux fusées. Direction assistée: hydraulique ou électrique, réduit l'effort au volant. La géométrie de la direction. Le bon fonctionnement de la direction dépend de trois réglages principaux: Parallélisme: orientation des roues avant l'une par rapport à l'autre. Un mauvais parallélisme use les pneus irrégulièrement et tire le véhicule d'un côté. Carrossage: inclinaison du plan de roue par rapport à la verticale. Chasse: angle de l'axe de pivotement de la roue par rapport à la verticale. Le réglage de la géométrie se fait avec un banc de géométrie (parallélisme laser ou informatique). Diagnostic. Volant dur: direction assistée défaillante, pression insuffisante. Jeu dans la direction: rotules usées, crémaillère usée. Véhicule qui tire d'un côté: parallélisme, pression des pneus, étrier grippé. Bruits au braquage: rotules, cardans, direction assistée. Volant qui vibre: équilibrage des roues, rotules, disques voilés. Points clés. Direction: volant, crémaillère, rotules. Géométrie: parallélisme, carrossage, chasse. Diagnostic: volant dur, jeu, tirage, vibrations."]],"11":[["fr","Chapitre VI, Les circuits électriques. Fondements théoriques. Batterie, alternateur, démarreur. Le circuit électrique du véhicule repose sur trois éléments principaux: La batterie: stocke l'énergie pour le démarrage et les accessoires. Tension typique: 12 V. Entretien: bornes propres, niveau d'électrolyte (batteries classiques), contrôle de la tension (12,6 V au repos). L'alternateur: recharge la batterie et alimente le véhicule en roulant. Tension de charge: 13,5 à 14,5 V. Le régulateur de tension est intégré. Le démarreur: lance le moteur en entraînant le volant moteur. Les capteurs et les calculateurs. Un véhicule moderne comporte de nombreux capteurs: Température (liquide de refroidissement, air). Pression (huile, admission, carburant). Position (papillon, vilebrequin, arbre à cames). Vitesse de roue (ABS). Sonde lambda (oxygène dans les gaz d'échappement). Les calculateurs traitent les signaux et commandent les actionneurs: calculateur moteur, ABS, airbag, climatisation. Diagnostic électrique. Multimètre: tension, résistance, continuité. Test de la batterie: tension au repos (12,6 V), tension sous charge. Test de l'alternateur: tension de charge (13,5-14,5 V moteur tournant). Test de continuité: fils coupés, masses oxydées. Erreur fréquente. Remplacer un capteur sans vérifier le faisceau ou le connecteur. Une panne apparente de capteur peut venir d'un fil coupé, d'une masse oxydée, d'un connecteur humide. Toujours mesurer avant de remplacer. Points clés. Batterie (12 V), alternateur (13,5-14,5 V), démarreur. Capteurs: température, pression, position, vitesse, oxygène. Calculateurs: moteur, ABS, airbag. Diagnostic: multimètre, mesurer avant de remplacer."]],"12":[["fr","Chapitre VII, La norme OBD-II et la prise de diagnostic. Fondements théoriques. Qu'est-ce que l'OBD-II? OBD signifie On-Board Diagnostics (diagnostic embarqué). L'OBD-II est une norme internationale (depuis 1996 aux États-Unis, adoptée dans le monde) qui normalise: la prise de diagnostic (16 broches, trapézoïdale); les protocoles de communication; les codes défaut (DTC, Diagnostic Trouble Codes); les paramètres en temps réel. La prise OBD-II est généralement située sous le tableau de bord, côté conducteur, à proximité du volant. La prise OBD-II et la valise de diagnostic. La valise de diagnostic. La valise de diagnostic (aussi appelée scanner) est un outil qui se connecte à la prise OBD-II et communique avec les calculateurs. Deux grandes familles: Outils multimarques: Autel, Launch, Delphi. Couvrent de nombreuses marques et fonctionnalités. Outils constructeurs: spécifiques à une marque (Toyota Techstream, Mercedes Star Diagnostic, etc.). Fonctions principales: Lecture des codes défaut. Effacement des codes après réparation. Lecture des données en temps réel (régime, température, tension, etc.). Tests d'actionneurs. Codage des calculateurs (sur certains véhicules). Précautions. Ne pas brancher la valise contact mis avant de vérifier la procédure du constructeur (certains véhicules exigent contact coupé). Ne pas effacer les codes avant d'avoir noté et compris le diagnostic. Vérifier la compatibilité de la valise avec le véhicule (protocole OBD-II, marque, année). Mettre à jour la valise régulièrement (nouveaux modèles, nouveaux codes). Points clés. OBD-II: norme internationale de diagnostic embarqué. Prise 16 broches sous le tableau de bord. Valise: lecture ou effacement des codes, données temps réel. Ne pas effacer avant d'avoir diagnostiqué."]],"13":[["fr","Chapitre VII, Les codes défaut. Fondements théoriques. Quatre familles de codes. Les codes défaut (DTC) sont standardisés. Leur première lettre indique la famille: Lettre. Famille. Exemples de systèmes. P. Powertrain (groupe motopropulseur). Moteur, transmission, émissions. C. Chassis (châssis). Freinage, suspension, direction. B. Body (carrosserie). Airbag, ceintures, éclairage, climatisation. U. Network (réseau de communication). Bus CAN, modules électroniques. Lecture des codes défaut sur la valise. Exemples courants. P0300: ratés d'allumage multiples (bougies, bobines, injecteurs). P0171: mélange trop pauvre (prise d'air, sonde lambda, injecteur). P0420: rendement du catalyseur insuffisant (sonde lambda, catalyseur). P0113: capteur de température d'air d'admission (signal trop élevé). C0035: capteur de vitesse de roue avant gauche (ABS). U0100: perte de communication avec le calculateur moteur. Interprétation. Un code défaut indique une zone de dysfonctionnement, pas nécessairement la pièce à remplacer. Il faut confirmer par: la lecture des données en temps réel (paramètres); des mesures (multimètre); une inspection visuelle (faisceau, connecteur, durite); un essai routier (si applicable). Ne jamais remplacer une pièce uniquement sur la base d'un code: la cause peut être ailleurs (fil coupé, masse oxydée, prise d'air). Erreur fréquente. Effacer les codes défaut sans réparer pour \"faire disparaître le voyant\". La panne réapparaît et le client perd confiance. Effacer un code ne répare rien: c'est une mauvaise pratique professionnelle. Points clés. 4 familles: P, C, B, U. P égale moteur ou transmission; C égale châssis; B égale carrosserie; U égale réseau. Un code égale zone, pas pièce. Confirmer par tests avant de réparer."]],"14":[["fr","Chapitre VII, Utilisation pratique de la valise. Fondements théoriques. La démarche en 6 étapes. Préparer le véhicule: contact mis (moteur tournant ou non selon la procédure), valise chargée, connecteur propre. Brancher la valise sur la prise OBD-II. Sélectionner le véhicule (marque, modèle, année, motorisation) ou lancer une lecture automatique. Lire les codes défaut (actuels et historiques). Interpréter les codes avec les données en temps réel. Réparer, puis effacer les codes et vérifier qu'ils ne réapparaissent pas après un cycle de conduite. Les données en temps réel. La valise peut afficher en direct: régime moteur (tr ou min); température du liquide de refroidissement (°C); tension batterie (V); position du papillon ( pour cent ); pression d'admission (kPa); tension des sondes lambda (V); avance à l'allumage (°). Ces données permettent de comprendre le comportement du moteur et de confirmer ou d'infirmer les hypothèses issues des codes défaut. Cas pratique. Un client se plaint d'un voyant moteur allumé et d'à-coups à l'accélération. Le technicien: Branche la valise, sélectionne le véhicule. Lit un code P0300 (ratés d'allumage multiples). Consulte les données en temps réel: l'oxygène fluctue anormalement, le régime est instable. Inspecte les bougies: l'une est très usée, une autre humide. Remplace les bougies, vérifie les bobines. Efface le code, fait un essai routier: pas de réapparition, comportement normal. Points clés. 6 étapes: préparer, brancher, sélectionner, lire, interpréter, réparer. Données en temps réel égale confirmation du diagnostic. Effacement après réparation plus essai. Toujours vérifier avant de remplacer."]],"15":[["fr","Chapitre VIII, L'entretien préventif. Fondements théoriques. Les opérations d'entretien courant. Opération. Périodicité typique. Vidange moteur plus filtre à huile. 10 000 à 15 000 kilomètres ou 1 an. Filtre à air. 15 000 à 30 000 kilomètres. Filtre à carburant (diesel). 20 000 à 30 000 kilomètres. Bougies (essence). 30 000 à 60 000 kilomètres. Courroie de distribution. 60 000 à 120 000 kilomètres selon constructeur. Liquide de frein. Tous les 2 ans. Plaquettes de frein. Selon usure (30 000 à 60 000 kilomètres). Pneumatiques. Pression mensuelle, usure à surveiller. Les intervalles dépendent du constructeur, du type d'utilisation et du climat. En R D C (routes dégradées, poussière, chaleur), les intervalles doivent être raccourcis. Choix des lubrifiants. Le choix de l'huile dépend de: la viscosité (5W-30, 10W-40, 15W-40, 20W-50): plus le second chiffre est élevé, plus l'huile résiste à chaud; la norme (API, ACEA) exigée par le constructeur; l'âge du moteur (huiles plus épaisses pour les moteurs usés). En climat tropical, on privilégie les huiles résistantes à haute température: 15W-40 ou 20W-50. Les pneumatiques. Pression: vérifiée mensuellement (à froid). Usure: témoins d'usure, profondeur des sculptures. Permutation: régulière pour une usure homogène. Géométrie: parallélisme et équilibrage. Points clés. Entretien: vidange, filtres, bougies, courroie, freins, pneus. Intervalles à raccourcir en R D C. Lubrifiants adaptés au climat tropical. Pression et usure des pneus."]],"16":[["fr","Chapitre VIII, La relation client. Fondements théoriques. Un métier de service. Le technicien automobile est en contact direct avec le client. La qualité de la relation conditionne la réputation du garage. Les étapes: Accueil: écouter le client, noter les symptômes, poser des questions précises. Diagnostic: expliquer la démarche, ne pas promettre ce qui n'est pas possible. Explication: décrire les causes, les solutions, les délais. Devis: détailler les pièces, la main-d'œuvre, le total. Obtenir l'accord du client. Intervention: réaliser les travaux dans les délais annoncés. Restitution: expliquer ce qui a été fait, les conseils d'usage (entretien futur, précautions). Suivi: rappeler les échéances d'entretien. Le devis. Un devis comporte: l'identification du véhicule (marque, modèle, immatriculation, kilométrage); la description des travaux; la liste des pièces (désignation, quantité, prix unitaire); la main-d'œuvre (heures, taux horaire); les taxes; le total, la durée d'immobilisation, la garantie. Le devis protège à la fois le client (transparence) et le technicien (cadre de l'intervention). Erreur fréquente. Proposer des réparations inutiles au client pour augmenter la facture. Cette pratique détruit la confiance et la réputation. Le technicien professionnel explique ce qui est nécessaire, distingue l'urgent du différable, et laisse le client décider. Points clés. Relation client égale accueil, diagnostic, explication, devis, intervention, suivi. Devis transparent égale confiance. Ne jamais proposer de réparations inutiles."]],"17":[["fr","Applications R D C, Mécanique automobile en contexte congolais. Contextualisation. Le parc automobile congolais. Le parc automobile de la R D C est composé majoritairement de véhicules d'occasion importés (Toyota, Mercedes, Nissan, etc.), souvent âgés de plus de 10 ans. Les conditions d'utilisation sont difficiles: routes dégradées (pistes, nids-de-poule): usure accélérée de la suspension, des pneumatiques, des rotules; chaleur tropicale: surchauffe fréquente, vieillissement des plastiques et des huiles; poussière: encrassement des filtres, usure des moteurs; embouteillages: usure des embrayages, des freins; carburant de qualité variable: encrassement des injecteurs, des filtres. Les garages congolais. Les garages de Kinshasa (Matonge, marché de la Liberté), de Lubumbashi, de Goma et d'autres villes font face à des défis spécifiques: accès limité aux pièces d'origine (utilisation de pièces compatibles ou de récupération); outillage parfois incomplet (fabrication locale d'outils spécifiques); documentation technique rare (schémas, codes défaut). Les techniciens formés à la méthode de diagnostic et à l'O B D2 (grâce au soutien de l'INPP) sont mieux armés pour ces défis. Débouchés. Mécanicien automobile. Électricien auto. Technicien de diagnostic. Chef d'atelier. Gérant de station-service. Poursuite d'études en génie mécanique ou maintenance automobile."]],"18":[["fr","Synthèse générale du cours. Ce qu'il faut retenir. Les idées maîtresses. Mécanique automobile égale mécanique plus électricité plus électronique plus diagnostic. Sécurité: EPI, levage avec chandelles, gestion des fluides. Moteur 4 temps: admission, compression, combustion, échappement. Lubrification (huile adaptée au climat) et refroidissement (radiateur, thermostat, pompe). Surchauffe: causes multiples, diagnostic structuré. Transmission: embrayage, boîte, différentiel. Freinage: circuit hydraulique, plaquettes, disques, ABS; purge obligatoire après intervention. Suspension et direction: ressorts, amortisseurs, rotules, géométrie. Circuits électriques: batterie (12 V), alternateur (13,5-14,5 V), démarreur, capteurs, calculateurs. OBD-II: norme de diagnostic embarqué; valise, codes défaut (P, C, B, U), données temps réel. Entretien préventif: vidange, filtres, bougies, courroie, freins, pneus. Relation client: accueil, diagnostic, devis transparent, suivi. Les erreurs à ne plus commettre. Travailler sous un véhicule tenu uniquement par un cric. Continuer à rouler avec une surchauffe. Négliger la purge après une intervention sur le circuit de freinage. Remplacer un capteur sans vérifier le faisceau. Effacer un code défaut sans réparer. Remplacer une pièce uniquement sur la base d'un code défaut. Proposer des réparations inutiles au client. Récapitulatif des codes défaut. Lettre. Système. P. Powertrain (moteur, transmission). C. Chassis (châssis: freinage, suspension). B. Body (carrosserie, airbag, éclairage). U. Network (réseau de communication)."]],"19":[["fr","Évaluation finale, Mécanique Automobile et Diagnostic. Consigne. Répondez aux 22 questions ci-dessous. Chaque question a une seule bonne réponse. Cliquez sur « Valider mes réponses » pour obtenir votre score. Bonne chance! Conseil. En cas d'erreur, relisez la diapositive correspondante. Les questions couvrent le moteur, la transmission, le freinage, la suspension, les circuits électriques, l'O B D2 et l'entretien."]]}};
+  var CACHE = "ecolia-cours-v1";                       // même cache que l'application
+  var PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  var PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+  var DL = '<svg viewBox="0 0 24 24"><path d="M11 3h2v9.2l3.6-3.6L18 10l-6 6-6-6 1.4-1.4L11 12.2V3zM5 19h14v2H5z"/></svg>';
+  var OK = '<svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>';
+  // Réparation du quiz : certains cours stockent les choix sous "opts" (ou autre) au lieu de "options"
+  try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+      questions.forEach(function (q) {
+        if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+        if (q.text === undefined) q.text = q.question || q.q || q.enonce || q.titre || "";
+        if (typeof q.correct === "undefined") {
+          if (typeof q.answer !== "undefined") q.correct = q.answer;
+          else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+        }
+      });
+    }
+  } catch (e) {}
+  var synth = window.speechSynthesis || null;
+  var HAS_CACHE = !!(window.caches && window.caches.open);
+  var NATIVE = false;           // APK ECOLIA : pont Java "CoursInterface" (fichiers dans le dossier de l'application)
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  var LATER = "ecolia_audio_later_" + CFG.code;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+  function init() {
+    if (document.getElementById("ecolia-audio-btn")) return;
+
+    // ---------- éléments de l'interface ----------
+    var btn = document.createElement("button");
+    btn.id = "ecolia-audio-btn"; btn.type = "button"; btn.className = "ecolia-off";
+    btn.setAttribute("aria-label", "Écouter la leçon"); btn.innerHTML = PLAY;
+    var dlBtn = document.createElement("button");
+    dlBtn.id = "ecolia-dl-btn"; dlBtn.type = "button"; dlBtn.className = "ecolia-off";
+    dlBtn.innerHTML = DL;
+    var host = document.querySelector(".header-right");
+    if (host) { host.insertBefore(dlBtn, host.firstChild); host.insertBefore(btn, dlBtn); }   // dans la barre du haut : ne scrolle jamais
+    else { btn.className += " ecolia-fixed"; document.body.appendChild(btn); }
+
+    var banner = document.createElement("div");
+    banner.id = "ecolia-audio-banner";
+    banner.innerHTML = '<span class="eab-txt"></span><span class="eab-act"></span><div class="eab-bar"><i></i></div>';
+    var content = document.getElementById("content");
+    if (content && content.parentNode) content.parentNode.insertBefore(banner, content);
+    else document.body.insertBefore(banner, document.body.firstChild);
+    var txtEl = banner.querySelector(".eab-txt"), actEl = banner.querySelector(".eab-act");
+    var barEl = banner.querySelector(".eab-bar"), barI = barEl.firstChild;
+
+    var audio = new Audio();            // un seul élément Audio, réutilisé (exigé par les navigateurs mobiles)
+    audio.preload = "auto";
+    var st = { idx: -1, auto: false, advancing: false, mode: null, speaking: false, token: 0, chunks: [], ci: 0, blobUrl: null, playTok: 0 };
+    var dl = { state: "none", cached: 0, busy: false, cancel: false };   // none | partial | full
+    var bnMode = null, hideTimer = null;
+    if (synth && synth.getVoices) { try { synth.getVoices(); } catch (e) {} }
+
+    function cur() {
+      try { if (typeof currentSlide === "number") return currentSlide; } catch (e) {}
+      return 0;
+    }
+    function hasMp3(i) { return CFG.available.indexOf(i + 1) !== -1; }
+    function fb(i) { return CFG.fallback && CFG.fallback[String(i + 1)]; }
+    function hasAudio(i) { return hasMp3(i) || (!!synth && !!fb(i)); }
+    function urlN(n) {   // dans l'APK la page est sur https://app.local : une adresse relative doit pointer vers le site
+      var b = CFG.base;
+      if (NATIVE && !/^https?:/i.test(b)) b = "https://ecolia-course.github.io/" + b.replace(/^(\.\.\/|\.\/)+/, "");
+      return new URL(b + nameN(n), location.href).href;
+    }
+    function setIcon(playing) { btn.innerHTML = playing ? PAUSE : PLAY; }
+    function isPlaying() { return st.mode === "mp3" ? !audio.paused : (st.mode === "tts" && st.speaking); }
+    function mo() { return "≈ " + CFG.sizeMo + " Mo"; }
+    function nameN(n) { return "audio_" + CFG.code + "_" + n + ".mp3"; }
+
+    // ====================================================================
+    //  Stockage hors ligne : 2 moteurs, même interface
+    //    - APK : fichiers du dossier de l'application (CoursInterface), servis par https://app.local/cours/
+    //    - Web : Cache Storage du navigateur (même cache que l'application web)
+    // ====================================================================
+    function nativeStore() {
+      var okKey = "ecolia_audio_ok_" + CFG.code;
+      function readOk() { try { return JSON.parse(lsGet(okKey) || "[]"); } catch (e) { return []; } }
+      function writeOk(a) { lsSet(okKey, JSON.stringify(a)); }
+      function exists(n) { try { return !!CoursInterface.exists(nameN(n)); } catch (e) { return false; } }
+      function local(n) { return location.origin + "/cours/" + nameN(n); }
+      function verify(n) {                                   // fichier complet ? (taille exacte connue à la génération)
+        return fetch(local(n), { cache: "no-store" }).then(function (r) { return r.blob(); }).then(function (b) {
+          var exp = CFG.sizes && CFG.sizes[String(n)];
+          return (b.size > 2000 && (!exp || b.size === exp)) ? b : null;
+        }).catch(function () { return null; });
+      }
+      return {
+        list: function () {
+          var ok = readOk().filter(exists); writeOk(ok); return Promise.resolve(ok);
+        },
+        get: function (n) { return exists(n) ? verify(n) : Promise.resolve(null); },
+        put: function (n) {
+          return new Promise(function (res, rej) {
+            try { CoursInterface.download(urlN(n), nameN(n)); } catch (e) { return rej(e); }
+            var t0 = Date.now();
+            function next() { if (Date.now() - t0 > 120000) rej(new Error("délai dépassé")); else setTimeout(poll, 800); }
+            function poll() {
+              if (!exists(n)) return next();
+              verify(n).then(function (b) {
+                if (!b) return next();
+                var ok = readOk(); if (ok.indexOf(n) < 0) ok.push(n); writeOk(ok); res();
+              });
+            }
+            setTimeout(poll, 800);
+          });
+        },
+        del: function (n) {
+          try { CoursInterface.delete(nameN(n)); } catch (e) {}
+          writeOk(readOk().filter(function (x) { return x !== n; }));
+          return Promise.resolve();
+        }
+      };
+    }
+    function cacheStore() {
+      return {
+        list: function () {
+          return caches.open(CACHE).then(function (c) {
+            return Promise.all(CFG.available.map(function (n) {
+              return c.match(urlN(n)).then(function (r) {
+                if (!r) return 0;
+                if ((r.headers.get("content-type") || "").indexOf("audio") !== 0) { c.delete(urlN(n)); return 0; }   // ancien contenu invalide
+                return n;
+              });
+            }));
+          }).then(function (a) { return a.filter(Boolean); });
+        },
+        get: function (n) {
+          return caches.open(CACHE).then(function (c) { return c.match(urlN(n)); })
+            .then(function (r) { return r ? r.blob() : null; }).then(function (b) { return b && b.size > 2000 ? b : null; });
+        },
+        put: function (n) {
+          var u = urlN(n);
+          return fetch(u, { cache: "no-store" }).then(function (r) {
+            if (!r.ok || r.status !== 200) throw new Error("HTTP " + r.status);
+            return r.blob();
+          }).then(function (b) {
+            if (b.size < 2000 || (b.type && b.type.indexOf("audio") !== 0 && b.type.indexOf("octet") < 0)) throw new Error("fichier invalide");
+            return caches.open(CACHE).then(function (c) { return c.put(u, new Response(b, { headers: { "Content-Type": "audio/mpeg" } })); });
+          });
+        },
+        del: function (n) { return caches.open(CACHE).then(function (c) { return c.delete(urlN(n)); }); }
+      };
+    }
+    var store = NATIVE ? nativeStore() : (HAS_CACHE ? cacheStore() : null);
+
+    // ====================================================================
+    //  Bannière : invitation, confirmations, progression
+    // ====================================================================
+    function showBanner(mode, text, buttons, pct) {
+      clearTimeout(hideTimer);
+      bnMode = mode;
+      txtEl.textContent = text;
+      actEl.innerHTML = "";
+      (buttons || []).forEach(function (b) {
+        var e = document.createElement("button");
+        e.type = "button"; e.textContent = b.label; if (b.pri) e.className = "pri";
+        e.addEventListener("click", function (ev) { ev.stopPropagation(); b.fn(); });
+        actEl.appendChild(e);
+      });
+      if (typeof pct === "number") { barEl.style.display = "block"; barI.style.width = pct + "%"; }
+      else barEl.style.display = "none";
+      banner.classList.add("on");
+    }
+    function hideBanner() { clearTimeout(hideTimer); bnMode = null; banner.classList.remove("on"); }
+    function flash(text) { showBanner("info", text, []); hideTimer = setTimeout(hideBanner, 4000); }
+
+    function refreshUI() {
+      var show = !!store && CFG.available.length > 0;
+      dlBtn.classList.toggle("ecolia-off", !show);
+      dlBtn.classList.toggle("ecolia-full", dl.state === "full");
+      dlBtn.innerHTML = dl.state === "full" ? OK : DL;
+      dlBtn.setAttribute("aria-label", dl.state === "full" ? "Audios téléchargés : supprimer" : "Télécharger les audios");
+      dlBtn.title = dlBtn.getAttribute("aria-label");
+    }
+    function refreshCacheState(done) {
+      if (!store) { dl.state = "none"; refreshUI(); if (done) done(); return; }
+      store.list().then(function (ok) {
+        dl.cached = ok.length;
+        dl.state = dl.cached === 0 ? "none" : (dl.cached >= CFG.available.length ? "full" : "partial");
+      }).catch(function () { dl.state = "none"; }).then(function () { refreshUI(); if (done) done(); });
+    }
+
+    function askDownload(fromInvite) {
+      var left = CFG.available.length - dl.cached;
+      var txt = dl.state === "partial"
+        ? "Il reste " + left + " audio(s) à télécharger pour écouter ce cours sans internet."
+        : "🔊 Télécharger les audios de ce cours (" + mo() + ") pour les écouter sans internet ? Wi-Fi recommandé.";
+      showBanner(fromInvite ? "invite" : "confirm", txt, [
+        { label: fromInvite ? "Plus tard" : "Annuler", fn: function () { if (fromInvite) lsSet(LATER, "1"); hideBanner(); } },
+        { label: "Télécharger", pri: true, fn: startDownload }
+      ]);
+    }
+    function askDelete() {
+      showBanner("confirm", "Supprimer les audios téléchargés de ce cours (" + mo() + ") ? Vous pourrez toujours les écouter en ligne.", [
+        { label: "Annuler", fn: hideBanner },
+        { label: "Supprimer", pri: true, fn: doDelete }
+      ]);
+    }
+
+    function startDownload() {
+      if (dl.busy || !store) return;
+      dl.busy = true; dl.cancel = false;
+      var total = CFG.available.length, done = 0, quota = false, fails = 0, todo = [];
+      store.list().then(function (have) {
+        CFG.available.forEach(function (n) { if (have.indexOf(n) < 0) todo.push(n); });
+        done = total - todo.length;
+        function paint() {
+          var msg = "Téléchargement des audios : " + done + " / " + total;
+          if (bnMode === "progress") {                  // met à jour sans recréer les boutons (sinon un appui peut être perdu)
+            txtEl.textContent = msg; barI.style.width = Math.round(done / total * 100) + "%";
+          } else {
+            showBanner("progress", msg, [
+              { label: "Annuler", fn: function () { dl.cancel = true; } }
+            ], Math.round(done / total * 100));
+          }
+        }
+        paint();
+        function worker() {
+          if (dl.cancel || quota || !todo.length) return Promise.resolve();
+          var n = todo.shift();
+          return store.put(n).then(function () { done++; paint(); }).catch(function (e) {
+            if (e && (e.name === "QuotaExceededError" || /quota/i.test(String(e.message)))) quota = true;
+            fails++;
+          }).then(worker);
+        }
+        return Promise.all([worker(), worker()]);
+      }).catch(function () { fails++; }).then(function () {
+        dl.busy = false;
+        refreshCacheState(function () {
+          if (dl.state === "full") flash("✓ Audios téléchargés : le cours se lit maintenant sans internet.");
+          else if (dl.cancel) flash("Téléchargement interrompu (" + dl.cached + " / " + total + "). Vous pourrez reprendre plus tard.");
+          else showBanner("error", quota ? "Espace insuffisant sur l'appareil. Libérez de la place puis réessayez."
+            : "Certains audios n'ont pas pu être téléchargés (connexion ?).", [
+            { label: "Fermer", fn: hideBanner }, { label: "Réessayer", pri: true, fn: startDownload }
+          ]);
+        });
+      });
+    }
+    function doDelete() {
+      if (!store) return;
+      Promise.all(CFG.available.map(function (n) { return store.del(n); })).catch(function () {}).then(function () {
+        lsDel(LATER);
+        refreshCacheState(function () { flash("Audios supprimés de cet appareil."); });
+      });
+    }
+
+    dlBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (dl.busy) return;
+      if (dl.state === "full") askDelete(); else askDownload(false);
+    });
+
+    // ====================================================================
+    //  Voix intégrée au téléphone (hors ligne, sans limite)
+    // ====================================================================
+    function pickVoice(lang) {
+      var vs = [];
+      try { vs = synth.getVoices() || []; } catch (e) {}
+      var pre = lang === "en" ? "en" : "fr", best = null;
+      for (var k = 0; k < vs.length; k++) {
+        var v = vs[k];
+        if ((v.lang || "").toLowerCase().indexOf(pre) !== 0) continue;
+        if (!best || (v.localService && !best.localService)) best = v;
+      }
+      return best;
+    }
+    function hardSplit(text, max) {
+      var out = [];
+      while (text.length > max) {
+        var cut = text.lastIndexOf(" ", max);
+        if (cut < 40) cut = max;
+        out.push(text.slice(0, cut)); text = text.slice(cut).replace(/^\s+/, "");
+      }
+      if (text) out.push(text);
+      return out;
+    }
+    function buildChunks(segs) {                  // morceaux courts : évite l'arrêt des longs textes sur Chrome
+      var out = [];
+      segs.forEach(function (s) {
+        var cur2 = "", parts = s[1].match(/[^.!?;:]+[.!?;:]*\s*/g) || [s[1]];
+        parts.forEach(function (p) {
+          if (cur2 && (cur2 + p).length > 160) { out.push({ lang: s[0], text: cur2.trim() }); cur2 = p; }
+          else cur2 += p;
+        });
+        if (cur2.trim()) out.push({ lang: s[0], text: cur2.trim() });
+      });
+      var res = [];
+      out.forEach(function (c) { hardSplit(c.text, 190).forEach(function (t) { res.push({ lang: c.lang, text: t }); }); });
+      return res;
+    }
+    function speakFrom(tk) {
+      if (tk !== st.token) return;
+      if (st.ci >= st.chunks.length) {
+        st.speaking = false; st.mode = null; st.ci = 0; setIcon(false);
+        if (st.auto) goNext();
+        return;
+      }
+      var c = st.chunks[st.ci];
+      var u = new SpeechSynthesisUtterance(c.text);
+      u.lang = c.lang === "en" ? "en-US" : "fr-FR";
+      var v = pickVoice(c.lang);
+      if (v) { u.voice = v; u.lang = v.lang; }
+      u.rate = 0.95;
+      u.onend = function () { if (tk !== st.token) return; st.ci++; speakFrom(tk); };
+      u.onerror = function () { if (tk !== st.token) return; st.speaking = false; setIcon(false); st.auto = false; };
+      synth.speak(u);
+    }
+    function startTts(from) {
+      st.token++;
+      var tk = st.token;
+      st.mode = "tts"; st.speaking = true; st.ci = from || 0; setIcon(true);
+      var busy = false;
+      try { busy = synth.speaking || synth.pending; synth.cancel(); } catch (e) {}
+      if (busy) setTimeout(function () { speakFrom(tk); }, 120);   // laisse cancel() se terminer
+      else speakFrom(tk);                                          // sinon tout de suite (exigé par iOS)
+    }
+    function playVoice() {
+      if (!(synth && fb(st.idx))) { st.auto = false; return false; }
+      if (!st.chunks.length) st.chunks = buildChunks(fb(st.idx));
+      startTts(st.ci);
+      return true;
+    }
+
+    // ====================================================================
+    //  Lecture
+    // ====================================================================
+    function freeBlob() { if (st.blobUrl) { try { URL.revokeObjectURL(st.blobUrl); } catch (e) {} st.blobUrl = null; } }
+    function stopAll() {
+      st.playTok++;
+      try { audio.pause(); audio.currentTime = 0; } catch (e) {}
+      st.token++;
+      try { if (synth) synth.cancel(); } catch (e) {}
+      st.speaking = false; st.mode = null; st.chunks = []; st.ci = 0;
+      setIcon(false);
+    }
+    function pauseNow() {
+      if (st.mode === "mp3") audio.pause();
+      else if (st.mode === "tts") {
+        st.token++;
+        try { synth.cancel(); } catch (e) {}
+        st.speaking = false; setIcon(false);      // st.ci conservé : la reprise repart de la phrase en cours
+      }
+    }
+    function startAudio(src, tok) {
+      if (tok !== st.playTok) return;
+      if (audio.getAttribute("data-src") !== src) { audio.setAttribute("data-src", src); audio.src = src; }
+      var p = audio.play();
+      if (p && p.catch) p.catch(function (err) {
+        console.warn("ECOLIA audio :", err);
+        if (tok !== st.playTok) return;
+        if (!(err && err.name === "NotAllowedError") && playVoice()) return;   // lecture impossible : voix du téléphone
+        setIcon(false); st.auto = false;
+      });
+    }
+    function playCurrent() {
+      var i = st.idx;
+      if (hasMp3(i)) {
+        var tok = ++st.playTok, u = urlN(i + 1);
+        st.mode = "mp3";
+        if (!navigator.onLine && dl.state === "none") { st.mode = null; if (playVoice()) return; }   // hors ligne et non téléchargé
+        if (store && dl.state !== "none") {                     // téléchargé : lecture locale, sans réseau
+          store.get(i + 1)
+            .then(function (b) {
+              if (tok !== st.playTok) return;
+              if (b) { freeBlob(); st.blobUrl = URL.createObjectURL(new Blob([b], { type: "audio/mpeg" })); startAudio(st.blobUrl, tok); }
+              else startAudio(u, tok);
+            }).catch(function () { startAudio(u, tok); });
+        } else startAudio(u, tok);                              // sinon lecture en ligne (appel immédiat, exigé par iOS)
+      } else if (!playVoice()) {
+        st.auto = false;
+      }
+    }
+
+    function onSlideChange(i) {
+      var wasAdvancing = st.advancing;
+      st.advancing = false;
+      st.idx = i;
+      btn.classList.toggle("ecolia-off", !hasAudio(i));
+      stopAll();
+      audio.removeAttribute("data-src");
+      freeBlob();
+      if (bnMode === "invite" && i !== 0) hideBanner();       // l'invitation n'apparaît qu'à la première slide
+      if (wasAdvancing && st.auto) setTimeout(playCurrent, 500);   // enchaînement automatique
+      else st.auto = false;                                         // changement manuel : on coupe tout
+    }
+    function goNext() {
+      if (st.idx + 1 >= CFG.count) { st.auto = false; return; }
+      st.advancing = true;
+      if (typeof nextSlide === "function") nextSlide();
+      else { var nb = document.getElementById("nextBtn"); if (nb) nb.click(); }
+      setTimeout(function () { st.advancing = false; }, 4000);
+    }
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var i = cur();
+      if (i !== st.idx) onSlideChange(i);
+      if (isPlaying()) { st.auto = false; pauseNow(); }
+      else { st.auto = true; playCurrent(); }
+    });
+    audio.addEventListener("play", function () { setIcon(true); });
+    audio.addEventListener("pause", function () { if (st.mode === "mp3") setIcon(false); });
+    audio.addEventListener("error", function () {
+      if (st.mode === "mp3" && playVoice()) return;            // fichier introuvable / hors ligne : voix du téléphone
+      setIcon(false); st.auto = false;
+    });
+    audio.addEventListener("ended", function () { setIcon(false); if (st.auto) goNext(); });
+    window.addEventListener("pagehide", function () { stopAll(); freeBlob(); });
+
+    // ---------- démarrage ----------
+    refreshCacheState(function () {
+      if (store && CFG.available.length && dl.state !== "full" && navigator.onLine && cur() === 0 && !lsGet(LATER)) askDownload(true);
+    });
+    st.idx = -1;
+    setInterval(function () { var i = cur(); if (i !== st.idx) onSlideChange(i); }, 250);   // suit la slide affichée
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+<!-- ECOLIA_AUDIO_PLAYER_END -->
+</body>
+</html>

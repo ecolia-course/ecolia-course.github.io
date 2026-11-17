@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="violet">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>ECOLIA — Informatique4</title>
+<style>
+[data-theme="bleu"]   { --p1:#0d2b4f; --p2:#1565c0; --p3:#07172e; --p4:#12437a; --p5:#5b8fd0; --bg:#e8f0fb; --bg2:#cfdff5; --bd:#a9c3e8; --soft:#dde8f7; --btn:#2a67b0; }
+[data-theme="vert"]   { --p1:#14442e; --p2:#2e7d32; --p3:#0b2b1a; --p4:#1f5c3a; --p5:#4f9a6b; --bg:#e8f5ec; --bg2:#c8e6d2; --bd:#a5cdb2; --soft:#dcefe2; --btn:#2f7a4f; }
+[data-theme="violet"] { --p1:#2d1b4e; --p2:#6a1b9a; --p3:#1a0f2e; --p4:#4a148c; --p5:#9c6fd0; --bg:#f1e9fb; --bg2:#dccbf2; --bd:#c4a8e6; --soft:#e8ddf6; --btn:#7e3fb2; }
+[data-theme="rouge"]  { --p1:#4a1010; --p2:#b71c1c; --p3:#2b0a0a; --p4:#8e1b1b; --p5:#d9706a; --bg:#fbeaea; --bg2:#f3cdcb; --bd:#e8a9a5; --soft:#f8dede; --btn:#a62a2a; }
+[data-theme="orange"] { --p1:#4e2a0c; --p2:#ef6c00; --p3:#2e1604; --p4:#b34a00; --p5:#f0a15a; --bg:#fff1e0; --bg2:#fbdcb8; --bd:#f3c08a; --soft:#fdebd6; --btn:#c9650a; }
+[data-theme="teal"]   { --p1:#0b3a3a; --p2:#00796b; --p3:#062626; --p4:#00574b; --p5:#4db6ac; --bg:#e0f2f1; --bg2:#b2dfdb; --bd:#80cbc4; --soft:#d5ecea; --btn:#26897d; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:linear-gradient(160deg,var(--p1) 0%,var(--p2) 50%,var(--p3) 100%); display:flex; justify-content:center; align-items:center; padding:8px; }
+.container { width:100%; max-width:1400px; background:#fefdf8; border-radius:20px; overflow:hidden; display:flex; flex-direction:column; height:100%; max-height:100vh; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.progress-bar { height:4px; background:var(--bg2); flex-shrink:0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--p5),var(--p4)); width:0%; transition:width 0.3s; }
+.header { padding:10px 16px; background:var(--bg); border-bottom:1px solid var(--bd); display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+.header h1 { color:var(--p4); font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box { display:flex; background:white; border-radius:20px; padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.search-box input { border:none; padding:6px 10px; border-radius:20px; outline:none; width:130px; font-size:0.8rem; }
+.search-box button { background:none; border:none; cursor:pointer; padding:4px 8px; font-size:0.85rem; color:var(--p2); }
+.badge { background:var(--p5); color:white; padding:4px 10px; border-radius:20px; font-weight:bold; font-size:0.75rem; }
+.search-nav { display:none; gap:4px; background:var(--bg2); padding:2px 8px; border-radius:20px; align-items:center; font-size:0.75rem; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:0.9rem; color:var(--p4); padding:2px 4px; }
+.content { padding:28px 32px; flex:1; overflow-y:auto; background:#fff; scroll-behavior:smooth; line-height:1.85; }
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.slide-title { color:var(--p1); font-size:1.5rem; font-weight:700; padding-bottom:12px; margin-bottom:20px; border-bottom:2px solid var(--p5); }
+.slide-content { color:var(--p3); font-size:1rem; }
+.empty-state { display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-height:60vh; padding:40px 20px; gap:18px; }
+.empty-state .icon { width:72px; height:72px; border-radius:50%; background:var(--bg); border:2px solid var(--bd); display:flex; align-items:center; justify-content:center; color:var(--p2); font-size:2rem; font-weight:300; }
+.empty-state h2 { color:var(--p1); font-size:1.4rem; font-weight:700; margin:0; }
+.empty-state p { color:#666; font-size:0.95rem; max-width:520px; line-height:1.7; }
+.empty-state .tag { display:inline-block; padding:6px 14px; background:var(--bg); color:var(--p4); border:1px solid var(--bd); border-radius:20px; font-size:0.8rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; }
+.bloc { padding:18px 22px; border-radius:12px; margin:22px 0; line-height:1.85; }
+.bloc-label { font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; opacity:0.7; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:var(--bg); border-left:4px solid var(--p5); }
+.theorie .bloc-label { color:var(--p4); }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.sources { background:#f5f5f5; padding:12px 16px; border-radius:10px; margin-top:26px; font-size:0.82rem; color:#666; border-left:3px solid #999; line-height:1.6; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:var(--p1); }
+.quiz-container { padding:22px; background:var(--bg); border-radius:16px; }
+.quiz-question { background:white; border-radius:10px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.quiz-question p { font-weight:600; margin-bottom:10px; color:var(--p1); }
+.quiz-question label { display:block; padding:8px 10px; margin:4px 0; border-radius:6px; cursor:pointer; transition:background 0.2s; }
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit { background:var(--btn); color:white; border:none; padding:12px 24px; border-radius:30px; font-size:1rem; cursor:pointer; font-weight:600; margin-top:14px; }
+.quiz-result { margin-top:16px; font-weight:600; }
+.controls { padding:8px 16px; background:#fafafa; border-top:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0; }
+.nav-btn { background:white; color:var(--p4); border:1px solid #ccc; padding:8px 14px; border-radius:8px; font-size:0.82rem; cursor:pointer; font-weight:500; }
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:var(--soft); }
+.content::-webkit-scrollbar-thumb { background:var(--p5); border-radius:3px; }
+@media (max-width:600px) { body { padding:0; } .container { border-radius:0; max-height:100vh; } .content { padding:20px 18px; } .slide-title { font-size:1.25rem; } .search-box input { width:90px; } .header h1 { font-size:0.85rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="header">
+<h1 id="pageTitle">ECOLIA</h1>
+<div class="header-right">
+<div class="search-box">
+<input id="searchInput" placeholder="Rechercher" type="text"/>
+<button id="searchBtn">⌕</button>
+</div>
+<div class="search-nav" id="searchNav">
+<button id="prevResultBtn">‹</button>
+<span id="resultCounter">0/0</span>
+<button id="nextResultBtn">›</button>
+</div>
+<span class="badge" id="slideCounter">0/0</span>
+</div>
+</div>
+<div class="content" id="content"></div>
+<div class="controls">
+<button class="nav-btn" id="prevBtn">← Précédent</button>
+<span class="counter" id="counter">—</span>
+<button class="nav-btn" id="nextBtn">Suivant →</button>
+</div>
+</div>
+<script>
+const COURSE_TITLE = "Informatique";
+const slides = [
+{
+    title: "Sommaire — Informatique",
+    content: `
+        <div class="bloc resume">
+            <div class="bloc-label">Présentation du cours</div>
+            <h3>Informatique — 4e Humanité</h3>
+            <p><strong>Niveau :</strong> 4e Humanité / Terminale (tronc commun).</p>
+            <p><strong>Statut :</strong> Approfondissement des TIC, centré sur l'algorithmique et les fondements de l'informatique.</p>
+            <p><strong>Objectif général :</strong> Initier l'élève à la pensée algorithmique et aux fondements de l'informatique, en le rendant capable de concevoir et d'analyser des algorithmes simples.</p>
+        </div>
+        <div class="bloc theorie">
+            <div class="bloc-label">Objectifs spécifiques</div>
+            <ol>
+                <li>Comprendre la représentation de l'information (binaire).</li>
+                <li>Connaître l'architecture matérielle et logicielle.</li>
+                <li>Maîtriser les bases de l'algorithmique.</li>
+                <li>Utiliser les structures de contrôle (condition, boucle).</li>
+                <li>Écrire un algorithme simple en pseudo-code.</li>
+                <li>Comprendre les notions de bases de données.</li>
+            </ol>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Organisation des chapitres</div>
+            <ul>
+                <li><strong>Chapitre I :</strong> Rappels : information et représentation.</li>
+                <li><strong>Chapitre II :</strong> Architecture matérielle et logicielle.</li>
+                <li><strong>Chapitre III :</strong> Introduction à l'algorithmique.</li>
+                <li><strong>Chapitre IV :</strong> Structures de contrôle.</li>
+                <li><strong>Chapitre V :</strong> Initiation à la programmation (pseudo-code).</li>
+                <li><strong>Chapitre VI :</strong> Notions de bases de données.</li>
+            </ul>
+            <p><strong>Prérequis :</strong> notions de TIC (fichiers, système d'exploitation).</p>
+        </div>
+        <div class="sources">
+            <p><strong>Sources :</strong> Manuel de TIC, 4e Humanités Scientifiques (programme national) ; références générales en algorithmique et bases de données pour le secondaire.</p>
+        </div>
+    `
+},
+{
+    title: "Leçon 1 — Information et données",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Définitions</h3>
+            <ul>
+                <li><strong>Donnée :</strong> élément brut, non interprété (ex. : un nombre, un mot).</li>
+                <li><strong>Information :</strong> donnée interprétée dans un contexte, qui prend un sens.</li>
+                <li><strong>Traitement :</strong> ensemble des opérations effectuées sur les données pour produire un résultat.</li>
+            </ul>
+            <h3>Le cycle de traitement</h3>
+            <p>Entrée (données) → Traitement → Sortie (résultat).</p>
+            <h3>Exemples</h3>
+            <ul>
+                <li>Donnée : 15, 12, 18 (notes d'un élève).</li>
+                <li>Traitement : calcul de la moyenne.</li>
+                <li>Information : moyenne = 15 (l'élève est admis).</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Un thermomètre affiche 38,5 °C. C'est une donnée. Associée au contexte (température corporelle), elle devient une information : la personne a de la fièvre.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>La donnée est brute, l'information est interprétée.</li>
+                <li>Le traitement transforme la donnée en information.</li>
+                <li>Erreur fréquente : confondre donnée et information.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 2 — Représentation binaire",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Le système binaire</h3>
+            <p>L'ordinateur ne comprend que deux états : 0 (absence de courant) et 1 (présence de courant). Le système binaire est un système de numération en base 2.</p>
+            <h3>Conversion binaire → décimal</h3>
+            <p>Chaque bit a un poids (puissance de 2) : 128, 64, 32, 16, 8, 4, 2, 1.</p>
+            <p><strong>Exemple :</strong> 1011 en binaire = 1×8 + 0×4 + 1×2 + 1×1 = 8 + 0 + 2 + 1 = <strong>11</strong> en décimal.</p>
+            <h3>Conversion décimal → binaire</h3>
+            <p>On divise successivement par 2 et on garde les restes.</p>
+            <p><strong>Exemple :</strong> 13 en binaire : 13 ÷ 2 = 6 reste 1 ; 6 ÷ 2 = 3 reste 0 ; 3 ÷ 2 = 1 reste 1 ; 1 ÷ 2 = 0 reste 1. Lecture des restes de bas en haut : <strong>1101</strong>.</p>
+            <h3>Représentation des caractères</h3>
+            <ul>
+                <li>Le code ASCII associe à chaque caractère un nombre (ex. : A = 65).</li>
+                <li>Un octet peut coder 256 valeurs (2⁸).</li>
+                <li>Les images, sons et vidéos sont aussi codés en binaire.</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exercice corrigé</div>
+            <p>Convertir 25 en binaire. 25 ÷ 2 = 12 r 1 ; 12 ÷ 2 = 6 r 0 ; 6 ÷ 2 = 3 r 0 ; 3 ÷ 2 = 1 r 1 ; 1 ÷ 2 = 0 r 1. Résultat : <strong>11001</strong>.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Le binaire utilise deux chiffres : 0 et 1.</li>
+                <li>Un octet = 8 bits.</li>
+                <li>Erreur fréquente : oublier de lire les restes de bas en haut.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 3 — Architecture d'un ordinateur",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Le modèle de Von Neumann</h3>
+            <p>L'ordinateur est organisé autour de quatre éléments :</p>
+            <ul>
+                <li><strong>L'unité centrale de traitement (CPU) :</strong> exécute les instructions.</li>
+                <li><strong>La mémoire :</strong> stocke les programmes et les données.</li>
+                <li><strong>Les entrées/sorties :</strong> communiquent avec l'extérieur.</li>
+                <li><strong>Le bus :</strong> relie ces éléments.</li>
+            </ul>
+            <h3>Le cycle d'exécution</h3>
+            <ol>
+                <li><strong>Recherche :</strong> le processeur lit l'instruction en mémoire.</li>
+                <li><strong>Décodage :</strong> il interprète l'instruction.</li>
+                <li><strong>Exécution :</strong> il réalise l'opération.</li>
+                <li><strong>Écriture :</strong> il enregistre le résultat.</li>
+            </ol>
+            <h3>Les registres</h3>
+            <p>Petites mémoires ultra-rapides intégrées au processeur, qui servent à stocker temporairement les données en cours de traitement.</p>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Lorsque vous ouvrez un logiciel, le processeur lit ses instructions en mémoire, les décode, les exécute. L'affichage à l'écran est le résultat de ce cycle.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Le processeur exécute, la mémoire stocke, les entrées/sorties communiquent.</li>
+                <li>Le cycle d'exécution se répète à grande vitesse.</li>
+                <li>Erreur fréquente : croire que l'ordinateur « réfléchit » ; il exécute des instructions.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 4 — Logiciels : système et applicatifs",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Deux grandes catégories de logiciels</h3>
+            <ul>
+                <li><strong>Logiciels système :</strong> gèrent le matériel et fournissent une plateforme aux applications. Ex. : Windows, Linux, macOS, Android.</li>
+                <li><strong>Logiciels applicatifs :</strong> conçus pour des tâches spécifiques. Ex. : traitement de texte, tableur, navigateur, jeu, logiciel de gestion.</li>
+            </ul>
+            <h3>Autres catégories</h3>
+            <ul>
+                <li><strong>Langages de programmation :</strong> Python, Java, C++, JavaScript.</li>
+                <li><strong>Utilitaires :</strong> antivirus, compresseurs, nettoyeurs.</li>
+                <li><strong>Pilotes (drivers) :</strong> permettent la communication entre le système et les périphériques.</li>
+            </ul>
+            <h3>Logiciel libre et logiciel propriétaire</h3>
+            <ul>
+                <li><strong>Logiciel libre :</strong> code source accessible, librement modifiable (ex. : LibreOffice, Linux).</li>
+                <li><strong>Logiciel propriétaire :</strong> code source fermé, utilisation sous licence (ex. : Windows, Office).</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Une école peut choisir LibreOffice (gratuit, libre) au lieu de Microsoft Office (payant) pour équiper sa salle informatique. Les fonctionnalités de base sont similaires.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Le logiciel système gère la machine ; l'applicatif réalise des tâches.</li>
+                <li>Il existe des logiciels libres et propriétaires.</li>
+                <li>Erreur fréquente : confondre système d'exploitation et logiciel applicatif.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 5 — Qu'est-ce qu'un algorithme ?",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Définition</h3>
+            <p>Un algorithme est une suite finie et ordonnée d'instructions qui permet de résoudre un problème. Il décrit <strong>comment</strong> faire, indépendamment du langage de programmation.</p>
+            <h3>Exemple du quotidien</h3>
+            <p>Algorithme pour faire du thé :</p>
+            <ol>
+                <li>Remplir une bouilloire d'eau.</li>
+                <li>Faire bouillir l'eau.</li>
+                <li>Mettre un sachet de thé dans une tasse.</li>
+                <li>Verser l'eau chaude dans la tasse.</li>
+                <li>Attendre 3 minutes.</li>
+                <li>Retirer le sachet.</li>
+            </ol>
+            <h3>Propriétés d'un algorithme</h3>
+            <ul>
+                <li><strong>Fini :</strong> il se termine après un nombre fini d'étapes.</li>
+                <li><strong>Précis :</strong> chaque étape est claire et non ambiguë.</li>
+                <li><strong>Général :</strong> il résout une classe de problèmes.</li>
+                <li><strong>Efficace :</strong> il atteint le résultat en un temps raisonnable.</li>
+            </ul>
+            <h3>Algorithmique et programmation</h3>
+            <p>L'algorithmique est la conception de l'algorithme. La programmation est la traduction de l'algorithme dans un langage exécutable par la machine (Python, Java, C…).</p>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Algorithme de calcul de la moyenne de trois notes :</p>
+            <ol>
+                <li>Lire les notes A, B, C.</li>
+                <li>Calculer M = (A + B + C) / 3.</li>
+                <li>Afficher M.</li>
+            </ol>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Un algorithme est une suite d'instructions pour résoudre un problème.</li>
+                <li>Il doit être fini, précis, général et efficace.</li>
+                <li>Erreur fréquente : confondre algorithme et programme ; le programme est une implémentation de l'algorithme.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 6 — Variables et instructions",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>La variable</h3>
+            <p>Une variable est un espace mémoire nommé qui peut contenir une valeur (nombre, texte, etc.). Sa valeur peut changer au cours du programme.</p>
+            <ul>
+                <li><strong>Nom :</strong> identifiant (ex. : age, moyenne, nom_eleve).</li>
+                <li><strong>Type :</strong> entier, réel, chaîne de caractères, booléen.</li>
+                <li><strong>Valeur :</strong> ce qui est stocké.</li>
+            </ul>
+            <h3>Les instructions de base</h3>
+            <ul>
+                <li><strong>Affectation :</strong> donner une valeur à une variable. <em>x ← 5</em> ou <em>x = 5</em>.</li>
+                <li><strong>Entrée :</strong> lire une valeur fournie par l'utilisateur. <em>Lire(x)</em>.</li>
+                <li><strong>Sortie :</strong> afficher une valeur. <em>Écrire(x)</em>.</li>
+                <li><strong>Calcul :</strong> effectuer une opération. <em>y ← x + 3</em>.</li>
+            </ul>
+            <h3>Exemple</h3>
+            <p>Algorithme qui demande l'âge et affiche le double :</p>
+            <ol>
+                <li>Lire(age)</li>
+                <li>double ← age × 2</li>
+                <li>Écrire(double)</li>
+            </ol>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exercice guidé</div>
+            <p>Écrire un algorithme qui calcule le prix total de 3 articles : lire le prix unitaire, multiplier par 3, afficher le total.</p>
+            <p><strong>Algorithme :</strong> Lire(prix) ; total ← prix × 3 ; Écrire(total).</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Une variable a un nom, un type et une valeur.</li>
+                <li>L'affectation donne une valeur ; l'entrée lit ; la sortie affiche.</li>
+                <li>Erreur fréquente : utiliser une variable sans l'avoir initialisée.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 7 — Structures conditionnelles",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Définition</h3>
+            <p>Une structure conditionnelle permet d'exécuter des instructions différentes selon qu'une condition est vraie ou fausse.</p>
+            <h3>La forme simple</h3>
+            <p><strong>SI condition ALORS instructions FIN SI</strong></p>
+            <p>Exemple : SI note ≥ 10 ALORS Écrire(« Admis ») FIN SI.</p>
+            <h3>La forme avec alternative</h3>
+            <p><strong>SI condition ALORS instructions1 SINON instructions2 FIN SI</strong></p>
+            <p>Exemple : SI note ≥ 10 ALORS Écrire(« Admis ») SINON Écrire(« Ajourné ») FIN SI.</p>
+            <h3>Conditions composées</h3>
+            <ul>
+                <li><strong>ET :</strong> les deux conditions doivent être vraies.</li>
+                <li><strong>OU :</strong> au moins une condition doit être vraie.</li>
+                <li><strong>NON :</strong> inverse la valeur de la condition.</li>
+            </ul>
+            <p>Exemple : SI (age ≥ 18) ET (permis = vrai) ALORS Écrire(« Peut conduire »).</p>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exercice guidé</div>
+            <p>Algorithme qui affiche la mention selon la moyenne :</p>
+            <ul>
+                <li>SI moyenne ≥ 16 : « Très bien »</li>
+                <li>SINON SI moyenne ≥ 14 : « Bien »</li>
+                <li>SINON SI moyenne ≥ 12 : « Assez bien »</li>
+                <li>SINON SI moyenne ≥ 10 : « Passable »</li>
+                <li>SINON : « Ajourné »</li>
+            </ul>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>La conditionnelle permet de choisir entre plusieurs actions.</li>
+                <li>Les conditions peuvent être combinées avec ET, OU, NON.</li>
+                <li>Erreur fréquente : oublier de fermer la structure (FIN SI).</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 8 — Les boucles",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Définition</h3>
+            <p>Une boucle permet de répéter des instructions plusieurs fois, sans les réécrire.</p>
+            <h3>La boucle « TANT QUE »</h3>
+            <p><strong>TANT QUE condition FAIRE instructions FIN TANT QUE</strong></p>
+            <p>Les instructions sont exécutées tant que la condition est vraie. Si la condition est fausse au départ, elles ne s'exécutent pas du tout.</p>
+            <p><strong>Exemple :</strong> TANT QUE x &lt; 10 FAIRE x ← x + 1 FIN TANT QUE.</p>
+            <h3>La boucle « POUR »</h3>
+            <p><strong>POUR i DE 1 À 10 FAIRE instructions FIN POUR</strong></p>
+            <p>Les instructions sont répétées un nombre connu de fois.</p>
+            <p><strong>Exemple :</strong> POUR i DE 1 À 10 FAIRE Écrire(i) FIN POUR (affiche 1, 2, 3… 10).</p>
+            <h3>La boucle « RÉPÉTER… JUSQU'À »</h3>
+            <p><strong>RÉPÉTER instructions JUSQU'À condition</strong></p>
+            <p>Les instructions sont exécutées au moins une fois, puis répétées jusqu'à ce que la condition soit vraie.</p>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exercice guidé</div>
+            <p>Algorithme qui calcule la somme des nombres de 1 à 100 :</p>
+            <p>somme ← 0 ; POUR i DE 1 À 100 FAIRE somme ← somme + i FIN POUR ; Écrire(somme).</p>
+            <p><strong>Résultat :</strong> 5 050.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>TANT QUE : répète tant qu'une condition est vraie.</li>
+                <li>POUR : répète un nombre connu de fois.</li>
+                <li>Erreur fréquente : oublier de faire évoluer la condition, ce qui provoque une boucle infinie.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 9 — Pseudo-code : exemples",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Définition</h3>
+            <p>Le pseudo-code est une façon d'écrire un algorithme dans un langage proche du langage naturel, avec des mots-clés conventionnels (Lire, Écrire, SI, ALORS, SINON, POUR, TANT QUE). Il est indépendant de tout langage de programmation.</p>
+            <h3>Règles d'écriture</h3>
+            <ul>
+                <li>Une instruction par ligne.</li>
+                <li>Indenter les blocs (SI, POUR, TANT QUE) pour la lisibilité.</li>
+                <li>Utiliser ← ou = pour l'affectation.</li>
+                <li>Nommer clairement les variables.</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple corrigé</div>
+            <p><strong>Algorithme de calcul du salaire net :</strong></p>
+            <p>Lire(salaire_brut) ; Lire(taux_cotisation) ;</p>
+            <p>cotisation ← salaire_brut × taux_cotisation ;</p>
+            <p>salaire_net ← salaire_brut − cotisation ;</p>
+            <p>Écrire(salaire_net).</p>
+            <p><strong>Exemple d'exécution :</strong> salaire_brut = 100 000 FC, taux = 0,05 → cotisation = 5 000 FC ; salaire_net = 95 000 FC.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Le pseudo-code est un langage intermédiaire entre la pensée et le programme.</li>
+                <li>Il facilite la conception avant l'écriture du code.</li>
+                <li>Erreur fréquente : écrire du code directement sans passer par l'algorithme.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 10 — Programmation : notions de base",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Définition</h3>
+            <p>Un programme est la traduction d'un algorithme dans un langage compréhensible par l'ordinateur (langage de programmation).</p>
+            <h3>Les langages de programmation</h3>
+            <ul>
+                <li><strong>Python :</strong> simple, très utilisé en éducation et en intelligence artificielle.</li>
+                <li><strong>Java :</strong> utilisé pour les applications et les sites web.</li>
+                <li><strong>C / C++ :</strong> langages de bas niveau, performants.</li>
+                <li><strong>JavaScript :</strong> pour les sites web interactifs.</li>
+                <li><strong>Scratch :</strong> langage visuel pour débuter.</li>
+            </ul>
+            <h3>Exemples de programmes</h3>
+            <p><strong>En Python (calcul de moyenne) :</strong></p>
+            <p>a = float(input("Note 1 : "))<br>
+            b = float(input("Note 2 : "))<br>
+            moyenne = (a + b) / 2<br>
+            print("Moyenne :", moyenne)</p>
+            <h3>Le cycle de vie d'un programme</h3>
+            <ol>
+                <li>Analyse du problème.</li>
+                <li>Conception de l'algorithme.</li>
+                <li>Écriture du code.</li>
+                <li>Test et débogage.</li>
+                <li>Utilisation et maintenance.</li>
+            </ol>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Un élève écrit un petit programme Python qui affiche la table de multiplication d'un nombre saisi par l'utilisateur. C'est un usage concret des boucles et des entrées/sorties.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Un programme traduit un algorithme dans un langage exécutable.</li>
+                <li>Il existe de nombreux langages, adaptés à des usages différents.</li>
+                <li>Erreur fréquente : écrire du code sans tester ; les tests permettent de corriger les erreurs (débogage).</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 11 — Bases de données : concepts",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Définition</h3>
+            <p>Une base de données est un ensemble organisé de données, structuré pour permettre la recherche, la mise à jour et la consultation rapides.</p>
+            <h3>Vocabulaire de base</h3>
+            <ul>
+                <li><strong>Table :</strong> structure qui organise les données en lignes et colonnes.</li>
+                <li><strong>Champ (ou colonne) :</strong> une propriété (ex. : nom, prénom, classe, note).</li>
+                <li><strong>Enregistrement (ou ligne) :</strong> un ensemble de valeurs correspondant à une entité (ex. : un élève).</li>
+                <li><strong>Clé primaire :</strong> champ qui identifie de manière unique chaque enregistrement (ex. : numéro matricule).</li>
+            </ul>
+            <h3>Exemple de table « Élèves »</h3>
+            <table>
+                <thead><tr><th>Matricule</th><th>Nom</th><th>Classe</th><th>Moyenne</th></tr></thead>
+                <tbody>
+                    <tr><td>001</td><td>Mukendi</td><td>4e A</td><td>14</td></tr>
+                    <tr><td>002</td><td>Kanku</td><td>4e A</td><td>12</td></tr>
+                    <tr><td>003</td><td>Ilunga</td><td>4e B</td><td>16</td></tr>
+                </tbody>
+            </table>
+            <figure>
+                <img data-image-id="informatique4_img02" alt="Schéma d'une base de données (table)">
+                <figcaption>Une table de base de données : les champs (colonnes) décrivent les propriétés, les enregistrements (lignes) décrivent les entités.</figcaption>
+            </figure>
+            <h3>Utilité</h3>
+            <p>Les bases de données sont utilisées partout : gestion d'une école, d'un hôpital, d'une banque, d'un commerce, d'une administration.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Une base de données organise les données en tables.</li>
+                <li>La clé primaire identifie chaque enregistrement de manière unique.</li>
+                <li>Erreur fréquente : confondre champ et enregistrement.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 12 — Requêtes simples",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Définition</h3>
+            <p>Une requête est une question posée à la base de données pour extraire des informations selon certains critères.</p>
+            <h3>Le langage SQL</h3>
+            <p>SQL (Structured Query Language) est le langage standard des bases de données. La requête de base est <strong>SELECT</strong>.</p>
+            <h3>Exemples de requêtes</h3>
+            <p><strong>Extraire tous les élèves :</strong></p>
+            <p>SELECT * FROM Eleves ;</p>
+            <p><strong>Extraire le nom et la moyenne :</strong></p>
+            <p>SELECT Nom, Moyenne FROM Eleves ;</p>
+            <p><strong>Filtrer avec une condition :</strong></p>
+            <p>SELECT Nom FROM Eleves WHERE Moyenne ≥ 14 ;</p>
+            <p><strong>Trier les résultats :</strong></p>
+            <p>SELECT Nom, Moyenne FROM Eleves ORDER BY Moyenne DESC ;</p>
+            <h3>Utilité</h3>
+            <ul>
+                <li>Rechercher rapidement une information.</li>
+                <li>Produire des statistiques (moyennes, listes, tris).</li>
+                <li>Automatiser la gestion des données.</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exercice guidé</div>
+            <p>Écrire une requête pour obtenir les noms des élèves de la classe « 4e A » ayant une moyenne supérieure ou égale à 13.</p>
+            <p><strong>Requête :</strong> SELECT Nom FROM Eleves WHERE Classe = "4e A" AND Moyenne ≥ 13 ;</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>SELECT permet d'extraire des données.</li>
+                <li>WHERE filtre selon une condition.</li>
+                <li>Erreur fréquente : oublier le point-virgule à la fin de la requête.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 13 — Applications de l'informatique en RDC",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Secteurs d'application</h3>
+            <ul>
+                <li><strong>Administration publique :</strong> gestion des dossiers, état civil, impôts.</li>
+                <li><strong>Banques et finances :</strong> gestion des comptes, paiements mobiles (M-Pesa, Orange Money, Airtel Money).</li>
+                <li><strong>Santé :</strong> dossiers médicaux, gestion des stocks de médicaments, télémédecine.</li>
+                <li><strong>Éducation :</strong> plateformes d'apprentissage, gestion scolaire, cours en ligne.</li>
+                <li><strong>Commerce :</strong> gestion des stocks, comptabilité informatisée, e-commerce.</li>
+                <li><strong>Agriculture :</strong> suivi des récoltes, prévisions météo.</li>
+                <li><strong>Mines :</strong> suivi de la production, gestion des ressources.</li>
+            </ul>
+            <h3>Défis</h3>
+            <ul>
+                <li>Accès à l'électricité et à internet.</li>
+                <li>Coût des équipements.</li>
+                <li>Formation des utilisateurs.</li>
+                <li>Cybersécurité et protection des données.</li>
+                <li>Fracture numérique entre villes et zones rurales.</li>
+            </ul>
+            <h3>Opportunités</h3>
+            <ul>
+                <li>Jeunesse intéressée par le numérique.</li>
+                <li>Développement de start-ups et d'emplois numériques.</li>
+                <li>Modernisation des services publics.</li>
+                <li>Éducation à distance.</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Une petite entreprise de Kinshasa utilise un tableur pour gérer ses stocks et sa comptabilité, et un téléphone mobile pour recevoir des paiements. Ce sont des usages concrets de l'informatique au service du développement.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>L'informatique transforme tous les secteurs d'activité en RDC.</li>
+                <li>Des défis subsistent (accès, formation, sécurité).</li>
+                <li>Erreur fréquente : croire que l'informatique est réservée aux grandes entreprises.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 14 — Synthèse : de l'information au programme",
+    content: `
+        <div class="bloc resume">
+            <div class="bloc-label">Synthèse générale</div>
+            <h3>Le parcours de l'information</h3>
+            <ol>
+                <li><strong>Donnée :</strong> élément brut (0 et 1, caractères, nombres).</li>
+                <li><strong>Structuration :</strong> organisation en fichiers, tables, bases de données.</li>
+                <li><strong>Traitement :</strong> algorithmes et programmes qui transforment les données.</li>
+                <li><strong>Information :</strong> résultat interprété, utile à la décision.</li>
+            </ol>
+        </div>
+        <div class="bloc theorie">
+            <div class="bloc-label">Compétences acquises</div>
+            <ul>
+                <li>Comprendre la représentation binaire de l'information.</li>
+                <li>Distinguer matériel et logiciel, système et applicatif.</li>
+                <li>Concevoir des algorithmes simples (variables, conditions, boucles).</li>
+                <li>Écrire du pseudo-code.</li>
+                <li>Comprendre les bases de données et les requêtes SQL.</li>
+                <li>Identifier les usages de l'informatique dans la société.</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Pour aller plus loin</div>
+            <p>S'entraîner à écrire des algorithmes simples, à traduire en Python, à créer de petites bases de données. La pratique régulière est la clé de la maîtrise.</p>
+        </div>
+    `
+},
+{
+    title: "Évaluation finale — Informatique",
+    content: `
+        <div class="bloc resume">
+            <div class="bloc-label">Évaluation finale</div>
+            <p>20 questions à choix multiple. Une seule réponse est correcte par question. Choisis la réponse qui te semble juste, puis valide.</p>
+        </div>
+        <div class="quiz-container">
+            <div id="quizQuestions"></div>
+            <button id="submitQuiz" class="quiz-btn-submit">Valider mes réponses</button>
+            <div id="quizResult" class="quiz-result"></div>
+        </div>
+    `
+}
+];
+const questions = [
+    { text: "Un algorithme est :", options: ["Un programme informatique", "Une suite d'étapes pour résoudre un problème", "Un ordinateur", "Un logiciel"], correct: 1 },
+    { text: "Que signifie « binaire » ?", options: ["Base 2", "Base 10", "Base 8", "Base 16"], correct: 0 },
+    { text: "Une structure conditionnelle permet de :", options: ["Répéter", "Choisir entre deux actions", "Calculer", "Stocker"], correct: 1 },
+    { text: "Une boucle sert à :", options: ["Répéter des instructions", "Choisir", "Afficher", "Éteindre"], correct: 0 },
+    { text: "Le processeur est :", options: ["Le cerveau de l'ordinateur", "Un périphérique", "Un logiciel", "Une mémoire"], correct: 0 },
+    { text: "Un logiciel applicatif est :", options: ["Le système d'exploitation", "Un programme destiné à une tâche spécifique", "Un composant matériel", "Un réseau"], correct: 1 },
+    { text: "Une variable est :", options: ["Une valeur fixe", "Un espace mémoire nommé qui peut changer de valeur", "Un algorithme", "Un fichier"], correct: 1 },
+    { text: "En pseudo-code, « SI…ALORS…SINON » exprime :", options: ["Une boucle", "Une condition", "Une variable", "Un tableau"], correct: 1 },
+    { text: "Une base de données est :", options: ["Un ensemble organisé de données", "Un algorithme", "Un programme", "Un ordinateur"], correct: 0 },
+    { text: "Un enregistrement dans une base de données correspond à :", options: ["Une ligne", "Une colonne", "Un tableur", "Un fichier"], correct: 0 },
+    { text: "La mémoire RAM est :", options: ["Volatile", "Permanente", "Un disque", "Un logiciel"], correct: 0 },
+    { text: "Un algorithme de calcul de moyenne utilise :", options: ["Une boucle et une somme", "Uniquement une condition", "Uniquement une variable", "Un tableur"], correct: 0 },
+    { text: "Le pseudo-code est :", options: ["Un langage de programmation réel", "Une représentation proche du langage naturel", "Un logiciel", "Un fichier exécutable"], correct: 1 },
+    { text: "Une requête simple dans une base de données permet de :", options: ["Extraire des données selon un critère", "Créer un algorithme", "Programmer", "Compiler"], correct: 0 },
+    { text: "L'informatique se distingue des TIC par :", options: ["Son focus sur les principes et la programmation", "Son absence d'outils", "Son ignorance d'internet", "Son caractère non scientifique"], correct: 0 },
+    { text: "Un organigramme représente :", options: ["Un algorithme", "Une base de données", "Un processeur", "Un réseau"], correct: 0 },
+    { text: "La structure « TANT QUE » est :", options: ["Une boucle", "Une condition", "Une variable", "Un tableau"], correct: 0 },
+    { text: "Un champ dans une base de données correspond à :", options: ["Une colonne", "Une ligne", "Un tableur", "Un fichier"], correct: 0 },
+    { text: "L'algorithmique développe :", options: ["La pensée logique", "La mémoire brute", "La vitesse de frappe", "Le dessin"], correct: 0 },
+    { text: "Quel langage est particulièrement adapté aux débutants ?", options: ["Python", "Assembleur", "C++", "Java"], correct: 0 }
+];
+
+try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+        questions.forEach(function (q) {
+            if (!q.text) q.text = q.question || q.q || q.enonce || q.titre || "";
+            if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+            if (typeof q.correct === "undefined") {
+                if (typeof q.answer !== "undefined") q.correct = q.answer;
+                else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+            }
+        });
+    }
+} catch (e) {}
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+const pageTitle = document.getElementById('pageTitle');
+pageTitle.textContent = "ECOLIA · " + COURSE_TITLE;
+document.title = "ECOLIA — " + COURSE_TITLE;
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim() || slides.length === 0) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp("(" + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ")", 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderEmptyState() {
+    contentDiv.innerHTML = '<div class="empty-state"><div class="icon">·</div><span class="tag">Bientôt disponible</span><h2>' + COURSE_TITLE + '</h2><p>Ce cours est en préparation. Le contenu sera ajouté prochainement.</p></div>';
+    slideCounterSpan.textContent = '0/0';
+    progressFill.style.width = '0%';
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    counterSpan.textContent = '—';
+}
+
+function renderQuiz() {
+    const qc = document.getElementById('quizQuestions');
+    if (!qc) return;
+    if (typeof questions === 'undefined' || questions.length === 0) {
+        qc.innerHTML = '<p style="color:#666;font-style:italic;">Quiz bientot disponible.</p>';
+        return;
+    }
+    let html = '';
+    questions.forEach((q, i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o, k) => {
+            html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>';
+        });
+        html += '</div>';
+    });
+    qc.innerHTML = html;
+    const submitBtn = document.getElementById('submitQuiz');
+    if (submitBtn) {
+        submitBtn.onclick = () => {
+            let score = 0;
+            questions.forEach((q, i) => {
+                const s = document.querySelector('input[name="q' + i + '"]:checked');
+                if (s && parseInt(s.value) === q.correct) score++;
+            });
+            const pct = Math.round(score/questions.length*100);
+            document.getElementById('quizResult').innerHTML =
+                '<div style="background:var(--bg2);padding:16px;border-radius:10px;margin-top:14px;">' +
+                '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong></div>';
+        };
+    }
+}
+
+function renderSlide(index, keepHighlight) {
+    if (keepHighlight === undefined) keepHighlight = true;
+    if (slides.length === 0) { renderEmptyState(); return; }
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    if (index === slides.length - 1) renderQuiz();
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    if (slides.length === 0) return;
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (slides.length && currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (slides.length && currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+<!-- ECOLIA_IMAGE_LOADER_START -->
+<script>
+(function () {
+  var SITE = "https://ecolia-course.github.io/";
+  var NATIVE = false;
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function abs(u) { return /^(https?:|data:|blob:)/i.test(u) ? u : (NATIVE ? SITE + u.replace(/^(\.\/|\/)+/, "") : u); }
+  function ext(u) { var m = String(u).split("?")[0].match(/\.(jpe?g|png|gif|webp|svg)$/i); return m ? m[1].toLowerCase() : "jpg"; }
+  function hide(img) { img.onerror = null; img.style.display = "none"; }
+  var table = null, queue = [], queued = {}, running = false;
+  function enqueue(full, fn) {
+    if (queued[fn]) return;
+    queued[fn] = 1; queue.push([full, fn]);
+    if (!running) { running = true; setTimeout(next, 2500); }
+  }
+  function next() {
+    if (!queue.length) { running = false; return; }
+    if (!navigator.onLine) { running = false; return; }
+    var q = queue.shift(), t0 = Date.now();
+    try { CoursInterface.download(q[0], q[1]); } catch (e) { return setTimeout(next, 500); }
+    (function wait() {
+      var ok = false;
+      try { ok = !!CoursInterface.exists(q[1]); } catch (e) {}
+      if (ok) setTimeout(next, 1500);
+      else if (Date.now() - t0 > 40000) next();
+      else setTimeout(wait, 700);
+    })();
+  }
+  function exists(fn) { try { return !!CoursInterface.exists(fn); } catch (e) { return false; } }
+  function show(img) {
+    if (!table || img.getAttribute("data-ecolia-done")) return;
+    var id = img.getAttribute("data-image-id");
+    var url = table[id];
+    if (typeof url !== "string" || !url.length) { console.warn("ECOLIA : image absente du JSON :", id); return; }
+    img.setAttribute("data-ecolia-done", "1");
+    if (!NATIVE) { img.onerror = function () { hide(img); }; img.setAttribute("src", url); return; }
+    var full = abs(url), fn = "img_" + id + "." + ext(url);
+    if (exists(fn)) {
+      img.onerror = function () {
+        try { CoursInterface["delete"](fn); } catch (e) {}
+        queued[fn] = 0;
+        img.onerror = function () { hide(img); };
+        img.setAttribute("src", full);
+      };
+      img.setAttribute("src", "https://app.local/cours/" + fn);
+    } else {
+      img.onerror = function () { hide(img); };
+      img.setAttribute("src", full);
+      enqueue(full, fn);
+    }
+  }
+  function scan(root) {
+    if (!root || !root.querySelectorAll) return;
+    if (root.matches && root.matches("img[data-image-id]")) show(root);
+    root.querySelectorAll("img[data-image-id]").forEach(show);
+  }
+  function prefetchAll() {
+    var ids = {};
+    try { JSON.stringify(slides).replace(/data-image-id=\\?"([^"\\]+)/g, function (m, id) { ids[id] = 1; }); } catch (e) {}
+    Object.keys(ids).forEach(function (id) {
+      var url = table[id];
+      if (typeof url !== "string" || !url.length) return;
+      var fn = "img_" + id + "." + ext(url);
+      if (!exists(fn)) enqueue(abs(url), fn);
+    });
+  }
+  function start(tbl) {
+    table = tbl;
+    scan(document.body);
+    new MutationObserver(function (muts) {
+      muts.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.nodeType === 1) scan(n); }); });
+    }).observe(document.body, { childList: true, subtree: true });
+    if (NATIVE) prefetchAll();
+  }
+  var JSON_URL = NATIVE ? SITE + "images_ecolia.json" : "images_ecolia.json";
+  var KEY = "ecolia_images_json";
+  fetch(JSON_URL, NATIVE ? { cache: "no-cache" } : undefined)
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (table) { if (NATIVE) lsSet(KEY, JSON.stringify(table)); start(table); })
+    .catch(function (e) {
+      var saved = null;
+      if (NATIVE) { try { saved = JSON.parse(lsGet(KEY) || "null"); } catch (x) {} }
+      if (saved) start(saved);
+      else console.warn("ECOLIA : JSON des images indisponible.", e);
+    });
+})();
+</script>
+<!-- ECOLIA_IMAGE_LOADER_END -->
+
+
+
+<!-- ECOLIA_AUDIO_PLAYER_START -->
+<style>
+  #ecolia-audio-btn, #ecolia-dl-btn {
+    width: 30px; height: 30px; min-width: 30px; padding: 0; margin: 0 4px 0 0;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    cursor: pointer; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent; outline: none;
+  }
+  #ecolia-audio-btn { border: none; background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-dl-btn { border: 1.5px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb); }
+  #ecolia-dl-btn.ecolia-full { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-btn.ecolia-fixed { position: fixed; top: 8px; left: 8px; z-index: 2147483000; }
+  #ecolia-audio-btn:active, #ecolia-dl-btn:active { transform: scale(.92); }
+  #ecolia-audio-btn svg, #ecolia-dl-btn svg { width: 15px; height: 15px; fill: currentColor; pointer-events: none; }
+  #ecolia-audio-btn.ecolia-off, #ecolia-dl-btn.ecolia-off { display: none; }
+  #ecolia-audio-banner {
+    display: none; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0;
+    padding: 8px 14px; font-size: .82rem; line-height: 1.35;
+    background: var(--soft, #eef3fb); color: var(--p1, #123); border-bottom: 1px solid var(--bd, #c9d6ea);
+  }
+  #ecolia-audio-banner.on { display: flex; }
+  #ecolia-audio-banner .eab-txt { flex: 1 1 180px; }
+  #ecolia-audio-banner .eab-act { display: flex; gap: 6px; flex-wrap: wrap; }
+  #ecolia-audio-banner button {
+    border: 1px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb);
+    border-radius: 16px; padding: 5px 12px; font-size: .8rem; cursor: pointer;
+  }
+  #ecolia-audio-banner button.pri { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-banner .eab-bar { display: none; flex-basis: 100%; height: 4px; border-radius: 2px; overflow: hidden; background: var(--bd, #c9d6ea); }
+  #ecolia-audio-banner .eab-bar i { display: block; height: 100%; width: 0; background: var(--p2, #2563eb); transition: width .2s; }
+</style>
+<script>
+(function () {
+  var CFG = {"code":"Informatique4","base":"https://ecolia-course.github.io/ecolia-media/audio_files/","available":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],"count":16,"sizeMo":12,"sizes":{"1":655104,"2":554496,"3":1001856,"4":645312,"5":813312,"6":733248,"7":814272,"8":775104,"9":742272,"10":792192,"11":787200,"12":777216,"13":716544,"14":835776,"15":512256,"16":109440},"fallback":{"1":[["fr","Sommaire, Informatique. Présentation du cours. Informatique, 4e Humanité. Niveau: 4e Humanité ou Terminale (tronc commun). Statut: Approfondissement des T I C, centré sur l'algorithmique et les fondements de l'informatique. Objectif général: Initier l'élève à la pensée algorithmique et aux fondements de l'informatique, en le rendant capable de concevoir et d'analyser des algorithmes simples. Objectifs spécifiques. Comprendre la représentation de l'information (binaire). Connaître l'architecture matérielle et logicielle. Maîtriser les bases de l'algorithmique. Utiliser les structures de contrôle (condition, boucle). Écrire un algorithme simple en pseudo-code. Comprendre les notions de bases de données. Organisation des chapitres. Chapitre I: Rappels: information et représentation. Chapitre II: Architecture matérielle et logicielle. Chapitre III: Introduction à l'algorithmique. Chapitre IV: Structures de contrôle. Chapitre V: Initiation à la programmation (pseudo-code). Chapitre VI: Notions de bases de données. Prérequis: notions de T I C (fichiers, système d'exploitation)."]],"2":[["fr","Leçon 1, Information et données. Fondements théoriques. Définitions. Donnée: élément brut, non interprété (ex.: un nombre, un mot). Information: donnée interprétée dans un contexte, qui prend un sens. Traitement: ensemble des opérations effectuées sur les données pour produire un résultat. Le cycle de traitement. Entrée (données), donc Traitement, donc Sortie (résultat). Exemples. Donnée: 15, 12, 18 (notes d'un élève). Traitement: calcul de la moyenne. Information: moyenne égale 15 (l'élève est admis). Exemple concret. Un thermomètre affiche 38,5 degrés Celsius. C'est une donnée. Associée au contexte (température corporelle), elle devient une information: la personne a de la fièvre. À retenir. La donnée est brute, l'information est interprétée. Le traitement transforme la donnée en information. Erreur fréquente: confondre donnée et information."]],"3":[["fr","Leçon 2, Représentation binaire. Fondements théoriques. Le système binaire. L'ordinateur ne comprend que deux états: 0 (absence de courant) et 1 (présence de courant). Le système binaire est un système de numération en base 2. Conversion binaire, donc décimal. Chaque bit a un poids (puissance de 2): 128, 64, 32, 16, 8, 4, 2, 1. Exemple: 1011 en binaire égale 1 multiplié par 8 plus 0 multiplié par 4 plus 1 multiplié par 2 plus 1 multiplié par 1 égale 8 plus 0 plus 2 plus 1 égale 11 en décimal. Conversion décimal, donc binaire. On divise successivement par 2 et on garde les restes. Exemple: 13 en binaire: 13 divisé par 2 égale 6 reste 1; 6 divisé par 2 égale 3 reste 0; 3 divisé par 2 égale 1 reste 1; 1 divisé par 2 égale 0 reste 1. Lecture des restes de bas en haut: 1101. Représentation des caractères. Le code ASCII associe à chaque caractère un nombre (ex.: A égale 65). Un octet peut coder 256 valeurs (2⁸). Les images, sons et vidéos sont aussi codés en binaire. Exercice corrigé. Convertir 25 en binaire. 25 divisé par 2 égale 12 r 1; 12 divisé par 2 égale 6 r 0; 6 divisé par 2 égale 3 r 0; 3 divisé par 2 égale 1 r 1; 1 divisé par 2 égale 0 r 1. Résultat: 11001. À retenir. Le binaire utilise deux chiffres: 0 et 1. Un octet égale 8 bits. Erreur fréquente: oublier de lire les restes de bas en haut."]],"4":[["fr","Leçon 3, Architecture d'un ordinateur. Fondements théoriques. Le modèle de Von Neumann. L'ordinateur est organisé autour de quatre éléments: L'unité centrale de traitement (CPU): exécute les instructions. La mémoire: stocke les programmes et les données. Les entrées ou sorties: communiquent avec l'extérieur. Le bus: relie ces éléments. Le cycle d'exécution. Recherche: le processeur lit l'instruction en mémoire. Décodage: il interprète l'instruction. Exécution: il réalise l'opération. Écriture: il enregistre le résultat. Les registres. Petites mémoires ultra-rapides intégrées au processeur, qui servent à stocker temporairement les données en cours de traitement. Exemple concret. Lorsque vous ouvrez un logiciel, le processeur lit ses instructions en mémoire, les décode, les exécute. L'affichage à l'écran est le résultat de ce cycle. À retenir. Le processeur exécute, la mémoire stocke, les entrées ou sorties communiquent. Le cycle d'exécution se répète à grande vitesse. Erreur fréquente: croire que l'ordinateur « réfléchit »; il exécute des instructions."]],"5":[["fr","Leçon 4, Logiciels: système et applicatifs. Fondements théoriques. Deux grandes catégories de logiciels. Logiciels système: gèrent le matériel et fournissent une plateforme aux applications. Ex.: Windows, Linux, macOS, Android. Logiciels applicatifs: conçus pour des tâches spécifiques. Ex.: traitement de texte, tableur, navigateur, jeu, logiciel de gestion. Autres catégories. Langages de programmation: Python, Java, C plus plus, JavaScript. Utilitaires: antivirus, compresseurs, nettoyeurs. Pilotes (drivers): permettent la communication entre le système et les périphériques. Logiciel libre et logiciel propriétaire. Logiciel libre: code source accessible, librement modifiable (ex.: LibreOffice, Linux). Logiciel propriétaire: code source fermé, utilisation sous licence (ex.: Windows, Office). Exemple concret. Une école peut choisir LibreOffice (gratuit, libre) au lieu de Microsoft Office (payant) pour équiper sa salle informatique. Les fonctionnalités de base sont similaires. À retenir. Le logiciel système gère la machine; l'applicatif réalise des tâches. Il existe des logiciels libres et propriétaires. Erreur fréquente: confondre système d'exploitation et logiciel applicatif."]],"6":[["fr","Leçon 5, Qu'est-ce qu'un algorithme? Fondements théoriques. Définition. Un algorithme est une suite finie et ordonnée d'instructions qui permet de résoudre un problème. Il décrit comment faire, indépendamment du langage de programmation. Exemple du quotidien. Algorithme pour faire du thé: Remplir une bouilloire d'eau. Faire bouillir l'eau. Mettre un sachet de thé dans une tasse. Verser l'eau chaude dans la tasse. Attendre 3 minutes. Retirer le sachet. Propriétés d'un algorithme. Fini: il se termine après un nombre fini d'étapes. Précis: chaque étape est claire et non ambiguë. Général: il résout une classe de problèmes. Efficace: il atteint le résultat en un temps raisonnable. Algorithmique et programmation. L'algorithmique est la conception de l'algorithme. La programmation est la traduction de l'algorithme dans un langage exécutable par la machine (Python, Java, C…). Exemple concret. Algorithme de calcul de la moyenne de trois notes: Lire les notes A, B, C. Calculer M égale (A plus B plus C) ou 3. Afficher M. À retenir. Un algorithme est une suite d'instructions pour résoudre un problème. Il doit être fini, précis, général et efficace. Erreur fréquente: confondre algorithme et programme; le programme est une implémentation de l'algorithme."]],"7":[["fr","Leçon 6, Variables et instructions. Fondements théoriques. La variable. Une variable est un espace mémoire nommé qui peut contenir une valeur (nombre, texte, etc.). Sa valeur peut changer au cours du programme. Nom: identifiant (ex.: age, moyenne, nom_eleve). Type: entier, réel, chaîne de caractères, booléen. Valeur: ce qui est stocké. Les instructions de base. Affectation: donner une valeur à une variable. x ← 5 ou x égale 5. Entrée: lire une valeur fournie par l'utilisateur. Lire(x). Sortie: afficher une valeur. Écrire(x). Calcul: effectuer une opération. y ← x plus 3. Exemple. Algorithme qui demande l'âge et affiche le double: Lire(age). double ← age multiplié par 2. Écrire(double). Exercice guidé. Écrire un algorithme qui calcule le prix total de 3 articles: lire le prix unitaire, multiplier par 3, afficher le total. Algorithme: Lire(prix); total ← prix multiplié par 3; Écrire(total). À retenir. Une variable a un nom, un type et une valeur. L'affectation donne une valeur; l'entrée lit; la sortie affiche. Erreur fréquente: utiliser une variable sans l'avoir initialisée."]],"8":[["fr","Leçon 7, Structures conditionnelles. Fondements théoriques. Définition. Une structure conditionnelle permet d'exécuter des instructions différentes selon qu'une condition est vraie ou fausse. La forme simple. SI condition ALORS instructions FIN SI. Exemple: SI note supérieur ou égal à 10 ALORS Écrire(« Admis ») FIN SI. La forme avec alternative. SI condition ALORS instructions1 SINON instructions2 FIN SI. Exemple: SI note supérieur ou égal à 10 ALORS Écrire(« Admis ») SINON Écrire(« Ajourné ») FIN SI. Conditions composées. ET: les deux conditions doivent être vraies. OU: au moins une condition doit être vraie. NON: inverse la valeur de la condition. Exemple: SI (age supérieur ou égal à 18) ET (permis égale vrai) ALORS Écrire(« Peut conduire »). Exercice guidé. Algorithme qui affiche la mention selon la moyenne: SI moyenne supérieur ou égal à 16: « Très bien ». SINON SI moyenne supérieur ou égal à 14: « Bien ». SINON SI moyenne supérieur ou égal à 12: « Assez bien ». SINON SI moyenne supérieur ou égal à 10: « Passable ». SINON: « Ajourné ». À retenir. La conditionnelle permet de choisir entre plusieurs actions. Les conditions peuvent être combinées avec ET, OU, NON. Erreur fréquente: oublier de fermer la structure (FIN SI)."]],"9":[["fr","Leçon 8, Les boucles. Fondements théoriques. Définition. Une boucle permet de répéter des instructions plusieurs fois, sans les réécrire. La boucle « TANT QUE ». TANT QUE condition FAIRE instructions FIN TANT QUE. Les instructions sont exécutées tant que la condition est vraie. Si la condition est fausse au départ, elles ne s'exécutent pas du tout. Exemple: TANT QUE x inférieur à 10 FAIRE x ← x plus 1 FIN TANT QUE. La boucle « POUR ». POUR i DE 1 À 10 FAIRE instructions FIN POUR. Les instructions sont répétées un nombre connu de fois. Exemple: POUR i DE 1 À 10 FAIRE Écrire(i) FIN POUR (affiche 1, 2, 3… 10). La boucle « RÉPÉTER… JUSQU'À ». RÉPÉTER instructions JUSQU'À condition. Les instructions sont exécutées au moins une fois, puis répétées jusqu'à ce que la condition soit vraie. Exercice guidé. Algorithme qui calcule la somme des nombres de 1 à 100: somme ← 0; POUR i DE 1 À 100 FAIRE somme ← somme plus i FIN POUR; Écrire(somme). Résultat: 5 050. À retenir. TANT QUE: répète tant qu'une condition est vraie. POUR: répète un nombre connu de fois. Erreur fréquente: oublier de faire évoluer la condition, ce qui provoque une boucle infinie."]],"10":[["fr","Leçon 9, Pseudo-code: exemples. Fondements théoriques. Définition. Le pseudo-code est une façon d'écrire un algorithme dans un langage proche du langage naturel, avec des mots-clés conventionnels (Lire, Écrire, SI, ALORS, SINON, POUR, TANT QUE). Il est indépendant de tout langage de programmation. Règles d'écriture. Une instruction par ligne. Indenter les blocs (SI, POUR, TANT QUE) pour la lisibilité. Utiliser ← ou égale pour l'affectation. Nommer clairement les variables. Exemple corrigé. Algorithme de calcul du salaire net: Lire(salaire_brut); Lire(taux_cotisation); cotisation ← salaire_brut multiplié par taux_cotisation; salaire_net ← salaire_brut moins cotisation; Écrire(salaire_net). Exemple d'exécution: salaire_brut égale 100 000 FC, taux égale 0,05, donc cotisation égale 5 000 FC; salaire_net égale 95 000 FC. À retenir. Le pseudo-code est un langage intermédiaire entre la pensée et le programme. Il facilite la conception avant l'écriture du code. Erreur fréquente: écrire du code directement sans passer par l'algorithme."]],"11":[["fr","Leçon 10, Programmation: notions de base. Fondements théoriques. Définition. Un programme est la traduction d'un algorithme dans un langage compréhensible par l'ordinateur (langage de programmation). Les langages de programmation. Python: simple, très utilisé en éducation et en intelligence artificielle. Java: utilisé pour les applications et les sites web. C ou C plus plus: langages de bas niveau, performants. JavaScript: pour les sites web interactifs. Scratch: langage visuel pour débuter. Exemples de programmes. En Python (calcul de moyenne): a égale float(input(\"Note 1: \")). b égale float(input(\"Note 2: \")). moyenne égale (a plus b) ou 2. print(\"Moyenne:\", moyenne). Le cycle de vie d'un programme. Analyse du problème. Conception de l'algorithme. Écriture du code. Test et débogage. Utilisation et maintenance. Exemple concret. Un élève écrit un petit programme Python qui affiche la table de multiplication d'un nombre saisi par l'utilisateur. C'est un usage concret des boucles et des entrées ou sorties. À retenir. Un programme traduit un algorithme dans un langage exécutable. Il existe de nombreux langages, adaptés à des usages différents. Erreur fréquente: écrire du code sans tester; les tests permettent de corriger les erreurs (débogage)."]],"12":[["fr","Leçon 11, Bases de données: concepts. Fondements théoriques. Définition. Une base de données est un ensemble organisé de données, structuré pour permettre la recherche, la mise à jour et la consultation rapides. Vocabulaire de base. Table: structure qui organise les données en lignes et colonnes. Champ (ou colonne): une propriété (ex.: nom, prénom, classe, note). Enregistrement (ou ligne): un ensemble de valeurs correspondant à une entité (ex.: un élève). Clé primaire: champ qui identifie de manière unique chaque enregistrement (ex.: numéro matricule). Exemple de table « Élèves ». Matricule. Nom. Classe. Moyenne. 001. Mukendi. 4e A. 14. 002. Kanku. 4e A. 12. 003. Ilunga. 4e B. 16. Une table de base de données: les champs (colonnes) décrivent les propriétés, les enregistrements (lignes) décrivent les entités. Utilité. Les bases de données sont utilisées partout: gestion d'une école, d'un hôpital, d'une banque, d'un commerce, d'une administration. À retenir. Une base de données organise les données en tables. La clé primaire identifie chaque enregistrement de manière unique. Erreur fréquente: confondre champ et enregistrement."]],"13":[["fr","Leçon 12, Requêtes simples. Fondements théoriques. Définition. Une requête est une question posée à la base de données pour extraire des informations selon certains critères. Le langage SQL. SQL (Structured Query Language) est le langage standard des bases de données. La requête de base est SELECT. Exemples de requêtes. Extraire tous les élèves: SELECT * FROM Eleves; Extraire le nom et la moyenne: SELECT Nom, Moyenne FROM Eleves; Filtrer avec une condition: SELECT Nom FROM Eleves WHERE Moyenne supérieur ou égal à 14; Trier les résultats: SELECT Nom, Moyenne FROM Eleves ORDER BY Moyenne DESC; Utilité. Rechercher rapidement une information. Produire des statistiques (moyennes, listes, tris). Automatiser la gestion des données. Exercice guidé. Écrire une requête pour obtenir les noms des élèves de la classe « 4e A » ayant une moyenne supérieure ou égale à 13. Requête: SELECT Nom FROM Eleves WHERE Classe égale \"4e A\" AND Moyenne supérieur ou égal à 13; À retenir. SELECT permet d'extraire des données. WHERE filtre selon une condition. Erreur fréquente: oublier le point-virgule à la fin de la requête."]],"14":[["fr","Leçon 13, Applications de l'informatique en R D C. Fondements théoriques. Secteurs d'application. Administration publique: gestion des dossiers, état civil, impôts. Banques et finances: gestion des comptes, paiements mobiles (M-Pesa, Orange Money, Airtel Money). Santé: dossiers médicaux, gestion des stocks de médicaments, télémédecine. Éducation: plateformes d'apprentissage, gestion scolaire, cours en ligne. Commerce: gestion des stocks, comptabilité informatisée, e-commerce. Agriculture: suivi des récoltes, prévisions météo. Mines: suivi de la production, gestion des ressources. Défis. Accès à l'électricité et à internet. Coût des équipements. Formation des utilisateurs. Cybersécurité et protection des données. Fracture numérique entre villes et zones rurales. Opportunités. Jeunesse intéressée par le numérique. Développement de start-ups et d'emplois numériques. Modernisation des services publics. Éducation à distance. Exemple concret. Une petite entreprise de Kinshasa utilise un tableur pour gérer ses stocks et sa comptabilité, et un téléphone mobile pour recevoir des paiements. Ce sont des usages concrets de l'informatique au service du développement. À retenir. L'informatique transforme tous les secteurs d'activité en R D C. Des défis subsistent (accès, formation, sécurité). Erreur fréquente: croire que l'informatique est réservée aux grandes entreprises."]],"15":[["fr","Leçon 14, Synthèse: de l'information au programme. Synthèse générale. Le parcours de l'information. Donnée: élément brut (0 et 1, caractères, nombres). Structuration: organisation en fichiers, tables, bases de données. Traitement: algorithmes et programmes qui transforment les données. Information: résultat interprété, utile à la décision. Compétences acquises. Comprendre la représentation binaire de l'information. Distinguer matériel et logiciel, système et applicatif. Concevoir des algorithmes simples (variables, conditions, boucles). Écrire du pseudo-code. Comprendre les bases de données et les requêtes SQL. Identifier les usages de l'informatique dans la société. Pour aller plus loin. S'entraîner à écrire des algorithmes simples, à traduire en Python, à créer de petites bases de données. La pratique régulière est la clé de la maîtrise."]],"16":[["fr","Évaluation finale, Informatique. Évaluation finale. 20 questions à choix multiple. Une seule réponse est correcte par question. Choisis la réponse qui te semble juste, puis valide."]]}};
+  var CACHE = "ecolia-cours-v1";                       // même cache que l'application
+  var PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  var PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+  var DL = '<svg viewBox="0 0 24 24"><path d="M11 3h2v9.2l3.6-3.6L18 10l-6 6-6-6 1.4-1.4L11 12.2V3zM5 19h14v2H5z"/></svg>';
+  var OK = '<svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>';
+  // Réparation du quiz : certains cours stockent les choix sous "opts" (ou autre) au lieu de "options"
+  try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+      questions.forEach(function (q) {
+        if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+        if (q.text === undefined) q.text = q.question || q.q || q.enonce || q.titre || "";
+        if (typeof q.correct === "undefined") {
+          if (typeof q.answer !== "undefined") q.correct = q.answer;
+          else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+        }
+      });
+    }
+  } catch (e) {}
+  var synth = window.speechSynthesis || null;
+  var HAS_CACHE = !!(window.caches && window.caches.open);
+  var NATIVE = false;           // APK ECOLIA : pont Java "CoursInterface" (fichiers dans le dossier de l'application)
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  var LATER = "ecolia_audio_later_" + CFG.code;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+  function init() {
+    if (document.getElementById("ecolia-audio-btn")) return;
+
+    // ---------- éléments de l'interface ----------
+    var btn = document.createElement("button");
+    btn.id = "ecolia-audio-btn"; btn.type = "button"; btn.className = "ecolia-off";
+    btn.setAttribute("aria-label", "Écouter la leçon"); btn.innerHTML = PLAY;
+    var dlBtn = document.createElement("button");
+    dlBtn.id = "ecolia-dl-btn"; dlBtn.type = "button"; dlBtn.className = "ecolia-off";
+    dlBtn.innerHTML = DL;
+    var host = document.querySelector(".header-right");
+    if (host) { host.insertBefore(dlBtn, host.firstChild); host.insertBefore(btn, dlBtn); }   // dans la barre du haut : ne scrolle jamais
+    else { btn.className += " ecolia-fixed"; document.body.appendChild(btn); }
+
+    var banner = document.createElement("div");
+    banner.id = "ecolia-audio-banner";
+    banner.innerHTML = '<span class="eab-txt"></span><span class="eab-act"></span><div class="eab-bar"><i></i></div>';
+    var content = document.getElementById("content");
+    if (content && content.parentNode) content.parentNode.insertBefore(banner, content);
+    else document.body.insertBefore(banner, document.body.firstChild);
+    var txtEl = banner.querySelector(".eab-txt"), actEl = banner.querySelector(".eab-act");
+    var barEl = banner.querySelector(".eab-bar"), barI = barEl.firstChild;
+
+    var audio = new Audio();            // un seul élément Audio, réutilisé (exigé par les navigateurs mobiles)
+    audio.preload = "auto";
+    var st = { idx: -1, auto: false, advancing: false, mode: null, speaking: false, token: 0, chunks: [], ci: 0, blobUrl: null, playTok: 0 };
+    var dl = { state: "none", cached: 0, busy: false, cancel: false };   // none | partial | full
+    var bnMode = null, hideTimer = null;
+    if (synth && synth.getVoices) { try { synth.getVoices(); } catch (e) {} }
+
+    function cur() {
+      try { if (typeof currentSlide === "number") return currentSlide; } catch (e) {}
+      return 0;
+    }
+    function hasMp3(i) { return CFG.available.indexOf(i + 1) !== -1; }
+    function fb(i) { return CFG.fallback && CFG.fallback[String(i + 1)]; }
+    function hasAudio(i) { return hasMp3(i) || (!!synth && !!fb(i)); }
+    function urlN(n) {   // dans l'APK la page est sur https://app.local : une adresse relative doit pointer vers le site
+      var b = CFG.base;
+      if (NATIVE && !/^https?:/i.test(b)) b = "https://ecolia-course.github.io/" + b.replace(/^(\.\.\/|\.\/)+/, "");
+      return new URL(b + nameN(n), location.href).href;
+    }
+    function setIcon(playing) { btn.innerHTML = playing ? PAUSE : PLAY; }
+    function isPlaying() { return st.mode === "mp3" ? !audio.paused : (st.mode === "tts" && st.speaking); }
+    function mo() { return "≈ " + CFG.sizeMo + " Mo"; }
+    function nameN(n) { return "audio_" + CFG.code + "_" + n + ".mp3"; }
+
+    // ====================================================================
+    //  Stockage hors ligne : 2 moteurs, même interface
+    //    - APK : fichiers du dossier de l'application (CoursInterface), servis par https://app.local/cours/
+    //    - Web : Cache Storage du navigateur (même cache que l'application web)
+    // ====================================================================
+    function nativeStore() {
+      var okKey = "ecolia_audio_ok_" + CFG.code;
+      function readOk() { try { return JSON.parse(lsGet(okKey) || "[]"); } catch (e) { return []; } }
+      function writeOk(a) { lsSet(okKey, JSON.stringify(a)); }
+      function exists(n) { try { return !!CoursInterface.exists(nameN(n)); } catch (e) { return false; } }
+      function local(n) { return location.origin + "/cours/" + nameN(n); }
+      function verify(n) {                                   // fichier complet ? (taille exacte connue à la génération)
+        return fetch(local(n), { cache: "no-store" }).then(function (r) { return r.blob(); }).then(function (b) {
+          var exp = CFG.sizes && CFG.sizes[String(n)];
+          return (b.size > 2000 && (!exp || b.size === exp)) ? b : null;
+        }).catch(function () { return null; });
+      }
+      return {
+        list: function () {
+          var ok = readOk().filter(exists); writeOk(ok); return Promise.resolve(ok);
+        },
+        get: function (n) { return exists(n) ? verify(n) : Promise.resolve(null); },
+        put: function (n) {
+          return new Promise(function (res, rej) {
+            try { CoursInterface.download(urlN(n), nameN(n)); } catch (e) { return rej(e); }
+            var t0 = Date.now();
+            function next() { if (Date.now() - t0 > 120000) rej(new Error("délai dépassé")); else setTimeout(poll, 800); }
+            function poll() {
+              if (!exists(n)) return next();
+              verify(n).then(function (b) {
+                if (!b) return next();
+                var ok = readOk(); if (ok.indexOf(n) < 0) ok.push(n); writeOk(ok); res();
+              });
+            }
+            setTimeout(poll, 800);
+          });
+        },
+        del: function (n) {
+          try { CoursInterface.delete(nameN(n)); } catch (e) {}
+          writeOk(readOk().filter(function (x) { return x !== n; }));
+          return Promise.resolve();
+        }
+      };
+    }
+    function cacheStore() {
+      return {
+        list: function () {
+          return caches.open(CACHE).then(function (c) {
+            return Promise.all(CFG.available.map(function (n) {
+              return c.match(urlN(n)).then(function (r) {
+                if (!r) return 0;
+                if ((r.headers.get("content-type") || "").indexOf("audio") !== 0) { c.delete(urlN(n)); return 0; }   // ancien contenu invalide
+                return n;
+              });
+            }));
+          }).then(function (a) { return a.filter(Boolean); });
+        },
+        get: function (n) {
+          return caches.open(CACHE).then(function (c) { return c.match(urlN(n)); })
+            .then(function (r) { return r ? r.blob() : null; }).then(function (b) { return b && b.size > 2000 ? b : null; });
+        },
+        put: function (n) {
+          var u = urlN(n);
+          return fetch(u, { cache: "no-store" }).then(function (r) {
+            if (!r.ok || r.status !== 200) throw new Error("HTTP " + r.status);
+            return r.blob();
+          }).then(function (b) {
+            if (b.size < 2000 || (b.type && b.type.indexOf("audio") !== 0 && b.type.indexOf("octet") < 0)) throw new Error("fichier invalide");
+            return caches.open(CACHE).then(function (c) { return c.put(u, new Response(b, { headers: { "Content-Type": "audio/mpeg" } })); });
+          });
+        },
+        del: function (n) { return caches.open(CACHE).then(function (c) { return c.delete(urlN(n)); }); }
+      };
+    }
+    var store = NATIVE ? nativeStore() : (HAS_CACHE ? cacheStore() : null);
+
+    // ====================================================================
+    //  Bannière : invitation, confirmations, progression
+    // ====================================================================
+    function showBanner(mode, text, buttons, pct) {
+      clearTimeout(hideTimer);
+      bnMode = mode;
+      txtEl.textContent = text;
+      actEl.innerHTML = "";
+      (buttons || []).forEach(function (b) {
+        var e = document.createElement("button");
+        e.type = "button"; e.textContent = b.label; if (b.pri) e.className = "pri";
+        e.addEventListener("click", function (ev) { ev.stopPropagation(); b.fn(); });
+        actEl.appendChild(e);
+      });
+      if (typeof pct === "number") { barEl.style.display = "block"; barI.style.width = pct + "%"; }
+      else barEl.style.display = "none";
+      banner.classList.add("on");
+    }
+    function hideBanner() { clearTimeout(hideTimer); bnMode = null; banner.classList.remove("on"); }
+    function flash(text) { showBanner("info", text, []); hideTimer = setTimeout(hideBanner, 4000); }
+
+    function refreshUI() {
+      var show = !!store && CFG.available.length > 0;
+      dlBtn.classList.toggle("ecolia-off", !show);
+      dlBtn.classList.toggle("ecolia-full", dl.state === "full");
+      dlBtn.innerHTML = dl.state === "full" ? OK : DL;
+      dlBtn.setAttribute("aria-label", dl.state === "full" ? "Audios téléchargés : supprimer" : "Télécharger les audios");
+      dlBtn.title = dlBtn.getAttribute("aria-label");
+    }
+    function refreshCacheState(done) {
+      if (!store) { dl.state = "none"; refreshUI(); if (done) done(); return; }
+      store.list().then(function (ok) {
+        dl.cached = ok.length;
+        dl.state = dl.cached === 0 ? "none" : (dl.cached >= CFG.available.length ? "full" : "partial");
+      }).catch(function () { dl.state = "none"; }).then(function () { refreshUI(); if (done) done(); });
+    }
+
+    function askDownload(fromInvite) {
+      var left = CFG.available.length - dl.cached;
+      var txt = dl.state === "partial"
+        ? "Il reste " + left + " audio(s) à télécharger pour écouter ce cours sans internet."
+        : "🔊 Télécharger les audios de ce cours (" + mo() + ") pour les écouter sans internet ? Wi-Fi recommandé.";
+      showBanner(fromInvite ? "invite" : "confirm", txt, [
+        { label: fromInvite ? "Plus tard" : "Annuler", fn: function () { if (fromInvite) lsSet(LATER, "1"); hideBanner(); } },
+        { label: "Télécharger", pri: true, fn: startDownload }
+      ]);
+    }
+    function askDelete() {
+      showBanner("confirm", "Supprimer les audios téléchargés de ce cours (" + mo() + ") ? Vous pourrez toujours les écouter en ligne.", [
+        { label: "Annuler", fn: hideBanner },
+        { label: "Supprimer", pri: true, fn: doDelete }
+      ]);
+    }
+
+    function startDownload() {
+      if (dl.busy || !store) return;
+      dl.busy = true; dl.cancel = false;
+      var total = CFG.available.length, done = 0, quota = false, fails = 0, todo = [];
+      store.list().then(function (have) {
+        CFG.available.forEach(function (n) { if (have.indexOf(n) < 0) todo.push(n); });
+        done = total - todo.length;
+        function paint() {
+          var msg = "Téléchargement des audios : " + done + " / " + total;
+          if (bnMode === "progress") {                  // met à jour sans recréer les boutons (sinon un appui peut être perdu)
+            txtEl.textContent = msg; barI.style.width = Math.round(done / total * 100) + "%";
+          } else {
+            showBanner("progress", msg, [
+              { label: "Annuler", fn: function () { dl.cancel = true; } }
+            ], Math.round(done / total * 100));
+          }
+        }
+        paint();
+        function worker() {
+          if (dl.cancel || quota || !todo.length) return Promise.resolve();
+          var n = todo.shift();
+          return store.put(n).then(function () { done++; paint(); }).catch(function (e) {
+            if (e && (e.name === "QuotaExceededError" || /quota/i.test(String(e.message)))) quota = true;
+            fails++;
+          }).then(worker);
+        }
+        return Promise.all([worker(), worker()]);
+      }).catch(function () { fails++; }).then(function () {
+        dl.busy = false;
+        refreshCacheState(function () {
+          if (dl.state === "full") flash("✓ Audios téléchargés : le cours se lit maintenant sans internet.");
+          else if (dl.cancel) flash("Téléchargement interrompu (" + dl.cached + " / " + total + "). Vous pourrez reprendre plus tard.");
+          else showBanner("error", quota ? "Espace insuffisant sur l'appareil. Libérez de la place puis réessayez."
+            : "Certains audios n'ont pas pu être téléchargés (connexion ?).", [
+            { label: "Fermer", fn: hideBanner }, { label: "Réessayer", pri: true, fn: startDownload }
+          ]);
+        });
+      });
+    }
+    function doDelete() {
+      if (!store) return;
+      Promise.all(CFG.available.map(function (n) { return store.del(n); })).catch(function () {}).then(function () {
+        lsDel(LATER);
+        refreshCacheState(function () { flash("Audios supprimés de cet appareil."); });
+      });
+    }
+
+    dlBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (dl.busy) return;
+      if (dl.state === "full") askDelete(); else askDownload(false);
+    });
+
+    // ====================================================================
+    //  Voix intégrée au téléphone (hors ligne, sans limite)
+    // ====================================================================
+    function pickVoice(lang) {
+      var vs = [];
+      try { vs = synth.getVoices() || []; } catch (e) {}
+      var pre = lang === "en" ? "en" : "fr", best = null;
+      for (var k = 0; k < vs.length; k++) {
+        var v = vs[k];
+        if ((v.lang || "").toLowerCase().indexOf(pre) !== 0) continue;
+        if (!best || (v.localService && !best.localService)) best = v;
+      }
+      return best;
+    }
+    function hardSplit(text, max) {
+      var out = [];
+      while (text.length > max) {
+        var cut = text.lastIndexOf(" ", max);
+        if (cut < 40) cut = max;
+        out.push(text.slice(0, cut)); text = text.slice(cut).replace(/^\s+/, "");
+      }
+      if (text) out.push(text);
+      return out;
+    }
+    function buildChunks(segs) {                  // morceaux courts : évite l'arrêt des longs textes sur Chrome
+      var out = [];
+      segs.forEach(function (s) {
+        var cur2 = "", parts = s[1].match(/[^.!?;:]+[.!?;:]*\s*/g) || [s[1]];
+        parts.forEach(function (p) {
+          if (cur2 && (cur2 + p).length > 160) { out.push({ lang: s[0], text: cur2.trim() }); cur2 = p; }
+          else cur2 += p;
+        });
+        if (cur2.trim()) out.push({ lang: s[0], text: cur2.trim() });
+      });
+      var res = [];
+      out.forEach(function (c) { hardSplit(c.text, 190).forEach(function (t) { res.push({ lang: c.lang, text: t }); }); });
+      return res;
+    }
+    function speakFrom(tk) {
+      if (tk !== st.token) return;
+      if (st.ci >= st.chunks.length) {
+        st.speaking = false; st.mode = null; st.ci = 0; setIcon(false);
+        if (st.auto) goNext();
+        return;
+      }
+      var c = st.chunks[st.ci];
+      var u = new SpeechSynthesisUtterance(c.text);
+      u.lang = c.lang === "en" ? "en-US" : "fr-FR";
+      var v = pickVoice(c.lang);
+      if (v) { u.voice = v; u.lang = v.lang; }
+      u.rate = 0.95;
+      u.onend = function () { if (tk !== st.token) return; st.ci++; speakFrom(tk); };
+      u.onerror = function () { if (tk !== st.token) return; st.speaking = false; setIcon(false); st.auto = false; };
+      synth.speak(u);
+    }
+    function startTts(from) {
+      st.token++;
+      var tk = st.token;
+      st.mode = "tts"; st.speaking = true; st.ci = from || 0; setIcon(true);
+      var busy = false;
+      try { busy = synth.speaking || synth.pending; synth.cancel(); } catch (e) {}
+      if (busy) setTimeout(function () { speakFrom(tk); }, 120);   // laisse cancel() se terminer
+      else speakFrom(tk);                                          // sinon tout de suite (exigé par iOS)
+    }
+    function playVoice() {
+      if (!(synth && fb(st.idx))) { st.auto = false; return false; }
+      if (!st.chunks.length) st.chunks = buildChunks(fb(st.idx));
+      startTts(st.ci);
+      return true;
+    }
+
+    // ====================================================================
+    //  Lecture
+    // ====================================================================
+    function freeBlob() { if (st.blobUrl) { try { URL.revokeObjectURL(st.blobUrl); } catch (e) {} st.blobUrl = null; } }
+    function stopAll() {
+      st.playTok++;
+      try { audio.pause(); audio.currentTime = 0; } catch (e) {}
+      st.token++;
+      try { if (synth) synth.cancel(); } catch (e) {}
+      st.speaking = false; st.mode = null; st.chunks = []; st.ci = 0;
+      setIcon(false);
+    }
+    function pauseNow() {
+      if (st.mode === "mp3") audio.pause();
+      else if (st.mode === "tts") {
+        st.token++;
+        try { synth.cancel(); } catch (e) {}
+        st.speaking = false; setIcon(false);      // st.ci conservé : la reprise repart de la phrase en cours
+      }
+    }
+    function startAudio(src, tok) {
+      if (tok !== st.playTok) return;
+      if (audio.getAttribute("data-src") !== src) { audio.setAttribute("data-src", src); audio.src = src; }
+      var p = audio.play();
+      if (p && p.catch) p.catch(function (err) {
+        console.warn("ECOLIA audio :", err);
+        if (tok !== st.playTok) return;
+        if (!(err && err.name === "NotAllowedError") && playVoice()) return;   // lecture impossible : voix du téléphone
+        setIcon(false); st.auto = false;
+      });
+    }
+    function playCurrent() {
+      var i = st.idx;
+      if (hasMp3(i)) {
+        var tok = ++st.playTok, u = urlN(i + 1);
+        st.mode = "mp3";
+        if (!navigator.onLine && dl.state === "none") { st.mode = null; if (playVoice()) return; }   // hors ligne et non téléchargé
+        if (store && dl.state !== "none") {                     // téléchargé : lecture locale, sans réseau
+          store.get(i + 1)
+            .then(function (b) {
+              if (tok !== st.playTok) return;
+              if (b) { freeBlob(); st.blobUrl = URL.createObjectURL(new Blob([b], { type: "audio/mpeg" })); startAudio(st.blobUrl, tok); }
+              else startAudio(u, tok);
+            }).catch(function () { startAudio(u, tok); });
+        } else startAudio(u, tok);                              // sinon lecture en ligne (appel immédiat, exigé par iOS)
+      } else if (!playVoice()) {
+        st.auto = false;
+      }
+    }
+
+    function onSlideChange(i) {
+      var wasAdvancing = st.advancing;
+      st.advancing = false;
+      st.idx = i;
+      btn.classList.toggle("ecolia-off", !hasAudio(i));
+      stopAll();
+      audio.removeAttribute("data-src");
+      freeBlob();
+      if (bnMode === "invite" && i !== 0) hideBanner();       // l'invitation n'apparaît qu'à la première slide
+      if (wasAdvancing && st.auto) setTimeout(playCurrent, 500);   // enchaînement automatique
+      else st.auto = false;                                         // changement manuel : on coupe tout
+    }
+    function goNext() {
+      if (st.idx + 1 >= CFG.count) { st.auto = false; return; }
+      st.advancing = true;
+      if (typeof nextSlide === "function") nextSlide();
+      else { var nb = document.getElementById("nextBtn"); if (nb) nb.click(); }
+      setTimeout(function () { st.advancing = false; }, 4000);
+    }
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var i = cur();
+      if (i !== st.idx) onSlideChange(i);
+      if (isPlaying()) { st.auto = false; pauseNow(); }
+      else { st.auto = true; playCurrent(); }
+    });
+    audio.addEventListener("play", function () { setIcon(true); });
+    audio.addEventListener("pause", function () { if (st.mode === "mp3") setIcon(false); });
+    audio.addEventListener("error", function () {
+      if (st.mode === "mp3" && playVoice()) return;            // fichier introuvable / hors ligne : voix du téléphone
+      setIcon(false); st.auto = false;
+    });
+    audio.addEventListener("ended", function () { setIcon(false); if (st.auto) goNext(); });
+    window.addEventListener("pagehide", function () { stopAll(); freeBlob(); });
+
+    // ---------- démarrage ----------
+    refreshCacheState(function () {
+      if (store && CFG.available.length && dl.state !== "full" && navigator.onLine && cur() === 0 && !lsGet(LATER)) askDownload(true);
+    });
+    st.idx = -1;
+    setInterval(function () { var i = cur(); if (i !== st.idx) onSlideChange(i); }, 250);   // suit la slide affichée
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+<!-- ECOLIA_AUDIO_PLAYER_END -->
+</body>
+</html>

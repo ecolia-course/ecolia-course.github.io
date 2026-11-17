@@ -1,0 +1,1631 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="rouge">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>ECOLIA — Hydro Pneumatique4</title>
+<style>
+[data-theme="bleu"]   { --p1:#0d2b4f; --p2:#1565c0; --p3:#07172e; --p4:#12437a; --p5:#5b8fd0; --bg:#e8f0fb; --bg2:#cfdff5; --bd:#a9c3e8; --soft:#dde8f7; --btn:#2a67b0; }
+[data-theme="vert"]   { --p1:#14442e; --p2:#2e7d32; --p3:#0b2b1a; --p4:#1f5c3a; --p5:#4f9a6b; --bg:#e8f5ec; --bg2:#c8e6d2; --bd:#a5cdb2; --soft:#dcefe2; --btn:#2f7a4f; }
+[data-theme="violet"] { --p1:#2d1b4e; --p2:#6a1b9a; --p3:#1a0f2e; --p4:#4a148c; --p5:#9c6fd0; --bg:#f1e9fb; --bg2:#dccbf2; --bd:#c4a8e6; --soft:#e8ddf6; --btn:#7e3fb2; }
+[data-theme="rouge"]  { --p1:#4a1010; --p2:#b71c1c; --p3:#2b0a0a; --p4:#8e1b1b; --p5:#d9706a; --bg:#fbeaea; --bg2:#f3cdcb; --bd:#e8a9a5; --soft:#f8dede; --btn:#a62a2a; }
+[data-theme="orange"] { --p1:#4e2a0c; --p2:#ef6c00; --p3:#2e1604; --p4:#b34a00; --p5:#f0a15a; --bg:#fff1e0; --bg2:#fbdcb8; --bd:#f3c08a; --soft:#fdebd6; --btn:#c9650a; }
+[data-theme="teal"]   { --p1:#0b3a3a; --p2:#00796b; --p3:#062626; --p4:#00574b; --p5:#4db6ac; --bg:#e0f2f1; --bg2:#b2dfdb; --bd:#80cbc4; --soft:#d5ecea; --btn:#26897d; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:linear-gradient(160deg,var(--p1) 0%,var(--p2) 50%,var(--p3) 100%); display:flex; justify-content:center; align-items:center; padding:8px; }
+.container { width:100%; max-width:1400px; background:#fefdf8; border-radius:20px; overflow:hidden; display:flex; flex-direction:column; height:100%; max-height:100vh; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.progress-bar { height:4px; background:var(--bg2); flex-shrink:0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--p5),var(--p4)); width:0%; transition:width 0.3s; }
+.header { padding:10px 16px; background:var(--bg); border-bottom:1px solid var(--bd); display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+.header h1 { color:var(--p4); font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box { display:flex; background:white; border-radius:20px; padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.search-box input { border:none; padding:6px 10px; border-radius:20px; outline:none; width:130px; font-size:0.8rem; }
+.search-box button { background:none; border:none; cursor:pointer; padding:4px 8px; font-size:0.85rem; color:var(--p2); }
+.badge { background:var(--p5); color:white; padding:4px 10px; border-radius:20px; font-weight:bold; font-size:0.75rem; }
+.search-nav { display:none; gap:4px; background:var(--bg2); padding:2px 8px; border-radius:20px; align-items:center; font-size:0.75rem; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:0.9rem; color:var(--p4); padding:2px 4px; }
+.content { padding:28px 32px; flex:1; overflow-y:auto; background:#fff; scroll-behavior:smooth; line-height:1.85; }
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.slide-title { color:var(--p1); font-size:1.5rem; font-weight:700; padding-bottom:12px; margin-bottom:20px; border-bottom:2px solid var(--p5); }
+.slide-content { color:var(--p3); font-size:1rem; }
+.empty-state { display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-height:60vh; padding:40px 20px; gap:18px; }
+.empty-state .icon { width:72px; height:72px; border-radius:50%; background:var(--bg); border:2px solid var(--bd); display:flex; align-items:center; justify-content:center; color:var(--p2); font-size:2rem; font-weight:300; }
+.empty-state h2 { color:var(--p1); font-size:1.4rem; font-weight:700; margin:0; }
+.empty-state p { color:#666; font-size:0.95rem; max-width:520px; line-height:1.7; }
+.empty-state .tag { display:inline-block; padding:6px 14px; background:var(--bg); color:var(--p4); border:1px solid var(--bd); border-radius:20px; font-size:0.8rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; }
+.bloc { padding:18px 22px; border-radius:12px; margin:22px 0; line-height:1.85; }
+.bloc-label { font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; opacity:0.7; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:var(--bg); border-left:4px solid var(--p5); }
+.theorie .bloc-label { color:var(--p4); }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.sources { background:#f5f5f5; padding:12px 16px; border-radius:10px; margin-top:26px; font-size:0.82rem; color:#666; border-left:3px solid #999; line-height:1.6; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:var(--p1); }
+.quiz-container { padding:22px; background:var(--bg); border-radius:16px; }
+.quiz-question { background:white; border-radius:10px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.quiz-question p { font-weight:600; margin-bottom:10px; color:var(--p1); }
+.quiz-question label { display:block; padding:8px 10px; margin:4px 0; border-radius:6px; cursor:pointer; transition:background 0.2s; }
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit { background:var(--btn); color:white; border:none; padding:12px 24px; border-radius:30px; font-size:1rem; cursor:pointer; font-weight:600; margin-top:14px; }
+.quiz-result { margin-top:16px; font-weight:600; }
+.controls { padding:8px 16px; background:#fafafa; border-top:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0; }
+.nav-btn { background:white; color:var(--p4); border:1px solid #ccc; padding:8px 14px; border-radius:8px; font-size:0.82rem; cursor:pointer; font-weight:500; }
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:var(--soft); }
+.content::-webkit-scrollbar-thumb { background:var(--p5); border-radius:3px; }
+@media (max-width:600px) { body { padding:0; } .container { border-radius:0; max-height:100vh; } .content { padding:20px 18px; } .slide-title { font-size:1.25rem; } .search-box input { width:90px; } .header h1 { font-size:0.85rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="header">
+<h1 id="pageTitle">ECOLIA</h1>
+<div class="header-right">
+<div class="search-box">
+<input id="searchInput" placeholder="Rechercher" type="text"/>
+<button id="searchBtn">⌕</button>
+</div>
+<div class="search-nav" id="searchNav">
+<button id="prevResultBtn">‹</button>
+<span id="resultCounter">0/0</span>
+<button id="nextResultBtn">›</button>
+</div>
+<span class="badge" id="slideCounter">0/0</span>
+</div>
+</div>
+<div class="content" id="content"></div>
+<div class="controls">
+<button class="nav-btn" id="prevBtn">← Précédent</button>
+<span class="counter" id="counter">—</span>
+<button class="nav-btn" id="nextBtn">Suivant →</button>
+</div>
+</div>
+<script>
+const COURSE_TITLE = "Hydro-Pneumatique (Transmissions de Puissance par Fluides)";
+const slides = [
+  {
+    title: "Sommaire — Hydro-Pneumatique",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Présentation du cours</div>
+        <h3>Transmettre la puissance par les fluides</h3>
+        <p>Ce cours d'Hydro-Pneumatique de la 4<sup>e</sup> Humanité Technique Industrielle vous apprend à comprendre, installer et entretenir les circuits hydrauliques et pneumatiques utilisés dans les machines industrielles : engins de chantier, machines minières, presses, convoyeurs. Vous étudierez les grandeurs physiques, les composants (pompes, vérins, distributeurs), les circuits de base et la sécurité.</p>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Objectifs d'apprentissage</div>
+        <h3>À la fin de ce cours, vous serez capable de :</h3>
+        <ul>
+          <li>Maîtriser les grandeurs physiques : pression, débit, force, vitesse, puissance.</li>
+          <li>Appliquer la loi de Pascal et les relations F = P·S et v = Q/S.</li>
+          <li>Identifier les composants hydrauliques et pneumatiques.</li>
+          <li>Lire et interpréter les schémas normalisés ISO 1219.</li>
+          <li>Concevoir des circuits simples (simple effet, double effet, séquence).</li>
+          <li>Diagnostiquer et réparer les pannes courantes.</li>
+          <li>Appliquer les règles de sécurité et de consignation.</li>
+        </ul>
+      </div>
+      <div class="bloc exemple">
+        <div class="bloc-label">Plan des chapitres</div>
+        <h3>Les huit chapitres du programme</h3>
+        <ol>
+          <li>Introduction et sécurité</li>
+          <li>Grandeurs physiques et lois des fluides</li>
+          <li>Composants hydrauliques (1) : pompes, réservoirs, filtres</li>
+          <li>Composants hydrauliques (2) : valves, distributeurs, vérins, moteurs</li>
+          <li>Pneumatique : production et traitement de l'air</li>
+          <li>Composants pneumatiques</li>
+          <li>Circuits hydrauliques et pneumatiques</li>
+          <li>Maintenance, diagnostic et sécurité</li>
+        </ol>
+        <p><strong>Compétence visée :</strong> lire un schéma, installer et entretenir des circuits hydrauliques et pneumatiques, en sécurité.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Pourquoi l'hydro-pneumatique ?",
+    content: `
+      <div class="bloc cas">
+        <div class="bloc-label">Situation-problème</div>
+        <h3>Une chargeuse en panne</h3>
+        <p>Sur un chantier de Lubumbashi, une chargeuse ne peut plus lever sa benne. Le moteur tourne, mais le vérin hydraulique ne réagit plus. Comment fonctionne ce circuit ? Quels composants intervenir ? Quelles sont les causes possibles ? Comment intervenir en sécurité ? Ce sont les questions de l'hydro-pneumatique.</p>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Définition</div>
+        <h3>Hydraulique et pneumatique</h3>
+        <p>L'<strong>hydraulique</strong> utilise un <strong>liquide</strong> (huile) pour transmettre de la puissance. La <strong>pneumatique</strong> utilise un <strong>gaz</strong> (air comprimé). L'<strong>hydro-pneumatique</strong> combine les deux technologies pour actionner des machines.</p>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Avantages et applications</div>
+        <h3>Pourquoi ces technologies ?</h3>
+        <ul>
+          <li><strong>Rapport poids/puissance élevé</strong> : beaucoup de force dans un petit volume.</li>
+          <li><strong>Souplesse et précision</strong> : mouvements contrôlés.</li>
+          <li><strong>Facilité de commande</strong> : distributeurs, électrovannes, API.</li>
+          <li><strong>Sécurité</strong> : la pneumatique ne produit pas d'étincelles.</li>
+        </ul>
+        <p><strong>Applications :</strong> engins de chantier (pelles, chargeuses), machines-outils, presses, convoyeurs, systèmes de levage, portes automatiques, robots, installations minières.</p>
+      </div>
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Hydraulique = huile, haute pression ; pneumatique = air comprimé, plus basse pression. Les deux sont partout dans l'industrie.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — La sécurité en hydro-pneumatique",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Les risques hydrauliques</div>
+        <h3>Haute pression</h3>
+        <ul>
+          <li><strong>Haute pression</strong> : jusqu'à 300 bar et plus.</li>
+          <li><strong>Projections d'huile</strong> : risque d'injection sous la peau, brûlures.</li>
+          <li><strong>Coup de fouet</strong> : un flexible qui se rompt peut fouetter violemment.</li>
+          <li><strong>Pollution</strong> : fuites d'huile dans l'environnement.</li>
+          <li><strong>Incendie</strong> : huile chaude projetée sur une surface chaude.</li>
+        </ul>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Les risques pneumatiques</div>
+        <h3>Air sous pression</h3>
+        <ul>
+          <li><strong>Air comprimé</strong> : jusqu'à 10 bar ; risque d'écrasement, de projection.</li>
+          <li><strong>Projections de particules</strong> : blessures oculaires.</li>
+          <li><strong>Bruit</strong> : échappements, outils pneumatiques.</li>
+          <li><strong>Coup de fouet</strong> : flexible qui se rompt.</li>
+        </ul>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Les EPI et la consignation</div>
+        <h3>Se protéger et isoler</h3>
+        <ul>
+          <li><strong>EPI :</strong> lunettes, gants, chaussures de sécurité, protection auditive.</li>
+          <li><strong>Consignation :</strong> isoler le circuit de la source d'énergie, purger la pression, vérifier l'absence de pression avant intervention.</li>
+          <li><strong>Flexibles adaptés :</strong> vérifier l'état, la pression nominale, les fixations.</li>
+        </ul>
+      </div>
+      <div class="bloc exemple">
+        <div class="bloc-label">Erreur fréquente</div>
+        <h3>Chercher une fuite à la main</h3>
+        <p>Une injection d'huile sous la peau, même à basse pression apparente, est une blessure grave qui peut entraîner une amputation ou une infection sévère. Il faut chercher une fuite avec un carton ou un papier, jamais avec la main.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — Les grandeurs physiques",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Pression et débit</div>
+        <h3>Deux grandeurs clés</h3>
+        <p>La <strong>pression</strong> est la force par unité de surface : P = F/S (Pa). Unités pratiques : 1 bar = 10⁵ Pa ; pression atmosphérique ≈ 1,013 bar.</p>
+        <p>Le <strong>débit</strong> est le volume de fluide par unité de temps : Q = V/t (L/min, m³/h).</p>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Les trois relations fondamentales</div>
+        <h3>Force, vitesse, puissance</h3>
+        <table>
+          <thead>
+            <tr><th>Grandeur</th><th>Relation</th><th>Unités</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Force d'un vérin</td><td>F = P × S</td><td>N (P en Pa, S en m²)</td></tr>
+            <tr><td>Vitesse d'un vérin</td><td>v = Q / S</td><td>m/s (Q en m³/s, S en m²)</td></tr>
+            <tr><td>Puissance hydraulique</td><td>P = p × Q</td><td>W (p en Pa, Q en m³/s)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="bloc exemple">
+        <div class="bloc-label">Application numérique</div>
+        <h3>Force d'un vérin</h3>
+        <p>Un vérin de 40 cm² est soumis à une pression de 80 bar. Quelle force développe-t-il ?</p>
+        <p><strong>Données :</strong> P = 80 bar = 8 × 10⁶ Pa ; S = 40 cm² = 40 × 10⁻⁴ m² = 4 × 10⁻³ m².</p>
+        <p><strong>Formule :</strong> F = P × S.</p>
+        <p><strong>Calcul :</strong> F = 8 × 10⁶ × 4 × 10⁻³ = 32 000 N.</p>
+        <p><strong>Interprétation :</strong> le vérin développe une force d'environ 32 kN (≈ 3,2 tonnes).</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — La loi de Pascal et l'équation de continuité",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">La loi de Pascal</div>
+        <h3>Une pression se transmet intégralement</h3>
+        <p>La <strong>loi de Pascal</strong> énonce que la pression appliquée à un fluide en équilibre se transmet intégralement dans toutes les directions. C'est le principe de la presse hydraulique, des freins et des vérins.</p>
+        <figure>
+          <img data-image-id="hydropneumatique4_img01" alt="Schéma d'une presse hydraulique illustrant le principe de Pascal avec un petit et un grand piston" />
+          <figcaption>Le principe de Pascal.</figcaption>
+        </figure>
+      </div>
+      <div class="bloc exemple">
+        <div class="bloc-label">Application</div>
+        <h3>Multiplier une force</h3>
+        <p>Une presse hydraulique a un petit piston de 10 cm² et un grand piston de 200 cm². On exerce une force de 200 N sur le petit. Quelle force obtient-on sur le grand ?</p>
+        <p><strong>Loi de Pascal :</strong> F₁/S₁ = F₂/S₂.</p>
+        <p><strong>Formule :</strong> F₂ = F₁ × (S₂/S₁).</p>
+        <p><strong>Calcul :</strong> F₂ = 200 × (200/10) = 200 × 20 = 4 000 N.</p>
+        <p><strong>Interprétation :</strong> la force est multipliée par 20.</p>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">L'équation de continuité</div>
+        <h3>Le débit est constant</h3>
+        <p>Dans un circuit fermé, le débit est constant : <strong>Q = S₁·v₁ = S₂·v₂</strong>. Quand la section diminue, la vitesse augmente (et inversement). C'est pourquoi un étranglement accélère le fluide.</p>
+      </div>
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Pascal : F₁/S₁ = F₂/S₂. Continuité : Q = S·v. Ces deux lois expliquent le fonctionnement des vérins et des presses hydrauliques.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — Les pertes de charge",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Définition</div>
+        <h3>Une pression qui diminue</h3>
+        <p>La <strong>perte de charge</strong> est la diminution de pression due aux frottements du fluide contre les parois, dans les coudes, les raccords, les filtres. Elle se transforme en chaleur.</p>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Facteurs</div>
+        <h3>Ce qui influence la perte de charge</h3>
+        <ul>
+          <li><strong>Débit</strong> : plus il est élevé, plus la perte augmente.</li>
+          <li><strong>Diamètre</strong> : plus il est petit, plus la perte augmente.</li>
+          <li><strong>Longueur</strong> : plus le tuyau est long, plus la perte augmente.</li>
+          <li><strong>Viscosité</strong> : huile froide ou épaisse → perte plus grande.</li>
+          <li><strong>Rugosité</strong> : tuyau entartré, dépôts → perte plus grande.</li>
+        </ul>
+      </div>
+      <div class="bloc exemple">
+        <div class="bloc-label">Erreur fréquente</div>
+        <h3>Confondre pression et débit</h3>
+        <p>Un circuit peut avoir une pression élevée mais un faible débit (petit diamètre, étranglement). Ce n'est pas parce qu'un manomètre indique 100 bar que le vérin se déplacera vite.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — Les pompes hydrauliques",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fonction</div>
+        <h3>Transformer l'énergie mécanique</h3>
+        <p>Les <strong>pompes hydrauliques</strong> transforment l'énergie mécanique (moteur électrique ou thermique) en énergie hydraulique (pression et débit).</p>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Les types</div>
+        <h3>Trois grandes familles</h3>
+        <ul>
+          <li><strong>À engrenages :</strong> simples, économiques, robustes ; pression moyenne.</li>
+          <li><strong>À palettes :</strong> débit régulier, silencieuses ; pression moyenne à élevée.</li>
+          <li><strong>À pistons :</strong> haute pression, haut rendement ; utilisées pour les fortes puissances.</li>
+        </ul>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Caractéristiques</div>
+        <h3>Ce qui distingue une pompe</h3>
+        <ul>
+          <li><strong>Pression maximale</strong> (bar).</li>
+          <li><strong>Débit</strong> (L/min).</li>
+          <li><strong>Cylindrée</strong> (cm³/tr).</li>
+          <li><strong>Rendement</strong> (%).</li>
+        </ul>
+      </div>
+      <div class="bloc exemple">
+        <div class="bloc-label">Application</div>
+        <h3>Choisir une pompe</h3>
+        <p>Pour une chargeuse qui doit fournir 60 L/min sous 200 bar, on choisit une pompe à pistons (haute pression) capable de ce débit. Une pompe à engrenages serait insuffisante en pression pour ce type d'engin.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — Réservoirs et filtres",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Le réservoir</div>
+        <h3>Plus qu'un simple bac</h3>
+        <p>Le <strong>réservoir hydraulique</strong> remplit plusieurs fonctions :</p>
+        <ul>
+          <li><strong>Stockage</strong> de l'huile.</li>
+          <li><strong>Refroidissement</strong> : dissipation de la chaleur.</li>
+          <li><strong>Décantation</strong> : les impuretés lourdes tombent au fond.</li>
+          <li><strong>Dégazage</strong> : l'air dissous s'échappe.</li>
+        </ul>
+        <p><strong>Équipements :</strong> filtre d'aspiration, filtre de retour, jauge de niveau, bouchon de remplissage, reniflard (mise à l'air libre).</p>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Les filtres</div>
+        <h3>Protéger les composants</h3>
+        <p>Les <strong>filtres</strong> éliminent les particules solides qui usent les composants. On mesure la propreté par l'<strong>indice ISO 4406</strong>. Un filtre colmaté provoque une baisse de pression, une usure accélérée et des pannes.</p>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Les accumulateurs</div>
+        <h3>Stocker l'énergie</h3>
+        <p>Les <strong>accumulateurs</strong> stockent de l'énergie hydraulique sous pression (azote). Ils servent à absorber les pointes de débit, à maintenir la pression en cas d'arrêt de la pompe, ou à amortir les chocs.</p>
+      </div>
+      <div class="bloc exemple">
+        <div class="bloc-label">Erreur fréquente</div>
+        <h3>Négliger le remplacement des filtres</h3>
+        <p>Un filtre colmaté ne filtre plus et laisse passer les impuretés, ou s'ouvre en by-pass et laisse passer les particules dans le circuit. L'usure des pompes et des vérins s'accélère, provoquant des pannes coûteuses.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre IV — Valves de pression et de débit",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Les valves de pression</div>
+        <h3>Contrôler la pression</h3>
+        <ul>
+          <li><strong>Limiteur de pression (soupape de sûreté)</strong> : limite la pression maximale du circuit ; protège contre la surpression.</li>
+          <li><strong>Réducteur de pression</strong> : maintient une pression aval constante, inférieure à la pression amont.</li>
+          <li><strong>Valve de séquence</strong> : ordonne les mouvements (par exemple, un vérin se déplace avant un autre).</li>
+        </ul>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Les valves de débit</div>
+        <h3>Contrôler la vitesse</h3>
+        <ul>
+          <li><strong>Étrangleur</strong> : réduit le débit localement ; la vitesse dépend de la pression.</li>
+          <li><strong>Régulateur de débit</strong> : maintient un débit constant, indépendamment de la pression (compensation de pression).</li>
+        </ul>
+      </div>
+      <div class="bloc exemple">
+        <div class="bloc-label">Application</div>
+        <h3>Régler la vitesse d'un vérin</h3>
+        <p>Pour qu'un vérin se déplace à vitesse constante quelles que soient les variations de charge, on utilise un <strong>régulateur de débit</strong> en amont ou en aval du vérin. Un simple étrangleur serait insuffisant si la charge varie.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre IV — Distributeurs et vérins",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Les distributeurs</div>
+        <h3>Orienter le fluide</h3>
+        <p>Les <strong>distributeurs</strong> orientent le fluide vers les actionneurs. Leur désignation : <strong>nombre d'orifices / nombre de positions</strong>.</p>
+        <ul>
+          <li><strong>2/2</strong> : 2 orifices, 2 positions (ouvert/fermé).</li>
+          <li><strong>3/2</strong> : 3 orifices, 2 positions (repos/travail).</li>
+          <li><strong>4/2</strong> : 4 orifices, 2 positions (deux directions).</li>
+          <li><strong>4/3</strong> : 4 orifices, 3 positions (avec position centrale).</li>
+        </ul>
+        <p><strong>Commande :</strong> manuelle, électrique (électrovanne), hydraulique, pneumatique.</p>
+        <figure>
+          <img data-image-id="hydropneumatique4_img03" alt="Symboles normalisés des distributeurs hydrauliques 3/2 et 4/2 avec leurs positions" />
+          <figcaption>Les distributeurs : symboles et positions.</figcaption>
+        </figure>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Les vérins</div>
+        <h3>Produire un mouvement linéaire</h3>
+        <ul>
+          <li><strong>Simple effet</strong> : la pression pousse le piston dans un sens ; le retour se fait par ressort ou charge.</li>
+          <li><strong>Double effet</strong> : la pression peut agir dans les deux sens (sortie et rentrée).</li>
+          <li><strong>Différentiel</strong> : la surface côté tige est plus petite que côté piston ; les forces et vitesses sont différentes selon le sens.</li>
+        </ul>
+      </div>
+      <div class="bloc exemple">
+        <div class="bloc-label">Erreur fréquente</div>
+        <h3>Confondre 3/2 et 4/2</h3>
+        <p>Un distributeur <strong>3/2</strong> a 3 orifices (P, A, T) et 2 positions ; il commande souvent un vérin simple effet. Un <strong>4/2</strong> a 4 orifices (P, T, A, B) et 2 positions ; il commande un vérin double effet.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre V — Production d'air comprimé",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Les compresseurs</div>
+        <h3>Produire de l'air sous pression</h3>
+        <p>Les <strong>compresseurs</strong> produisent de l'air comprimé. Trois grandes familles :</p>
+        <ul>
+          <li><strong>À pistons</strong> : pression élevée, débit moyen ; bruit et vibrations.</li>
+          <li><strong>À vis</strong> : débit continu, silencieux ; utilisés dans l'industrie.</li>
+          <li><strong>À palettes</strong> : compacts, débit régulier ; petites puissances.</li>
+        </ul>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Le réseau d'air</div>
+        <h3>Distribuer l'air</h3>
+        <p>Le <strong>réseau d'air comprimé</strong> comprend : compresseur, réservoir, tuyauteries, purges, boucle en anneau. Une boucle en anneau équilibre la pression et permet d'isoler une partie du réseau en cas de maintenance.</p>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Le traitement de l'air</div>
+        <h3>Filtration, régulation, lubrification</h3>
+        <p>Le <strong>FRL</strong> (Filtre-Régulateur-Lubrificateur) traite l'air avant utilisation :</p>
+        <ul>
+          <li><strong>Filtre</strong> : élimine les particules et l'eau.</li>
+          <li><strong>Régulateur</strong> : maintient une pression constante.</li>
+          <li><strong>Lubrificateur</strong> : ajoute une fine huile pour lubrifier les composants.</li>
+        </ul>
+        <figure>
+          <img data-image-id="hydropneumatique4_img04" alt="Ensemble Filtre-Régulateur-Lubrificateur en pneumatique" />
+          <figcaption>Le FRL : traitement de l'air comprimé.</figcaption>
+        </figure>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VI — Composants pneumatiques",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Distributeurs et vérins</div>
+        <h3>Les actionneurs pneumatiques</h3>
+        <p>Les <strong>distributeurs pneumatiques</strong> ont les mêmes désignations que les distributeurs hydrauliques (2/2, 3/2, 4/2, 4/3). Les <strong>vérins pneumatiques</strong> sont simple effet ou double effet, avec des <strong>coussins pneumatiques</strong> pour amortir les fins de course.</p>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Moteurs et capteurs</div>
+        <h3>Rotation et information</h3>
+        <ul>
+          <li><strong>Moteurs pneumatiques</strong> : outils portatifs (visseuses, meuleuses), mélangeurs, treuils.</li>
+          <li><strong>Capteurs</strong> : fins de course, capteurs de pression, capteurs de position. Ils informent l'automate de l'état du système.</li>
+        </ul>
+      </div>
+      <div class="bloc exemple">
+        <div class="bloc-label">Erreur fréquente</div>
+        <h3>Pas de coussin de fin de course</h3>
+        <p>Un vérin pneumatique sans coussin de fin de course frappe violemment en bout de course. Les chocs répétés endommagent le vérin, la machine et le support. Le coussin amortit la fin de course.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VII — Les circuits de base",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Les schémas</div>
+        <h3>Lire un schéma ISO 1219</h3>
+        <p>Les schémas utilisent les <strong>symboles normalisés ISO 1219</strong>. On distingue le <strong>schéma de puissance</strong> (composants traversés par le fluide) et le <strong>schéma de commande</strong> (circuits électriques ou pneumatiques de pilotage).</p>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Les circuits de base</div>
+        <h3>Trois exemples</h3>
+        <ul>
+          <li><strong>Simple effet :</strong> un distributeur 3/2 commande un vérin simple effet ; le retour se fait par ressort.</li>
+          <li><strong>Double effet :</strong> un distributeur 4/2 commande un vérin double effet ; la pression peut aller dans les deux chambres.</li>
+          <li><strong>Séquence :</strong> plusieurs vérins sont actionnés dans un ordre déterminé (distributeurs en cascade, séquenceur).</li>
+        </ul>
+        <figure>
+          <img data-image-id="hydropneumatique4_img05" alt="Schéma d'un circuit pneumatique de vérin double effet commandé par un distributeur 4/2" />
+          <figcaption>Un circuit pneumatique de base.</figcaption>
+        </figure>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Commande par API</div>
+        <h3>Pilotage automatique</h3>
+        <p>Les <strong>électrovannes</strong> sont pilotées par les sorties de l'<strong>automate programmable (API)</strong>. Les <strong>capteurs</strong> (fins de course, présence) sont connectés aux entrées. L'automate exécute le programme et commande les mouvements.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VII — Exemple de circuit complet",
+    content: `
+      <div class="bloc cas">
+        <div class="bloc-label">Cas concret</div>
+        <h3>Convoyeur avec poussoir pneumatique</h3>
+        <p>Un convoyeur transporte des colis. Un vérin pneumatique pousse les colis sur une plateforme d'emballage. Le distributeur 4/2 est commandé par un API ; un capteur de présence détecte le colis et déclenche la sortie du vérin. Une fois le colis poussé, un capteur de fin de course fait rentrer le vérin.</p>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Description du circuit</div>
+        <h3>Les composants</h3>
+        <ul>
+          <li><strong>Compresseur + FRL</strong> : production et traitement de l'air.</li>
+          <li><strong>Distributeur 4/2</strong> : commande du vérin.</li>
+          <li><strong>Vérin double effet</strong> : pousse le colis.</li>
+          <li><strong>Capteurs</strong> : présence colis, fin de course sortie, fin de course rentrée.</li>
+          <li><strong>API</strong> : coordination du cycle.</li>
+        </ul>
+      </div>
+      <div class="bloc exemple">
+        <div class="bloc-label">Cycle de fonctionnement</div>
+        <h3>Étapes du programme</h3>
+        <ol>
+          <li>Colis détecté → signal au API.</li>
+          <li>API active la sortie → électrovanne → vérin sort.</li>
+          <li>Vérin en fin de course sortie → signal au API.</li>
+          <li>API désactive la sortie → vérin rentre.</li>
+          <li>Vérin en fin de course rentrée → cycle terminé.</li>
+        </ol>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VIII — Maintenance et diagnostic",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Les pannes courantes</div>
+        <h3>Reconnaître le symptôme</h3>
+        <table>
+          <thead>
+            <tr><th>Symptôme</th><th>Cause possible</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Baisse de pression</td><td>Fuite, pompe usée, filtre colmaté</td></tr>
+            <tr><td>Échauffement</td><td>Huile dégradée, pression trop élevée</td></tr>
+            <tr><td>Bruit</td><td>Cavitation, air dans le circuit</td></tr>
+            <tr><td>Mouvements irréguliers</td><td>Débit instable, distributeur défaillant</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">La méthode de diagnostic</div>
+        <h3>Cinq étapes</h3>
+        <ol>
+          <li><strong>Observer</strong> : symptômes, bruits, fuites visibles.</li>
+          <li><strong>Mesurer</strong> : pression (manomètre), débit (débitmètre), température.</li>
+          <li><strong>Localiser</strong> : identifier le composant défaillant.</li>
+          <li><strong>Réparer</strong> : remplacer ou régler.</li>
+          <li><strong>Vérifier</strong> : essai après réparation.</li>
+        </ol>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">L'entretien préventif</div>
+        <h3>Prévenir plutôt que guérir</h3>
+        <ul>
+          <li>Contrôle des niveaux d'huile et d'air.</li>
+          <li>Remplacement périodique des filtres.</li>
+          <li>Vérification des flexibles et des raccords.</li>
+          <li>Analyse de l'huile (viscosité, propreté).</li>
+          <li>Purge des condensats dans les circuits pneumatiques.</li>
+        </ul>
+      </div>
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>La maintenance préventive prolonge la durée de vie des équipements et évite les pannes coûteuses.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VIII — La consignation et la sécurité",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">La consignation</div>
+        <h3>Isoler et purger</h3>
+        <p>Avant toute intervention, il faut <strong>consigner</strong> le circuit :</p>
+        <ol>
+          <li><strong>Isoler</strong> le circuit de la source d'énergie (fermer les vannes, couper la pompe).</li>
+          <li><strong>Purger</strong> la pression résiduelle.</li>
+          <li><strong>Vérifier</strong> l'absence de pression (manomètre à zéro).</li>
+          <li><strong>Condamner</strong> les commandes (cadenas, étiquettes).</li>
+        </ol>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Les précautions spécifiques</div>
+        <h3>Points d'attention</h3>
+        <ul>
+          <li><strong>Accumulateurs :</strong> peuvent contenir de l'énergie même après l'arrêt de la pompe ; purger avant intervention.</li>
+          <li><strong>Vérins en charge :</strong> un vérin qui supporte une charge peut bouger brusquement lors de la purge ; caler la charge.</li>
+          <li><strong>Flexibles :</strong> vérifier la pression nominale, l'état, les fixations.</li>
+          <li><strong>Projections :</strong> ne jamais chercher une fuite à la main.</li>
+        </ul>
+      </div>
+      <div class="bloc exemple">
+        <div class="bloc-label">Erreur fréquente</div>
+        <h3>Intervenir sans purger</h3>
+        <p>Un circuit hydraulique peut rester sous pression après l'arrêt de la pompe, à cause d'un accumulateur ou d'une charge. Intervenir sans purger provoque des projections ou des mouvements inattendus. La purge est obligatoire.</p>
+      </div>
+    `
+  },
+  {
+    title: "Contexte RDC — Applications industrielles",
+    content: `
+      <div class="bloc cas">
+        <div class="bloc-label">Contexte</div>
+        <h3>Partout autour de nous</h3>
+        <ul>
+          <li><strong>Engins de chantier :</strong> pelles, chargeuses, bulldozers, niveleuses à Kinshasa, Lubumbashi, Goma.</li>
+          <li><strong>Machines minières :</strong> foreuses, concasseurs, convoyeurs, pompes au Lualaba.</li>
+          <li><strong>Installations industrielles :</strong> presses, machines de conditionnement, systèmes de levage, portes automatiques.</li>
+        </ul>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Défis</div>
+        <h3>Ce que rencontre le technicien</h3>
+        <ul>
+          <li>Accès aux pièces de rechange.</li>
+          <li>Coût des flexibles et des composants.</li>
+          <li>Maintenance préventive souvent négligée.</li>
+          <li>Formation continue nécessaire.</li>
+        </ul>
+      </div>
+      <div class="bloc exemple">
+        <div class="bloc-label">Cas pédagogique</div>
+        <h3>Chargeuse en panne au Lualaba</h3>
+        <p>Un technicien dans une mine du Lualaba est appelé : le vérin de levage d'une chargeuse ne fonctionne plus. Il consigne le circuit, purge la pression, vérifie le niveau d'huile (bas), inspecte les flexibles (fuite sur un flexible), teste le distributeur (blocage), remplace le flexible et le distributeur, complète l'huile, purge le circuit et remet en service. Il rédige un rapport et recommande un contrôle régulier des flexibles.</p>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Débouchés</div>
+        <h3>Après le cours</h3>
+        <p>Technicien de maintenance hydraulique et pneumatique, mécanicien d'engins, technicien en automatismes, chef d'atelier, et poursuite d'études en génie mécanique ou en hydraulique.</p>
+      </div>
+    `
+  },
+  {
+    title: "Synthèse — De la source de puissance à l'actionneur",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Récapitulatif général</div>
+        <h3>Le grand enchaînement</h3>
+        <ol>
+          <li><strong>Source d'énergie :</strong> moteur électrique ou thermique.</li>
+          <li><strong>Pompe ou compresseur :</strong> transforme l'énergie mécanique en énergie hydraulique ou pneumatique.</li>
+          <li><strong>Traitement :</strong> filtration, régulation, lubrification.</li>
+          <li><strong>Distribution :</strong> distributeurs (2/2, 3/2, 4/2, 4/3).</li>
+          <li><strong>Actionneur :</strong> vérin (linéaire) ou moteur (rotatif).</li>
+          <li><strong>Retour :</strong> réservoir (hydraulique) ou échappement (pneumatique).</li>
+        </ol>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Points clés à retenir</div>
+        <h3>Les notions essentielles</h3>
+        <ul>
+          <li>Hydraulique = huile ; pneumatique = air comprimé.</li>
+          <li>P = F/S ; F = P×S ; v = Q/S ; P = p×Q.</li>
+          <li>Loi de Pascal : F₁/S₁ = F₂/S₂.</li>
+          <li>Équation de continuité : Q = S·v.</li>
+          <li>Pompes : engrenages, palettes, pistons.</li>
+          <li>Filtres : protéger les composants (ISO 4406).</li>
+          <li>Valves : pression (limiteur, réducteur), débit (étrangleur, régulateur).</li>
+          <li>Distributeurs : 3/2 (simple effet), 4/2 (double effet).</li>
+          <li>Vérins : simple effet, double effet, différentiel.</li>
+          <li>FRL : Filtre, Régulateur, Lubrificateur (pneumatique).</li>
+          <li>Circuits : simple effet, double effet, séquence, commande par API.</li>
+          <li>Sécurité : consignation, purge, EPI, jamais chercher une fuite à la main.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Évaluation finale — Hydro-Pneumatique",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Consignes</div>
+        <p>Répondez aux questions suivantes en choisissant une seule bonne réponse parmi les quatre propositions. Le résultat s'affiche après validation.</p>
+      </div>
+      <div class="quiz-container">
+        <div id="quizQuestions"></div>
+        <button id="submitQuiz" class="quiz-btn-submit">
+          Valider mes réponses
+        </button>
+        <div id="quizResult" class="quiz-result"></div>
+      </div>
+    `
+  }
+];
+const questions = [
+  {
+    text: "L'hydraulique utilise :",
+    options: [
+      "Un liquide",
+      "Un gaz",
+      "Un solide",
+      "Le vide"
+    ],
+    correct: 0
+  },
+  {
+    text: "La pneumatique utilise :",
+    options: [
+      "Un gaz",
+      "Un liquide",
+      "Un solide",
+      "Le vide"
+    ],
+    correct: 0
+  },
+  {
+    text: "La loi de Pascal concerne :",
+    options: [
+      "Les fluides en équilibre",
+      "Les solides",
+      "Les gaz uniquement",
+      "Le vide"
+    ],
+    correct: 0
+  },
+  {
+    text: "La pression se mesure en :",
+    options: [
+      "Bars ou pascals",
+      "Litres",
+      "Mètres cubes",
+      "Kilogrammes"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le débit se mesure en :",
+    options: [
+      "L/min ou m³/h",
+      "Bars",
+      "Newtons",
+      "Watts"
+    ],
+    correct: 0
+  },
+  {
+    text: "La force d'un vérin est donnée par :",
+    options: [
+      "F = P × S",
+      "F = P / S",
+      "F = S / P",
+      "F = P + S"
+    ],
+    correct: 0
+  },
+  {
+    text: "La vitesse d'un vérin est donnée par :",
+    options: [
+      "v = Q / S",
+      "v = Q × S",
+      "v = S / Q",
+      "v = Q + S"
+    ],
+    correct: 0
+  },
+  {
+    text: "La puissance hydraulique est :",
+    options: [
+      "P = p × Q",
+      "P = p / Q",
+      "P = Q / p",
+      "P = p + Q"
+    ],
+    correct: 0
+  },
+  {
+    text: "La pompe hydraulique transforme :",
+    options: [
+      "L'énergie mécanique en énergie hydraulique",
+      "L'énergie hydraulique en mécanique",
+      "L'électricité en chaleur",
+      "L'air en eau"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le réservoir hydraulique sert à :",
+    options: [
+      "Stocker et refroidir l'huile",
+      "Comprimer l'air",
+      "Filtrer l'eau",
+      "Chauffer l'huile"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le filtre hydraulique sert à :",
+    options: [
+      "Éliminer les particules",
+      "Augmenter la pression",
+      "Chauffer l'huile",
+      "Réduire le débit"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le limiteur de pression sert à :",
+    options: [
+      "Limiter la pression maximale",
+      "Augmenter le débit",
+      "Réduire la vitesse",
+      "Filtrer"
+    ],
+    correct: 0
+  },
+  {
+    text: "Un distributeur 4/2 a :",
+    options: [
+      "4 orifices et 2 positions",
+      "2 orifices et 4 positions",
+      "4 orifices et 4 positions",
+      "2 orifices et 2 positions"
+    ],
+    correct: 0
+  },
+  {
+    text: "Un vérin simple effet :",
+    options: [
+      "Revient par ressort ou charge",
+      "A deux chambres",
+      "Est toujours hydraulique",
+      "N'existe pas"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le compresseur produit :",
+    options: [
+      "De l'air comprimé",
+      "De l'huile",
+      "De l'eau",
+      "De l'électricité"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le FRL signifie :",
+    options: [
+      "Filtre-Régulateur-Lubrificateur",
+      "Filtre-Réducteur-Limiteur",
+      "Force-Résistance-Longueur",
+      "Aucune de ces réponses"
+    ],
+    correct: 0
+  },
+  {
+    text: "Les distributeurs pneumatiques sont commandés par :",
+    options: [
+      "Air, électricité ou main",
+      "Uniquement la main",
+      "Uniquement l'électricité",
+      "Uniquement l'air"
+    ],
+    correct: 0
+  },
+  {
+    text: "La commande par API utilise :",
+    options: [
+      "Des électrovannes",
+      "Uniquement des commandes manuelles",
+      "Uniquement des distributeurs pneumatiques",
+      "Rien"
+    ],
+    correct: 0
+  },
+  {
+    text: "Une baisse de pression peut être due à :",
+    options: [
+      "Une fuite",
+      "Un filtre neuf",
+      "Une huile propre",
+      "Un débit élevé"
+    ],
+    correct: 0
+  },
+  {
+    text: "La consignation d'un circuit hydraulique consiste à :",
+    options: [
+      "Isoler, purger et vérifier l'absence de pression",
+      "Laisser le circuit sous pression",
+      "Ajouter de l'huile",
+      "Changer la pompe"
+    ],
+    correct: 0
+  },
+  {
+    text: "Les engins de chantier utilisent :",
+    options: [
+      "Des circuits hydrauliques",
+      "Uniquement des circuits électriques",
+      "Uniquement des circuits pneumatiques",
+      "Aucun circuit"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'objectif principal de l'hydro-pneumatique en 4e Humanité Technique est de :",
+    options: [
+      "Comprendre, installer et maintenir les circuits hydrauliques et pneumatiques",
+      "Remplacer l'ingénieur",
+      "Fabriquer des pompes",
+      "Construire des routes"
+    ],
+    correct: 0
+  }
+];
+
+try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+        questions.forEach(function (q) {
+            if (!q.text) q.text = q.question || q.q || q.enonce || q.titre || "";
+            if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+            if (typeof q.correct === "undefined") {
+                if (typeof q.answer !== "undefined") q.correct = q.answer;
+                else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+            }
+        });
+    }
+} catch (e) {}
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+const pageTitle = document.getElementById('pageTitle');
+pageTitle.textContent = "ECOLIA · " + COURSE_TITLE;
+document.title = "ECOLIA — " + COURSE_TITLE;
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim() || slides.length === 0) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp("(" + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ")", 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderEmptyState() {
+    contentDiv.innerHTML = '<div class="empty-state"><div class="icon">·</div><span class="tag">Bientôt disponible</span><h2>' + COURSE_TITLE + '</h2><p>Ce cours est en préparation. Le contenu sera ajouté prochainement.</p></div>';
+    slideCounterSpan.textContent = '0/0';
+    progressFill.style.width = '0%';
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    counterSpan.textContent = '—';
+}
+
+function renderQuiz() {
+    const qc = document.getElementById('quizQuestions');
+    if (!qc) return;
+    if (typeof questions === 'undefined' || questions.length === 0) {
+        qc.innerHTML = '<p style="color:#666;font-style:italic;">Quiz bientot disponible.</p>';
+        return;
+    }
+    let html = '';
+    questions.forEach((q, i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o, k) => {
+            html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>';
+        });
+        html += '</div>';
+    });
+    qc.innerHTML = html;
+    const submitBtn = document.getElementById('submitQuiz');
+    if (submitBtn) {
+        submitBtn.onclick = () => {
+            let score = 0;
+            questions.forEach((q, i) => {
+                const s = document.querySelector('input[name="q' + i + '"]:checked');
+                if (s && parseInt(s.value) === q.correct) score++;
+            });
+            const pct = Math.round(score/questions.length*100);
+            document.getElementById('quizResult').innerHTML =
+                '<div style="background:var(--bg2);padding:16px;border-radius:10px;margin-top:14px;">' +
+                '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong></div>';
+        };
+    }
+}
+
+function renderSlide(index, keepHighlight) {
+    if (keepHighlight === undefined) keepHighlight = true;
+    if (slides.length === 0) { renderEmptyState(); return; }
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    if (index === slides.length - 1) renderQuiz();
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    if (slides.length === 0) return;
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (slides.length && currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (slides.length && currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+<!-- ECOLIA_IMAGE_LOADER_START -->
+<script>
+(function () {
+  var SITE = "https://ecolia-course.github.io/";
+  var NATIVE = false;
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function abs(u) { return /^(https?:|data:|blob:)/i.test(u) ? u : (NATIVE ? SITE + u.replace(/^(\.\/|\/)+/, "") : u); }
+  function ext(u) { var m = String(u).split("?")[0].match(/\.(jpe?g|png|gif|webp|svg)$/i); return m ? m[1].toLowerCase() : "jpg"; }
+  function hide(img) { img.onerror = null; img.style.display = "none"; }
+  var table = null, queue = [], queued = {}, running = false;
+  function enqueue(full, fn) {
+    if (queued[fn]) return;
+    queued[fn] = 1; queue.push([full, fn]);
+    if (!running) { running = true; setTimeout(next, 2500); }
+  }
+  function next() {
+    if (!queue.length) { running = false; return; }
+    if (!navigator.onLine) { running = false; return; }
+    var q = queue.shift(), t0 = Date.now();
+    try { CoursInterface.download(q[0], q[1]); } catch (e) { return setTimeout(next, 500); }
+    (function wait() {
+      var ok = false;
+      try { ok = !!CoursInterface.exists(q[1]); } catch (e) {}
+      if (ok) setTimeout(next, 1500);
+      else if (Date.now() - t0 > 40000) next();
+      else setTimeout(wait, 700);
+    })();
+  }
+  function exists(fn) { try { return !!CoursInterface.exists(fn); } catch (e) { return false; } }
+  function show(img) {
+    if (!table || img.getAttribute("data-ecolia-done")) return;
+    var id = img.getAttribute("data-image-id");
+    var url = table[id];
+    if (typeof url !== "string" || !url.length) { console.warn("ECOLIA : image absente du JSON :", id); return; }
+    img.setAttribute("data-ecolia-done", "1");
+    if (!NATIVE) { img.onerror = function () { hide(img); }; img.setAttribute("src", url); return; }
+    var full = abs(url), fn = "img_" + id + "." + ext(url);
+    if (exists(fn)) {
+      img.onerror = function () {
+        try { CoursInterface["delete"](fn); } catch (e) {}
+        queued[fn] = 0;
+        img.onerror = function () { hide(img); };
+        img.setAttribute("src", full);
+      };
+      img.setAttribute("src", "https://app.local/cours/" + fn);
+    } else {
+      img.onerror = function () { hide(img); };
+      img.setAttribute("src", full);
+      enqueue(full, fn);
+    }
+  }
+  function scan(root) {
+    if (!root || !root.querySelectorAll) return;
+    if (root.matches && root.matches("img[data-image-id]")) show(root);
+    root.querySelectorAll("img[data-image-id]").forEach(show);
+  }
+  function prefetchAll() {
+    var ids = {};
+    try { JSON.stringify(slides).replace(/data-image-id=\\?"([^"\\]+)/g, function (m, id) { ids[id] = 1; }); } catch (e) {}
+    Object.keys(ids).forEach(function (id) {
+      var url = table[id];
+      if (typeof url !== "string" || !url.length) return;
+      var fn = "img_" + id + "." + ext(url);
+      if (!exists(fn)) enqueue(abs(url), fn);
+    });
+  }
+  function start(tbl) {
+    table = tbl;
+    scan(document.body);
+    new MutationObserver(function (muts) {
+      muts.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.nodeType === 1) scan(n); }); });
+    }).observe(document.body, { childList: true, subtree: true });
+    if (NATIVE) prefetchAll();
+  }
+  var JSON_URL = NATIVE ? SITE + "images_ecolia.json" : "images_ecolia.json";
+  var KEY = "ecolia_images_json";
+  fetch(JSON_URL, NATIVE ? { cache: "no-cache" } : undefined)
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (table) { if (NATIVE) lsSet(KEY, JSON.stringify(table)); start(table); })
+    .catch(function (e) {
+      var saved = null;
+      if (NATIVE) { try { saved = JSON.parse(lsGet(KEY) || "null"); } catch (x) {} }
+      if (saved) start(saved);
+      else console.warn("ECOLIA : JSON des images indisponible.", e);
+    });
+})();
+</script>
+<!-- ECOLIA_IMAGE_LOADER_END -->
+
+
+
+<!-- ECOLIA_AUDIO_PLAYER_START -->
+<style>
+  #ecolia-audio-btn, #ecolia-dl-btn {
+    width: 30px; height: 30px; min-width: 30px; padding: 0; margin: 0 4px 0 0;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    cursor: pointer; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent; outline: none;
+  }
+  #ecolia-audio-btn { border: none; background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-dl-btn { border: 1.5px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb); }
+  #ecolia-dl-btn.ecolia-full { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-btn.ecolia-fixed { position: fixed; top: 8px; left: 8px; z-index: 2147483000; }
+  #ecolia-audio-btn:active, #ecolia-dl-btn:active { transform: scale(.92); }
+  #ecolia-audio-btn svg, #ecolia-dl-btn svg { width: 15px; height: 15px; fill: currentColor; pointer-events: none; }
+  #ecolia-audio-btn.ecolia-off, #ecolia-dl-btn.ecolia-off { display: none; }
+  #ecolia-audio-banner {
+    display: none; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0;
+    padding: 8px 14px; font-size: .82rem; line-height: 1.35;
+    background: var(--soft, #eef3fb); color: var(--p1, #123); border-bottom: 1px solid var(--bd, #c9d6ea);
+  }
+  #ecolia-audio-banner.on { display: flex; }
+  #ecolia-audio-banner .eab-txt { flex: 1 1 180px; }
+  #ecolia-audio-banner .eab-act { display: flex; gap: 6px; flex-wrap: wrap; }
+  #ecolia-audio-banner button {
+    border: 1px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb);
+    border-radius: 16px; padding: 5px 12px; font-size: .8rem; cursor: pointer;
+  }
+  #ecolia-audio-banner button.pri { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-banner .eab-bar { display: none; flex-basis: 100%; height: 4px; border-radius: 2px; overflow: hidden; background: var(--bd, #c9d6ea); }
+  #ecolia-audio-banner .eab-bar i { display: block; height: 100%; width: 0; background: var(--p2, #2563eb); transition: width .2s; }
+</style>
+<script>
+(function () {
+  var CFG = {"code":"HydroPneumatique4","base":"https://ecolia-course.github.io/ecolia-media/audio_files/","available":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"count":19,"sizeMo":13,"sizes":{"1":928128,"2":719232,"3":720960,"4":872448,"5":796032,"6":478848,"7":528192,"8":666624,"9":499776,"10":762240,"11":576576,"12":496320,"13":559488,"14":614784,"15":605760,"16":569664,"17":743040,"18":919488,"19":109056},"fallback":{"1":[["fr","Sommaire, Hydro-Pneumatique. Présentation du cours. Transmettre la puissance par les fluides. Ce cours d'Hydro-Pneumatique de la 4e Humanité Technique Industrielle vous apprend à comprendre, installer et entretenir les circuits hydrauliques et pneumatiques utilisés dans les machines industrielles: engins de chantier, machines minières, presses, convoyeurs. Vous étudierez les grandeurs physiques, les composants (pompes, vérins, distributeurs), les circuits de base et la sécurité. Objectifs d'apprentissage. À la fin de ce cours, vous serez capable de: Maîtriser les grandeurs physiques: pression, débit, force, vitesse, puissance. Appliquer la loi de Pascal et les relations F égale P multiplié par S et v égale Q ou S. Identifier les composants hydrauliques et pneumatiques. Lire et interpréter les schémas normalisés ISO 1219. Concevoir des circuits simples (simple effet, double effet, séquence). Diagnostiquer et réparer les pannes courantes. Appliquer les règles de sécurité et de consignation. Plan des chapitres. Les huit chapitres du programme. Introduction et sécurité. Grandeurs physiques et lois des fluides. Composants hydrauliques (1): pompes, réservoirs, filtres. Composants hydrauliques (2): valves, distributeurs, vérins, moteurs. Pneumatique: production et traitement de l'air. Composants pneumatiques. Circuits hydrauliques et pneumatiques. Maintenance, diagnostic et sécurité. Compétence visée: lire un schéma, installer et entretenir des circuits hydrauliques et pneumatiques, en sécurité."]],"2":[["fr","Chapitre I, Pourquoi l'hydro-pneumatique? Situation-problème. Une chargeuse en panne. Sur un chantier de Lubumbashi, une chargeuse ne peut plus lever sa benne. Le moteur tourne, mais le vérin hydraulique ne réagit plus. Comment fonctionne ce circuit? Quels composants intervenir? Quelles sont les causes possibles? Comment intervenir en sécurité? Ce sont les questions de l'hydro-pneumatique. Définition. Hydraulique et pneumatique. L'hydraulique utilise un liquide (huile) pour transmettre de la puissance. La pneumatique utilise un gaz (air comprimé). L'hydro-pneumatique combine les deux technologies pour actionner des machines. Avantages et applications. Pourquoi ces technologies? Rapport poids ou puissance élevé: beaucoup de force dans un petit volume. Souplesse et précision: mouvements contrôlés. Facilité de commande: distributeurs, électrovannes, API. Sécurité: la pneumatique ne produit pas d'étincelles. Applications: engins de chantier (pelles, chargeuses), machines-outils, presses, convoyeurs, systèmes de levage, portes automatiques, robots, installations minières. À retenir. Hydraulique égale huile, haute pression; pneumatique égale air comprimé, plus basse pression. Les deux sont partout dans l'industrie."]],"3":[["fr","Chapitre I, La sécurité en hydro-pneumatique. Les risques hydrauliques. Haute pression. Haute pression: jusqu'à 300 bar et plus. Projections d'huile: risque d'injection sous la peau, brûlures. Coup de fouet: un flexible qui se rompt peut fouetter violemment. Pollution: fuites d'huile dans l'environnement. Incendie: huile chaude projetée sur une surface chaude. Les risques pneumatiques. Air sous pression. Air comprimé: jusqu'à 10 bar; risque d'écrasement, de projection. Projections de particules: blessures oculaires. Bruit: échappements, outils pneumatiques. Coup de fouet: flexible qui se rompt. Les EPI et la consignation. Se protéger et isoler. EPI: lunettes, gants, chaussures de sécurité, protection auditive. Consignation: isoler le circuit de la source d'énergie, purger la pression, vérifier l'absence de pression avant intervention. Flexibles adaptés: vérifier l'état, la pression nominale, les fixations. Erreur fréquente. Chercher une fuite à la main. Une injection d'huile sous la peau, même à basse pression apparente, est une blessure grave qui peut entraîner une amputation ou une infection sévère. Il faut chercher une fuite avec un carton ou un papier, jamais avec la main."]],"4":[["fr","Chapitre II, Les grandeurs physiques. Pression et débit. Deux grandeurs clés. La pression est la force par unité de surface: P égale F ou S (Pa). Unités pratiques: 1 bar égale 10⁵ Pa; pression atmosphérique environ égal à 1,013 bar. Le débit est le volume de fluide par unité de temps: Q égale V ou t (L ou min, m au cube /h). Les trois relations fondamentales. Force, vitesse, puissance. Grandeur. Relation. Unités. Force d'un vérin. F égale P multiplié par S. N (P en Pa, S en m au carré ). Vitesse d'un vérin. v égale Q ou S. m ou s (Q en m au cube /s, S en m au carré ). Puissance hydraulique. P égale p multiplié par Q. W (p en Pa, Q en m au cube /s). Application numérique. Force d'un vérin. Un vérin de 40 centimètres carrés est soumis à une pression de 80 bar. Quelle force développe-t-il? Données: P égale 80 bar égale 8 multiplié par 10⁶ Pa; S égale 40 centimètres carrés égale 40 multiplié par 10⁻⁴ m au carré égale 4 multiplié par 10⁻ au cube m au carré. Formule: F égale P multiplié par S. Calcul: F égale 8 multiplié par 10⁶ multiplié par 4 multiplié par 10⁻ au cube égale 32 000 N. Interprétation: le vérin développe une force d'environ 32 kN ( environ égal à 3,2 tonnes)."]],"5":[["fr","Chapitre II, La loi de Pascal et l'équation de continuité. La loi de Pascal. Une pression se transmet intégralement. La loi de Pascal énonce que la pression appliquée à un fluide en équilibre se transmet intégralement dans toutes les directions. C'est le principe de la presse hydraulique, des freins et des vérins. Le principe de Pascal. Application. Multiplier une force. Une presse hydraulique a un petit piston de 10 centimètres carrés et un grand piston de 200 centimètres carrés. On exerce une force de 200 N sur le petit. Quelle force obtient-on sur le grand? Loi de Pascal: F1/S1 égale F2/S2. Formule: F2 égale F1 multiplié par (S2/S1). Calcul: F2 égale 200 multiplié par (200 sur 10) égale 200 multiplié par 20 égale 4 000 N. Interprétation: la force est multipliée par 20. L'équation de continuité. Le débit est constant. Dans un circuit fermé, le débit est constant: Q égale S1 multiplié par v1 égale S2 multiplié par v2. Quand la section diminue, la vitesse augmente (et inversement). C'est pourquoi un étranglement accélère le fluide. À retenir. Pascal: F1/S1 égale F2/S2. Continuité: Q égale S multiplié par v. Ces deux lois expliquent le fonctionnement des vérins et des presses hydrauliques."]],"6":[["fr","Chapitre II, Les pertes de charge. Définition. Une pression qui diminue. La perte de charge est la diminution de pression due aux frottements du fluide contre les parois, dans les coudes, les raccords, les filtres. Elle se transforme en chaleur. Facteurs. Ce qui influence la perte de charge. Débit: plus il est élevé, plus la perte augmente. Diamètre: plus il est petit, plus la perte augmente. Longueur: plus le tuyau est long, plus la perte augmente. Viscosité: huile froide ou épaisse, donc perte plus grande. Rugosité: tuyau entartré, dépôts, donc perte plus grande. Erreur fréquente. Confondre pression et débit. Un circuit peut avoir une pression élevée mais un faible débit (petit diamètre, étranglement). Ce n'est pas parce qu'un manomètre indique 100 bar que le vérin se déplacera vite."]],"7":[["fr","Chapitre III, Les pompes hydrauliques. Fonction. Transformer l'énergie mécanique. Les pompes hydrauliques transforment l'énergie mécanique (moteur électrique ou thermique) en énergie hydraulique (pression et débit). Les types. Trois grandes familles. À engrenages: simples, économiques, robustes; pression moyenne. À palettes: débit régulier, silencieuses; pression moyenne à élevée. À pistons: haute pression, haut rendement; utilisées pour les fortes puissances. Caractéristiques. Ce qui distingue une pompe. Pression maximale (bar). Débit (L ou min). Cylindrée (cm au cube /tr). Rendement ( pour cent ). Application. Choisir une pompe. Pour une chargeuse qui doit fournir 60 litres par minute sous 200 bar, on choisit une pompe à pistons (haute pression) capable de ce débit. Une pompe à engrenages serait insuffisante en pression pour ce type d'engin."]],"8":[["fr","Chapitre III, Réservoirs et filtres. Le réservoir. Plus qu'un simple bac. Le réservoir hydraulique remplit plusieurs fonctions: Stockage de l'huile. Refroidissement: dissipation de la chaleur. Décantation: les impuretés lourdes tombent au fond. Dégazage: l'air dissous s'échappe. Équipements: filtre d'aspiration, filtre de retour, jauge de niveau, bouchon de remplissage, reniflard (mise à l'air libre). Les filtres. Protéger les composants. Les filtres éliminent les particules solides qui usent les composants. On mesure la propreté par l'indice ISO 4406. Un filtre colmaté provoque une baisse de pression, une usure accélérée et des pannes. Les accumulateurs. Stocker l'énergie. Les accumulateurs stockent de l'énergie hydraulique sous pression (azote). Ils servent à absorber les pointes de débit, à maintenir la pression en cas d'arrêt de la pompe, ou à amortir les chocs. Erreur fréquente. Négliger le remplacement des filtres. Un filtre colmaté ne filtre plus et laisse passer les impuretés, ou s'ouvre en by-pass et laisse passer les particules dans le circuit. L'usure des pompes et des vérins s'accélère, provoquant des pannes coûteuses."]],"9":[["fr","Chapitre IV, Valves de pression et de débit. Les valves de pression. Contrôler la pression. Limiteur de pression (soupape de sûreté): limite la pression maximale du circuit; protège contre la surpression. Réducteur de pression: maintient une pression aval constante, inférieure à la pression amont. Valve de séquence: ordonne les mouvements (par exemple, un vérin se déplace avant un autre). Les valves de débit. Contrôler la vitesse. Étrangleur: réduit le débit localement; la vitesse dépend de la pression. Régulateur de débit: maintient un débit constant, indépendamment de la pression (compensation de pression). Application. Régler la vitesse d'un vérin. Pour qu'un vérin se déplace à vitesse constante quelles que soient les variations de charge, on utilise un régulateur de débit en amont ou en aval du vérin. Un simple étrangleur serait insuffisant si la charge varie."]],"10":[["fr","Chapitre IV, Distributeurs et vérins. Les distributeurs. Orienter le fluide. Les distributeurs orientent le fluide vers les actionneurs. Leur désignation: nombre d'orifices ou nombre de positions. 2 sur 2: 2 orifices, 2 positions (ouvert ou fermé). 3 sur 2: 3 orifices, 2 positions (repos ou travail). 4 sur 2: 4 orifices, 2 positions (deux directions). 4 sur 3: 4 orifices, 3 positions (avec position centrale). Commande: manuelle, électrique (électrovanne), hydraulique, pneumatique. Les distributeurs: symboles et positions. Les vérins. Produire un mouvement linéaire. Simple effet: la pression pousse le piston dans un sens; le retour se fait par ressort ou charge. Double effet: la pression peut agir dans les deux sens (sortie et rentrée). Différentiel: la surface côté tige est plus petite que côté piston; les forces et vitesses sont différentes selon le sens. Erreur fréquente. Confondre 3 sur 2 et 4 sur 2. Un distributeur 3 sur 2 a 3 orifices (P, A, T) et 2 positions; il commande souvent un vérin simple effet. Un 4 sur 2 a 4 orifices (P, T, A, B) et 2 positions; il commande un vérin double effet."]],"11":[["fr","Chapitre V, Production d'air comprimé. Les compresseurs. Produire de l'air sous pression. Les compresseurs produisent de l'air comprimé. Trois grandes familles: À pistons: pression élevée, débit moyen; bruit et vibrations. À vis: débit continu, silencieux; utilisés dans l'industrie. À palettes: compacts, débit régulier; petites puissances. Le réseau d'air. Distribuer l'air. Le réseau d'air comprimé comprend: compresseur, réservoir, tuyauteries, purges, boucle en anneau. Une boucle en anneau équilibre la pression et permet d'isoler une partie du réseau en cas de maintenance. Le traitement de l'air. Filtration, régulation, lubrification. Le FRL (Filtre-Régulateur-Lubrificateur) traite l'air avant utilisation: Filtre: élimine les particules et l'eau. Régulateur: maintient une pression constante. Lubrificateur: ajoute une fine huile pour lubrifier les composants. Le FRL: traitement de l'air comprimé."]],"12":[["fr","Chapitre VI, Composants pneumatiques. Distributeurs et vérins. Les actionneurs pneumatiques. Les distributeurs pneumatiques ont les mêmes désignations que les distributeurs hydrauliques (2 sur 2, 3 sur 2, 4 sur 2, 4 sur 3). Les vérins pneumatiques sont simple effet ou double effet, avec des coussins pneumatiques pour amortir les fins de course. Moteurs et capteurs. Rotation et information. Moteurs pneumatiques: outils portatifs (visseuses, meuleuses), mélangeurs, treuils. Capteurs: fins de course, capteurs de pression, capteurs de position. Ils informent l'automate de l'état du système. Erreur fréquente. Pas de coussin de fin de course. Un vérin pneumatique sans coussin de fin de course frappe violemment en bout de course. Les chocs répétés endommagent le vérin, la machine et le support. Le coussin amortit la fin de course."]],"13":[["fr","Chapitre VII, Les circuits de base. Les schémas. Lire un schéma ISO 1219. Les schémas utilisent les symboles normalisés ISO 1219. On distingue le schéma de puissance (composants traversés par le fluide) et le schéma de commande (circuits électriques ou pneumatiques de pilotage). Les circuits de base. Trois exemples. Simple effet: un distributeur 3 sur 2 commande un vérin simple effet; le retour se fait par ressort. Double effet: un distributeur 4 sur 2 commande un vérin double effet; la pression peut aller dans les deux chambres. Séquence: plusieurs vérins sont actionnés dans un ordre déterminé (distributeurs en cascade, séquenceur). Un circuit pneumatique de base. Commande par API. Pilotage automatique. Les électrovannes sont pilotées par les sorties de l'automate programmable (API). Les capteurs (fins de course, présence) sont connectés aux entrées. L'automate exécute le programme et commande les mouvements."]],"14":[["fr","Chapitre VII, Exemple de circuit complet. Cas concret. Convoyeur avec poussoir pneumatique. Un convoyeur transporte des colis. Un vérin pneumatique pousse les colis sur une plateforme d'emballage. Le distributeur 4 sur 2 est commandé par un API; un capteur de présence détecte le colis et déclenche la sortie du vérin. Une fois le colis poussé, un capteur de fin de course fait rentrer le vérin. Description du circuit. Les composants. Compresseur plus FRL: production et traitement de l'air. Distributeur 4 sur 2: commande du vérin. Vérin double effet: pousse le colis. Capteurs: présence colis, fin de course sortie, fin de course rentrée. API: coordination du cycle. Cycle de fonctionnement. Étapes du programme. Colis détecté, donc signal au API. API active la sortie, donc électrovanne, donc vérin sort. Vérin en fin de course sortie, donc signal au API. API désactive la sortie, donc vérin rentre. Vérin en fin de course rentrée, donc cycle terminé."]],"15":[["fr","Chapitre VIII, Maintenance et diagnostic. Les pannes courantes. Reconnaître le symptôme. Symptôme. Cause possible. Baisse de pression. Fuite, pompe usée, filtre colmaté. Échauffement. Huile dégradée, pression trop élevée. Bruit. Cavitation, air dans le circuit. Mouvements irréguliers. Débit instable, distributeur défaillant. La méthode de diagnostic. Cinq étapes. Observer: symptômes, bruits, fuites visibles. Mesurer: pression (manomètre), débit (débitmètre), température. Localiser: identifier le composant défaillant. Réparer: remplacer ou régler. Vérifier: essai après réparation. L'entretien préventif. Prévenir plutôt que guérir. Contrôle des niveaux d'huile et d'air. Remplacement périodique des filtres. Vérification des flexibles et des raccords. Analyse de l'huile (viscosité, propreté). Purge des condensats dans les circuits pneumatiques. À retenir. La maintenance préventive prolonge la durée de vie des équipements et évite les pannes coûteuses."]],"16":[["fr","Chapitre VIII, La consignation et la sécurité. La consignation. Isoler et purger. Avant toute intervention, il faut consigner le circuit: Isoler le circuit de la source d'énergie (fermer les vannes, couper la pompe). Purger la pression résiduelle. Vérifier l'absence de pression (manomètre à zéro). Condamner les commandes (cadenas, étiquettes). Les précautions spécifiques. Points d'attention. Accumulateurs: peuvent contenir de l'énergie même après l'arrêt de la pompe; purger avant intervention. Vérins en charge: un vérin qui supporte une charge peut bouger brusquement lors de la purge; caler la charge. Flexibles: vérifier la pression nominale, l'état, les fixations. Projections: ne jamais chercher une fuite à la main. Erreur fréquente. Intervenir sans purger. Un circuit hydraulique peut rester sous pression après l'arrêt de la pompe, à cause d'un accumulateur ou d'une charge. Intervenir sans purger provoque des projections ou des mouvements inattendus. La purge est obligatoire."]],"17":[["fr","Contexte R D C, Applications industrielles. Contexte. Partout autour de nous. Engins de chantier: pelles, chargeuses, bulldozers, niveleuses à Kinshasa, Lubumbashi, Goma. Machines minières: foreuses, concasseurs, convoyeurs, pompes au Lualaba. Installations industrielles: presses, machines de conditionnement, systèmes de levage, portes automatiques. Défis. Ce que rencontre le technicien. Accès aux pièces de rechange. Coût des flexibles et des composants. Maintenance préventive souvent négligée. Formation continue nécessaire. Cas pédagogique. Chargeuse en panne au Lualaba. Un technicien dans une mine du Lualaba est appelé: le vérin de levage d'une chargeuse ne fonctionne plus. Il consigne le circuit, purge la pression, vérifie le niveau d'huile (bas), inspecte les flexibles (fuite sur un flexible), teste le distributeur (blocage), remplace le flexible et le distributeur, complète l'huile, purge le circuit et remet en service. Il rédige un rapport et recommande un contrôle régulier des flexibles. Débouchés. Après le cours. Technicien de maintenance hydraulique et pneumatique, mécanicien d'engins, technicien en automatismes, chef d'atelier, et poursuite d'études en génie mécanique ou en hydraulique."]],"18":[["fr","Synthèse, De la source de puissance à l'actionneur. Récapitulatif général. Le grand enchaînement. Source d'énergie: moteur électrique ou thermique. Pompe ou compresseur: transforme l'énergie mécanique en énergie hydraulique ou pneumatique. Traitement: filtration, régulation, lubrification. Distribution: distributeurs (2 sur 2, 3 sur 2, 4 sur 2, 4 sur 3). Actionneur: vérin (linéaire) ou moteur (rotatif). Retour: réservoir (hydraulique) ou échappement (pneumatique). Points clés à retenir. Les notions essentielles. Hydraulique égale huile; pneumatique égale air comprimé. P égale F ou S; F égale P multiplié par S; v égale Q ou S; P égale p multiplié par Q. Loi de Pascal: F1/S1 égale F2/S2. Équation de continuité: Q égale S multiplié par v. Pompes: engrenages, palettes, pistons. Filtres: protéger les composants (ISO 4406). Valves: pression (limiteur, réducteur), débit (étrangleur, régulateur). Distributeurs: 3 sur 2 (simple effet), 4 sur 2 (double effet). Vérins: simple effet, double effet, différentiel. FRL: Filtre, Régulateur, Lubrificateur (pneumatique). Circuits: simple effet, double effet, séquence, commande par API. Sécurité: consignation, purge, EPI, jamais chercher une fuite à la main."]],"19":[["fr","Évaluation finale, Hydro-Pneumatique. Consignes. Répondez aux questions suivantes en choisissant une seule bonne réponse parmi les quatre propositions. Le résultat s'affiche après validation."]]}};
+  var CACHE = "ecolia-cours-v1";                       // même cache que l'application
+  var PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  var PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+  var DL = '<svg viewBox="0 0 24 24"><path d="M11 3h2v9.2l3.6-3.6L18 10l-6 6-6-6 1.4-1.4L11 12.2V3zM5 19h14v2H5z"/></svg>';
+  var OK = '<svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>';
+  // Réparation du quiz : certains cours stockent les choix sous "opts" (ou autre) au lieu de "options"
+  try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+      questions.forEach(function (q) {
+        if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+        if (q.text === undefined) q.text = q.question || q.q || q.enonce || q.titre || "";
+        if (typeof q.correct === "undefined") {
+          if (typeof q.answer !== "undefined") q.correct = q.answer;
+          else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+        }
+      });
+    }
+  } catch (e) {}
+  var synth = window.speechSynthesis || null;
+  var HAS_CACHE = !!(window.caches && window.caches.open);
+  var NATIVE = false;           // APK ECOLIA : pont Java "CoursInterface" (fichiers dans le dossier de l'application)
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  var LATER = "ecolia_audio_later_" + CFG.code;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+  function init() {
+    if (document.getElementById("ecolia-audio-btn")) return;
+
+    // ---------- éléments de l'interface ----------
+    var btn = document.createElement("button");
+    btn.id = "ecolia-audio-btn"; btn.type = "button"; btn.className = "ecolia-off";
+    btn.setAttribute("aria-label", "Écouter la leçon"); btn.innerHTML = PLAY;
+    var dlBtn = document.createElement("button");
+    dlBtn.id = "ecolia-dl-btn"; dlBtn.type = "button"; dlBtn.className = "ecolia-off";
+    dlBtn.innerHTML = DL;
+    var host = document.querySelector(".header-right");
+    if (host) { host.insertBefore(dlBtn, host.firstChild); host.insertBefore(btn, dlBtn); }   // dans la barre du haut : ne scrolle jamais
+    else { btn.className += " ecolia-fixed"; document.body.appendChild(btn); }
+
+    var banner = document.createElement("div");
+    banner.id = "ecolia-audio-banner";
+    banner.innerHTML = '<span class="eab-txt"></span><span class="eab-act"></span><div class="eab-bar"><i></i></div>';
+    var content = document.getElementById("content");
+    if (content && content.parentNode) content.parentNode.insertBefore(banner, content);
+    else document.body.insertBefore(banner, document.body.firstChild);
+    var txtEl = banner.querySelector(".eab-txt"), actEl = banner.querySelector(".eab-act");
+    var barEl = banner.querySelector(".eab-bar"), barI = barEl.firstChild;
+
+    var audio = new Audio();            // un seul élément Audio, réutilisé (exigé par les navigateurs mobiles)
+    audio.preload = "auto";
+    var st = { idx: -1, auto: false, advancing: false, mode: null, speaking: false, token: 0, chunks: [], ci: 0, blobUrl: null, playTok: 0 };
+    var dl = { state: "none", cached: 0, busy: false, cancel: false };   // none | partial | full
+    var bnMode = null, hideTimer = null;
+    if (synth && synth.getVoices) { try { synth.getVoices(); } catch (e) {} }
+
+    function cur() {
+      try { if (typeof currentSlide === "number") return currentSlide; } catch (e) {}
+      return 0;
+    }
+    function hasMp3(i) { return CFG.available.indexOf(i + 1) !== -1; }
+    function fb(i) { return CFG.fallback && CFG.fallback[String(i + 1)]; }
+    function hasAudio(i) { return hasMp3(i) || (!!synth && !!fb(i)); }
+    function urlN(n) {   // dans l'APK la page est sur https://app.local : une adresse relative doit pointer vers le site
+      var b = CFG.base;
+      if (NATIVE && !/^https?:/i.test(b)) b = "https://ecolia-course.github.io/" + b.replace(/^(\.\.\/|\.\/)+/, "");
+      return new URL(b + nameN(n), location.href).href;
+    }
+    function setIcon(playing) { btn.innerHTML = playing ? PAUSE : PLAY; }
+    function isPlaying() { return st.mode === "mp3" ? !audio.paused : (st.mode === "tts" && st.speaking); }
+    function mo() { return "≈ " + CFG.sizeMo + " Mo"; }
+    function nameN(n) { return "audio_" + CFG.code + "_" + n + ".mp3"; }
+
+    // ====================================================================
+    //  Stockage hors ligne : 2 moteurs, même interface
+    //    - APK : fichiers du dossier de l'application (CoursInterface), servis par https://app.local/cours/
+    //    - Web : Cache Storage du navigateur (même cache que l'application web)
+    // ====================================================================
+    function nativeStore() {
+      var okKey = "ecolia_audio_ok_" + CFG.code;
+      function readOk() { try { return JSON.parse(lsGet(okKey) || "[]"); } catch (e) { return []; } }
+      function writeOk(a) { lsSet(okKey, JSON.stringify(a)); }
+      function exists(n) { try { return !!CoursInterface.exists(nameN(n)); } catch (e) { return false; } }
+      function local(n) { return location.origin + "/cours/" + nameN(n); }
+      function verify(n) {                                   // fichier complet ? (taille exacte connue à la génération)
+        return fetch(local(n), { cache: "no-store" }).then(function (r) { return r.blob(); }).then(function (b) {
+          var exp = CFG.sizes && CFG.sizes[String(n)];
+          return (b.size > 2000 && (!exp || b.size === exp)) ? b : null;
+        }).catch(function () { return null; });
+      }
+      return {
+        list: function () {
+          var ok = readOk().filter(exists); writeOk(ok); return Promise.resolve(ok);
+        },
+        get: function (n) { return exists(n) ? verify(n) : Promise.resolve(null); },
+        put: function (n) {
+          return new Promise(function (res, rej) {
+            try { CoursInterface.download(urlN(n), nameN(n)); } catch (e) { return rej(e); }
+            var t0 = Date.now();
+            function next() { if (Date.now() - t0 > 120000) rej(new Error("délai dépassé")); else setTimeout(poll, 800); }
+            function poll() {
+              if (!exists(n)) return next();
+              verify(n).then(function (b) {
+                if (!b) return next();
+                var ok = readOk(); if (ok.indexOf(n) < 0) ok.push(n); writeOk(ok); res();
+              });
+            }
+            setTimeout(poll, 800);
+          });
+        },
+        del: function (n) {
+          try { CoursInterface.delete(nameN(n)); } catch (e) {}
+          writeOk(readOk().filter(function (x) { return x !== n; }));
+          return Promise.resolve();
+        }
+      };
+    }
+    function cacheStore() {
+      return {
+        list: function () {
+          return caches.open(CACHE).then(function (c) {
+            return Promise.all(CFG.available.map(function (n) {
+              return c.match(urlN(n)).then(function (r) {
+                if (!r) return 0;
+                if ((r.headers.get("content-type") || "").indexOf("audio") !== 0) { c.delete(urlN(n)); return 0; }   // ancien contenu invalide
+                return n;
+              });
+            }));
+          }).then(function (a) { return a.filter(Boolean); });
+        },
+        get: function (n) {
+          return caches.open(CACHE).then(function (c) { return c.match(urlN(n)); })
+            .then(function (r) { return r ? r.blob() : null; }).then(function (b) { return b && b.size > 2000 ? b : null; });
+        },
+        put: function (n) {
+          var u = urlN(n);
+          return fetch(u, { cache: "no-store" }).then(function (r) {
+            if (!r.ok || r.status !== 200) throw new Error("HTTP " + r.status);
+            return r.blob();
+          }).then(function (b) {
+            if (b.size < 2000 || (b.type && b.type.indexOf("audio") !== 0 && b.type.indexOf("octet") < 0)) throw new Error("fichier invalide");
+            return caches.open(CACHE).then(function (c) { return c.put(u, new Response(b, { headers: { "Content-Type": "audio/mpeg" } })); });
+          });
+        },
+        del: function (n) { return caches.open(CACHE).then(function (c) { return c.delete(urlN(n)); }); }
+      };
+    }
+    var store = NATIVE ? nativeStore() : (HAS_CACHE ? cacheStore() : null);
+
+    // ====================================================================
+    //  Bannière : invitation, confirmations, progression
+    // ====================================================================
+    function showBanner(mode, text, buttons, pct) {
+      clearTimeout(hideTimer);
+      bnMode = mode;
+      txtEl.textContent = text;
+      actEl.innerHTML = "";
+      (buttons || []).forEach(function (b) {
+        var e = document.createElement("button");
+        e.type = "button"; e.textContent = b.label; if (b.pri) e.className = "pri";
+        e.addEventListener("click", function (ev) { ev.stopPropagation(); b.fn(); });
+        actEl.appendChild(e);
+      });
+      if (typeof pct === "number") { barEl.style.display = "block"; barI.style.width = pct + "%"; }
+      else barEl.style.display = "none";
+      banner.classList.add("on");
+    }
+    function hideBanner() { clearTimeout(hideTimer); bnMode = null; banner.classList.remove("on"); }
+    function flash(text) { showBanner("info", text, []); hideTimer = setTimeout(hideBanner, 4000); }
+
+    function refreshUI() {
+      var show = !!store && CFG.available.length > 0;
+      dlBtn.classList.toggle("ecolia-off", !show);
+      dlBtn.classList.toggle("ecolia-full", dl.state === "full");
+      dlBtn.innerHTML = dl.state === "full" ? OK : DL;
+      dlBtn.setAttribute("aria-label", dl.state === "full" ? "Audios téléchargés : supprimer" : "Télécharger les audios");
+      dlBtn.title = dlBtn.getAttribute("aria-label");
+    }
+    function refreshCacheState(done) {
+      if (!store) { dl.state = "none"; refreshUI(); if (done) done(); return; }
+      store.list().then(function (ok) {
+        dl.cached = ok.length;
+        dl.state = dl.cached === 0 ? "none" : (dl.cached >= CFG.available.length ? "full" : "partial");
+      }).catch(function () { dl.state = "none"; }).then(function () { refreshUI(); if (done) done(); });
+    }
+
+    function askDownload(fromInvite) {
+      var left = CFG.available.length - dl.cached;
+      var txt = dl.state === "partial"
+        ? "Il reste " + left + " audio(s) à télécharger pour écouter ce cours sans internet."
+        : "🔊 Télécharger les audios de ce cours (" + mo() + ") pour les écouter sans internet ? Wi-Fi recommandé.";
+      showBanner(fromInvite ? "invite" : "confirm", txt, [
+        { label: fromInvite ? "Plus tard" : "Annuler", fn: function () { if (fromInvite) lsSet(LATER, "1"); hideBanner(); } },
+        { label: "Télécharger", pri: true, fn: startDownload }
+      ]);
+    }
+    function askDelete() {
+      showBanner("confirm", "Supprimer les audios téléchargés de ce cours (" + mo() + ") ? Vous pourrez toujours les écouter en ligne.", [
+        { label: "Annuler", fn: hideBanner },
+        { label: "Supprimer", pri: true, fn: doDelete }
+      ]);
+    }
+
+    function startDownload() {
+      if (dl.busy || !store) return;
+      dl.busy = true; dl.cancel = false;
+      var total = CFG.available.length, done = 0, quota = false, fails = 0, todo = [];
+      store.list().then(function (have) {
+        CFG.available.forEach(function (n) { if (have.indexOf(n) < 0) todo.push(n); });
+        done = total - todo.length;
+        function paint() {
+          var msg = "Téléchargement des audios : " + done + " / " + total;
+          if (bnMode === "progress") {                  // met à jour sans recréer les boutons (sinon un appui peut être perdu)
+            txtEl.textContent = msg; barI.style.width = Math.round(done / total * 100) + "%";
+          } else {
+            showBanner("progress", msg, [
+              { label: "Annuler", fn: function () { dl.cancel = true; } }
+            ], Math.round(done / total * 100));
+          }
+        }
+        paint();
+        function worker() {
+          if (dl.cancel || quota || !todo.length) return Promise.resolve();
+          var n = todo.shift();
+          return store.put(n).then(function () { done++; paint(); }).catch(function (e) {
+            if (e && (e.name === "QuotaExceededError" || /quota/i.test(String(e.message)))) quota = true;
+            fails++;
+          }).then(worker);
+        }
+        return Promise.all([worker(), worker()]);
+      }).catch(function () { fails++; }).then(function () {
+        dl.busy = false;
+        refreshCacheState(function () {
+          if (dl.state === "full") flash("✓ Audios téléchargés : le cours se lit maintenant sans internet.");
+          else if (dl.cancel) flash("Téléchargement interrompu (" + dl.cached + " / " + total + "). Vous pourrez reprendre plus tard.");
+          else showBanner("error", quota ? "Espace insuffisant sur l'appareil. Libérez de la place puis réessayez."
+            : "Certains audios n'ont pas pu être téléchargés (connexion ?).", [
+            { label: "Fermer", fn: hideBanner }, { label: "Réessayer", pri: true, fn: startDownload }
+          ]);
+        });
+      });
+    }
+    function doDelete() {
+      if (!store) return;
+      Promise.all(CFG.available.map(function (n) { return store.del(n); })).catch(function () {}).then(function () {
+        lsDel(LATER);
+        refreshCacheState(function () { flash("Audios supprimés de cet appareil."); });
+      });
+    }
+
+    dlBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (dl.busy) return;
+      if (dl.state === "full") askDelete(); else askDownload(false);
+    });
+
+    // ====================================================================
+    //  Voix intégrée au téléphone (hors ligne, sans limite)
+    // ====================================================================
+    function pickVoice(lang) {
+      var vs = [];
+      try { vs = synth.getVoices() || []; } catch (e) {}
+      var pre = lang === "en" ? "en" : "fr", best = null;
+      for (var k = 0; k < vs.length; k++) {
+        var v = vs[k];
+        if ((v.lang || "").toLowerCase().indexOf(pre) !== 0) continue;
+        if (!best || (v.localService && !best.localService)) best = v;
+      }
+      return best;
+    }
+    function hardSplit(text, max) {
+      var out = [];
+      while (text.length > max) {
+        var cut = text.lastIndexOf(" ", max);
+        if (cut < 40) cut = max;
+        out.push(text.slice(0, cut)); text = text.slice(cut).replace(/^\s+/, "");
+      }
+      if (text) out.push(text);
+      return out;
+    }
+    function buildChunks(segs) {                  // morceaux courts : évite l'arrêt des longs textes sur Chrome
+      var out = [];
+      segs.forEach(function (s) {
+        var cur2 = "", parts = s[1].match(/[^.!?;:]+[.!?;:]*\s*/g) || [s[1]];
+        parts.forEach(function (p) {
+          if (cur2 && (cur2 + p).length > 160) { out.push({ lang: s[0], text: cur2.trim() }); cur2 = p; }
+          else cur2 += p;
+        });
+        if (cur2.trim()) out.push({ lang: s[0], text: cur2.trim() });
+      });
+      var res = [];
+      out.forEach(function (c) { hardSplit(c.text, 190).forEach(function (t) { res.push({ lang: c.lang, text: t }); }); });
+      return res;
+    }
+    function speakFrom(tk) {
+      if (tk !== st.token) return;
+      if (st.ci >= st.chunks.length) {
+        st.speaking = false; st.mode = null; st.ci = 0; setIcon(false);
+        if (st.auto) goNext();
+        return;
+      }
+      var c = st.chunks[st.ci];
+      var u = new SpeechSynthesisUtterance(c.text);
+      u.lang = c.lang === "en" ? "en-US" : "fr-FR";
+      var v = pickVoice(c.lang);
+      if (v) { u.voice = v; u.lang = v.lang; }
+      u.rate = 0.95;
+      u.onend = function () { if (tk !== st.token) return; st.ci++; speakFrom(tk); };
+      u.onerror = function () { if (tk !== st.token) return; st.speaking = false; setIcon(false); st.auto = false; };
+      synth.speak(u);
+    }
+    function startTts(from) {
+      st.token++;
+      var tk = st.token;
+      st.mode = "tts"; st.speaking = true; st.ci = from || 0; setIcon(true);
+      var busy = false;
+      try { busy = synth.speaking || synth.pending; synth.cancel(); } catch (e) {}
+      if (busy) setTimeout(function () { speakFrom(tk); }, 120);   // laisse cancel() se terminer
+      else speakFrom(tk);                                          // sinon tout de suite (exigé par iOS)
+    }
+    function playVoice() {
+      if (!(synth && fb(st.idx))) { st.auto = false; return false; }
+      if (!st.chunks.length) st.chunks = buildChunks(fb(st.idx));
+      startTts(st.ci);
+      return true;
+    }
+
+    // ====================================================================
+    //  Lecture
+    // ====================================================================
+    function freeBlob() { if (st.blobUrl) { try { URL.revokeObjectURL(st.blobUrl); } catch (e) {} st.blobUrl = null; } }
+    function stopAll() {
+      st.playTok++;
+      try { audio.pause(); audio.currentTime = 0; } catch (e) {}
+      st.token++;
+      try { if (synth) synth.cancel(); } catch (e) {}
+      st.speaking = false; st.mode = null; st.chunks = []; st.ci = 0;
+      setIcon(false);
+    }
+    function pauseNow() {
+      if (st.mode === "mp3") audio.pause();
+      else if (st.mode === "tts") {
+        st.token++;
+        try { synth.cancel(); } catch (e) {}
+        st.speaking = false; setIcon(false);      // st.ci conservé : la reprise repart de la phrase en cours
+      }
+    }
+    function startAudio(src, tok) {
+      if (tok !== st.playTok) return;
+      if (audio.getAttribute("data-src") !== src) { audio.setAttribute("data-src", src); audio.src = src; }
+      var p = audio.play();
+      if (p && p.catch) p.catch(function (err) {
+        console.warn("ECOLIA audio :", err);
+        if (tok !== st.playTok) return;
+        if (!(err && err.name === "NotAllowedError") && playVoice()) return;   // lecture impossible : voix du téléphone
+        setIcon(false); st.auto = false;
+      });
+    }
+    function playCurrent() {
+      var i = st.idx;
+      if (hasMp3(i)) {
+        var tok = ++st.playTok, u = urlN(i + 1);
+        st.mode = "mp3";
+        if (!navigator.onLine && dl.state === "none") { st.mode = null; if (playVoice()) return; }   // hors ligne et non téléchargé
+        if (store && dl.state !== "none") {                     // téléchargé : lecture locale, sans réseau
+          store.get(i + 1)
+            .then(function (b) {
+              if (tok !== st.playTok) return;
+              if (b) { freeBlob(); st.blobUrl = URL.createObjectURL(new Blob([b], { type: "audio/mpeg" })); startAudio(st.blobUrl, tok); }
+              else startAudio(u, tok);
+            }).catch(function () { startAudio(u, tok); });
+        } else startAudio(u, tok);                              // sinon lecture en ligne (appel immédiat, exigé par iOS)
+      } else if (!playVoice()) {
+        st.auto = false;
+      }
+    }
+
+    function onSlideChange(i) {
+      var wasAdvancing = st.advancing;
+      st.advancing = false;
+      st.idx = i;
+      btn.classList.toggle("ecolia-off", !hasAudio(i));
+      stopAll();
+      audio.removeAttribute("data-src");
+      freeBlob();
+      if (bnMode === "invite" && i !== 0) hideBanner();       // l'invitation n'apparaît qu'à la première slide
+      if (wasAdvancing && st.auto) setTimeout(playCurrent, 500);   // enchaînement automatique
+      else st.auto = false;                                         // changement manuel : on coupe tout
+    }
+    function goNext() {
+      if (st.idx + 1 >= CFG.count) { st.auto = false; return; }
+      st.advancing = true;
+      if (typeof nextSlide === "function") nextSlide();
+      else { var nb = document.getElementById("nextBtn"); if (nb) nb.click(); }
+      setTimeout(function () { st.advancing = false; }, 4000);
+    }
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var i = cur();
+      if (i !== st.idx) onSlideChange(i);
+      if (isPlaying()) { st.auto = false; pauseNow(); }
+      else { st.auto = true; playCurrent(); }
+    });
+    audio.addEventListener("play", function () { setIcon(true); });
+    audio.addEventListener("pause", function () { if (st.mode === "mp3") setIcon(false); });
+    audio.addEventListener("error", function () {
+      if (st.mode === "mp3" && playVoice()) return;            // fichier introuvable / hors ligne : voix du téléphone
+      setIcon(false); st.auto = false;
+    });
+    audio.addEventListener("ended", function () { setIcon(false); if (st.auto) goNext(); });
+    window.addEventListener("pagehide", function () { stopAll(); freeBlob(); });
+
+    // ---------- démarrage ----------
+    refreshCacheState(function () {
+      if (store && CFG.available.length && dl.state !== "full" && navigator.onLine && cur() === 0 && !lsGet(LATER)) askDownload(true);
+    });
+    st.idx = -1;
+    setInterval(function () { var i = cur(); if (i !== st.idx) onSlideChange(i); }, 250);   // suit la slide affichée
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+<!-- ECOLIA_AUDIO_PLAYER_END -->
+</body>
+</html>

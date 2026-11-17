@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="rouge">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>ECOLIA — Developpement Communautaire4</title>
+<style>
+[data-theme="bleu"]   { --p1:#0d2b4f; --p2:#1565c0; --p3:#07172e; --p4:#12437a; --p5:#5b8fd0; --bg:#e8f0fb; --bg2:#cfdff5; --bd:#a9c3e8; --soft:#dde8f7; --btn:#2a67b0; }
+[data-theme="vert"]   { --p1:#14442e; --p2:#2e7d32; --p3:#0b2b1a; --p4:#1f5c3a; --p5:#4f9a6b; --bg:#e8f5ec; --bg2:#c8e6d2; --bd:#a5cdb2; --soft:#dcefe2; --btn:#2f7a4f; }
+[data-theme="violet"] { --p1:#2d1b4e; --p2:#6a1b9a; --p3:#1a0f2e; --p4:#4a148c; --p5:#9c6fd0; --bg:#f1e9fb; --bg2:#dccbf2; --bd:#c4a8e6; --soft:#e8ddf6; --btn:#7e3fb2; }
+[data-theme="rouge"]  { --p1:#4a1010; --p2:#b71c1c; --p3:#2b0a0a; --p4:#8e1b1b; --p5:#d9706a; --bg:#fbeaea; --bg2:#f3cdcb; --bd:#e8a9a5; --soft:#f8dede; --btn:#a62a2a; }
+[data-theme="orange"] { --p1:#4e2a0c; --p2:#ef6c00; --p3:#2e1604; --p4:#b34a00; --p5:#f0a15a; --bg:#fff1e0; --bg2:#fbdcb8; --bd:#f3c08a; --soft:#fdebd6; --btn:#c9650a; }
+[data-theme="teal"]   { --p1:#0b3a3a; --p2:#00796b; --p3:#062626; --p4:#00574b; --p5:#4db6ac; --bg:#e0f2f1; --bg2:#b2dfdb; --bd:#80cbc4; --soft:#d5ecea; --btn:#26897d; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:linear-gradient(160deg,var(--p1) 0%,var(--p2) 50%,var(--p3) 100%); display:flex; justify-content:center; align-items:center; padding:8px; }
+.container { width:100%; max-width:1400px; background:#fefdf8; border-radius:20px; overflow:hidden; display:flex; flex-direction:column; height:100%; max-height:100vh; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.progress-bar { height:4px; background:var(--bg2); flex-shrink:0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--p5),var(--p4)); width:0%; transition:width 0.3s; }
+.header { padding:10px 16px; background:var(--bg); border-bottom:1px solid var(--bd); display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+.header h1 { color:var(--p4); font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box { display:flex; background:white; border-radius:20px; padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.search-box input { border:none; padding:6px 10px; border-radius:20px; outline:none; width:130px; font-size:0.8rem; }
+.search-box button { background:none; border:none; cursor:pointer; padding:4px 8px; font-size:0.85rem; color:var(--p2); }
+.badge { background:var(--p5); color:white; padding:4px 10px; border-radius:20px; font-weight:bold; font-size:0.75rem; }
+.search-nav { display:none; gap:4px; background:var(--bg2); padding:2px 8px; border-radius:20px; align-items:center; font-size:0.75rem; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:0.9rem; color:var(--p4); padding:2px 4px; }
+.content { padding:28px 32px; flex:1; overflow-y:auto; background:#fff; scroll-behavior:smooth; line-height:1.85; }
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.slide-title { color:var(--p1); font-size:1.5rem; font-weight:700; padding-bottom:12px; margin-bottom:20px; border-bottom:2px solid var(--p5); }
+.slide-content { color:var(--p3); font-size:1rem; }
+.empty-state { display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-height:60vh; padding:40px 20px; gap:18px; }
+.empty-state .icon { width:72px; height:72px; border-radius:50%; background:var(--bg); border:2px solid var(--bd); display:flex; align-items:center; justify-content:center; color:var(--p2); font-size:2rem; font-weight:300; }
+.empty-state h2 { color:var(--p1); font-size:1.4rem; font-weight:700; margin:0; }
+.empty-state p { color:#666; font-size:0.95rem; max-width:520px; line-height:1.7; }
+.empty-state .tag { display:inline-block; padding:6px 14px; background:var(--bg); color:var(--p4); border:1px solid var(--bd); border-radius:20px; font-size:0.8rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; }
+.bloc { padding:18px 22px; border-radius:12px; margin:22px 0; line-height:1.85; }
+.bloc-label { font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; opacity:0.7; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:var(--bg); border-left:4px solid var(--p5); }
+.theorie .bloc-label { color:var(--p4); }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.sources { background:#f5f5f5; padding:12px 16px; border-radius:10px; margin-top:26px; font-size:0.82rem; color:#666; border-left:3px solid #999; line-height:1.6; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:var(--p1); }
+.quiz-container { padding:22px; background:var(--bg); border-radius:16px; }
+.quiz-question { background:white; border-radius:10px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.quiz-question p { font-weight:600; margin-bottom:10px; color:var(--p1); }
+.quiz-question label { display:block; padding:8px 10px; margin:4px 0; border-radius:6px; cursor:pointer; transition:background 0.2s; }
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit { background:var(--btn); color:white; border:none; padding:12px 24px; border-radius:30px; font-size:1rem; cursor:pointer; font-weight:600; margin-top:14px; }
+.quiz-result { margin-top:16px; font-weight:600; }
+.controls { padding:8px 16px; background:#fafafa; border-top:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0; }
+.nav-btn { background:white; color:var(--p4); border:1px solid #ccc; padding:8px 14px; border-radius:8px; font-size:0.82rem; cursor:pointer; font-weight:500; }
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:var(--soft); }
+.content::-webkit-scrollbar-thumb { background:var(--p5); border-radius:3px; }
+@media (max-width:600px) { body { padding:0; } .container { border-radius:0; max-height:100vh; } .content { padding:20px 18px; } .slide-title { font-size:1.25rem; } .search-box input { width:90px; } .header h1 { font-size:0.85rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="header">
+<h1 id="pageTitle">ECOLIA</h1>
+<div class="header-right">
+<div class="search-box">
+<input id="searchInput" placeholder="Rechercher" type="text"/>
+<button id="searchBtn">⌕</button>
+</div>
+<div class="search-nav" id="searchNav">
+<button id="prevResultBtn">‹</button>
+<span id="resultCounter">0/0</span>
+<button id="nextResultBtn">›</button>
+</div>
+<span class="badge" id="slideCounter">0/0</span>
+</div>
+</div>
+<div class="content" id="content"></div>
+<div class="controls">
+<button class="nav-btn" id="prevBtn">← Précédent</button>
+<span class="counter" id="counter">—</span>
+<button class="nav-btn" id="nextBtn">Suivant →</button>
+</div>
+</div>
+<script>
+const COURSE_TITLE = "Développement Communautaire (Développement Communautaire et Local)";
+const slides = [
+  {
+    title: "Sommaire — Développement Communautaire",
+    content: `
+      <div class="bloc resume">
+        <h3>Bienvenue dans le cours de Développement Communautaire</h3>
+        <p>Ce cours de <strong>Développement Communautaire</strong> s'adresse aux élèves de la 4<sup>e</sup> année des Humanités, section Commerciale et Gestion (options sociales). Il vous apprendra à accompagner un processus de développement communautaire, depuis le diagnostic jusqu'à l'évaluation, en mobilisant la participation des habitants et les ressources locales.</p>
+        <h4>Objectifs du cours</h4>
+        <ul>
+          <li>Définir le développement communautaire et ses principes.</li>
+          <li>Réaliser un diagnostic communautaire simple.</li>
+          <li>Planifier un projet communautaire participatif.</li>
+          <li>Mobiliser les ressources locales et les partenaires.</li>
+          <li>Gérer et suivre un projet.</li>
+          <li>Évaluer l'impact d'un projet.</li>
+        </ul>
+        <h4>Les grands chapitres du cours</h4>
+        <ol>
+          <li>Introduction au développement communautaire.</li>
+          <li>Le diagnostic communautaire.</li>
+          <li>La planification participative.</li>
+          <li>La mobilisation des ressources.</li>
+          <li>La gestion et le suivi d'un projet.</li>
+          <li>L'évaluation et la capitalisation.</li>
+        </ol>
+        <p><strong>Compétences visées :</strong> à la fin de ce cours, vous serez capable d'accompagner une communauté dans l'identification de ses besoins, la planification et la réalisation de projets participatifs, et l'évaluation de leur impact. Ce cours est complémentaire du cours d'Animation Sociale (qui traite de l'animation des groupes au quotidien).</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 1 — Pourquoi le développement communautaire ?",
+    content: `
+      <div class="bloc cas">
+        <div class="bloc-label">Situation-problème</div>
+        <h3>Un puits qui ne fonctionne plus</h3>
+        <p>Dans un village de Bandundu, une ONG a construit un puits il y a trois ans. Aujourd'hui, la pompe est cassée, personne ne sait comment la réparer, et le puits est abandonné. Les habitants doivent parcourir plusieurs kilomètres pour trouver de l'eau. L'ONG, qui a financé le projet, est repartie sans avoir formé de comité de gestion ni prévu l'entretien.</p>
+        <p><strong>Question de départ :</strong> Comment faire pour qu'un projet communautaire dure après le départ des partenaires ?</p>
+        <p>Le <strong>développement communautaire</strong> répond à cette question : il ne s'agit pas seulement de construire, mais d'accompagner la communauté pour qu'elle s'approprie le projet, le gère et le maintienne. La durabilité est au cœur de la démarche.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 1 — Définition et principes",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Un processus participatif et durable</h3>
+        <figure>
+          <img src="developpementcommunautaire4_img01" alt="Schéma des principes du développement communautaire : participation, autonomisation, durabilité, équité." />
+          <figcaption>Les principes du développement communautaire</figcaption>
+        </figure>
+        <p>Le <strong>développement communautaire</strong> est un processus par lequel les membres d'une communauté, avec l'appui de partenaires, identifient leurs besoins, définissent leurs priorités, planifient et réalisent des actions collectives pour améliorer leurs conditions de vie, dans une perspective durable.</p>
+        <h4>Les principes</h4>
+        <ul>
+          <li><strong>Participation :</strong> la communauté est actrice de son développement, pas simple bénéficiaire.</li>
+          <li><strong>Autonomisation :</strong> renforcement des capacités locales pour que la communauté puisse agir par elle-même.</li>
+          <li><strong>Durabilité :</strong> actions qui perdurent après le départ des partenaires.</li>
+          <li><strong>Équité :</strong> prise en compte des plus vulnérables (femmes, enfants, personnes handicapées).</li>
+          <li><strong>Respect des cultures locales :</strong> les solutions doivent s'appuyer sur les savoir-faire et les valeurs de la communauté.</li>
+        </ul>
+        <p><strong>Erreur fréquente :</strong> croire que le développement communautaire consiste à apporter des solutions toutes faites. Il vise à renforcer la capacité de la communauté à résoudre ses propres problèmes.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 1 — L'approche participative",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>La communauté actrice</h3>
+        <p>L'<strong>approche participative</strong> est au cœur du développement communautaire. Elle repose sur l'idée que la communauté n'est pas un simple bénéficiaire mais un <strong>partenaire actif</strong> : les décisions sont prises <em>avec</em> elle, pas <em>pour</em> elle.</p>
+        <h4>Les niveaux de participation</h4>
+        <ul>
+          <li><strong>Participation consultative :</strong> la communauté est consultée, mais les décisions sont prises ailleurs.</li>
+          <li><strong>Participation associative :</strong> la communauté participe à l'exécution des activités.</li>
+          <li><strong>Participation décisionnelle :</strong> la communauté participe à toutes les étapes, y compris les décisions.</li>
+        </ul>
+        <p>L'objectif du développement communautaire est d'atteindre le niveau décisionnel, qui garantit l'appropriation et la durabilité.</p>
+        <p><strong>Erreur fréquente :</strong> se contenter d'une participation consultative et croire que la communauté est impliquée. La vraie participation va jusqu'à la décision.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 2 — Le diagnostic communautaire",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Connaître la communauté</h3>
+        <figure>
+          <img src="developpementcommunautaire4_img02" alt="Réunion communautaire avec des habitants discutant autour d'une carte." />
+          <figcaption>Le diagnostic participatif : écouter la communauté</figcaption>
+        </figure>
+        <p>Le <strong>diagnostic communautaire</strong> est un processus de collecte et d'analyse d'informations sur une communauté, afin d'identifier ses besoins, ses problèmes, ses ressources et ses priorités.</p>
+        <h4>Les étapes</h4>
+        <ol>
+          <li><strong>Préparation :</strong> définir les objectifs, constituer l'équipe, choisir les outils.</li>
+          <li><strong>Collecte de données :</strong> enquêtes, entretiens, observation, réunions avec la communauté.</li>
+          <li><strong>Analyse :</strong> identification des problèmes, hiérarchisation, recherche des causes.</li>
+          <li><strong>Restitution :</strong> partager les résultats avec la communauté pour validation.</li>
+        </ol>
+        <h4>Les outils</h4>
+        <ul>
+          <li><strong>Questionnaire :</strong> recueillir des données quantitatives.</li>
+          <li><strong>Guide d'entretien :</strong> explorer les perceptions et les expériences.</li>
+          <li><strong>Carte communautaire :</strong> représenter le territoire et ses ressources.</li>
+          <li><strong>Diagramme de Venn :</strong> visualiser les relations entre acteurs.</li>
+          <li><strong>Arbre à problèmes :</strong> identifier les causes et les conséquences d'un problème.</li>
+        </ul>
+        <p><strong>Erreur fréquente :</strong> réaliser un diagnostic sans la communauté. Les données recueillies sans participation sont souvent incomplètes ou biaisées.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 2 — L'arbre à problèmes",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Identifier et hiérarchiser les problèmes</h3>
+        <p>L'<strong>arbre à problèmes</strong> est un outil visuel qui permet d'analyser un problème central en identifiant ses causes (racines) et ses conséquences (branches).</p>
+        <h4>Exemple</h4>
+        <p><strong>Problème central :</strong> « Les enfants du quartier ne sont pas scolarisés. »</p>
+        <p><strong>Causes :</strong> école éloignée, frais scolaires trop élevés, manque d'enseignants, travail des enfants.</p>
+        <p><strong>Conséquences :</strong> analphabétisme, chômage, délinquance, pauvreté persistante.</p>
+        <h4>L'arbre à objectifs</h4>
+        <p>On transforme ensuite les problèmes en objectifs positifs : « Les enfants du quartier sont scolarisés. » Ce qui donne :</p>
+        <ul>
+          <li><strong>Objectif :</strong> scolariser les enfants.</li>
+          <li><strong>Activités :</strong> construire une école de proximité, aider les familles pour les frais, former des enseignants, sensibiliser contre le travail des enfants.</li>
+        </ul>
+        <p><strong>Erreur fréquente :</strong> se limiter aux symptômes sans chercher les causes profondes. Un projet efficace s'attaque aux causes.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 3 — La planification participative",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Définir ensemble le projet</h3>
+        <p>La <strong>planification participative</strong> est le processus par lequel la communauté, appuyée par l'agent de développement, définit les objectifs, les activités, les ressources, le calendrier et les responsabilités d'un projet.</p>
+        <h4>Les composantes</h4>
+        <ul>
+          <li><strong>Objectif général :</strong> le changement attendu à long terme.</li>
+          <li><strong>Objectifs spécifiques :</strong> les résultats concrets à atteindre.</li>
+          <li><strong>Activités :</strong> les actions à réaliser.</li>
+          <li><strong>Ressources :</strong> humaines, matérielles, financières.</li>
+          <li><strong>Calendrier :</strong> les dates de réalisation.</li>
+          <li><strong>Responsabilités :</strong> qui fait quoi.</li>
+          <li><strong>Indicateurs :</strong> comment mesurer les progrès.</li>
+        </ul>
+        <h4>Le cadre logique</h4>
+        <p>Outil qui relie objectifs, activités, indicateurs et hypothèses. Il permet de structurer le projet de manière cohérente.</p>
+        <p><strong>Erreur fréquente :</strong> planifier sans tenir compte des réalités locales (saison des pluies, disponibilité de la main-d'œuvre, ressources). Le projet échoue ou ne dure pas.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 4 — La mobilisation des ressources locales",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Valoriser ce que la communauté possède</h3>
+        <p>La <strong>mobilisation des ressources locales</strong> consiste à identifier et à valoriser les ressources déjà présentes dans la communauté.</p>
+        <h4>Les types de ressources</h4>
+        <ul>
+          <li><strong>Humaines :</strong> main-d'œuvre bénévole, compétences, savoir-faire traditionnels.</li>
+          <li><strong>Matérielles :</strong> matériaux locaux (sable, pierre, bois), terres, équipements.</li>
+          <li><strong>Financières :</strong> cotisations des habitants, activités génératrices de revenus.</li>
+          <li><strong>Sociales :</strong> réseaux de solidarité, associations, tontines.</li>
+        </ul>
+        <h4>Les partenaires externes</h4>
+        <ul>
+          <li>ONG, associations de développement.</li>
+          <li>État, communes, provinces.</li>
+          <li>Coopération internationale.</li>
+          <li>Églises, secteur privé.</li>
+        </ul>
+        <p><strong>Erreur fréquente :</strong> dépendre uniquement de l'extérieur. La mobilisation des ressources locales est le gage de la durabilité : ce qui vient de la communauté perdure avec elle.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 4 — Les partenariats et les financements",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Travailler avec les autres</h3>
+        <p>Le développement communautaire ne se fait pas en vase clos : il nécessite des partenariats et des financements.</p>
+        <h4>Les partenariats</h4>
+        <ul>
+          <li><strong>ONG locales et internationales :</strong> appui technique et financier.</li>
+          <li><strong>État et collectivités :</strong> autorisations, infrastructures, financements publics.</li>
+          <li><strong>Églises :</strong> mobilisation sociale, infrastructures, financements.</li>
+          <li><strong>Secteur privé :</strong> sponsoring, mécénat, investissements sociaux.</li>
+          <li><strong>Universités et centres de recherche :</strong> expertise, formation.</li>
+        </ul>
+        <h4>Les financements</h4>
+        <ul>
+          <li><strong>Micro-crédit :</strong> pour les activités génératrices de revenus.</li>
+          <li><strong>Subventions :</strong> financements non remboursables de bailleurs.</li>
+          <li><strong>Cotisations :</strong> contributions des membres.</li>
+          <li><strong>Fonds de développement local :</strong> fonds publics dédiés.</li>
+        </ul>
+        <p><strong>Erreur fréquente :</strong> multiplier les partenaires sans coordination. Un projet éclaté entre plusieurs bailleurs perd sa cohérence.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 5 — La gestion et le suivi d'un projet",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Piloter le projet au quotidien</h3>
+        <p><strong>La gestion.</strong> Organisation des activités, coordination des acteurs, gestion des ressources, respect du calendrier et du budget.</p>
+        <h4>Les outils de gestion</h4>
+        <ul>
+          <li><strong>Plan d'action :</strong> détaille les activités, les responsables et les échéances.</li>
+          <li><strong>Budget :</strong> prévoit les recettes et les dépenses.</li>
+          <li><strong>Tableau de bord :</strong> suit les indicateurs clés.</li>
+          <li><strong>Rapports d'avancement :</strong> informent les partenaires.</li>
+        </ul>
+        <p><strong>Le suivi.</strong> Collecte régulière d'informations sur l'avancement du projet, comparaison avec le plan, identification des écarts et ajustements.</p>
+        <h4>Les réunions de suivi</h4>
+        <ul>
+          <li>Fréquence régulière (hebdomadaire, mensuelle).</li>
+          <li>Ordre du jour précis.</li>
+          <li>Compte rendu et décisions.</li>
+        </ul>
+        <p><strong>Erreur fréquente :</strong> négliger le suivi. Les problèmes s'accumulent et le projet dérive.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 5 — La gestion des conflits dans un projet",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Prévenir et résoudre les tensions</h3>
+        <p>Les projets communautaires sont souvent le théâtre de tensions : désaccords sur les priorités, rivalités entre groupes, mauvaise répartition des ressources. La gestion des conflits est une compétence clé de l'agent de développement.</p>
+        <h4>Les sources de conflit</h4>
+        <ul>
+          <li>Désaccord sur les objectifs et les priorités.</li>
+          <li>Répartition inégale des bénéfices du projet.</li>
+          <li>Conflits de leadership.</li>
+          <li>Méfiance vis-à-vis des partenaires.</li>
+        </ul>
+        <h4>Les stratégies de gestion</h4>
+        <ul>
+          <li><strong>Prévention :</strong> transparence, règles claires, communication régulière.</li>
+          <li><strong>Médiation :</strong> intervention d'un tiers neutre pour faciliter le dialogue.</li>
+          <li><strong>Négociation :</strong> recherche d'un accord mutuellement acceptable.</li>
+          <li><strong>Arbitrage :</strong> en dernier recours, décision d'une autorité.</li>
+        </ul>
+        <p><strong>Erreur fréquente :</strong> ignorer les tensions en espérant qu'elles disparaissent. Les conflits non traités s'aggravent et peuvent faire échouer le projet.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 6 — L'évaluation de l'impact",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Mesurer le changement</h3>
+        <p>L'<strong>évaluation</strong> consiste à apprécier les résultats et l'impact du projet par rapport aux objectifs fixés. On distingue :</p>
+        <ul>
+          <li><strong>L'évaluation à mi-parcours :</strong> pour corriger en cours de route.</li>
+          <li><strong>L'évaluation finale :</strong> pour apprécier les résultats atteints.</li>
+          <li><strong>L'évaluation d'impact :</strong> pour mesurer les changements à long terme dans les conditions de vie.</li>
+        </ul>
+        <h4>Les indicateurs</h4>
+        <ul>
+          <li><strong>Quantitatifs :</strong> nombre de bénéficiaires, litres d'eau distribués, taux de scolarisation.</li>
+          <li><strong>Qualitatifs :</strong> satisfaction, changement de comportement, renforcement des capacités.</li>
+        </ul>
+        <h4>Exemple</h4>
+        <p>Après la construction du puits, l'équipe évalue : 300 personnes ont accès à l'eau potable, les maladies diarrhéiques ont diminué, la communauté a créé un comité de gestion pour l'entretien.</p>
+        <p><strong>Erreur fréquente :</strong> évaluer uniquement les réalisations matérielles sans mesurer l'impact sur les conditions de vie et la durabilité.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 6 — La capitalisation",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Apprendre de l'expérience</h3>
+        <p>La <strong>capitalisation</strong> est le processus de documentation et de partage des expériences, des leçons apprises et des bonnes pratiques d'un projet.</p>
+        <h4>Pourquoi capitaliser ?</h4>
+        <ul>
+          <li>Ne pas répéter les mêmes erreurs.</li>
+          <li>Partager les réussites avec d'autres communautés.</li>
+          <li>Renforcer les capacités de l'organisation.</li>
+          <li>Contribuer au plaidoyer et à la recherche de financements.</li>
+        </ul>
+        <h4>Les outils</h4>
+        <ul>
+          <li><strong>Rapport final :</strong> synthèse du projet, résultats, leçons.</li>
+          <li><strong>Fiches de capitalisation :</strong> document court sur une expérience spécifique.</li>
+          <li><strong>Ateliers de partage :</strong> échanges avec d'autres acteurs.</li>
+          <li><strong>Publications et site web :</strong> diffusion large.</li>
+        </ul>
+        <p><strong>Erreur fréquente :</strong> ne pas documenter le projet une fois terminé. Sans capitalisation, l'expérience est perdue et ne bénéficie à personne.</p>
+      </div>
+    `
+  },
+  {
+    title: "Méthode — Accompagner un projet communautaire",
+    content: `
+      <div class="bloc exemple">
+        <div class="bloc-label">Méthode</div>
+        <h3>Un cas pratique pas à pas</h3>
+        <p><strong>Situation.</strong> Un groupe d'élèves de 4<sup>e</sup> commerciale à Kinshasa accompagne un quartier de Matete dans un projet d'assainissement.</p>
+        <h4>Étape 1 — Diagnostic</h4>
+        <p>Réunions avec les habitants, observation du quartier, entretiens avec le chef de quartier et les associations. Constat : déchets accumulés, manque de poubelles, maladies fréquentes.</p>
+        <h4>Étape 2 — Restitution</h4>
+        <p>Présentation des résultats à la communauté. Priorisation : l'assainissement est la priorité n° 1.</p>
+        <h4>Étape 3 — Planification</h4>
+        <p>Objectif : réduire les déchets et améliorer la salubrité. Activités : journées de salubrité mensuelles, installation de poubelles, sensibilisation des habitants. Ressources : main-d'œuvre bénévole, matériaux locaux, appui de la commune. Calendrier : 6 mois.</p>
+        <h4>Étape 4 — Mobilisation</h4>
+        <p>Sensibilisation des habitants, mobilisation des jeunes, demande d'appui à la commune et à une ONG locale.</p>
+        <h4>Étape 5 — Réalisation et suivi</h4>
+        <p>Journées de salubrité, installation des poubelles, réunions de suivi mensuelles, ajustements.</p>
+        <h4>Étape 6 — Évaluation et capitalisation</h4>
+        <p>Réduction visible des déchets, diminution des maladies, satisfaction des habitants. Rédaction d'un rapport et partage de l'expérience.</p>
+        <p><strong>Erreur à éviter :</strong> vouloir tout faire sans la communauté. C'est la participation qui fait la différence.</p>
+      </div>
+    `
+  },
+  {
+    title: "Synthèse — Accompagner la communauté vers l'autonomie",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Synthèse</div>
+        <h3>Ce qu'il faut retenir</h3>
+        <p>Le développement communautaire est un processus participatif et durable, qui vise à renforcer la capacité des communautés à améliorer leurs conditions de vie par elles-mêmes.</p>
+        <ul>
+          <li><strong>Principes :</strong> participation, autonomisation, durabilité, équité.</li>
+          <li><strong>Diagnostic :</strong> collecte de données, analyse des besoins, arbre à problèmes.</li>
+          <li><strong>Planification :</strong> objectifs, activités, ressources, calendrier, responsabilités, indicateurs.</li>
+          <li><strong>Mobilisation :</strong> ressources locales (main-d'œuvre, matériaux, savoir-faire) et partenaires externes.</li>
+          <li><strong>Gestion :</strong> coordination, suivi, gestion des conflits.</li>
+          <li><strong>Évaluation :</strong> indicateurs quantitatifs et qualitatifs, impact.</li>
+          <li><strong>Capitalisation :</strong> documenter et partager les leçons apprises.</li>
+        </ul>
+        <p>Dans le contexte congolais, où les communautés font face à de nombreux défis (pauvreté, infrastructures, santé, éducation), le développement communautaire est un levier essentiel pour améliorer les conditions de vie de manière durable.</p>
+      </div>
+    `
+  },
+  {
+    title: "Évaluation finale — Développement Communautaire",
+    content: `
+      <p>Répondez aux questions suivantes pour vérifier votre compréhension du cours. Une seule réponse est correcte par question.</p>
+      <div class="quiz-container">
+        <div id="quizQuestions"></div>
+        <button id="submitQuiz" class="quiz-btn-submit">
+          Valider mes réponses
+        </button>
+        <div id="quizResult" class="quiz-result"></div>
+      </div>
+    `
+  }
+];
+const questions = [
+  {
+    text: "Le développement communautaire est :",
+    options: [
+      "Un processus participatif d'amélioration des conditions de vie",
+      "Une aide extérieure imposée",
+      "Une action individuelle",
+      "Une entreprise privée"
+    ],
+    correct: 0
+  },
+  {
+    text: "La participation est :",
+    options: [
+      "Un principe du développement communautaire",
+      "Une option",
+      "Une contrainte",
+      "Un luxe"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'autonomisation vise à :",
+    options: [
+      "Rendre la communauté dépendante",
+      "Renforcer la capacité de la communauté à agir elle-même",
+      "Imposer des solutions",
+      "Ignorer les habitants"
+    ],
+    correct: 1
+  },
+  {
+    text: "Le diagnostic communautaire sert à :",
+    options: [
+      "Identifier les besoins et les ressources",
+      "Imposer un projet",
+      "Ignorer la communauté",
+      "Vendre des produits"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'arbre à problèmes permet de :",
+    options: [
+      "Identifier et hiérarchiser les problèmes",
+      "Planter des arbres",
+      "Calculer un budget",
+      "Recruter du personnel"
+    ],
+    correct: 0
+  },
+  {
+    text: "La planification participative implique :",
+    options: [
+      "La communauté dans la définition des objectifs",
+      "Uniquement les experts",
+      "Uniquement l'État",
+      "Personne"
+    ],
+    correct: 0
+  },
+  {
+    text: "Un partenaire possible d'un projet communautaire est :",
+    options: ["Une ONG", "Un concurrent", "Un client", "Un fournisseur"],
+    correct: 0
+  },
+  {
+    text: "La mobilisation des ressources locales vise à :",
+    options: [
+      "Dépendre de l'extérieur",
+      "Valoriser les ressources de la communauté",
+      "Ignorer les habitants",
+      "Augmenter les coûts"
+    ],
+    correct: 1
+  },
+  {
+    text: "Le suivi d'un projet permet de :",
+    options: [
+      "Vérifier l'avancement et ajuster",
+      "Ignorer les problèmes",
+      "Arrêter le projet",
+      "Remplacer l'évaluation"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'évaluation mesure :",
+    options: [
+      "Les résultats et l'impact",
+      "Uniquement les dépenses",
+      "Uniquement le nombre de réunions",
+      "La popularité du chef"
+    ],
+    correct: 0
+  },
+  {
+    text: "Un indicateur quantitatif est :",
+    options: [
+      "Le nombre de bénéficiaires",
+      "La satisfaction",
+      "La motivation",
+      "La confiance"
+    ],
+    correct: 0
+  },
+  {
+    text: "La capitalisation consiste à :",
+    options: [
+      "Documenter les leçons apprises",
+      "Détruire les documents",
+      "Vendre le projet",
+      "Ignorer l'expérience"
+    ],
+    correct: 0
+  },
+  {
+    text: "Un projet durable est un projet qui :",
+    options: [
+      "Perdure après le départ des partenaires",
+      "S'arrête immédiatement",
+      "Dépend éternellement de l'aide",
+      "Ne profite à personne"
+    ],
+    correct: 0
+  },
+  {
+    text: "La communauté doit être :",
+    options: [
+      "Actrice de son développement",
+      "Passive",
+      "Ignorée",
+      "Exclue"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le diagnostic participatif se fait :",
+    options: [
+      "Avec la communauté",
+      "Sans la communauté",
+      "Uniquement en laboratoire",
+      "Par des étrangers seuls"
+    ],
+    correct: 0
+  },
+  {
+    text: "Un comité de gestion sert à :",
+    options: [
+      "Assurer la pérennité du projet",
+      "Dilapider les fonds",
+      "Arrêter le projet",
+      "Exclure les habitants"
+    ],
+    correct: 0
+  },
+  {
+    text: "Les ressources locales incluent :",
+    options: [
+      "La main-d'œuvre et les matériaux locaux",
+      "Uniquement l'argent",
+      "Uniquement les machines",
+      "Uniquement les experts"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'évaluation à mi-parcours permet de :",
+    options: [
+      "Corriger le projet en cours",
+      "Attendre la fin",
+      "Ignorer les problèmes",
+      "Arrêter le projet"
+    ],
+    correct: 0
+  },
+  {
+    text: "La durabilité d'un projet dépend de :",
+    options: [
+      "L'appropriation par la communauté",
+      "L'abandon",
+      "La dépendance",
+      "L'absence de suivi"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'objectif principal du développement communautaire en 4e Humanité est de :",
+    options: [
+      "Former des agents de développement capables d'accompagner les communautés",
+      "Remplacer l'État",
+      "Étudier la littérature",
+      "Gérer les stocks"
+    ],
+    correct: 0
+  }
+];
+
+try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+        questions.forEach(function (q) {
+            if (!q.text) q.text = q.question || q.q || q.enonce || q.titre || "";
+            if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+            if (typeof q.correct === "undefined") {
+                if (typeof q.answer !== "undefined") q.correct = q.answer;
+                else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+            }
+        });
+    }
+} catch (e) {}
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+const pageTitle = document.getElementById('pageTitle');
+pageTitle.textContent = "ECOLIA · " + COURSE_TITLE;
+document.title = "ECOLIA — " + COURSE_TITLE;
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim() || slides.length === 0) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp("(" + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ")", 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderEmptyState() {
+    contentDiv.innerHTML = '<div class="empty-state"><div class="icon">·</div><span class="tag">Bientôt disponible</span><h2>' + COURSE_TITLE + '</h2><p>Ce cours est en préparation. Le contenu sera ajouté prochainement.</p></div>';
+    slideCounterSpan.textContent = '0/0';
+    progressFill.style.width = '0%';
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    counterSpan.textContent = '—';
+}
+
+function renderQuiz() {
+    const qc = document.getElementById('quizQuestions');
+    if (!qc) return;
+    if (typeof questions === 'undefined' || questions.length === 0) {
+        qc.innerHTML = '<p style="color:#666;font-style:italic;">Quiz bientot disponible.</p>';
+        return;
+    }
+    let html = '';
+    questions.forEach((q, i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o, k) => {
+            html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>';
+        });
+        html += '</div>';
+    });
+    qc.innerHTML = html;
+    const submitBtn = document.getElementById('submitQuiz');
+    if (submitBtn) {
+        submitBtn.onclick = () => {
+            let score = 0;
+            questions.forEach((q, i) => {
+                const s = document.querySelector('input[name="q' + i + '"]:checked');
+                if (s && parseInt(s.value) === q.correct) score++;
+            });
+            const pct = Math.round(score/questions.length*100);
+            document.getElementById('quizResult').innerHTML =
+                '<div style="background:var(--bg2);padding:16px;border-radius:10px;margin-top:14px;">' +
+                '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong></div>';
+        };
+    }
+}
+
+function renderSlide(index, keepHighlight) {
+    if (keepHighlight === undefined) keepHighlight = true;
+    if (slides.length === 0) { renderEmptyState(); return; }
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    if (index === slides.length - 1) renderQuiz();
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    if (slides.length === 0) return;
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (slides.length && currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (slides.length && currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+<!-- ECOLIA_IMAGE_LOADER_START -->
+<script>
+(function () {
+  var SITE = "https://ecolia-course.github.io/";
+  var NATIVE = false;
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function abs(u) { return /^(https?:|data:|blob:)/i.test(u) ? u : (NATIVE ? SITE + u.replace(/^(\.\/|\/)+/, "") : u); }
+  function ext(u) { var m = String(u).split("?")[0].match(/\.(jpe?g|png|gif|webp|svg)$/i); return m ? m[1].toLowerCase() : "jpg"; }
+  function hide(img) { img.onerror = null; img.style.display = "none"; }
+  var table = null, queue = [], queued = {}, running = false;
+  function enqueue(full, fn) {
+    if (queued[fn]) return;
+    queued[fn] = 1; queue.push([full, fn]);
+    if (!running) { running = true; setTimeout(next, 2500); }
+  }
+  function next() {
+    if (!queue.length) { running = false; return; }
+    if (!navigator.onLine) { running = false; return; }
+    var q = queue.shift(), t0 = Date.now();
+    try { CoursInterface.download(q[0], q[1]); } catch (e) { return setTimeout(next, 500); }
+    (function wait() {
+      var ok = false;
+      try { ok = !!CoursInterface.exists(q[1]); } catch (e) {}
+      if (ok) setTimeout(next, 1500);
+      else if (Date.now() - t0 > 40000) next();
+      else setTimeout(wait, 700);
+    })();
+  }
+  function exists(fn) { try { return !!CoursInterface.exists(fn); } catch (e) { return false; } }
+  function show(img) {
+    if (!table || img.getAttribute("data-ecolia-done")) return;
+    var id = img.getAttribute("data-image-id");
+    var url = table[id];
+    if (typeof url !== "string" || !url.length) { console.warn("ECOLIA : image absente du JSON :", id); return; }
+    img.setAttribute("data-ecolia-done", "1");
+    if (!NATIVE) { img.onerror = function () { hide(img); }; img.setAttribute("src", url); return; }
+    var full = abs(url), fn = "img_" + id + "." + ext(url);
+    if (exists(fn)) {
+      img.onerror = function () {
+        try { CoursInterface["delete"](fn); } catch (e) {}
+        queued[fn] = 0;
+        img.onerror = function () { hide(img); };
+        img.setAttribute("src", full);
+      };
+      img.setAttribute("src", "https://app.local/cours/" + fn);
+    } else {
+      img.onerror = function () { hide(img); };
+      img.setAttribute("src", full);
+      enqueue(full, fn);
+    }
+  }
+  function scan(root) {
+    if (!root || !root.querySelectorAll) return;
+    if (root.matches && root.matches("img[data-image-id]")) show(root);
+    root.querySelectorAll("img[data-image-id]").forEach(show);
+  }
+  function prefetchAll() {
+    var ids = {};
+    try { JSON.stringify(slides).replace(/data-image-id=\\?"([^"\\]+)/g, function (m, id) { ids[id] = 1; }); } catch (e) {}
+    Object.keys(ids).forEach(function (id) {
+      var url = table[id];
+      if (typeof url !== "string" || !url.length) return;
+      var fn = "img_" + id + "." + ext(url);
+      if (!exists(fn)) enqueue(abs(url), fn);
+    });
+  }
+  function start(tbl) {
+    table = tbl;
+    scan(document.body);
+    new MutationObserver(function (muts) {
+      muts.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.nodeType === 1) scan(n); }); });
+    }).observe(document.body, { childList: true, subtree: true });
+    if (NATIVE) prefetchAll();
+  }
+  var JSON_URL = NATIVE ? SITE + "images_ecolia.json" : "images_ecolia.json";
+  var KEY = "ecolia_images_json";
+  fetch(JSON_URL, NATIVE ? { cache: "no-cache" } : undefined)
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (table) { if (NATIVE) lsSet(KEY, JSON.stringify(table)); start(table); })
+    .catch(function (e) {
+      var saved = null;
+      if (NATIVE) { try { saved = JSON.parse(lsGet(KEY) || "null"); } catch (x) {} }
+      if (saved) start(saved);
+      else console.warn("ECOLIA : JSON des images indisponible.", e);
+    });
+})();
+</script>
+<!-- ECOLIA_IMAGE_LOADER_END -->
+
+
+
+<!-- ECOLIA_AUDIO_PLAYER_START -->
+<style>
+  #ecolia-audio-btn, #ecolia-dl-btn {
+    width: 30px; height: 30px; min-width: 30px; padding: 0; margin: 0 4px 0 0;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    cursor: pointer; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent; outline: none;
+  }
+  #ecolia-audio-btn { border: none; background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-dl-btn { border: 1.5px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb); }
+  #ecolia-dl-btn.ecolia-full { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-btn.ecolia-fixed { position: fixed; top: 8px; left: 8px; z-index: 2147483000; }
+  #ecolia-audio-btn:active, #ecolia-dl-btn:active { transform: scale(.92); }
+  #ecolia-audio-btn svg, #ecolia-dl-btn svg { width: 15px; height: 15px; fill: currentColor; pointer-events: none; }
+  #ecolia-audio-btn.ecolia-off, #ecolia-dl-btn.ecolia-off { display: none; }
+  #ecolia-audio-banner {
+    display: none; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0;
+    padding: 8px 14px; font-size: .82rem; line-height: 1.35;
+    background: var(--soft, #eef3fb); color: var(--p1, #123); border-bottom: 1px solid var(--bd, #c9d6ea);
+  }
+  #ecolia-audio-banner.on { display: flex; }
+  #ecolia-audio-banner .eab-txt { flex: 1 1 180px; }
+  #ecolia-audio-banner .eab-act { display: flex; gap: 6px; flex-wrap: wrap; }
+  #ecolia-audio-banner button {
+    border: 1px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb);
+    border-radius: 16px; padding: 5px 12px; font-size: .8rem; cursor: pointer;
+  }
+  #ecolia-audio-banner button.pri { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-banner .eab-bar { display: none; flex-basis: 100%; height: 4px; border-radius: 2px; overflow: hidden; background: var(--bd, #c9d6ea); }
+  #ecolia-audio-banner .eab-bar i { display: block; height: 100%; width: 0; background: var(--p2, #2563eb); transition: width .2s; }
+</style>
+<script>
+(function () {
+  var CFG = {"code":"DeveloppementCommunautaire4","base":"https://ecolia-course.github.io/ecolia-media/audio_files/","available":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],"count":16,"sizeMo":9,"sizes":{"1":700416,"2":438144,"3":610944,"4":506112,"5":660288,"6":545472,"7":579840,"8":525696,"9":538752,"10":480192,"11":524160,"12":551424,"13":468096,"14":831744,"15":633216,"16":91008},"fallback":{"1":[["fr","Sommaire, Développement Communautaire. Bienvenue dans le cours de Développement Communautaire. Ce cours de Développement Communautaire s'adresse aux élèves de la 4e année des Humanités, section Commerciale et Gestion (options sociales). Il vous apprendra à accompagner un processus de développement communautaire, depuis le diagnostic jusqu'à l'évaluation, en mobilisant la participation des habitants et les ressources locales. Objectifs du cours. Définir le développement communautaire et ses principes. Réaliser un diagnostic communautaire simple. Planifier un projet communautaire participatif. Mobiliser les ressources locales et les partenaires. Gérer et suivre un projet. Évaluer l'impact d'un projet. Les grands chapitres du cours. Introduction au développement communautaire. Le diagnostic communautaire. La planification participative. La mobilisation des ressources. La gestion et le suivi d'un projet. L'évaluation et la capitalisation. Compétences visées: à la fin de ce cours, vous serez capable d'accompagner une communauté dans l'identification de ses besoins, la planification et la réalisation de projets participatifs, et l'évaluation de leur impact. Ce cours est complémentaire du cours d'Animation Sociale (qui traite de l'animation des groupes au quotidien)."]],"2":[["fr","Chapitre 1, Pourquoi le développement communautaire? Situation-problème. Un puits qui ne fonctionne plus. Dans un village de Bandundu, une ONG a construit un puits il y a trois ans. Aujourd'hui, la pompe est cassée, personne ne sait comment la réparer, et le puits est abandonné. Les habitants doivent parcourir plusieurs kilomètres pour trouver de l'eau. L'ONG, qui a financé le projet, est repartie sans avoir formé de comité de gestion ni prévu l'entretien. Question de départ: Comment faire pour qu'un projet communautaire dure après le départ des partenaires? Le développement communautaire répond à cette question: il ne s'agit pas seulement de construire, mais d'accompagner la communauté pour qu'elle s'approprie le projet, le gère et le maintienne. La durabilité est au cœur de la démarche."]],"3":[["fr","Chapitre 1, Définition et principes. Fondements théoriques. Un processus participatif et durable. Les principes du développement communautaire. Le développement communautaire est un processus par lequel les membres d'une communauté, avec l'appui de partenaires, identifient leurs besoins, définissent leurs priorités, planifient et réalisent des actions collectives pour améliorer leurs conditions de vie, dans une perspective durable. Les principes. Participation: la communauté est actrice de son développement, pas simple bénéficiaire. Autonomisation: renforcement des capacités locales pour que la communauté puisse agir par elle-même. Durabilité: actions qui perdurent après le départ des partenaires. Équité: prise en compte des plus vulnérables (femmes, enfants, personnes handicapées). Respect des cultures locales: les solutions doivent s'appuyer sur les savoir-faire et les valeurs de la communauté. Erreur fréquente: croire que le développement communautaire consiste à apporter des solutions toutes faites. Il vise à renforcer la capacité de la communauté à résoudre ses propres problèmes."]],"4":[["fr","Chapitre 1, L'approche participative. Fondements théoriques. La communauté actrice. L'approche participative est au cœur du développement communautaire. Elle repose sur l'idée que la communauté n'est pas un simple bénéficiaire mais un partenaire actif: les décisions sont prises avec elle, pas pour elle. Les niveaux de participation. Participation consultative: la communauté est consultée, mais les décisions sont prises ailleurs. Participation associative: la communauté participe à l'exécution des activités. Participation décisionnelle: la communauté participe à toutes les étapes, y compris les décisions. L'objectif du développement communautaire est d'atteindre le niveau décisionnel, qui garantit l'appropriation et la durabilité. Erreur fréquente: se contenter d'une participation consultative et croire que la communauté est impliquée. La vraie participation va jusqu'à la décision."]],"5":[["fr","Chapitre 2, Le diagnostic communautaire. Fondements théoriques. Connaître la communauté. Le diagnostic participatif: écouter la communauté. Le diagnostic communautaire est un processus de collecte et d'analyse d'informations sur une communauté, afin d'identifier ses besoins, ses problèmes, ses ressources et ses priorités. Les étapes. Préparation: définir les objectifs, constituer l'équipe, choisir les outils. Collecte de données: enquêtes, entretiens, observation, réunions avec la communauté. Analyse: identification des problèmes, hiérarchisation, recherche des causes. Restitution: partager les résultats avec la communauté pour validation. Les outils. Questionnaire: recueillir des données quantitatives. Guide d'entretien: explorer les perceptions et les expériences. Carte communautaire: représenter le territoire et ses ressources. Diagramme de Venn: visualiser les relations entre acteurs. Arbre à problèmes: identifier les causes et les conséquences d'un problème. Erreur fréquente: réaliser un diagnostic sans la communauté. Les données recueillies sans participation sont souvent incomplètes ou biaisées."]],"6":[["fr","Chapitre 2, L'arbre à problèmes. Fondements théoriques. Identifier et hiérarchiser les problèmes. L'arbre à problèmes est un outil visuel qui permet d'analyser un problème central en identifiant ses causes (racines) et ses conséquences (branches). Exemple. Problème central: « Les enfants du quartier ne sont pas scolarisés. ». Causes: école éloignée, frais scolaires trop élevés, manque d'enseignants, travail des enfants. Conséquences: analphabétisme, chômage, délinquance, pauvreté persistante. L'arbre à objectifs. On transforme ensuite les problèmes en objectifs positifs: « Les enfants du quartier sont scolarisés. » Ce qui donne: Objectif: scolariser les enfants. Activités: construire une école de proximité, aider les familles pour les frais, former des enseignants, sensibiliser contre le travail des enfants. Erreur fréquente: se limiter aux symptômes sans chercher les causes profondes. Un projet efficace s'attaque aux causes."]],"7":[["fr","Chapitre 3, La planification participative. Fondements théoriques. Définir ensemble le projet. La planification participative est le processus par lequel la communauté, appuyée par l'agent de développement, définit les objectifs, les activités, les ressources, le calendrier et les responsabilités d'un projet. Les composantes. Objectif général: le changement attendu à long terme. Objectifs spécifiques: les résultats concrets à atteindre. Activités: les actions à réaliser. Ressources: humaines, matérielles, financières. Calendrier: les dates de réalisation. Responsabilités: qui fait quoi. Indicateurs: comment mesurer les progrès. Le cadre logique. Outil qui relie objectifs, activités, indicateurs et hypothèses. Il permet de structurer le projet de manière cohérente. Erreur fréquente: planifier sans tenir compte des réalités locales (saison des pluies, disponibilité de la main-d'œuvre, ressources). Le projet échoue ou ne dure pas."]],"8":[["fr","Chapitre 4, La mobilisation des ressources locales. Fondements théoriques. Valoriser ce que la communauté possède. La mobilisation des ressources locales consiste à identifier et à valoriser les ressources déjà présentes dans la communauté. Les types de ressources. Humaines: main-d'œuvre bénévole, compétences, savoir-faire traditionnels. Matérielles: matériaux locaux (sable, pierre, bois), terres, équipements. Financières: cotisations des habitants, activités génératrices de revenus. Sociales: réseaux de solidarité, associations, tontines. Les partenaires externes. ONG, associations de développement. État, communes, provinces. Coopération internationale. Églises, secteur privé. Erreur fréquente: dépendre uniquement de l'extérieur. La mobilisation des ressources locales est le gage de la durabilité: ce qui vient de la communauté perdure avec elle."]],"9":[["fr","Chapitre 4, Les partenariats et les financements. Fondements théoriques. Travailler avec les autres. Le développement communautaire ne se fait pas en vase clos: il nécessite des partenariats et des financements. Les partenariats. ONG locales et internationales: appui technique et financier. État et collectivités: autorisations, infrastructures, financements publics. Églises: mobilisation sociale, infrastructures, financements. Secteur privé: sponsoring, mécénat, investissements sociaux. Universités et centres de recherche: expertise, formation. Les financements. Micro-crédit: pour les activités génératrices de revenus. Subventions: financements non remboursables de bailleurs. Cotisations: contributions des membres. Fonds de développement local: fonds publics dédiés. Erreur fréquente: multiplier les partenaires sans coordination. Un projet éclaté entre plusieurs bailleurs perd sa cohérence."]],"10":[["fr","Chapitre 5, La gestion et le suivi d'un projet. Fondements théoriques. Piloter le projet au quotidien. La gestion. Organisation des activités, coordination des acteurs, gestion des ressources, respect du calendrier et du budget. Les outils de gestion. Plan d'action: détaille les activités, les responsables et les échéances. Budget: prévoit les recettes et les dépenses. Tableau de bord: suit les indicateurs clés. Rapports d'avancement: informent les partenaires. Le suivi. Collecte régulière d'informations sur l'avancement du projet, comparaison avec le plan, identification des écarts et ajustements. Les réunions de suivi. Fréquence régulière (hebdomadaire, mensuelle). Ordre du jour précis. Compte rendu et décisions. Erreur fréquente: négliger le suivi. Les problèmes s'accumulent et le projet dérive."]],"11":[["fr","Chapitre 5, La gestion des conflits dans un projet. Fondements théoriques. Prévenir et résoudre les tensions. Les projets communautaires sont souvent le théâtre de tensions: désaccords sur les priorités, rivalités entre groupes, mauvaise répartition des ressources. La gestion des conflits est une compétence clé de l'agent de développement. Les sources de conflit. Désaccord sur les objectifs et les priorités. Répartition inégale des bénéfices du projet. Conflits de leadership. Méfiance vis-à-vis des partenaires. Les stratégies de gestion. Prévention: transparence, règles claires, communication régulière. Médiation: intervention d'un tiers neutre pour faciliter le dialogue. Négociation: recherche d'un accord mutuellement acceptable. Arbitrage: en dernier recours, décision d'une autorité. Erreur fréquente: ignorer les tensions en espérant qu'elles disparaissent. Les conflits non traités s'aggravent et peuvent faire échouer le projet."]],"12":[["fr","Chapitre 6, L'évaluation de l'impact. Fondements théoriques. Mesurer le changement. L'évaluation consiste à apprécier les résultats et l'impact du projet par rapport aux objectifs fixés. On distingue: L'évaluation à mi-parcours: pour corriger en cours de route. L'évaluation finale: pour apprécier les résultats atteints. L'évaluation d'impact: pour mesurer les changements à long terme dans les conditions de vie. Les indicateurs. Quantitatifs: nombre de bénéficiaires, litres d'eau distribués, taux de scolarisation. Qualitatifs: satisfaction, changement de comportement, renforcement des capacités. Exemple. Après la construction du puits, l'équipe évalue: 300 personnes ont accès à l'eau potable, les maladies diarrhéiques ont diminué, la communauté a créé un comité de gestion pour l'entretien. Erreur fréquente: évaluer uniquement les réalisations matérielles sans mesurer l'impact sur les conditions de vie et la durabilité."]],"13":[["fr","Chapitre 6, La capitalisation. Fondements théoriques. Apprendre de l'expérience. La capitalisation est le processus de documentation et de partage des expériences, des leçons apprises et des bonnes pratiques d'un projet. Pourquoi capitaliser? Ne pas répéter les mêmes erreurs. Partager les réussites avec d'autres communautés. Renforcer les capacités de l'organisation. Contribuer au plaidoyer et à la recherche de financements. Les outils. Rapport final: synthèse du projet, résultats, leçons. Fiches de capitalisation: document court sur une expérience spécifique. Ateliers de partage: échanges avec d'autres acteurs. Publications et site web: diffusion large. Erreur fréquente: ne pas documenter le projet une fois terminé. Sans capitalisation, l'expérience est perdue et ne bénéficie à personne."]],"14":[["fr","Méthode, Accompagner un projet communautaire. Méthode. Un cas pratique pas à pas. Situation. Un groupe d'élèves de 4e commerciale à Kinshasa accompagne un quartier de Matete dans un projet d'assainissement. Étape 1, Diagnostic. Réunions avec les habitants, observation du quartier, entretiens avec le chef de quartier et les associations. Constat: déchets accumulés, manque de poubelles, maladies fréquentes. Étape 2, Restitution. Présentation des résultats à la communauté. Priorisation: l'assainissement est la priorité n° 1. Étape 3, Planification. Objectif: réduire les déchets et améliorer la salubrité. Activités: journées de salubrité mensuelles, installation de poubelles, sensibilisation des habitants. Ressources: main-d'œuvre bénévole, matériaux locaux, appui de la commune. Calendrier: 6 mois. Étape 4, Mobilisation. Sensibilisation des habitants, mobilisation des jeunes, demande d'appui à la commune et à une ONG locale. Étape 5, Réalisation et suivi. Journées de salubrité, installation des poubelles, réunions de suivi mensuelles, ajustements. Étape 6, Évaluation et capitalisation. Réduction visible des déchets, diminution des maladies, satisfaction des habitants. Rédaction d'un rapport et partage de l'expérience. Erreur à éviter: vouloir tout faire sans la communauté. C'est la participation qui fait la différence."]],"15":[["fr","Synthèse, Accompagner la communauté vers l'autonomie. Synthèse. Ce qu'il faut retenir. Le développement communautaire est un processus participatif et durable, qui vise à renforcer la capacité des communautés à améliorer leurs conditions de vie par elles-mêmes. Principes: participation, autonomisation, durabilité, équité. Diagnostic: collecte de données, analyse des besoins, arbre à problèmes. Planification: objectifs, activités, ressources, calendrier, responsabilités, indicateurs. Mobilisation: ressources locales (main-d'œuvre, matériaux, savoir-faire) et partenaires externes. Gestion: coordination, suivi, gestion des conflits. Évaluation: indicateurs quantitatifs et qualitatifs, impact. Capitalisation: documenter et partager les leçons apprises. Dans le contexte congolais, où les communautés font face à de nombreux défis (pauvreté, infrastructures, santé, éducation), le développement communautaire est un levier essentiel pour améliorer les conditions de vie de manière durable."]],"16":[["fr","Évaluation finale, Développement Communautaire. Répondez aux questions suivantes pour vérifier votre compréhension du cours. Une seule réponse est correcte par question."]]}};
+  var CACHE = "ecolia-cours-v1";                       // même cache que l'application
+  var PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  var PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+  var DL = '<svg viewBox="0 0 24 24"><path d="M11 3h2v9.2l3.6-3.6L18 10l-6 6-6-6 1.4-1.4L11 12.2V3zM5 19h14v2H5z"/></svg>';
+  var OK = '<svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>';
+  // Réparation du quiz : certains cours stockent les choix sous "opts" (ou autre) au lieu de "options"
+  try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+      questions.forEach(function (q) {
+        if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+        if (q.text === undefined) q.text = q.question || q.q || q.enonce || q.titre || "";
+        if (typeof q.correct === "undefined") {
+          if (typeof q.answer !== "undefined") q.correct = q.answer;
+          else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+        }
+      });
+    }
+  } catch (e) {}
+  var synth = window.speechSynthesis || null;
+  var HAS_CACHE = !!(window.caches && window.caches.open);
+  var NATIVE = false;           // APK ECOLIA : pont Java "CoursInterface" (fichiers dans le dossier de l'application)
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  var LATER = "ecolia_audio_later_" + CFG.code;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+  function init() {
+    if (document.getElementById("ecolia-audio-btn")) return;
+
+    // ---------- éléments de l'interface ----------
+    var btn = document.createElement("button");
+    btn.id = "ecolia-audio-btn"; btn.type = "button"; btn.className = "ecolia-off";
+    btn.setAttribute("aria-label", "Écouter la leçon"); btn.innerHTML = PLAY;
+    var dlBtn = document.createElement("button");
+    dlBtn.id = "ecolia-dl-btn"; dlBtn.type = "button"; dlBtn.className = "ecolia-off";
+    dlBtn.innerHTML = DL;
+    var host = document.querySelector(".header-right");
+    if (host) { host.insertBefore(dlBtn, host.firstChild); host.insertBefore(btn, dlBtn); }   // dans la barre du haut : ne scrolle jamais
+    else { btn.className += " ecolia-fixed"; document.body.appendChild(btn); }
+
+    var banner = document.createElement("div");
+    banner.id = "ecolia-audio-banner";
+    banner.innerHTML = '<span class="eab-txt"></span><span class="eab-act"></span><div class="eab-bar"><i></i></div>';
+    var content = document.getElementById("content");
+    if (content && content.parentNode) content.parentNode.insertBefore(banner, content);
+    else document.body.insertBefore(banner, document.body.firstChild);
+    var txtEl = banner.querySelector(".eab-txt"), actEl = banner.querySelector(".eab-act");
+    var barEl = banner.querySelector(".eab-bar"), barI = barEl.firstChild;
+
+    var audio = new Audio();            // un seul élément Audio, réutilisé (exigé par les navigateurs mobiles)
+    audio.preload = "auto";
+    var st = { idx: -1, auto: false, advancing: false, mode: null, speaking: false, token: 0, chunks: [], ci: 0, blobUrl: null, playTok: 0 };
+    var dl = { state: "none", cached: 0, busy: false, cancel: false };   // none | partial | full
+    var bnMode = null, hideTimer = null;
+    if (synth && synth.getVoices) { try { synth.getVoices(); } catch (e) {} }
+
+    function cur() {
+      try { if (typeof currentSlide === "number") return currentSlide; } catch (e) {}
+      return 0;
+    }
+    function hasMp3(i) { return CFG.available.indexOf(i + 1) !== -1; }
+    function fb(i) { return CFG.fallback && CFG.fallback[String(i + 1)]; }
+    function hasAudio(i) { return hasMp3(i) || (!!synth && !!fb(i)); }
+    function urlN(n) {   // dans l'APK la page est sur https://app.local : une adresse relative doit pointer vers le site
+      var b = CFG.base;
+      if (NATIVE && !/^https?:/i.test(b)) b = "https://ecolia-course.github.io/" + b.replace(/^(\.\.\/|\.\/)+/, "");
+      return new URL(b + nameN(n), location.href).href;
+    }
+    function setIcon(playing) { btn.innerHTML = playing ? PAUSE : PLAY; }
+    function isPlaying() { return st.mode === "mp3" ? !audio.paused : (st.mode === "tts" && st.speaking); }
+    function mo() { return "≈ " + CFG.sizeMo + " Mo"; }
+    function nameN(n) { return "audio_" + CFG.code + "_" + n + ".mp3"; }
+
+    // ====================================================================
+    //  Stockage hors ligne : 2 moteurs, même interface
+    //    - APK : fichiers du dossier de l'application (CoursInterface), servis par https://app.local/cours/
+    //    - Web : Cache Storage du navigateur (même cache que l'application web)
+    // ====================================================================
+    function nativeStore() {
+      var okKey = "ecolia_audio_ok_" + CFG.code;
+      function readOk() { try { return JSON.parse(lsGet(okKey) || "[]"); } catch (e) { return []; } }
+      function writeOk(a) { lsSet(okKey, JSON.stringify(a)); }
+      function exists(n) { try { return !!CoursInterface.exists(nameN(n)); } catch (e) { return false; } }
+      function local(n) { return location.origin + "/cours/" + nameN(n); }
+      function verify(n) {                                   // fichier complet ? (taille exacte connue à la génération)
+        return fetch(local(n), { cache: "no-store" }).then(function (r) { return r.blob(); }).then(function (b) {
+          var exp = CFG.sizes && CFG.sizes[String(n)];
+          return (b.size > 2000 && (!exp || b.size === exp)) ? b : null;
+        }).catch(function () { return null; });
+      }
+      return {
+        list: function () {
+          var ok = readOk().filter(exists); writeOk(ok); return Promise.resolve(ok);
+        },
+        get: function (n) { return exists(n) ? verify(n) : Promise.resolve(null); },
+        put: function (n) {
+          return new Promise(function (res, rej) {
+            try { CoursInterface.download(urlN(n), nameN(n)); } catch (e) { return rej(e); }
+            var t0 = Date.now();
+            function next() { if (Date.now() - t0 > 120000) rej(new Error("délai dépassé")); else setTimeout(poll, 800); }
+            function poll() {
+              if (!exists(n)) return next();
+              verify(n).then(function (b) {
+                if (!b) return next();
+                var ok = readOk(); if (ok.indexOf(n) < 0) ok.push(n); writeOk(ok); res();
+              });
+            }
+            setTimeout(poll, 800);
+          });
+        },
+        del: function (n) {
+          try { CoursInterface.delete(nameN(n)); } catch (e) {}
+          writeOk(readOk().filter(function (x) { return x !== n; }));
+          return Promise.resolve();
+        }
+      };
+    }
+    function cacheStore() {
+      return {
+        list: function () {
+          return caches.open(CACHE).then(function (c) {
+            return Promise.all(CFG.available.map(function (n) {
+              return c.match(urlN(n)).then(function (r) {
+                if (!r) return 0;
+                if ((r.headers.get("content-type") || "").indexOf("audio") !== 0) { c.delete(urlN(n)); return 0; }   // ancien contenu invalide
+                return n;
+              });
+            }));
+          }).then(function (a) { return a.filter(Boolean); });
+        },
+        get: function (n) {
+          return caches.open(CACHE).then(function (c) { return c.match(urlN(n)); })
+            .then(function (r) { return r ? r.blob() : null; }).then(function (b) { return b && b.size > 2000 ? b : null; });
+        },
+        put: function (n) {
+          var u = urlN(n);
+          return fetch(u, { cache: "no-store" }).then(function (r) {
+            if (!r.ok || r.status !== 200) throw new Error("HTTP " + r.status);
+            return r.blob();
+          }).then(function (b) {
+            if (b.size < 2000 || (b.type && b.type.indexOf("audio") !== 0 && b.type.indexOf("octet") < 0)) throw new Error("fichier invalide");
+            return caches.open(CACHE).then(function (c) { return c.put(u, new Response(b, { headers: { "Content-Type": "audio/mpeg" } })); });
+          });
+        },
+        del: function (n) { return caches.open(CACHE).then(function (c) { return c.delete(urlN(n)); }); }
+      };
+    }
+    var store = NATIVE ? nativeStore() : (HAS_CACHE ? cacheStore() : null);
+
+    // ====================================================================
+    //  Bannière : invitation, confirmations, progression
+    // ====================================================================
+    function showBanner(mode, text, buttons, pct) {
+      clearTimeout(hideTimer);
+      bnMode = mode;
+      txtEl.textContent = text;
+      actEl.innerHTML = "";
+      (buttons || []).forEach(function (b) {
+        var e = document.createElement("button");
+        e.type = "button"; e.textContent = b.label; if (b.pri) e.className = "pri";
+        e.addEventListener("click", function (ev) { ev.stopPropagation(); b.fn(); });
+        actEl.appendChild(e);
+      });
+      if (typeof pct === "number") { barEl.style.display = "block"; barI.style.width = pct + "%"; }
+      else barEl.style.display = "none";
+      banner.classList.add("on");
+    }
+    function hideBanner() { clearTimeout(hideTimer); bnMode = null; banner.classList.remove("on"); }
+    function flash(text) { showBanner("info", text, []); hideTimer = setTimeout(hideBanner, 4000); }
+
+    function refreshUI() {
+      var show = !!store && CFG.available.length > 0;
+      dlBtn.classList.toggle("ecolia-off", !show);
+      dlBtn.classList.toggle("ecolia-full", dl.state === "full");
+      dlBtn.innerHTML = dl.state === "full" ? OK : DL;
+      dlBtn.setAttribute("aria-label", dl.state === "full" ? "Audios téléchargés : supprimer" : "Télécharger les audios");
+      dlBtn.title = dlBtn.getAttribute("aria-label");
+    }
+    function refreshCacheState(done) {
+      if (!store) { dl.state = "none"; refreshUI(); if (done) done(); return; }
+      store.list().then(function (ok) {
+        dl.cached = ok.length;
+        dl.state = dl.cached === 0 ? "none" : (dl.cached >= CFG.available.length ? "full" : "partial");
+      }).catch(function () { dl.state = "none"; }).then(function () { refreshUI(); if (done) done(); });
+    }
+
+    function askDownload(fromInvite) {
+      var left = CFG.available.length - dl.cached;
+      var txt = dl.state === "partial"
+        ? "Il reste " + left + " audio(s) à télécharger pour écouter ce cours sans internet."
+        : "🔊 Télécharger les audios de ce cours (" + mo() + ") pour les écouter sans internet ? Wi-Fi recommandé.";
+      showBanner(fromInvite ? "invite" : "confirm", txt, [
+        { label: fromInvite ? "Plus tard" : "Annuler", fn: function () { if (fromInvite) lsSet(LATER, "1"); hideBanner(); } },
+        { label: "Télécharger", pri: true, fn: startDownload }
+      ]);
+    }
+    function askDelete() {
+      showBanner("confirm", "Supprimer les audios téléchargés de ce cours (" + mo() + ") ? Vous pourrez toujours les écouter en ligne.", [
+        { label: "Annuler", fn: hideBanner },
+        { label: "Supprimer", pri: true, fn: doDelete }
+      ]);
+    }
+
+    function startDownload() {
+      if (dl.busy || !store) return;
+      dl.busy = true; dl.cancel = false;
+      var total = CFG.available.length, done = 0, quota = false, fails = 0, todo = [];
+      store.list().then(function (have) {
+        CFG.available.forEach(function (n) { if (have.indexOf(n) < 0) todo.push(n); });
+        done = total - todo.length;
+        function paint() {
+          var msg = "Téléchargement des audios : " + done + " / " + total;
+          if (bnMode === "progress") {                  // met à jour sans recréer les boutons (sinon un appui peut être perdu)
+            txtEl.textContent = msg; barI.style.width = Math.round(done / total * 100) + "%";
+          } else {
+            showBanner("progress", msg, [
+              { label: "Annuler", fn: function () { dl.cancel = true; } }
+            ], Math.round(done / total * 100));
+          }
+        }
+        paint();
+        function worker() {
+          if (dl.cancel || quota || !todo.length) return Promise.resolve();
+          var n = todo.shift();
+          return store.put(n).then(function () { done++; paint(); }).catch(function (e) {
+            if (e && (e.name === "QuotaExceededError" || /quota/i.test(String(e.message)))) quota = true;
+            fails++;
+          }).then(worker);
+        }
+        return Promise.all([worker(), worker()]);
+      }).catch(function () { fails++; }).then(function () {
+        dl.busy = false;
+        refreshCacheState(function () {
+          if (dl.state === "full") flash("✓ Audios téléchargés : le cours se lit maintenant sans internet.");
+          else if (dl.cancel) flash("Téléchargement interrompu (" + dl.cached + " / " + total + "). Vous pourrez reprendre plus tard.");
+          else showBanner("error", quota ? "Espace insuffisant sur l'appareil. Libérez de la place puis réessayez."
+            : "Certains audios n'ont pas pu être téléchargés (connexion ?).", [
+            { label: "Fermer", fn: hideBanner }, { label: "Réessayer", pri: true, fn: startDownload }
+          ]);
+        });
+      });
+    }
+    function doDelete() {
+      if (!store) return;
+      Promise.all(CFG.available.map(function (n) { return store.del(n); })).catch(function () {}).then(function () {
+        lsDel(LATER);
+        refreshCacheState(function () { flash("Audios supprimés de cet appareil."); });
+      });
+    }
+
+    dlBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (dl.busy) return;
+      if (dl.state === "full") askDelete(); else askDownload(false);
+    });
+
+    // ====================================================================
+    //  Voix intégrée au téléphone (hors ligne, sans limite)
+    // ====================================================================
+    function pickVoice(lang) {
+      var vs = [];
+      try { vs = synth.getVoices() || []; } catch (e) {}
+      var pre = lang === "en" ? "en" : "fr", best = null;
+      for (var k = 0; k < vs.length; k++) {
+        var v = vs[k];
+        if ((v.lang || "").toLowerCase().indexOf(pre) !== 0) continue;
+        if (!best || (v.localService && !best.localService)) best = v;
+      }
+      return best;
+    }
+    function hardSplit(text, max) {
+      var out = [];
+      while (text.length > max) {
+        var cut = text.lastIndexOf(" ", max);
+        if (cut < 40) cut = max;
+        out.push(text.slice(0, cut)); text = text.slice(cut).replace(/^\s+/, "");
+      }
+      if (text) out.push(text);
+      return out;
+    }
+    function buildChunks(segs) {                  // morceaux courts : évite l'arrêt des longs textes sur Chrome
+      var out = [];
+      segs.forEach(function (s) {
+        var cur2 = "", parts = s[1].match(/[^.!?;:]+[.!?;:]*\s*/g) || [s[1]];
+        parts.forEach(function (p) {
+          if (cur2 && (cur2 + p).length > 160) { out.push({ lang: s[0], text: cur2.trim() }); cur2 = p; }
+          else cur2 += p;
+        });
+        if (cur2.trim()) out.push({ lang: s[0], text: cur2.trim() });
+      });
+      var res = [];
+      out.forEach(function (c) { hardSplit(c.text, 190).forEach(function (t) { res.push({ lang: c.lang, text: t }); }); });
+      return res;
+    }
+    function speakFrom(tk) {
+      if (tk !== st.token) return;
+      if (st.ci >= st.chunks.length) {
+        st.speaking = false; st.mode = null; st.ci = 0; setIcon(false);
+        if (st.auto) goNext();
+        return;
+      }
+      var c = st.chunks[st.ci];
+      var u = new SpeechSynthesisUtterance(c.text);
+      u.lang = c.lang === "en" ? "en-US" : "fr-FR";
+      var v = pickVoice(c.lang);
+      if (v) { u.voice = v; u.lang = v.lang; }
+      u.rate = 0.95;
+      u.onend = function () { if (tk !== st.token) return; st.ci++; speakFrom(tk); };
+      u.onerror = function () { if (tk !== st.token) return; st.speaking = false; setIcon(false); st.auto = false; };
+      synth.speak(u);
+    }
+    function startTts(from) {
+      st.token++;
+      var tk = st.token;
+      st.mode = "tts"; st.speaking = true; st.ci = from || 0; setIcon(true);
+      var busy = false;
+      try { busy = synth.speaking || synth.pending; synth.cancel(); } catch (e) {}
+      if (busy) setTimeout(function () { speakFrom(tk); }, 120);   // laisse cancel() se terminer
+      else speakFrom(tk);                                          // sinon tout de suite (exigé par iOS)
+    }
+    function playVoice() {
+      if (!(synth && fb(st.idx))) { st.auto = false; return false; }
+      if (!st.chunks.length) st.chunks = buildChunks(fb(st.idx));
+      startTts(st.ci);
+      return true;
+    }
+
+    // ====================================================================
+    //  Lecture
+    // ====================================================================
+    function freeBlob() { if (st.blobUrl) { try { URL.revokeObjectURL(st.blobUrl); } catch (e) {} st.blobUrl = null; } }
+    function stopAll() {
+      st.playTok++;
+      try { audio.pause(); audio.currentTime = 0; } catch (e) {}
+      st.token++;
+      try { if (synth) synth.cancel(); } catch (e) {}
+      st.speaking = false; st.mode = null; st.chunks = []; st.ci = 0;
+      setIcon(false);
+    }
+    function pauseNow() {
+      if (st.mode === "mp3") audio.pause();
+      else if (st.mode === "tts") {
+        st.token++;
+        try { synth.cancel(); } catch (e) {}
+        st.speaking = false; setIcon(false);      // st.ci conservé : la reprise repart de la phrase en cours
+      }
+    }
+    function startAudio(src, tok) {
+      if (tok !== st.playTok) return;
+      if (audio.getAttribute("data-src") !== src) { audio.setAttribute("data-src", src); audio.src = src; }
+      var p = audio.play();
+      if (p && p.catch) p.catch(function (err) {
+        console.warn("ECOLIA audio :", err);
+        if (tok !== st.playTok) return;
+        if (!(err && err.name === "NotAllowedError") && playVoice()) return;   // lecture impossible : voix du téléphone
+        setIcon(false); st.auto = false;
+      });
+    }
+    function playCurrent() {
+      var i = st.idx;
+      if (hasMp3(i)) {
+        var tok = ++st.playTok, u = urlN(i + 1);
+        st.mode = "mp3";
+        if (!navigator.onLine && dl.state === "none") { st.mode = null; if (playVoice()) return; }   // hors ligne et non téléchargé
+        if (store && dl.state !== "none") {                     // téléchargé : lecture locale, sans réseau
+          store.get(i + 1)
+            .then(function (b) {
+              if (tok !== st.playTok) return;
+              if (b) { freeBlob(); st.blobUrl = URL.createObjectURL(new Blob([b], { type: "audio/mpeg" })); startAudio(st.blobUrl, tok); }
+              else startAudio(u, tok);
+            }).catch(function () { startAudio(u, tok); });
+        } else startAudio(u, tok);                              // sinon lecture en ligne (appel immédiat, exigé par iOS)
+      } else if (!playVoice()) {
+        st.auto = false;
+      }
+    }
+
+    function onSlideChange(i) {
+      var wasAdvancing = st.advancing;
+      st.advancing = false;
+      st.idx = i;
+      btn.classList.toggle("ecolia-off", !hasAudio(i));
+      stopAll();
+      audio.removeAttribute("data-src");
+      freeBlob();
+      if (bnMode === "invite" && i !== 0) hideBanner();       // l'invitation n'apparaît qu'à la première slide
+      if (wasAdvancing && st.auto) setTimeout(playCurrent, 500);   // enchaînement automatique
+      else st.auto = false;                                         // changement manuel : on coupe tout
+    }
+    function goNext() {
+      if (st.idx + 1 >= CFG.count) { st.auto = false; return; }
+      st.advancing = true;
+      if (typeof nextSlide === "function") nextSlide();
+      else { var nb = document.getElementById("nextBtn"); if (nb) nb.click(); }
+      setTimeout(function () { st.advancing = false; }, 4000);
+    }
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var i = cur();
+      if (i !== st.idx) onSlideChange(i);
+      if (isPlaying()) { st.auto = false; pauseNow(); }
+      else { st.auto = true; playCurrent(); }
+    });
+    audio.addEventListener("play", function () { setIcon(true); });
+    audio.addEventListener("pause", function () { if (st.mode === "mp3") setIcon(false); });
+    audio.addEventListener("error", function () {
+      if (st.mode === "mp3" && playVoice()) return;            // fichier introuvable / hors ligne : voix du téléphone
+      setIcon(false); st.auto = false;
+    });
+    audio.addEventListener("ended", function () { setIcon(false); if (st.auto) goNext(); });
+    window.addEventListener("pagehide", function () { stopAll(); freeBlob(); });
+
+    // ---------- démarrage ----------
+    refreshCacheState(function () {
+      if (store && CFG.available.length && dl.state !== "full" && navigator.onLine && cur() === 0 && !lsGet(LATER)) askDownload(true);
+    });
+    st.idx = -1;
+    setInterval(function () { var i = cur(); if (i !== st.idx) onSlideChange(i); }, 250);   // suit la slide affichée
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+<!-- ECOLIA_AUDIO_PLAYER_END -->
+</body>
+</html>

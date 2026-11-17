@@ -1,0 +1,1759 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="teal">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>ECOLIA — Dietetique4</title>
+<style>
+[data-theme="bleu"]   { --p1:#0d2b4f; --p2:#1565c0; --p3:#07172e; --p4:#12437a; --p5:#5b8fd0; --bg:#e8f0fb; --bg2:#cfdff5; --bd:#a9c3e8; --soft:#dde8f7; --btn:#2a67b0; }
+[data-theme="vert"]   { --p1:#14442e; --p2:#2e7d32; --p3:#0b2b1a; --p4:#1f5c3a; --p5:#4f9a6b; --bg:#e8f5ec; --bg2:#c8e6d2; --bd:#a5cdb2; --soft:#dcefe2; --btn:#2f7a4f; }
+[data-theme="violet"] { --p1:#2d1b4e; --p2:#6a1b9a; --p3:#1a0f2e; --p4:#4a148c; --p5:#9c6fd0; --bg:#f1e9fb; --bg2:#dccbf2; --bd:#c4a8e6; --soft:#e8ddf6; --btn:#7e3fb2; }
+[data-theme="rouge"]  { --p1:#4a1010; --p2:#b71c1c; --p3:#2b0a0a; --p4:#8e1b1b; --p5:#d9706a; --bg:#fbeaea; --bg2:#f3cdcb; --bd:#e8a9a5; --soft:#f8dede; --btn:#a62a2a; }
+[data-theme="orange"] { --p1:#4e2a0c; --p2:#ef6c00; --p3:#2e1604; --p4:#b34a00; --p5:#f0a15a; --bg:#fff1e0; --bg2:#fbdcb8; --bd:#f3c08a; --soft:#fdebd6; --btn:#c9650a; }
+[data-theme="teal"]   { --p1:#0b3a3a; --p2:#00796b; --p3:#062626; --p4:#00574b; --p5:#4db6ac; --bg:#e0f2f1; --bg2:#b2dfdb; --bd:#80cbc4; --soft:#d5ecea; --btn:#26897d; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:linear-gradient(160deg,var(--p1) 0%,var(--p2) 50%,var(--p3) 100%); display:flex; justify-content:center; align-items:center; padding:8px; }
+.container { width:100%; max-width:1400px; background:#fefdf8; border-radius:20px; overflow:hidden; display:flex; flex-direction:column; height:100%; max-height:100vh; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.progress-bar { height:4px; background:var(--bg2); flex-shrink:0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--p5),var(--p4)); width:0%; transition:width 0.3s; }
+.header { padding:10px 16px; background:var(--bg); border-bottom:1px solid var(--bd); display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+.header h1 { color:var(--p4); font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box { display:flex; background:white; border-radius:20px; padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.search-box input { border:none; padding:6px 10px; border-radius:20px; outline:none; width:130px; font-size:0.8rem; }
+.search-box button { background:none; border:none; cursor:pointer; padding:4px 8px; font-size:0.85rem; color:var(--p2); }
+.badge { background:var(--p5); color:white; padding:4px 10px; border-radius:20px; font-weight:bold; font-size:0.75rem; }
+.search-nav { display:none; gap:4px; background:var(--bg2); padding:2px 8px; border-radius:20px; align-items:center; font-size:0.75rem; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:0.9rem; color:var(--p4); padding:2px 4px; }
+.content { padding:28px 32px; flex:1; overflow-y:auto; background:#fff; scroll-behavior:smooth; line-height:1.85; }
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.slide-title { color:var(--p1); font-size:1.5rem; font-weight:700; padding-bottom:12px; margin-bottom:20px; border-bottom:2px solid var(--p5); }
+.slide-content { color:var(--p3); font-size:1rem; }
+.empty-state { display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-height:60vh; padding:40px 20px; gap:18px; }
+.empty-state .icon { width:72px; height:72px; border-radius:50%; background:var(--bg); border:2px solid var(--bd); display:flex; align-items:center; justify-content:center; color:var(--p2); font-size:2rem; font-weight:300; }
+.empty-state h2 { color:var(--p1); font-size:1.4rem; font-weight:700; margin:0; }
+.empty-state p { color:#666; font-size:0.95rem; max-width:520px; line-height:1.7; }
+.empty-state .tag { display:inline-block; padding:6px 14px; background:var(--bg); color:var(--p4); border:1px solid var(--bd); border-radius:20px; font-size:0.8rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; }
+.bloc { padding:18px 22px; border-radius:12px; margin:22px 0; line-height:1.85; }
+.bloc-label { font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; opacity:0.7; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:var(--bg); border-left:4px solid var(--p5); }
+.theorie .bloc-label { color:var(--p4); }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.sources { background:#f5f5f5; padding:12px 16px; border-radius:10px; margin-top:26px; font-size:0.82rem; color:#666; border-left:3px solid #999; line-height:1.6; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:var(--p1); }
+.quiz-container { padding:22px; background:var(--bg); border-radius:16px; }
+.quiz-question { background:white; border-radius:10px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.quiz-question p { font-weight:600; margin-bottom:10px; color:var(--p1); }
+.quiz-question label { display:block; padding:8px 10px; margin:4px 0; border-radius:6px; cursor:pointer; transition:background 0.2s; }
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit { background:var(--btn); color:white; border:none; padding:12px 24px; border-radius:30px; font-size:1rem; cursor:pointer; font-weight:600; margin-top:14px; }
+.quiz-result { margin-top:16px; font-weight:600; }
+.controls { padding:8px 16px; background:#fafafa; border-top:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0; }
+.nav-btn { background:white; color:var(--p4); border:1px solid #ccc; padding:8px 14px; border-radius:8px; font-size:0.82rem; cursor:pointer; font-weight:500; }
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:var(--soft); }
+.content::-webkit-scrollbar-thumb { background:var(--p5); border-radius:3px; }
+@media (max-width:600px) { body { padding:0; } .container { border-radius:0; max-height:100vh; } .content { padding:20px 18px; } .slide-title { font-size:1.25rem; } .search-box input { width:90px; } .header h1 { font-size:0.85rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="header">
+<h1 id="pageTitle">ECOLIA</h1>
+<div class="header-right">
+<div class="search-box">
+<input id="searchInput" placeholder="Rechercher" type="text"/>
+<button id="searchBtn">⌕</button>
+</div>
+<div class="search-nav" id="searchNav">
+<button id="prevResultBtn">‹</button>
+<span id="resultCounter">0/0</span>
+<button id="nextResultBtn">›</button>
+</div>
+<span class="badge" id="slideCounter">0/0</span>
+</div>
+</div>
+<div class="content" id="content"></div>
+<div class="controls">
+<button class="nav-btn" id="prevBtn">← Précédent</button>
+<span class="counter" id="counter">—</span>
+<button class="nav-btn" id="nextBtn">Suivant →</button>
+</div>
+</div>
+<script>
+const COURSE_TITLE = "Diététique (Diététique Thérapeutique et Nutrition Appliquée)";
+const slides = [
+  {
+    title: "Sommaire — Diététique",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Bienvenue</div>
+        <h3>La diététique : adapter l'alimentation aux besoins de chacun</h3>
+        <p>La <strong>diététique</strong> est la science de l'alimentation équilibrée, appliquée à l'homme sain ou malade. Elle consiste à <strong>élaborer des régimes alimentaires adaptés</strong> pour maintenir la santé ou prendre en charge une pathologie. Loin d'être une simple restriction, la diététique est un ajustement raisonné, personnalisé et culturellement pertinent.</p>
+        <p>Ce cours s'adresse aux élèves de 4<sup>e</sup> Humanité de la filière Nutrition. Il prépare le futur technicien A2 à <strong>mener une anamnèse alimentaire</strong>, à <strong>concevoir des régimes adaptés aux principales pathologies</strong> (obésité, diabète, hypertension, carences) et à <strong>conseiller et suivre les patients</strong>, en valorisant les aliments locaux congolais.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Objectifs d'apprentissage</div>
+        <p>À la fin de ce cours, l'élève doit être capable de :</p>
+        <ol>
+          <li>Définir les concepts de base de la diététique (diététique, régime, équilibre alimentaire).</li>
+          <li>Comprendre la digestion et l'absorption des nutriments.</li>
+          <li>Connaître les groupes alimentaires et les principes de l'équilibre alimentaire.</li>
+          <li>Réaliser une anamnèse alimentaire et une évaluation nutritionnelle simple.</li>
+          <li>Élaborer des régimes adaptés aux pathologies de surcharge (obésité, diabète, hypertension).</li>
+          <li>Élaborer des régimes de récupération pour les carences et la malnutrition.</li>
+          <li>Planifier des repas équilibrés et des recettes locales saines.</li>
+          <li>Communiquer et assurer le suivi diététique.</li>
+        </ol>
+      </div>
+
+      <div class="bloc cas">
+        <div class="bloc-label">Grands chapitres du cours</div>
+        <ul>
+          <li><strong>Chapitre I</strong> — Introduction à la diététique.</li>
+          <li><strong>Chapitre II</strong> — La digestion et l'absorption des nutriments.</li>
+          <li><strong>Chapitre III</strong> — Les groupes alimentaires et l'équilibre alimentaire.</li>
+          <li><strong>Chapitre IV</strong> — Anamnèse et évaluation nutritionnelle.</li>
+          <li><strong>Chapitre V</strong> — Régimes thérapeutiques (1) : pathologies de surcharge.</li>
+          <li><strong>Chapitre VI</strong> — Régimes thérapeutiques (2) : carences et malnutrition.</li>
+          <li><strong>Chapitre VII</strong> — Planification des repas et recettes locales.</li>
+          <li><strong>Chapitre VIII</strong> — Communication et suivi diététique.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Qu'est-ce que la diététique ?",
+    content: `
+      <div class="bloc cas">
+        <div class="bloc-label">Situation-problème</div>
+        <p>Une femme de 45 ans, diabétique et en surpoids, consulte. Elle explique qu'elle a arrêté de manger du fufu parce qu'« on lui a dit que c'était mauvais ». Elle se sent faible, n'a pas d'énergie, et ne sait plus quoi manger. Que faut-il lui expliquer ? Un régime doit-il supprimer le fufu ou l'adapter ?</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Définitions</h3>
+
+        <h4>La diététique</h4>
+        <p>La <strong>diététique</strong> est la science de l'alimentation équilibrée, appliquée à l'homme sain ou malade. Elle consiste à élaborer des régimes alimentaires adaptés pour maintenir la santé ou prendre en charge une pathologie.</p>
+
+        <h4>Le régime</h4>
+        <p>Un <strong>régime</strong> est une adaptation qualitative et quantitative de l'alimentation à des besoins spécifiques. Il ne s'agit pas uniquement de restriction, mais d'un ajustement raisonné. Un régime peut :</p>
+        <ul>
+          <li><strong>Réduire</strong> certains apports (calories, sel, sucres).</li>
+          <li><strong>Augmenter</strong> certains apports (protéines, fer, fibres).</li>
+          <li><strong>Modifier</strong> la répartition (nombre de repas, horaires).</li>
+          <li><strong>Adapter</strong> la consistance (aliments mixés, mous).</li>
+          <li><strong>Éliminer</strong> certains aliments (allergie, intolérance).</li>
+        </ul>
+
+        <h4>L'équilibre alimentaire</h4>
+        <p>L'équilibre alimentaire associe :</p>
+        <ul>
+          <li>La <strong>diversité</strong> : manger de tout.</li>
+          <li>La <strong>proportionnalité</strong> : respecter les proportions entre les groupes d'aliments.</li>
+          <li>L'<strong>adéquation</strong> aux besoins individuels.</li>
+          <li>Le <strong>plaisir</strong> et la <strong>convivialité</strong>.</li>
+        </ul>
+
+        <h4>Le rôle du diététicien</h4>
+        <p>Le diététicien ne donne pas des ordres : il accompagne un changement en proposant des solutions adaptées au mode de vie, à la culture et au budget de la personne.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Croire qu'un régime est nécessairement une privation est une erreur. C'est une <strong>adaptation personnalisée</strong> aux besoins. Interdire brutalement le fufu à une personne diabétique peut la priver d'énergie sans bénéfice : il faut plutôt ajuster les quantités, associer les aliments et équilibrer le repas.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — La digestion et l'absorption des nutriments",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le parcours des aliments</h3>
+        <p>Comprendre la digestion est indispensable en diététique : elle permet de justifier les choix alimentaires et de comprendre pourquoi certains aliments sont mieux tolérés que d'autres.</p>
+
+        <h4>1. La bouche</h4>
+        <p>La <strong>mastication</strong> réduit les aliments en bouillie. La <strong>salive</strong> contient une enzyme, l'amylase salivaire, qui commence la digestion des glucides complexes (amidon) en sucres plus simples. Le bol alimentaire est ensuite avalé.</p>
+
+        <h4>2. L'estomac</h4>
+        <p>Le bol alimentaire y est malaxé et mélangé au <strong>suc gastrique</strong> (acide chlorhydrique + pepsine). La pepsine commence la digestion des protéines. Le pH est très acide (1 à 3). Le bol devient chyme, qui passe lentement dans l'intestin grêle.</p>
+
+        <h4>3. L'intestin grêle</h4>
+        <p>C'est le lieu principal de la digestion et de l'absorption. Il reçoit :</p>
+        <ul>
+          <li><strong>Le suc pancréatique</strong> : enzymes (amylase, lipase, protéases) qui digèrent les glucides, lipides et protéines.</li>
+          <li><strong>La bile</strong> (du foie via la vésicule biliaire) : émulsionne les lipides pour faciliter leur digestion.</li>
+          <li><strong>Le suc intestinal</strong> : enzymes complémentaires.</li>
+        </ul>
+        <p>Les nutriments digérés (glucose, acides aminés, acides gras, vitamines, minéraux) traversent la paroi intestinale (absorption) et passent dans le sang ou la lymphe.</p>
+
+        <h4>4. Le côlon (gros intestin)</h4>
+        <p>Il absorbe l'eau et les minéraux. Les fibres non digestibles y sont fermentées par les bactéries intestinales. Les déchets forment les selles.</p>
+
+        <h4>Facteurs qui influencent la digestion</h4>
+        <ul>
+          <li>L'état des dents (mastication).</li>
+          <li>L'âge (baisse de la production enzymatique avec l'âge).</li>
+          <li>L'état de santé (maladies digestives, stress).</li>
+          <li>La composition du repas (fibres, graisses).</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Négliger l'importance de la digestion dans le choix des aliments est une erreur. Un aliment riche en nutriments mais mal absorbé (par exemple en cas de maladie intestinale) ne nourrit pas correctement. Le diététicien doit tenir compte de la digestibilité.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — Les groupes alimentaires et l'équilibre",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les trois groupes fonctionnels</h3>
+        <p>Comme en nutrition communautaire, les aliments se classent en trois groupes fonctionnels :</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Groupe</th>
+              <th>Rôle</th>
+              <th>Exemples congolais</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Énergétiques</strong></td>
+              <td>Fournir l'énergie</td>
+              <td>Fufu, manioc, riz, maïs, huile de palme, arachides</td>
+            </tr>
+            <tr>
+              <td><strong>Bâtisseurs</strong></td>
+              <td>Construire et réparer les tissus</td>
+              <td>Poisson, viande, œufs, haricots, lait, chenilles</td>
+            </tr>
+            <tr>
+              <td><strong>Protecteurs</strong></td>
+              <td>Protéger et réguler</td>
+              <td>Pondu, matembele, papaye, mangue, agrumes</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Les principes de l'équilibre alimentaire</h3>
+        <ul>
+          <li><strong>Diversité</strong> : varier les aliments au sein de chaque groupe et entre les groupes.</li>
+          <li><strong>Proportionnalité</strong> : respecter la pyramide alimentaire (glucides complexes à la base, protéines au milieu, graisses et sucres en haut).</li>
+          <li><strong>Adéquation</strong> aux besoins : âge, sexe, activité, état physiologique ou pathologique.</li>
+          <li><strong>Répartition des repas</strong> : 3 repas principaux + 1 à 2 collations, sans grignotage désordonné.</li>
+          <li><strong>Hydratation</strong> : boire suffisamment d'eau, éviter les sodas sucrés.</li>
+        </ul>
+
+        <h3>Les tables de composition des aliments</h3>
+        <p>Les <strong>tables de composition</strong> indiquent, pour chaque aliment, les teneurs en énergie, protéines, lipides, glucides, vitamines, minéraux. Elles sont indispensables pour calculer les apports d'un régime. Il existe des tables adaptées aux aliments congolais : manioc, maïs, sorgho, huile de palme, poisson fumé, légumineuses du Kasaï.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Se fier uniquement à la quantité sans considérer la qualité et la diversité est une erreur. Manger beaucoup de fufu n'est pas équilibré si l'on ne mange pas de légumes et de protéines. À l'inverse, un plat simple qui combine fufu + poisson + pondu peut être parfaitement équilibré.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre IV — L'anamnèse alimentaire",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Interroger pour comprendre</h3>
+        <p>L'<strong>anamnèse alimentaire</strong> est un interrogatoire structuré sur les habitudes alimentaires du patient. C'est l'outil diagnostique principal du diététicien. Elle permet de comprendre ce que mange réellement la personne, ses contraintes, ses préférences et ses erreurs.</p>
+
+        <h4>Éléments à recueillir</h4>
+        <ul>
+          <li><strong>Habitudes générales</strong> : nombre de repas, horaires, lieu de consommation.</li>
+          <li><strong>Aliments consommés</strong> : type, quantité, fréquence.</li>
+          <li><strong>Mode de préparation</strong> : friture, bouillon, grillade.</li>
+          <li><strong>Préférences et aversions</strong>.</li>
+          <li><strong>Allergies et intolérances</strong>.</li>
+          <li><strong>Boissons</strong> : eau, sodas, alcool.</li>
+          <li><strong>Activité physique</strong> et sédentarité.</li>
+          <li><strong>Contexte socio-économique</strong> : budget, approvisionnement, temps disponible.</li>
+          <li><strong>Antécédents médicaux</strong> et traitements en cours.</li>
+        </ul>
+
+        <h4>Outils complémentaires</h4>
+        <ul>
+          <li><strong>Rappel de 24 heures</strong> : reconstitution précise d'une journée alimentaire type.</li>
+          <li><strong>Fréquence de consommation</strong> : combien de fois par semaine consomme-t-il des légumes, du poisson, des fruits ?</li>
+          <li><strong>Journal alimentaire</strong> : tenu par le patient pendant plusieurs jours.</li>
+        </ul>
+
+        <h4>Le diagnostic diététique</h4>
+        <p>À l'issue de l'anamnèse, on identifie :</p>
+        <ul>
+          <li>Les <strong>déséquilibres</strong> (trop de sucres, pas assez de légumes).</li>
+          <li>Les <strong>carences</strong> probables (fer, calcium, fibres).</li>
+          <li>Les <strong>excès</strong> (calories, sel, graisses).</li>
+          <li>Les <strong>habitudes à risque</strong> (grignotage, sodas).</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>L'anamnèse alimentaire est l'outil clé du diététicien. Elle recueille les habitudes, les quantités, les préférences, les contraintes et les antécédents. Complétée par des mesures anthropométriques, elle permet de poser un diagnostic diététique et de proposer un plan d'action.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre IV — Les mesures anthropométriques",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Mesurer pour objectiver</h3>
+        <p>Les <strong>mesures anthropométriques</strong> complètent l'anamnèse. Elles permettent de suivre objectivement l'état nutritionnel et d'évaluer l'effet d'un régime dans le temps.</p>
+
+        <h4>Poids et taille</h4>
+        <p>Mesurés avec une balance et une toise, ils permettent de calculer l'IMC chez l'adulte.</p>
+
+        <h4>IMC (Indice de Masse Corporelle)</h4>
+        <p><strong>IMC = Poids (kg) / Taille² (m²)</strong></p>
+        <table>
+          <thead>
+            <tr>
+              <th>IMC</th>
+              <th>Interprétation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>&lt; 16,5</td><td>Dénutrition sévère</td></tr>
+            <tr><td>16,5 – 18,4</td><td>Dénutrition</td></tr>
+            <tr><td>18,5 – 24,9</td><td>Normal</td></tr>
+            <tr><td>25 – 29,9</td><td>Surpoids</td></tr>
+            <tr><td>30 – 34,9</td><td>Obésité modérée</td></tr>
+            <tr><td>35 – 39,9</td><td>Obésité sévère</td></tr>
+            <tr><td>≥ 40</td><td>Obésité morbide</td></tr>
+          </tbody>
+        </table>
+
+        <h4>Tour de taille</h4>
+        <p>Il mesure la graisse abdominale, particulièrement dangereuse pour la santé cardiovasculaire :</p>
+        <ul>
+          <li>Hommes : risque élevé au-delà de 94 cm, très élevé au-delà de 102 cm.</li>
+          <li>Femmes : risque élevé au-delà de 80 cm, très élevé au-delà de 88 cm.</li>
+        </ul>
+
+        <h4>Périmètre brachial et autres mesures</h4>
+        <p>Utiles surtout chez l'enfant et la personne âgée. Le périmètre brachial dépiste rapidement la dénutrition.</p>
+
+        <h4>Suivi dans le temps</h4>
+        <p>Le poids, l'IMC et le tour de taille doivent être mesurés régulièrement pour suivre l'évolution et ajuster le régime.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Se limiter à l'anamnèse sans mesures anthropométriques est une erreur. Un patient peut sous-estimer ce qu'il mange ou oublier des aliments. Les mesures objectives complètent et corrigent l'anamnèse. Inversement, se limiter aux mesures sans anamnèse prive le diététicien de la compréhension des causes.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre V — Le régime hypocalorique (obésité)",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>L'obésité et son régime</h3>
+        <p>L'<strong>obésité</strong> est un excès de masse grasse entraînant des risques pour la santé (diabète, hypertension, maladies cardiovasculaires, certains cancers, problèmes articulaires). Elle se définit par un IMC ≥ 30.</p>
+
+        <h4>Principes du régime hypocalorique</h4>
+        <ul>
+          <li><strong>Réduction modérée des calories</strong> : un déficit de 300 à 500 kcal/jour permet une perte progressive (0,5 kg/semaine), plus durable qu'un régime brutal.</li>
+          <li><strong>Maintien de la diversité</strong> : ne pas supprimer un groupe entier, mais réduire les portions.</li>
+          <li><strong>Priorité aux aliments rassasiants</strong> : légumes, fibres, protéines.</li>
+          <li><strong>Réduction des sucres simples</strong> : sodas, confiseries, pâtisseries, jus sucrés.</li>
+          <li><strong>Réduction des graisses saturées</strong> : fritures, beurre, graisses cachées.</li>
+          <li><strong>Augmentation des légumes et fruits</strong> (protecteurs, fibres).</li>
+          <li><strong>Activité physique régulière</strong> : au moins 30 minutes de marche par jour.</li>
+          <li><strong>Nombre de repas</strong> : maintenir 3 repas + 1 collation pour éviter la faim et le grignotage.</li>
+        </ul>
+
+        <h4>Adaptation culturelle</h4>
+        <p>Il ne s'agit pas de supprimer le fufu ou le riz, mais de :</p>
+        <ul>
+          <li>Réduire la portion (par exemple, passer de 3 boules à 1,5).</li>
+          <li>Augmenter la part de légumes dans l'assiette.</li>
+          <li>Réduire l'huile de cuisson.</li>
+          <li>Préférer les grillades aux fritures.</li>
+          <li>Privilégier l'eau aux boissons sucrées.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Imposer un régime très restrictif (moins de 1000 kcal/jour) sans surveillance médicale est dangereux : fatigue, perte de muscle, carences, effet yo-yo. Un régime hypocalorique doit être <strong>modéré</strong>, équilibré et durable.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre V — Le régime du diabétique",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Contrôler la glycémie</h3>
+        <p>Le <strong>diabète</strong> est un trouble du métabolisme des glucides, caractérisé par une hyperglycémie chronique (taux de sucre dans le sang trop élevé). Le diabète de type 2, le plus fréquent, est fortement lié à l'alimentation et au mode de vie.</p>
+
+        <h4>Principes du régime</h4>
+        <ul>
+          <li><strong>Répartition régulière des glucides</strong> dans la journée : 3 repas + 1 à 2 collations pour éviter les pics glycémiques.</li>
+          <li><strong>Préférer les glucides à index glycémique bas</strong> : légumineuses, céréales complètes, légumes verts, igname.</li>
+          <li><strong>Limiter les sucres simples</strong> : sucre, miel, confitures, sodas, jus de fruits sucrés, pâtisseries.</li>
+          <li><strong>Augmenter les fibres</strong> : légumes, fruits peu sucrés, haricots, céréales complètes.</li>
+          <li><strong>Maintien des protéines</strong> : poisson, œufs, viande maigre, légumineuses.</li>
+          <li><strong>Réduire les graisses saturées</strong> (fritures, beurre) et privilégier les huiles végétales.</li>
+          <li><strong>Activité physique régulière</strong> : améliore la sensibilité à l'insuline.</li>
+          <li><strong>Contrôle du poids</strong> : une perte de 5 à 10 % du poids améliore fortement l'équilibre glycémique.</li>
+        </ul>
+
+        <h4>L'index glycémique (IG)</h4>
+        <p>L'IG mesure la vitesse à laquelle un aliment glucidique élève la glycémie :</p>
+        <ul>
+          <li><strong>IG élevé</strong> : sucre, pain blanc, riz blanc, pomme de terre, sodas.</li>
+          <li><strong>IG bas</strong> : haricots, lentilles, avoine, céréales complètes, légumes verts, igname.</li>
+        </ul>
+
+        <h4>Attention aux hypoglycémies</h4>
+        <p>Un diabétique traité par médicaments hypoglycémiants ou insuline peut faire des hypoglycémies (sueurs, tremblements, malaise). Il doit avoir toujours du sucre rapide sur lui. Le régime doit être régulier pour prévenir ces épisodes.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Supprimer totalement les glucides chez un diabétique est une erreur. Le cerveau et les muscles ont besoin de glucides. Il faut les choisir (index glycémique bas), les répartir et ajuster les quantités, pas les éliminer.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre V — Le régime du hypertendu",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Réduire la pression artérielle par l'alimentation</h3>
+        <p>L'<strong>hypertension artérielle</strong> (HTA) est une pression artérielle élevée de façon persistante (≥ 140/90 mmHg). Elle augmente le risque d'AVC, d'infarctus et d'insuffisance rénale. Le régime est un pilier du traitement.</p>
+
+        <h4>Principes du régime</h4>
+        <ul>
+          <li><strong>Réduction du sel</strong> : moins de 5 g/jour (une petite cuillère à café). Attention aux sels cachés (bouillons cubes, conserves, charcuteries, pain, poisson salé).</li>
+          <li><strong>Augmentation du potassium</strong> : banane, orange, légumes-feuilles, haricots, patate douce. Le potassium aide à réduire la tension.</li>
+          <li><strong>Augmentation du calcium et du magnésium</strong> : produits laitiers, légumes verts, noix.</li>
+          <li><strong>Réduction des graisses saturées</strong> : fritures, beurre, viandes grasses.</li>
+          <li><strong>Réduction de l'alcool</strong> : à limiter au maximum.</li>
+          <li><strong>Activité physique régulière</strong>.</li>
+          <li><strong>Contrôle du poids</strong>.</li>
+        </ul>
+
+        <h4>Le régime DASH</h4>
+        <p>Le régime <strong>DASH</strong> (Dietary Approaches to Stop Hypertension) est un modèle international : riche en fruits, légumes, céréales complètes, produits laitiers pauvres en gras, pauvre en sel, en sucres et en graisses saturées. Il a prouvé son efficacité pour réduire la tension artérielle.</p>
+
+        <h4>Adaptation culturelle congolaise</h4>
+        <ul>
+          <li>Réduire le sel dans la cuisson, ne pas resaler à table.</li>
+          <li>Éviter les bouillons cubes (très salés).</li>
+          <li>Privilégier le poisson frais au poisson salé et fumé.</li>
+          <li>Augmenter les légumes-feuilles et les fruits locaux.</li>
+          <li>Limiter les fritures et l'huile de palme en excès.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Se contenter de dire « ne mangez pas salé » sans expliquer où se cache le sel est une erreur. Le sel caché des bouillons cubes, du pain, des conserves et du poisson salé est souvent la principale source. Il faut apprendre au patient à lire les habitudes et à cuisiner autrement (épices, citron, herbes).</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VI — Les régimes de carence (fer, vitamine A, iode)",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Corriger les carences par l'alimentation</h3>
+
+        <h4>1. L'anémie ferriprive</h4>
+        <p>Régime riche en fer :</p>
+        <ul>
+          <li><strong>Fer héminique</strong> (mieux absorbé) : viande rouge, foie, poisson, volaille.</li>
+          <li><strong>Fer non héminique</strong> (végétal) : haricots, lentilles, pondu, matembele, morelle noire.</li>
+          <li><strong>Vitamine C</strong> (agrumes, tomate, mangue, papaye) : augmente l'absorption du fer végétal.</li>
+          <li><strong>Éviter le thé et le café</strong> pendant les repas : les tanins inhibent l'absorption du fer.</li>
+        </ul>
+
+        <h4>2. La carence en vitamine A</h4>
+        <p>Régime riche en vitamine A :</p>
+        <ul>
+          <li>Sources animales (rétinol, directement utilisable) : foie, œufs, lait entier, beurre.</li>
+          <li>Sources végétales (bêta-carotène, précurseur) : légumes-feuilles verts (pondu, matembele, morelle noire), fruits jaune-orangé (mangue, papaye, carotte), huile de palme rouge.</li>
+        </ul>
+
+        <h4>3. La carence en iode</h4>
+        <p>Utilisation systématique de <strong>sel iodé</strong>. Le sel iodé doit être conservé à l'abri de la lumière et de l'humidité (l'iode s'évapore). L'ajout de sel en fin de cuisson préserve mieux l'iode.</p>
+
+        <h4>4. Autres carences fréquentes</h4>
+        <ul>
+          <li><strong>Calcium</strong> : lait, produits laitiers, petits poissons avec arêtes, légumes verts.</li>
+          <li><strong>Zinc</strong> : viande, poisson, légumineuses, noix.</li>
+          <li><strong>Vitamine C</strong> : agrumes, goyave, papaye, poivron.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Les régimes de carence associent des aliments riches en nutriments, une bonne association (fer + vitamine C), et des précautions (éviter le thé pendant les repas). Le sel iodé est la mesure la plus simple contre la carence en iode.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VI — La récupération nutritionnelle",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Réalimenter un enfant malnutri</h3>
+        <p>La <strong>récupération nutritionnelle</strong> est la prise en charge des enfants souffrant de malnutrition aiguë sévère (marasme, kwashiorkor). Elle doit être progressive et surveillée pour éviter le <strong>syndrome de renutrition</strong>.</p>
+
+        <h4>Principes</h4>
+        <ul>
+          <li><strong>Traiter d'abord les infections</strong> et les complications (antibiotiques, hydratation).</li>
+          <li><strong>Réalimenter progressivement</strong> : commencer par des aliments faciles à digérer, en petites quantités fréquentes (toutes les 2 à 3 heures).</li>
+          <li><strong>Augmenter progressivement</strong> les quantités et la densité énergétique.</li>
+          <li><strong>Surveiller</strong> le poids, la température, l'hydratation, l'apparition d'œdèmes.</li>
+          <li><strong>Supplémenter</strong> en vitamines et minéraux (vitamine A, zinc, potassium, magnésium).</li>
+          <li><strong>Ne pas donner trop de fer</strong> dans la phase aiguë (le fer peut aggraver les infections).</li>
+        </ul>
+
+        <h4>Aliments utilisés</h4>
+        <ul>
+          <li><strong>Lait thérapeutique</strong> (F-75 puis F-100) : formules adaptées aux différentes phases.</li>
+          <li><strong>Aliments thérapeutiques prêts à l'emploi (ATPE)</strong> : pâtes à base d'arachide enrichies, très utilisées en communauté.</li>
+          <li><strong>Aliments locaux enrichis</strong> : bouillies de maïs/soja enrichies, purées avec huile et sucre.</li>
+        </ul>
+
+        <h4>Le syndrome de renutrition</h4>
+        <p>Une réalimentation trop rapide peut provoquer des troubles graves : déséquilibres électrolytiques, insuffisance cardiaque, voire décès. C'est pourquoi la progression doit être prudente et médicalement encadrée.</p>
+
+        <h4>Suivi post-récupération</h4>
+        <p>Après la phase aiguë, il faut :</p>
+        <ul>
+          <li>Poursuivre une alimentation équilibrée et diversifiée.</li>
+          <li>Surveiller la croissance.</li>
+          <li>Prévenir la rechute par l'éducation nutritionnelle des familles.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Réalimenter trop rapidement un enfant sévèrement malnutri est une erreur grave. Le syndrome de renutrition peut être mortel. La progression prudente et la surveillance médicale sont indispensables.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VII — La planification des repas",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Composer un menu équilibré</h3>
+        <p>Planifier les repas consiste à organiser, sur une journée ou une semaine, des repas qui respectent les principes de l'équilibre alimentaire, tout en tenant compte des contraintes du patient (budget, temps, préférences, culture).</p>
+
+        <h4>Étapes de la planification</h4>
+        <ol>
+          <li><strong>Définir les besoins</strong> : âge, sexe, activité, état physiologique ou pathologique, objectif (maintien, perte, prise de poids).</li>
+          <li><strong>Choisir les groupes alimentaires</strong> à chaque repas.</li>
+          <li><strong>Définir les portions</strong> en utilisant des repères manuels (main, poing, pouce) ou des mesures standard (bol, assiette, cuillère).</li>
+          <li><strong>Répartir sur la journée</strong> : petit-déjeuner, déjeuner, collation, dîner.</li>
+          <li><strong>Vérifier l'équilibre</strong> sur la semaine : diversité, saisonnalité, coût.</li>
+        </ol>
+
+        <h4>Les repères de portion</h4>
+        <ul>
+          <li><strong>Paume de la main</strong> : portion de protéines (viande, poisson).</li>
+          <li><strong>Poing</strong> : portion de légumes ou de riz/fufu.</li>
+          <li><strong>Pouce</strong> : portion de matières grasses (huile).</li>
+          <li><strong>Deux mains en coupe</strong> : portion de légumes verts ou de fruits.</li>
+        </ul>
+
+        <h4>Exemple de journée type (adulte équilibré)</h4>
+        <ul>
+          <li><strong>Petit-déjeuner</strong> : bouillie de maïs légèrement sucrée, une banane, un verre d'eau.</li>
+          <li><strong>Déjeuner</strong> : fufu (portion modérée), poisson grillé, pondu, un fruit.</li>
+          <li><strong>Collation</strong> : une poignée d'arachides ou un fruit.</li>
+          <li><strong>Dîner</strong> : riz, haricots, matembele, un fruit.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>La planification des repas combine besoins, groupes alimentaires, portions et répartition dans la journée. Les repères manuels facilitent l'estimation des portions sans balance. Un menu équilibré est diversifié, adapté au patient et à son budget.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VII — Les recettes locales saines",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Valoriser les aliments congolais</h3>
+        <p>Une alimentation équilibrée doit être <strong>durable, accessible et culturellement acceptée</strong>. En RDC, cela signifie s'appuyer sur les aliments locaux : manioc, maïs, riz, poisson de fleuve, légumineuses, légumes-feuilles, fruits.</p>
+
+        <h4>Principes d'une recette locale saine</h4>
+        <ul>
+          <li><strong>Combiner les trois groupes</strong> : énergétique + bâtisseur + protecteur.</li>
+          <li><strong>Limiter les fritures</strong> : préférer les cuissons à l'eau, à la vapeur, au four, en sauce légère.</li>
+          <li><strong>Réduire le sel</strong> : remplacer par des épices, herbes, citron, ail, oignon.</li>
+          <li><strong>Réduire le sucre</strong> : dans les boissons et les desserts.</li>
+          <li><strong>Augmenter les légumes</strong> : les intégrer dans les plats principaux.</li>
+          <li><strong>Utiliser les aliments de saison</strong> : moins chers et plus nutritifs.</li>
+          <li><strong>Économiser</strong> : choisir les sources de protéines accessibles (haricots, poisson de fleuve, chenilles).</li>
+        </ul>
+
+        <h4>Exemples de recettes saines</h4>
+        <ul>
+          <li><strong>Pondu au poisson fumé</strong> : légumes-feuilles (fer, calcium) + poisson (protéines) + huile de palme en quantité modérée.</li>
+          <li><strong>Haricots au riz</strong> : légumineuses (protéines végétales + fibres) + céréales.</li>
+          <li><strong>Bouillie enrichie de maïs et soja</strong> : céréale + légumineuse, complémentarité protéique idéale.</li>
+          <li><strong>Poisson grillé au matembele</strong> : protéines + légumes-feuilles + accompagnement modéré.</li>
+          <li><strong>Salade de papaye verte et carotte râpée</strong> : vitamines, fibres, fraîcheur.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Proposer des menus coûteux ou importés est une erreur. La durabilité passe par les aliments locaux, accessibles et acceptés. Une alimentation saine n'a pas besoin d'être chère : elle doit être bien composée.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VIII — Le conseil diététique et le suivi",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Accompagner, pas imposer</h3>
+        <p>Le <strong>conseil diététique</strong> est un entretien structuré entre le diététicien et le patient, qui aboutit à un plan alimentaire personnalisé et à un suivi. Il ne s'agit pas de donner des ordres mais d'accompagner un changement.</p>
+
+        <h4>Les étapes du conseil</h4>
+        <ol>
+          <li><strong>Écouter</strong> : laisser le patient s'exprimer sur ses habitudes, ses difficultés, ses attentes.</li>
+          <li><strong>Reformuler</strong> : vérifier que l'on a bien compris.</li>
+          <li><strong>Expliquer</strong> : donner des informations claires et personnalisées, sans jargon.</li>
+          <li><strong>Proposer</strong> : suggérer des changements réalistes, un ou deux à la fois.</li>
+          <li><strong>Planifier</strong> : établir ensemble un plan concret (repas, achats, activité).</li>
+          <li><strong>Fixer un rendez-vous</strong> de suivi.</li>
+        </ol>
+
+        <h4>L'observance</h4>
+        <p>L'<strong>observance</strong> est le respect du régime par le patient. Elle dépend de :</p>
+        <ul>
+          <li>La compréhension du régime.</li>
+          <li>L'acceptation culturelle.</li>
+          <li>La faisabilité (budget, temps).</li>
+          <li>La confiance dans le professionnel.</li>
+          <li>La motivation et le soutien de la famille.</li>
+        </ul>
+
+        <h4>Les entretiens de suivi</h4>
+        <p>Ils permettent de :</p>
+        <ul>
+          <li>Mesurer les progrès (poids, tour de taille, glycémie, tension).</li>
+          <li>Identifier les difficultés.</li>
+          <li>Ajuster le plan.</li>
+          <li>Encourager et soutenir.</li>
+        </ul>
+
+        <h4>L'éthique du diététicien</h4>
+        <ul>
+          <li><strong>Confidentialité</strong> : ne pas divulguer les données du patient.</li>
+          <li><strong>Consentement</strong> : ne pas imposer un régime.</li>
+          <li><strong>Dignité</strong> : respecter la personne sans jugement.</li>
+          <li><strong>Compétence</strong> : ne pas sortir de son domaine, référer au médecin.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Imposer un régime sans explication ni suivi est une erreur. Sans adhésion du patient, le régime échoue. Le rôle du diététicien est d'<strong>accompagner</strong>, d'expliquer, d'adapter et de suivre.</p>
+      </div>
+    `
+  },
+  {
+    title: "Synthèse — De l'évaluation au régime personnalisé",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Synthèse générale</div>
+        <h3>La démarche du diététicien</h3>
+        <ol>
+          <li><strong>Comprendre</strong> : concepts de base, digestion, groupes d'aliments.</li>
+          <li><strong>Évaluer</strong> : anamnèse alimentaire, mesures anthropométriques (IMC, tour de taille).</li>
+          <li><strong>Diagnostiquer</strong> : identifier les déséquilibres, carences et excès.</li>
+          <li><strong>Proposer un régime adapté</strong> : hypocalorique (obésité), contrôlé en glucides (diabète), pauvre en sel (hypertension), riche en fer/vitamine A/iode (carences), progressif (malnutrition).</li>
+          <li><strong>Planifier des repas</strong> : menus équilibrés, portions adaptées, recettes locales saines.</li>
+          <li><strong>Accompagner</strong> : conseil, éducation, suivi, ajustement, éthique.</li>
+        </ol>
+
+        <h3>Tableau récapitulatif des régimes</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Pathologie</th>
+              <th>Principes du régime</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Obésité</td>
+              <td>Déficit modéré de 300-500 kcal/jour, riche en fibres et protéines, limiter sucres et graisses</td>
+            </tr>
+            <tr>
+              <td>Diabète</td>
+              <td>Glucides à IG bas, répartis dans la journée, riche en fibres, limiter sucres simples</td>
+            </tr>
+            <tr>
+              <td>Hypertension</td>
+              <td>Moins de 5 g de sel/jour, riche en potassium/calcium/magnésium, limiter alcool et graisses</td>
+            </tr>
+            <tr>
+              <td>Anémie ferriprive</td>
+              <td>Fer héminique et non héminique + vitamine C, éviter le thé pendant les repas</td>
+            </tr>
+            <tr>
+              <td>Carence vitamine A</td>
+              <td>Foie, œufs, légumes-feuilles, fruits jaunes, huile de palme rouge</td>
+            </tr>
+            <tr>
+              <td>Carence iode</td>
+              <td>Sel iodé, conservation à l'abri de la lumière</td>
+            </tr>
+            <tr>
+              <td>Malnutrition sévère</td>
+              <td>Réalimentation progressive, surveillée, prévention du syndrome de renutrition</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bloc cas">
+        <div class="bloc-label">Étude de cas (cas pédagogique)</div>
+        <p>« Un élève de 4<sup>e</sup> diététique à Kinshasa reçoit une femme enceinte anémiée. Il réalise une anamnèse, constate une faible consommation de fer et de vitamine C, et élabore un plan alimentaire adapté : légumes-feuilles, haricots, poisson, agrumes, tout en tenant compte du budget familial. Il explique les choix et fixe un rendez-vous de suivi. »</p>
+        <p><strong>Analyse :</strong> la démarche est exemplaire. L'élève a réalisé l'anamnèse, identifié la carence, proposé un plan alimentaire adapté aux aliments locaux, pris en compte le budget, expliqué les choix et prévu un suivi. Il a aussi pu conseiller la supplémentation en fer prescrite par le médecin.</p>
+      </div>
+
+      <div class="bloc sources">
+        <div class="bloc-label">Sources du cours</div>
+        <ul>
+          <li>Sciences-Africa, <em>Diététique</em>, 4<sup>e</sup> Année des Humanités, Curriculum Officiel APC – MINEPST RDC.</li>
+          <li>Sciences-Africa, <em>Fonction du diététicien</em>, 4<sup>e</sup> Année des Humanités.</li>
+          <li>Manuels Scolaires RDC, <em>Manuel de Diététique et Nutrition pour la 4<sup>e</sup> Année — Option Nutrition</em>, Édition 2025.</li>
+          <li>Manuels Scolaires RDC, <em>Fiches pédagogiques — Cours de Diététique</em>, Édition 2025.</li>
+          <li>Manuels Scolaires RDC, <em>Fiches pédagogiques — Cours de Diététique Thérapeutique</em>, Édition 2025.</li>
+          <li>Manuels Scolaires RDC, <em>Manuel de Diététique pour la 4<sup>e</sup> Année Hôtellerie et Restauration</em>, Édition 2025.</li>
+          <li>OMS, FAO — références sur la diététique et la nutrition.</li>
+          <li>Tables de composition des aliments congolais.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Évaluation finale — Diététique",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Consigne</div>
+        <p>Répondez aux questions ci-dessous en sélectionnant la bonne réponse parmi les quatre propositions. Le QCM couvre l'ensemble du cours. Cliquez ensuite sur « Valider mes réponses » pour obtenir votre score.</p>
+      </div>
+
+      <div class="quiz-container">
+        <div id="quizQuestions"></div>
+        <button id="submitQuiz" class="quiz-btn-submit">
+          Valider mes réponses
+        </button>
+        <div id="quizResult" class="quiz-result"></div>
+      </div>
+    `
+  }
+];
+const questions = [
+  {
+    text: "La diététique est la science de :",
+    options: [
+      "L'alimentation équilibrée appliquée à l'homme sain ou malade",
+      "La culture des plantes",
+      "L'élevage",
+      "La mécanique agricole"
+    ],
+    correct: 0
+  },
+  {
+    text: "Un régime est :",
+    options: [
+      "Une adaptation qualitative et quantitative de l'alimentation à des besoins spécifiques",
+      "Une privation totale de nourriture",
+      "Un médicament",
+      "Un exercice physique"
+    ],
+    correct: 0
+  },
+  {
+    text: "Parmi les principes suivants de l'équilibre alimentaire, lequel est indispensable ?",
+    options: [
+      "La diversité et la proportionnalité des aliments",
+      "La suppression d'un groupe alimentaire",
+      "Le jeûne prolongé",
+      "La consommation exclusive d'un aliment"
+    ],
+    correct: 0
+  },
+  {
+    text: "La digestion des glucides complexes commence :",
+    options: [
+      "Dans la bouche, grâce à l'amylase salivaire",
+      "Dans l'estomac, grâce à l'acide chlorhydrique",
+      "Dans l'intestin grêle uniquement",
+      "Dans le côlon"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'absorption des nutriments se fait principalement :",
+    options: [
+      "Dans l'intestin grêle",
+      "Dans la bouche",
+      "Dans l'estomac",
+      "Dans le côlon"
+    ],
+    correct: 0
+  },
+  {
+    text: "La bile joue un rôle principal dans la digestion :",
+    options: [
+      "Des lipides (émulsion)",
+      "Des glucides",
+      "Des protéines",
+      "De l'eau"
+    ],
+    correct: 0
+  },
+  {
+    text: "Les aliments énergétiques sont riches en :",
+    options: [
+      "Glucides et lipides",
+      "Protéines",
+      "Vitamines et minéraux",
+      "Eau"
+    ],
+    correct: 0
+  },
+  {
+    text: "Les aliments bâtisseurs sont riches en :",
+    options: [
+      "Protéines",
+      "Glucides",
+      "Lipides",
+      "Vitamines"
+    ],
+    correct: 0
+  },
+  {
+    text: "Les aliments protecteurs sont riches en :",
+    options: [
+      "Vitamines, minéraux et fibres",
+      "Protéines",
+      "Glucides",
+      "Lipides"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'anamnèse alimentaire est :",
+    options: [
+      "Un interrogatoire structuré sur les habitudes alimentaires du patient",
+      "Une prise de sang",
+      "Une radiographie",
+      "Un vaccin"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'IMC se calcule par la formule :",
+    options: [
+      "Poids (kg) / Taille² (m²)",
+      "Taille (m) / Poids (kg)",
+      "Poids × Taille",
+      "Taille² × Poids"
+    ],
+    correct: 0
+  },
+  {
+    text: "Un IMC de 32 correspond à :",
+    options: [
+      "Une obésité modérée",
+      "Un poids normal",
+      "Une dénutrition",
+      "Un surpoids"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le régime hypocalorique est utilisé principalement dans :",
+    options: [
+      "L'obésité",
+      "L'anémie",
+      "La carence en vitamine A",
+      "Le kwashiorkor"
+    ],
+    correct: 0
+  },
+  {
+    text: "Parmi les principes du régime du diabétique, lequel est correct ?",
+    options: [
+      "Préférer les glucides à index glycémique bas et les répartir dans la journée",
+      "Supprimer totalement les glucides",
+      "Manger une seule fois par jour",
+      "Boire des sodas sucrés"
+    ],
+    correct: 0
+  },
+  {
+    text: "Parmi les aliments suivants, lequel a un index glycémique bas ?",
+    options: ["Les haricots", "Le sucre blanc", "Le pain blanc", "Le soda"],
+    correct: 0
+  },
+  {
+    text: "Le régime du patient hypertendu doit être :",
+    options: [
+      "Pauvre en sel et riche en potassium",
+      "Riche en sel",
+      "Riche en graisses saturées",
+      "Riche en alcool"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le sel caché dans l'alimentation provient notamment de :",
+    options: [
+      "Bouillons cubes, conserves, pain, charcuteries",
+      "Fruits frais",
+      "Légumes verts",
+      "Eau potable"
+    ],
+    correct: 0
+  },
+  {
+    text: "Pour améliorer l'absorption du fer végétal, il faut associer :",
+    options: [
+      "La vitamine C (agrumes, tomate, papaye)",
+      "Le thé",
+      "Le café",
+      "Le lait"
+    ],
+    correct: 0
+  },
+  {
+    text: "Les aliments riches en vitamine A sont notamment :",
+    options: [
+      "Le foie, les œufs, les légumes-feuilles, les fruits jaunes",
+      "Le sel, le sucre, le pain blanc",
+      "L'eau, le thé, le café",
+      "La viande rouge uniquement"
+    ],
+    correct: 0
+  },
+  {
+    text: "La carence en iode se prévient par :",
+    options: [
+      "L'utilisation de sel iodé",
+      "La consommation de sucre",
+      "L'ajout de sel non iodé",
+      "L'évitement des légumes"
+    ],
+    correct: 0
+  },
+  {
+    text: "La réalimentation d'un enfant sévèrement malnutri doit être :",
+    options: [
+      "Progressive et surveillée pour éviter le syndrome de renutrition",
+      "Rapide et massive",
+      "Uniquement avec des boissons sucrées",
+      "Réalisée à domicile sans suivi"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le syndrome de renutrition est :",
+    options: [
+      "Un trouble grave dû à une réalimentation trop rapide",
+      "Une maladie infectieuse",
+      "Une allergie alimentaire",
+      "Un trouble du sommeil"
+    ],
+    correct: 0
+  },
+  {
+    text: "Parmi les principes d'une recette locale saine, lequel est correct ?",
+    options: [
+      "Combiner les trois groupes alimentaires en limitant les fritures et le sel",
+      "Utiliser beaucoup d'huile et de sel",
+      "Supprimer les légumes",
+      "Utiliser uniquement des aliments importés"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le conseil diététique doit être :",
+    options: [
+      "Personnalisé, adapté au mode de vie et accompagné d'un suivi",
+      "Standardisé pour tous les patients",
+      "Imposé sans explication",
+      "Uniquement écrit"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'éthique du diététicien impose :",
+    options: [
+      "La confidentialité, le respect du patient et le consentement",
+      "La diffusion des données du patient",
+      "L'imposition du régime sans discussion",
+      "L'ignorance des préférences du patient"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'observance du régime dépend notamment de :",
+    options: [
+      "La compréhension, l'acceptation culturelle et la faisabilité",
+      "La contrainte et la peur",
+      "Le prix du régime uniquement",
+      "L'âge du patient uniquement"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'objectif principal de la diététique en 4<sup>e</sup> Humanité est de rendre l'élève capable de :",
+    options: [
+      "Concevoir et suivre des plans alimentaires adaptés aux besoins et à la santé",
+      "Vendre des aliments",
+      "Construire des routes",
+      "Élever des animaux"
+    ],
+    correct: 0
+  }
+];
+
+try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+        questions.forEach(function (q) {
+            if (!q.text) q.text = q.question || q.q || q.enonce || q.titre || "";
+            if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+            if (typeof q.correct === "undefined") {
+                if (typeof q.answer !== "undefined") q.correct = q.answer;
+                else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+            }
+        });
+    }
+} catch (e) {}
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+const pageTitle = document.getElementById('pageTitle');
+pageTitle.textContent = "ECOLIA · " + COURSE_TITLE;
+document.title = "ECOLIA — " + COURSE_TITLE;
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim() || slides.length === 0) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp("(" + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ")", 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderEmptyState() {
+    contentDiv.innerHTML = '<div class="empty-state"><div class="icon">·</div><span class="tag">Bientôt disponible</span><h2>' + COURSE_TITLE + '</h2><p>Ce cours est en préparation. Le contenu sera ajouté prochainement.</p></div>';
+    slideCounterSpan.textContent = '0/0';
+    progressFill.style.width = '0%';
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    counterSpan.textContent = '—';
+}
+
+function renderQuiz() {
+    const qc = document.getElementById('quizQuestions');
+    if (!qc) return;
+    if (typeof questions === 'undefined' || questions.length === 0) {
+        qc.innerHTML = '<p style="color:#666;font-style:italic;">Quiz bientot disponible.</p>';
+        return;
+    }
+    let html = '';
+    questions.forEach((q, i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o, k) => {
+            html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>';
+        });
+        html += '</div>';
+    });
+    qc.innerHTML = html;
+    const submitBtn = document.getElementById('submitQuiz');
+    if (submitBtn) {
+        submitBtn.onclick = () => {
+            let score = 0;
+            questions.forEach((q, i) => {
+                const s = document.querySelector('input[name="q' + i + '"]:checked');
+                if (s && parseInt(s.value) === q.correct) score++;
+            });
+            const pct = Math.round(score/questions.length*100);
+            document.getElementById('quizResult').innerHTML =
+                '<div style="background:var(--bg2);padding:16px;border-radius:10px;margin-top:14px;">' +
+                '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong></div>';
+        };
+    }
+}
+
+function renderSlide(index, keepHighlight) {
+    if (keepHighlight === undefined) keepHighlight = true;
+    if (slides.length === 0) { renderEmptyState(); return; }
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    if (index === slides.length - 1) renderQuiz();
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    if (slides.length === 0) return;
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (slides.length && currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (slides.length && currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+<!-- ECOLIA_IMAGE_LOADER_START -->
+<script>
+(function () {
+  var SITE = "https://ecolia-course.github.io/";
+  var NATIVE = false;
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function abs(u) { return /^(https?:|data:|blob:)/i.test(u) ? u : (NATIVE ? SITE + u.replace(/^(\.\/|\/)+/, "") : u); }
+  function ext(u) { var m = String(u).split("?")[0].match(/\.(jpe?g|png|gif|webp|svg)$/i); return m ? m[1].toLowerCase() : "jpg"; }
+  function hide(img) { img.onerror = null; img.style.display = "none"; }
+  var table = null, queue = [], queued = {}, running = false;
+  function enqueue(full, fn) {
+    if (queued[fn]) return;
+    queued[fn] = 1; queue.push([full, fn]);
+    if (!running) { running = true; setTimeout(next, 2500); }
+  }
+  function next() {
+    if (!queue.length) { running = false; return; }
+    if (!navigator.onLine) { running = false; return; }
+    var q = queue.shift(), t0 = Date.now();
+    try { CoursInterface.download(q[0], q[1]); } catch (e) { return setTimeout(next, 500); }
+    (function wait() {
+      var ok = false;
+      try { ok = !!CoursInterface.exists(q[1]); } catch (e) {}
+      if (ok) setTimeout(next, 1500);
+      else if (Date.now() - t0 > 40000) next();
+      else setTimeout(wait, 700);
+    })();
+  }
+  function exists(fn) { try { return !!CoursInterface.exists(fn); } catch (e) { return false; } }
+  function show(img) {
+    if (!table || img.getAttribute("data-ecolia-done")) return;
+    var id = img.getAttribute("data-image-id");
+    var url = table[id];
+    if (typeof url !== "string" || !url.length) { console.warn("ECOLIA : image absente du JSON :", id); return; }
+    img.setAttribute("data-ecolia-done", "1");
+    if (!NATIVE) { img.onerror = function () { hide(img); }; img.setAttribute("src", url); return; }
+    var full = abs(url), fn = "img_" + id + "." + ext(url);
+    if (exists(fn)) {
+      img.onerror = function () {
+        try { CoursInterface["delete"](fn); } catch (e) {}
+        queued[fn] = 0;
+        img.onerror = function () { hide(img); };
+        img.setAttribute("src", full);
+      };
+      img.setAttribute("src", "https://app.local/cours/" + fn);
+    } else {
+      img.onerror = function () { hide(img); };
+      img.setAttribute("src", full);
+      enqueue(full, fn);
+    }
+  }
+  function scan(root) {
+    if (!root || !root.querySelectorAll) return;
+    if (root.matches && root.matches("img[data-image-id]")) show(root);
+    root.querySelectorAll("img[data-image-id]").forEach(show);
+  }
+  function prefetchAll() {
+    var ids = {};
+    try { JSON.stringify(slides).replace(/data-image-id=\\?"([^"\\]+)/g, function (m, id) { ids[id] = 1; }); } catch (e) {}
+    Object.keys(ids).forEach(function (id) {
+      var url = table[id];
+      if (typeof url !== "string" || !url.length) return;
+      var fn = "img_" + id + "." + ext(url);
+      if (!exists(fn)) enqueue(abs(url), fn);
+    });
+  }
+  function start(tbl) {
+    table = tbl;
+    scan(document.body);
+    new MutationObserver(function (muts) {
+      muts.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.nodeType === 1) scan(n); }); });
+    }).observe(document.body, { childList: true, subtree: true });
+    if (NATIVE) prefetchAll();
+  }
+  var JSON_URL = NATIVE ? SITE + "images_ecolia.json" : "images_ecolia.json";
+  var KEY = "ecolia_images_json";
+  fetch(JSON_URL, NATIVE ? { cache: "no-cache" } : undefined)
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (table) { if (NATIVE) lsSet(KEY, JSON.stringify(table)); start(table); })
+    .catch(function (e) {
+      var saved = null;
+      if (NATIVE) { try { saved = JSON.parse(lsGet(KEY) || "null"); } catch (x) {} }
+      if (saved) start(saved);
+      else console.warn("ECOLIA : JSON des images indisponible.", e);
+    });
+})();
+</script>
+<!-- ECOLIA_IMAGE_LOADER_END -->
+
+
+
+<!-- ECOLIA_AUDIO_PLAYER_START -->
+<style>
+  #ecolia-audio-btn, #ecolia-dl-btn {
+    width: 30px; height: 30px; min-width: 30px; padding: 0; margin: 0 4px 0 0;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    cursor: pointer; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent; outline: none;
+  }
+  #ecolia-audio-btn { border: none; background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-dl-btn { border: 1.5px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb); }
+  #ecolia-dl-btn.ecolia-full { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-btn.ecolia-fixed { position: fixed; top: 8px; left: 8px; z-index: 2147483000; }
+  #ecolia-audio-btn:active, #ecolia-dl-btn:active { transform: scale(.92); }
+  #ecolia-audio-btn svg, #ecolia-dl-btn svg { width: 15px; height: 15px; fill: currentColor; pointer-events: none; }
+  #ecolia-audio-btn.ecolia-off, #ecolia-dl-btn.ecolia-off { display: none; }
+  #ecolia-audio-banner {
+    display: none; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0;
+    padding: 8px 14px; font-size: .82rem; line-height: 1.35;
+    background: var(--soft, #eef3fb); color: var(--p1, #123); border-bottom: 1px solid var(--bd, #c9d6ea);
+  }
+  #ecolia-audio-banner.on { display: flex; }
+  #ecolia-audio-banner .eab-txt { flex: 1 1 180px; }
+  #ecolia-audio-banner .eab-act { display: flex; gap: 6px; flex-wrap: wrap; }
+  #ecolia-audio-banner button {
+    border: 1px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb);
+    border-radius: 16px; padding: 5px 12px; font-size: .8rem; cursor: pointer;
+  }
+  #ecolia-audio-banner button.pri { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-banner .eab-bar { display: none; flex-basis: 100%; height: 4px; border-radius: 2px; overflow: hidden; background: var(--bd, #c9d6ea); }
+  #ecolia-audio-banner .eab-bar i { display: block; height: 100%; width: 0; background: var(--p2, #2563eb); transition: width .2s; }
+</style>
+<script>
+(function () {
+  var CFG = {"code":"Dietetique4","base":"https://ecolia-course.github.io/ecolia-media/audio_files/","available":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],"count":16,"sizeMo":16,"sizes":{"1":1099392,"2":1039488,"3":1153152,"4":1035648,"5":964608,"6":1022208,"7":968640,"8":1116672,"9":1109184,"10":1007808,"11":1029696,"12":993408,"13":975744,"14":946560,"15":1308864,"16":152448},"fallback":{"1":[["fr","Sommaire, Diététique. Bienvenue. La diététique: adapter l'alimentation aux besoins de chacun. La diététique est la science de l'alimentation équilibrée, appliquée à l'homme sain ou malade. Elle consiste à élaborer des régimes alimentaires adaptés pour maintenir la santé ou prendre en charge une pathologie. Loin d'être une simple restriction, la diététique est un ajustement raisonné, personnalisé et culturellement pertinent. Ce cours s'adresse aux élèves de 4e Humanité de la filière Nutrition. Il prépare le futur technicien A2 à mener une anamnèse alimentaire, à concevoir des régimes adaptés aux principales pathologies (obésité, diabète, hypertension, carences) et à conseiller et suivre les patients, en valorisant les aliments locaux congolais. Objectifs d'apprentissage. À la fin de ce cours, l'élève doit être capable de: Définir les concepts de base de la diététique (diététique, régime, équilibre alimentaire). Comprendre la digestion et l'absorption des nutriments. Connaître les groupes alimentaires et les principes de l'équilibre alimentaire. Réaliser une anamnèse alimentaire et une évaluation nutritionnelle simple. Élaborer des régimes adaptés aux pathologies de surcharge (obésité, diabète, hypertension). Élaborer des régimes de récupération pour les carences et la malnutrition. Planifier des repas équilibrés et des recettes locales saines. Communiquer et assurer le suivi diététique. Grands chapitres du cours. Chapitre I, Introduction à la diététique. Chapitre II, La digestion et l'absorption des nutriments. Chapitre III, Les groupes alimentaires et l'équilibre alimentaire. Chapitre IV, Anamnèse et évaluation nutritionnelle. Chapitre V, Régimes thérapeutiques (1): pathologies de surcharge. Chapitre VI, Régimes thérapeutiques (2): carences et malnutrition. Chapitre VII, Planification des repas et recettes locales. Chapitre VIII, Communication et suivi diététique."]],"2":[["fr","Chapitre I, Qu'est-ce que la diététique? Situation-problème. Une femme de 45 ans, diabétique et en surpoids, consulte. Elle explique qu'elle a arrêté de manger du fufu parce qu'« on lui a dit que c'était mauvais ». Elle se sent faible, n'a pas d'énergie, et ne sait plus quoi manger. Que faut-il lui expliquer? Un régime doit-il supprimer le fufu ou l'adapter? Fondements théoriques. Définitions. La diététique. La diététique est la science de l'alimentation équilibrée, appliquée à l'homme sain ou malade. Elle consiste à élaborer des régimes alimentaires adaptés pour maintenir la santé ou prendre en charge une pathologie. Le régime. Un régime est une adaptation qualitative et quantitative de l'alimentation à des besoins spécifiques. Il ne s'agit pas uniquement de restriction, mais d'un ajustement raisonné. Un régime peut: Réduire certains apports (calories, sel, sucres). Augmenter certains apports (protéines, fer, fibres). Modifier la répartition (nombre de repas, horaires). Adapter la consistance (aliments mixés, mous). Éliminer certains aliments (allergie, intolérance). L'équilibre alimentaire. L'équilibre alimentaire associe: La diversité: manger de tout. La proportionnalité: respecter les proportions entre les groupes d'aliments. L'adéquation aux besoins individuels. Le plaisir et la convivialité. Le rôle du diététicien. Le diététicien ne donne pas des ordres: il accompagne un changement en proposant des solutions adaptées au mode de vie, à la culture et au budget de la personne. Erreur fréquente. Croire qu'un régime est nécessairement une privation est une erreur. C'est une adaptation personnalisée aux besoins. Interdire brutalement le fufu à une personne diabétique peut la priver d'énergie sans bénéfice: il faut plutôt ajuster les quantités, associer les aliments et équilibrer le repas."]],"3":[["fr","Chapitre II, La digestion et l'absorption des nutriments. Fondements théoriques. Le parcours des aliments. Comprendre la digestion est indispensable en diététique: elle permet de justifier les choix alimentaires et de comprendre pourquoi certains aliments sont mieux tolérés que d'autres. 1. La bouche. La mastication réduit les aliments en bouillie. La salive contient une enzyme, l'amylase salivaire, qui commence la digestion des glucides complexes (amidon) en sucres plus simples. Le bol alimentaire est ensuite avalé. 2. L'estomac. Le bol alimentaire y est malaxé et mélangé au suc gastrique (acide chlorhydrique plus pepsine). La pepsine commence la digestion des protéines. Le pH est très acide (1 à 3). Le bol devient chyme, qui passe lentement dans l'intestin grêle. 3. L'intestin grêle. C'est le lieu principal de la digestion et de l'absorption. Il reçoit: Le suc pancréatique: enzymes (amylase, lipase, protéases) qui digèrent les glucides, lipides et protéines. La bile (du foie via la vésicule biliaire): émulsionne les lipides pour faciliter leur digestion. Le suc intestinal: enzymes complémentaires. Les nutriments digérés (glucose, acides aminés, acides gras, vitamines, minéraux) traversent la paroi intestinale (absorption) et passent dans le sang ou la lymphe. 4. Le côlon (gros intestin). Il absorbe l'eau et les minéraux. Les fibres non digestibles y sont fermentées par les bactéries intestinales. Les déchets forment les selles. Facteurs qui influencent la digestion. L'état des dents (mastication). L'âge (baisse de la production enzymatique avec l'âge). L'état de santé (maladies digestives, stress). La composition du repas (fibres, graisses). Erreur fréquente. Négliger l'importance de la digestion dans le choix des aliments est une erreur. Un aliment riche en nutriments mais mal absorbé (par exemple en cas de maladie intestinale) ne nourrit pas correctement. Le diététicien doit tenir compte de la digestibilité."]],"4":[["fr","Chapitre III, Les groupes alimentaires et l'équilibre. Fondements théoriques. Les trois groupes fonctionnels. Comme en nutrition communautaire, les aliments se classent en trois groupes fonctionnels: Groupe. Rôle. Exemples congolais. Énergétiques. Fournir l'énergie. Fufu, manioc, riz, maïs, huile de palme, arachides. Bâtisseurs. Construire et réparer les tissus. Poisson, viande, œufs, haricots, lait, chenilles. Protecteurs. Protéger et réguler. Pondu, matembele, papaye, mangue, agrumes. Les principes de l'équilibre alimentaire. Diversité: varier les aliments au sein de chaque groupe et entre les groupes. Proportionnalité: respecter la pyramide alimentaire (glucides complexes à la base, protéines au milieu, graisses et sucres en haut). Adéquation aux besoins: âge, sexe, activité, état physiologique ou pathologique. Répartition des repas: 3 repas principaux plus 1 à 2 collations, sans grignotage désordonné. Hydratation: boire suffisamment d'eau, éviter les sodas sucrés. Les tables de composition des aliments. Les tables de composition indiquent, pour chaque aliment, les teneurs en énergie, protéines, lipides, glucides, vitamines, minéraux. Elles sont indispensables pour calculer les apports d'un régime. Il existe des tables adaptées aux aliments congolais: manioc, maïs, sorgho, huile de palme, poisson fumé, légumineuses du Kasaï. Erreur fréquente. Se fier uniquement à la quantité sans considérer la qualité et la diversité est une erreur. Manger beaucoup de fufu n'est pas équilibré si l'on ne mange pas de légumes et de protéines. À l'inverse, un plat simple qui combine fufu plus poisson plus pondu peut être parfaitement équilibré."]],"5":[["fr","Chapitre IV, L'anamnèse alimentaire. Fondements théoriques. Interroger pour comprendre. L'anamnèse alimentaire est un interrogatoire structuré sur les habitudes alimentaires du patient. C'est l'outil diagnostique principal du diététicien. Elle permet de comprendre ce que mange réellement la personne, ses contraintes, ses préférences et ses erreurs. Éléments à recueillir. Habitudes générales: nombre de repas, horaires, lieu de consommation. Aliments consommés: type, quantité, fréquence. Mode de préparation: friture, bouillon, grillade. Préférences et aversions. Allergies et intolérances. Boissons: eau, sodas, alcool. Activité physique et sédentarité. Contexte socio-économique: budget, approvisionnement, temps disponible. Antécédents médicaux et traitements en cours. Outils complémentaires. Rappel de 24 heures: reconstitution précise d'une journée alimentaire type. Fréquence de consommation: combien de fois par semaine consomme-t-il des légumes, du poisson, des fruits? Journal alimentaire: tenu par le patient pendant plusieurs jours. Le diagnostic diététique. À l'issue de l'anamnèse, on identifie: Les déséquilibres (trop de sucres, pas assez de légumes). Les carences probables (fer, calcium, fibres). Les excès (calories, sel, graisses). Les habitudes à risque (grignotage, sodas). À retenir. L'anamnèse alimentaire est l'outil clé du diététicien. Elle recueille les habitudes, les quantités, les préférences, les contraintes et les antécédents. Complétée par des mesures anthropométriques, elle permet de poser un diagnostic diététique et de proposer un plan d'action."]],"6":[["fr","Chapitre IV, Les mesures anthropométriques. Fondements théoriques. Mesurer pour objectiver. Les mesures anthropométriques complètent l'anamnèse. Elles permettent de suivre objectivement l'état nutritionnel et d'évaluer l'effet d'un régime dans le temps. Poids et taille. Mesurés avec une balance et une toise, ils permettent de calculer l'IMC chez l'adulte. IMC (Indice de Masse Corporelle). IMC égale Poids (kg) ou Taille au carré (m au carré ). IMC. Interprétation. inférieur à 16,5. Dénutrition sévère. 16,5 moins 18,4. Dénutrition. 18,5 moins 24,9. Normal. 25 moins 29,9. Surpoids. 30 moins 34,9. Obésité modérée. 35 moins 39,9. Obésité sévère. supérieur ou égal à 40. Obésité morbide. Tour de taille. Il mesure la graisse abdominale, particulièrement dangereuse pour la santé cardiovasculaire: Hommes: risque élevé au-delà de 94 centimètres, très élevé au-delà de 102 centimètres. Femmes: risque élevé au-delà de 80 centimètres, très élevé au-delà de 88 centimètres. Périmètre brachial et autres mesures. Utiles surtout chez l'enfant et la personne âgée. Le périmètre brachial dépiste rapidement la dénutrition. Suivi dans le temps. Le poids, l'IMC et le tour de taille doivent être mesurés régulièrement pour suivre l'évolution et ajuster le régime. Erreur fréquente. Se limiter à l'anamnèse sans mesures anthropométriques est une erreur. Un patient peut sous-estimer ce qu'il mange ou oublier des aliments. Les mesures objectives complètent et corrigent l'anamnèse. Inversement, se limiter aux mesures sans anamnèse prive le diététicien de la compréhension des causes."]],"7":[["fr","Chapitre V, Le régime hypocalorique (obésité). Fondements théoriques. L'obésité et son régime. L'obésité est un excès de masse grasse entraînant des risques pour la santé (diabète, hypertension, maladies cardiovasculaires, certains cancers, problèmes articulaires). Elle se définit par un IMC supérieur ou égal à 30. Principes du régime hypocalorique. Réduction modérée des calories: un déficit de 300 à 500 kcal ou jour permet une perte progressive (0,5 kilogrammes ou semaine), plus durable qu'un régime brutal. Maintien de la diversité: ne pas supprimer un groupe entier, mais réduire les portions. Priorité aux aliments rassasiants: légumes, fibres, protéines. Réduction des sucres simples: sodas, confiseries, pâtisseries, jus sucrés. Réduction des graisses saturées: fritures, beurre, graisses cachées. Augmentation des légumes et fruits (protecteurs, fibres). Activité physique régulière: au moins 30 minutes de marche par jour. Nombre de repas: maintenir 3 repas plus 1 collation pour éviter la faim et le grignotage. Adaptation culturelle. Il ne s'agit pas de supprimer le fufu ou le riz, mais de: Réduire la portion (par exemple, passer de 3 boules à 1,5). Augmenter la part de légumes dans l'assiette. Réduire l'huile de cuisson. Préférer les grillades aux fritures. Privilégier l'eau aux boissons sucrées. Erreur fréquente. Imposer un régime très restrictif (moins de 1000 kcal ou jour) sans surveillance médicale est dangereux: fatigue, perte de muscle, carences, effet yo-yo. Un régime hypocalorique doit être modéré, équilibré et durable."]],"8":[["fr","Chapitre V, Le régime du diabétique. Fondements théoriques. Contrôler la glycémie. Le diabète est un trouble du métabolisme des glucides, caractérisé par une hyperglycémie chronique (taux de sucre dans le sang trop élevé). Le diabète de type 2, le plus fréquent, est fortement lié à l'alimentation et au mode de vie. Principes du régime. Répartition régulière des glucides dans la journée: 3 repas plus 1 à 2 collations pour éviter les pics glycémiques. Préférer les glucides à index glycémique bas: légumineuses, céréales complètes, légumes verts, igname. Limiter les sucres simples: sucre, miel, confitures, sodas, jus de fruits sucrés, pâtisseries. Augmenter les fibres: légumes, fruits peu sucrés, haricots, céréales complètes. Maintien des protéines: poisson, œufs, viande maigre, légumineuses. Réduire les graisses saturées (fritures, beurre) et privilégier les huiles végétales. Activité physique régulière: améliore la sensibilité à l'insuline. Contrôle du poids: une perte de 5 à 10 pour cent du poids améliore fortement l'équilibre glycémique. L'index glycémique (IG). L'IG mesure la vitesse à laquelle un aliment glucidique élève la glycémie: IG élevé: sucre, pain blanc, riz blanc, pomme de terre, sodas. IG bas: haricots, lentilles, avoine, céréales complètes, légumes verts, igname. Attention aux hypoglycémies. Un diabétique traité par médicaments hypoglycémiants ou insuline peut faire des hypoglycémies (sueurs, tremblements, malaise). Il doit avoir toujours du sucre rapide sur lui. Le régime doit être régulier pour prévenir ces épisodes. Erreur fréquente. Supprimer totalement les glucides chez un diabétique est une erreur. Le cerveau et les muscles ont besoin de glucides. Il faut les choisir (index glycémique bas), les répartir et ajuster les quantités, pas les éliminer."]],"9":[["fr","Chapitre V, Le régime du hypertendu. Fondements théoriques. Réduire la pression artérielle par l'alimentation. L'hypertension artérielle (HTA) est une pression artérielle élevée de façon persistante ( supérieur ou égal à 140 sur 90 mmHg). Elle augmente le risque d'AVC, d'infarctus et d'insuffisance rénale. Le régime est un pilier du traitement. Principes du régime. Réduction du sel: moins de 5 grammes par jour (une petite cuillère à café). Attention aux sels cachés (bouillons cubes, conserves, charcuteries, pain, poisson salé). Augmentation du potassium: banane, orange, légumes-feuilles, haricots, patate douce. Le potassium aide à réduire la tension. Augmentation du calcium et du magnésium: produits laitiers, légumes verts, noix. Réduction des graisses saturées: fritures, beurre, viandes grasses. Réduction de l'alcool: à limiter au maximum. Activité physique régulière. Contrôle du poids. Le régime DASH. Le régime DASH (Dietary Approaches to Stop Hypertension) est un modèle international: riche en fruits, légumes, céréales complètes, produits laitiers pauvres en gras, pauvre en sel, en sucres et en graisses saturées. Il a prouvé son efficacité pour réduire la tension artérielle. Adaptation culturelle congolaise. Réduire le sel dans la cuisson, ne pas resaler à table. Éviter les bouillons cubes (très salés). Privilégier le poisson frais au poisson salé et fumé. Augmenter les légumes-feuilles et les fruits locaux. Limiter les fritures et l'huile de palme en excès. Erreur fréquente. Se contenter de dire « ne mangez pas salé » sans expliquer où se cache le sel est une erreur. Le sel caché des bouillons cubes, du pain, des conserves et du poisson salé est souvent la principale source. Il faut apprendre au patient à lire les habitudes et à cuisiner autrement (épices, citron, herbes)."]],"10":[["fr","Chapitre VI, Les régimes de carence (fer, vitamine A, iode). Fondements théoriques. Corriger les carences par l'alimentation. 1. L'anémie ferriprive. Régime riche en fer: Fer héminique (mieux absorbé): viande rouge, foie, poisson, volaille. Fer non héminique (végétal): haricots, lentilles, pondu, matembele, morelle noire. Vitamine C (agrumes, tomate, mangue, papaye): augmente l'absorption du fer végétal. Éviter le thé et le café pendant les repas: les tanins inhibent l'absorption du fer. 2. La carence en vitamine A. Régime riche en vitamine A: Sources animales (rétinol, directement utilisable): foie, œufs, lait entier, beurre. Sources végétales (bêta-carotène, précurseur): légumes-feuilles verts (pondu, matembele, morelle noire), fruits jaune-orangé (mangue, papaye, carotte), huile de palme rouge. 3. La carence en iode. Utilisation systématique de sel iodé. Le sel iodé doit être conservé à l'abri de la lumière et de l'humidité (l'iode s'évapore). L'ajout de sel en fin de cuisson préserve mieux l'iode. 4. Autres carences fréquentes. Calcium: lait, produits laitiers, petits poissons avec arêtes, légumes verts. Zinc: viande, poisson, légumineuses, noix. Vitamine C: agrumes, goyave, papaye, poivron. À retenir. Les régimes de carence associent des aliments riches en nutriments, une bonne association (fer plus vitamine C), et des précautions (éviter le thé pendant les repas). Le sel iodé est la mesure la plus simple contre la carence en iode."]],"11":[["fr","Chapitre VI, La récupération nutritionnelle. Fondements théoriques. Réalimenter un enfant malnutri. La récupération nutritionnelle est la prise en charge des enfants souffrant de malnutrition aiguë sévère (marasme, kwashiorkor). Elle doit être progressive et surveillée pour éviter le syndrome de renutrition. Principes. Traiter d'abord les infections et les complications (antibiotiques, hydratation). Réalimenter progressivement: commencer par des aliments faciles à digérer, en petites quantités fréquentes (toutes les 2 à 3 heures). Augmenter progressivement les quantités et la densité énergétique. Surveiller le poids, la température, l'hydratation, l'apparition d'œdèmes. Supplémenter en vitamines et minéraux (vitamine A, zinc, potassium, magnésium). Ne pas donner trop de fer dans la phase aiguë (le fer peut aggraver les infections). Aliments utilisés. Lait thérapeutique (F-75 puis F-100): formules adaptées aux différentes phases. Aliments thérapeutiques prêts à l'emploi (ATPE): pâtes à base d'arachide enrichies, très utilisées en communauté. Aliments locaux enrichis: bouillies de maïs ou soja enrichies, purées avec huile et sucre. Le syndrome de renutrition. Une réalimentation trop rapide peut provoquer des troubles graves: déséquilibres électrolytiques, insuffisance cardiaque, voire décès. C'est pourquoi la progression doit être prudente et médicalement encadrée. Suivi post-récupération. Après la phase aiguë, il faut: Poursuivre une alimentation équilibrée et diversifiée. Surveiller la croissance. Prévenir la rechute par l'éducation nutritionnelle des familles. Erreur fréquente. Réalimenter trop rapidement un enfant sévèrement malnutri est une erreur grave. Le syndrome de renutrition peut être mortel. La progression prudente et la surveillance médicale sont indispensables."]],"12":[["fr","Chapitre VII, La planification des repas. Fondements théoriques. Composer un menu équilibré. Planifier les repas consiste à organiser, sur une journée ou une semaine, des repas qui respectent les principes de l'équilibre alimentaire, tout en tenant compte des contraintes du patient (budget, temps, préférences, culture). Étapes de la planification. Définir les besoins: âge, sexe, activité, état physiologique ou pathologique, objectif (maintien, perte, prise de poids). Choisir les groupes alimentaires à chaque repas. Définir les portions en utilisant des repères manuels (main, poing, pouce) ou des mesures standard (bol, assiette, cuillère). Répartir sur la journée: petit-déjeuner, déjeuner, collation, dîner. Vérifier l'équilibre sur la semaine: diversité, saisonnalité, coût. Les repères de portion. Paume de la main: portion de protéines (viande, poisson). Poing: portion de légumes ou de riz ou fufu. Pouce: portion de matières grasses (huile). Deux mains en coupe: portion de légumes verts ou de fruits. Exemple de journée type (adulte équilibré). Petit-déjeuner: bouillie de maïs légèrement sucrée, une banane, un verre d'eau. Déjeuner: fufu (portion modérée), poisson grillé, pondu, un fruit. Collation: une poignée d'arachides ou un fruit. Dîner: riz, haricots, matembele, un fruit. À retenir. La planification des repas combine besoins, groupes alimentaires, portions et répartition dans la journée. Les repères manuels facilitent l'estimation des portions sans balance. Un menu équilibré est diversifié, adapté au patient et à son budget."]],"13":[["fr","Chapitre VII, Les recettes locales saines. Fondements théoriques. Valoriser les aliments congolais. Une alimentation équilibrée doit être durable, accessible et culturellement acceptée. En R D C, cela signifie s'appuyer sur les aliments locaux: manioc, maïs, riz, poisson de fleuve, légumineuses, légumes-feuilles, fruits. Principes d'une recette locale saine. Combiner les trois groupes: énergétique plus bâtisseur plus protecteur. Limiter les fritures: préférer les cuissons à l'eau, à la vapeur, au four, en sauce légère. Réduire le sel: remplacer par des épices, herbes, citron, ail, oignon. Réduire le sucre: dans les boissons et les desserts. Augmenter les légumes: les intégrer dans les plats principaux. Utiliser les aliments de saison: moins chers et plus nutritifs. Économiser: choisir les sources de protéines accessibles (haricots, poisson de fleuve, chenilles). Exemples de recettes saines. Pondu au poisson fumé: légumes-feuilles (fer, calcium) plus poisson (protéines) plus huile de palme en quantité modérée. Haricots au riz: légumineuses (protéines végétales plus fibres) plus céréales. Bouillie enrichie de maïs et soja: céréale plus légumineuse, complémentarité protéique idéale. Poisson grillé au matembele: protéines plus légumes-feuilles plus accompagnement modéré. Salade de papaye verte et carotte râpée: vitamines, fibres, fraîcheur. Erreur fréquente. Proposer des menus coûteux ou importés est une erreur. La durabilité passe par les aliments locaux, accessibles et acceptés. Une alimentation saine n'a pas besoin d'être chère: elle doit être bien composée."]],"14":[["fr","Chapitre VIII, Le conseil diététique et le suivi. Fondements théoriques. Accompagner, pas imposer. Le conseil diététique est un entretien structuré entre le diététicien et le patient, qui aboutit à un plan alimentaire personnalisé et à un suivi. Il ne s'agit pas de donner des ordres mais d'accompagner un changement. Les étapes du conseil. Écouter: laisser le patient s'exprimer sur ses habitudes, ses difficultés, ses attentes. Reformuler: vérifier que l'on a bien compris. Expliquer: donner des informations claires et personnalisées, sans jargon. Proposer: suggérer des changements réalistes, un ou deux à la fois. Planifier: établir ensemble un plan concret (repas, achats, activité). Fixer un rendez-vous de suivi. L'observance. L'observance est le respect du régime par le patient. Elle dépend de: La compréhension du régime. L'acceptation culturelle. La faisabilité (budget, temps). La confiance dans le professionnel. La motivation et le soutien de la famille. Les entretiens de suivi. Ils permettent de: Mesurer les progrès (poids, tour de taille, glycémie, tension). Identifier les difficultés. Ajuster le plan. Encourager et soutenir. L'éthique du diététicien. Confidentialité: ne pas divulguer les données du patient. Consentement: ne pas imposer un régime. Dignité: respecter la personne sans jugement. Compétence: ne pas sortir de son domaine, référer au médecin. Erreur fréquente. Imposer un régime sans explication ni suivi est une erreur. Sans adhésion du patient, le régime échoue. Le rôle du diététicien est d'accompagner, d'expliquer, d'adapter et de suivre."]],"15":[["fr","Synthèse, De l'évaluation au régime personnalisé. Synthèse générale. La démarche du diététicien. Comprendre: concepts de base, digestion, groupes d'aliments. Évaluer: anamnèse alimentaire, mesures anthropométriques (IMC, tour de taille). Diagnostiquer: identifier les déséquilibres, carences et excès. Proposer un régime adapté: hypocalorique (obésité), contrôlé en glucides (diabète), pauvre en sel (hypertension), riche en fer ou vitamine A ou iode (carences), progressif (malnutrition). Planifier des repas: menus équilibrés, portions adaptées, recettes locales saines. Accompagner: conseil, éducation, suivi, ajustement, éthique. Tableau récapitulatif des régimes. Pathologie. Principes du régime. Obésité. Déficit modéré de 300-500 kcal ou jour, riche en fibres et protéines, limiter sucres et graisses. Diabète. Glucides à IG bas, répartis dans la journée, riche en fibres, limiter sucres simples. Hypertension. Moins de 5 grammes de sel ou jour, riche en potassium ou calcium ou magnésium, limiter alcool et graisses. Anémie ferriprive. Fer héminique et non héminique plus vitamine C, éviter le thé pendant les repas. Carence vitamine A. Foie, œufs, légumes-feuilles, fruits jaunes, huile de palme rouge. Carence iode. Sel iodé, conservation à l'abri de la lumière. Malnutrition sévère. Réalimentation progressive, surveillée, prévention du syndrome de renutrition. Étude de cas (cas pédagogique). « Un élève de 4e diététique à Kinshasa reçoit une femme enceinte anémiée. Il réalise une anamnèse, constate une faible consommation de fer et de vitamine C, et élabore un plan alimentaire adapté: légumes-feuilles, haricots, poisson, agrumes, tout en tenant compte du budget familial. Il explique les choix et fixe un rendez-vous de suivi. ». Analyse: la démarche est exemplaire. L'élève a réalisé l'anamnèse, identifié la carence, proposé un plan alimentaire adapté aux aliments locaux, pris en compte le budget, expliqué les choix et prévu un suivi. Il a aussi pu conseiller la supplémentation en fer prescrite par le médecin."]],"16":[["fr","Évaluation finale, Diététique. Consigne. Répondez aux questions ci-dessous en sélectionnant la bonne réponse parmi les quatre propositions. Le QCM couvre l'ensemble du cours. Cliquez ensuite sur « Valider mes réponses » pour obtenir votre score."]]}};
+  var CACHE = "ecolia-cours-v1";                       // même cache que l'application
+  var PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  var PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+  var DL = '<svg viewBox="0 0 24 24"><path d="M11 3h2v9.2l3.6-3.6L18 10l-6 6-6-6 1.4-1.4L11 12.2V3zM5 19h14v2H5z"/></svg>';
+  var OK = '<svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>';
+  // Réparation du quiz : certains cours stockent les choix sous "opts" (ou autre) au lieu de "options"
+  try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+      questions.forEach(function (q) {
+        if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+        if (q.text === undefined) q.text = q.question || q.q || q.enonce || q.titre || "";
+        if (typeof q.correct === "undefined") {
+          if (typeof q.answer !== "undefined") q.correct = q.answer;
+          else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+        }
+      });
+    }
+  } catch (e) {}
+  var synth = window.speechSynthesis || null;
+  var HAS_CACHE = !!(window.caches && window.caches.open);
+  var NATIVE = false;           // APK ECOLIA : pont Java "CoursInterface" (fichiers dans le dossier de l'application)
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  var LATER = "ecolia_audio_later_" + CFG.code;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+  function init() {
+    if (document.getElementById("ecolia-audio-btn")) return;
+
+    // ---------- éléments de l'interface ----------
+    var btn = document.createElement("button");
+    btn.id = "ecolia-audio-btn"; btn.type = "button"; btn.className = "ecolia-off";
+    btn.setAttribute("aria-label", "Écouter la leçon"); btn.innerHTML = PLAY;
+    var dlBtn = document.createElement("button");
+    dlBtn.id = "ecolia-dl-btn"; dlBtn.type = "button"; dlBtn.className = "ecolia-off";
+    dlBtn.innerHTML = DL;
+    var host = document.querySelector(".header-right");
+    if (host) { host.insertBefore(dlBtn, host.firstChild); host.insertBefore(btn, dlBtn); }   // dans la barre du haut : ne scrolle jamais
+    else { btn.className += " ecolia-fixed"; document.body.appendChild(btn); }
+
+    var banner = document.createElement("div");
+    banner.id = "ecolia-audio-banner";
+    banner.innerHTML = '<span class="eab-txt"></span><span class="eab-act"></span><div class="eab-bar"><i></i></div>';
+    var content = document.getElementById("content");
+    if (content && content.parentNode) content.parentNode.insertBefore(banner, content);
+    else document.body.insertBefore(banner, document.body.firstChild);
+    var txtEl = banner.querySelector(".eab-txt"), actEl = banner.querySelector(".eab-act");
+    var barEl = banner.querySelector(".eab-bar"), barI = barEl.firstChild;
+
+    var audio = new Audio();            // un seul élément Audio, réutilisé (exigé par les navigateurs mobiles)
+    audio.preload = "auto";
+    var st = { idx: -1, auto: false, advancing: false, mode: null, speaking: false, token: 0, chunks: [], ci: 0, blobUrl: null, playTok: 0 };
+    var dl = { state: "none", cached: 0, busy: false, cancel: false };   // none | partial | full
+    var bnMode = null, hideTimer = null;
+    if (synth && synth.getVoices) { try { synth.getVoices(); } catch (e) {} }
+
+    function cur() {
+      try { if (typeof currentSlide === "number") return currentSlide; } catch (e) {}
+      return 0;
+    }
+    function hasMp3(i) { return CFG.available.indexOf(i + 1) !== -1; }
+    function fb(i) { return CFG.fallback && CFG.fallback[String(i + 1)]; }
+    function hasAudio(i) { return hasMp3(i) || (!!synth && !!fb(i)); }
+    function urlN(n) {   // dans l'APK la page est sur https://app.local : une adresse relative doit pointer vers le site
+      var b = CFG.base;
+      if (NATIVE && !/^https?:/i.test(b)) b = "https://ecolia-course.github.io/" + b.replace(/^(\.\.\/|\.\/)+/, "");
+      return new URL(b + nameN(n), location.href).href;
+    }
+    function setIcon(playing) { btn.innerHTML = playing ? PAUSE : PLAY; }
+    function isPlaying() { return st.mode === "mp3" ? !audio.paused : (st.mode === "tts" && st.speaking); }
+    function mo() { return "≈ " + CFG.sizeMo + " Mo"; }
+    function nameN(n) { return "audio_" + CFG.code + "_" + n + ".mp3"; }
+
+    // ====================================================================
+    //  Stockage hors ligne : 2 moteurs, même interface
+    //    - APK : fichiers du dossier de l'application (CoursInterface), servis par https://app.local/cours/
+    //    - Web : Cache Storage du navigateur (même cache que l'application web)
+    // ====================================================================
+    function nativeStore() {
+      var okKey = "ecolia_audio_ok_" + CFG.code;
+      function readOk() { try { return JSON.parse(lsGet(okKey) || "[]"); } catch (e) { return []; } }
+      function writeOk(a) { lsSet(okKey, JSON.stringify(a)); }
+      function exists(n) { try { return !!CoursInterface.exists(nameN(n)); } catch (e) { return false; } }
+      function local(n) { return location.origin + "/cours/" + nameN(n); }
+      function verify(n) {                                   // fichier complet ? (taille exacte connue à la génération)
+        return fetch(local(n), { cache: "no-store" }).then(function (r) { return r.blob(); }).then(function (b) {
+          var exp = CFG.sizes && CFG.sizes[String(n)];
+          return (b.size > 2000 && (!exp || b.size === exp)) ? b : null;
+        }).catch(function () { return null; });
+      }
+      return {
+        list: function () {
+          var ok = readOk().filter(exists); writeOk(ok); return Promise.resolve(ok);
+        },
+        get: function (n) { return exists(n) ? verify(n) : Promise.resolve(null); },
+        put: function (n) {
+          return new Promise(function (res, rej) {
+            try { CoursInterface.download(urlN(n), nameN(n)); } catch (e) { return rej(e); }
+            var t0 = Date.now();
+            function next() { if (Date.now() - t0 > 120000) rej(new Error("délai dépassé")); else setTimeout(poll, 800); }
+            function poll() {
+              if (!exists(n)) return next();
+              verify(n).then(function (b) {
+                if (!b) return next();
+                var ok = readOk(); if (ok.indexOf(n) < 0) ok.push(n); writeOk(ok); res();
+              });
+            }
+            setTimeout(poll, 800);
+          });
+        },
+        del: function (n) {
+          try { CoursInterface.delete(nameN(n)); } catch (e) {}
+          writeOk(readOk().filter(function (x) { return x !== n; }));
+          return Promise.resolve();
+        }
+      };
+    }
+    function cacheStore() {
+      return {
+        list: function () {
+          return caches.open(CACHE).then(function (c) {
+            return Promise.all(CFG.available.map(function (n) {
+              return c.match(urlN(n)).then(function (r) {
+                if (!r) return 0;
+                if ((r.headers.get("content-type") || "").indexOf("audio") !== 0) { c.delete(urlN(n)); return 0; }   // ancien contenu invalide
+                return n;
+              });
+            }));
+          }).then(function (a) { return a.filter(Boolean); });
+        },
+        get: function (n) {
+          return caches.open(CACHE).then(function (c) { return c.match(urlN(n)); })
+            .then(function (r) { return r ? r.blob() : null; }).then(function (b) { return b && b.size > 2000 ? b : null; });
+        },
+        put: function (n) {
+          var u = urlN(n);
+          return fetch(u, { cache: "no-store" }).then(function (r) {
+            if (!r.ok || r.status !== 200) throw new Error("HTTP " + r.status);
+            return r.blob();
+          }).then(function (b) {
+            if (b.size < 2000 || (b.type && b.type.indexOf("audio") !== 0 && b.type.indexOf("octet") < 0)) throw new Error("fichier invalide");
+            return caches.open(CACHE).then(function (c) { return c.put(u, new Response(b, { headers: { "Content-Type": "audio/mpeg" } })); });
+          });
+        },
+        del: function (n) { return caches.open(CACHE).then(function (c) { return c.delete(urlN(n)); }); }
+      };
+    }
+    var store = NATIVE ? nativeStore() : (HAS_CACHE ? cacheStore() : null);
+
+    // ====================================================================
+    //  Bannière : invitation, confirmations, progression
+    // ====================================================================
+    function showBanner(mode, text, buttons, pct) {
+      clearTimeout(hideTimer);
+      bnMode = mode;
+      txtEl.textContent = text;
+      actEl.innerHTML = "";
+      (buttons || []).forEach(function (b) {
+        var e = document.createElement("button");
+        e.type = "button"; e.textContent = b.label; if (b.pri) e.className = "pri";
+        e.addEventListener("click", function (ev) { ev.stopPropagation(); b.fn(); });
+        actEl.appendChild(e);
+      });
+      if (typeof pct === "number") { barEl.style.display = "block"; barI.style.width = pct + "%"; }
+      else barEl.style.display = "none";
+      banner.classList.add("on");
+    }
+    function hideBanner() { clearTimeout(hideTimer); bnMode = null; banner.classList.remove("on"); }
+    function flash(text) { showBanner("info", text, []); hideTimer = setTimeout(hideBanner, 4000); }
+
+    function refreshUI() {
+      var show = !!store && CFG.available.length > 0;
+      dlBtn.classList.toggle("ecolia-off", !show);
+      dlBtn.classList.toggle("ecolia-full", dl.state === "full");
+      dlBtn.innerHTML = dl.state === "full" ? OK : DL;
+      dlBtn.setAttribute("aria-label", dl.state === "full" ? "Audios téléchargés : supprimer" : "Télécharger les audios");
+      dlBtn.title = dlBtn.getAttribute("aria-label");
+    }
+    function refreshCacheState(done) {
+      if (!store) { dl.state = "none"; refreshUI(); if (done) done(); return; }
+      store.list().then(function (ok) {
+        dl.cached = ok.length;
+        dl.state = dl.cached === 0 ? "none" : (dl.cached >= CFG.available.length ? "full" : "partial");
+      }).catch(function () { dl.state = "none"; }).then(function () { refreshUI(); if (done) done(); });
+    }
+
+    function askDownload(fromInvite) {
+      var left = CFG.available.length - dl.cached;
+      var txt = dl.state === "partial"
+        ? "Il reste " + left + " audio(s) à télécharger pour écouter ce cours sans internet."
+        : "🔊 Télécharger les audios de ce cours (" + mo() + ") pour les écouter sans internet ? Wi-Fi recommandé.";
+      showBanner(fromInvite ? "invite" : "confirm", txt, [
+        { label: fromInvite ? "Plus tard" : "Annuler", fn: function () { if (fromInvite) lsSet(LATER, "1"); hideBanner(); } },
+        { label: "Télécharger", pri: true, fn: startDownload }
+      ]);
+    }
+    function askDelete() {
+      showBanner("confirm", "Supprimer les audios téléchargés de ce cours (" + mo() + ") ? Vous pourrez toujours les écouter en ligne.", [
+        { label: "Annuler", fn: hideBanner },
+        { label: "Supprimer", pri: true, fn: doDelete }
+      ]);
+    }
+
+    function startDownload() {
+      if (dl.busy || !store) return;
+      dl.busy = true; dl.cancel = false;
+      var total = CFG.available.length, done = 0, quota = false, fails = 0, todo = [];
+      store.list().then(function (have) {
+        CFG.available.forEach(function (n) { if (have.indexOf(n) < 0) todo.push(n); });
+        done = total - todo.length;
+        function paint() {
+          var msg = "Téléchargement des audios : " + done + " / " + total;
+          if (bnMode === "progress") {                  // met à jour sans recréer les boutons (sinon un appui peut être perdu)
+            txtEl.textContent = msg; barI.style.width = Math.round(done / total * 100) + "%";
+          } else {
+            showBanner("progress", msg, [
+              { label: "Annuler", fn: function () { dl.cancel = true; } }
+            ], Math.round(done / total * 100));
+          }
+        }
+        paint();
+        function worker() {
+          if (dl.cancel || quota || !todo.length) return Promise.resolve();
+          var n = todo.shift();
+          return store.put(n).then(function () { done++; paint(); }).catch(function (e) {
+            if (e && (e.name === "QuotaExceededError" || /quota/i.test(String(e.message)))) quota = true;
+            fails++;
+          }).then(worker);
+        }
+        return Promise.all([worker(), worker()]);
+      }).catch(function () { fails++; }).then(function () {
+        dl.busy = false;
+        refreshCacheState(function () {
+          if (dl.state === "full") flash("✓ Audios téléchargés : le cours se lit maintenant sans internet.");
+          else if (dl.cancel) flash("Téléchargement interrompu (" + dl.cached + " / " + total + "). Vous pourrez reprendre plus tard.");
+          else showBanner("error", quota ? "Espace insuffisant sur l'appareil. Libérez de la place puis réessayez."
+            : "Certains audios n'ont pas pu être téléchargés (connexion ?).", [
+            { label: "Fermer", fn: hideBanner }, { label: "Réessayer", pri: true, fn: startDownload }
+          ]);
+        });
+      });
+    }
+    function doDelete() {
+      if (!store) return;
+      Promise.all(CFG.available.map(function (n) { return store.del(n); })).catch(function () {}).then(function () {
+        lsDel(LATER);
+        refreshCacheState(function () { flash("Audios supprimés de cet appareil."); });
+      });
+    }
+
+    dlBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (dl.busy) return;
+      if (dl.state === "full") askDelete(); else askDownload(false);
+    });
+
+    // ====================================================================
+    //  Voix intégrée au téléphone (hors ligne, sans limite)
+    // ====================================================================
+    function pickVoice(lang) {
+      var vs = [];
+      try { vs = synth.getVoices() || []; } catch (e) {}
+      var pre = lang === "en" ? "en" : "fr", best = null;
+      for (var k = 0; k < vs.length; k++) {
+        var v = vs[k];
+        if ((v.lang || "").toLowerCase().indexOf(pre) !== 0) continue;
+        if (!best || (v.localService && !best.localService)) best = v;
+      }
+      return best;
+    }
+    function hardSplit(text, max) {
+      var out = [];
+      while (text.length > max) {
+        var cut = text.lastIndexOf(" ", max);
+        if (cut < 40) cut = max;
+        out.push(text.slice(0, cut)); text = text.slice(cut).replace(/^\s+/, "");
+      }
+      if (text) out.push(text);
+      return out;
+    }
+    function buildChunks(segs) {                  // morceaux courts : évite l'arrêt des longs textes sur Chrome
+      var out = [];
+      segs.forEach(function (s) {
+        var cur2 = "", parts = s[1].match(/[^.!?;:]+[.!?;:]*\s*/g) || [s[1]];
+        parts.forEach(function (p) {
+          if (cur2 && (cur2 + p).length > 160) { out.push({ lang: s[0], text: cur2.trim() }); cur2 = p; }
+          else cur2 += p;
+        });
+        if (cur2.trim()) out.push({ lang: s[0], text: cur2.trim() });
+      });
+      var res = [];
+      out.forEach(function (c) { hardSplit(c.text, 190).forEach(function (t) { res.push({ lang: c.lang, text: t }); }); });
+      return res;
+    }
+    function speakFrom(tk) {
+      if (tk !== st.token) return;
+      if (st.ci >= st.chunks.length) {
+        st.speaking = false; st.mode = null; st.ci = 0; setIcon(false);
+        if (st.auto) goNext();
+        return;
+      }
+      var c = st.chunks[st.ci];
+      var u = new SpeechSynthesisUtterance(c.text);
+      u.lang = c.lang === "en" ? "en-US" : "fr-FR";
+      var v = pickVoice(c.lang);
+      if (v) { u.voice = v; u.lang = v.lang; }
+      u.rate = 0.95;
+      u.onend = function () { if (tk !== st.token) return; st.ci++; speakFrom(tk); };
+      u.onerror = function () { if (tk !== st.token) return; st.speaking = false; setIcon(false); st.auto = false; };
+      synth.speak(u);
+    }
+    function startTts(from) {
+      st.token++;
+      var tk = st.token;
+      st.mode = "tts"; st.speaking = true; st.ci = from || 0; setIcon(true);
+      var busy = false;
+      try { busy = synth.speaking || synth.pending; synth.cancel(); } catch (e) {}
+      if (busy) setTimeout(function () { speakFrom(tk); }, 120);   // laisse cancel() se terminer
+      else speakFrom(tk);                                          // sinon tout de suite (exigé par iOS)
+    }
+    function playVoice() {
+      if (!(synth && fb(st.idx))) { st.auto = false; return false; }
+      if (!st.chunks.length) st.chunks = buildChunks(fb(st.idx));
+      startTts(st.ci);
+      return true;
+    }
+
+    // ====================================================================
+    //  Lecture
+    // ====================================================================
+    function freeBlob() { if (st.blobUrl) { try { URL.revokeObjectURL(st.blobUrl); } catch (e) {} st.blobUrl = null; } }
+    function stopAll() {
+      st.playTok++;
+      try { audio.pause(); audio.currentTime = 0; } catch (e) {}
+      st.token++;
+      try { if (synth) synth.cancel(); } catch (e) {}
+      st.speaking = false; st.mode = null; st.chunks = []; st.ci = 0;
+      setIcon(false);
+    }
+    function pauseNow() {
+      if (st.mode === "mp3") audio.pause();
+      else if (st.mode === "tts") {
+        st.token++;
+        try { synth.cancel(); } catch (e) {}
+        st.speaking = false; setIcon(false);      // st.ci conservé : la reprise repart de la phrase en cours
+      }
+    }
+    function startAudio(src, tok) {
+      if (tok !== st.playTok) return;
+      if (audio.getAttribute("data-src") !== src) { audio.setAttribute("data-src", src); audio.src = src; }
+      var p = audio.play();
+      if (p && p.catch) p.catch(function (err) {
+        console.warn("ECOLIA audio :", err);
+        if (tok !== st.playTok) return;
+        if (!(err && err.name === "NotAllowedError") && playVoice()) return;   // lecture impossible : voix du téléphone
+        setIcon(false); st.auto = false;
+      });
+    }
+    function playCurrent() {
+      var i = st.idx;
+      if (hasMp3(i)) {
+        var tok = ++st.playTok, u = urlN(i + 1);
+        st.mode = "mp3";
+        if (!navigator.onLine && dl.state === "none") { st.mode = null; if (playVoice()) return; }   // hors ligne et non téléchargé
+        if (store && dl.state !== "none") {                     // téléchargé : lecture locale, sans réseau
+          store.get(i + 1)
+            .then(function (b) {
+              if (tok !== st.playTok) return;
+              if (b) { freeBlob(); st.blobUrl = URL.createObjectURL(new Blob([b], { type: "audio/mpeg" })); startAudio(st.blobUrl, tok); }
+              else startAudio(u, tok);
+            }).catch(function () { startAudio(u, tok); });
+        } else startAudio(u, tok);                              // sinon lecture en ligne (appel immédiat, exigé par iOS)
+      } else if (!playVoice()) {
+        st.auto = false;
+      }
+    }
+
+    function onSlideChange(i) {
+      var wasAdvancing = st.advancing;
+      st.advancing = false;
+      st.idx = i;
+      btn.classList.toggle("ecolia-off", !hasAudio(i));
+      stopAll();
+      audio.removeAttribute("data-src");
+      freeBlob();
+      if (bnMode === "invite" && i !== 0) hideBanner();       // l'invitation n'apparaît qu'à la première slide
+      if (wasAdvancing && st.auto) setTimeout(playCurrent, 500);   // enchaînement automatique
+      else st.auto = false;                                         // changement manuel : on coupe tout
+    }
+    function goNext() {
+      if (st.idx + 1 >= CFG.count) { st.auto = false; return; }
+      st.advancing = true;
+      if (typeof nextSlide === "function") nextSlide();
+      else { var nb = document.getElementById("nextBtn"); if (nb) nb.click(); }
+      setTimeout(function () { st.advancing = false; }, 4000);
+    }
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var i = cur();
+      if (i !== st.idx) onSlideChange(i);
+      if (isPlaying()) { st.auto = false; pauseNow(); }
+      else { st.auto = true; playCurrent(); }
+    });
+    audio.addEventListener("play", function () { setIcon(true); });
+    audio.addEventListener("pause", function () { if (st.mode === "mp3") setIcon(false); });
+    audio.addEventListener("error", function () {
+      if (st.mode === "mp3" && playVoice()) return;            // fichier introuvable / hors ligne : voix du téléphone
+      setIcon(false); st.auto = false;
+    });
+    audio.addEventListener("ended", function () { setIcon(false); if (st.auto) goNext(); });
+    window.addEventListener("pagehide", function () { stopAll(); freeBlob(); });
+
+    // ---------- démarrage ----------
+    refreshCacheState(function () {
+      if (store && CFG.available.length && dl.state !== "full" && navigator.onLine && cur() === 0 && !lsGet(LATER)) askDownload(true);
+    });
+    st.idx = -1;
+    setInterval(function () { var i = cur(); if (i !== st.idx) onSlideChange(i); }, 250);   // suit la slide affichée
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+<!-- ECOLIA_AUDIO_PLAYER_END -->
+</body>
+</html>

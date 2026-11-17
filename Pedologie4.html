@@ -1,0 +1,1947 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="teal">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>ECOLIA — Pedologie4</title>
+<style>
+[data-theme="bleu"]   { --p1:#0d2b4f; --p2:#1565c0; --p3:#07172e; --p4:#12437a; --p5:#5b8fd0; --bg:#e8f0fb; --bg2:#cfdff5; --bd:#a9c3e8; --soft:#dde8f7; --btn:#2a67b0; }
+[data-theme="vert"]   { --p1:#14442e; --p2:#2e7d32; --p3:#0b2b1a; --p4:#1f5c3a; --p5:#4f9a6b; --bg:#e8f5ec; --bg2:#c8e6d2; --bd:#a5cdb2; --soft:#dcefe2; --btn:#2f7a4f; }
+[data-theme="violet"] { --p1:#2d1b4e; --p2:#6a1b9a; --p3:#1a0f2e; --p4:#4a148c; --p5:#9c6fd0; --bg:#f1e9fb; --bg2:#dccbf2; --bd:#c4a8e6; --soft:#e8ddf6; --btn:#7e3fb2; }
+[data-theme="rouge"]  { --p1:#4a1010; --p2:#b71c1c; --p3:#2b0a0a; --p4:#8e1b1b; --p5:#d9706a; --bg:#fbeaea; --bg2:#f3cdcb; --bd:#e8a9a5; --soft:#f8dede; --btn:#a62a2a; }
+[data-theme="orange"] { --p1:#4e2a0c; --p2:#ef6c00; --p3:#2e1604; --p4:#b34a00; --p5:#f0a15a; --bg:#fff1e0; --bg2:#fbdcb8; --bd:#f3c08a; --soft:#fdebd6; --btn:#c9650a; }
+[data-theme="teal"]   { --p1:#0b3a3a; --p2:#00796b; --p3:#062626; --p4:#00574b; --p5:#4db6ac; --bg:#e0f2f1; --bg2:#b2dfdb; --bd:#80cbc4; --soft:#d5ecea; --btn:#26897d; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:linear-gradient(160deg,var(--p1) 0%,var(--p2) 50%,var(--p3) 100%); display:flex; justify-content:center; align-items:center; padding:8px; }
+.container { width:100%; max-width:1400px; background:#fefdf8; border-radius:20px; overflow:hidden; display:flex; flex-direction:column; height:100%; max-height:100vh; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.progress-bar { height:4px; background:var(--bg2); flex-shrink:0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--p5),var(--p4)); width:0%; transition:width 0.3s; }
+.header { padding:10px 16px; background:var(--bg); border-bottom:1px solid var(--bd); display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+.header h1 { color:var(--p4); font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box { display:flex; background:white; border-radius:20px; padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.search-box input { border:none; padding:6px 10px; border-radius:20px; outline:none; width:130px; font-size:0.8rem; }
+.search-box button { background:none; border:none; cursor:pointer; padding:4px 8px; font-size:0.85rem; color:var(--p2); }
+.badge { background:var(--p5); color:white; padding:4px 10px; border-radius:20px; font-weight:bold; font-size:0.75rem; }
+.search-nav { display:none; gap:4px; background:var(--bg2); padding:2px 8px; border-radius:20px; align-items:center; font-size:0.75rem; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:0.9rem; color:var(--p4); padding:2px 4px; }
+.content { padding:28px 32px; flex:1; overflow-y:auto; background:#fff; scroll-behavior:smooth; line-height:1.85; }
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.slide-title { color:var(--p1); font-size:1.5rem; font-weight:700; padding-bottom:12px; margin-bottom:20px; border-bottom:2px solid var(--p5); }
+.slide-content { color:var(--p3); font-size:1rem; }
+.empty-state { display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-height:60vh; padding:40px 20px; gap:18px; }
+.empty-state .icon { width:72px; height:72px; border-radius:50%; background:var(--bg); border:2px solid var(--bd); display:flex; align-items:center; justify-content:center; color:var(--p2); font-size:2rem; font-weight:300; }
+.empty-state h2 { color:var(--p1); font-size:1.4rem; font-weight:700; margin:0; }
+.empty-state p { color:#666; font-size:0.95rem; max-width:520px; line-height:1.7; }
+.empty-state .tag { display:inline-block; padding:6px 14px; background:var(--bg); color:var(--p4); border:1px solid var(--bd); border-radius:20px; font-size:0.8rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; }
+.bloc { padding:18px 22px; border-radius:12px; margin:22px 0; line-height:1.85; }
+.bloc-label { font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; opacity:0.7; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:var(--bg); border-left:4px solid var(--p5); }
+.theorie .bloc-label { color:var(--p4); }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.sources { background:#f5f5f5; padding:12px 16px; border-radius:10px; margin-top:26px; font-size:0.82rem; color:#666; border-left:3px solid #999; line-height:1.6; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:var(--p1); }
+.quiz-container { padding:22px; background:var(--bg); border-radius:16px; }
+.quiz-question { background:white; border-radius:10px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.quiz-question p { font-weight:600; margin-bottom:10px; color:var(--p1); }
+.quiz-question label { display:block; padding:8px 10px; margin:4px 0; border-radius:6px; cursor:pointer; transition:background 0.2s; }
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit { background:var(--btn); color:white; border:none; padding:12px 24px; border-radius:30px; font-size:1rem; cursor:pointer; font-weight:600; margin-top:14px; }
+.quiz-result { margin-top:16px; font-weight:600; }
+.controls { padding:8px 16px; background:#fafafa; border-top:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0; }
+.nav-btn { background:white; color:var(--p4); border:1px solid #ccc; padding:8px 14px; border-radius:8px; font-size:0.82rem; cursor:pointer; font-weight:500; }
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:var(--soft); }
+.content::-webkit-scrollbar-thumb { background:var(--p5); border-radius:3px; }
+@media (max-width:600px) { body { padding:0; } .container { border-radius:0; max-height:100vh; } .content { padding:20px 18px; } .slide-title { font-size:1.25rem; } .search-box input { width:90px; } .header h1 { font-size:0.85rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="header">
+<h1 id="pageTitle">ECOLIA</h1>
+<div class="header-right">
+<div class="search-box">
+<input id="searchInput" placeholder="Rechercher" type="text"/>
+<button id="searchBtn">⌕</button>
+</div>
+<div class="search-nav" id="searchNav">
+<button id="prevResultBtn">‹</button>
+<span id="resultCounter">0/0</span>
+<button id="nextResultBtn">›</button>
+</div>
+<span class="badge" id="slideCounter">0/0</span>
+</div>
+</div>
+<div class="content" id="content"></div>
+<div class="controls">
+<button class="nav-btn" id="prevBtn">← Précédent</button>
+<span class="counter" id="counter">—</span>
+<button class="nav-btn" id="nextBtn">Suivant →</button>
+</div>
+</div>
+<script>
+const COURSE_TITLE = "Pédologie (Science du Sol)";
+const slides = [
+  {
+    title: "Sommaire — Pédologie (Science du Sol)",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Bienvenue</div>
+        <h3>Pédologie : comprendre, diagnostiquer et conserver le sol</h3>
+        <p>Le sol est le socle de toute production agricole. Sans un sol vivant, structuré et fertile, aucune culture ne peut nourrir durablement une population. La <strong>pédologie</strong> est la science qui étudie le sol : sa constitution, son organisation, ses propriétés physiques, chimiques et biologiques, sa formation, sa classification, sa dégradation et les moyens de le conserver et de l'améliorer.</p>
+        <p>Ce cours s'adresse aux élèves de 4<sup>e</sup> Humanité de la section Agricole (Option Agriculture Générale). Il vise à former un futur technicien A2 capable de <strong>diagnostiquer</strong> un sol sur le terrain, de le <strong>classifier</strong> parmi les grands types de sols congolais, et d'<strong>intervenir</strong> pour le conserver ou améliorer sa fertilité.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Objectifs d'apprentissage</div>
+        <p>À la fin de ce cours, l'élève doit être capable de :</p>
+        <ol>
+          <li>Définir le sol et décrire ses quatre constituants (minéral, organique, liquide, gazeux).</li>
+          <li>Identifier les horizons d'un profil de sol et utiliser une fosse pédologique.</li>
+          <li>Déterminer la texture et la structure d'un sol par des méthodes de terrain.</li>
+          <li>Mesurer et interpréter le pH et évaluer la fertilité chimique et biologique.</li>
+          <li>Expliquer la formation et l'évolution des sols en zone intertropicale.</li>
+          <li>Classifier les sols congolais (Ferralsols, Andosols, Fluvisols, sols sableux, sols argileux).</li>
+          <li>Diagnostiquer les causes de dégradation et proposer des techniques de conservation.</li>
+          <li>Proposer des techniques d'amélioration de la fertilité (compost, amendements, engrais verts, agroforesterie).</li>
+        </ol>
+      </div>
+
+      <div class="bloc cas">
+        <div class="bloc-label">Grands chapitres du cours</div>
+        <ul>
+          <li><strong>Chapitre I</strong> — Qu'est-ce que le sol ? Définition et constituants.</li>
+          <li><strong>Chapitre II</strong> — Le profil du sol et les horizons.</li>
+          <li><strong>Chapitre III</strong> — Les propriétés physiques (texture, structure, porosité).</li>
+          <li><strong>Chapitre IV</strong> — Les propriétés chimiques et biologiques (pH, matière organique, éléments nutritifs).</li>
+          <li><strong>Chapitre V</strong> — La formation et l'évolution des sols (pédogenèse).</li>
+          <li><strong>Chapitre VI</strong> — La classification des sols et la typologie congolaise.</li>
+          <li><strong>Chapitre VII</strong> — La dégradation et la conservation des sols.</li>
+          <li><strong>Chapitre VIII</strong> — L'amélioration de la fertilité.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Pourquoi étudier la pédologie ?",
+    content: `
+      <div class="bloc cas">
+        <div class="bloc-label">Situation-problème</div>
+        <p>Dans la région de Kananga, deux parcelles voisines sont cultivées de la même manière depuis cinq ans. Sur la première, les rendements de maïs restent corrects. Sur la seconde, les rendements chutent chaque année : le sol est devenu dur, l'eau ruisselle après la pluie, les plants jaunissent et les racines restent courtes. Pourquoi deux parcelles voisines réagissent-elles si différemment ? Peut-on encore améliorer le sol de la seconde parcelle ?</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le sol, socle de la sécurité alimentaire</h3>
+        <p>Le sol est bien plus qu'une simple « terre » : c'est un <strong>écosystème vivant</strong>, le support de toutes les cultures, et un réservoir de biodiversité. Il remplit plusieurs fonctions essentielles :</p>
+        <ul>
+          <li><strong>Support de production</strong> : il ancre les racines et fournit l'eau et les nutriments aux plantes.</li>
+          <li><strong>Régulation de l'eau</strong> : il absorbe, filtre et stocke l'eau de pluie, limitant les crues et l'érosion.</li>
+          <li><strong>Stockage du carbone</strong> : il enferme d'énormes quantités de carbone organique, participant à la régulation du climat.</li>
+          <li><strong>Habitat de biodiversité</strong> : vers de terre, bactéries, champignons, insectes y vivent et y travaillent.</li>
+          <li><strong>Filtre et tampon</strong> : il dégrade certains polluants et régule le pH et la disponibilité des nutriments.</li>
+        </ul>
+        <p>Sans sol fertile, l'agriculture s'effondre, la sécurité alimentaire est menacée et les populations rurales migrent. Comprendre le sol est donc la première compétence d'un technicien agricole.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Le sol n'est pas un simple support inerte : c'est un milieu vivant et complexe, qui rend des services vitaux à l'agriculture et à la société. La pédologie, science du sol, est indispensable au futur technicien agricole.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Définition du sol",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Qu'est-ce que le sol ?</h3>
+        <p>Le sol est défini comme une <strong>formation naturelle de surface</strong>, de structure meuble et d'épaisseur variable, résultant de la transformation de la roche mère sous-jacente sous l'influence de processus physiques, chimiques et biologiques.</p>
+        <p>Cette définition mérite d'être décomposée mot à mot :</p>
+        <ul>
+          <li><strong>Formation naturelle de surface</strong> : le sol n'est pas fabriqué par l'homme ; il se forme à la surface de la Terre au contact de l'atmosphère, de la végétation et des eaux.</li>
+          <li><strong>Structure meuble</strong> : le sol est friable, poreux, permettant le passage des racines, de l'air et de l'eau. Une roche massive n'est pas un sol.</li>
+          <li><strong>Épaisseur variable</strong> : quelques centimètres à plusieurs mètres selon les régions (un sol jeune peut faire 20 cm, un sol tropical ancien plusieurs mètres).</li>
+          <li><strong>Issu de la transformation de la roche mère</strong> : les minéraux du sol proviennent de l'altération de la roche située dessous (ou apportée par le vent, l'eau, les glaciers).</li>
+          <li><strong>Sous l'influence de processus physiques, chimiques et biologiques</strong> : climat, eau, organismes vivants, temps transforment en permanence le sol.</li>
+        </ul>
+        <p><strong>Attention</strong> : la « terre » qu'on utilise pour fabriquer des briques ou pour la construction n'est pas un sol au sens de la pédologie : c'est un matériau déstructuré et souvent stérile.</p>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Exemple concret</div>
+        <p>Un élève observe deux échantillons :</p>
+        <ul>
+          <li>Le premier, prélevé sous une forêt, est sombre, friable, sent l'humus et contient des racines et des vers de terre : <strong>c'est un sol</strong>.</li>
+          <li>Le second, prélevé à 15 m de profondeur sur un chantier, est gris, compact, dur et sans vie : <strong>c'est de la roche altérée, pas un sol</strong>.</li>
+        </ul>
+        <p>La présence de vie, de structure meuble et de matière organique est le signe distinctif du sol.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Le sol est une formation naturelle de surface, meuble, épaisse et vivante, issue de l'altération de la roche mère sous l'action du climat, des organismes et du temps.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Les quatre constituants du sol",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les quatre fractions du sol</h3>
+        <p>Le sol n'est pas un bloc homogène : il est composé de quatre fractions en interaction permanente. En volume, un sol fertile idéal est composé approximativement de :</p>
+        <ul>
+          <li><strong>45 % de fraction minérale</strong> (sables, limons, argiles)</li>
+          <li><strong>5 % de fraction organique</strong> (humus, débris végétaux, êtres vivants)</li>
+          <li><strong>25 % de fraction liquide</strong> (solution du sol)</li>
+          <li><strong>25 % de fraction gazeuse</strong> (air du sol)</li>
+        </ul>
+
+        <h4>1. La fraction minérale</h4>
+        <p>Elle provient de l'altération de la roche mère. Elle est constituée de particules classées par taille :</p>
+        <ul>
+          <li><strong>Sables</strong> : 50 μm à 2 mm — particules grossières, visibles à l'œil, drainantes.</li>
+          <li><strong>Limons</strong> : 2 à 50 μm — particules intermédiaires, douces au toucher.</li>
+          <li><strong>Argiles</strong> : moins de 2 μm — particules microscopiques, collantes, capables de retenir l'eau et les nutriments.</li>
+        </ul>
+
+        <h4>2. La fraction organique</h4>
+        <p>Elle comprend la matière organique vivante (racines, bactéries, champignons, vers de terre) et la matière organique morte (débris de plantes et d'animaux, humus). L'humus est la fraction organique stabilisée, de couleur sombre, qui donne au sol sa fertilité et sa structure.</p>
+
+        <h4>3. La fraction liquide (solution du sol)</h4>
+        <p>C'est l'eau présente dans les pores, dans laquelle sont dissous les sels minéraux (nitrates, phosphates, potassium, calcium, magnésium). Les racines ne peuvent absorber les nutriments que sous forme dissoute.</p>
+
+        <h4>4. La fraction gazeuse (air du sol)</h4>
+        <p>L'air du sol est contenu dans les pores non occupés par l'eau. Il est plus riche en CO<sub>2</sub> et moins riche en O<sub>2</sub> que l'air atmosphérique, à cause de la respiration des racines et des micro-organismes. L'aération est indispensable à la vie du sol.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente à éviter</div>
+        <p>Réduire le sol à sa seule fraction minérale est une erreur pédagogique grave. La matière organique, l'eau et l'air du sol sont aussi essentiels que les minéraux : un sol sans matière organique est stérile, même s'il contient beaucoup de sable et d'argile.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — Le profil du sol et les horizons",
+    content: `
+      <div class="bloc cas">
+        <div class="bloc-label">Situation d'observation</div>
+        <p>Un technicien creuse une fosse de 1,20 m de profondeur sur une parcelle agricole. Sur la paroi verticale, il observe plusieurs bandes de couleur et de texture différentes : une couche sombre en surface, une couche brun-rouge plus compacte au milieu, une couche plus claire en bas, puis la roche mère. Comment appelle-t-on cette organisation en couches ?</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le profil pédologique</h3>
+        <p>On appelle <strong>profil du sol</strong> la coupe verticale du sol, depuis la surface jusqu'à la roche mère. Cette coupe révèle une succession de couches appelées <strong>horizons</strong>, qui se différencient par leur couleur, leur texture, leur structure, leur composition chimique et leur activité biologique.</p>
+        <p>Les horizons sont notés par des lettres majuscules : <strong>O, A, E, B, C, R</strong>. Dans un cours d'initiation, on retient surtout les quatre principaux : <strong>A, B, C et R</strong>.</p>
+
+        <h4>Horizon O (organique)</h4>
+        <p>Couche superficielle de litière (feuilles mortes, débris végétaux) lorsque la couverture forestière est importante. Absent dans les sols cultivés labourés.</p>
+
+        <h4>Horizon A</h4>
+        <p>Couche superficielle, souvent de couleur sombre, riche en matière organique et en humus. C'est la zone d'activité biologique intense : racines, vers de terre, micro-organismes. C'est l'horizon le plus fertile et le plus important pour l'agriculture. Épaisseur typique : 10 à 30 cm.</p>
+
+        <h4>Horizon E (éluvial)</h4>
+        <p>Horizon appauvri, clair, d'où les argiles et les oxydes ont été entraînés vers la profondeur par le lessivage. Souvent présent dans les sols forestiers tropicaux.</p>
+
+        <h4>Horizon B</h4>
+        <p>Couche d'accumulation : les argiles, les oxydes de fer, les carbonates lessivés des horizons supérieurs s'y accumulent. Souvent plus compacte et plus colorée (rouge, ocre). Peut limiter l'infiltration de l'eau et le développement des racines.</p>
+
+        <h4>Horizon C</h4>
+        <p>Matériau parental altéré, sans structure développée. Il s'agit de la roche mère en cours d'altération. Il contient peu de matière organique et peu de vie.</p>
+
+        <h4>Roche mère (R)</h4>
+        <p>Roche non altérée à la base du profil. Sa nature (granitique, volcanique, sédimentaire) détermine la composition minérale du sol.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Le profil du sol est la coupe verticale du sol, révélant une succession d'horizons : A (riche en matière organique), B (accumulation), C (matériau altéré), R (roche mère). Chaque horizon a un rôle spécifique.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — La fosse pédologique : observer et décrire",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>La fosse pédologique</h3>
+        <p>La <strong>fosse pédologique</strong> est l'outil de terrain essentiel du pédologue et du technicien agricole. Il s'agit d'un trou rectangulaire creusé verticalement dans le sol, d'environ 1 m à 1,50 m de profondeur, permettant d'observer directement le profil et de décrire les horizons.</p>
+
+        <h4>Dimensions usuelles</h4>
+        <ul>
+          <li>Longueur : 1 m à 1,20 m.</li>
+          <li>Largeur : 60 cm à 80 cm (pour pouvoir travailler à l'intérieur).</li>
+          <li>Profondeur : 1 m à 1,50 m (jusqu'à la roche mère si possible).</li>
+        </ul>
+
+        <h4>Précautions</h4>
+        <ul>
+          <li>Ne jamais creuser seul sans surveillance : le risque d'effondrement est réel.</li>
+          <li>Creuser de préférence dans un endroit stable, ni trop pentu, ni près d'un mur.</li>
+          <li>Reboucher la fosse après observation pour éviter les accidents.</li>
+        </ul>
+
+        <h4>Ce que l'on observe dans une fosse</h4>
+        <ol>
+          <li><strong>Nombre et épaisseur des horizons</strong> : chaque horizon est mesuré en centimètres.</li>
+          <li><strong>Couleur</strong> : sombre (matière organique), rouge (oxydes de fer), gris (hydromorphie), blanchâtre (carbonates).</li>
+          <li><strong>Texture</strong> : au toucher (sableux, limoneux, argileux).</li>
+          <li><strong>Structure</strong> : en mottes, en plaquettes, particulaire, massive.</li>
+          <li><strong>Présence de racines</strong> : profondeur d'enracinement.</li>
+          <li><strong>Présence d'eau</strong> : nappe phréatique, traces d'hydromorphie.</li>
+          <li><strong>Traces biologiques</strong> : galeries de vers de terre, fourmilières, matière organique.</li>
+          <li><strong>Traces d'érosion ou de dégradation</strong> : compactage, semelle de labour, croûte de battance.</li>
+        </ol>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Exemple de description de profil</div>
+        <p>Fosse creusée à 1,20 m de profondeur sur une parcelle cultivée à Kananga :</p>
+        <ul>
+          <li><strong>0–15 cm</strong> — Horizon A, couleur brun sombre, texture limono-sableuse, structure grumeleuse, racines nombreuses.</li>
+          <li><strong>15–40 cm</strong> — Horizon B, couleur brun-rouge, texture argileuse, structure en blocs compacts.</li>
+          <li><strong>40–100 cm</strong> — Horizon C, couleur brun clair, texture hétérogène, quelques cailloux.</li>
+          <li><strong>100–120 cm</strong> — Roche mère, schiste altéré.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Négliger l'observation du profil est une erreur fréquente. Un sol peut sembler fertile en surface mais présenter des contraintes en profondeur : compaction, horizon B très argileux, nappe phréatique haute, roche dure à faible profondeur. Un diagnostic sans fosse est un diagnostic incomplet.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — La texture du sol",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>La texture : proportion des particules minérales</h3>
+        <p>La <strong>texture</strong> d'un sol désigne la proportion relative des particules minérales qui le constituent, classées selon leur taille :</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Fraction</th>
+              <th>Taille des particules</th>
+              <th>Comportement</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Argile</strong></td>
+              <td>&lt; 2 μm (micromètres)</td>
+              <td>Très collante, retient l'eau et les nutriments, se compacte.</td>
+            </tr>
+            <tr>
+              <td><strong>Limon</strong></td>
+              <td>2 à 50 μm</td>
+              <td>Douce au toucher, intermédiaire, retient bien l'eau.</td>
+            </tr>
+            <tr>
+              <td><strong>Sable</strong></td>
+              <td>50 μm à 2 mm</td>
+              <td>Rugueux, très drainant, ne retient ni l'eau ni les nutriments.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4>Les classes texturales</h4>
+        <p>Selon le pourcentage des trois fractions, on distingue des sols :</p>
+        <ul>
+          <li><strong>Sableux</strong> : légers, faciles à travailler, mais sèchent vite et pauvres en nutriments.</li>
+          <li><strong>Argileux</strong> : lourds, collants, retiennent l'eau mais mal drainés et difficiles à travailler.</li>
+          <li><strong>Limoneux</strong> : équilibrés, agréables à travailler.</li>
+          <li><strong>Argilo-sableux</strong> ou <strong>limono-argileux</strong> : compromis recherché.</li>
+          <li><strong>Franc</strong> (loam) : équilibré entre sable, limon et argile, souvent idéal pour l'agriculture.</li>
+        </ul>
+
+        <h4>Le test du boudin</h4>
+        <p>La texture peut être estimée au champ par le <strong>test du boudin</strong> : on humidifie une poignée de terre, on la malaxe, puis on tente de former un boudin entre le pouce et l'index.</p>
+        <ul>
+          <li>Impossible de former un boudin : sol <strong>sableux</strong>.</li>
+          <li>Boudin qui se casse avant 5 cm : sol <strong>limono-sableux</strong> ou <strong>limoneux</strong>.</li>
+          <li>Boudin qui tient jusqu'à 5–8 cm puis se fissure : sol <strong>argilo-sableux</strong>.</li>
+          <li>Boudin long, souple, qu'on peut courber en anneau : sol <strong>argileux</strong>.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>La texture est la proportion d'argile, de limon et de sable. Elle détermine la capacité du sol à retenir l'eau et les nutriments. Le test du boudin permet de l'estimer au champ, sans laboratoire.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — La structure, la porosité et la perméabilité",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>La structure du sol</h3>
+        <p>La <strong>structure</strong> désigne la manière dont les particules minérales et organiques s'assemblent en agrégats. Elle est indépendante de la texture : deux sols de même texture peuvent avoir des structures différentes.</p>
+        <p>Types de structures :</p>
+        <ul>
+          <li><strong>Grumeleuse</strong> : agrégats arrondis, friables — structure idéale pour l'agriculture.</li>
+          <li><strong>Particulaire</strong> : grains séparés (sables) — perméable mais peu cohérent.</li>
+          <li><strong>En blocs</strong> ou <strong>massive</strong> : mottes compactes (argiles) — difficile à travailler.</li>
+          <li><strong>En plaquettes</strong> ou lamellaire : couches horizontales (sols compactés par le labour).</li>
+          <li><strong>Prismatique</strong> ou <strong>columnaire</strong> : colonnes verticales (sols sodiques).</li>
+        </ul>
+
+        <h4>Pourquoi la structure est-elle importante ?</h4>
+        <p>Une bonne structure grumeleuse favorise :</p>
+        <ul>
+          <li>L'<strong>aération</strong> : les racines respirent.</li>
+          <li>L'<strong>infiltration</strong> de l'eau : moins de ruissellement et d'érosion.</li>
+          <li>Le <strong>développement racinaire</strong> : les racines se frayent facilement un chemin.</li>
+          <li>La <strong>résistance à l'érosion</strong> : les agrégats résistent à la pluie.</li>
+        </ul>
+
+        <h3>La porosité</h3>
+        <p>La <strong>porosité</strong> est la proportion de vides (air + eau) dans le sol. Un sol bien structuré a une porosité d'environ 50 %. Les pores sont de deux types :</p>
+        <ul>
+          <li><strong>Macropores</strong> : gros pores, laissent passer l'eau et l'air rapidement.</li>
+          <li><strong>Micropores</strong> : petits pores, retiennent l'eau capillaire.</li>
+        </ul>
+
+        <h3>La perméabilité</h3>
+        <p>La <strong>perméabilité</strong> est la capacité du sol à laisser passer l'eau. Elle dépend de la porosité, de la texture et de la structure. Un sol compacté (par le passage répété d'animaux, par la machinerie ou par un labour trop profond) voit sa porosité et sa perméabilité diminuer fortement : l'eau ruisselle en surface, les racines ne pénètrent plus.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente à éviter</div>
+        <p><strong>Ne pas confondre texture et structure.</strong> La texture est la proportion de particules ; la structure est l'organisation de ces particules en agrégats. On peut avoir deux sols de même texture (par exemple argileux) dont l'un est bien structuré (grumeleux) et l'autre compacté (massif). Le comportement agricole est radicalement différent.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre IV — Le pH du sol : mesure et interprétation",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Qu'est-ce que le pH ?</h3>
+        <p>Le <strong>pH</strong> est une mesure de l'acidité ou de l'alcalinité d'une solution. Il varie de 0 (très acide) à 14 (très basique), 7 étant neutre. Dans le sol, le pH de la solution du sol contrôle la disponibilité des éléments nutritifs : à certains pH, les nutriments sont solubles et absorbables ; à d'autres, ils sont bloqués ou deviennent toxiques.</p>
+
+        <h4>Échelle d'interprétation</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>pH</th>
+              <th>Interprétation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>&lt; 5</td><td>Très acide (Ferralsols, sols sableux)</td></tr>
+            <tr><td>5 – 6</td><td>Acide</td></tr>
+            <tr><td>6 – 7</td><td>Légèrement acide à neutre (idéal pour la plupart des cultures)</td></tr>
+            <tr><td>7 – 8</td><td>Légèrement basique</td></tr>
+            <tr><td>&gt; 8</td><td>Basique (sols sodiques, calcaires)</td></tr>
+          </tbody>
+        </table>
+
+        <h4>Conséquences d'un pH trop acide (&lt; 5,5)</h4>
+        <ul>
+          <li>Blocage du phosphore (P) : les plantes ne peuvent plus l'absorber.</li>
+          <li>Toxicité de l'aluminium (Al<sup>3+</sup>) : les racines s'arrêtent de croître.</li>
+          <li>Faible activité biologique : les bactéries fixatrices d'azote meurent.</li>
+          <li>Faible capacité d'échange cationique : les nutriments sont lessivés.</li>
+        </ul>
+        <p>C'est le cas de nombreux Ferralsols congolais, qui doivent être amendés par du calcaire (chaux ou dolomie).</p>
+
+        <h4>Conséquences d'un pH trop basique (&gt; 8)</h4>
+        <ul>
+          <li>Blocage du fer, du manganèse, du zinc.</li>
+          <li>Structure dégradée (sols sodiques).</li>
+          <li>Faible infiltration.</li>
+        </ul>
+
+        <h4>Mesure du pH au champ et au laboratoire</h4>
+        <ul>
+          <li><strong>Bandelettes pH</strong> : rapides, économiques, suffisantes pour un diagnostic de terrain.</li>
+          <li><strong>pH-mètre portable</strong> : mesure précise.</li>
+          <li><strong>Laboratoire simplifié</strong> : méthode à l'eau ou au KCl.</li>
+        </ul>
+        <p>Le mode opératoire avec bandelettes : prélever un échantillon de sol, le mélanger à de l'eau distillée (1 volume de sol pour 2 volumes d'eau), laisser reposer 30 min, puis tremper la bandelette dans la solution claire et comparer la couleur à l'échelle.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Le pH contrôle la disponibilité des nutriments. La plupart des cultures préfèrent un pH entre 6 et 7. Les sols congolais sont souvent acides et nécessitent des amendements calcaires.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre IV — La matière organique et la vie du sol",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>La matière organique du sol (MOS)</h3>
+        <p>La matière organique représente une faible fraction du volume du sol (environ 5 %), mais elle joue un rôle central dans la fertilité. Elle comprend :</p>
+        <ul>
+          <li><strong>La matière organique vivante</strong> : racines, bactéries, champignons, vers de terre, insectes, protozoaires.</li>
+          <li><strong>La matière organique fraîche</strong> : débris végétaux (feuilles, tiges, racines mortes), débris animaux.</li>
+          <li><strong>L'humus</strong> : matière organique décomposée et stabilisée, de couleur sombre, qui persiste dans le sol.</li>
+        </ul>
+
+        <h4>Rôles de la matière organique</h4>
+        <ol>
+          <li><strong>Améliore la structure</strong> : les substances humiques collent les particules en agrégats stables.</li>
+          <li><strong>Retient l'eau</strong> : l'humus peut stocker jusqu'à 5 fois son poids en eau.</li>
+          <li><strong>Retient les nutriments</strong> : sa capacité d'échange cationique est élevée.</li>
+          <li><strong>Nourrit la vie biologique</strong> : c'est la base de la chaîne alimentaire du sol.</li>
+          <li><strong>Stocke le carbone</strong> : elle enferme du carbone issu du CO<sub>2</sub> atmosphérique.</li>
+          <li><strong>Améliore le pH</strong> : elle tamponne les variations.</li>
+        </ol>
+
+        <h3>La vie biologique du sol</h3>
+        <p>Un gramme de sol fertile contient des millions de bactéries, des dizaines de mètres d'hyphes de champignons, des protozoaires, des nématodes. À plus grande échelle, on trouve des vers de terre, des fourmis, des termites, des larves d'insectes.</p>
+        <p>Les micro-organismes décomposent la matière organique et libèrent les nutriments minéraux (N, P, K) sous forme assimilable par les plantes. Ce processus s'appelle la <strong>minéralisation</strong>. Les vers de terre, en creusant des galeries et en ingérant la terre, améliorent l'aération, la structure et la fertilité.</p>
+
+        <h3>Équilibre humification / minéralisation</h3>
+        <p>Dans un sol en équilibre, la matière organique apportée est en partie minéralisée (nutriments libérés) et en partie humifiée (stockée). Un excès de travail du sol, une absence d'apport organique ou un lessivage intense font pencher la balance vers la minéralisation : la matière organique diminue, la fertilité baisse.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Se fier uniquement au pH sans considérer la matière organique et l'activité biologique est une erreur. La fertilité est un ensemble : un sol peut avoir un pH correct mais être stérile par manque de matière organique et de vie.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre IV — Les éléments nutritifs du sol",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les éléments nutritifs essentiels</h3>
+        <p>Les plantes ont besoin de 17 éléments nutritifs essentiels. On distingue :</p>
+        <ul>
+          <li><strong>Macro-éléments</strong> : absorbés en grandes quantités — azote (N), phosphore (P), potassium (K), calcium (Ca), magnésium (Mg), soufre (S), carbone (C), hydrogène (H), oxygène (O).</li>
+          <li><strong>Oligo-éléments</strong> : absorbés en très petites quantités — fer (Fe), manganèse (Mn), zinc (Zn), cuivre (Cu), bore (B), molybdène (Mo), chlore (Cl), nickel (Ni).</li>
+        </ul>
+
+        <h4>Rôles des trois grands éléments (N, P, K)</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Élément</th>
+              <th>Rôle principal</th>
+              <th>Signe de carence</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Azote (N)</strong></td>
+              <td>Croissance végétative, synthèse des protéines, couleur verte.</td>
+              <td>Feuilles jaunâtres, croissance lente.</td>
+            </tr>
+            <tr>
+              <td><strong>Phosphore (P)</strong></td>
+              <td>Développement des racines, floraison, fructification.</td>
+              <td>Feuilles pourpres, racines faibles.</td>
+            </tr>
+            <tr>
+              <td><strong>Potassium (K)</strong></td>
+              <td>Résistance aux maladies, qualité des fruits, régulation de l'eau.</td>
+              <td>Bords de feuilles brunis, tiges faibles.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4>Facteurs de disponibilité</h4>
+        <p>Un élément peut être présent dans le sol mais non disponible pour les plantes. La disponibilité dépend de :</p>
+        <ul>
+          <li><strong>Du pH</strong> : à pH acide, le P est bloqué ; à pH basique, le Fe, le Mn, le Zn sont bloqués.</li>
+          <li><strong>De la matière organique</strong> : elle retient les cations (Ca, Mg, K) et les libère progressivement.</li>
+          <li><strong>De la texture</strong> : les argiles retiennent les cations ; les sables les laissent lessiver.</li>
+          <li><strong>De l'humidité</strong> : les nutriments circulent en solution.</li>
+        </ul>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Exemple pratique</div>
+        <p>Un agriculteur observe sur son maïs :</p>
+        <ul>
+          <li>Feuilles jaunes, plants chétifs → <strong>carence en azote</strong> probable.</li>
+          <li>Feuilles violacées, épi mal formé → <strong>carence en phosphore</strong> possible.</li>
+          <li>Bords des feuilles secs et bruns, tige faible → <strong>carence en potassium</strong>.</li>
+        </ul>
+        <p>Le diagnostic visuel n'est qu'un indice : une analyse de sol est nécessaire pour confirmer.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Les plantes ont besoin de macro-éléments (N, P, K surtout) et d'oligo-éléments. Leur disponibilité dépend du pH, de la matière organique, de la texture et de l'humidité. Une carence se diagnostique par observation et par analyse.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre V — La formation et l'évolution des sols (pédogenèse)",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>La pédogenèse</h3>
+        <p>La <strong>pédogenèse</strong> est l'ensemble des processus qui transforment un matériau parental en sol. Elle se déroule sur des échelles de temps très longues : de plusieurs centaines à plusieurs milliers d'années pour former un sol épais.</p>
+
+        <h4>Les cinq facteurs de formation</h4>
+        <p>Cinq facteurs, souvent retenus dans la formule « CLORPT », contrôlent la pédogenèse :</p>
+        <ol>
+          <li><strong>Climat</strong> : température et pluviométrie. En zone intertropicale, chaleur et humidité accélèrent l'altération et le lessivage.</li>
+          <li><strong>Organismes vivants</strong> : végétation, faune du sol, micro-organismes qui décomposent la matière organique.</li>
+          <li><strong>Relief</strong> : en pente, l'érosion emporte les matériaux ; en bas de pente, les dépôts s'accumulent.</li>
+          <li><strong>Roche mère</strong> : nature minéralogique (granite, basalte, calcaire, schiste) qui détermine la composition chimique initiale.</li>
+          <li><strong>Temps</strong> : un sol jeune est peu épais, un sol ancien est profond et très altéré.</li>
+        </ol>
+
+        <h4>Les grands processus</h4>
+        <ul>
+          <li><strong>Altération</strong> : fragmentation et décomposition chimique de la roche mère sous l'effet de l'eau, de la température et des acides organiques.</li>
+          <li><strong>Décomposition de la matière organique</strong> : transformation des débris végétaux et animaux en humus par les micro-organismes.</li>
+          <li><strong>Lessivage</strong> : entraînement vertical des particules fines et des éléments solubles par les eaux d'infiltration.</li>
+          <li><strong>Ferrallitisation</strong> : accumulation d'oxydes de fer et d'aluminium dans les horizons profonds, donnant une couleur rouge caractéristique (sols tropicaux).</li>
+          <li><strong>Podzolisation</strong> : migration du fer et de l'aluminium sous forêt de conifères (climats froids).</li>
+          <li><strong>Salinisation</strong> : accumulation de sels en surface (climats arides, irrigation mal maîtrisée).</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Croire que la formation d'un sol est rapide est une erreur. Il faut des siècles pour reconstituer un sol fertile. C'est pourquoi l'érosion et la dégradation sont des phénomènes très graves : perdre 10 cm de sol peut être quasi irréversible à l'échelle d'une génération.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre V — La spécificité des sols tropicaux",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les sols tropicaux : spécificités et contraintes</h3>
+        <p>En zone intertropicale (dont la RDC), la chaleur et l'humidité permanentes accélèrent l'altération des roches et le lessivage. Les sols y acquièrent des caractéristiques très particulières.</p>
+
+        <h4>1. Forte altération et grande profondeur</h4>
+        <p>La chaleur combinée à l'humidité favorise l'altération chimique intense de la roche mère. Les sols tropicaux sont souvent très épais (plusieurs mètres) mais appauvris.</p>
+
+        <h4>2. Ferrallitisation</h4>
+        <p>Processus typique des zones tropicales humides : sous l'effet du lessivage intense, la silice est emportée, tandis que les oxydes de fer et d'aluminium s'accumulent. Les sols deviennent rouges ou ocre. Les argiles dominantes sont la kaolinite et les oxydes de fer. Ces sols (Ferralsols) retiennent mal les nutriments.</p>
+
+        <h4>3. Acidité</h4>
+        <p>Le lessivage emporte les cations basiques (Ca, Mg, K). Le pH descend souvent en dessous de 5,5. L'aluminium devient toxique pour les racines.</p>
+
+        <h4>4. Faible réserve de matière organique</h4>
+        <p>La chaleur accélère la décomposition microbienne : la matière organique est détruite très vite, l'humus ne se stabilise pas facilement. Un sol forestier amazonien ou congolais peut redevenir stérile en 2–3 ans après déboisement.</p>
+
+        <h4>5. Pauvreté chimique apparente</h4>
+        <p>La plupart des éléments nutritifs sont stockés dans la biomasse (arbres, végétation) et dans la matière organique, non dans le sol minéral. C'est pourquoi l'agriculture itinérante sur brûlis traditionnelle fonctionne : la fertilité vient des cendres, pour 2 à 3 ans seulement.</p>
+
+        <h4>6. Fragilité</h4>
+        <p>Les sols tropicaux sont fertiles tant qu'ils sont protégés par la forêt. Dès qu'on les met à nu, ils se dégradent vite : érosion, lessivage, compaction, baisse de la matière organique.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Les sols tropicaux sont souvent profonds, acides, pauvres en éléments nutritifs, mais fertiles si bien gérés. La fertilité vient surtout de la matière organique et de la végétation, non du sol minéral. La déforestation les fragilise gravement.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VI — Les sols de la RDC (1) : Ferralsols et sols sableux",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les Ferralsols (sols ferrallitiques)</h3>
+        <p>Les Ferralsols sont les sols les plus répandus en République Démocratique du Congo. On les rencontre surtout dans la <strong>Cuvette Centrale</strong> (Kisangani, Mbandaka, Boende, Ikela) et sur une grande partie du territoire.</p>
+        <p><strong>Caractéristiques :</strong></p>
+        <ul>
+          <li>Couleur rouge ou ocre, due aux oxydes de fer.</li>
+          <li>Très profonds (souvent plusieurs mètres).</li>
+          <li>Texture argileuse kaolinitique, mais structure stable grâce aux oxydes.</li>
+          <li>pH acide (souvent 4,5 – 5,5).</li>
+          <li>Faible capacité d'échange cationique : les nutriments sont lessivés.</li>
+          <li>Faible réserve en phosphore assimilable.</li>
+        </ul>
+        <p><strong>Potentiel agronomique :</strong> médiocre sans intrants, bon avec amendements calcaires, apports organiques massifs et fertilisation adaptée. Ils portent actuellement les cultures vivrières (manioc, maïs, bananier) et parfois le palmier à huile.</p>
+
+        <h3>Les sols sableux du plateau des Bateke</h3>
+        <p>À proximité de Kinshasa, le plateau des Bateke (région de Maluku, Kwamouth) est couvert de sols sableux d'origine ancienne.</p>
+        <p><strong>Caractéristiques :</strong></p>
+        <ul>
+          <li>Très sableux (plus de 80 % de sable).</li>
+          <li>Pauvres en argile et en matière organique.</li>
+          <li>Très drainants, sensibles au lessivage.</li>
+          <li>pH acide.</li>
+          <li>Faible capacité de rétention en eau.</li>
+        </ul>
+        <p><strong>Potentiel agronomique :</strong> faible sans gestion spécifique. L'agroforesterie (acacia, eucalyptus associés aux cultures), l'apport massif de matière organique et la fertilisation sont indispensables. Ces sols conviennent au manioc, à l'ananas et au palmier avec aménagement.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Retenir l'essentiel</div>
+        <p>Les Ferralsols dominent la Cuvette Centrale : profonds, acides, pauvres, mais cultivables avec amendements. Les sols sableux des Bateke sont très pauvres et exigent une gestion spécifique (agroforesterie, matière organique).</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VI — Les sols de la RDC (2) : Andosols, Fluvisols, sols argileux",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les Andosols (sols volcaniques)</h3>
+        <p>Les Andosols se rencontrent principalement dans les régions volcaniques de l'Est de la RDC : <strong>Kivu</strong>, Nord-Kivu (Goma, Masisi, Rutshuru) et Sud-Kivu (Bukavu, Kabare, Walungu). Ils proviennent de l'altération des cendres et laves volcaniques.</p>
+        <p><strong>Caractéristiques :</strong></p>
+        <ul>
+          <li>Très fertiles : riches en éléments minéraux (Ca, Mg, K, P).</li>
+          <li>pH souvent proche de la neutralité (6 – 7).</li>
+          <li>Structure meuble, légère, favorable aux racines.</li>
+          <li>Bonne rétention en eau et en nutriments.</li>
+          <li>Fragiles : sensibles à l'érosion dès que la pente est cultivée sans protection.</li>
+        </ul>
+        <p><strong>Potentiel agronomique :</strong> élevé. Les Andosols du Kivu portent les cultures vivrières (haricot, maïs, pomme de terre, sorgho, bananier) et le café arabica. Mais la forte pression démographique et la culture sur pente provoquent une érosion grave (glissements de terrain, ravinement).</p>
+
+        <h3>Les Fluvisols (sols alluviaux)</h3>
+        <p>Les Fluvisols se rencontrent le long des cours d'eau, dans les plaines alluviales (plaine de la Ruzizi, bords du fleuve Congo, vallées inondables).</p>
+        <p><strong>Caractéristiques :</strong></p>
+        <ul>
+          <li>Issus de dépôts de sédiments apportés par les cours d'eau.</li>
+          <li>Souvent fertiles (renouvellement par les crues).</li>
+          <li>Texture variable (sableuse, limoneuse, argileuse).</li>
+          <li>Risque d'inondation et d'engorgement.</li>
+        </ul>
+        <p><strong>Potentiel agronomique :</strong> bon à très bon. Ils conviennent au maraîchage, au riz, à la canne à sucre et au maïs. La plaine de la Ruzizi est un exemple type de plaine alluviale fertile.</p>
+
+        <h3>Les sols argileux de savane</h3>
+        <p>Présents dans les savanes du Katanga, du Kasaï, de la région de Kananga et de Mbuji-Mayi. Ils sont plus argileux et souvent plus fertiles que les Ferralsols voisins, mais leur structure est lourde.</p>
+        <p><strong>Caractéristiques :</strong></p>
+        <ul>
+          <li>Texture argileuse dominante.</li>
+          <li>Fertilité chimique modérée à bonne (surtout dans les zones de savane herbeuse).</li>
+          <li>Difficiles à travailler (lourds, collants en saison des pluies, durs en saison sèche).</li>
+          <li>Sensibles à la compaction.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Appliquer les mêmes pratiques à tous les sols est une erreur. Un Ferralsol acide exige un amendement calcaire ; un Andosol fertile exige surtout une protection contre l'érosion ; un sol sableux des Bateke exige de la matière organique. Le diagnostic préalable est indispensable.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VII — La dégradation des sols",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les causes de dégradation</h3>
+        <p>La dégradation du sol est la perte de ses capacités productives et de ses fonctions écologiques. Elle peut être physique, chimique ou biologique.</p>
+
+        <h4>Causes principales</h4>
+        <ul>
+          <li><strong>Érosion hydrique</strong> : la pluie détache et emporte les particules de sol. Elle est favorisée par le déboisement, la mise à nu, la pente.</li>
+          <li><strong>Érosion éolienne</strong> : le vent emporte les particules fines (surtout en zone sèche).</li>
+          <li><strong>Lessivage</strong> : entraînement des nutriments solubles vers la nappe phréatique.</li>
+          <li><strong>Compaction</strong> : tassement des horizons par le labour profond, le passage répété d'animaux, la machinerie lourde.</li>
+          <li><strong>Perte de matière organique</strong> : absence d'apports organiques, brûlis systématique, travail du sol excessif.</li>
+          <li><strong>Surexploitation</strong> : cultures continues sans jachère ni rotation, épuisement des nutriments.</li>
+          <li><strong>Déforestation</strong> : perte du couvert protecteur, dégradation accélérée.</li>
+          <li><strong>Pollution</strong> : pesticides, engrais excessifs, métaux lourds, plastiques.</li>
+          <li><strong>Salinisation</strong> : irrigation mal maîtrisée en zone sèche.</li>
+        </ul>
+
+        <h4>Les formes d'érosion hydrique</h4>
+        <ol>
+          <li><strong>Érosion en nappe</strong> : couche superficielle emportée uniformément. Difficile à voir mais très destructrice.</li>
+          <li><strong>Érosion en rigoles</strong> : petites rigoles après chaque pluie, effacées par le labour. Signe d'alerte.</li>
+          <li><strong>Érosion en ravines</strong> : les rigoles se creusent et forment des ravines profondes. Exemple : érosion ravinante à Kananga et Kikwit.</li>
+          <li><strong>Érosion en masse (glissements)</strong> : effondrement de pans entiers (sols volcaniques en pente, forte pluie).</li>
+        </ol>
+      </div>
+
+      <div class="bloc cas">
+        <div class="bloc-label">Cas congolais</div>
+        <p>À <strong>Kananga</strong> (Kasaï-Central) et à <strong>Kikwit</strong> (Kwilu), des ravines de plusieurs dizaines de mètres de profondeur détruisent chaque année des habitations, des routes et des terres agricoles. Les causes : forte pente, sols sableux ou sablo-argileux, pluies intenses, déboisement et absence d'aménagement antiérosif. Ces ravines menacent les infrastructures urbaines et rurales.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>La dégradation est causée par l'érosion, le lessivage, la compaction, la perte de matière organique et la surexploitation. Elle prive le technicien agricole de son outil principal. La prévention est plus efficace et bien moins coûteuse que la restauration.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VII — Les techniques de conservation des sols",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les techniques de conservation</h3>
+        <p>Conserver le sol, c'est à la fois limiter les pertes et maintenir sa fertilité. Les techniques se classent en trois grandes familles :</p>
+
+        <h4>1. Protéger la surface du sol</h4>
+        <ul>
+          <li><strong>Paillage (mulching)</strong> : couvrir le sol avec des résidus végétaux. Réduit l'impact des gouttes de pluie, limite l'évaporation, freine l'érosion.</li>
+          <li><strong>Cultures de couverture</strong> : plantes rampantes (mucuna, crotalaire, légumineuses) couvrant le sol entre deux cultures.</li>
+          <li><strong>Couverture végétale permanente</strong> : maintien d'une végétation herbacée (savane, gazon) sur les sols non cultivés.</li>
+        </ul>
+
+        <h4>2. Aménager le terrain</h4>
+        <ul>
+          <li><strong>Cordons pierreux</strong> : lignes de pierres disposées perpendiculairement à la pente pour freiner le ruissellement.</li>
+          <li><strong>Terrasses</strong> : marches horizontales aménagées sur les fortes pentes.</li>
+          <li><strong>Bandes enherbées</strong> : bandes de végétation dense intercalées entre les cultures.</li>
+          <li><strong>Fossés de diversion</strong> : dévient l'eau de ruissellement avant qu'elle n'atteigne la parcelle.</li>
+          <li><strong>Ados</strong> et <strong>billons</strong> : élevations de terre pour ralentir l'eau.</li>
+        </ul>
+
+        <h4>3. Modifier les pratiques culturales</h4>
+        <ul>
+          <li><strong>Travail du sol réduit</strong> : limiter le labour, préserver la structure et la matière organique.</li>
+          <li><strong>Rotation des cultures</strong> : alterner cultures épuisantes (maïs, manioc) et cultures enrichissantes (légumineuses).</li>
+          <li><strong>Association de cultures</strong> : couverture permanente du sol, meilleur recyclage des nutriments.</li>
+          <li><strong>Agroforesterie</strong> : arbres associés aux cultures pour protéger le sol et l'enrichir.</li>
+          <li><strong>Jachère</strong> : repos du sol pour reconstituer sa fertilité (jachère courte, jachère améliorée à légumineuses).</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Attendre que l'érosion soit visible (ravines) avant d'agir est une grave erreur. La prévention, par la couverture du sol et les aménagements, est beaucoup plus efficace et moins coûteuse que la restauration d'une ravine.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VIII — L'amélioration de la fertilité : compost et amendements",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le compost</h3>
+        <p>Le <strong>compost</strong> est le produit de la décomposition contrôlée de déchets organiques (résidus de culture, déchets de cuisine, fumier, feuilles) par les micro-organismes. C'est un amendement organique qui apporte de l'humus et des nutriments.</p>
+
+        <h4>Technique du compostage</h4>
+        <ol>
+          <li>Choisir un emplacement ombragé, à l'abri du vent, près du point d'eau.</li>
+          <li>Alterner les couches : <strong>couches vertes</strong> (riches en azote : herbes fraîches, déchets de cuisine, fumier) et <strong>couches brunes</strong> (riches en carbone : feuilles sèches, paille, résidus de maïs).</li>
+          <li>Humidifier régulièrement (comme une éponge essorée : ni trop sec, ni détrempé).</li>
+          <li>Retourner le tas tous les 15 jours pour aérer et relancer la fermentation.</li>
+          <li>La température monte (50 – 60 °C) : c'est la preuve d'une bonne activité microbienne.</li>
+          <li>Après 2 à 3 mois, le compost est mûr : sombre, friable, sans odeur, il sent la forêt.</li>
+        </ol>
+
+        <h3>Les amendements calcaires</h3>
+        <p>Les <strong>amendements calcaires</strong> (chaux agricole, dolomie, calcaire broyé) corrigent l'acidité des sols. Ils remontent le pH vers 6 – 7, ce qui libère le phosphore bloqué et réduit la toxicité de l'aluminium. Indispensables sur les Ferralsols et les sols sableux du plateau des Bateke.</p>
+        <p><strong>Méthode d'application :</strong></p>
+        <ul>
+          <li>Épandre en saison sèche ou avant les pluies, sur sol travaillé.</li>
+          <li>Incorporer par un léger labour ou un hersage.</li>
+          <li>Dose variable selon l'acidité mesurée (généralement 1 à 3 t/ha sur sols très acides).</li>
+          <li>Ne pas mélanger directement avec les engrais azotés (risque de perte d'azote).</li>
+        </ul>
+
+        <h3>Les engrais verts</h3>
+        <p>Les <strong>engrais verts</strong> sont des cultures (souvent des légumineuses : mucuna, crotalaire, pois sabre, haricot) semées puis enfouies dans le sol avant leur floraison. Elles enrichissent le sol en azote (grâce à la fixation symbiotique), en matière organique et améliorent la structure.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Le compost, les amendements calcaires et les engrais verts sont les trois piliers de l'amélioration organique et minérale du sol. Le compost apporte l'humus, la chaux corrige l'acidité, les engrais verts enrichissent en azote et structurent.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VIII — Agroforesterie et fertilisation raisonnée",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>L'agroforesterie</h3>
+        <p>L'<strong>agroforesterie</strong> est l'association, sur la même parcelle, d'arbres et de cultures (ou d'arbres et d'élevage). C'est une pratique ancestrale paysanne, aujourd'hui scientifiquement validée.</p>
+
+        <h4>Types d'agroforesterie</h4>
+        <ul>
+          <li><strong>Agroforêt</strong> : cultures sous couvert arboré (cacao, café).</li>
+          <li><strong>Haies vives</strong> : rangées d'arbres ou d'arbustes délimitant les parcelles, réduisant le vent et l'érosion.</li>
+          <li><strong>Arbres fertilisants</strong> : légumineuses arborées (acacia, leucaena, tephrosia, gliricidia) qui fixent l'azote et produisent de la biomasse utilisable comme paillage.</li>
+          <li><strong>Associations arbres-cultures</strong> : arbres fruitiers ou bois d'œuvre plantés en ligne dans les cultures.</li>
+          <li><strong>Jachère améliorée</strong> : arbres légumineux sur une parcelle au repos.</li>
+        </ul>
+
+        <h4>Bénéfices de l'agroforesterie</h4>
+        <ul>
+          <li>Protection du sol contre l'érosion (couvert, racines).</li>
+          <li>Enrichissement en azote (légumineuses).</li>
+          <li>Production de bois, fruits, fourrage (diversification des revenus).</li>
+          <li>Amélioration du microclimat (ombre, humidité).</li>
+          <li>Stockage du carbone (atténuation du changement climatique).</li>
+        </ul>
+
+        <h3>La fertilisation minérale raisonnée</h3>
+        <p>Les <strong>engrais minéraux</strong> apportent des nutriments concentrés (NPK, urée, etc.). Ils sont utiles pour corriger rapidement une carence, mais ils ne remplacent jamais la matière organique.</p>
+
+        <h4>Règles d'une fertilisation raisonnée</h4>
+        <ul>
+          <li><strong>Analyser le sol</strong> avant d'apporter.</li>
+          <li><strong>Respecter les doses</strong> recommandées : un excès nuit (brûlures, pollution, perte économique).</li>
+          <li><strong>Fractionner</strong> les apports (azote surtout) pour limiter les pertes par lessivage.</li>
+          <li><strong>Appliquer au bon moment</strong> (au semis, au tallage, à la floraison selon les cultures).</li>
+          <li><strong>Combiner</strong> engrais organiques et minéraux.</li>
+          <li><strong>Éviter</strong> l'épandage sur sol détrempé ou en forte pluie.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Utiliser uniquement des engrais minéraux sans matière organique est une erreur de long terme. Le sol s'appauvrit, se compacte, perd sa structure et sa vie biologique. Le raisonnement « tout engrais minéral » est une impasse écologique et économique.</p>
+      </div>
+    `
+  },
+  {
+    title: "Synthèse — Diagnostiquer, classifier, intervenir",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Synthèse générale</div>
+        <h3>Les trois compétences du technicien en pédologie</h3>
+
+        <h4>1. Diagnostiquer</h4>
+        <p>Observer le profil dans une fosse, mesurer l'épaisseur des horizons, estimer la texture par le test du boudin, mesurer le pH, apprécier la matière organique, identifier les contraintes (compaction, érosion, acidité).</p>
+
+        <h4>2. Classifier</h4>
+        <p>Reconnaître le grand type de sol : Ferralsol, Andosol, Fluvisol, sol sableux, sol argileux de savane. Évaluer son potentiel et ses contraintes pour les cultures envisagées.</p>
+
+        <h4>3. Intervenir</h4>
+        <p>Proposer des techniques adaptées : amendement calcaire sur Ferralsol acide, protection antiérosive sur Andosol en pente, matière organique et agroforesterie sur sol sableux, compost partout.</p>
+
+        <h3>Tableau de synthèse</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Type de sol</th>
+              <th>Contraintes principales</th>
+              <th>Interventions clés</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Ferralsol</td>
+              <td>Acidité, faible CEC, P bloqué</td>
+              <td>Chauler, compost, agroforesterie, cultures tolérantes.</td>
+            </tr>
+            <tr>
+              <td>Andosol</td>
+              <td>Érosion en pente</td>
+              <td>Terrasses, haies, bandes enherbées, association cultures.</td>
+            </tr>
+            <tr>
+              <td>Fluvisol</td>
+              <td>Inondation, engorgement</td>
+              <td>Drainage, billons, choix de cultures adaptées.</td>
+            </tr>
+            <tr>
+              <td>Sol sableux (Bateke)</td>
+              <td>Pauvreté, lessivage</td>
+              <td>Compost massif, agroforesterie, cultures tolérantes.</td>
+            </tr>
+            <tr>
+              <td>Sol argileux de savane</td>
+              <td>Lourdeur, compaction</td>
+              <td>Travail à bonne humidité, matière organique, paillage.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bloc cas">
+        <div class="bloc-label">Étude de cas (cas pédagogique)</div>
+        <p>« Un élève de 4<sup>e</sup> pédologie à Kananga réalise une fosse pédologique sur une parcelle en pente. Il observe un horizon A peu épais (10 cm), un horizon B compact, et des signes d'érosion en rigoles. Il mesure un pH de 5,3 et constate une faible teneur en matière organique. Il propose un plan d'action : apport de compost, amendement calcaire, cordons pierreux et culture de couverture. Il présente ses résultats à la classe avec un profil schématisé. »</p>
+        <p><strong>Analyse :</strong> le diagnostic est correct. Le pH acide impose un chaulage. La faible matière organique impose du compost et une couverture. La pente et les rigoles imposent des cordons pierreux et une culture de couverture. Le plan est cohérent.</p>
+      </div>
+
+      <div class="bloc sources">
+        <div class="bloc-label">Sources du cours</div>
+        <ul>
+          <li>Fiches pédagogiques officielles — Cours de Programme National de Pédologie, Édition 2025 (manuels-scolaires-rdc.com).</li>
+          <li>Georges Muyayabantu Mupala, <em>Éléments de Pédologie Générale et Intertropicale</em>, L'Harmattan RDC.</li>
+          <li>Service Géologique National du Congo (SGN-C), « Connaissance du sol et du sous-sol ».</li>
+          <li>FAO / INERA, <em>Gestion durable des sols en République Démocratique du Congo</em>.</li>
+          <li>Curriculum de la Filière Agriculture Générale, MEPST/PEQPESU (2017).</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Évaluation finale — Pédologie (Science du Sol)",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Consigne</div>
+        <p>Répondez aux questions ci-dessous en sélectionnant la bonne réponse parmi les quatre propositions. Le QCM couvre l'ensemble du cours. Cliquez ensuite sur « Valider mes réponses » pour obtenir votre score.</p>
+      </div>
+
+      <div class="quiz-container">
+        <div id="quizQuestions"></div>
+        <button id="submitQuiz" class="quiz-btn-submit">
+          Valider mes réponses
+        </button>
+        <div id="quizResult" class="quiz-result"></div>
+      </div>
+    `
+  }
+];
+const questions = [
+  {
+    text: "La pédologie est la science qui étudie :",
+    options: ["Les plantes cultivées", "Les sols", "Les animaux domestiques", "Le climat"],
+    correct: 1
+  },
+  {
+    text: "Le sol est une formation naturelle de surface issue de :",
+    options: [
+      "La transformation de la roche mère sous l'action de processus physiques, chimiques et biologiques",
+      "La seule décomposition des feuilles mortes",
+      "L'action exclusive de l'homme",
+      "La condensation de l'air"
+    ],
+    correct: 0
+  },
+  {
+    text: "Parmi les quatre constituants du sol, lequel est indispensable à la respiration des racines ?",
+    options: ["La fraction minérale", "La fraction organique", "La fraction gazeuse (air du sol)", "Les débris de roche"],
+    correct: 2
+  },
+  {
+    text: "L'horizon A d'un sol est :",
+    options: [
+      "La roche mère non altérée",
+      "La couche superficielle riche en matière organique",
+      "La couche d'accumulation d'argile",
+      "Le matériau parental altéré"
+    ],
+    correct: 1
+  },
+  {
+    text: "L'horizon B d'un sol est caractérisé par :",
+    options: [
+      "Une accumulation d'argiles, d'oxydes ou de carbonates",
+      "Une absence totale de minéraux",
+      "Une richesse maximale en humus",
+      "La présence obligatoire de la nappe phréatique"
+    ],
+    correct: 0
+  },
+  {
+    text: "La fosse pédologique sert principalement à :",
+    options: [
+      "Arroser les cultures",
+      "Observer et décrire le profil du sol",
+      "Stocker du compost",
+      "Mesurer la pluviométrie"
+    ],
+    correct: 1
+  },
+  {
+    text: "La texture d'un sol désigne :",
+    options: [
+      "L'organisation des particules en agrégats",
+      "La proportion d'argile, de limon et de sable",
+      "Le pH du sol",
+      "La profondeur de la nappe phréatique"
+    ],
+    correct: 1
+  },
+  {
+    text: "Parmi les fractions suivantes, laquelle a les particules les plus fines ?",
+    options: ["Le sable", "Le limon", "L'argile", "Les graviers"],
+    correct: 2
+  },
+  {
+    text: "Le test du boudin permet d'estimer :",
+    options: ["Le pH du sol", "La texture du sol", "La profondeur du sol", "La quantité d'azote"],
+    correct: 1
+  },
+  {
+    text: "Un pH de 5,2 correspond à un sol :",
+    options: ["Neutre", "Basique", "Acide", "Alcalin"],
+    correct: 2
+  },
+  {
+    text: "Un pH trop acide bloque principalement :",
+    options: ["Le phosphore et favorise la toxicité de l'aluminium", "L'azote uniquement", "Le carbone", "Rien du tout"],
+    correct: 0
+  },
+  {
+    text: "La matière organique du sol :",
+    options: [
+      "Améliore la structure, retient l'eau et nourrit la vie du sol",
+      "Nuit aux cultures",
+      "Augmente l'érosion",
+      "Est inutile en agriculture"
+    ],
+    correct: 0
+  },
+  {
+    text: "Parmi les trois éléments N, P, K, celui qui favorise surtout le développement des racines et la floraison est :",
+    options: ["L'azote (N)", "Le phosphore (P)", "Le potassium (K)", "Le calcium (Ca)"],
+    correct: 1
+  },
+  {
+    text: "La pédogenèse désigne :",
+    options: [
+      "La formation et l'évolution des sols",
+      "La culture du sol",
+      "L'analyse chimique du sol",
+      "La mesure du pH"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le lessivage est :",
+    options: [
+      "L'entraînement des particules fines et des éléments solubles vers la profondeur",
+      "L'accumulation de matière organique en surface",
+      "La formation de ravines",
+      "L'évaporation de l'eau du sol"
+    ],
+    correct: 0
+  },
+  {
+    text: "La ferrallitisation est un processus typique :",
+    options: [
+      "Des déserts froids",
+      "Des zones tropicales humides (accumulation d'oxydes de fer et d'aluminium)",
+      "Des glaciers",
+      "Des zones arctiques"
+    ],
+    correct: 1
+  },
+  {
+    text: "Les Ferralsols congolais sont surtout présents :",
+    options: [
+      "Dans la Cuvette Centrale",
+      "Uniquement dans le Kivu",
+      "Sur le plateau des Bateke",
+      "Le long de la Ruzizi"
+    ],
+    correct: 0
+  },
+  {
+    text: "Les Andosols sont des sols :",
+    options: [
+      "Alluviaux des bords de fleuve",
+      "Volcaniques, présents dans la région du Kivu",
+      "Sableux du plateau des Bateke",
+      "Argileux de savane"
+    ],
+    correct: 1
+  },
+  {
+    text: "Les Fluvisols sont des sols :",
+    options: [
+      "Alluviaux, fertiles, le long des cours d'eau",
+      "Volcaniques",
+      "Sableux pauvres",
+      "Salés"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'érosion ravinante est un problème majeur à :",
+    options: [
+      "Kananga et Kikwit",
+      "Goma et Bukavu",
+      "Kinshasa et Matadi",
+      "Kisangani et Mbandaka"
+    ],
+    correct: 0
+  },
+  {
+    text: "Les cordons pierreux servent à :",
+    options: [
+      "Augmenter l'érosion",
+      "Freiner le ruissellement et l'érosion sur les pentes",
+      "Fertiliser le sol",
+      "Arroser les cultures"
+    ],
+    correct: 1
+  },
+  {
+    text: "Le compost est :",
+    options: [
+      "Un pesticide",
+      "Un engrais minéral de synthèse",
+      "Un amendement organique issu de la décomposition de déchets organiques",
+      "Un herbicide"
+    ],
+    correct: 2
+  },
+  {
+    text: "Les amendements calcaires (chaux, dolomie) servent à :",
+    options: [
+      "Augmenter l'acidité du sol",
+      "Corriger l'acidité du sol et remonter le pH vers 6 – 7",
+      "Nourrir les plantes en azote",
+      "Tuer les micro-organismes"
+    ],
+    correct: 1
+  },
+  {
+    text: "L'agroforesterie consiste à :",
+    options: [
+      "Couper tous les arbres d'une parcelle",
+      "Associer arbres et cultures sur la même parcelle",
+      "Planter uniquement des arbres sans cultures",
+      "Éviter toute végétation"
+    ],
+    correct: 1
+  },
+  {
+    text: "Un sol sableux du plateau des Bateke est :",
+    options: [
+      "Très fertile naturellement",
+      "Pauvre et sensible au lessivage",
+      "Volcanique",
+      "Alluvial"
+    ],
+    correct: 1
+  },
+  {
+    text: "La rotation des cultures permet surtout de :",
+    options: [
+      "Épuiser plus vite le sol",
+      "Éviter l'épuisement du sol et limiter les maladies",
+      "Augmenter l'érosion",
+      "Tuer les vers de terre"
+    ],
+    correct: 1
+  },
+  {
+    text: "Parmi les techniques suivantes, laquelle N'EST PAS une technique de conservation des sols ?",
+    options: [
+      "Paillage",
+      "Cordons pierreux",
+      "Labour profond répété sur sol nu en pente",
+      "Bandes enherbées"
+    ],
+    correct: 2
+  },
+  {
+    text: "L'objectif principal de la pédologie en 4e Humanité agricole est de rendre l'élève capable de :",
+    options: [
+      "Diagnostiquer, classifier et conserver les sols",
+      "Étudier la littérature",
+      "Gérer les stocks d'un magasin",
+      "Construire des routes"
+    ],
+    correct: 0
+  }
+];
+
+try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+        questions.forEach(function (q) {
+            if (!q.text) q.text = q.question || q.q || q.enonce || q.titre || "";
+            if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+            if (typeof q.correct === "undefined") {
+                if (typeof q.answer !== "undefined") q.correct = q.answer;
+                else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+            }
+        });
+    }
+} catch (e) {}
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+const pageTitle = document.getElementById('pageTitle');
+pageTitle.textContent = "ECOLIA · " + COURSE_TITLE;
+document.title = "ECOLIA — " + COURSE_TITLE;
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim() || slides.length === 0) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp("(" + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ")", 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderEmptyState() {
+    contentDiv.innerHTML = '<div class="empty-state"><div class="icon">·</div><span class="tag">Bientôt disponible</span><h2>' + COURSE_TITLE + '</h2><p>Ce cours est en préparation. Le contenu sera ajouté prochainement.</p></div>';
+    slideCounterSpan.textContent = '0/0';
+    progressFill.style.width = '0%';
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    counterSpan.textContent = '—';
+}
+
+function renderQuiz() {
+    const qc = document.getElementById('quizQuestions');
+    if (!qc) return;
+    if (typeof questions === 'undefined' || questions.length === 0) {
+        qc.innerHTML = '<p style="color:#666;font-style:italic;">Quiz bientot disponible.</p>';
+        return;
+    }
+    let html = '';
+    questions.forEach((q, i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o, k) => {
+            html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>';
+        });
+        html += '</div>';
+    });
+    qc.innerHTML = html;
+    const submitBtn = document.getElementById('submitQuiz');
+    if (submitBtn) {
+        submitBtn.onclick = () => {
+            let score = 0;
+            questions.forEach((q, i) => {
+                const s = document.querySelector('input[name="q' + i + '"]:checked');
+                if (s && parseInt(s.value) === q.correct) score++;
+            });
+            const pct = Math.round(score/questions.length*100);
+            document.getElementById('quizResult').innerHTML =
+                '<div style="background:var(--bg2);padding:16px;border-radius:10px;margin-top:14px;">' +
+                '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong></div>';
+        };
+    }
+}
+
+function renderSlide(index, keepHighlight) {
+    if (keepHighlight === undefined) keepHighlight = true;
+    if (slides.length === 0) { renderEmptyState(); return; }
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    if (index === slides.length - 1) renderQuiz();
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    if (slides.length === 0) return;
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (slides.length && currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (slides.length && currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+<!-- ECOLIA_IMAGE_LOADER_START -->
+<script>
+(function () {
+  var SITE = "https://ecolia-course.github.io/";
+  var NATIVE = false;
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function abs(u) { return /^(https?:|data:|blob:)/i.test(u) ? u : (NATIVE ? SITE + u.replace(/^(\.\/|\/)+/, "") : u); }
+  function ext(u) { var m = String(u).split("?")[0].match(/\.(jpe?g|png|gif|webp|svg)$/i); return m ? m[1].toLowerCase() : "jpg"; }
+  function hide(img) { img.onerror = null; img.style.display = "none"; }
+  var table = null, queue = [], queued = {}, running = false;
+  function enqueue(full, fn) {
+    if (queued[fn]) return;
+    queued[fn] = 1; queue.push([full, fn]);
+    if (!running) { running = true; setTimeout(next, 2500); }
+  }
+  function next() {
+    if (!queue.length) { running = false; return; }
+    if (!navigator.onLine) { running = false; return; }
+    var q = queue.shift(), t0 = Date.now();
+    try { CoursInterface.download(q[0], q[1]); } catch (e) { return setTimeout(next, 500); }
+    (function wait() {
+      var ok = false;
+      try { ok = !!CoursInterface.exists(q[1]); } catch (e) {}
+      if (ok) setTimeout(next, 1500);
+      else if (Date.now() - t0 > 40000) next();
+      else setTimeout(wait, 700);
+    })();
+  }
+  function exists(fn) { try { return !!CoursInterface.exists(fn); } catch (e) { return false; } }
+  function show(img) {
+    if (!table || img.getAttribute("data-ecolia-done")) return;
+    var id = img.getAttribute("data-image-id");
+    var url = table[id];
+    if (typeof url !== "string" || !url.length) { console.warn("ECOLIA : image absente du JSON :", id); return; }
+    img.setAttribute("data-ecolia-done", "1");
+    if (!NATIVE) { img.onerror = function () { hide(img); }; img.setAttribute("src", url); return; }
+    var full = abs(url), fn = "img_" + id + "." + ext(url);
+    if (exists(fn)) {
+      img.onerror = function () {
+        try { CoursInterface["delete"](fn); } catch (e) {}
+        queued[fn] = 0;
+        img.onerror = function () { hide(img); };
+        img.setAttribute("src", full);
+      };
+      img.setAttribute("src", "https://app.local/cours/" + fn);
+    } else {
+      img.onerror = function () { hide(img); };
+      img.setAttribute("src", full);
+      enqueue(full, fn);
+    }
+  }
+  function scan(root) {
+    if (!root || !root.querySelectorAll) return;
+    if (root.matches && root.matches("img[data-image-id]")) show(root);
+    root.querySelectorAll("img[data-image-id]").forEach(show);
+  }
+  function prefetchAll() {
+    var ids = {};
+    try { JSON.stringify(slides).replace(/data-image-id=\\?"([^"\\]+)/g, function (m, id) { ids[id] = 1; }); } catch (e) {}
+    Object.keys(ids).forEach(function (id) {
+      var url = table[id];
+      if (typeof url !== "string" || !url.length) return;
+      var fn = "img_" + id + "." + ext(url);
+      if (!exists(fn)) enqueue(abs(url), fn);
+    });
+  }
+  function start(tbl) {
+    table = tbl;
+    scan(document.body);
+    new MutationObserver(function (muts) {
+      muts.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.nodeType === 1) scan(n); }); });
+    }).observe(document.body, { childList: true, subtree: true });
+    if (NATIVE) prefetchAll();
+  }
+  var JSON_URL = NATIVE ? SITE + "images_ecolia.json" : "images_ecolia.json";
+  var KEY = "ecolia_images_json";
+  fetch(JSON_URL, NATIVE ? { cache: "no-cache" } : undefined)
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (table) { if (NATIVE) lsSet(KEY, JSON.stringify(table)); start(table); })
+    .catch(function (e) {
+      var saved = null;
+      if (NATIVE) { try { saved = JSON.parse(lsGet(KEY) || "null"); } catch (x) {} }
+      if (saved) start(saved);
+      else console.warn("ECOLIA : JSON des images indisponible.", e);
+    });
+})();
+</script>
+<!-- ECOLIA_IMAGE_LOADER_END -->
+
+
+
+<!-- ECOLIA_AUDIO_PLAYER_START -->
+<style>
+  #ecolia-audio-btn, #ecolia-dl-btn {
+    width: 30px; height: 30px; min-width: 30px; padding: 0; margin: 0 4px 0 0;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    cursor: pointer; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent; outline: none;
+  }
+  #ecolia-audio-btn { border: none; background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-dl-btn { border: 1.5px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb); }
+  #ecolia-dl-btn.ecolia-full { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-btn.ecolia-fixed { position: fixed; top: 8px; left: 8px; z-index: 2147483000; }
+  #ecolia-audio-btn:active, #ecolia-dl-btn:active { transform: scale(.92); }
+  #ecolia-audio-btn svg, #ecolia-dl-btn svg { width: 15px; height: 15px; fill: currentColor; pointer-events: none; }
+  #ecolia-audio-btn.ecolia-off, #ecolia-dl-btn.ecolia-off { display: none; }
+  #ecolia-audio-banner {
+    display: none; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0;
+    padding: 8px 14px; font-size: .82rem; line-height: 1.35;
+    background: var(--soft, #eef3fb); color: var(--p1, #123); border-bottom: 1px solid var(--bd, #c9d6ea);
+  }
+  #ecolia-audio-banner.on { display: flex; }
+  #ecolia-audio-banner .eab-txt { flex: 1 1 180px; }
+  #ecolia-audio-banner .eab-act { display: flex; gap: 6px; flex-wrap: wrap; }
+  #ecolia-audio-banner button {
+    border: 1px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb);
+    border-radius: 16px; padding: 5px 12px; font-size: .8rem; cursor: pointer;
+  }
+  #ecolia-audio-banner button.pri { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-banner .eab-bar { display: none; flex-basis: 100%; height: 4px; border-radius: 2px; overflow: hidden; background: var(--bd, #c9d6ea); }
+  #ecolia-audio-banner .eab-bar i { display: block; height: 100%; width: 0; background: var(--p2, #2563eb); transition: width .2s; }
+</style>
+<script>
+(function () {
+  var CFG = {"code":"Pedologie4","base":"https://ecolia-course.github.io/ecolia-media/audio_files/","available":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21],"count":21,"sizeMo":25,"sizes":{"1":1283136,"2":945792,"3":1121088,"4":1219584,"5":1427520,"6":1389696,"7":1028928,"8":1182144,"9":1218432,"10":1310016,"11":1343424,"12":1149504,"13":1231296,"14":1090368,"15":1409088,"16":1275072,"17":1065408,"18":1281600,"19":1188864,"20":1307328,"21":163776},"fallback":{"1":[["fr","Sommaire, Pédologie (Science du Sol). Bienvenue. Pédologie: comprendre, diagnostiquer et conserver le sol. Le sol est le socle de toute production agricole. Sans un sol vivant, structuré et fertile, aucune culture ne peut nourrir durablement une population. La pédologie est la science qui étudie le sol: sa constitution, son organisation, ses propriétés physiques, chimiques et biologiques, sa formation, sa classification, sa dégradation et les moyens de le conserver et de l'améliorer. Ce cours s'adresse aux élèves de 4e Humanité de la section Agricole (Option Agriculture Générale). Il vise à former un futur technicien A2 capable de diagnostiquer un sol sur le terrain, de le classifier parmi les grands types de sols congolais, et d'intervenir pour le conserver ou améliorer sa fertilité. Objectifs d'apprentissage. À la fin de ce cours, l'élève doit être capable de: Définir le sol et décrire ses quatre constituants (minéral, organique, liquide, gazeux). Identifier les horizons d'un profil de sol et utiliser une fosse pédologique. Déterminer la texture et la structure d'un sol par des méthodes de terrain. Mesurer et interpréter le pH et évaluer la fertilité chimique et biologique. Expliquer la formation et l'évolution des sols en zone intertropicale. Classifier les sols congolais (Ferralsols, Andosols, Fluvisols, sols sableux, sols argileux). Diagnostiquer les causes de dégradation et proposer des techniques de conservation. Proposer des techniques d'amélioration de la fertilité (compost, amendements, engrais verts, agroforesterie). Grands chapitres du cours. Chapitre I, Qu'est-ce que le sol? Définition et constituants. Chapitre II, Le profil du sol et les horizons. Chapitre III, Les propriétés physiques (texture, structure, porosité). Chapitre IV, Les propriétés chimiques et biologiques (pH, matière organique, éléments nutritifs). Chapitre V, La formation et l'évolution des sols (pédogenèse). Chapitre VI, La classification des sols et la typologie congolaise. Chapitre VII, La dégradation et la conservation des sols. Chapitre VIII, L'amélioration de la fertilité."]],"2":[["fr","Chapitre I, Pourquoi étudier la pédologie? Situation-problème. Dans la région de Kananga, deux parcelles voisines sont cultivées de la même manière depuis cinq ans. Sur la première, les rendements de maïs restent corrects. Sur la seconde, les rendements chutent chaque année: le sol est devenu dur, l'eau ruisselle après la pluie, les plants jaunissent et les racines restent courtes. Pourquoi deux parcelles voisines réagissent-elles si différemment? Peut-on encore améliorer le sol de la seconde parcelle? Fondements théoriques. Le sol, socle de la sécurité alimentaire. Le sol est bien plus qu'une simple « terre »: c'est un écosystème vivant, le support de toutes les cultures, et un réservoir de biodiversité. Il remplit plusieurs fonctions essentielles: Support de production: il ancre les racines et fournit l'eau et les nutriments aux plantes. Régulation de l'eau: il absorbe, filtre et stocke l'eau de pluie, limitant les crues et l'érosion. Stockage du carbone: il enferme d'énormes quantités de carbone organique, participant à la régulation du climat. Habitat de biodiversité: vers de terre, bactéries, champignons, insectes y vivent et y travaillent. Filtre et tampon: il dégrade certains polluants et régule le pH et la disponibilité des nutriments. Sans sol fertile, l'agriculture s'effondre, la sécurité alimentaire est menacée et les populations rurales migrent. Comprendre le sol est donc la première compétence d'un technicien agricole. À retenir. Le sol n'est pas un simple support inerte: c'est un milieu vivant et complexe, qui rend des services vitaux à l'agriculture et à la société. La pédologie, science du sol, est indispensable au futur technicien agricole."]],"3":[["fr","Chapitre I, Définition du sol. Fondements théoriques. Qu'est-ce que le sol? Le sol est défini comme une formation naturelle de surface, de structure meuble et d'épaisseur variable, résultant de la transformation de la roche mère sous-jacente sous l'influence de processus physiques, chimiques et biologiques. Cette définition mérite d'être décomposée mot à mot: Formation naturelle de surface: le sol n'est pas fabriqué par l'homme; il se forme à la surface de la Terre au contact de l'atmosphère, de la végétation et des eaux. Structure meuble: le sol est friable, poreux, permettant le passage des racines, de l'air et de l'eau. Une roche massive n'est pas un sol. Épaisseur variable: quelques centimètres à plusieurs mètres selon les régions (un sol jeune peut faire 20 centimètres, un sol tropical ancien plusieurs mètres). Issu de la transformation de la roche mère: les minéraux du sol proviennent de l'altération de la roche située dessous (ou apportée par le vent, l'eau, les glaciers). Sous l'influence de processus physiques, chimiques et biologiques: climat, eau, organismes vivants, temps transforment en permanence le sol. Attention: la « terre » qu'on utilise pour fabriquer des briques ou pour la construction n'est pas un sol au sens de la pédologie: c'est un matériau déstructuré et souvent stérile. Exemple concret. Un élève observe deux échantillons: Le premier, prélevé sous une forêt, est sombre, friable, sent l'humus et contient des racines et des vers de terre: c'est un sol. Le second, prélevé à 15 mètres de profondeur sur un chantier, est gris, compact, dur et sans vie: c'est de la roche altérée, pas un sol. La présence de vie, de structure meuble et de matière organique est le signe distinctif du sol. À retenir. Le sol est une formation naturelle de surface, meuble, épaisse et vivante, issue de l'altération de la roche mère sous l'action du climat, des organismes et du temps."]],"4":[["fr","Chapitre I, Les quatre constituants du sol. Fondements théoriques. Les quatre fractions du sol. Le sol n'est pas un bloc homogène: il est composé de quatre fractions en interaction permanente. En volume, un sol fertile idéal est composé approximativement de: 45 pour cent de fraction minérale (sables, limons, argiles). 5 pour cent de fraction organique (humus, débris végétaux, êtres vivants). 25 pour cent de fraction liquide (solution du sol). 25 pour cent de fraction gazeuse (air du sol). 1. La fraction minérale. Elle provient de l'altération de la roche mère. Elle est constituée de particules classées par taille: Sables: 50 μm à 2 millimètres, particules grossières, visibles à l'œil, drainantes. Limons: 2 à 50 μm, particules intermédiaires, douces au toucher. Argiles: moins de 2 μm, particules microscopiques, collantes, capables de retenir l'eau et les nutriments. 2. La fraction organique. Elle comprend la matière organique vivante (racines, bactéries, champignons, vers de terre) et la matière organique morte (débris de plantes et d'animaux, humus). L'humus est la fraction organique stabilisée, de couleur sombre, qui donne au sol sa fertilité et sa structure. 3. La fraction liquide (solution du sol). C'est l'eau présente dans les pores, dans laquelle sont dissous les sels minéraux (nitrates, phosphates, potassium, calcium, magnésium). Les racines ne peuvent absorber les nutriments que sous forme dissoute. 4. La fraction gazeuse (air du sol). L'air du sol est contenu dans les pores non occupés par l'eau. Il est plus riche en C O2 et moins riche en O2 que l'air atmosphérique, à cause de la respiration des racines et des micro-organismes. L'aération est indispensable à la vie du sol. Erreur fréquente à éviter. Réduire le sol à sa seule fraction minérale est une erreur pédagogique grave. La matière organique, l'eau et l'air du sol sont aussi essentiels que les minéraux: un sol sans matière organique est stérile, même s'il contient beaucoup de sable et d'argile."]],"5":[["fr","Chapitre II, Le profil du sol et les horizons. Situation d'observation. Un technicien creuse une fosse de 1,20 mètres de profondeur sur une parcelle agricole. Sur la paroi verticale, il observe plusieurs bandes de couleur et de texture différentes: une couche sombre en surface, une couche brun-rouge plus compacte au milieu, une couche plus claire en bas, puis la roche mère. Comment appelle-t-on cette organisation en couches? Fondements théoriques. Le profil pédologique. On appelle profil du sol la coupe verticale du sol, depuis la surface jusqu'à la roche mère. Cette coupe révèle une succession de couches appelées horizons, qui se différencient par leur couleur, leur texture, leur structure, leur composition chimique et leur activité biologique. Les horizons sont notés par des lettres majuscules: O, A, E, B, C, R. Dans un cours d'initiation, on retient surtout les quatre principaux: A, B, C et R. Horizon O (organique). Couche superficielle de litière (feuilles mortes, débris végétaux) lorsque la couverture forestière est importante. Absent dans les sols cultivés labourés. Horizon A. Couche superficielle, souvent de couleur sombre, riche en matière organique et en humus. C'est la zone d'activité biologique intense: racines, vers de terre, micro-organismes. C'est l'horizon le plus fertile et le plus important pour l'agriculture. Épaisseur typique: 10 à 30 centimètres. Horizon E (éluvial). Horizon appauvri, clair, d'où les argiles et les oxydes ont été entraînés vers la profondeur par le lessivage. Souvent présent dans les sols forestiers tropicaux. Horizon B. Couche d'accumulation: les argiles, les oxydes de fer, les carbonates lessivés des horizons supérieurs s'y accumulent. Souvent plus compacte et plus colorée (rouge, ocre). Peut limiter l'infiltration de l'eau et le développement des racines. Horizon C. Matériau parental altéré, sans structure développée. Il s'agit de la roche mère en cours d'altération. Il contient peu de matière organique et peu de vie. Roche mère (R). Roche non altérée à la base du profil. Sa nature (granitique, volcanique, sédimentaire) détermine la composition minérale du sol. À retenir. Le profil du sol est la coupe verticale du sol, révélant une succession d'horizons: A (riche en matière organique), B (accumulation), C (matériau altéré), R (roche mère). Chaque horizon a un rôle spécifique."]],"6":[["fr","Chapitre II, La fosse pédologique: observer et décrire. Fondements théoriques. La fosse pédologique. La fosse pédologique est l'outil de terrain essentiel du pédologue et du technicien agricole. Il s'agit d'un trou rectangulaire creusé verticalement dans le sol, d'environ 1 mètres à 1,50 mètres de profondeur, permettant d'observer directement le profil et de décrire les horizons. Dimensions usuelles. Longueur: 1 mètres à 1,20 mètres. Largeur: 60 centimètres à 80 centimètres (pour pouvoir travailler à l'intérieur). Profondeur: 1 mètres à 1,50 mètres (jusqu'à la roche mère si possible). Précautions. Ne jamais creuser seul sans surveillance: le risque d'effondrement est réel. Creuser de préférence dans un endroit stable, ni trop pentu, ni près d'un mur. Reboucher la fosse après observation pour éviter les accidents. Ce que l'on observe dans une fosse. Nombre et épaisseur des horizons: chaque horizon est mesuré en centimètres. Couleur: sombre (matière organique), rouge (oxydes de fer), gris (hydromorphie), blanchâtre (carbonates). Texture: au toucher (sableux, limoneux, argileux). Structure: en mottes, en plaquettes, particulaire, massive. Présence de racines: profondeur d'enracinement. Présence d'eau: nappe phréatique, traces d'hydromorphie. Traces biologiques: galeries de vers de terre, fourmilières, matière organique. Traces d'érosion ou de dégradation: compactage, semelle de labour, croûte de battance. Exemple de description de profil. Fosse creusée à 1,20 mètres de profondeur sur une parcelle cultivée à Kananga: 0–15 centimètres, Horizon A, couleur brun sombre, texture limono-sableuse, structure grumeleuse, racines nombreuses. 15–40 centimètres, Horizon B, couleur brun-rouge, texture argileuse, structure en blocs compacts. 40–100 centimètres, Horizon C, couleur brun clair, texture hétérogène, quelques cailloux. 100–120 centimètres, Roche mère, schiste altéré. Erreur fréquente. Négliger l'observation du profil est une erreur fréquente. Un sol peut sembler fertile en surface mais présenter des contraintes en profondeur: compaction, horizon B très argileux, nappe phréatique haute, roche dure à faible profondeur. Un diagnostic sans fosse est un diagnostic incomplet."]],"7":[["fr","Chapitre III, La texture du sol. Fondements théoriques. La texture: proportion des particules minérales. La texture d'un sol désigne la proportion relative des particules minérales qui le constituent, classées selon leur taille: Fraction. Taille des particules. Comportement. Argile. inférieur à 2 μm (micromètres). Très collante, retient l'eau et les nutriments, se compacte. Limon. 2 à 50 μm. Douce au toucher, intermédiaire, retient bien l'eau. Sable. 50 μm à 2 millimètres. Rugueux, très drainant, ne retient ni l'eau ni les nutriments. Les classes texturales. Selon le pourcentage des trois fractions, on distingue des sols: Sableux: légers, faciles à travailler, mais sèchent vite et pauvres en nutriments. Argileux: lourds, collants, retiennent l'eau mais mal drainés et difficiles à travailler. Limoneux: équilibrés, agréables à travailler. Argilo-sableux ou limono-argileux: compromis recherché. Franc (loam): équilibré entre sable, limon et argile, souvent idéal pour l'agriculture. Le test du boudin. La texture peut être estimée au champ par le test du boudin: on humidifie une poignée de terre, on la malaxe, puis on tente de former un boudin entre le pouce et l'index. Impossible de former un boudin: sol sableux. Boudin qui se casse avant 5 centimètres: sol limono-sableux ou limoneux. Boudin qui tient jusqu'à 5–8 centimètres puis se fissure: sol argilo-sableux. Boudin long, souple, qu'on peut courber en anneau: sol argileux. À retenir. La texture est la proportion d'argile, de limon et de sable. Elle détermine la capacité du sol à retenir l'eau et les nutriments. Le test du boudin permet de l'estimer au champ, sans laboratoire."]],"8":[["fr","Chapitre III, La structure, la porosité et la perméabilité. Fondements théoriques. La structure du sol. La structure désigne la manière dont les particules minérales et organiques s'assemblent en agrégats. Elle est indépendante de la texture: deux sols de même texture peuvent avoir des structures différentes. Types de structures: Grumeleuse: agrégats arrondis, friables, structure idéale pour l'agriculture. Particulaire: grains séparés (sables), perméable mais peu cohérent. En blocs ou massive: mottes compactes (argiles), difficile à travailler. En plaquettes ou lamellaire: couches horizontales (sols compactés par le labour). Prismatique ou columnaire: colonnes verticales (sols sodiques). Pourquoi la structure est-elle importante? Une bonne structure grumeleuse favorise: L'aération: les racines respirent. L'infiltration de l'eau: moins de ruissellement et d'érosion. Le développement racinaire: les racines se frayent facilement un chemin. La résistance à l'érosion: les agrégats résistent à la pluie. La porosité. La porosité est la proportion de vides (air plus eau) dans le sol. Un sol bien structuré a une porosité d'environ 50 pour cent. Les pores sont de deux types: Macropores: gros pores, laissent passer l'eau et l'air rapidement. Micropores: petits pores, retiennent l'eau capillaire. La perméabilité. La perméabilité est la capacité du sol à laisser passer l'eau. Elle dépend de la porosité, de la texture et de la structure. Un sol compacté (par le passage répété d'animaux, par la machinerie ou par un labour trop profond) voit sa porosité et sa perméabilité diminuer fortement: l'eau ruisselle en surface, les racines ne pénètrent plus. Erreur fréquente à éviter. Ne pas confondre texture et structure. La texture est la proportion de particules; la structure est l'organisation de ces particules en agrégats. On peut avoir deux sols de même texture (par exemple argileux) dont l'un est bien structuré (grumeleux) et l'autre compacté (massif). Le comportement agricole est radicalement différent."]],"9":[["fr","Chapitre IV, Le pH du sol: mesure et interprétation. Fondements théoriques. Qu'est-ce que le pH? Le pH est une mesure de l'acidité ou de l'alcalinité d'une solution. Il varie de 0 (très acide) à 14 (très basique), 7 étant neutre. Dans le sol, le pH de la solution du sol contrôle la disponibilité des éléments nutritifs: à certains pH, les nutriments sont solubles et absorbables; à d'autres, ils sont bloqués ou deviennent toxiques. Échelle d'interprétation. pH. Interprétation. inférieur à 5. Très acide (Ferralsols, sols sableux). 5 moins 6. Acide. 6 moins 7. Légèrement acide à neutre (idéal pour la plupart des cultures). 7 moins 8. Légèrement basique. supérieur à 8. Basique (sols sodiques, calcaires). Conséquences d'un pH trop acide ( inférieur à 5,5). Blocage du phosphore (P): les plantes ne peuvent plus l'absorber. Toxicité de l'aluminium (Al3 plus ): les racines s'arrêtent de croître. Faible activité biologique: les bactéries fixatrices d'azote meurent. Faible capacité d'échange cationique: les nutriments sont lessivés. C'est le cas de nombreux Ferralsols congolais, qui doivent être amendés par du calcaire (chaux ou dolomie). Conséquences d'un pH trop basique ( supérieur à 8). Blocage du fer, du manganèse, du zinc. Structure dégradée (sols sodiques). Faible infiltration. Mesure du pH au champ et au laboratoire. Bandelettes pH: rapides, économiques, suffisantes pour un diagnostic de terrain. pH-mètre portable: mesure précise. Laboratoire simplifié: méthode à l'eau ou au KCl. Le mode opératoire avec bandelettes: prélever un échantillon de sol, le mélanger à de l'eau distillée (1 volume de sol pour 2 volumes d'eau), laisser reposer 30 minutes, puis tremper la bandelette dans la solution claire et comparer la couleur à l'échelle. À retenir. Le pH contrôle la disponibilité des nutriments. La plupart des cultures préfèrent un pH entre 6 et 7. Les sols congolais sont souvent acides et nécessitent des amendements calcaires."]],"10":[["fr","Chapitre IV, La matière organique et la vie du sol. Fondements théoriques. La matière organique du sol (MOS). La matière organique représente une faible fraction du volume du sol (environ 5 pour cent ), mais elle joue un rôle central dans la fertilité. Elle comprend: La matière organique vivante: racines, bactéries, champignons, vers de terre, insectes, protozoaires. La matière organique fraîche: débris végétaux (feuilles, tiges, racines mortes), débris animaux. L'humus: matière organique décomposée et stabilisée, de couleur sombre, qui persiste dans le sol. Rôles de la matière organique. Améliore la structure: les substances humiques collent les particules en agrégats stables. Retient l'eau: l'humus peut stocker jusqu'à 5 fois son poids en eau. Retient les nutriments: sa capacité d'échange cationique est élevée. Nourrit la vie biologique: c'est la base de la chaîne alimentaire du sol. Stocke le carbone: elle enferme du carbone issu du C O2 atmosphérique. Améliore le pH: elle tamponne les variations. La vie biologique du sol. Un gramme de sol fertile contient des millions de bactéries, des dizaines de mètres d'hyphes de champignons, des protozoaires, des nématodes. À plus grande échelle, on trouve des vers de terre, des fourmis, des termites, des larves d'insectes. Les micro-organismes décomposent la matière organique et libèrent les nutriments minéraux (N, P, K) sous forme assimilable par les plantes. Ce processus s'appelle la minéralisation. Les vers de terre, en creusant des galeries et en ingérant la terre, améliorent l'aération, la structure et la fertilité. Équilibre humification ou minéralisation. Dans un sol en équilibre, la matière organique apportée est en partie minéralisée (nutriments libérés) et en partie humifiée (stockée). Un excès de travail du sol, une absence d'apport organique ou un lessivage intense font pencher la balance vers la minéralisation: la matière organique diminue, la fertilité baisse. Erreur fréquente. Se fier uniquement au pH sans considérer la matière organique et l'activité biologique est une erreur. La fertilité est un ensemble: un sol peut avoir un pH correct mais être stérile par manque de matière organique et de vie."]],"11":[["fr","Chapitre IV, Les éléments nutritifs du sol. Fondements théoriques. Les éléments nutritifs essentiels. Les plantes ont besoin de 17 éléments nutritifs essentiels. On distingue: Macro-éléments: absorbés en grandes quantités, azote (N), phosphore (P), potassium (K), calcium (Ca), magnésium (Mg), soufre (S), carbone (C), hydrogène (H), oxygène (O). Oligo-éléments: absorbés en très petites quantités, fer (Fe), manganèse (Mn), zinc (Zn), cuivre (Cu), bore (B), molybdène (Mo), chlore (Cl), nickel (Ni). Rôles des trois grands éléments (N, P, K). Élément. Rôle principal. Signe de carence. Azote (N). Croissance végétative, synthèse des protéines, couleur verte. Feuilles jaunâtres, croissance lente. Phosphore (P). Développement des racines, floraison, fructification. Feuilles pourpres, racines faibles. Potassium (K). Résistance aux maladies, qualité des fruits, régulation de l'eau. Bords de feuilles brunis, tiges faibles. Facteurs de disponibilité. Un élément peut être présent dans le sol mais non disponible pour les plantes. La disponibilité dépend de: Du pH: à pH acide, le P est bloqué; à pH basique, le Fe, le Mn, le Zn sont bloqués. De la matière organique: elle retient les cations (Ca, Mg, K) et les libère progressivement. De la texture: les argiles retiennent les cations; les sables les laissent lessiver. De l'humidité: les nutriments circulent en solution. Exemple pratique. Un agriculteur observe sur son maïs: Feuilles jaunes, plants chétifs, donc carence en azote probable. Feuilles violacées, épi mal formé, donc carence en phosphore possible. Bords des feuilles secs et bruns, tige faible, donc carence en potassium. Le diagnostic visuel n'est qu'un indice: une analyse de sol est nécessaire pour confirmer. À retenir. Les plantes ont besoin de macro-éléments (N, P, K surtout) et d'oligo-éléments. Leur disponibilité dépend du pH, de la matière organique, de la texture et de l'humidité. Une carence se diagnostique par observation et par analyse."]],"12":[["fr","Chapitre V, La formation et l'évolution des sols (pédogenèse). Fondements théoriques. La pédogenèse. La pédogenèse est l'ensemble des processus qui transforment un matériau parental en sol. Elle se déroule sur des échelles de temps très longues: de plusieurs centaines à plusieurs milliers d'années pour former un sol épais. Les cinq facteurs de formation. Cinq facteurs, souvent retenus dans la formule « CLORPT », contrôlent la pédogenèse: Climat: température et pluviométrie. En zone intertropicale, chaleur et humidité accélèrent l'altération et le lessivage. Organismes vivants: végétation, faune du sol, micro-organismes qui décomposent la matière organique. Relief: en pente, l'érosion emporte les matériaux; en bas de pente, les dépôts s'accumulent. Roche mère: nature minéralogique (granite, basalte, calcaire, schiste) qui détermine la composition chimique initiale. Temps: un sol jeune est peu épais, un sol ancien est profond et très altéré. Les grands processus. Altération: fragmentation et décomposition chimique de la roche mère sous l'effet de l'eau, de la température et des acides organiques. Décomposition de la matière organique: transformation des débris végétaux et animaux en humus par les micro-organismes. Lessivage: entraînement vertical des particules fines et des éléments solubles par les eaux d'infiltration. Ferrallitisation: accumulation d'oxydes de fer et d'aluminium dans les horizons profonds, donnant une couleur rouge caractéristique (sols tropicaux). Podzolisation: migration du fer et de l'aluminium sous forêt de conifères (climats froids). Salinisation: accumulation de sels en surface (climats arides, irrigation mal maîtrisée). Erreur fréquente. Croire que la formation d'un sol est rapide est une erreur. Il faut des siècles pour reconstituer un sol fertile. C'est pourquoi l'érosion et la dégradation sont des phénomènes très graves: perdre 10 centimètres de sol peut être quasi irréversible à l'échelle d'une génération."]],"13":[["fr","Chapitre V, La spécificité des sols tropicaux. Fondements théoriques. Les sols tropicaux: spécificités et contraintes. En zone intertropicale (dont la R D C), la chaleur et l'humidité permanentes accélèrent l'altération des roches et le lessivage. Les sols y acquièrent des caractéristiques très particulières. 1. Forte altération et grande profondeur. La chaleur combinée à l'humidité favorise l'altération chimique intense de la roche mère. Les sols tropicaux sont souvent très épais (plusieurs mètres) mais appauvris. 2. Ferrallitisation. Processus typique des zones tropicales humides: sous l'effet du lessivage intense, la silice est emportée, tandis que les oxydes de fer et d'aluminium s'accumulent. Les sols deviennent rouges ou ocre. Les argiles dominantes sont la kaolinite et les oxydes de fer. Ces sols (Ferralsols) retiennent mal les nutriments. 3. Acidité. Le lessivage emporte les cations basiques (Ca, Mg, K). Le pH descend souvent en dessous de 5,5. L'aluminium devient toxique pour les racines. 4. Faible réserve de matière organique. La chaleur accélère la décomposition microbienne: la matière organique est détruite très vite, l'humus ne se stabilise pas facilement. Un sol forestier amazonien ou congolais peut redevenir stérile en 2–3 ans après déboisement. 5. Pauvreté chimique apparente. La plupart des éléments nutritifs sont stockés dans la biomasse (arbres, végétation) et dans la matière organique, non dans le sol minéral. C'est pourquoi l'agriculture itinérante sur brûlis traditionnelle fonctionne: la fertilité vient des cendres, pour 2 à 3 ans seulement. 6. Fragilité. Les sols tropicaux sont fertiles tant qu'ils sont protégés par la forêt. Dès qu'on les met à nu, ils se dégradent vite: érosion, lessivage, compaction, baisse de la matière organique. À retenir. Les sols tropicaux sont souvent profonds, acides, pauvres en éléments nutritifs, mais fertiles si bien gérés. La fertilité vient surtout de la matière organique et de la végétation, non du sol minéral. La déforestation les fragilise gravement."]],"14":[["fr","Chapitre VI, Les sols de la R D C (1): Ferralsols et sols sableux. Fondements théoriques. Les Ferralsols (sols ferrallitiques). Les Ferralsols sont les sols les plus répandus en République Démocratique du Congo. On les rencontre surtout dans la Cuvette Centrale (Kisangani, Mbandaka, Boende, Ikela) et sur une grande partie du territoire. Caractéristiques: Couleur rouge ou ocre, due aux oxydes de fer. Très profonds (souvent plusieurs mètres). Texture argileuse kaolinitique, mais structure stable grâce aux oxydes. pH acide (souvent 4,5 moins 5,5). Faible capacité d'échange cationique: les nutriments sont lessivés. Faible réserve en phosphore assimilable. Potentiel agronomique: médiocre sans intrants, bon avec amendements calcaires, apports organiques massifs et fertilisation adaptée. Ils portent actuellement les cultures vivrières (manioc, maïs, bananier) et parfois le palmier à huile. Les sols sableux du plateau des Bateke. À proximité de Kinshasa, le plateau des Bateke (région de Maluku, Kwamouth) est couvert de sols sableux d'origine ancienne. Caractéristiques: Très sableux (plus de 80 pour cent de sable). Pauvres en argile et en matière organique. Très drainants, sensibles au lessivage. pH acide. Faible capacité de rétention en eau. Potentiel agronomique: faible sans gestion spécifique. L'agroforesterie (acacia, eucalyptus associés aux cultures), l'apport massif de matière organique et la fertilisation sont indispensables. Ces sols conviennent au manioc, à l'ananas et au palmier avec aménagement. Retenir l'essentiel. Les Ferralsols dominent la Cuvette Centrale: profonds, acides, pauvres, mais cultivables avec amendements. Les sols sableux des Bateke sont très pauvres et exigent une gestion spécifique (agroforesterie, matière organique)."]],"15":[["fr","Chapitre VI, Les sols de la R D C (2): Andosols, Fluvisols, sols argileux. Fondements théoriques. Les Andosols (sols volcaniques). Les Andosols se rencontrent principalement dans les régions volcaniques de l'Est de la R D C: Kivu, Nord-Kivu (Goma, Masisi, Rutshuru) et Sud-Kivu (Bukavu, Kabare, Walungu). Ils proviennent de l'altération des cendres et laves volcaniques. Caractéristiques: Très fertiles: riches en éléments minéraux (Ca, Mg, K, P). pH souvent proche de la neutralité (6 moins 7). Structure meuble, légère, favorable aux racines. Bonne rétention en eau et en nutriments. Fragiles: sensibles à l'érosion dès que la pente est cultivée sans protection. Potentiel agronomique: élevé. Les Andosols du Kivu portent les cultures vivrières (haricot, maïs, pomme de terre, sorgho, bananier) et le café arabica. Mais la forte pression démographique et la culture sur pente provoquent une érosion grave (glissements de terrain, ravinement). Les Fluvisols (sols alluviaux). Les Fluvisols se rencontrent le long des cours d'eau, dans les plaines alluviales (plaine de la Ruzizi, bords du fleuve Congo, vallées inondables). Caractéristiques: Issus de dépôts de sédiments apportés par les cours d'eau. Souvent fertiles (renouvellement par les crues). Texture variable (sableuse, limoneuse, argileuse). Risque d'inondation et d'engorgement. Potentiel agronomique: bon à très bon. Ils conviennent au maraîchage, au riz, à la canne à sucre et au maïs. La plaine de la Ruzizi est un exemple type de plaine alluviale fertile. Les sols argileux de savane. Présents dans les savanes du Katanga, du Kasaï, de la région de Kananga et de Mbuji-Mayi. Ils sont plus argileux et souvent plus fertiles que les Ferralsols voisins, mais leur structure est lourde. Caractéristiques: Texture argileuse dominante. Fertilité chimique modérée à bonne (surtout dans les zones de savane herbeuse). Difficiles à travailler (lourds, collants en saison des pluies, durs en saison sèche). Sensibles à la compaction. Erreur fréquente. Appliquer les mêmes pratiques à tous les sols est une erreur. Un Ferralsol acide exige un amendement calcaire; un Andosol fertile exige surtout une protection contre l'érosion; un sol sableux des Bateke exige de la matière organique. Le diagnostic préalable est indispensable."]],"16":[["fr","Chapitre VII, La dégradation des sols. Fondements théoriques. Les causes de dégradation. La dégradation du sol est la perte de ses capacités productives et de ses fonctions écologiques. Elle peut être physique, chimique ou biologique. Causes principales. Érosion hydrique: la pluie détache et emporte les particules de sol. Elle est favorisée par le déboisement, la mise à nu, la pente. Érosion éolienne: le vent emporte les particules fines (surtout en zone sèche). Lessivage: entraînement des nutriments solubles vers la nappe phréatique. Compaction: tassement des horizons par le labour profond, le passage répété d'animaux, la machinerie lourde. Perte de matière organique: absence d'apports organiques, brûlis systématique, travail du sol excessif. Surexploitation: cultures continues sans jachère ni rotation, épuisement des nutriments. Déforestation: perte du couvert protecteur, dégradation accélérée. Pollution: pesticides, engrais excessifs, métaux lourds, plastiques. Salinisation: irrigation mal maîtrisée en zone sèche. Les formes d'érosion hydrique. Érosion en nappe: couche superficielle emportée uniformément. Difficile à voir mais très destructrice. Érosion en rigoles: petites rigoles après chaque pluie, effacées par le labour. Signe d'alerte. Érosion en ravines: les rigoles se creusent et forment des ravines profondes. Exemple: érosion ravinante à Kananga et Kikwit. Érosion en masse (glissements): effondrement de pans entiers (sols volcaniques en pente, forte pluie). Cas congolais. À Kananga (Kasaï-Central) et à Kikwit (Kwilu), des ravines de plusieurs dizaines de mètres de profondeur détruisent chaque année des habitations, des routes et des terres agricoles. Les causes: forte pente, sols sableux ou sablo-argileux, pluies intenses, déboisement et absence d'aménagement antiérosif. Ces ravines menacent les infrastructures urbaines et rurales. À retenir. La dégradation est causée par l'érosion, le lessivage, la compaction, la perte de matière organique et la surexploitation. Elle prive le technicien agricole de son outil principal. La prévention est plus efficace et bien moins coûteuse que la restauration."]],"17":[["fr","Chapitre VII, Les techniques de conservation des sols. Fondements théoriques. Les techniques de conservation. Conserver le sol, c'est à la fois limiter les pertes et maintenir sa fertilité. Les techniques se classent en trois grandes familles: 1. Protéger la surface du sol. Paillage (mulching): couvrir le sol avec des résidus végétaux. Réduit l'impact des gouttes de pluie, limite l'évaporation, freine l'érosion. Cultures de couverture: plantes rampantes (mucuna, crotalaire, légumineuses) couvrant le sol entre deux cultures. Couverture végétale permanente: maintien d'une végétation herbacée (savane, gazon) sur les sols non cultivés. 2. Aménager le terrain. Cordons pierreux: lignes de pierres disposées perpendiculairement à la pente pour freiner le ruissellement. Terrasses: marches horizontales aménagées sur les fortes pentes. Bandes enherbées: bandes de végétation dense intercalées entre les cultures. Fossés de diversion: dévient l'eau de ruissellement avant qu'elle n'atteigne la parcelle. Ados et billons: élevations de terre pour ralentir l'eau. 3. Modifier les pratiques culturales. Travail du sol réduit: limiter le labour, préserver la structure et la matière organique. Rotation des cultures: alterner cultures épuisantes (maïs, manioc) et cultures enrichissantes (légumineuses). Association de cultures: couverture permanente du sol, meilleur recyclage des nutriments. Agroforesterie: arbres associés aux cultures pour protéger le sol et l'enrichir. Jachère: repos du sol pour reconstituer sa fertilité (jachère courte, jachère améliorée à légumineuses). Erreur fréquente. Attendre que l'érosion soit visible (ravines) avant d'agir est une grave erreur. La prévention, par la couverture du sol et les aménagements, est beaucoup plus efficace et moins coûteuse que la restauration d'une ravine."]],"18":[["fr","Chapitre VIII, L'amélioration de la fertilité: compost et amendements. Fondements théoriques. Le compost. Le compost est le produit de la décomposition contrôlée de déchets organiques (résidus de culture, déchets de cuisine, fumier, feuilles) par les micro-organismes. C'est un amendement organique qui apporte de l'humus et des nutriments. Technique du compostage. Choisir un emplacement ombragé, à l'abri du vent, près du point d'eau. Alterner les couches: couches vertes (riches en azote: herbes fraîches, déchets de cuisine, fumier) et couches brunes (riches en carbone: feuilles sèches, paille, résidus de maïs). Humidifier régulièrement (comme une éponge essorée: ni trop sec, ni détrempé). Retourner le tas tous les 15 jours pour aérer et relancer la fermentation. La température monte (50 moins 60 degrés Celsius): c'est la preuve d'une bonne activité microbienne. Après 2 à 3 mois, le compost est mûr: sombre, friable, sans odeur, il sent la forêt. Les amendements calcaires. Les amendements calcaires (chaux agricole, dolomie, calcaire broyé) corrigent l'acidité des sols. Ils remontent le pH vers 6 moins 7, ce qui libère le phosphore bloqué et réduit la toxicité de l'aluminium. Indispensables sur les Ferralsols et les sols sableux du plateau des Bateke. Méthode d'application: Épandre en saison sèche ou avant les pluies, sur sol travaillé. Incorporer par un léger labour ou un hersage. Dose variable selon l'acidité mesurée (généralement 1 à 3 t ou ha sur sols très acides). Ne pas mélanger directement avec les engrais azotés (risque de perte d'azote). Les engrais verts. Les engrais verts sont des cultures (souvent des légumineuses: mucuna, crotalaire, pois sabre, haricot) semées puis enfouies dans le sol avant leur floraison. Elles enrichissent le sol en azote (grâce à la fixation symbiotique), en matière organique et améliorent la structure. À retenir. Le compost, les amendements calcaires et les engrais verts sont les trois piliers de l'amélioration organique et minérale du sol. Le compost apporte l'humus, la chaux corrige l'acidité, les engrais verts enrichissent en azote et structurent."]],"19":[["fr","Chapitre VIII, Agroforesterie et fertilisation raisonnée. Fondements théoriques. L'agroforesterie. L'agroforesterie est l'association, sur la même parcelle, d'arbres et de cultures (ou d'arbres et d'élevage). C'est une pratique ancestrale paysanne, aujourd'hui scientifiquement validée. Types d'agroforesterie. Agroforêt: cultures sous couvert arboré (cacao, café). Haies vives: rangées d'arbres ou d'arbustes délimitant les parcelles, réduisant le vent et l'érosion. Arbres fertilisants: légumineuses arborées (acacia, leucaena, tephrosia, gliricidia) qui fixent l'azote et produisent de la biomasse utilisable comme paillage. Associations arbres-cultures: arbres fruitiers ou bois d'œuvre plantés en ligne dans les cultures. Jachère améliorée: arbres légumineux sur une parcelle au repos. Bénéfices de l'agroforesterie. Protection du sol contre l'érosion (couvert, racines). Enrichissement en azote (légumineuses). Production de bois, fruits, fourrage (diversification des revenus). Amélioration du microclimat (ombre, humidité). Stockage du carbone (atténuation du changement climatique). La fertilisation minérale raisonnée. Les engrais minéraux apportent des nutriments concentrés (NPK, urée, etc.). Ils sont utiles pour corriger rapidement une carence, mais ils ne remplacent jamais la matière organique. Règles d'une fertilisation raisonnée. Analyser le sol avant d'apporter. Respecter les doses recommandées: un excès nuit (brûlures, pollution, perte économique). Fractionner les apports (azote surtout) pour limiter les pertes par lessivage. Appliquer au bon moment (au semis, au tallage, à la floraison selon les cultures). Combiner engrais organiques et minéraux. Éviter l'épandage sur sol détrempé ou en forte pluie. Erreur fréquente. Utiliser uniquement des engrais minéraux sans matière organique est une erreur de long terme. Le sol s'appauvrit, se compacte, perd sa structure et sa vie biologique. Le raisonnement « tout engrais minéral » est une impasse écologique et économique."]],"20":[["fr","Synthèse, Diagnostiquer, classifier, intervenir. Synthèse générale. Les trois compétences du technicien en pédologie. 1. Diagnostiquer. Observer le profil dans une fosse, mesurer l'épaisseur des horizons, estimer la texture par le test du boudin, mesurer le pH, apprécier la matière organique, identifier les contraintes (compaction, érosion, acidité). 2. Classifier. Reconnaître le grand type de sol: Ferralsol, Andosol, Fluvisol, sol sableux, sol argileux de savane. Évaluer son potentiel et ses contraintes pour les cultures envisagées. 3. Intervenir. Proposer des techniques adaptées: amendement calcaire sur Ferralsol acide, protection antiérosive sur Andosol en pente, matière organique et agroforesterie sur sol sableux, compost partout. Tableau de synthèse. Type de sol. Contraintes principales. Interventions clés. Ferralsol. Acidité, faible CEC, P bloqué. Chauler, compost, agroforesterie, cultures tolérantes. Andosol. Érosion en pente. Terrasses, haies, bandes enherbées, association cultures. Fluvisol. Inondation, engorgement. Drainage, billons, choix de cultures adaptées. Sol sableux (Bateke). Pauvreté, lessivage. Compost massif, agroforesterie, cultures tolérantes. Sol argileux de savane. Lourdeur, compaction. Travail à bonne humidité, matière organique, paillage. Étude de cas (cas pédagogique). « Un élève de 4e pédologie à Kananga réalise une fosse pédologique sur une parcelle en pente. Il observe un horizon A peu épais (10 centimètres), un horizon B compact, et des signes d'érosion en rigoles. Il mesure un pH de 5,3 et constate une faible teneur en matière organique. Il propose un plan d'action: apport de compost, amendement calcaire, cordons pierreux et culture de couverture. Il présente ses résultats à la classe avec un profil schématisé. ». Analyse: le diagnostic est correct. Le pH acide impose un chaulage. La faible matière organique impose du compost et une couverture. La pente et les rigoles imposent des cordons pierreux et une culture de couverture. Le plan est cohérent."]],"21":[["fr","Évaluation finale, Pédologie (Science du Sol). Consigne. Répondez aux questions ci-dessous en sélectionnant la bonne réponse parmi les quatre propositions. Le QCM couvre l'ensemble du cours. Cliquez ensuite sur « Valider mes réponses » pour obtenir votre score."]]}};
+  var CACHE = "ecolia-cours-v1";                       // même cache que l'application
+  var PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  var PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+  var DL = '<svg viewBox="0 0 24 24"><path d="M11 3h2v9.2l3.6-3.6L18 10l-6 6-6-6 1.4-1.4L11 12.2V3zM5 19h14v2H5z"/></svg>';
+  var OK = '<svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>';
+  // Réparation du quiz : certains cours stockent les choix sous "opts" (ou autre) au lieu de "options"
+  try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+      questions.forEach(function (q) {
+        if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+        if (q.text === undefined) q.text = q.question || q.q || q.enonce || q.titre || "";
+        if (typeof q.correct === "undefined") {
+          if (typeof q.answer !== "undefined") q.correct = q.answer;
+          else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+        }
+      });
+    }
+  } catch (e) {}
+  var synth = window.speechSynthesis || null;
+  var HAS_CACHE = !!(window.caches && window.caches.open);
+  var NATIVE = false;           // APK ECOLIA : pont Java "CoursInterface" (fichiers dans le dossier de l'application)
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  var LATER = "ecolia_audio_later_" + CFG.code;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+  function init() {
+    if (document.getElementById("ecolia-audio-btn")) return;
+
+    // ---------- éléments de l'interface ----------
+    var btn = document.createElement("button");
+    btn.id = "ecolia-audio-btn"; btn.type = "button"; btn.className = "ecolia-off";
+    btn.setAttribute("aria-label", "Écouter la leçon"); btn.innerHTML = PLAY;
+    var dlBtn = document.createElement("button");
+    dlBtn.id = "ecolia-dl-btn"; dlBtn.type = "button"; dlBtn.className = "ecolia-off";
+    dlBtn.innerHTML = DL;
+    var host = document.querySelector(".header-right");
+    if (host) { host.insertBefore(dlBtn, host.firstChild); host.insertBefore(btn, dlBtn); }   // dans la barre du haut : ne scrolle jamais
+    else { btn.className += " ecolia-fixed"; document.body.appendChild(btn); }
+
+    var banner = document.createElement("div");
+    banner.id = "ecolia-audio-banner";
+    banner.innerHTML = '<span class="eab-txt"></span><span class="eab-act"></span><div class="eab-bar"><i></i></div>';
+    var content = document.getElementById("content");
+    if (content && content.parentNode) content.parentNode.insertBefore(banner, content);
+    else document.body.insertBefore(banner, document.body.firstChild);
+    var txtEl = banner.querySelector(".eab-txt"), actEl = banner.querySelector(".eab-act");
+    var barEl = banner.querySelector(".eab-bar"), barI = barEl.firstChild;
+
+    var audio = new Audio();            // un seul élément Audio, réutilisé (exigé par les navigateurs mobiles)
+    audio.preload = "auto";
+    var st = { idx: -1, auto: false, advancing: false, mode: null, speaking: false, token: 0, chunks: [], ci: 0, blobUrl: null, playTok: 0 };
+    var dl = { state: "none", cached: 0, busy: false, cancel: false };   // none | partial | full
+    var bnMode = null, hideTimer = null;
+    if (synth && synth.getVoices) { try { synth.getVoices(); } catch (e) {} }
+
+    function cur() {
+      try { if (typeof currentSlide === "number") return currentSlide; } catch (e) {}
+      return 0;
+    }
+    function hasMp3(i) { return CFG.available.indexOf(i + 1) !== -1; }
+    function fb(i) { return CFG.fallback && CFG.fallback[String(i + 1)]; }
+    function hasAudio(i) { return hasMp3(i) || (!!synth && !!fb(i)); }
+    function urlN(n) {   // dans l'APK la page est sur https://app.local : une adresse relative doit pointer vers le site
+      var b = CFG.base;
+      if (NATIVE && !/^https?:/i.test(b)) b = "https://ecolia-course.github.io/" + b.replace(/^(\.\.\/|\.\/)+/, "");
+      return new URL(b + nameN(n), location.href).href;
+    }
+    function setIcon(playing) { btn.innerHTML = playing ? PAUSE : PLAY; }
+    function isPlaying() { return st.mode === "mp3" ? !audio.paused : (st.mode === "tts" && st.speaking); }
+    function mo() { return "≈ " + CFG.sizeMo + " Mo"; }
+    function nameN(n) { return "audio_" + CFG.code + "_" + n + ".mp3"; }
+
+    // ====================================================================
+    //  Stockage hors ligne : 2 moteurs, même interface
+    //    - APK : fichiers du dossier de l'application (CoursInterface), servis par https://app.local/cours/
+    //    - Web : Cache Storage du navigateur (même cache que l'application web)
+    // ====================================================================
+    function nativeStore() {
+      var okKey = "ecolia_audio_ok_" + CFG.code;
+      function readOk() { try { return JSON.parse(lsGet(okKey) || "[]"); } catch (e) { return []; } }
+      function writeOk(a) { lsSet(okKey, JSON.stringify(a)); }
+      function exists(n) { try { return !!CoursInterface.exists(nameN(n)); } catch (e) { return false; } }
+      function local(n) { return location.origin + "/cours/" + nameN(n); }
+      function verify(n) {                                   // fichier complet ? (taille exacte connue à la génération)
+        return fetch(local(n), { cache: "no-store" }).then(function (r) { return r.blob(); }).then(function (b) {
+          var exp = CFG.sizes && CFG.sizes[String(n)];
+          return (b.size > 2000 && (!exp || b.size === exp)) ? b : null;
+        }).catch(function () { return null; });
+      }
+      return {
+        list: function () {
+          var ok = readOk().filter(exists); writeOk(ok); return Promise.resolve(ok);
+        },
+        get: function (n) { return exists(n) ? verify(n) : Promise.resolve(null); },
+        put: function (n) {
+          return new Promise(function (res, rej) {
+            try { CoursInterface.download(urlN(n), nameN(n)); } catch (e) { return rej(e); }
+            var t0 = Date.now();
+            function next() { if (Date.now() - t0 > 120000) rej(new Error("délai dépassé")); else setTimeout(poll, 800); }
+            function poll() {
+              if (!exists(n)) return next();
+              verify(n).then(function (b) {
+                if (!b) return next();
+                var ok = readOk(); if (ok.indexOf(n) < 0) ok.push(n); writeOk(ok); res();
+              });
+            }
+            setTimeout(poll, 800);
+          });
+        },
+        del: function (n) {
+          try { CoursInterface.delete(nameN(n)); } catch (e) {}
+          writeOk(readOk().filter(function (x) { return x !== n; }));
+          return Promise.resolve();
+        }
+      };
+    }
+    function cacheStore() {
+      return {
+        list: function () {
+          return caches.open(CACHE).then(function (c) {
+            return Promise.all(CFG.available.map(function (n) {
+              return c.match(urlN(n)).then(function (r) {
+                if (!r) return 0;
+                if ((r.headers.get("content-type") || "").indexOf("audio") !== 0) { c.delete(urlN(n)); return 0; }   // ancien contenu invalide
+                return n;
+              });
+            }));
+          }).then(function (a) { return a.filter(Boolean); });
+        },
+        get: function (n) {
+          return caches.open(CACHE).then(function (c) { return c.match(urlN(n)); })
+            .then(function (r) { return r ? r.blob() : null; }).then(function (b) { return b && b.size > 2000 ? b : null; });
+        },
+        put: function (n) {
+          var u = urlN(n);
+          return fetch(u, { cache: "no-store" }).then(function (r) {
+            if (!r.ok || r.status !== 200) throw new Error("HTTP " + r.status);
+            return r.blob();
+          }).then(function (b) {
+            if (b.size < 2000 || (b.type && b.type.indexOf("audio") !== 0 && b.type.indexOf("octet") < 0)) throw new Error("fichier invalide");
+            return caches.open(CACHE).then(function (c) { return c.put(u, new Response(b, { headers: { "Content-Type": "audio/mpeg" } })); });
+          });
+        },
+        del: function (n) { return caches.open(CACHE).then(function (c) { return c.delete(urlN(n)); }); }
+      };
+    }
+    var store = NATIVE ? nativeStore() : (HAS_CACHE ? cacheStore() : null);
+
+    // ====================================================================
+    //  Bannière : invitation, confirmations, progression
+    // ====================================================================
+    function showBanner(mode, text, buttons, pct) {
+      clearTimeout(hideTimer);
+      bnMode = mode;
+      txtEl.textContent = text;
+      actEl.innerHTML = "";
+      (buttons || []).forEach(function (b) {
+        var e = document.createElement("button");
+        e.type = "button"; e.textContent = b.label; if (b.pri) e.className = "pri";
+        e.addEventListener("click", function (ev) { ev.stopPropagation(); b.fn(); });
+        actEl.appendChild(e);
+      });
+      if (typeof pct === "number") { barEl.style.display = "block"; barI.style.width = pct + "%"; }
+      else barEl.style.display = "none";
+      banner.classList.add("on");
+    }
+    function hideBanner() { clearTimeout(hideTimer); bnMode = null; banner.classList.remove("on"); }
+    function flash(text) { showBanner("info", text, []); hideTimer = setTimeout(hideBanner, 4000); }
+
+    function refreshUI() {
+      var show = !!store && CFG.available.length > 0;
+      dlBtn.classList.toggle("ecolia-off", !show);
+      dlBtn.classList.toggle("ecolia-full", dl.state === "full");
+      dlBtn.innerHTML = dl.state === "full" ? OK : DL;
+      dlBtn.setAttribute("aria-label", dl.state === "full" ? "Audios téléchargés : supprimer" : "Télécharger les audios");
+      dlBtn.title = dlBtn.getAttribute("aria-label");
+    }
+    function refreshCacheState(done) {
+      if (!store) { dl.state = "none"; refreshUI(); if (done) done(); return; }
+      store.list().then(function (ok) {
+        dl.cached = ok.length;
+        dl.state = dl.cached === 0 ? "none" : (dl.cached >= CFG.available.length ? "full" : "partial");
+      }).catch(function () { dl.state = "none"; }).then(function () { refreshUI(); if (done) done(); });
+    }
+
+    function askDownload(fromInvite) {
+      var left = CFG.available.length - dl.cached;
+      var txt = dl.state === "partial"
+        ? "Il reste " + left + " audio(s) à télécharger pour écouter ce cours sans internet."
+        : "🔊 Télécharger les audios de ce cours (" + mo() + ") pour les écouter sans internet ? Wi-Fi recommandé.";
+      showBanner(fromInvite ? "invite" : "confirm", txt, [
+        { label: fromInvite ? "Plus tard" : "Annuler", fn: function () { if (fromInvite) lsSet(LATER, "1"); hideBanner(); } },
+        { label: "Télécharger", pri: true, fn: startDownload }
+      ]);
+    }
+    function askDelete() {
+      showBanner("confirm", "Supprimer les audios téléchargés de ce cours (" + mo() + ") ? Vous pourrez toujours les écouter en ligne.", [
+        { label: "Annuler", fn: hideBanner },
+        { label: "Supprimer", pri: true, fn: doDelete }
+      ]);
+    }
+
+    function startDownload() {
+      if (dl.busy || !store) return;
+      dl.busy = true; dl.cancel = false;
+      var total = CFG.available.length, done = 0, quota = false, fails = 0, todo = [];
+      store.list().then(function (have) {
+        CFG.available.forEach(function (n) { if (have.indexOf(n) < 0) todo.push(n); });
+        done = total - todo.length;
+        function paint() {
+          var msg = "Téléchargement des audios : " + done + " / " + total;
+          if (bnMode === "progress") {                  // met à jour sans recréer les boutons (sinon un appui peut être perdu)
+            txtEl.textContent = msg; barI.style.width = Math.round(done / total * 100) + "%";
+          } else {
+            showBanner("progress", msg, [
+              { label: "Annuler", fn: function () { dl.cancel = true; } }
+            ], Math.round(done / total * 100));
+          }
+        }
+        paint();
+        function worker() {
+          if (dl.cancel || quota || !todo.length) return Promise.resolve();
+          var n = todo.shift();
+          return store.put(n).then(function () { done++; paint(); }).catch(function (e) {
+            if (e && (e.name === "QuotaExceededError" || /quota/i.test(String(e.message)))) quota = true;
+            fails++;
+          }).then(worker);
+        }
+        return Promise.all([worker(), worker()]);
+      }).catch(function () { fails++; }).then(function () {
+        dl.busy = false;
+        refreshCacheState(function () {
+          if (dl.state === "full") flash("✓ Audios téléchargés : le cours se lit maintenant sans internet.");
+          else if (dl.cancel) flash("Téléchargement interrompu (" + dl.cached + " / " + total + "). Vous pourrez reprendre plus tard.");
+          else showBanner("error", quota ? "Espace insuffisant sur l'appareil. Libérez de la place puis réessayez."
+            : "Certains audios n'ont pas pu être téléchargés (connexion ?).", [
+            { label: "Fermer", fn: hideBanner }, { label: "Réessayer", pri: true, fn: startDownload }
+          ]);
+        });
+      });
+    }
+    function doDelete() {
+      if (!store) return;
+      Promise.all(CFG.available.map(function (n) { return store.del(n); })).catch(function () {}).then(function () {
+        lsDel(LATER);
+        refreshCacheState(function () { flash("Audios supprimés de cet appareil."); });
+      });
+    }
+
+    dlBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (dl.busy) return;
+      if (dl.state === "full") askDelete(); else askDownload(false);
+    });
+
+    // ====================================================================
+    //  Voix intégrée au téléphone (hors ligne, sans limite)
+    // ====================================================================
+    function pickVoice(lang) {
+      var vs = [];
+      try { vs = synth.getVoices() || []; } catch (e) {}
+      var pre = lang === "en" ? "en" : "fr", best = null;
+      for (var k = 0; k < vs.length; k++) {
+        var v = vs[k];
+        if ((v.lang || "").toLowerCase().indexOf(pre) !== 0) continue;
+        if (!best || (v.localService && !best.localService)) best = v;
+      }
+      return best;
+    }
+    function hardSplit(text, max) {
+      var out = [];
+      while (text.length > max) {
+        var cut = text.lastIndexOf(" ", max);
+        if (cut < 40) cut = max;
+        out.push(text.slice(0, cut)); text = text.slice(cut).replace(/^\s+/, "");
+      }
+      if (text) out.push(text);
+      return out;
+    }
+    function buildChunks(segs) {                  // morceaux courts : évite l'arrêt des longs textes sur Chrome
+      var out = [];
+      segs.forEach(function (s) {
+        var cur2 = "", parts = s[1].match(/[^.!?;:]+[.!?;:]*\s*/g) || [s[1]];
+        parts.forEach(function (p) {
+          if (cur2 && (cur2 + p).length > 160) { out.push({ lang: s[0], text: cur2.trim() }); cur2 = p; }
+          else cur2 += p;
+        });
+        if (cur2.trim()) out.push({ lang: s[0], text: cur2.trim() });
+      });
+      var res = [];
+      out.forEach(function (c) { hardSplit(c.text, 190).forEach(function (t) { res.push({ lang: c.lang, text: t }); }); });
+      return res;
+    }
+    function speakFrom(tk) {
+      if (tk !== st.token) return;
+      if (st.ci >= st.chunks.length) {
+        st.speaking = false; st.mode = null; st.ci = 0; setIcon(false);
+        if (st.auto) goNext();
+        return;
+      }
+      var c = st.chunks[st.ci];
+      var u = new SpeechSynthesisUtterance(c.text);
+      u.lang = c.lang === "en" ? "en-US" : "fr-FR";
+      var v = pickVoice(c.lang);
+      if (v) { u.voice = v; u.lang = v.lang; }
+      u.rate = 0.95;
+      u.onend = function () { if (tk !== st.token) return; st.ci++; speakFrom(tk); };
+      u.onerror = function () { if (tk !== st.token) return; st.speaking = false; setIcon(false); st.auto = false; };
+      synth.speak(u);
+    }
+    function startTts(from) {
+      st.token++;
+      var tk = st.token;
+      st.mode = "tts"; st.speaking = true; st.ci = from || 0; setIcon(true);
+      var busy = false;
+      try { busy = synth.speaking || synth.pending; synth.cancel(); } catch (e) {}
+      if (busy) setTimeout(function () { speakFrom(tk); }, 120);   // laisse cancel() se terminer
+      else speakFrom(tk);                                          // sinon tout de suite (exigé par iOS)
+    }
+    function playVoice() {
+      if (!(synth && fb(st.idx))) { st.auto = false; return false; }
+      if (!st.chunks.length) st.chunks = buildChunks(fb(st.idx));
+      startTts(st.ci);
+      return true;
+    }
+
+    // ====================================================================
+    //  Lecture
+    // ====================================================================
+    function freeBlob() { if (st.blobUrl) { try { URL.revokeObjectURL(st.blobUrl); } catch (e) {} st.blobUrl = null; } }
+    function stopAll() {
+      st.playTok++;
+      try { audio.pause(); audio.currentTime = 0; } catch (e) {}
+      st.token++;
+      try { if (synth) synth.cancel(); } catch (e) {}
+      st.speaking = false; st.mode = null; st.chunks = []; st.ci = 0;
+      setIcon(false);
+    }
+    function pauseNow() {
+      if (st.mode === "mp3") audio.pause();
+      else if (st.mode === "tts") {
+        st.token++;
+        try { synth.cancel(); } catch (e) {}
+        st.speaking = false; setIcon(false);      // st.ci conservé : la reprise repart de la phrase en cours
+      }
+    }
+    function startAudio(src, tok) {
+      if (tok !== st.playTok) return;
+      if (audio.getAttribute("data-src") !== src) { audio.setAttribute("data-src", src); audio.src = src; }
+      var p = audio.play();
+      if (p && p.catch) p.catch(function (err) {
+        console.warn("ECOLIA audio :", err);
+        if (tok !== st.playTok) return;
+        if (!(err && err.name === "NotAllowedError") && playVoice()) return;   // lecture impossible : voix du téléphone
+        setIcon(false); st.auto = false;
+      });
+    }
+    function playCurrent() {
+      var i = st.idx;
+      if (hasMp3(i)) {
+        var tok = ++st.playTok, u = urlN(i + 1);
+        st.mode = "mp3";
+        if (!navigator.onLine && dl.state === "none") { st.mode = null; if (playVoice()) return; }   // hors ligne et non téléchargé
+        if (store && dl.state !== "none") {                     // téléchargé : lecture locale, sans réseau
+          store.get(i + 1)
+            .then(function (b) {
+              if (tok !== st.playTok) return;
+              if (b) { freeBlob(); st.blobUrl = URL.createObjectURL(new Blob([b], { type: "audio/mpeg" })); startAudio(st.blobUrl, tok); }
+              else startAudio(u, tok);
+            }).catch(function () { startAudio(u, tok); });
+        } else startAudio(u, tok);                              // sinon lecture en ligne (appel immédiat, exigé par iOS)
+      } else if (!playVoice()) {
+        st.auto = false;
+      }
+    }
+
+    function onSlideChange(i) {
+      var wasAdvancing = st.advancing;
+      st.advancing = false;
+      st.idx = i;
+      btn.classList.toggle("ecolia-off", !hasAudio(i));
+      stopAll();
+      audio.removeAttribute("data-src");
+      freeBlob();
+      if (bnMode === "invite" && i !== 0) hideBanner();       // l'invitation n'apparaît qu'à la première slide
+      if (wasAdvancing && st.auto) setTimeout(playCurrent, 500);   // enchaînement automatique
+      else st.auto = false;                                         // changement manuel : on coupe tout
+    }
+    function goNext() {
+      if (st.idx + 1 >= CFG.count) { st.auto = false; return; }
+      st.advancing = true;
+      if (typeof nextSlide === "function") nextSlide();
+      else { var nb = document.getElementById("nextBtn"); if (nb) nb.click(); }
+      setTimeout(function () { st.advancing = false; }, 4000);
+    }
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var i = cur();
+      if (i !== st.idx) onSlideChange(i);
+      if (isPlaying()) { st.auto = false; pauseNow(); }
+      else { st.auto = true; playCurrent(); }
+    });
+    audio.addEventListener("play", function () { setIcon(true); });
+    audio.addEventListener("pause", function () { if (st.mode === "mp3") setIcon(false); });
+    audio.addEventListener("error", function () {
+      if (st.mode === "mp3" && playVoice()) return;            // fichier introuvable / hors ligne : voix du téléphone
+      setIcon(false); st.auto = false;
+    });
+    audio.addEventListener("ended", function () { setIcon(false); if (st.auto) goNext(); });
+    window.addEventListener("pagehide", function () { stopAll(); freeBlob(); });
+
+    // ---------- démarrage ----------
+    refreshCacheState(function () {
+      if (store && CFG.available.length && dl.state !== "full" && navigator.onLine && cur() === 0 && !lsGet(LATER)) askDownload(true);
+    });
+    st.idx = -1;
+    setInterval(function () { var i = cur(); if (i !== st.idx) onSlideChange(i); }, 250);   // suit la slide affichée
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+<!-- ECOLIA_AUDIO_PLAYER_END -->
+</body>
+</html>

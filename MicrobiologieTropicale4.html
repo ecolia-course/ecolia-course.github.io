@@ -1,0 +1,2136 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="orange">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>ECOLIA — Microbiologie Tropicale4</title>
+<style>
+[data-theme="bleu"]   { --p1:#0d2b4f; --p2:#1565c0; --p3:#07172e; --p4:#12437a; --p5:#5b8fd0; --bg:#e8f0fb; --bg2:#cfdff5; --bd:#a9c3e8; --soft:#dde8f7; --btn:#2a67b0; }
+[data-theme="vert"]   { --p1:#14442e; --p2:#2e7d32; --p3:#0b2b1a; --p4:#1f5c3a; --p5:#4f9a6b; --bg:#e8f5ec; --bg2:#c8e6d2; --bd:#a5cdb2; --soft:#dcefe2; --btn:#2f7a4f; }
+[data-theme="violet"] { --p1:#2d1b4e; --p2:#6a1b9a; --p3:#1a0f2e; --p4:#4a148c; --p5:#9c6fd0; --bg:#f1e9fb; --bg2:#dccbf2; --bd:#c4a8e6; --soft:#e8ddf6; --btn:#7e3fb2; }
+[data-theme="rouge"]  { --p1:#4a1010; --p2:#b71c1c; --p3:#2b0a0a; --p4:#8e1b1b; --p5:#d9706a; --bg:#fbeaea; --bg2:#f3cdcb; --bd:#e8a9a5; --soft:#f8dede; --btn:#a62a2a; }
+[data-theme="orange"] { --p1:#4e2a0c; --p2:#ef6c00; --p3:#2e1604; --p4:#b34a00; --p5:#f0a15a; --bg:#fff1e0; --bg2:#fbdcb8; --bd:#f3c08a; --soft:#fdebd6; --btn:#c9650a; }
+[data-theme="teal"]   { --p1:#0b3a3a; --p2:#00796b; --p3:#062626; --p4:#00574b; --p5:#4db6ac; --bg:#e0f2f1; --bg2:#b2dfdb; --bd:#80cbc4; --soft:#d5ecea; --btn:#26897d; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:linear-gradient(160deg,var(--p1) 0%,var(--p2) 50%,var(--p3) 100%); display:flex; justify-content:center; align-items:center; padding:8px; }
+.container { width:100%; max-width:1400px; background:#fefdf8; border-radius:20px; overflow:hidden; display:flex; flex-direction:column; height:100%; max-height:100vh; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.progress-bar { height:4px; background:var(--bg2); flex-shrink:0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--p5),var(--p4)); width:0%; transition:width 0.3s; }
+.header { padding:10px 16px; background:var(--bg); border-bottom:1px solid var(--bd); display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+.header h1 { color:var(--p4); font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box { display:flex; background:white; border-radius:20px; padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.search-box input { border:none; padding:6px 10px; border-radius:20px; outline:none; width:130px; font-size:0.8rem; }
+.search-box button { background:none; border:none; cursor:pointer; padding:4px 8px; font-size:0.85rem; color:var(--p2); }
+.badge { background:var(--p5); color:white; padding:4px 10px; border-radius:20px; font-weight:bold; font-size:0.75rem; }
+.search-nav { display:none; gap:4px; background:var(--bg2); padding:2px 8px; border-radius:20px; align-items:center; font-size:0.75rem; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:0.9rem; color:var(--p4); padding:2px 4px; }
+.content { padding:28px 32px; flex:1; overflow-y:auto; background:#fff; scroll-behavior:smooth; line-height:1.85; }
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.slide-title { color:var(--p1); font-size:1.5rem; font-weight:700; padding-bottom:12px; margin-bottom:20px; border-bottom:2px solid var(--p5); }
+.slide-content { color:var(--p3); font-size:1rem; }
+.empty-state { display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-height:60vh; padding:40px 20px; gap:18px; }
+.empty-state .icon { width:72px; height:72px; border-radius:50%; background:var(--bg); border:2px solid var(--bd); display:flex; align-items:center; justify-content:center; color:var(--p2); font-size:2rem; font-weight:300; }
+.empty-state h2 { color:var(--p1); font-size:1.4rem; font-weight:700; margin:0; }
+.empty-state p { color:#666; font-size:0.95rem; max-width:520px; line-height:1.7; }
+.empty-state .tag { display:inline-block; padding:6px 14px; background:var(--bg); color:var(--p4); border:1px solid var(--bd); border-radius:20px; font-size:0.8rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; }
+.bloc { padding:18px 22px; border-radius:12px; margin:22px 0; line-height:1.85; }
+.bloc-label { font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; opacity:0.7; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:var(--bg); border-left:4px solid var(--p5); }
+.theorie .bloc-label { color:var(--p4); }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.sources { background:#f5f5f5; padding:12px 16px; border-radius:10px; margin-top:26px; font-size:0.82rem; color:#666; border-left:3px solid #999; line-height:1.6; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:var(--p1); }
+.quiz-container { padding:22px; background:var(--bg); border-radius:16px; }
+.quiz-question { background:white; border-radius:10px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.quiz-question p { font-weight:600; margin-bottom:10px; color:var(--p1); }
+.quiz-question label { display:block; padding:8px 10px; margin:4px 0; border-radius:6px; cursor:pointer; transition:background 0.2s; }
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit { background:var(--btn); color:white; border:none; padding:12px 24px; border-radius:30px; font-size:1rem; cursor:pointer; font-weight:600; margin-top:14px; }
+.quiz-result { margin-top:16px; font-weight:600; }
+.controls { padding:8px 16px; background:#fafafa; border-top:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0; }
+.nav-btn { background:white; color:var(--p4); border:1px solid #ccc; padding:8px 14px; border-radius:8px; font-size:0.82rem; cursor:pointer; font-weight:500; }
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:var(--soft); }
+.content::-webkit-scrollbar-thumb { background:var(--p5); border-radius:3px; }
+@media (max-width:600px) { body { padding:0; } .container { border-radius:0; max-height:100vh; } .content { padding:20px 18px; } .slide-title { font-size:1.25rem; } .search-box input { width:90px; } .header h1 { font-size:0.85rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="header">
+<h1 id="pageTitle">ECOLIA</h1>
+<div class="header-right">
+<div class="search-box">
+<input id="searchInput" placeholder="Rechercher" type="text"/>
+<button id="searchBtn">⌕</button>
+</div>
+<div class="search-nav" id="searchNav">
+<button id="prevResultBtn">‹</button>
+<span id="resultCounter">0/0</span>
+<button id="nextResultBtn">›</button>
+</div>
+<span class="badge" id="slideCounter">0/0</span>
+</div>
+</div>
+<div class="content" id="content"></div>
+<div class="controls">
+<button class="nav-btn" id="prevBtn">← Précédent</button>
+<span class="counter" id="counter">—</span>
+<button class="nav-btn" id="nextBtn">Suivant →</button>
+</div>
+</div>
+<script>
+const COURSE_TITLE = "Microbiologie Tropicale (Agents Pathogènes et Santé Publique)";
+const slides = [
+  {
+    title: "Sommaire — Microbiologie Tropicale",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Bienvenue</div>
+        <h3>La microbiologie tropicale : comprendre les invisibles pour mieux soigner</h3>
+        <p>La <strong>microbiologie tropicale</strong> étudie les micro-organismes (bactéries, virus, parasites, champignons) et leur rôle dans les maladies infectieuses qui sévissent principalement en zone tropicale. En République Démocratique du Congo, le climat chaud et humide, la présence de vecteurs, l'accès limité à l'eau potable et les conditions d'hygiène favorisent la transmission de nombreuses maladies infectieuses : choléra, fièvre typhoïde, shigellose, méningites, paludisme, tuberculose, VIH, parasitoses intestinales.</p>
+        <p>Ce cours s'adresse aux élèves de 4<sup>e</sup> Humanité de la section ITM (Institut Technique Médical), filière Soins Infirmiers. Il prépare le futur infirmier A2 à <strong>comprendre les agents pathogènes</strong>, à <strong>identifier les maladies infectieuses prioritaires</strong>, à <strong>appliquer les mesures de prévention</strong> et à <strong>participer à la surveillance épidémiologique</strong> aux côtés de l'INRB et des zones de santé.</p>
+        <p><strong>Important :</strong> ce cours présente les principes et les observations de base. Les actes de laboratoire spécialisés et les diagnostics médicaux relèvent du médecin ou du biologiste. L'infirmier reconnaît, prévient, éduque, notifie et collabore.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Objectifs d'apprentissage</div>
+        <p>À la fin de ce cours, l'élève doit être capable de :</p>
+        <ol>
+          <li>Définir les concepts de base de la microbiologie.</li>
+          <li>Classer et décrire les principaux agents pathogènes (bactéries, virus, parasites, champignons).</li>
+          <li>Expliquer les modes de transmission et les facteurs de risque des maladies infectieuses.</li>
+          <li>Identifier les signes cliniques et les méthodes de diagnostic des maladies infectieuses prioritaires en RDC.</li>
+          <li>Appliquer les mesures de prévention et de lutte.</li>
+          <li>Réaliser des observations microbiologiques simples (coloration de Gram, observation microscopique).</li>
+          <li>Participer à la surveillance épidémiologique et à l'éducation sanitaire.</li>
+        </ol>
+      </div>
+
+      <div class="bloc cas">
+        <div class="bloc-label">Grands chapitres du cours</div>
+        <ul>
+          <li><strong>Chapitre I</strong> — Introduction à la microbiologie tropicale.</li>
+          <li><strong>Chapitre II</strong> — Les agents pathogènes : classification et structure.</li>
+          <li><strong>Chapitre III</strong> — La pathogénicité et la transmission.</li>
+          <li><strong>Chapitre IV</strong> — Les maladies bactériennes épidémiques.</li>
+          <li><strong>Chapitre V</strong> — Le paludisme et les parasitoses.</li>
+          <li><strong>Chapitre VI</strong> — La tuberculose et le VIH.</li>
+          <li><strong>Chapitre VII</strong> — Les techniques de laboratoire.</li>
+          <li><strong>Chapitre VIII</strong> — La prévention, la surveillance et l'éducation.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Pourquoi la microbiologie tropicale ?",
+    content: `
+      <div class="bloc cas">
+        <div class="bloc-label">Situation-problème</div>
+        <p>Dans un centre de santé d'Uvira, plusieurs patients arrivent le même jour avec une diarrhée aqueuse profuse, « eau de riz », et des vomissements. Un enfant est déjà très déshydraté. Le lendemain, deux autres cas sont signalés dans le même quartier. Que se passe-t-il ? Comment l'infirmier doit-il réagir ? Quelles mesures prendre pour éviter que l'épidémie ne se propage ?</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Une discipline au cœur de la santé publique</h3>
+        <p>La <strong>microbiologie</strong> est la science qui étudie les micro-organismes et leurs interactions avec l'homme et l'environnement. La <strong>microbiologie tropicale</strong> se concentre sur les agents pathogènes dont l'épidémiologie est favorisée par le climat tropical :</p>
+        <ul>
+          <li><strong>Chaleur et humidité</strong> : favorisent la survie des bactéries dans l'eau et les aliments.</li>
+          <li><strong>Vecteurs abondants</strong> : moustiques, mouches, puces, tiques, mouche tsé-tsé.</li>
+          <li><strong>Eau et assainissement insuffisants</strong> : transmission féco-orale des maladies diarrhéiques.</li>
+          <li><strong>Promiscuité et déplacements de population</strong> : favorisent les épidémies.</li>
+        </ul>
+
+        <h3>L'importance pour l'infirmier A2</h3>
+        <p>L'infirmier est en première ligne :</p>
+        <ul>
+          <li>Il <strong>reconnaît</strong> les cas suspects (diarrhée profuse, fièvre, toux persistante, éruption).</li>
+          <li>Il <strong>applique</strong> les mesures d'hygiène immédiates.</li>
+          <li>Il <strong>éduque</strong> les patients et les familles.</li>
+          <li>Il <strong>notifie</strong> les cas suspects aux autorités sanitaires (zones de santé, INRB).</li>
+        </ul>
+
+        <h3>Les maladies tropicales négligées</h3>
+        <p>Affections qui touchent principalement les populations pauvres des régions tropicales : trypanosomiase, leishmaniose, schistosomiase, filariose, lèpre, ulcère de Buruli, etc. Elles sont souvent négligées par la recherche et les systèmes de santé, malgré leur impact considérable.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>La microbiologie tropicale étudie les agents infectieux en zone chaude et humide. L'infirmier A2 est un acteur clé de la reconnaissance, de la prévention et de la notification des cas. Les maladies tropicales négligées sont une priorité de santé publique.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Définitions et concepts de base",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les mots-clés de la microbiologie</h3>
+
+        <h4>Micro-organisme</h4>
+        <p>Être vivant invisible à l'œil nu, observable au microscope. Les principaux groupes sont : bactéries, virus, champignons, protozoaires, helminthes (vers).</p>
+
+        <h4>Pathogène</h4>
+        <p>Micro-organisme capable de provoquer une maladie. Certains micro-organismes sont commensaux (ils vivent normalement sur ou dans le corps sans causer de maladie) ; d'autres sont opportunistes (ils provoquent une maladie quand les défenses immunitaires sont affaiblies).</p>
+
+        <h4>Pathogénicité</h4>
+        <p>Capacité d'un agent infectieux à provoquer une maladie. C'est un caractère qualitatif.</p>
+
+        <h4>Virulence</h4>
+        <p>Degré de gravité de la maladie provoquée. C'est un caractère quantitatif : une souche très virulente provoquera une maladie plus grave qu'une souche peu virulente.</p>
+
+        <h4>Infection</h4>
+        <p>Pénétration et multiplication d'un agent pathogène dans l'organisme.</p>
+
+        <h4>Contamination</h4>
+        <p>Présence d'un agent pathogène sur une surface, un aliment, un objet, ou dans un milieu. Elle peut ne pas provoquer d'infection.</p>
+
+        <h4>Porteur sain</h4>
+        <p>Personne qui héberge un agent pathogène sans manifester de symptômes, mais qui peut le transmettre à d'autres.</p>
+
+        <h4>Immunité</h4>
+        <p>Capacité de l'organisme à se défendre contre les infections. Elle peut être innée (barrières naturelles) ou acquise (après une infection ou une vaccination).</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Confondre <strong>contamination</strong> et <strong>infection</strong> est une erreur fréquente. Un aliment peut être contaminé sans qu'il y ait infection (si l'agent ne se multiplie pas ou si la personne ne le consomme pas). À l'inverse, un porteur sain est infecté sans être malade, mais il peut transmettre l'agent.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — Les bactéries : structure et coloration de Gram",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les bactéries</h3>
+        <p>Les <strong>bactéries</strong> sont des cellules <strong>procaryotes</strong> : elles n'ont pas de noyau, leur matériel génétique baigne dans le cytoplasme. Ce sont des organismes vivants autonomes qui se multiplient par division binaire.</p>
+
+        <h4>Structure</h4>
+        <ul>
+          <li><strong>Paroi cellulaire</strong> : enveloppe rigide qui donne la forme (coque, bacille, spirille).</li>
+          <li><strong>Membrane cytoplasmique</strong> : contrôle les échanges.</li>
+          <li><strong>Cytoplasme</strong> : contient les ribosomes, les enzymes, le matériel génétique.</li>
+          <li><strong>Flagelles</strong> : appendices qui permettent la mobilité (facultatifs).</li>
+          <li><strong>Pili</strong> : permettent l'adhésion aux cellules hôtes.</li>
+          <li><strong>Capsule</strong> : enveloppe protectrice (facultative), favorise l'échappement immunitaire.</li>
+          <li><strong>Spores</strong> : formes de résistance (chez certaines bactéries comme <em>Clostridium</em> et <em>Bacillus</em>).</li>
+        </ul>
+
+        <h4>La coloration de Gram</h4>
+        <p>Technique de laboratoire qui distingue deux grands groupes de bactéries selon la structure de leur paroi :</p>
+        <ul>
+          <li><strong>Gram-positives</strong> : paroi épaisse (peptidoglycane), retiennent le violet de cristal et apparaissent <strong>violettes</strong> au microscope.</li>
+          <li><strong>Gram-négatives</strong> : paroi fine, se décolorent à l'alcool et prennent le rose de la fuchsine ; elles apparaissent <strong>roses</strong>.</li>
+        </ul>
+
+        <h4>Pourquoi c'est important ?</h4>
+        <p>La coloration de Gram <strong>oriente le diagnostic et le traitement</strong> :</p>
+        <ul>
+          <li>Un Gram positif (par exemple <em>Streptococcus</em>, <em>Staphylococcus</em>) ne se traite pas de la même façon qu'un Gram négatif (par exemple <em>Vibrio cholerae</em>, <em>Salmonella</em>).</li>
+          <li>La forme de la bactérie complète l'information : coques Gram+ en chaînettes = <em>Streptococcus</em> ; bacilles Gram- = entérobactéries.</li>
+        </ul>
+
+        <h4>Les grandes formes</h4>
+        <ul>
+          <li><strong>Coques</strong> : sphériques (streptocoques, staphylocoques).</li>
+          <li><strong>Bacilles</strong> : en forme de bâtonnets (E. coli, Salmonella, Vibrio cholerae).</li>
+          <li><strong>Spirilles</strong> : en forme de spirale (Tréponème).</li>
+          <li><strong>Vibrions</strong> : en forme de virgule (Vibrio cholerae).</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Les bactéries sont des procaryotes. La coloration de Gram distingue Gram-positives (violettes, paroi épaisse) et Gram-négatives (roses, paroi fine). La forme (coque, bacille, spirille, vibrion) complète l'identification. Gram et forme orientent le traitement.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — Les virus, parasites et champignons",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les virus</h3>
+        <p>Les <strong>virus</strong> sont des agents infectieux <strong>acellulaires</strong>. Ils ne sont pas capables de se multiplier seuls : ils doivent pénétrer dans une cellule hôte et détourner sa machinerie pour se reproduire. Un virus est composé de :</p>
+        <ul>
+          <li><strong>Un acide nucléique</strong> : ADN ou ARN (jamais les deux).</li>
+          <li><strong>Une capside</strong> : enveloppe protéique qui protège l'acide nucléique.</li>
+          <li>Parfois une <strong>enveloppe</strong> lipidique.</li>
+        </ul>
+        <p>Les virus tropicaux importants en RDC :</p>
+        <ul>
+          <li><strong>Virus du chikungunya</strong> : transmis par <em>Aedes aegypti</em>, épidémie à Matadi en 2019.</li>
+          <li><strong>Virus de la dengue</strong> : transmis par <em>Aedes</em>, présent à la frontière angolaise.</li>
+          <li><strong>Virus Ebola</strong> : fièvre hémorragique grave, épidémies récurrentes en RDC.</li>
+          <li><strong>Virus de la rougeole</strong> : prévention par la vaccination.</li>
+          <li><strong>VIH</strong> : infection chronique.</li>
+        </ul>
+
+        <h3>Les parasites</h3>
+        <p>Les <strong>parasites</strong> sont des organismes eucaryotes qui vivent aux dépens d'un hôte. On distingue :</p>
+        <ul>
+          <li><strong>Protozoaires</strong> : unicellulaires. Exemples : <em>Plasmodium</em> (paludisme), <em>Entamoeba histolytica</em> (amibiase), <em>Giardia lamblia</em> (giardiase), <em>Trypanosoma</em> (trypanosomiase).</li>
+          <li><strong>Helminthes</strong> (vers) : pluricellulaires. Exemples : ascaris, ankylostomes, schistosomes, filaires.</li>
+        </ul>
+
+        <h3>Les champignons</h3>
+        <p>Les <strong>champignons</strong> sont des eucaryotes. Certains sont responsables de mycoses superficielles (teigne, candidose buccale) ; d'autres de mycoses profondes (aspergillose, cryptococcose), surtout chez les personnes immunodéprimées (VIH).</p>
+
+        <h4>Antibiotiques et virus</h4>
+        <p><strong>Les antibiotiques n'agissent que sur les bactéries, pas sur les virus.</strong> Un rhume, une grippe, la rougeole, le VIH ne se traitent pas avec des antibiotiques. Utiliser un antibiotique pour une infection virale est inutile et favorise la résistance.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Donner des antibiotiques pour une infection virale est une erreur fréquente et grave. Les antibiotiques ne tuent que les bactéries. En plus d'être inefficaces, ils favorisent la résistance des bactéries présentes dans l'organisme.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — Les modes de transmission",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les grandes voies de transmission</h3>
+
+        <h4>1. Voie féco-orale</h4>
+        <p>L'agent pathogène est présent dans les selles d'un malade ou d'un porteur sain, contamine l'eau ou les aliments, et est ingéré par une personne saine. C'est la voie des maladies diarrhéiques.</p>
+        <ul>
+          <li><strong>Maladies</strong> : choléra, fièvre typhoïde, shigellose, amibiase, giardiase, hépatite A, poliomyélite.</li>
+          <li><strong>Mesures</strong> : lavage des mains, eau potable, hygiène alimentaire, assainissement des latrines.</li>
+        </ul>
+
+        <h4>2. Voie aérienne</h4>
+        <p>L'agent est projeté par la toux, les éternuements, la parole, sous forme de gouttelettes ou d'aérosols, et inhalé par une personne saine.</p>
+        <ul>
+          <li><strong>Maladies</strong> : tuberculose, méningites, grippe, rougeole, coqueluche, COVID-19.</li>
+          <li><strong>Mesures</strong> : aération des locaux, masques, distanciation, vaccination.</li>
+        </ul>
+
+        <h4>3. Vecteurs</h4>
+        <p>Un être vivant (insecte, acarien) transporte l'agent d'un réservoir à un hôte.</p>
+        <ul>
+          <li><strong>Moustiques</strong> : paludisme (<em>Anopheles</em>), dengue et chikungunya (<em>Aedes</em>), fièvre jaune (<em>Aedes</em>).</li>
+          <li><strong>Mouche tsé-tsé</strong> : trypanosomiase.</li>
+          <li><strong>Puces</strong> : peste.</li>
+          <li><strong>Tiques</strong> : babésiose, anaplasmose.</li>
+          <li><strong>Mesures</strong> : moustiquaires imprégnées, répulsifs, lutte antivectorielle, destruction des gîtes larvaires.</li>
+        </ul>
+
+        <h4>4. Contact direct</h4>
+        <p>Transmission par contact cutané ou muqueux, plaies, rapports sexuels, sang.</p>
+        <ul>
+          <li><strong>Maladies</strong> : VIH, hépatites B et C, syphilis, gonococcie, herpès, infections cutanées.</li>
+          <li><strong>Mesures</strong> : préservatifs, gants, matériel stérile, hygiène.</li>
+        </ul>
+
+        <h4>5. Transmission mère-enfant</h4>
+        <p>Transmission pendant la grossesse, l'accouchement ou l'allaitement.</p>
+        <ul>
+          <li><strong>Maladies</strong> : VIH, hépatite B, syphilis, toxoplasmose, rubéole.</li>
+          <li><strong>Mesures</strong> : dépistage prénatal, ARV (VIH), vaccination, césarienne si nécessaire.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Cinq voies majeures : féco-orale (diarrhées), aérienne (tuberculose, méningites), vecteurs (paludisme, dengue), contact (VIH, IST), mère-enfant. Chaque voie a ses mesures de prévention spécifiques.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — Les facteurs favorisants en zone tropicale",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Pourquoi les maladies infectieuses prolifèrent en zone tropicale</h3>
+
+        <h4>Facteurs climatiques</h4>
+        <ul>
+          <li><strong>Chaleur</strong> : accélère la multiplication bactérienne dans les aliments.</li>
+          <li><strong>Humidité</strong> : favorise la survie des virus et la reproduction des vecteurs.</li>
+          <li><strong>Pluies abondantes</strong> : créent des gîtes larvaires, contaminent les sources d'eau.</li>
+        </ul>
+
+        <h4>Facteurs environnementaux</h4>
+        <ul>
+          <li><strong>Eau non potable</strong> : principale source de maladies diarrhéiques.</li>
+          <li><strong>Assainissement insuffisant</strong> : latrines absentes ou inadaptées, eaux usées stagnantes.</li>
+          <li><strong>Déchets mal gérés</strong> : attirent rongeurs et insectes.</li>
+          <li><strong>Habitat précaire</strong> : promiscuité, mauvaise ventilation.</li>
+        </ul>
+
+        <h4>Facteurs socio-économiques</h4>
+        <ul>
+          <li><strong>Pauvreté</strong> : accès limité aux soins, à l'eau potable, à une alimentation équilibrée.</li>
+          <li><strong>Faible niveau d'éducation</strong> : moins de connaissances sur l'hygiène.</li>
+          <li><strong>Déplacements de population</strong> : réfugiés, déplacés internes, camps surpeuplés.</li>
+          <li><strong>Conflits</strong> : détruisent les infrastructures sanitaires.</li>
+        </ul>
+
+        <h4>Facteurs individuels</h4>
+        <ul>
+          <li><strong>Malnutrition</strong> : affaiblit l'immunité.</li>
+          <li><strong>VIH, diabète</strong> : immunodépression.</li>
+          <li><strong>Grossesse</strong> : vulnérabilité accrue (paludisme, anémie).</li>
+          <li><strong>Âge</strong> : enfants et personnes âgées plus vulnérables.</li>
+          <li><strong>Non-vaccination</strong> : absence de protection.</li>
+        </ul>
+
+        <h4>Conséquences pour l'infirmier</h4>
+        <p>Comprendre ces facteurs permet d'agir sur eux : éduquer, sensibiliser, promouvoir l'hygiène, orienter vers les programmes de vaccination, signaler les situations à risque.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Croire que les maladies infectieuses sont inévitables en zone tropicale est une erreur. Elles résultent de facteurs multiples (climat, eau, hygiène, pauvreté), sur lesquels on peut agir par la prévention et l'éducation.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre IV — Le choléra",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le choléra</h3>
+        <p>Le <strong>choléra</strong> est une infection intestinale aiguë causée par la bactérie <em>Vibrio cholerae</em>. Il est transmis par l'eau et les aliments contaminés (voie féco-orale). C'est une maladie épidémique redoutable, présente de façon récurrente en RDC (Uvira, Bas-Congo, Katanga, Maniema).</p>
+
+        <h4>Signes cliniques</h4>
+        <ul>
+          <li><strong>Diarrhée aqueuse profuse</strong> en « eau de riz » (liquide blanchâtre, inodore, sans glaire ni sang).</li>
+          <li><strong>Vomissements</strong> en jet, abondants.</li>
+          <li><strong>Déshydratation rapide</strong> : soif intense, yeux enfoncés, pli cutané, crampes musculaires, hypotension, oligurie, voire anurie.</li>
+          <li>Évolution possible vers le choc hypovolémique et la mort en quelques heures.</li>
+        </ul>
+
+        <h4>Diagnostic</h4>
+        <ul>
+          <li><strong>Clinique</strong> : tableau de diarrhée aqueuse profuse en contexte épidémique.</li>
+          <li><strong>Laboratoire</strong> : examen microscopique des selles (bactéries mobiles en « virgule »), culture sur milieu spécifique, confirmation par l'INRB.</li>
+        </ul>
+
+        <h4>Traitement</h4>
+        <ul>
+          <li><strong>Réhydratation immédiate</strong> : c'est le traitement prioritaire. SRO si possible, sinon réhydratation intraveineuse (Ringer lactate).</li>
+          <li><strong>Antibiotiques</strong> : sur prescription, pour réduire la durée de la diarrhée et la transmission.</li>
+          <li><strong>Isolement</strong> du patient, désinfection.</li>
+          <li><strong>Surveillance</strong> : diurèse, signes vitaux, état de conscience.</li>
+        </ul>
+
+        <h4>Prévention</h4>
+        <ul>
+          <li><strong>Lavage des mains</strong> au savon.</li>
+          <li><strong>Eau potable</strong> : bouillie, filtrée ou chlorée.</li>
+          <li><strong>Hygiène alimentaire</strong> : aliments bien cuits, lavage des fruits et légumes.</li>
+          <li><strong>Assainissement</strong> : latrines, élimination des eaux usées.</li>
+          <li><strong>Vaccination</strong> dans certaines situations épidémiques.</li>
+        </ul>
+
+        <h4>Rôle de l'infirmier</h4>
+        <ul>
+          <li>Reconnaître le tableau de choléra.</li>
+          <li>Réhydrater immédiatement.</li>
+          <li>Isoler les patients.</li>
+          <li>Notifier immédiatement à la zone de santé et à l'INRB.</li>
+          <li>Éduquer la communauté sur l'hygiène et la chloration de l'eau.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Retarder la réhydratation pour attendre un résultat de laboratoire est une erreur mortelle. Dans un contexte de diarrhée profuse, la réhydratation se commence immédiatement, avant toute confirmation.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre IV — La fièvre typhoïde et la shigellose",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>La fièvre typhoïde</h3>
+        <p>La <strong>fièvre typhoïde</strong> est causée par <em>Salmonella</em> Typhi, bactérie transmise par l'eau et les aliments contaminés. Des épidémies ont été documentées en RDC (Bwamanda, Wamba, Pawa, Poko, Kwango).</p>
+
+        <h4>Signes cliniques</h4>
+        <ul>
+          <li><strong>Fièvre prolongée</strong>, en plateau (souvent 39 – 40 °C), avec pouls relativement lent par rapport à la fièvre (dissociation pouls-température).</li>
+          <li><strong>Céphalées</strong>, insomnie, fatigue.</li>
+          <li><strong>Douleurs abdominales</strong>, troubles du transit (diarrhée ou constipation).</li>
+          <li>Parfois éruption rosée sur le ventre.</li>
+          <li>Complications possibles : perforation intestinale, hémorragie digestive.</li>
+        </ul>
+
+        <h4>Diagnostic</h4>
+        <ul>
+          <li><strong>Hémoculture</strong> : examen de référence (pendant la première semaine).</li>
+          <li><strong>Coproculture</strong> : à partir de la deuxième semaine.</li>
+          <li><strong>Sérologie</strong> (Widal) : utile mais peu spécifique.</li>
+        </ul>
+
+        <h4>Traitement</h4>
+        <ul>
+          <li><strong>Antibiothérapie</strong> adaptée (sur prescription), en tenant compte des résistances.</li>
+          <li>Réhydratation, antipyrétiques, surveillance.</li>
+        </ul>
+
+        <h4>Prévention</h4>
+        <ul>
+          <li>Eau potable, hygiène alimentaire, lavage des mains.</li>
+          <li>Assainissement des latrines.</li>
+          <li>Vaccination (recommandée dans certaines zones).</li>
+          <li>Dépistage et traitement des porteurs chroniques (notamment chez les manipulateurs d'aliments).</li>
+        </ul>
+
+        <h3>La shigellose</h3>
+        <p>La <strong>shigellose</strong> est une infection intestinale causée par <em>Shigella</em>, bactérie très contagieuse transmise par voie féco-orale. Elle se manifeste par une <strong>diarrhée sanglante</strong> (dysenterie bacillaire) accompagnée de fièvre et de douleurs abdominales. Elle est surveillée par l'INRB.</p>
+
+        <h4>Traitement et prévention</h4>
+        <ul>
+          <li>Réhydratation, antibiothérapie adaptée (sur prescription).</li>
+          <li>Hygiène des mains, eau potable, assainissement.</li>
+          <li>Isolement du patient, désinfection.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Fièvre typhoïde = fièvre prolongée + troubles digestifs, transmise par l'eau/aliments. Shigellose = diarrhée sanglante. Les deux se préviennent par l'hygiène et l'assainissement.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre IV — Les méningites bactériennes et la peste",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les méningites bactériennes</h3>
+        <p>Les <strong>méningites bactériennes</strong> sont des infections des méninges (enveloppes du cerveau et de la moelle épinière) causées par :</p>
+        <ul>
+          <li><em>Neisseria meningitidis</em> (méningocoque) : épidémies dans la ceinture méningitique africaine.</li>
+          <li><em>Streptococcus pneumoniae</em> (pneumocoque) : formes graves, souvent chez l'enfant et la personne âgée.</li>
+          <li><em>Haemophilus influenzae</em> b : prévention par la vaccination.</li>
+        </ul>
+
+        <h4>Signes cliniques</h4>
+        <ul>
+          <li><strong>Fièvre élevée</strong> brutale.</li>
+          <li><strong>Céphalées intenses</strong>.</li>
+          <li><strong>Raideur de la nuque</strong> (signe majeur).</li>
+          <li>Vomissements, photophobie (crainte de la lumière).</li>
+          <li>Troubles de la conscience, convulsions.</li>
+          <li>Chez le nourrisson : fontanelle bombée, geignement, hypotonie.</li>
+        </ul>
+
+        <h4>Conduite à tenir</h4>
+        <ul>
+          <li><strong>Urgence médicale absolue</strong> : chaque minute compte.</li>
+          <li>Transfert immédiat vers un hôpital.</li>
+          <li>Antibiothérapie urgente (sur prescription).</li>
+          <li>Isolement respiratoire si méningocoque, chimioprophylaxie des contacts.</li>
+          <li>Notification obligatoire (maladie à déclaration).</li>
+        </ul>
+
+        <h4>Prévention</h4>
+        <ul>
+          <li>Vaccination contre le méningocoque, le pneumocoque, l'<em>Haemophilus influenzae</em> b.</li>
+          <li>Aération des locaux, éviter la promiscuité.</li>
+        </ul>
+
+        <h3>La peste</h3>
+        <p>La <strong>peste</strong> est une maladie bactérienne causée par <em>Yersinia pestis</em>, transmise par les puces des rongeurs (rats, souris). Elle est surveillée par l'INRB en RDC.</p>
+
+        <h4>Formes cliniques</h4>
+        <ul>
+          <li><strong>Peste bubonique</strong> : bubons (ganglions gonflés et douloureux), fièvre, prostration.</li>
+          <li><strong>Peste septicémique</strong> : envahissement du sang, mortel en quelques jours.</li>
+          <li><strong>Peste pulmonaire</strong> : toux, fièvre, détresse respiratoire ; transmission interhumaine par voie aérienne, très contagieuse.</li>
+        </ul>
+
+        <h4>Conduite à tenir</h4>
+        <ul>
+          <li>Urgence absolue : isolement, notification immédiate.</li>
+          <li>Antibiothérapie urgente (sur prescription).</li>
+          <li>Lutte contre les rongeurs et les puces.</li>
+          <li>Port de masque et d'équipement de protection.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Négliger une raideur de nuque fébrile est une erreur grave. Une méningite bactérienne non traitée peut être mortelle en moins de 24 heures. Toute suspicion doit être transférée immédiatement.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre V — Le paludisme",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Une endémie parasitaire majeure</h3>
+        <p>Le <strong>paludisme</strong> est une maladie parasitaire causée par <em>Plasmodium</em> (principalement <em>P. falciparum</em> en RDC), transmise par la piqûre de l'anophèle femelle. La transmission est présente toute l'année en RDC, avec des pics saisonniers en saison des pluies.</p>
+
+        <h4>Cycle simplifié</h4>
+        <ol>
+          <li>L'anophèle femelle pique un humain infecté et ingère des gamétocytes.</li>
+          <li>Dans le moustique, les gamètes fusionnent et produisent des sporozoïtes.</li>
+          <li>Le moustique pique un nouvel humain et injecte les sporozoïtes.</li>
+          <li>Les sporozoïtes gagnent le foie (phase hépatique).</li>
+          <li>Puis ils passent dans le sang et infectent les globules rouges (phase sanguine), qui éclatent : fièvre et anémie.</li>
+        </ol>
+
+        <h4>Signes cliniques</h4>
+        <ul>
+          <li><strong>Fièvre</strong> (parfois avec accès cycliques frissons-chaleur-sueurs).</li>
+          <li><strong>Céphalées, courbatures, fatigue</strong>.</li>
+          <li>Chez l'enfant : vomissements, convulsions possibles (signe de gravité).</li>
+          <li>Signes de gravité : troubles de conscience, coma, anémie sévère, détresse respiratoire, ictère, oligurie.</li>
+        </ul>
+
+        <h4>Diagnostic</h4>
+        <ul>
+          <li><strong>Test de Diagnostic Rapide (TDR)</strong> : rapide, adapté aux zones périphériques.</li>
+          <li><strong>Goutte épaisse / frottis</strong> : identifie l'espèce et quantifie la parasitémie.</li>
+        </ul>
+
+        <h4>Traitement</h4>
+        <ul>
+          <li><strong>Paludisme simple</strong> : Combinaisons Thérapeutiques à base d'Artémisinine (CTA), pendant 3 jours.</li>
+          <li><strong>Paludisme grave</strong> : artésunate injectable (1<sup>re</sup> intention) ou quinine en perfusion, en milieu hospitalier.</li>
+        </ul>
+
+        <h4>Prévention</h4>
+        <ul>
+          <li><strong>Moustiquaires imprégnées d'insecticide (MILDA)</strong> : mesure la plus efficace.</li>
+          <li>Élimination des gîtes larvaires.</li>
+          <li>Traitement préventif intermittent (TPI) chez la femme enceinte.</li>
+          <li>Éducation sanitaire.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Paludisme = parasite <em>Plasmodium</em>, vecteur <em>Anopheles</em>. Fièvre, anémie, formes graves (paludisme cérébral). Diagnostic par TDR ou goutte épaisse. CTA pour les formes simples ; artésunate ou quinine pour les formes graves. MILDA = prévention principale.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre V — Les parasitoses intestinales",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Amibiase et giardiase</h3>
+
+        <h4>L'amibiase</h4>
+        <p>L'<strong>amibiase</strong> est causée par <em>Entamoeba histolytica</em>, un protozoaire transmis par voie féco-orale (eau et aliments contaminés). La prévalence en RDC est élevée (jusqu'à 55 % dans certaines études).</p>
+
+        <p><strong>Signes cliniques :</strong></p>
+        <ul>
+          <li>Forme intestinale : diarrhée avec glaires et parfois sang (dysenterie amibienne), douleurs abdominales, flatulences.</li>
+          <li>Forme hépatique : abcès du foie (fièvre, douleur au foie).</li>
+        </ul>
+
+        <p><strong>Traitement :</strong> antiparasitaire sur prescription. Réhydratation si nécessaire.</p>
+
+        <h4>La giardiase</h4>
+        <p>La <strong>giardiase</strong> est causée par <em>Giardia lamblia</em>, protozoaire flagellé, transmis par voie féco-orale. La prévalence en RDC est estimée à environ 6 %.</p>
+
+        <p><strong>Signes cliniques :</strong></p>
+        <ul>
+          <li>Diarrhée chronique, selles graisseuses, malabsorption.</li>
+          <li>Douleurs abdominales, ballonnements.</li>
+          <li>Amaigrissement, fatigue (surtout chez l'enfant).</li>
+        </ul>
+
+        <p><strong>Traitement :</strong> antiparasitaire sur prescription.</p>
+
+        <h3>Les helminthes intestinaux</h3>
+        <p>Vers intestinaux (ascaris, ankylostomes, trichocéphales) :</p>
+        <ul>
+          <li>Transmission par ingestion d'œufs (mains sales, aliments contaminés) ou par pénétration cutanée (ankylostomes, marche pieds nus).</li>
+          <li>Signes : douleurs abdominales, amaigrissement, anémie (ankylostomes), retard de croissance chez l'enfant.</li>
+          <li>Traitement : vermifuge sur prescription.</li>
+        </ul>
+
+        <h4>Prévention commune</h4>
+        <ul>
+          <li>Lavage des mains.</li>
+          <li>Eau potable.</li>
+          <li>Hygiène alimentaire.</li>
+          <li>Assainissement des latrines.</li>
+          <li>Port de chaussures (prévention ankylostomes).</li>
+          <li>Déparasitage régulier dans les zones endémiques.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Confondre les diarrhées parasitaires avec une simple diarrhée virale ou bactérienne, sans demander d'examen parasitologique, conduit à un traitement inadapté et à la chronicisation. Devant une diarrhée persistante, une recherche de parasites est nécessaire.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VI — La tuberculose",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Une maladie infectieuse majeure</h3>
+        <p>La <strong>tuberculose</strong> est une maladie infectieuse causée par <em>Mycobacterium tuberculosis</em> (bacille de Koch). Elle touche principalement les poumons, mais peut atteindre d'autres organes (ganglions, os, méninges, reins).</p>
+
+        <h4>Transmission</h4>
+        <p>La tuberculose se transmet par <strong>voie aérienne</strong> : un patient bacillifère tousse, projette des gouttelettes contenant le bacille, qui sont inhalées par une personne saine. La contagion nécessite un contact prolongé et rapproché.</p>
+
+        <h4>Signes cliniques</h4>
+        <ul>
+          <li><strong>Toux persistante > 2 semaines</strong> (parfois avec crachats ou sang).</li>
+          <li><strong>Fièvre</strong> modérée, souvent vespérale.</li>
+          <li><strong>Sueurs nocturnes</strong>.</li>
+          <li><strong>Amaigrissement</strong>, perte d'appétit.</li>
+          <li><strong>Asthénie</strong>.</li>
+        </ul>
+
+        <h4>Diagnostic</h4>
+        <ul>
+          <li><strong>Bacilloscopie</strong> (examen microscopique des crachats).</li>
+          <li><strong>GeneXpert</strong> (test moléculaire, détecte aussi la résistance à la rifampicine).</li>
+          <li><strong>Radiographie du thorax</strong>.</li>
+        </ul>
+
+        <h4>Traitement</h4>
+        <ul>
+          <li><strong>Phase intensive</strong> (2 mois) : rifampicine, isoniazide, pyrazinamide, éthambutol.</li>
+          <li><strong>Phase de continuation</strong> (4 mois) : rifampicine, isoniazide.</li>
+          <li><strong>Observance cruciale</strong> : un traitement incomplet favorise l'apparition de résistances (tuberculose MDR/XDR), surveillées par l'INRB.</li>
+        </ul>
+
+        <h4>Prévention</h4>
+        <ul>
+          <li><strong>Vaccin BCG</strong> à la naissance.</li>
+          <li><strong>Dépistage des contacts</strong>.</li>
+          <li><strong>Aération des locaux</strong>.</li>
+          <li><strong>Éducation</strong> : se couvrir la bouche, ne pas cracher au sol.</li>
+        </ul>
+
+        <h4>Rôle de l'infirmier</h4>
+        <ul>
+          <li>Reconnaître les signes suspects.</li>
+          <li>Orienter vers le centre de diagnostic.</li>
+          <li>Accompagner le traitement (traitement directement observé, TDO).</li>
+          <li>Surveiller les effets indésirables (hépatotoxicité, troubles oculaires).</li>
+          <li>Sensibiliser à l'observance.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Tuberculose = transmission aérienne. Signes : toux > 2 semaines, sueurs nocturnes, amaigrissement. Diagnostic : bacilloscopie, GeneXpert. Traitement long (6 mois) avec observance stricte. Vaccin BCG, dépistage des contacts.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VI — Le VIH/sida",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Une pandémie mondiale</h3>
+        <p>Le <strong>VIH</strong> (virus de l'immunodéficience humaine) attaque le système immunitaire, en particulier les lymphocytes T CD4. Le <strong>sida</strong> (syndrome d'immunodéficience acquise) est le stade avancé de l'infection, marqué par l'apparition d'infections opportunistes et de certains cancers.</p>
+
+        <h4>Transmission</h4>
+        <ul>
+          <li><strong>Voie sexuelle</strong> : rapports non protégés.</li>
+          <li><strong>Voie sanguine</strong> : transfusion, échange de seringues, objets tranchants souillés.</li>
+          <li><strong>Voie mère-enfant</strong> : grossesse, accouchement, allaitement (sans prévention).</li>
+        </ul>
+        <p>Le VIH ne se transmet pas par : poignée de main, câlin, toux, piqûre de moustique, toilettes partagées, vaisselle, nourriture.</p>
+
+        <h4>Phases</h4>
+        <ol>
+          <li><strong>Primo-infection</strong> : syndrome pseudo-grippal, 2 à 4 semaines après la contamination.</li>
+          <li><strong>Phase asymptomatique</strong> : plusieurs années, sans symptômes.</li>
+          <li><strong>Phase symptomatique</strong> : infections opportunistes, amaigrissement.</li>
+          <li><strong>Sida</strong> : stade final.</li>
+        </ol>
+
+        <h4>Infections opportunistes</h4>
+        <ul>
+          <li><strong>Tuberculose</strong> (première cause de mortalité chez les PVVIH).</li>
+          <li><strong>Candidose</strong> buccale ou œsophagienne.</li>
+          <li><strong>Pneumocystose</strong>, <strong>toxoplasmose cérébrale</strong>, <strong>cryptococcose</strong>.</li>
+          <li><strong>Sarcome de Kaposi</strong>, lymphomes.</li>
+        </ul>
+
+        <h4>Prévention et prise en charge</h4>
+        <ul>
+          <li><strong>Préservatifs</strong> masculins et féminins.</li>
+          <li><strong>Dépistage</strong> volontaire et confidentiel.</li>
+          <li><strong>Antirétroviraux (ARV)</strong> : trithérapie, réduction de la charge virale, « U = U » (Indétectable = Intransmissible).</li>
+          <li><strong>PTME</strong> : prévention de la transmission mère-enfant.</li>
+          <li><strong>Sécurisation des transfusions</strong>, matériel stérile.</li>
+        </ul>
+
+        <h4>Rôle de l'infirmier</h4>
+        <ul>
+          <li>Accompagner le patient sans jugement.</li>
+          <li>Éduquer sur l'observance des ARV.</li>
+          <li>Surveiller les effets indésirables et les infections opportunistes.</li>
+          <li>Lutter contre la stigmatisation et la discrimination.</li>
+          <li>Soutenir psychologiquement.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Stigmatiser une personne vivant avec le VIH est une erreur grave. La stigmatisation pousse les patients à cacher leur statut, à fuir les soins et à transmettre le virus sans le savoir. L'infirmier doit adopter une attitude bienveillante et confidentielle.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VII — Les techniques de laboratoire",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les outils du diagnostic microbiologique</h3>
+
+        <h4>La coloration de Gram</h4>
+        <p>Technique qui distingue les bactéries Gram-positives (violettes) des Gram-négatives (roses). Elle oriente le diagnostic et le choix thérapeutique. Étapes :</p>
+        <ol>
+          <li>Préparation d'un frottis bactérien sur lame.</li>
+          <li>Séchage et fixation.</li>
+          <li>Coloration au violet de cristal (1 min).</li>
+          <li>Lugol (mordant, 1 min).</li>
+          <li>Décoloration à l'alcool (rapide).</li>
+          <li>Contre-coloration à la fuchsine (30 s).</li>
+          <li>Rinçage, séchage, observation au microscope à immersion (grossissement ×100).</li>
+        </ol>
+
+        <h4>L'observation microscopique</h4>
+        <p>Le microscope optique permet d'observer les bactéries, parasites, cellules. Techniques : préparation de lames, mise au point, utilisation de l'huile à immersion pour le grossissement maximal.</p>
+
+        <h4>La culture et l'isolement</h4>
+        <p>Ensemencement sur milieux de culture (géloses spécifiques), isolement des colonies, identification par tests biochimiques et coloration.</p>
+
+        <h4>L'antibiogramme</h4>
+        <p>Test de sensibilité aux antibiotiques. On ensemence la bactérie sur une gélose, on dépose des disques d'antibiotiques, et on observe les zones d'inhibition après incubation. Plus la zone est grande, plus la bactérie est sensible. L'antibiogramme guide le traitement et lutte contre la résistance antimicrobienne.</p>
+
+        <h4>Les techniques spécifiques</h4>
+        <ul>
+          <li><strong>Hémoculture</strong> : recherche de bactéries dans le sang (fièvre typhoïde, septicémies).</li>
+          <li><strong>Coproculture</strong> : recherche de bactéries dans les selles (choléra, shigellose, salmonellose).</li>
+          <li><strong>Examen parasitologique des selles</strong> : recherche de parasites (amibiase, giardiase, vers).</li>
+          <li><strong>Goutte épaisse</strong> : recherche de <em>Plasmodium</em>.</li>
+          <li><strong>GeneXpert</strong> : test moléculaire pour la tuberculose.</li>
+        </ul>
+
+        <h4>Règles de sécurité au laboratoire</h4>
+        <ul>
+          <li><strong>Asepsie</strong> : lavage des mains, gants, matériel stérile.</li>
+          <li><strong>Élimination correcte</strong> des déchets biologiques.</li>
+          <li><strong>Étiquetage</strong> rigoureux des échantillons.</li>
+          <li><strong>Transport</strong> adapté au laboratoire de référence.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Manipuler les échantillons sans respecter l'asepsie est une erreur grave : risque de contamination du manipulateur et de faux résultats. Les règles de sécurité au laboratoire doivent être strictement respectées.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VIII — La prévention et l'hygiène",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les mesures universelles de prévention</h3>
+
+        <h4>1. L'hygiène des mains</h4>
+        <p>C'est la mesure la plus efficace pour prévenir les infections. Lavage au savon pendant au moins 20 secondes, ou friction avec une solution hydro-alcoolique. À réaliser :</p>
+        <ul>
+          <li>Avant et après chaque soin.</li>
+          <li>Après avoir touché un patient, du matériel, des déchets.</li>
+          <li>Avant de préparer ou de consommer un repas.</li>
+          <li>Après les toilettes.</li>
+        </ul>
+
+        <h4>2. L'eau potable</h4>
+        <ul>
+          <li>Eau bouillie pendant 1 minute, refroidie.</li>
+          <li>Eau filtrée (filtre à céramique, filtre à sable).</li>
+          <li>Eau chlorée (eau de Javel à dose contrôlée).</li>
+          <li>Eau en bouteille ou sachet de source agréée.</li>
+        </ul>
+
+        <h4>3. L'hygiène alimentaire</h4>
+        <ul>
+          <li>Laver les fruits et légumes à l'eau potable.</li>
+          <li>Bien cuire les viandes, poissons et œufs.</li>
+          <li>Conserver les aliments à l'abri des mouches et des rongeurs.</li>
+          <li>Ne pas mélanger cru et cuit.</li>
+        </ul>
+
+        <h4>4. L'assainissement</h4>
+        <ul>
+          <li>Latrines propres et bien situées, loin des sources d'eau.</li>
+          <li>Élimination correcte des déchets ménagers.</li>
+          <li>Évacuation des eaux usées.</li>
+          <li>Élimination des eaux stagnantes (gîtes larvaires).</li>
+        </ul>
+
+        <h4>5. La vaccination</h4>
+        <ul>
+          <li><strong>BCG</strong> : tuberculose (formes graves de l'enfant).</li>
+          <li><strong>Vaccins du programme élargi</strong> : rougeole, fièvre jaune, poliomyélite, DTC-HepB-Hib, pneumocoque, rotavirus.</li>
+          <li>Respect de la chaîne du froid (conservation entre +2 et +8 °C).</li>
+        </ul>
+
+        <h4>6. La lutte antivectorielle</h4>
+        <ul>
+          <li>Moustiquaires imprégnées (MILDA).</li>
+          <li>Répulsifs, insecticides.</li>
+          <li>Élimination des gîtes larvaires.</li>
+          <li>Désherbage, assèchement des zones humides autour des habitations.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Six mesures clés : hygiène des mains, eau potable, hygiène alimentaire, assainissement, vaccination, lutte antivectorielle. Ensemble, elles préviennent la majorité des maladies infectieuses tropicales.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VIII — La surveillance épidémiologique et la riposte",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>La surveillance épidémiologique</h3>
+        <p>La <strong>surveillance épidémiologique</strong> est la collecte continue, l'analyse et la diffusion des données sur les maladies infectieuses. Elle permet de :</p>
+        <ul>
+          <li><strong>Détecter</strong> les épidémies précocement.</li>
+          <li><strong>Suivre</strong> l'évolution des maladies.</li>
+          <li><strong>Évaluer</strong> l'efficacité des interventions.</li>
+          <li><strong>Orienter</strong> les politiques de santé.</li>
+        </ul>
+
+        <h4>Le rôle de l'INRB</h4>
+        <p>L'<strong>Institut National de Recherche Biomédicale (INRB)</strong> de Kinshasa coordonne :</p>
+        <ul>
+          <li>La surveillance des maladies bactériennes épidémiques (choléra, méningites, shigellose, fièvre typhoïde, peste).</li>
+          <li>La confirmation biologique des épidémies.</li>
+          <li>La surveillance de la résistance antimicrobienne.</li>
+          <li>La recherche biomédicale sur les pathogènes prioritaires.</li>
+        </ul>
+
+        <h4>Le rôle de l'infirmier A2</h4>
+        <ul>
+          <li><strong>Notifier</strong> immédiatement les cas suspects à la zone de santé.</li>
+          <li><strong>Prélever</strong> et <strong>transmettre</strong> les échantillons selon les procédures.</li>
+          <li><strong>Renseigner</strong> les fiches de surveillance.</li>
+          <li><strong>Participer</strong> aux investigations d'épidémie.</li>
+          <li><strong>Appliquer</strong> les mesures de riposte (isolement, désinfection, prophylaxie des contacts).</li>
+        </ul>
+
+        <h4>La riposte aux épidémies</h4>
+        <p>Face à une épidémie, la réponse repose sur :</p>
+        <ol>
+          <li><strong>Confirmation</strong> des cas (clinique + laboratoire).</li>
+          <li><strong>Isolement</strong> des malades.</li>
+          <li><strong>Prise en charge</strong> des patients (traitement, réhydratation).</li>
+          <li><strong>Investigation</strong> autour des cas (recherche des contacts).</li>
+          <li><strong>Prophylaxie</strong> des contacts (vaccination, antibiotiques).</li>
+          <li><strong>Mesures d'hygiène</strong> collectives (eau potable, assainissement).</li>
+          <li><strong>Communication</strong> des risques à la population.</li>
+        </ol>
+
+        <h4>La communication</h4>
+        <p>Une communication claire, transparente et culturellement adaptée est essentielle. La rumeur, la peur et la stigmatisation peuvent entraver la riposte. L'infirmier est un relais d'information fiable dans sa communauté.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Attendre la confirmation biologique pour déclarer une épidémie est une erreur. La notification précoce, même en l'absence de confirmation, permet de déclencher la riposte et de sauver des vies.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VIII — L'éducation sanitaire et la communication",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Éduquer pour prévenir</h3>
+        <p>L'<strong>éducation sanitaire</strong> est l'une des armes les plus puissantes contre les maladies infectieuses. Elle permet aux populations de comprendre les modes de transmission et d'adopter des comportements protecteurs.</p>
+
+        <h4>Les messages clés</h4>
+        <ul>
+          <li><strong>Lavage des mains</strong> au savon, plusieurs fois par jour, avant les repas et après les toilettes.</li>
+          <li><strong>Eau potable</strong> : bouillir, filtrer ou chlorer.</li>
+          <li><strong>Hygiène alimentaire</strong> : laver les fruits et légumes, bien cuire les viandes.</li>
+          <li><strong>Moustiquaire imprégnée</strong> chaque nuit pour toute la famille.</li>
+          <li><strong>Vaccination</strong> des enfants selon le calendrier.</li>
+          <li><strong>Consulter tôt</strong> en cas de fièvre, diarrhée, toux persistante.</li>
+          <li><strong>Terminer les traitements</strong> (tuberculose, paludisme, VIH).</li>
+          <li><strong>Ne pas stigmatiser</strong> les personnes malades.</li>
+        </ul>
+
+        <h4>Les canaux de communication</h4>
+        <ul>
+          <li><strong>Causeries</strong> dans les centres de santé, écoles, églises, marchés.</li>
+          <li><strong>Radios communautaires</strong> (très écoutées en zone rurale).</li>
+          <li><strong>Affiches et images</strong> adaptées aux personnes peu alphabétisées.</li>
+          <li><strong>Théâtre participatif</strong>, jeux de rôle.</li>
+          <li><strong>Visites à domicile</strong>.</li>
+          <li><strong>Réseaux sociaux</strong> en milieu urbain.</li>
+        </ul>
+
+        <h4>Principes d'une communication efficace</h4>
+        <ul>
+          <li><strong>Simplicité</strong> : messages courts, un seul message à la fois.</li>
+          <li><strong>Adaptation culturelle</strong> : tenir compte des habitudes, des croyances, de la langue.</li>
+          <li><strong>Répétition</strong> : un message répété est mieux retenu.</li>
+          <li><strong>Démonstration</strong> : montrer concrètement (lavage des mains, préparation du SRO).</li>
+          <li><strong>Participation</strong> : écouter, impliquer.</li>
+        </ul>
+
+        <h4>Rôle de l'infirmier</h4>
+        <p>L'infirmier est un <strong>éducateur de santé</strong>. Il ne se contente pas de soigner : il transmet des connaissances, corrige les fausses croyances, encourage les comportements protecteurs et soutient les familles.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>L'éducation sanitaire permet aux populations d'adopter des comportements protecteurs. Messages clés : hygiène des mains, eau potable, moustiquaire, vaccination, consultation précoce. Canaux multiples, adaptation culturelle. L'infirmier est un éducateur.</p>
+      </div>
+    `
+  },
+  {
+    title: "Synthèse — Comprendre, prévenir, surveiller, agir",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Synthèse générale</div>
+        <h3>Les quatre compétences du soignant en microbiologie tropicale</h3>
+        <ol>
+          <li><strong>Comprendre</strong> les agents pathogènes, leurs modes de transmission et leurs facteurs de risque.</li>
+          <li><strong>Prévenir</strong> par l'hygiène, l'assainissement, la vaccination, la lutte antivectorielle.</li>
+          <li><strong>Surveiller</strong> en notifiant les cas suspects et en participant à la riposte aux épidémies.</li>
+          <li><strong>Agir</strong> en appliquant les gestes de premiers soins (réhydratation, isolement), en éduquant et en orientant.</li>
+        </ol>
+
+        <h3>Tableau récapitulatif</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Maladie</th>
+              <th>Agent</th>
+              <th>Transmission</th>
+              <th>Prévention clé</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Choléra</td>
+              <td><em>Vibrio cholerae</em></td>
+              <td>Féco-orale</td>
+              <td>Eau potable, hygiène</td>
+            </tr>
+            <tr>
+              <td>Fièvre typhoïde</td>
+              <td><em>Salmonella</em> Typhi</td>
+              <td>Féco-orale</td>
+              <td>Eau potable, hygiène</td>
+            </tr>
+            <tr>
+              <td>Shigellose</td>
+              <td><em>Shigella</em></td>
+              <td>Féco-orale</td>
+              <td>Lavage des mains</td>
+            </tr>
+            <tr>
+              <td>Méningite</td>
+              <td><em>Meningocoque</em>, <em>Pneumocoque</em></td>
+              <td>Aérienne</td>
+              <td>Vaccination, aération</td>
+            </tr>
+            <tr>
+              <td>Peste</td>
+              <td><em>Yersinia pestis</em></td>
+              <td>Puces</td>
+              <td>Lutte contre rongeurs</td>
+            </tr>
+            <tr>
+              <td>Paludisme</td>
+              <td><em>Plasmodium</em></td>
+              <td><em>Anopheles</em></td>
+              <td>MILDA, gîtes larvaires</td>
+            </tr>
+            <tr>
+              <td>Amibiase</td>
+              <td><em>Entamoeba histolytica</em></td>
+              <td>Féco-orale</td>
+              <td>Hygiène, eau potable</td>
+            </tr>
+            <tr>
+              <td>Giardiase</td>
+              <td><em>Giardia lamblia</em></td>
+              <td>Féco-orale</td>
+              <td>Hygiène, eau potable</td>
+            </tr>
+            <tr>
+              <td>Tuberculose</td>
+              <td><em>M. tuberculosis</em></td>
+              <td>Aérienne</td>
+              <td>BCG, dépistage</td>
+            </tr>
+            <tr>
+              <td>VIH</td>
+              <td>VIH</td>
+              <td>Sexuelle, sanguine, mère-enfant</td>
+              <td>Préservatif, dépistage, ARV</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bloc cas">
+        <div class="bloc-label">Étude de cas (cas pédagogique)</div>
+        <p>« Un infirmier A2 dans un centre de santé d'Uvira reçoit plusieurs patients présentant une diarrhée aqueuse profuse. Il suspecte le choléra, isole les patients, applique les mesures d'hygiène, administre du SRO et alerte immédiatement la zone de santé. Il prélève des échantillons et les envoie à l'INRB pour confirmation. Il sensibilise la communauté sur le lavage des mains et la chloration de l'eau. »</p>
+        <p><strong>Analyse :</strong> la démarche est exemplaire. L'infirmier a reconnu un tableau de choléra, appliqué immédiatement les mesures de prise en charge (réhydratation, isolement, hygiène), notifié les autorités, prélevé et transmis les échantillons pour confirmation, et sensibilisé la communauté. Il a mobilisé toutes les compétences du cours : comprendre, prévenir, surveiller, agir.</p>
+      </div>
+
+      <div class="bloc sources">
+        <div class="bloc-label">Sources du cours</div>
+        <ul>
+          <li>Manuels Scolaires RDC, <em>Fiches pédagogiques — Cours de Programme National de Microbiologie, 4<sup>e</sup> Année des Humanités</em>, Édition 2025.</li>
+          <li>Sciences-Africa, <em>Microbiologie</em>, 4<sup>e</sup> Année des Humanités, Curriculum Officiel APC – MINEPST RDC.</li>
+          <li>Manuels Scolaires RDC, <em>Fiches pédagogiques — Microbiologie, Immunologie et Écologie Microbienne</em>, 4<sup>e</sup> Année, Option Scientifique, Édition 2025.</li>
+          <li>INRB, Département de Microbiologie — missions de surveillance (choléra, méningites, shigellose, fièvre typhoïde, peste, résistance antimicrobienne).</li>
+          <li>OMS — maladies tropicales négligées, surveillance épidémiologique.</li>
+          <li>PNLP, PNMLS, PNLS — directives nationales en RDC.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Évaluation finale — Microbiologie Tropicale",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Consigne</div>
+        <p>Répondez aux questions ci-dessous en sélectionnant la bonne réponse parmi les quatre propositions. Le QCM couvre l'ensemble du cours. Cliquez ensuite sur « Valider mes réponses » pour obtenir votre score.</p>
+      </div>
+
+      <div class="quiz-container">
+        <div id="quizQuestions"></div>
+        <button id="submitQuiz" class="quiz-btn-submit">
+          Valider mes réponses
+        </button>
+        <div id="quizResult" class="quiz-result"></div>
+      </div>
+    `
+  }
+];
+const questions = [
+  {
+    text: "La microbiologie tropicale étudie :",
+    options: [
+      "Les micro-organismes et les maladies infectieuses en zone tropicale",
+      "Les plantes tropicales uniquement",
+      "Les animaux de la savane",
+      "Le climat équatorial"
+    ],
+    correct: 0
+  },
+  {
+    text: "La pathogénicité est :",
+    options: [
+      "La capacité d'un agent à provoquer une maladie",
+      "La quantité de bactéries présentes",
+      "La transmission par l'air",
+      "Un type de coloration"
+    ],
+    correct: 0
+  },
+  {
+    text: "Les bactéries Gram-positives apparaissent au microscope :",
+    options: ["Violettes", "Roses", "Invisibles", "Bleues"],
+    correct: 0
+  },
+  {
+    text: "Les bactéries Gram-négatives apparaissent au microscope :",
+    options: ["Roses", "Violettes", "Invisibles", "Vertes"],
+    correct: 0
+  },
+  {
+    text: "Parmi les propositions suivantes, laquelle est correcte ?",
+    options: [
+      "Les antibiotiques n'agissent que sur les bactéries",
+      "Les antibiotiques agissent sur les virus",
+      "Les antibiotiques agissent sur tout",
+      "Les antibiotiques agissent uniquement sur les champignons"
+    ],
+    correct: 0
+  },
+  {
+    text: "La voie féco-orale transmet notamment :",
+    options: [
+      "Le choléra, la fièvre typhoïde, la shigellose",
+      "La tuberculose et la grippe",
+      "Le paludisme",
+      "Le VIH uniquement"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le paludisme est transmis par :",
+    options: [
+      "L'anophèle femelle",
+      "La mouche tsé-tsé",
+      "Les tiques",
+      "Les puces"
+    ],
+    correct: 0
+  },
+  {
+    text: "La dengue et le chikungunya sont transmis par :",
+    options: [
+      "Aedes aegypti et Aedes albopictus",
+      "L'anophèle",
+      "La mouche tsé-tsé",
+      "Les puces"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le choléra est causé par :",
+    options: [
+      "Vibrio cholerae",
+      "Salmonella Typhi",
+      "Shigella",
+      "Entamoeba histolytica"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le signe principal du choléra est :",
+    options: [
+      "Une diarrhée aqueuse profuse en eau de riz",
+      "Une toux persistante",
+      "Une éruption cutanée",
+      "Une paralysie des jambes"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le traitement prioritaire du choléra est :",
+    options: [
+      "La réhydratation immédiate (SRO ou IV)",
+      "L'antibiothérapie seule",
+      "Le repos",
+      "La chirurgie"
+    ],
+    correct: 0
+  },
+  {
+    text: "La fièvre typhoïde est causée par :",
+    options: [
+      "Salmonella Typhi",
+      "Vibrio cholerae",
+      "Shigella",
+      "Plasmodium"
+    ],
+    correct: 0
+  },
+  {
+    text: "La shigellose se manifeste principalement par :",
+    options: [
+      "Une diarrhée sanglante",
+      "Une toux sèche",
+      "Une méningite",
+      "Une hépatite"
+    ],
+    correct: 0
+  },
+  {
+    text: "Une méningite bactérienne se reconnaît notamment à :",
+    options: [
+      "La raideur de la nuque",
+      "La diarrhée",
+      "L'éruption cutanée",
+      "La toux"
+    ],
+    correct: 0
+  },
+  {
+    text: "La peste est transmise par :",
+    options: [
+      "Les puces des rongeurs",
+      "Les moustiques",
+      "L'eau contaminée",
+      "L'air"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le diagnostic du paludisme repose notamment sur :",
+    options: [
+      "Le TDR ou la goutte épaisse",
+      "L'hémoculture",
+      "La radiographie",
+      "L'échographie"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'amibiase est causée par :",
+    options: [
+      "Entamoeba histolytica",
+      "Giardia lamblia",
+      "Plasmodium falciparum",
+      "Vibrio cholerae"
+    ],
+    correct: 0
+  },
+  {
+    text: "La giardiase est une parasitose :",
+    options: [
+      "Intestinale",
+      "Respiratoire",
+      "Cutanée",
+      "Neurologique"
+    ],
+    correct: 0
+  },
+  {
+    text: "La tuberculose se transmet principalement par :",
+    options: [
+      "Voie aérienne (gouttelettes)",
+      "L'eau de boisson",
+      "Les aliments souillés",
+      "Les moustiques"
+    ],
+    correct: 0
+  },
+  {
+    text: "Parmi les signes suivants, lequel évoque la tuberculose ?",
+    options: [
+      "Toux persistante > 2 semaines, sueurs nocturnes, amaigrissement",
+      "Diarrhée aqueuse profuse",
+      "Raideur de la nuque",
+      "Éruption cutanée"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le VIH se transmet par :",
+    options: [
+      "Voie sexuelle, sanguine et mère-enfant",
+      "Voie aérienne",
+      "L'eau de boisson",
+      "Les piqûres de moustique"
+    ],
+    correct: 0
+  },
+  {
+    text: "Parmi les propositions suivantes, laquelle est correcte ?",
+    options: [
+      "Le VIH ne se transmet pas par poignée de main ou câlin",
+      "Le VIH se transmet par la toux",
+      "Le VIH se transmet par piqûre de moustique",
+      "Le VIH se transmet en partageant un repas"
+    ],
+    correct: 0
+  },
+  {
+    text: "La coloration de Gram sert à :",
+    options: [
+      "Distinguer les bactéries Gram+ et Gram-",
+      "Colorer les virus",
+      "Observer les champignons",
+      "Mesurer la température"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'antibiogramme sert à :",
+    options: [
+      "Tester la sensibilité des bactéries aux antibiotiques",
+      "Compter les globules rouges",
+      "Colorer les cellules",
+      "Préparer les vaccins"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'INRB est chargé notamment de :",
+    options: [
+      "La surveillance microbiologique et la confirmation des épidémies",
+      "La construction d'hôpitaux",
+      "La vente de médicaments",
+      "L'éducation scolaire"
+    ],
+    correct: 0
+  },
+  {
+    text: "La mesure de prévention la plus efficace contre les maladies diarrhéiques est :",
+    options: [
+      "Le lavage des mains au savon",
+      "La vaccination",
+      "La moustiquaire imprégnée",
+      "Les antibiotiques en prévention"
+    ],
+    correct: 0
+  },
+  {
+    text: "La notification précoce d'un cas suspect permet :",
+    options: [
+      "Une riposte rapide et la protection de la communauté",
+      "De cacher la maladie",
+      "D'éviter les soins",
+      "De retarder le traitement"
+    ],
+    correct: 0
+  },
+  {
+    text: "Une épidémie de choléra a été documentée en RDC à :",
+    options: [
+      "Uvira, dans le Sud-Kivu",
+      "Kinshasa exclusivement",
+      "Lubumbashi",
+      "Goma uniquement"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le chikungunya a été signalé en RDC à :",
+    options: [
+      "Matadi",
+      "Kisangani",
+      "Kananga",
+      "Bunia"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'objectif principal de la microbiologie tropicale en 4<sup>e</sup> Humanité ITM est de rendre l'élève capable de :",
+    options: [
+      "Comprendre les agents pathogènes et participer à la prévention, à la surveillance et à la prise en charge",
+      "Remplacer le médecin dans toutes les situations",
+      "Vendre des médicaments",
+      "Fabriquer des vaccins"
+    ],
+    correct: 0
+  }
+];
+
+try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+        questions.forEach(function (q) {
+            if (!q.text) q.text = q.question || q.q || q.enonce || q.titre || "";
+            if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+            if (typeof q.correct === "undefined") {
+                if (typeof q.answer !== "undefined") q.correct = q.answer;
+                else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+            }
+        });
+    }
+} catch (e) {}
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+const pageTitle = document.getElementById('pageTitle');
+pageTitle.textContent = "ECOLIA · " + COURSE_TITLE;
+document.title = "ECOLIA — " + COURSE_TITLE;
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim() || slides.length === 0) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp("(" + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ")", 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderEmptyState() {
+    contentDiv.innerHTML = '<div class="empty-state"><div class="icon">·</div><span class="tag">Bientôt disponible</span><h2>' + COURSE_TITLE + '</h2><p>Ce cours est en préparation. Le contenu sera ajouté prochainement.</p></div>';
+    slideCounterSpan.textContent = '0/0';
+    progressFill.style.width = '0%';
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    counterSpan.textContent = '—';
+}
+
+function renderQuiz() {
+    const qc = document.getElementById('quizQuestions');
+    if (!qc) return;
+    if (typeof questions === 'undefined' || questions.length === 0) {
+        qc.innerHTML = '<p style="color:#666;font-style:italic;">Quiz bientot disponible.</p>';
+        return;
+    }
+    let html = '';
+    questions.forEach((q, i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o, k) => {
+            html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>';
+        });
+        html += '</div>';
+    });
+    qc.innerHTML = html;
+    const submitBtn = document.getElementById('submitQuiz');
+    if (submitBtn) {
+        submitBtn.onclick = () => {
+            let score = 0;
+            questions.forEach((q, i) => {
+                const s = document.querySelector('input[name="q' + i + '"]:checked');
+                if (s && parseInt(s.value) === q.correct) score++;
+            });
+            const pct = Math.round(score/questions.length*100);
+            document.getElementById('quizResult').innerHTML =
+                '<div style="background:var(--bg2);padding:16px;border-radius:10px;margin-top:14px;">' +
+                '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong></div>';
+        };
+    }
+}
+
+function renderSlide(index, keepHighlight) {
+    if (keepHighlight === undefined) keepHighlight = true;
+    if (slides.length === 0) { renderEmptyState(); return; }
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    if (index === slides.length - 1) renderQuiz();
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    if (slides.length === 0) return;
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (slides.length && currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (slides.length && currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+<!-- ECOLIA_IMAGE_LOADER_START -->
+<script>
+(function () {
+  var SITE = "https://ecolia-course.github.io/";
+  var NATIVE = false;
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function abs(u) { return /^(https?:|data:|blob:)/i.test(u) ? u : (NATIVE ? SITE + u.replace(/^(\.\/|\/)+/, "") : u); }
+  function ext(u) { var m = String(u).split("?")[0].match(/\.(jpe?g|png|gif|webp|svg)$/i); return m ? m[1].toLowerCase() : "jpg"; }
+  function hide(img) { img.onerror = null; img.style.display = "none"; }
+  var table = null, queue = [], queued = {}, running = false;
+  function enqueue(full, fn) {
+    if (queued[fn]) return;
+    queued[fn] = 1; queue.push([full, fn]);
+    if (!running) { running = true; setTimeout(next, 2500); }
+  }
+  function next() {
+    if (!queue.length) { running = false; return; }
+    if (!navigator.onLine) { running = false; return; }
+    var q = queue.shift(), t0 = Date.now();
+    try { CoursInterface.download(q[0], q[1]); } catch (e) { return setTimeout(next, 500); }
+    (function wait() {
+      var ok = false;
+      try { ok = !!CoursInterface.exists(q[1]); } catch (e) {}
+      if (ok) setTimeout(next, 1500);
+      else if (Date.now() - t0 > 40000) next();
+      else setTimeout(wait, 700);
+    })();
+  }
+  function exists(fn) { try { return !!CoursInterface.exists(fn); } catch (e) { return false; } }
+  function show(img) {
+    if (!table || img.getAttribute("data-ecolia-done")) return;
+    var id = img.getAttribute("data-image-id");
+    var url = table[id];
+    if (typeof url !== "string" || !url.length) { console.warn("ECOLIA : image absente du JSON :", id); return; }
+    img.setAttribute("data-ecolia-done", "1");
+    if (!NATIVE) { img.onerror = function () { hide(img); }; img.setAttribute("src", url); return; }
+    var full = abs(url), fn = "img_" + id + "." + ext(url);
+    if (exists(fn)) {
+      img.onerror = function () {
+        try { CoursInterface["delete"](fn); } catch (e) {}
+        queued[fn] = 0;
+        img.onerror = function () { hide(img); };
+        img.setAttribute("src", full);
+      };
+      img.setAttribute("src", "https://app.local/cours/" + fn);
+    } else {
+      img.onerror = function () { hide(img); };
+      img.setAttribute("src", full);
+      enqueue(full, fn);
+    }
+  }
+  function scan(root) {
+    if (!root || !root.querySelectorAll) return;
+    if (root.matches && root.matches("img[data-image-id]")) show(root);
+    root.querySelectorAll("img[data-image-id]").forEach(show);
+  }
+  function prefetchAll() {
+    var ids = {};
+    try { JSON.stringify(slides).replace(/data-image-id=\\?"([^"\\]+)/g, function (m, id) { ids[id] = 1; }); } catch (e) {}
+    Object.keys(ids).forEach(function (id) {
+      var url = table[id];
+      if (typeof url !== "string" || !url.length) return;
+      var fn = "img_" + id + "." + ext(url);
+      if (!exists(fn)) enqueue(abs(url), fn);
+    });
+  }
+  function start(tbl) {
+    table = tbl;
+    scan(document.body);
+    new MutationObserver(function (muts) {
+      muts.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.nodeType === 1) scan(n); }); });
+    }).observe(document.body, { childList: true, subtree: true });
+    if (NATIVE) prefetchAll();
+  }
+  var JSON_URL = NATIVE ? SITE + "images_ecolia.json" : "images_ecolia.json";
+  var KEY = "ecolia_images_json";
+  fetch(JSON_URL, NATIVE ? { cache: "no-cache" } : undefined)
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (table) { if (NATIVE) lsSet(KEY, JSON.stringify(table)); start(table); })
+    .catch(function (e) {
+      var saved = null;
+      if (NATIVE) { try { saved = JSON.parse(lsGet(KEY) || "null"); } catch (x) {} }
+      if (saved) start(saved);
+      else console.warn("ECOLIA : JSON des images indisponible.", e);
+    });
+})();
+</script>
+<!-- ECOLIA_IMAGE_LOADER_END -->
+
+
+
+<!-- ECOLIA_AUDIO_PLAYER_START -->
+<style>
+  #ecolia-audio-btn, #ecolia-dl-btn {
+    width: 30px; height: 30px; min-width: 30px; padding: 0; margin: 0 4px 0 0;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    cursor: pointer; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent; outline: none;
+  }
+  #ecolia-audio-btn { border: none; background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-dl-btn { border: 1.5px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb); }
+  #ecolia-dl-btn.ecolia-full { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-btn.ecolia-fixed { position: fixed; top: 8px; left: 8px; z-index: 2147483000; }
+  #ecolia-audio-btn:active, #ecolia-dl-btn:active { transform: scale(.92); }
+  #ecolia-audio-btn svg, #ecolia-dl-btn svg { width: 15px; height: 15px; fill: currentColor; pointer-events: none; }
+  #ecolia-audio-btn.ecolia-off, #ecolia-dl-btn.ecolia-off { display: none; }
+  #ecolia-audio-banner {
+    display: none; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0;
+    padding: 8px 14px; font-size: .82rem; line-height: 1.35;
+    background: var(--soft, #eef3fb); color: var(--p1, #123); border-bottom: 1px solid var(--bd, #c9d6ea);
+  }
+  #ecolia-audio-banner.on { display: flex; }
+  #ecolia-audio-banner .eab-txt { flex: 1 1 180px; }
+  #ecolia-audio-banner .eab-act { display: flex; gap: 6px; flex-wrap: wrap; }
+  #ecolia-audio-banner button {
+    border: 1px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb);
+    border-radius: 16px; padding: 5px 12px; font-size: .8rem; cursor: pointer;
+  }
+  #ecolia-audio-banner button.pri { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-banner .eab-bar { display: none; flex-basis: 100%; height: 4px; border-radius: 2px; overflow: hidden; background: var(--bd, #c9d6ea); }
+  #ecolia-audio-banner .eab-bar i { display: block; height: 100%; width: 0; background: var(--p2, #2563eb); transition: width .2s; }
+</style>
+<script>
+(function () {
+  var CFG = {"code":"MicrobiologieTropicale4","base":"https://ecolia-course.github.io/ecolia-media/audio_files/","available":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],"count":20,"sizeMo":23,"sizes":{"1":1396800,"2":1125120,"3":941184,"4":1271616,"5":1185024,"6":1338048,"7":979968,"8":1180992,"9":1150656,"10":1195968,"11":1161600,"12":1100352,"13":1170048,"14":1211328,"15":1288128,"16":1029312,"17":1119936,"18":1132032,"19":1355712,"20":159744},"fallback":{"1":[["fr","Sommaire, Microbiologie Tropicale. Bienvenue. La microbiologie tropicale: comprendre les invisibles pour mieux soigner. La microbiologie tropicale étudie les micro-organismes (bactéries, virus, parasites, champignons) et leur rôle dans les maladies infectieuses qui sévissent principalement en zone tropicale. En République Démocratique du Congo, le climat chaud et humide, la présence de vecteurs, l'accès limité à l'eau potable et les conditions d'hygiène favorisent la transmission de nombreuses maladies infectieuses: choléra, fièvre typhoïde, shigellose, méningites, paludisme, tuberculose, VIH, parasitoses intestinales. Ce cours s'adresse aux élèves de 4e Humanité de la section ITM (Institut Technique Médical), filière Soins Infirmiers. Il prépare le futur infirmier A2 à comprendre les agents pathogènes, à identifier les maladies infectieuses prioritaires, à appliquer les mesures de prévention et à participer à la surveillance épidémiologique aux côtés de l'INRB et des zones de santé. Important: ce cours présente les principes et les observations de base. Les actes de laboratoire spécialisés et les diagnostics médicaux relèvent du médecin ou du biologiste. L'infirmier reconnaît, prévient, éduque, notifie et collabore. Objectifs d'apprentissage. À la fin de ce cours, l'élève doit être capable de: Définir les concepts de base de la microbiologie. Classer et décrire les principaux agents pathogènes (bactéries, virus, parasites, champignons). Expliquer les modes de transmission et les facteurs de risque des maladies infectieuses. Identifier les signes cliniques et les méthodes de diagnostic des maladies infectieuses prioritaires en R D C. Appliquer les mesures de prévention et de lutte. Réaliser des observations microbiologiques simples (coloration de Gram, observation microscopique). Participer à la surveillance épidémiologique et à l'éducation sanitaire. Grands chapitres du cours. Chapitre I, Introduction à la microbiologie tropicale. Chapitre II, Les agents pathogènes: classification et structure. Chapitre III, La pathogénicité et la transmission. Chapitre IV, Les maladies bactériennes épidémiques. Chapitre V, Le paludisme et les parasitoses. Chapitre VI, La tuberculose et le VIH. Chapitre VII, Les techniques de laboratoire. Chapitre VIII, La prévention, la surveillance et l'éducation."]],"2":[["fr","Chapitre I, Pourquoi la microbiologie tropicale? Situation-problème. Dans un centre de santé d'Uvira, plusieurs patients arrivent le même jour avec une diarrhée aqueuse profuse, « eau de riz », et des vomissements. Un enfant est déjà très déshydraté. Le lendemain, deux autres cas sont signalés dans le même quartier. Que se passe-t-il? Comment l'infirmier doit-il réagir? Quelles mesures prendre pour éviter que l'épidémie ne se propage? Fondements théoriques. Une discipline au cœur de la santé publique. La microbiologie est la science qui étudie les micro-organismes et leurs interactions avec l'homme et l'environnement. La microbiologie tropicale se concentre sur les agents pathogènes dont l'épidémiologie est favorisée par le climat tropical: Chaleur et humidité: favorisent la survie des bactéries dans l'eau et les aliments. Vecteurs abondants: moustiques, mouches, puces, tiques, mouche tsé-tsé. Eau et assainissement insuffisants: transmission féco-orale des maladies diarrhéiques. Promiscuité et déplacements de population: favorisent les épidémies. L'importance pour l'infirmier A2. L'infirmier est en première ligne: Il reconnaît les cas suspects (diarrhée profuse, fièvre, toux persistante, éruption). Il applique les mesures d'hygiène immédiates. Il éduque les patients et les familles. Il notifie les cas suspects aux autorités sanitaires (zones de santé, INRB). Les maladies tropicales négligées. Affections qui touchent principalement les populations pauvres des régions tropicales: trypanosomiase, leishmaniose, schistosomiase, filariose, lèpre, ulcère de Buruli, etc. Elles sont souvent négligées par la recherche et les systèmes de santé, malgré leur impact considérable. À retenir. La microbiologie tropicale étudie les agents infectieux en zone chaude et humide. L'infirmier A2 est un acteur clé de la reconnaissance, de la prévention et de la notification des cas. Les maladies tropicales négligées sont une priorité de santé publique."]],"3":[["fr","Chapitre I, Définitions et concepts de base. Fondements théoriques. Les mots-clés de la microbiologie. Micro-organisme. Être vivant invisible à l'œil nu, observable au microscope. Les principaux groupes sont: bactéries, virus, champignons, protozoaires, helminthes (vers). Pathogène. Micro-organisme capable de provoquer une maladie. Certains micro-organismes sont commensaux (ils vivent normalement sur ou dans le corps sans causer de maladie); d'autres sont opportunistes (ils provoquent une maladie quand les défenses immunitaires sont affaiblies). Pathogénicité. Capacité d'un agent infectieux à provoquer une maladie. C'est un caractère qualitatif. Virulence. Degré de gravité de la maladie provoquée. C'est un caractère quantitatif: une souche très virulente provoquera une maladie plus grave qu'une souche peu virulente. Infection. Pénétration et multiplication d'un agent pathogène dans l'organisme. Contamination. Présence d'un agent pathogène sur une surface, un aliment, un objet, ou dans un milieu. Elle peut ne pas provoquer d'infection. Porteur sain. Personne qui héberge un agent pathogène sans manifester de symptômes, mais qui peut le transmettre à d'autres. Immunité. Capacité de l'organisme à se défendre contre les infections. Elle peut être innée (barrières naturelles) ou acquise (après une infection ou une vaccination). Erreur fréquente. Confondre contamination et infection est une erreur fréquente. Un aliment peut être contaminé sans qu'il y ait infection (si l'agent ne se multiplie pas ou si la personne ne le consomme pas). À l'inverse, un porteur sain est infecté sans être malade, mais il peut transmettre l'agent."]],"4":[["fr","Chapitre II, Les bactéries: structure et coloration de Gram. Fondements théoriques. Les bactéries. Les bactéries sont des cellules procaryotes: elles n'ont pas de noyau, leur matériel génétique baigne dans le cytoplasme. Ce sont des organismes vivants autonomes qui se multiplient par division binaire. Structure. Paroi cellulaire: enveloppe rigide qui donne la forme (coque, bacille, spirille). Membrane cytoplasmique: contrôle les échanges. Cytoplasme: contient les ribosomes, les enzymes, le matériel génétique. Flagelles: appendices qui permettent la mobilité (facultatifs). Pili: permettent l'adhésion aux cellules hôtes. Capsule: enveloppe protectrice (facultative), favorise l'échappement immunitaire. Spores: formes de résistance (chez certaines bactéries comme Clostridium et Bacillus). La coloration de Gram. Technique de laboratoire qui distingue deux grands groupes de bactéries selon la structure de leur paroi: Gram-positives: paroi épaisse (peptidoglycane), retiennent le violet de cristal et apparaissent violettes au microscope. Gram-négatives: paroi fine, se décolorent à l'alcool et prennent le rose de la fuchsine; elles apparaissent roses. Pourquoi c'est important? La coloration de Gram oriente le diagnostic et le traitement: Un Gram positif (par exemple Streptococcus, Staphylococcus) ne se traite pas de la même façon qu'un Gram négatif (par exemple Vibrio cholerae, Salmonella). La forme de la bactérie complète l'information: coques Gram plus en chaînettes égale Streptococcus; bacilles Gram- égale entérobactéries. Les grandes formes. Coques: sphériques (streptocoques, staphylocoques). Bacilles: en forme de bâtonnets (E. coli, Salmonella, Vibrio cholerae). Spirilles: en forme de spirale (Tréponème). Vibrions: en forme de virgule (Vibrio cholerae). À retenir. Les bactéries sont des procaryotes. La coloration de Gram distingue Gram-positives (violettes, paroi épaisse) et Gram-négatives (roses, paroi fine). La forme (coque, bacille, spirille, vibrion) complète l'identification. Gram et forme orientent le traitement."]],"5":[["fr","Chapitre II, Les virus, parasites et champignons. Fondements théoriques. Les virus. Les virus sont des agents infectieux acellulaires. Ils ne sont pas capables de se multiplier seuls: ils doivent pénétrer dans une cellule hôte et détourner sa machinerie pour se reproduire. Un virus est composé de: Un acide nucléique: ADN ou ARN (jamais les deux). Une capside: enveloppe protéique qui protège l'acide nucléique. Parfois une enveloppe lipidique. Les virus tropicaux importants en R D C: Virus du chikungunya: transmis par Aedes aegypti, épidémie à Matadi en 2019. Virus de la dengue: transmis par Aedes, présent à la frontière angolaise. Virus Ebola: fièvre hémorragique grave, épidémies récurrentes en R D C. Virus de la rougeole: prévention par la vaccination. VIH: infection chronique. Les parasites. Les parasites sont des organismes eucaryotes qui vivent aux dépens d'un hôte. On distingue: Protozoaires: unicellulaires. Exemples: Plasmodium (paludisme), Entamoeba histolytica (amibiase), Giardia lamblia (giardiase), Trypanosoma (trypanosomiase). Helminthes (vers): pluricellulaires. Exemples: ascaris, ankylostomes, schistosomes, filaires. Les champignons. Les champignons sont des eucaryotes. Certains sont responsables de mycoses superficielles (teigne, candidose buccale); d'autres de mycoses profondes (aspergillose, cryptococcose), surtout chez les personnes immunodéprimées (VIH). Antibiotiques et virus. Les antibiotiques n'agissent que sur les bactéries, pas sur les virus. Un rhume, une grippe, la rougeole, le VIH ne se traitent pas avec des antibiotiques. Utiliser un antibiotique pour une infection virale est inutile et favorise la résistance. Erreur fréquente. Donner des antibiotiques pour une infection virale est une erreur fréquente et grave. Les antibiotiques ne tuent que les bactéries. En plus d'être inefficaces, ils favorisent la résistance des bactéries présentes dans l'organisme."]],"6":[["fr","Chapitre III, Les modes de transmission. Fondements théoriques. Les grandes voies de transmission. 1. Voie féco-orale. L'agent pathogène est présent dans les selles d'un malade ou d'un porteur sain, contamine l'eau ou les aliments, et est ingéré par une personne saine. C'est la voie des maladies diarrhéiques. Maladies: choléra, fièvre typhoïde, shigellose, amibiase, giardiase, hépatite A, poliomyélite. Mesures: lavage des mains, eau potable, hygiène alimentaire, assainissement des latrines. 2. Voie aérienne. L'agent est projeté par la toux, les éternuements, la parole, sous forme de gouttelettes ou d'aérosols, et inhalé par une personne saine. Maladies: tuberculose, méningites, grippe, rougeole, coqueluche, COVID-19. Mesures: aération des locaux, masques, distanciation, vaccination. 3. Vecteurs. Un être vivant (insecte, acarien) transporte l'agent d'un réservoir à un hôte. Moustiques: paludisme (Anopheles), dengue et chikungunya (Aedes), fièvre jaune (Aedes). Mouche tsé-tsé: trypanosomiase. Puces: peste. Tiques: babésiose, anaplasmose. Mesures: moustiquaires imprégnées, répulsifs, lutte antivectorielle, destruction des gîtes larvaires. 4. Contact direct. Transmission par contact cutané ou muqueux, plaies, rapports sexuels, sang. Maladies: VIH, hépatites B et C, syphilis, gonococcie, herpès, infections cutanées. Mesures: préservatifs, gants, matériel stérile, hygiène. 5. Transmission mère-enfant. Transmission pendant la grossesse, l'accouchement ou l'allaitement. Maladies: VIH, hépatite B, syphilis, toxoplasmose, rubéole. Mesures: dépistage prénatal, ARV (VIH), vaccination, césarienne si nécessaire. À retenir. Cinq voies majeures: féco-orale (diarrhées), aérienne (tuberculose, méningites), vecteurs (paludisme, dengue), contact (VIH, IST), mère-enfant. Chaque voie a ses mesures de prévention spécifiques."]],"7":[["fr","Chapitre III, Les facteurs favorisants en zone tropicale. Fondements théoriques. Pourquoi les maladies infectieuses prolifèrent en zone tropicale. Facteurs climatiques. Chaleur: accélère la multiplication bactérienne dans les aliments. Humidité: favorise la survie des virus et la reproduction des vecteurs. Pluies abondantes: créent des gîtes larvaires, contaminent les sources d'eau. Facteurs environnementaux. Eau non potable: principale source de maladies diarrhéiques. Assainissement insuffisant: latrines absentes ou inadaptées, eaux usées stagnantes. Déchets mal gérés: attirent rongeurs et insectes. Habitat précaire: promiscuité, mauvaise ventilation. Facteurs socio-économiques. Pauvreté: accès limité aux soins, à l'eau potable, à une alimentation équilibrée. Faible niveau d'éducation: moins de connaissances sur l'hygiène. Déplacements de population: réfugiés, déplacés internes, camps surpeuplés. Conflits: détruisent les infrastructures sanitaires. Facteurs individuels. Malnutrition: affaiblit l'immunité. VIH, diabète: immunodépression. Grossesse: vulnérabilité accrue (paludisme, anémie). Âge: enfants et personnes âgées plus vulnérables. Non-vaccination: absence de protection. Conséquences pour l'infirmier. Comprendre ces facteurs permet d'agir sur eux: éduquer, sensibiliser, promouvoir l'hygiène, orienter vers les programmes de vaccination, signaler les situations à risque. Erreur fréquente. Croire que les maladies infectieuses sont inévitables en zone tropicale est une erreur. Elles résultent de facteurs multiples (climat, eau, hygiène, pauvreté), sur lesquels on peut agir par la prévention et l'éducation."]],"8":[["fr","Chapitre IV, Le choléra. Fondements théoriques. Le choléra. Le choléra est une infection intestinale aiguë causée par la bactérie Vibrio cholerae. Il est transmis par l'eau et les aliments contaminés (voie féco-orale). C'est une maladie épidémique redoutable, présente de façon récurrente en R D C (Uvira, Bas-Congo, Katanga, Maniema). Signes cliniques. Diarrhée aqueuse profuse en « eau de riz » (liquide blanchâtre, inodore, sans glaire ni sang). Vomissements en jet, abondants. Déshydratation rapide: soif intense, yeux enfoncés, pli cutané, crampes musculaires, hypotension, oligurie, voire anurie. Évolution possible vers le choc hypovolémique et la mort en quelques heures. Diagnostic. Clinique: tableau de diarrhée aqueuse profuse en contexte épidémique. Laboratoire: examen microscopique des selles (bactéries mobiles en « virgule »), culture sur milieu spécifique, confirmation par l'INRB. Traitement. Réhydratation immédiate: c'est le traitement prioritaire. SRO si possible, sinon réhydratation intraveineuse (Ringer lactate). Antibiotiques: sur prescription, pour réduire la durée de la diarrhée et la transmission. Isolement du patient, désinfection. Surveillance: diurèse, signes vitaux, état de conscience. Prévention. Lavage des mains au savon. Eau potable: bouillie, filtrée ou chlorée. Hygiène alimentaire: aliments bien cuits, lavage des fruits et légumes. Assainissement: latrines, élimination des eaux usées. Vaccination dans certaines situations épidémiques. Rôle de l'infirmier. Reconnaître le tableau de choléra. Réhydrater immédiatement. Isoler les patients. Notifier immédiatement à la zone de santé et à l'INRB. Éduquer la communauté sur l'hygiène et la chloration de l'eau. Erreur fréquente. Retarder la réhydratation pour attendre un résultat de laboratoire est une erreur mortelle. Dans un contexte de diarrhée profuse, la réhydratation se commence immédiatement, avant toute confirmation."]],"9":[["fr","Chapitre IV, La fièvre typhoïde et la shigellose. Fondements théoriques. La fièvre typhoïde. La fièvre typhoïde est causée par Salmonella Typhi, bactérie transmise par l'eau et les aliments contaminés. Des épidémies ont été documentées en R D C (Bwamanda, Wamba, Pawa, Poko, Kwango). Signes cliniques. Fièvre prolongée, en plateau (souvent 39 moins 40 degrés Celsius), avec pouls relativement lent par rapport à la fièvre (dissociation pouls-température). Céphalées, insomnie, fatigue. Douleurs abdominales, troubles du transit (diarrhée ou constipation). Parfois éruption rosée sur le ventre. Complications possibles: perforation intestinale, hémorragie digestive. Diagnostic. Hémoculture: examen de référence (pendant la première semaine). Coproculture: à partir de la deuxième semaine. Sérologie (Widal): utile mais peu spécifique. Traitement. Antibiothérapie adaptée (sur prescription), en tenant compte des résistances. Réhydratation, antipyrétiques, surveillance. Prévention. Eau potable, hygiène alimentaire, lavage des mains. Assainissement des latrines. Vaccination (recommandée dans certaines zones). Dépistage et traitement des porteurs chroniques (notamment chez les manipulateurs d'aliments). La shigellose. La shigellose est une infection intestinale causée par Shigella, bactérie très contagieuse transmise par voie féco-orale. Elle se manifeste par une diarrhée sanglante (dysenterie bacillaire) accompagnée de fièvre et de douleurs abdominales. Elle est surveillée par l'INRB. Traitement et prévention. Réhydratation, antibiothérapie adaptée (sur prescription). Hygiène des mains, eau potable, assainissement. Isolement du patient, désinfection. À retenir. Fièvre typhoïde égale fièvre prolongée plus troubles digestifs, transmise par l'eau ou aliments. Shigellose égale diarrhée sanglante. Les deux se préviennent par l'hygiène et l'assainissement."]],"10":[["fr","Chapitre IV, Les méningites bactériennes et la peste. Fondements théoriques. Les méningites bactériennes. Les méningites bactériennes sont des infections des méninges (enveloppes du cerveau et de la moelle épinière) causées par: Neisseria meningitidis (méningocoque): épidémies dans la ceinture méningitique africaine. Streptococcus pneumoniae (pneumocoque): formes graves, souvent chez l'enfant et la personne âgée. Haemophilus influenzae b: prévention par la vaccination. Signes cliniques. Fièvre élevée brutale. Céphalées intenses. Raideur de la nuque (signe majeur). Vomissements, photophobie (crainte de la lumière). Troubles de la conscience, convulsions. Chez le nourrisson: fontanelle bombée, geignement, hypotonie. Conduite à tenir. Urgence médicale absolue: chaque minute compte. Transfert immédiat vers un hôpital. Antibiothérapie urgente (sur prescription). Isolement respiratoire si méningocoque, chimioprophylaxie des contacts. Notification obligatoire (maladie à déclaration). Prévention. Vaccination contre le méningocoque, le pneumocoque, l'Haemophilus influenzae b. Aération des locaux, éviter la promiscuité. La peste. La peste est une maladie bactérienne causée par Yersinia pestis, transmise par les puces des rongeurs (rats, souris). Elle est surveillée par l'INRB en R D C. Formes cliniques. Peste bubonique: bubons (ganglions gonflés et douloureux), fièvre, prostration. Peste septicémique: envahissement du sang, mortel en quelques jours. Peste pulmonaire: toux, fièvre, détresse respiratoire; transmission interhumaine par voie aérienne, très contagieuse. Conduite à tenir. Urgence absolue: isolement, notification immédiate. Antibiothérapie urgente (sur prescription). Lutte contre les rongeurs et les puces. Port de masque et d'équipement de protection. Erreur fréquente. Négliger une raideur de nuque fébrile est une erreur grave. Une méningite bactérienne non traitée peut être mortelle en moins de 24 heures. Toute suspicion doit être transférée immédiatement."]],"11":[["fr","Chapitre V, Le paludisme. Fondements théoriques. Une endémie parasitaire majeure. Le paludisme est une maladie parasitaire causée par Plasmodium (principalement P. falciparum en R D C), transmise par la piqûre de l'anophèle femelle. La transmission est présente toute l'année en R D C, avec des pics saisonniers en saison des pluies. Cycle simplifié. L'anophèle femelle pique un humain infecté et ingère des gamétocytes. Dans le moustique, les gamètes fusionnent et produisent des sporozoïtes. Le moustique pique un nouvel humain et injecte les sporozoïtes. Les sporozoïtes gagnent le foie (phase hépatique). Puis ils passent dans le sang et infectent les globules rouges (phase sanguine), qui éclatent: fièvre et anémie. Signes cliniques. Fièvre (parfois avec accès cycliques frissons-chaleur-sueurs). Céphalées, courbatures, fatigue. Chez l'enfant: vomissements, convulsions possibles (signe de gravité). Signes de gravité: troubles de conscience, coma, anémie sévère, détresse respiratoire, ictère, oligurie. Diagnostic. Test de Diagnostic Rapide (TDR): rapide, adapté aux zones périphériques. Goutte épaisse ou frottis: identifie l'espèce et quantifie la parasitémie. Traitement. Paludisme simple: Combinaisons Thérapeutiques à base d'Artémisinine (CTA), pendant 3 jours. Paludisme grave: artésunate injectable (1re intention) ou quinine en perfusion, en milieu hospitalier. Prévention. Moustiquaires imprégnées d'insecticide (MILDA): mesure la plus efficace. Élimination des gîtes larvaires. Traitement préventif intermittent (TPI) chez la femme enceinte. Éducation sanitaire. À retenir. Paludisme égale parasite Plasmodium, vecteur Anopheles. Fièvre, anémie, formes graves (paludisme cérébral). Diagnostic par TDR ou goutte épaisse. CTA pour les formes simples; artésunate ou quinine pour les formes graves. MILDA égale prévention principale."]],"12":[["fr","Chapitre V, Les parasitoses intestinales. Fondements théoriques. Amibiase et giardiase. L'amibiase. L'amibiase est causée par Entamoeba histolytica, un protozoaire transmis par voie féco-orale (eau et aliments contaminés). La prévalence en R D C est élevée (jusqu'à 55 pour cent dans certaines études). Signes cliniques: Forme intestinale: diarrhée avec glaires et parfois sang (dysenterie amibienne), douleurs abdominales, flatulences. Forme hépatique: abcès du foie (fièvre, douleur au foie). Traitement: antiparasitaire sur prescription. Réhydratation si nécessaire. La giardiase. La giardiase est causée par Giardia lamblia, protozoaire flagellé, transmis par voie féco-orale. La prévalence en R D C est estimée à environ 6 pour cent. Signes cliniques: Diarrhée chronique, selles graisseuses, malabsorption. Douleurs abdominales, ballonnements. Amaigrissement, fatigue (surtout chez l'enfant). Traitement: antiparasitaire sur prescription. Les helminthes intestinaux. Vers intestinaux (ascaris, ankylostomes, trichocéphales): Transmission par ingestion d'œufs (mains sales, aliments contaminés) ou par pénétration cutanée (ankylostomes, marche pieds nus). Signes: douleurs abdominales, amaigrissement, anémie (ankylostomes), retard de croissance chez l'enfant. Traitement: vermifuge sur prescription. Prévention commune. Lavage des mains. Eau potable. Hygiène alimentaire. Assainissement des latrines. Port de chaussures (prévention ankylostomes). Déparasitage régulier dans les zones endémiques. Erreur fréquente. Confondre les diarrhées parasitaires avec une simple diarrhée virale ou bactérienne, sans demander d'examen parasitologique, conduit à un traitement inadapté et à la chronicisation. Devant une diarrhée persistante, une recherche de parasites est nécessaire."]],"13":[["fr","Chapitre VI, La tuberculose. Fondements théoriques. Une maladie infectieuse majeure. La tuberculose est une maladie infectieuse causée par Mycobacterium tuberculosis (bacille de Koch). Elle touche principalement les poumons, mais peut atteindre d'autres organes (ganglions, os, méninges, reins). Transmission. La tuberculose se transmet par voie aérienne: un patient bacillifère tousse, projette des gouttelettes contenant le bacille, qui sont inhalées par une personne saine. La contagion nécessite un contact prolongé et rapproché. Signes cliniques. Toux persistante supérieur à 2 semaines (parfois avec crachats ou sang). Fièvre modérée, souvent vespérale. Sueurs nocturnes. Amaigrissement, perte d'appétit. Asthénie. Diagnostic. Bacilloscopie (examen microscopique des crachats). GeneXpert (test moléculaire, détecte aussi la résistance à la rifampicine). Radiographie du thorax. Traitement. Phase intensive (2 mois): rifampicine, isoniazide, pyrazinamide, éthambutol. Phase de continuation (4 mois): rifampicine, isoniazide. Observance cruciale: un traitement incomplet favorise l'apparition de résistances (tuberculose MDR ou XDR), surveillées par l'INRB. Prévention. Vaccin BCG à la naissance. Dépistage des contacts. Aération des locaux. Éducation: se couvrir la bouche, ne pas cracher au sol. Rôle de l'infirmier. Reconnaître les signes suspects. Orienter vers le centre de diagnostic. Accompagner le traitement (traitement directement observé, TDO). Surveiller les effets indésirables (hépatotoxicité, troubles oculaires). Sensibiliser à l'observance. À retenir. Tuberculose égale transmission aérienne. Signes: toux supérieur à 2 semaines, sueurs nocturnes, amaigrissement. Diagnostic: bacilloscopie, GeneXpert. Traitement long (6 mois) avec observance stricte. Vaccin BCG, dépistage des contacts."]],"14":[["fr","Chapitre VI, Le VIH ou sida. Fondements théoriques. Une pandémie mondiale. Le VIH (virus de l'immunodéficience humaine) attaque le système immunitaire, en particulier les lymphocytes T C D4. Le sida (syndrome d'immunodéficience acquise) est le stade avancé de l'infection, marqué par l'apparition d'infections opportunistes et de certains cancers. Transmission. Voie sexuelle: rapports non protégés. Voie sanguine: transfusion, échange de seringues, objets tranchants souillés. Voie mère-enfant: grossesse, accouchement, allaitement (sans prévention). Le VIH ne se transmet pas par: poignée de main, câlin, toux, piqûre de moustique, toilettes partagées, vaisselle, nourriture. Phases. Primo-infection: syndrome pseudo-grippal, 2 à 4 semaines après la contamination. Phase asymptomatique: plusieurs années, sans symptômes. Phase symptomatique: infections opportunistes, amaigrissement. Sida: stade final. Infections opportunistes. Tuberculose (première cause de mortalité chez les PVVIH). Candidose buccale ou œsophagienne. Pneumocystose, toxoplasmose cérébrale, cryptococcose. Sarcome de Kaposi, lymphomes. Prévention et prise en charge. Préservatifs masculins et féminins. Dépistage volontaire et confidentiel. Antirétroviraux (ARV): trithérapie, réduction de la charge virale, « U égale U » (Indétectable égale Intransmissible). PTME: prévention de la transmission mère-enfant. Sécurisation des transfusions, matériel stérile. Rôle de l'infirmier. Accompagner le patient sans jugement. Éduquer sur l'observance des ARV. Surveiller les effets indésirables et les infections opportunistes. Lutter contre la stigmatisation et la discrimination. Soutenir psychologiquement. Erreur fréquente. Stigmatiser une personne vivant avec le VIH est une erreur grave. La stigmatisation pousse les patients à cacher leur statut, à fuir les soins et à transmettre le virus sans le savoir. L'infirmier doit adopter une attitude bienveillante et confidentielle."]],"15":[["fr","Chapitre VII, Les techniques de laboratoire. Fondements théoriques. Les outils du diagnostic microbiologique. La coloration de Gram. Technique qui distingue les bactéries Gram-positives (violettes) des Gram-négatives (roses). Elle oriente le diagnostic et le choix thérapeutique. Étapes: Préparation d'un frottis bactérien sur lame. Séchage et fixation. Coloration au violet de cristal (1 minutes). Lugol (mordant, 1 minutes). Décoloration à l'alcool (rapide). Contre-coloration à la fuchsine (30 secondes). Rinçage, séchage, observation au microscope à immersion (grossissement multiplié par 100). L'observation microscopique. Le microscope optique permet d'observer les bactéries, parasites, cellules. Techniques: préparation de lames, mise au point, utilisation de l'huile à immersion pour le grossissement maximal. La culture et l'isolement. Ensemencement sur milieux de culture (géloses spécifiques), isolement des colonies, identification par tests biochimiques et coloration. L'antibiogramme. Test de sensibilité aux antibiotiques. On ensemence la bactérie sur une gélose, on dépose des disques d'antibiotiques, et on observe les zones d'inhibition après incubation. Plus la zone est grande, plus la bactérie est sensible. L'antibiogramme guide le traitement et lutte contre la résistance antimicrobienne. Les techniques spécifiques. Hémoculture: recherche de bactéries dans le sang (fièvre typhoïde, septicémies). Coproculture: recherche de bactéries dans les selles (choléra, shigellose, salmonellose). Examen parasitologique des selles: recherche de parasites (amibiase, giardiase, vers). Goutte épaisse: recherche de Plasmodium. GeneXpert: test moléculaire pour la tuberculose. Règles de sécurité au laboratoire. Asepsie: lavage des mains, gants, matériel stérile. Élimination correcte des déchets biologiques. Étiquetage rigoureux des échantillons. Transport adapté au laboratoire de référence. Erreur fréquente. Manipuler les échantillons sans respecter l'asepsie est une erreur grave: risque de contamination du manipulateur et de faux résultats. Les règles de sécurité au laboratoire doivent être strictement respectées."]],"16":[["fr","Chapitre VIII, La prévention et l'hygiène. Fondements théoriques. Les mesures universelles de prévention. 1. L'hygiène des mains. C'est la mesure la plus efficace pour prévenir les infections. Lavage au savon pendant au moins 20 secondes, ou friction avec une solution hydro-alcoolique. À réaliser: Avant et après chaque soin. Après avoir touché un patient, du matériel, des déchets. Avant de préparer ou de consommer un repas. Après les toilettes. 2. L'eau potable. Eau bouillie pendant 1 minute, refroidie. Eau filtrée (filtre à céramique, filtre à sable). Eau chlorée (eau de Javel à dose contrôlée). Eau en bouteille ou sachet de source agréée. 3. L'hygiène alimentaire. Laver les fruits et légumes à l'eau potable. Bien cuire les viandes, poissons et œufs. Conserver les aliments à l'abri des mouches et des rongeurs. Ne pas mélanger cru et cuit. 4. L'assainissement. Latrines propres et bien situées, loin des sources d'eau. Élimination correcte des déchets ménagers. Évacuation des eaux usées. Élimination des eaux stagnantes (gîtes larvaires). 5. La vaccination. BCG: tuberculose (formes graves de l'enfant). Vaccins du programme élargi: rougeole, fièvre jaune, poliomyélite, DTC-HepB-Hib, pneumocoque, rotavirus. Respect de la chaîne du froid (conservation entre plus 2 et plus 8 degrés Celsius). 6. La lutte antivectorielle. Moustiquaires imprégnées (MILDA). Répulsifs, insecticides. Élimination des gîtes larvaires. Désherbage, assèchement des zones humides autour des habitations. À retenir. Six mesures clés: hygiène des mains, eau potable, hygiène alimentaire, assainissement, vaccination, lutte antivectorielle. Ensemble, elles préviennent la majorité des maladies infectieuses tropicales."]],"17":[["fr","Chapitre VIII, La surveillance épidémiologique et la riposte. Fondements théoriques. La surveillance épidémiologique. La surveillance épidémiologique est la collecte continue, l'analyse et la diffusion des données sur les maladies infectieuses. Elle permet de: Détecter les épidémies précocement. Suivre l'évolution des maladies. Évaluer l'efficacité des interventions. Orienter les politiques de santé. Le rôle de l'INRB. L'Institut National de Recherche Biomédicale (INRB) de Kinshasa coordonne: La surveillance des maladies bactériennes épidémiques (choléra, méningites, shigellose, fièvre typhoïde, peste). La confirmation biologique des épidémies. La surveillance de la résistance antimicrobienne. La recherche biomédicale sur les pathogènes prioritaires. Le rôle de l'infirmier A2. Notifier immédiatement les cas suspects à la zone de santé. Prélever et transmettre les échantillons selon les procédures. Renseigner les fiches de surveillance. Participer aux investigations d'épidémie. Appliquer les mesures de riposte (isolement, désinfection, prophylaxie des contacts). La riposte aux épidémies. Face à une épidémie, la réponse repose sur: Confirmation des cas (clinique plus laboratoire). Isolement des malades. Prise en charge des patients (traitement, réhydratation). Investigation autour des cas (recherche des contacts). Prophylaxie des contacts (vaccination, antibiotiques). Mesures d'hygiène collectives (eau potable, assainissement). Communication des risques à la population. La communication. Une communication claire, transparente et culturellement adaptée est essentielle. La rumeur, la peur et la stigmatisation peuvent entraver la riposte. L'infirmier est un relais d'information fiable dans sa communauté. Erreur fréquente. Attendre la confirmation biologique pour déclarer une épidémie est une erreur. La notification précoce, même en l'absence de confirmation, permet de déclencher la riposte et de sauver des vies."]],"18":[["fr","Chapitre VIII, L'éducation sanitaire et la communication. Fondements théoriques. Éduquer pour prévenir. L'éducation sanitaire est l'une des armes les plus puissantes contre les maladies infectieuses. Elle permet aux populations de comprendre les modes de transmission et d'adopter des comportements protecteurs. Les messages clés. Lavage des mains au savon, plusieurs fois par jour, avant les repas et après les toilettes. Eau potable: bouillir, filtrer ou chlorer. Hygiène alimentaire: laver les fruits et légumes, bien cuire les viandes. Moustiquaire imprégnée chaque nuit pour toute la famille. Vaccination des enfants selon le calendrier. Consulter tôt en cas de fièvre, diarrhée, toux persistante. Terminer les traitements (tuberculose, paludisme, VIH). Ne pas stigmatiser les personnes malades. Les canaux de communication. Causeries dans les centres de santé, écoles, églises, marchés. Radios communautaires (très écoutées en zone rurale). Affiches et images adaptées aux personnes peu alphabétisées. Théâtre participatif, jeux de rôle. Visites à domicile. Réseaux sociaux en milieu urbain. Principes d'une communication efficace. Simplicité: messages courts, un seul message à la fois. Adaptation culturelle: tenir compte des habitudes, des croyances, de la langue. Répétition: un message répété est mieux retenu. Démonstration: montrer concrètement (lavage des mains, préparation du SRO). Participation: écouter, impliquer. Rôle de l'infirmier. L'infirmier est un éducateur de santé. Il ne se contente pas de soigner: il transmet des connaissances, corrige les fausses croyances, encourage les comportements protecteurs et soutient les familles. À retenir. L'éducation sanitaire permet aux populations d'adopter des comportements protecteurs. Messages clés: hygiène des mains, eau potable, moustiquaire, vaccination, consultation précoce. Canaux multiples, adaptation culturelle. L'infirmier est un éducateur."]],"19":[["fr","Synthèse, Comprendre, prévenir, surveiller, agir. Synthèse générale. Les quatre compétences du soignant en microbiologie tropicale. Comprendre les agents pathogènes, leurs modes de transmission et leurs facteurs de risque. Prévenir par l'hygiène, l'assainissement, la vaccination, la lutte antivectorielle. Surveiller en notifiant les cas suspects et en participant à la riposte aux épidémies. Agir en appliquant les gestes de premiers soins (réhydratation, isolement), en éduquant et en orientant. Tableau récapitulatif. Maladie. Agent. Transmission. Prévention clé. Choléra. Vibrio cholerae. Féco-orale. Eau potable, hygiène. Fièvre typhoïde. Salmonella Typhi. Féco-orale. Eau potable, hygiène. Shigellose. Shigella. Féco-orale. Lavage des mains. Méningite. Meningocoque, Pneumocoque. Aérienne. Vaccination, aération. Peste. Yersinia pestis. Puces. Lutte contre rongeurs. Paludisme. Plasmodium. Anopheles. MILDA, gîtes larvaires. Amibiase. Entamoeba histolytica. Féco-orale. Hygiène, eau potable. Giardiase. Giardia lamblia. Féco-orale. Hygiène, eau potable. Tuberculose. M. tuberculosis. Aérienne. BCG, dépistage. VIH. VIH. Sexuelle, sanguine, mère-enfant. Préservatif, dépistage, ARV. Étude de cas (cas pédagogique). « Un infirmier A2 dans un centre de santé d'Uvira reçoit plusieurs patients présentant une diarrhée aqueuse profuse. Il suspecte le choléra, isole les patients, applique les mesures d'hygiène, administre du SRO et alerte immédiatement la zone de santé. Il prélève des échantillons et les envoie à l'INRB pour confirmation. Il sensibilise la communauté sur le lavage des mains et la chloration de l'eau. ». Analyse: la démarche est exemplaire. L'infirmier a reconnu un tableau de choléra, appliqué immédiatement les mesures de prise en charge (réhydratation, isolement, hygiène), notifié les autorités, prélevé et transmis les échantillons pour confirmation, et sensibilisé la communauté. Il a mobilisé toutes les compétences du cours: comprendre, prévenir, surveiller, agir."]],"20":[["fr","Évaluation finale, Microbiologie Tropicale. Consigne. Répondez aux questions ci-dessous en sélectionnant la bonne réponse parmi les quatre propositions. Le QCM couvre l'ensemble du cours. Cliquez ensuite sur « Valider mes réponses » pour obtenir votre score."]]}};
+  var CACHE = "ecolia-cours-v1";                       // même cache que l'application
+  var PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  var PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+  var DL = '<svg viewBox="0 0 24 24"><path d="M11 3h2v9.2l3.6-3.6L18 10l-6 6-6-6 1.4-1.4L11 12.2V3zM5 19h14v2H5z"/></svg>';
+  var OK = '<svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>';
+  // Réparation du quiz : certains cours stockent les choix sous "opts" (ou autre) au lieu de "options"
+  try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+      questions.forEach(function (q) {
+        if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+        if (q.text === undefined) q.text = q.question || q.q || q.enonce || q.titre || "";
+        if (typeof q.correct === "undefined") {
+          if (typeof q.answer !== "undefined") q.correct = q.answer;
+          else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+        }
+      });
+    }
+  } catch (e) {}
+  var synth = window.speechSynthesis || null;
+  var HAS_CACHE = !!(window.caches && window.caches.open);
+  var NATIVE = false;           // APK ECOLIA : pont Java "CoursInterface" (fichiers dans le dossier de l'application)
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  var LATER = "ecolia_audio_later_" + CFG.code;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+  function init() {
+    if (document.getElementById("ecolia-audio-btn")) return;
+
+    // ---------- éléments de l'interface ----------
+    var btn = document.createElement("button");
+    btn.id = "ecolia-audio-btn"; btn.type = "button"; btn.className = "ecolia-off";
+    btn.setAttribute("aria-label", "Écouter la leçon"); btn.innerHTML = PLAY;
+    var dlBtn = document.createElement("button");
+    dlBtn.id = "ecolia-dl-btn"; dlBtn.type = "button"; dlBtn.className = "ecolia-off";
+    dlBtn.innerHTML = DL;
+    var host = document.querySelector(".header-right");
+    if (host) { host.insertBefore(dlBtn, host.firstChild); host.insertBefore(btn, dlBtn); }   // dans la barre du haut : ne scrolle jamais
+    else { btn.className += " ecolia-fixed"; document.body.appendChild(btn); }
+
+    var banner = document.createElement("div");
+    banner.id = "ecolia-audio-banner";
+    banner.innerHTML = '<span class="eab-txt"></span><span class="eab-act"></span><div class="eab-bar"><i></i></div>';
+    var content = document.getElementById("content");
+    if (content && content.parentNode) content.parentNode.insertBefore(banner, content);
+    else document.body.insertBefore(banner, document.body.firstChild);
+    var txtEl = banner.querySelector(".eab-txt"), actEl = banner.querySelector(".eab-act");
+    var barEl = banner.querySelector(".eab-bar"), barI = barEl.firstChild;
+
+    var audio = new Audio();            // un seul élément Audio, réutilisé (exigé par les navigateurs mobiles)
+    audio.preload = "auto";
+    var st = { idx: -1, auto: false, advancing: false, mode: null, speaking: false, token: 0, chunks: [], ci: 0, blobUrl: null, playTok: 0 };
+    var dl = { state: "none", cached: 0, busy: false, cancel: false };   // none | partial | full
+    var bnMode = null, hideTimer = null;
+    if (synth && synth.getVoices) { try { synth.getVoices(); } catch (e) {} }
+
+    function cur() {
+      try { if (typeof currentSlide === "number") return currentSlide; } catch (e) {}
+      return 0;
+    }
+    function hasMp3(i) { return CFG.available.indexOf(i + 1) !== -1; }
+    function fb(i) { return CFG.fallback && CFG.fallback[String(i + 1)]; }
+    function hasAudio(i) { return hasMp3(i) || (!!synth && !!fb(i)); }
+    function urlN(n) {   // dans l'APK la page est sur https://app.local : une adresse relative doit pointer vers le site
+      var b = CFG.base;
+      if (NATIVE && !/^https?:/i.test(b)) b = "https://ecolia-course.github.io/" + b.replace(/^(\.\.\/|\.\/)+/, "");
+      return new URL(b + nameN(n), location.href).href;
+    }
+    function setIcon(playing) { btn.innerHTML = playing ? PAUSE : PLAY; }
+    function isPlaying() { return st.mode === "mp3" ? !audio.paused : (st.mode === "tts" && st.speaking); }
+    function mo() { return "≈ " + CFG.sizeMo + " Mo"; }
+    function nameN(n) { return "audio_" + CFG.code + "_" + n + ".mp3"; }
+
+    // ====================================================================
+    //  Stockage hors ligne : 2 moteurs, même interface
+    //    - APK : fichiers du dossier de l'application (CoursInterface), servis par https://app.local/cours/
+    //    - Web : Cache Storage du navigateur (même cache que l'application web)
+    // ====================================================================
+    function nativeStore() {
+      var okKey = "ecolia_audio_ok_" + CFG.code;
+      function readOk() { try { return JSON.parse(lsGet(okKey) || "[]"); } catch (e) { return []; } }
+      function writeOk(a) { lsSet(okKey, JSON.stringify(a)); }
+      function exists(n) { try { return !!CoursInterface.exists(nameN(n)); } catch (e) { return false; } }
+      function local(n) { return location.origin + "/cours/" + nameN(n); }
+      function verify(n) {                                   // fichier complet ? (taille exacte connue à la génération)
+        return fetch(local(n), { cache: "no-store" }).then(function (r) { return r.blob(); }).then(function (b) {
+          var exp = CFG.sizes && CFG.sizes[String(n)];
+          return (b.size > 2000 && (!exp || b.size === exp)) ? b : null;
+        }).catch(function () { return null; });
+      }
+      return {
+        list: function () {
+          var ok = readOk().filter(exists); writeOk(ok); return Promise.resolve(ok);
+        },
+        get: function (n) { return exists(n) ? verify(n) : Promise.resolve(null); },
+        put: function (n) {
+          return new Promise(function (res, rej) {
+            try { CoursInterface.download(urlN(n), nameN(n)); } catch (e) { return rej(e); }
+            var t0 = Date.now();
+            function next() { if (Date.now() - t0 > 120000) rej(new Error("délai dépassé")); else setTimeout(poll, 800); }
+            function poll() {
+              if (!exists(n)) return next();
+              verify(n).then(function (b) {
+                if (!b) return next();
+                var ok = readOk(); if (ok.indexOf(n) < 0) ok.push(n); writeOk(ok); res();
+              });
+            }
+            setTimeout(poll, 800);
+          });
+        },
+        del: function (n) {
+          try { CoursInterface.delete(nameN(n)); } catch (e) {}
+          writeOk(readOk().filter(function (x) { return x !== n; }));
+          return Promise.resolve();
+        }
+      };
+    }
+    function cacheStore() {
+      return {
+        list: function () {
+          return caches.open(CACHE).then(function (c) {
+            return Promise.all(CFG.available.map(function (n) {
+              return c.match(urlN(n)).then(function (r) {
+                if (!r) return 0;
+                if ((r.headers.get("content-type") || "").indexOf("audio") !== 0) { c.delete(urlN(n)); return 0; }   // ancien contenu invalide
+                return n;
+              });
+            }));
+          }).then(function (a) { return a.filter(Boolean); });
+        },
+        get: function (n) {
+          return caches.open(CACHE).then(function (c) { return c.match(urlN(n)); })
+            .then(function (r) { return r ? r.blob() : null; }).then(function (b) { return b && b.size > 2000 ? b : null; });
+        },
+        put: function (n) {
+          var u = urlN(n);
+          return fetch(u, { cache: "no-store" }).then(function (r) {
+            if (!r.ok || r.status !== 200) throw new Error("HTTP " + r.status);
+            return r.blob();
+          }).then(function (b) {
+            if (b.size < 2000 || (b.type && b.type.indexOf("audio") !== 0 && b.type.indexOf("octet") < 0)) throw new Error("fichier invalide");
+            return caches.open(CACHE).then(function (c) { return c.put(u, new Response(b, { headers: { "Content-Type": "audio/mpeg" } })); });
+          });
+        },
+        del: function (n) { return caches.open(CACHE).then(function (c) { return c.delete(urlN(n)); }); }
+      };
+    }
+    var store = NATIVE ? nativeStore() : (HAS_CACHE ? cacheStore() : null);
+
+    // ====================================================================
+    //  Bannière : invitation, confirmations, progression
+    // ====================================================================
+    function showBanner(mode, text, buttons, pct) {
+      clearTimeout(hideTimer);
+      bnMode = mode;
+      txtEl.textContent = text;
+      actEl.innerHTML = "";
+      (buttons || []).forEach(function (b) {
+        var e = document.createElement("button");
+        e.type = "button"; e.textContent = b.label; if (b.pri) e.className = "pri";
+        e.addEventListener("click", function (ev) { ev.stopPropagation(); b.fn(); });
+        actEl.appendChild(e);
+      });
+      if (typeof pct === "number") { barEl.style.display = "block"; barI.style.width = pct + "%"; }
+      else barEl.style.display = "none";
+      banner.classList.add("on");
+    }
+    function hideBanner() { clearTimeout(hideTimer); bnMode = null; banner.classList.remove("on"); }
+    function flash(text) { showBanner("info", text, []); hideTimer = setTimeout(hideBanner, 4000); }
+
+    function refreshUI() {
+      var show = !!store && CFG.available.length > 0;
+      dlBtn.classList.toggle("ecolia-off", !show);
+      dlBtn.classList.toggle("ecolia-full", dl.state === "full");
+      dlBtn.innerHTML = dl.state === "full" ? OK : DL;
+      dlBtn.setAttribute("aria-label", dl.state === "full" ? "Audios téléchargés : supprimer" : "Télécharger les audios");
+      dlBtn.title = dlBtn.getAttribute("aria-label");
+    }
+    function refreshCacheState(done) {
+      if (!store) { dl.state = "none"; refreshUI(); if (done) done(); return; }
+      store.list().then(function (ok) {
+        dl.cached = ok.length;
+        dl.state = dl.cached === 0 ? "none" : (dl.cached >= CFG.available.length ? "full" : "partial");
+      }).catch(function () { dl.state = "none"; }).then(function () { refreshUI(); if (done) done(); });
+    }
+
+    function askDownload(fromInvite) {
+      var left = CFG.available.length - dl.cached;
+      var txt = dl.state === "partial"
+        ? "Il reste " + left + " audio(s) à télécharger pour écouter ce cours sans internet."
+        : "🔊 Télécharger les audios de ce cours (" + mo() + ") pour les écouter sans internet ? Wi-Fi recommandé.";
+      showBanner(fromInvite ? "invite" : "confirm", txt, [
+        { label: fromInvite ? "Plus tard" : "Annuler", fn: function () { if (fromInvite) lsSet(LATER, "1"); hideBanner(); } },
+        { label: "Télécharger", pri: true, fn: startDownload }
+      ]);
+    }
+    function askDelete() {
+      showBanner("confirm", "Supprimer les audios téléchargés de ce cours (" + mo() + ") ? Vous pourrez toujours les écouter en ligne.", [
+        { label: "Annuler", fn: hideBanner },
+        { label: "Supprimer", pri: true, fn: doDelete }
+      ]);
+    }
+
+    function startDownload() {
+      if (dl.busy || !store) return;
+      dl.busy = true; dl.cancel = false;
+      var total = CFG.available.length, done = 0, quota = false, fails = 0, todo = [];
+      store.list().then(function (have) {
+        CFG.available.forEach(function (n) { if (have.indexOf(n) < 0) todo.push(n); });
+        done = total - todo.length;
+        function paint() {
+          var msg = "Téléchargement des audios : " + done + " / " + total;
+          if (bnMode === "progress") {                  // met à jour sans recréer les boutons (sinon un appui peut être perdu)
+            txtEl.textContent = msg; barI.style.width = Math.round(done / total * 100) + "%";
+          } else {
+            showBanner("progress", msg, [
+              { label: "Annuler", fn: function () { dl.cancel = true; } }
+            ], Math.round(done / total * 100));
+          }
+        }
+        paint();
+        function worker() {
+          if (dl.cancel || quota || !todo.length) return Promise.resolve();
+          var n = todo.shift();
+          return store.put(n).then(function () { done++; paint(); }).catch(function (e) {
+            if (e && (e.name === "QuotaExceededError" || /quota/i.test(String(e.message)))) quota = true;
+            fails++;
+          }).then(worker);
+        }
+        return Promise.all([worker(), worker()]);
+      }).catch(function () { fails++; }).then(function () {
+        dl.busy = false;
+        refreshCacheState(function () {
+          if (dl.state === "full") flash("✓ Audios téléchargés : le cours se lit maintenant sans internet.");
+          else if (dl.cancel) flash("Téléchargement interrompu (" + dl.cached + " / " + total + "). Vous pourrez reprendre plus tard.");
+          else showBanner("error", quota ? "Espace insuffisant sur l'appareil. Libérez de la place puis réessayez."
+            : "Certains audios n'ont pas pu être téléchargés (connexion ?).", [
+            { label: "Fermer", fn: hideBanner }, { label: "Réessayer", pri: true, fn: startDownload }
+          ]);
+        });
+      });
+    }
+    function doDelete() {
+      if (!store) return;
+      Promise.all(CFG.available.map(function (n) { return store.del(n); })).catch(function () {}).then(function () {
+        lsDel(LATER);
+        refreshCacheState(function () { flash("Audios supprimés de cet appareil."); });
+      });
+    }
+
+    dlBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (dl.busy) return;
+      if (dl.state === "full") askDelete(); else askDownload(false);
+    });
+
+    // ====================================================================
+    //  Voix intégrée au téléphone (hors ligne, sans limite)
+    // ====================================================================
+    function pickVoice(lang) {
+      var vs = [];
+      try { vs = synth.getVoices() || []; } catch (e) {}
+      var pre = lang === "en" ? "en" : "fr", best = null;
+      for (var k = 0; k < vs.length; k++) {
+        var v = vs[k];
+        if ((v.lang || "").toLowerCase().indexOf(pre) !== 0) continue;
+        if (!best || (v.localService && !best.localService)) best = v;
+      }
+      return best;
+    }
+    function hardSplit(text, max) {
+      var out = [];
+      while (text.length > max) {
+        var cut = text.lastIndexOf(" ", max);
+        if (cut < 40) cut = max;
+        out.push(text.slice(0, cut)); text = text.slice(cut).replace(/^\s+/, "");
+      }
+      if (text) out.push(text);
+      return out;
+    }
+    function buildChunks(segs) {                  // morceaux courts : évite l'arrêt des longs textes sur Chrome
+      var out = [];
+      segs.forEach(function (s) {
+        var cur2 = "", parts = s[1].match(/[^.!?;:]+[.!?;:]*\s*/g) || [s[1]];
+        parts.forEach(function (p) {
+          if (cur2 && (cur2 + p).length > 160) { out.push({ lang: s[0], text: cur2.trim() }); cur2 = p; }
+          else cur2 += p;
+        });
+        if (cur2.trim()) out.push({ lang: s[0], text: cur2.trim() });
+      });
+      var res = [];
+      out.forEach(function (c) { hardSplit(c.text, 190).forEach(function (t) { res.push({ lang: c.lang, text: t }); }); });
+      return res;
+    }
+    function speakFrom(tk) {
+      if (tk !== st.token) return;
+      if (st.ci >= st.chunks.length) {
+        st.speaking = false; st.mode = null; st.ci = 0; setIcon(false);
+        if (st.auto) goNext();
+        return;
+      }
+      var c = st.chunks[st.ci];
+      var u = new SpeechSynthesisUtterance(c.text);
+      u.lang = c.lang === "en" ? "en-US" : "fr-FR";
+      var v = pickVoice(c.lang);
+      if (v) { u.voice = v; u.lang = v.lang; }
+      u.rate = 0.95;
+      u.onend = function () { if (tk !== st.token) return; st.ci++; speakFrom(tk); };
+      u.onerror = function () { if (tk !== st.token) return; st.speaking = false; setIcon(false); st.auto = false; };
+      synth.speak(u);
+    }
+    function startTts(from) {
+      st.token++;
+      var tk = st.token;
+      st.mode = "tts"; st.speaking = true; st.ci = from || 0; setIcon(true);
+      var busy = false;
+      try { busy = synth.speaking || synth.pending; synth.cancel(); } catch (e) {}
+      if (busy) setTimeout(function () { speakFrom(tk); }, 120);   // laisse cancel() se terminer
+      else speakFrom(tk);                                          // sinon tout de suite (exigé par iOS)
+    }
+    function playVoice() {
+      if (!(synth && fb(st.idx))) { st.auto = false; return false; }
+      if (!st.chunks.length) st.chunks = buildChunks(fb(st.idx));
+      startTts(st.ci);
+      return true;
+    }
+
+    // ====================================================================
+    //  Lecture
+    // ====================================================================
+    function freeBlob() { if (st.blobUrl) { try { URL.revokeObjectURL(st.blobUrl); } catch (e) {} st.blobUrl = null; } }
+    function stopAll() {
+      st.playTok++;
+      try { audio.pause(); audio.currentTime = 0; } catch (e) {}
+      st.token++;
+      try { if (synth) synth.cancel(); } catch (e) {}
+      st.speaking = false; st.mode = null; st.chunks = []; st.ci = 0;
+      setIcon(false);
+    }
+    function pauseNow() {
+      if (st.mode === "mp3") audio.pause();
+      else if (st.mode === "tts") {
+        st.token++;
+        try { synth.cancel(); } catch (e) {}
+        st.speaking = false; setIcon(false);      // st.ci conservé : la reprise repart de la phrase en cours
+      }
+    }
+    function startAudio(src, tok) {
+      if (tok !== st.playTok) return;
+      if (audio.getAttribute("data-src") !== src) { audio.setAttribute("data-src", src); audio.src = src; }
+      var p = audio.play();
+      if (p && p.catch) p.catch(function (err) {
+        console.warn("ECOLIA audio :", err);
+        if (tok !== st.playTok) return;
+        if (!(err && err.name === "NotAllowedError") && playVoice()) return;   // lecture impossible : voix du téléphone
+        setIcon(false); st.auto = false;
+      });
+    }
+    function playCurrent() {
+      var i = st.idx;
+      if (hasMp3(i)) {
+        var tok = ++st.playTok, u = urlN(i + 1);
+        st.mode = "mp3";
+        if (!navigator.onLine && dl.state === "none") { st.mode = null; if (playVoice()) return; }   // hors ligne et non téléchargé
+        if (store && dl.state !== "none") {                     // téléchargé : lecture locale, sans réseau
+          store.get(i + 1)
+            .then(function (b) {
+              if (tok !== st.playTok) return;
+              if (b) { freeBlob(); st.blobUrl = URL.createObjectURL(new Blob([b], { type: "audio/mpeg" })); startAudio(st.blobUrl, tok); }
+              else startAudio(u, tok);
+            }).catch(function () { startAudio(u, tok); });
+        } else startAudio(u, tok);                              // sinon lecture en ligne (appel immédiat, exigé par iOS)
+      } else if (!playVoice()) {
+        st.auto = false;
+      }
+    }
+
+    function onSlideChange(i) {
+      var wasAdvancing = st.advancing;
+      st.advancing = false;
+      st.idx = i;
+      btn.classList.toggle("ecolia-off", !hasAudio(i));
+      stopAll();
+      audio.removeAttribute("data-src");
+      freeBlob();
+      if (bnMode === "invite" && i !== 0) hideBanner();       // l'invitation n'apparaît qu'à la première slide
+      if (wasAdvancing && st.auto) setTimeout(playCurrent, 500);   // enchaînement automatique
+      else st.auto = false;                                         // changement manuel : on coupe tout
+    }
+    function goNext() {
+      if (st.idx + 1 >= CFG.count) { st.auto = false; return; }
+      st.advancing = true;
+      if (typeof nextSlide === "function") nextSlide();
+      else { var nb = document.getElementById("nextBtn"); if (nb) nb.click(); }
+      setTimeout(function () { st.advancing = false; }, 4000);
+    }
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var i = cur();
+      if (i !== st.idx) onSlideChange(i);
+      if (isPlaying()) { st.auto = false; pauseNow(); }
+      else { st.auto = true; playCurrent(); }
+    });
+    audio.addEventListener("play", function () { setIcon(true); });
+    audio.addEventListener("pause", function () { if (st.mode === "mp3") setIcon(false); });
+    audio.addEventListener("error", function () {
+      if (st.mode === "mp3" && playVoice()) return;            // fichier introuvable / hors ligne : voix du téléphone
+      setIcon(false); st.auto = false;
+    });
+    audio.addEventListener("ended", function () { setIcon(false); if (st.auto) goNext(); });
+    window.addEventListener("pagehide", function () { stopAll(); freeBlob(); });
+
+    // ---------- démarrage ----------
+    refreshCacheState(function () {
+      if (store && CFG.available.length && dl.state !== "full" && navigator.onLine && cur() === 0 && !lsGet(LATER)) askDownload(true);
+    });
+    st.idx = -1;
+    setInterval(function () { var i = cur(); if (i !== st.idx) onSlideChange(i); }, 250);   // suit la slide affichée
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+<!-- ECOLIA_AUDIO_PLAYER_END -->
+</body>
+</html>

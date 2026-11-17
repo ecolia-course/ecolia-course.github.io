@@ -1,0 +1,1597 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="bleu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>ECOLIA — Gestion Dechets4</title>
+<style>
+[data-theme="bleu"]   { --p1:#0d2b4f; --p2:#1565c0; --p3:#07172e; --p4:#12437a; --p5:#5b8fd0; --bg:#e8f0fb; --bg2:#cfdff5; --bd:#a9c3e8; --soft:#dde8f7; --btn:#2a67b0; }
+[data-theme="vert"]   { --p1:#14442e; --p2:#2e7d32; --p3:#0b2b1a; --p4:#1f5c3a; --p5:#4f9a6b; --bg:#e8f5ec; --bg2:#c8e6d2; --bd:#a5cdb2; --soft:#dcefe2; --btn:#2f7a4f; }
+[data-theme="violet"] { --p1:#2d1b4e; --p2:#6a1b9a; --p3:#1a0f2e; --p4:#4a148c; --p5:#9c6fd0; --bg:#f1e9fb; --bg2:#dccbf2; --bd:#c4a8e6; --soft:#e8ddf6; --btn:#7e3fb2; }
+[data-theme="rouge"]  { --p1:#4a1010; --p2:#b71c1c; --p3:#2b0a0a; --p4:#8e1b1b; --p5:#d9706a; --bg:#fbeaea; --bg2:#f3cdcb; --bd:#e8a9a5; --soft:#f8dede; --btn:#a62a2a; }
+[data-theme="orange"] { --p1:#4e2a0c; --p2:#ef6c00; --p3:#2e1604; --p4:#b34a00; --p5:#f0a15a; --bg:#fff1e0; --bg2:#fbdcb8; --bd:#f3c08a; --soft:#fdebd6; --btn:#c9650a; }
+[data-theme="teal"]   { --p1:#0b3a3a; --p2:#00796b; --p3:#062626; --p4:#00574b; --p5:#4db6ac; --bg:#e0f2f1; --bg2:#b2dfdb; --bd:#80cbc4; --soft:#d5ecea; --btn:#26897d; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:linear-gradient(160deg,var(--p1) 0%,var(--p2) 50%,var(--p3) 100%); display:flex; justify-content:center; align-items:center; padding:8px; }
+.container { width:100%; max-width:1400px; background:#fefdf8; border-radius:20px; overflow:hidden; display:flex; flex-direction:column; height:100%; max-height:100vh; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.progress-bar { height:4px; background:var(--bg2); flex-shrink:0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--p5),var(--p4)); width:0%; transition:width 0.3s; }
+.header { padding:10px 16px; background:var(--bg); border-bottom:1px solid var(--bd); display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+.header h1 { color:var(--p4); font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box { display:flex; background:white; border-radius:20px; padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.search-box input { border:none; padding:6px 10px; border-radius:20px; outline:none; width:130px; font-size:0.8rem; }
+.search-box button { background:none; border:none; cursor:pointer; padding:4px 8px; font-size:0.85rem; color:var(--p2); }
+.badge { background:var(--p5); color:white; padding:4px 10px; border-radius:20px; font-weight:bold; font-size:0.75rem; }
+.search-nav { display:none; gap:4px; background:var(--bg2); padding:2px 8px; border-radius:20px; align-items:center; font-size:0.75rem; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:0.9rem; color:var(--p4); padding:2px 4px; }
+.content { padding:28px 32px; flex:1; overflow-y:auto; background:#fff; scroll-behavior:smooth; line-height:1.85; }
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.slide-title { color:var(--p1); font-size:1.5rem; font-weight:700; padding-bottom:12px; margin-bottom:20px; border-bottom:2px solid var(--p5); }
+.slide-content { color:var(--p3); font-size:1rem; }
+.empty-state { display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-height:60vh; padding:40px 20px; gap:18px; }
+.empty-state .icon { width:72px; height:72px; border-radius:50%; background:var(--bg); border:2px solid var(--bd); display:flex; align-items:center; justify-content:center; color:var(--p2); font-size:2rem; font-weight:300; }
+.empty-state h2 { color:var(--p1); font-size:1.4rem; font-weight:700; margin:0; }
+.empty-state p { color:#666; font-size:0.95rem; max-width:520px; line-height:1.7; }
+.empty-state .tag { display:inline-block; padding:6px 14px; background:var(--bg); color:var(--p4); border:1px solid var(--bd); border-radius:20px; font-size:0.8rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; }
+.bloc { padding:18px 22px; border-radius:12px; margin:22px 0; line-height:1.85; }
+.bloc-label { font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; opacity:0.7; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:var(--bg); border-left:4px solid var(--p5); }
+.theorie .bloc-label { color:var(--p4); }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.sources { background:#f5f5f5; padding:12px 16px; border-radius:10px; margin-top:26px; font-size:0.82rem; color:#666; border-left:3px solid #999; line-height:1.6; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:var(--p1); }
+.quiz-container { padding:22px; background:var(--bg); border-radius:16px; }
+.quiz-question { background:white; border-radius:10px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.quiz-question p { font-weight:600; margin-bottom:10px; color:var(--p1); }
+.quiz-question label { display:block; padding:8px 10px; margin:4px 0; border-radius:6px; cursor:pointer; transition:background 0.2s; }
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit { background:var(--btn); color:white; border:none; padding:12px 24px; border-radius:30px; font-size:1rem; cursor:pointer; font-weight:600; margin-top:14px; }
+.quiz-result { margin-top:16px; font-weight:600; }
+.controls { padding:8px 16px; background:#fafafa; border-top:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0; }
+.nav-btn { background:white; color:var(--p4); border:1px solid #ccc; padding:8px 14px; border-radius:8px; font-size:0.82rem; cursor:pointer; font-weight:500; }
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:var(--soft); }
+.content::-webkit-scrollbar-thumb { background:var(--p5); border-radius:3px; }
+@media (max-width:600px) { body { padding:0; } .container { border-radius:0; max-height:100vh; } .content { padding:20px 18px; } .slide-title { font-size:1.25rem; } .search-box input { width:90px; } .header h1 { font-size:0.85rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="header">
+<h1 id="pageTitle">ECOLIA</h1>
+<div class="header-right">
+<div class="search-box">
+<input id="searchInput" placeholder="Rechercher" type="text"/>
+<button id="searchBtn">⌕</button>
+</div>
+<div class="search-nav" id="searchNav">
+<button id="prevResultBtn">‹</button>
+<span id="resultCounter">0/0</span>
+<button id="nextResultBtn">›</button>
+</div>
+<span class="badge" id="slideCounter">0/0</span>
+</div>
+</div>
+<div class="content" id="content"></div>
+<div class="controls">
+<button class="nav-btn" id="prevBtn">← Précédent</button>
+<span class="counter" id="counter">—</span>
+<button class="nav-btn" id="nextBtn">Suivant →</button>
+</div>
+</div>
+<script>
+const COURSE_TITLE = "Gestion des Déchets (Gestion des Déchets Biomédicaux et Assainissement)";
+const slides = [
+  {
+    title: "Sommaire — Gestion des Déchets (Gestion des Déchets Biomédicaux et Assainissement)",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Présentation du cours</div>
+        <h3>Trier, collecter, traiter : protéger la santé et l'environnement</h3>
+        <p>Les déchets produits par les structures de santé ne sont pas des ordures ordinaires. Aiguilles, pansements souillés, placentas, médicaments périmés : ils peuvent transmettre des infections, polluer l'environnement et provoquer des accidents. En République Démocratique du Congo, 96,2 % du personnel n'a pas reçu de formation sur la gestion des déchets biomédicaux, et les incinérateurs sont souvent vétustes ou absents. Ce cours vous apprendra à classer les déchets, à appliquer le tri à la source, à décrire les étapes de la gestion et à sensibiliser le personnel.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Objectifs d'apprentissage</div>
+        <h3>À la fin de ce cours, vous serez capable de :</h3>
+        <ul>
+          <li>Classer les déchets d'activités de soins selon leurs catégories.</li>
+          <li>Identifier les risques sanitaires et environnementaux.</li>
+          <li>Appliquer le tri à la source et le conditionnement (codage couleur).</li>
+          <li>Décrire les étapes de la gestion des déchets.</li>
+          <li>Connaître les équipements de traitement (incinérateur, fosse à placentas, autoclave).</li>
+          <li>Appliquer les règles de sécurité et utiliser les EPI.</li>
+          <li>Participer à la formation et à la sensibilisation du personnel.</li>
+          <li>Contribuer à l'assainissement et à la salubrité publique.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Plan du cours</div>
+        <h3>Huit chapitres progressifs</h3>
+        <ol>
+          <li>Introduction à la gestion des déchets</li>
+          <li>La classification des déchets d'activités de soins</li>
+          <li>Les risques sanitaires et environnementaux</li>
+          <li>Le tri à la source et le conditionnement</li>
+          <li>Les étapes de la gestion des déchets</li>
+          <li>Les équipements de traitement</li>
+          <li>La sécurité et la formation</li>
+          <li>L'assainissement et la salubrité publique</li>
+        </ol>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 1 — Pourquoi la gestion des déchets ?",
+    content: `
+      <div class="bloc cas">
+        <div class="bloc-label">Situation-problème</div>
+        <h3>Une aiguille dans la poubelle ordinaire</h3>
+        <p>Dans un hôpital de Kinshasa, un agent de surface se blesse avec une aiguille qui avait été jetée dans une poubelle ordinaire. L'aiguille provenait d'un service où l'on soignait des patients infectés par le VIH et les hépatites. L'agent est exposé à un risque majeur. Que s'est-il passé ? Une erreur de tri à la source. Ce cas illustre l'importance de la gestion des déchets biomédicaux.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Définition</div>
+        <h3>Une chaîne de responsabilités</h3>
+        <p>La <strong>gestion des déchets d'activités de soins (DAS)</strong> est l'ensemble des opérations visant à collecter, trier, conditionner, stocker, transporter, traiter et éliminer les déchets produits par les structures de santé, en minimisant les risques pour la santé et l'environnement.</p>
+
+        <h4>Importance en RDC</h4>
+        <ul>
+          <li><strong>96,2 %</strong> du personnel n'a pas reçu de formation sur la gestion des déchets biomédicaux (DBM).</li>
+          <li>Le <strong>tri sélectif</strong> est insuffisant.</li>
+          <li>Les <strong>incinérateurs</strong> et équipements sont insuffisants ou vétustes.</li>
+          <li>Les déchets sont souvent brûlés à l'air libre ou jetés dans des décharges non contrôlées.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Cadre réglementaire</div>
+        <p>Le <strong>Plan de Gestion des Déchets Biomédicaux (PGDBM)</strong> et le <strong>Plan de Lutte contre les Infections et de Gestion des Déchets Biomédicaux (PLIGD)</strong> définissent les orientations nationales. La révision des référentiels pédagogiques des ITM/ISTM est recommandée pour intégrer la gestion des DBM.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 1 — Définition et cadre réglementaire",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Une obligation professionnelle</h3>
+        <p>La gestion des déchets est une <strong>obligation professionnelle</strong> et une <strong>responsabilité de santé publique</strong>. Elle concerne tous les acteurs : soignants, agents de surface, techniciens d'assainissement, administrateurs.</p>
+
+        <h4>Le cadre réglementaire en RDC</h4>
+        <ul>
+          <li><strong>PGDBM</strong> : Plan de Gestion des Déchets Biomédicaux.</li>
+          <li><strong>PLIGD</strong> : Plan de Lutte contre les Infections et de Gestion des Déchets Biomédicaux.</li>
+          <li><strong>Recommandations internationales</strong> : OMS, UNICEF (EHA en milieu de soins).</li>
+        </ul>
+
+        <h4>Les principes</h4>
+        <ul>
+          <li><strong>Principe de précaution</strong> : considérer tout déchet comme potentiellement infectieux.</li>
+          <li><strong>Principe de proximité</strong> : traiter les déchets au plus près de leur production.</li>
+          <li><strong>Principe pollueur-payeur</strong> : le producteur de déchets est responsable de leur élimination.</li>
+          <li><strong>Traçabilité</strong> : chaque étape doit être documentée.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Croire que les déchets de soins sont des ordures comme les autres. Ils présentent des <strong>risques infectieux, chimiques et radioactifs</strong> qui nécessitent une filière spécifique.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 2 — La classification des déchets d'activités de soins",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Six grandes catégories</h3>
+        <p>Les déchets d'activités de soins sont classés en plusieurs catégories selon leur nature et leur risque.</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Catégorie</th>
+              <th>Exemples</th>
+              <th>Filière</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>DAOM (déchets assimilables aux ordures ménagères)</td>
+              <td>Emballages non souillés, restes alimentaires, papiers</td>
+              <td>Filière des déchets ménagers</td>
+            </tr>
+            <tr>
+              <td>Déchets infectieux</td>
+              <td>Pansements souillés, gants usagés, tubes de prélèvement, cultures</td>
+              <td>Incinération ou autoclave</td>
+            </tr>
+            <tr>
+              <td>Déchets piquants/tranchants</td>
+              <td>Aiguilles, lames, ampoules</td>
+              <td>Collecteurs rigides jaunes</td>
+            </tr>
+            <tr>
+              <td>Déchets anatomiques</td>
+              <td>Tissus, organes, placentas</td>
+              <td>Incinération ou fosse à placentas</td>
+            </tr>
+            <tr>
+              <td>Déchets chimiques/pharmaceutiques</td>
+              <td>Médicaments périmés, solvants, désinfectants</td>
+              <td>Filière spécifique</td>
+            </tr>
+            <tr>
+              <td>Déchets radioactifs</td>
+              <td>Résidus de médecine nucléaire</td>
+              <td>Filière réglementée</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Mélanger les déchets infectieux et les DAOM. Cela <strong>augmente le volume à traiter</strong> et le risque de contamination. Le tri à la source est la première barrière.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 2 — Focus sur les déchets piquants et anatomiques",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Les déchets piquants et tranchants</div>
+        <h3>Une priorité absolue</h3>
+        <p>Les <strong>déchets piquants et tranchants</strong> (aiguilles, lames, ampoules) sont les plus dangereux pour le personnel : ils peuvent provoquer des <strong>accidents d'exposition au sang (AES)</strong> et transmettre des infections graves (VIH, hépatites B et C, tétanos).</p>
+
+        <h4>Précautions</h4>
+        <ul>
+          <li><strong>Ne jamais recapuchonner</strong> une aiguille.</li>
+          <li><strong>Jeter immédiatement</strong> dans un collecteur rigide jaune.</li>
+          <li><strong>Ne pas dépasser</strong> le niveau de remplissage maximal.</li>
+          <li><strong>Fermer hermétiquement</strong> le collecteur lorsqu'il est plein.</li>
+          <li><strong>Acheminer rapidement</strong> vers la filière de traitement.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les déchets anatomiques</div>
+        <h3>Une sensibilité culturelle et sanitaire</h3>
+        <p>Les <strong>déchets anatomiques</strong> (tissus, organes, placentas) doivent être traités avec respect et selon des règles strictes.</p>
+
+        <h4>Filières possibles</h4>
+        <ul>
+          <li><strong>Incinération</strong> dans un incinérateur dédié.</li>
+          <li><strong>Fosse à placentas</strong> : fosse aménagée, couverte, dans l'enceinte de la structure de santé.</li>
+          <li><strong>Enfouissement contrôlé</strong> dans un site autorisé.</li>
+        </ul>
+
+        <h4>Précautions</h4>
+        <ul>
+          <li>Respect des rites culturels.</li>
+          <li>Pas d'enfouissement sauvage.</li>
+          <li>Localisation à distance des sources d'eau.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>La gestion des piquants/tranchants et des anatomiques exige une <strong>rigueur absolue</strong>. Une aiguille mal jetée peut tuer ; un placenta mal éliminé peut contaminer l'environnement.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 3 — Les risques sanitaires",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Des risques multiples</h3>
+        <p>La mauvaise gestion des déchets expose à plusieurs types de risques.</p>
+
+        <h4>Risques infectieux</h4>
+        <ul>
+          <li><strong>Transmission d'agents pathogènes</strong> : VIH, hépatites B et C, tétanos, tuberculose.</li>
+          <li><strong>Voies de transmission</strong> : piqûre, contact cutanéo-muqueux, inhalation, ingestion.</li>
+        </ul>
+
+        <h4>Accidents d'exposition au sang (AES)</h4>
+        <ul>
+          <li>Piqûres avec des aiguilles contaminées.</li>
+          <li>Coupures avec des lames, tessons.</li>
+          <li>Projections sur les muqueuses (yeux, bouche).</li>
+        </ul>
+        <p>Conduite à tenir en cas d'AES : lavage abondant à l'eau et au savon, antiseptique, consultation médicale immédiate, déclaration, prophylaxie post-exposition si indiquée.</p>
+
+        <h4>Risques chimiques et toxiques</h4>
+        <ul>
+          <li>Exposition aux produits chimiques (désinfectants, solvants, médicaments cytotoxiques).</li>
+          <li>Brûlures, intoxications, allergies.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Sous-estimer le risque d'AES lors de la manipulation des déchets. Les <strong>précautions standard</strong> s'appliquent à tous les déchets, car on ne connaît pas toujours le statut infectieux des patients.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 3 — Les risques environnementaux",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Une pollution durable</h3>
+        <p>La mauvaise gestion des déchets de soins pollue l'environnement et contamine la chaîne alimentaire.</p>
+
+        <h4>Sources de pollution</h4>
+        <ul>
+          <li><strong>Brûlage à l'air libre</strong> : émission de dioxines, furanes, particules fines, métaux lourds.</li>
+          <li><strong>Décharges non contrôlées</strong> : infiltration dans les sols et les nappes phréatiques.</li>
+          <li><strong>Rejet dans les cours d'eau</strong> : contamination des ressources en eau.</li>
+          <li><strong>Mauvaise manipulation des produits chimiques</strong> : pollution des sols.</li>
+        </ul>
+
+        <h4>Conséquences</h4>
+        <ul>
+          <li>Contamination des sols et des eaux.</li>
+          <li>Contamination de la chaîne alimentaire (agriculture, élevage, pêche).</li>
+          <li>Atteinte à la biodiversité.</li>
+          <li>Contribution au changement climatique (incinération non contrôlée).</li>
+          <li>Nuisances olfactives et visuelles.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Les déchets de soins ne sont pas seulement un problème de santé : c'est aussi un <strong>problème environnemental</strong>. Une gestion rigoureuse protège à la fois les patients, le personnel, les communautés et l'écosystème.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 4 — Le tri à la source",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>La première barrière</h3>
+        <p>Le <strong>tri à la source</strong> consiste à séparer les déchets au moment de leur production, par le producteur (soignant), dans des contenants dédiés. C'est la première barrière de sécurité.</p>
+
+        <h4>Le codage couleur</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Couleur</th>
+              <th>Type de déchets</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Jaune</td><td>Déchets infectieux et piquants/tranchants</td></tr>
+            <tr><td>Noir</td><td>DAOM (ordures ménagères)</td></tr>
+            <tr><td>Rouge</td><td>Déchets anatomiques (ou selon protocoles locaux)</td></tr>
+            <tr><td>Bleu</td><td>Déchets chimiques et pharmaceutiques</td></tr>
+            <tr><td>Vert</td><td>Déchets recyclables (selon les filières)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <figure>
+        <img data-image-id="gestiondechets4_img01" alt="Affiche de tri des déchets biomédicaux avec codage couleur : jaune, noir, rouge, bleu, vert" />
+        <figcaption>Le tri à la source : chaque déchet dans son contenant.</figcaption>
+      </figure>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Bonnes pratiques</div>
+        <ul>
+          <li>Ne pas remplir excessivement les sacs (max 2/3 ou 3/4).</li>
+          <li>Fermer hermétiquement les sacs.</li>
+          <li>Étiqueter clairement les contenants.</li>
+          <li>Ne jamais mélanger les catégories.</li>
+          <li>Former le personnel au tri.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 4 — Le conditionnement",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Des contenants adaptés</h3>
+        <p>Le <strong>conditionnement</strong> est l'ensemble des opérations qui consistent à placer les déchets dans des contenants adaptés à leur catégorie, en vue de leur stockage et de leur transport.</p>
+
+        <h4>Les contenants</h4>
+        <ul>
+          <li><strong>Sacs en plastique</strong> : adaptés aux DAOM et aux déchets infectieux (sacs jaunes).</li>
+          <li><strong>Collecteurs rigides jaunes</strong> : pour les piquants et tranchants, avec un couvercle et un système de fermeture.</li>
+          <li><strong>Poubelles étiquetées</strong> : pour les déchets de soins, avec un couvercle.</li>
+          <li><strong>Contenants étanches</strong> : pour les déchets liquides.</li>
+        </ul>
+
+        <h4>Bonnes pratiques</h4>
+        <ul>
+          <li>Utiliser des contenants conformes aux normes.</li>
+          <li>Éviter les sacs surchargés (ils se déchirent).</li>
+          <li>Ne pas compacter les déchets à la main.</li>
+          <li>Fermer hermétiquement les contenants avant transport.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Utiliser des sacs non conformes ou surchargés. Les sacs se déchirent et exposent le personnel aux déchets. Un <strong>conditionnement rigoureux</strong> est indispensable.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 5 — Les étapes de la gestion des déchets",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Une chaîne de sept étapes</h3>
+        <ol>
+          <li><strong>Tri à la source</strong> : séparation au moment de la production.</li>
+          <li><strong>Pré-collecte</strong> : collecte des déchets dans les services, au plus près du lieu de production.</li>
+          <li><strong>Collecte</strong> : transfert des déchets vers un local de stockage intermédiaire.</li>
+          <li><strong>Stockage intermédiaire</strong> : local fermé, aéré, à l'abri du soleil, avec des contenants identifiés ; durée limitée.</li>
+          <li><strong>Transport</strong> : vers le lieu de traitement (incinérateur, autoclave, site d'enfouissement) ; véhicules dédiés, étanches.</li>
+          <li><strong>Traitement</strong> : incinération, autoclavage, désinfection chimique, broyage.</li>
+          <li><strong>Élimination finale</strong> : enfouissement contrôlé, rejet en filière agréée.</li>
+        </ol>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Négliger le <strong>stockage intermédiaire</strong>. Les déchets s'accumulent, attirent les vecteurs, dégagent des odeurs, deviennent un danger. Le local doit être fermé, aéré et régulièrement nettoyé.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 5 — Le stockage, le transport et l'élimination",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Le stockage intermédiaire</div>
+        <h3>Un local dédié</h3>
+        <ul>
+          <li><strong>Localisation</strong> : à l'écart des zones de soins, à l'abri du soleil.</li>
+          <li><strong>Construction</strong> : sol lavable, murs lavables, ventilation.</li>
+          <li><strong>Accès</strong> : réservé au personnel formé.</li>
+          <li><strong>Durée</strong> : limitée selon la filière (souvent 24-48 h pour les infectieux).</li>
+          <li><strong>Nettoyage</strong> : quotidien, désinfection régulière.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Le transport</div>
+        <h3>Éviter les fuites et les expositions</h3>
+        <ul>
+          <li><strong>Véhicules dédiés</strong> : identifiés, étanches, fermés.</li>
+          <li><strong>Contenants hermétiques</strong> : jamais de sacs ouverts.</li>
+          <li><strong>Itinéraires</strong> : éviter les zones fréquentées aux heures de pointe.</li>
+          <li><strong>Personnel formé</strong> : EPI, précautions.</li>
+          <li><strong>Traçabilité</strong> : bordereaux de suivi.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">L'élimination finale</div>
+        <h3>Une filière contrôlée</h3>
+        <ul>
+          <li><strong>Enfouissement contrôlé</strong> : site autorisé, fosses étanches.</li>
+          <li><strong>Rejet en filière agréée</strong> : pour les déchets recyclables.</li>
+          <li><strong>Interdiction</strong> : rejet dans la nature, décharges sauvages, incinération à l'air libre.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 6 — L'incinérateur Montfort",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Détruire les déchets infectieux</h3>
+        <p>L'<strong>incinérateur Montfort</strong> est un incinérateur simple, robuste et adapté aux structures de santé de première ligne. Il est utilisé pour détruire les déchets infectieux et anatomiques.</p>
+
+        <h4>Caractéristiques</h4>
+        <ul>
+          <li><strong>Chambre de combustion</strong> en briques réfractaires.</li>
+          <li><strong>Température</strong> : plus de 850 °C pour une combustion complète.</li>
+          <li><strong>Chargement</strong> : par le haut, en petites quantités.</li>
+          <li><strong>Cheminée</strong> : évacuation des fumées.</li>
+          <li><strong>Cendres</strong> : à enfouir dans une fosse dédiée.</li>
+        </ul>
+
+        <h4>Surveillance</h4>
+        <ul>
+          <li><strong>Signes de combustion incomplète</strong> : fumée excessive, cendres non calcinées.</li>
+          <li><strong>Formation du personnel</strong> à la surveillance et à la maintenance.</li>
+          <li><strong>Contrôle de la température</strong> : ne pas surcharger l'incinérateur.</li>
+        </ul>
+      </div>
+
+      <figure>
+        <img data-image-id="gestiondechets4_img02" alt="Incinérateur Montfort avec cheminée et chambre de combustion en briques réfractaires" />
+        <figcaption>L'incinérateur Montfort : détruire les déchets infectieux à haute température.</figcaption>
+      </figure>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Utiliser un incinérateur sans surveillance de la température. Une <strong>combustion incomplète</strong> génère des polluants toxiques (dioxines, furanes) et ne détruit pas les pathogènes. La surveillance est indispensable.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 6 — La fosse à placentas et les autres équipements",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">La fosse à placentas</div>
+        <h3>Une solution simple pour les anatomiques</h3>
+        <p>La <strong>fosse à placentas</strong> est une fosse creusée et aménagée pour l'enfouissement des placentas et autres déchets anatomiques.</p>
+
+        <h4>Caractéristiques</h4>
+        <ul>
+          <li><strong>Localisation</strong> : dans l'enceinte de la structure, à distance des sources d'eau.</li>
+          <li><strong>Construction</strong> : parois maçonnées, couvercle, profondeur suffisante.</li>
+          <li><strong>Utilisation</strong> : chaque dépôt est recouvert de terre ou de chaux.</li>
+          <li><strong>Fermeture</strong> : définitive lorsqu'elle est pleine ; une nouvelle fosse est alors aménagée.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les autres équipements</div>
+        <h3>Compléter la filière</h3>
+        <ul>
+          <li><strong>Autoclave</strong> : stérilisation par vapeur sous pression (121 °C ou 134 °C) pour les déchets infectieux et les instruments.</li>
+          <li><strong>Broyeur</strong> : réduction du volume des déchets (verre, objets).</li>
+          <li><strong>Poubelles et collecteurs</strong> : étiquetés, dédiés à chaque catégorie.</li>
+          <li><strong>Fosses de cendres</strong> : pour les résidus d'incinération.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>La <strong>fosse à placentas</strong> est une solution simple et culturellement acceptable pour les déchets anatomiques. Elle doit être construite et entretenue selon les règles, pour éviter toute contamination de l'environnement.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 7 — La sécurité et les équipements de protection individuelle",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Protéger le personnel</h3>
+        <p>La manipulation des déchets expose à des risques. Les <strong>équipements de protection individuelle (EPI)</strong> sont indispensables.</p>
+
+        <h4>Les EPI</h4>
+        <ul>
+          <li><strong>Gants</strong> résistants (nitrile, latex épais).</li>
+          <li><strong>Blouse</strong> ou combinaison de travail.</li>
+          <li><strong>Masque</strong> (en cas de risque d'aérosols).</li>
+          <li><strong>Lunettes</strong> de protection contre les projections.</li>
+          <li><strong>Chaussures de sécurité</strong> fermées.</li>
+          <li><strong>Casque</strong> si nécessaire (zones de travail particulières).</li>
+        </ul>
+
+        <h4>Les précautions</h4>
+        <ul>
+          <li><strong>Ne pas recapuchonner</strong> les aiguilles.</li>
+          <li><strong>Ne pas compacter</strong> les déchets à la main.</li>
+          <li><strong>Se laver les mains</strong> après manipulation.</li>
+          <li><strong>Ne pas manger, boire ou fumer</strong> dans les zones de travail.</li>
+          <li><strong>Déclarer</strong> tout accident d'exposition.</li>
+        </ul>
+      </div>
+
+      <figure>
+        <img data-image-id="gestiondechets4_img03" alt="Agent de collecte des déchets biomédicaux en tenue de protection : gants, blouse, masque" />
+        <figcaption>La protection du personnel de collecte : une priorité absolue.</figcaption>
+      </figure>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Confier la manipulation des déchets à du personnel non formé (filles et garçons de salle) sans encadrement. C'est une <strong>source majeure d'accidents</strong>. Toute personne manipulant les déchets doit être formée et équipée.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 7 — La formation du personnel",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Un constat préoccupant</div>
+        <h3>Un besoin urgent de formation</h3>
+        <p>En RDC, <strong>96,2 % du personnel</strong> n'a pas reçu de formation sur la gestion des déchets biomédicaux. C'est une cause majeure de mauvaises pratiques et d'accidents.</p>
+
+        <h4>Les contenus de la formation</h4>
+        <ul>
+          <li><strong>Risques</strong> liés à la manipulation des DBM.</li>
+          <li><strong>Tri à la source</strong> et codage couleur.</li>
+          <li><strong>Conditionnement</strong> et étiquetage.</li>
+          <li><strong>Étapes de la gestion</strong> : collecte, stockage, transport, traitement.</li>
+          <li><strong>Utilisation des EPI</strong>.</li>
+          <li><strong>Maintenance</strong> des équipements (incinérateur Montfort).</li>
+          <li><strong>Conduite à tenir en cas d'AES</strong>.</li>
+          <li><strong>Traçabilité</strong> et documents.</li>
+        </ul>
+
+        <h4>Méthodes pédagogiques</h4>
+        <ul>
+          <li>Ateliers pratiques.</li>
+          <li>Simulations (tri, manipulation d'aiguilles).</li>
+          <li>Supports visuels (affiches, fiches).</li>
+          <li>Évaluation des acquis.</li>
+          <li>Recyclage régulier.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>La formation est un <strong>investissement</strong>, pas un coût. Un personnel formé réduit les accidents, améliore la qualité des soins et protège l'environnement. La révision des référentiels pédagogiques des ITM/ISTM est une priorité nationale.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 8 — L'assainissement et la salubrité publique",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Au-delà des déchets de soins</h3>
+        <p>L'<strong>assainissement</strong> englobe toutes les mesures visant à préserver la salubrité publique : gestion des déchets solides et liquides, latrines, eaux usées, lutte antivectorielle.</p>
+
+        <h4>Les latrines</h4>
+        <ul>
+          <li><strong>Conception</strong> : fosse étanche, dalle, superstructure, ventilation.</li>
+          <li><strong>Entretien</strong> : nettoyage régulier, vidange périodique.</li>
+          <li><strong>Prévention</strong> : distance des sources d'eau, pas de latrines à proximité d'un puits.</li>
+        </ul>
+
+        <h4>L'évacuation des eaux usées</h4>
+        <ul>
+          <li><strong>Fosses septiques</strong> : pour les eaux domestiques.</li>
+          <li><strong>Réseaux d'assainissement</strong> : pour les zones urbaines.</li>
+          <li><strong>Traitement</strong> avant rejet dans le milieu naturel.</li>
+        </ul>
+
+        <h4>La lutte antivectorielle</h4>
+        <ul>
+          <li>Élimination des gîtes larvaires (eaux stagnantes).</li>
+          <li>Désherbage, assèchement des zones humides.</li>
+          <li>Pulvérisations d'insecticides.</li>
+          <li>Moustiquaires imprégnées.</li>
+        </ul>
+
+        <h4>La salubrité publique</h4>
+        <ul>
+          <li>Propreté des marchés, des écoles, des quartiers.</li>
+          <li>Gestion des déchets ménagers.</li>
+          <li>Éducation à l'hygiène.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Négliger l'assainissement autour des structures de santé. Les déchets et les eaux stagnantes attirent les vecteurs (mouches, moustiques, rongeurs) et favorisent les épidémies. L'<strong>assainissement</strong> fait partie intégrante de la prévention.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 8 — Le cas des épidémies",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Quand la gestion des déchets devient vitale</h3>
+        <p>Lors des épidémies (choléra, Ebola, rougeole), la gestion des déchets prend une importance particulière. Les déchets contaminés peuvent être une source majeure de transmission.</p>
+
+        <h4>Mesures renforcées en période d'épidémie</h4>
+        <ul>
+          <li><strong>Tri strict</strong> des déchets contaminés.</li>
+          <li><strong>Double emballage</strong> pour les déchets très infectieux.</li>
+          <li><strong>Incinération</strong> prioritaire.</li>
+          <li><strong>EPI renforcés</strong> (combinaison, masque FFP2, double gants).</li>
+          <li><strong>Formation accélérée</strong> du personnel.</li>
+          <li><strong>Traçabilité</strong> renforcée.</li>
+        </ul>
+
+        <h4>Le rôle des équipes d'urgence</h4>
+        <ul>
+          <li>Former rapidement le personnel.</li>
+          <li>Organiser la filière.</li>
+          <li>Surveiller les AES.</li>
+          <li>Assurer l'approvisionnement en EPI et en consommables.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Les épidémies rappellent l'importance d'une gestion des déchets <strong>rigoureuse et anticipée</strong>. En temps normal, c'est une obligation ; en temps d'épidémie, c'est une question de survie.</p>
+      </div>
+    `
+  },
+  {
+    title: "Synthèse — Trier, collecter, traiter, former",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Synthèse générale</div>
+        <h3>Les points clés du cours de gestion des déchets</h3>
+        <ol>
+          <li><strong>Définition</strong> : gestion des DAS = tri, collecte, stockage, transport, traitement, élimination.</li>
+          <li><strong>Cadre</strong> : PGDBM, PLIGD, recommandations OMS/UNICEF.</li>
+          <li><strong>Classification</strong> : DAOM, infectieux, piquants/tranchants, anatomiques, chimiques, radioactifs.</li>
+          <li><strong>Risques sanitaires</strong> : infections, AES, produits chimiques.</li>
+          <li><strong>Risques environnementaux</strong> : pollution des sols, de l'eau, de l'air.</li>
+          <li><strong>Tri à la source</strong> : codage couleur (jaune, noir, rouge, bleu, vert).</li>
+          <li><strong>Conditionnement</strong> : sacs, collecteurs rigides, étiquetage.</li>
+          <li><strong>Étapes</strong> : tri, pré-collecte, collecte, stockage, transport, traitement, élimination.</li>
+          <li><strong>Incinérateur Montfort</strong> : combustion à plus de 850 °C, surveillance indispensable.</li>
+          <li><strong>Fosse à placentas</strong> : pour les déchets anatomiques.</li>
+          <li><strong>Autoclave</strong> : stérilisation par vapeur sous pression.</li>
+          <li><strong>EPI</strong> : gants, blouse, masque, lunettes, chaussures fermées.</li>
+          <li><strong>Formation</strong> : 96,2 % du personnel non formé ; priorité nationale.</li>
+          <li><strong>Assainissement</strong> : latrines, eaux usées, lutte antivectorielle, salubrité publique.</li>
+        </ol>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Message final</div>
+        <h3>Une responsabilité partagée</h3>
+        <p>La gestion des déchets de soins est l'affaire de tous : soignants, agents de surface, techniciens d'assainissement, administrateurs, patients et communautés. Chacun a un rôle à jouer. Une filière bien organisée protège la santé, l'environnement et la dignité des personnes.</p>
+      </div>
+
+      <div class="sources">
+        <strong>Sources :</strong>
+        <ul>
+          <li>PDSS (Programme de Développement des Services de Santé, RDC) — modules de formation sur les DBM.</li>
+          <li>Banque Mondiale (RDC) — révision des référentiels pédagogiques des ITM/ISTM.</li>
+          <li>CSNRDC (2024) — état des lieux de la gestion des DBM.</li>
+          <li>AEIC-IAAC (2025) — incinérateur Montfort.</li>
+          <li>OMS (gestion des déchets d'activités de soins).</li>
+          <li>UNICEF (EHA en milieu de soins).</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Évaluation finale — Gestion des Déchets",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Consignes</div>
+        <p>Répondez aux questions suivantes en choisissant la seule bonne réponse parmi les quatre propositions. Chaque question est indépendante et porte sur les notions développées dans le cours. Prenez le temps de relire les chapitres en cas de doute.</p>
+      </div>
+      <div class="quiz-container">
+        <div id="quizQuestions"></div>
+        <button id="submitQuiz" class="quiz-btn-submit">
+          Valider mes réponses
+        </button>
+        <div id="quizResult" class="quiz-result"></div>
+      </div>
+    `
+  }
+];
+const questions = [
+  {
+    text: "La gestion des déchets vise à :",
+    options: ["Augmenter les déchets", "Protéger la santé et l'environnement", "Polluer", "Vendre des déchets"],
+    correct: 1
+  },
+  {
+    text: "Les DBM sont :",
+    options: ["Des déchets ménagers", "Des déchets biomédicaux", "Des déchets industriels", "Des déchets radioactifs"],
+    correct: 1
+  },
+  {
+    text: "Une aiguille usagée est un déchet :",
+    options: ["DAOM", "Piquant et tranchant", "Anatomique", "Chimique"],
+    correct: 1
+  },
+  {
+    text: "Un pansement souillé est un déchet :",
+    options: ["DAOM", "Infectieux", "Anatomique", "Radioactif"],
+    correct: 1
+  },
+  {
+    text: "Un placenta est un déchet :",
+    options: ["Infectieux", "DAOM", "Anatomique", "Chimique"],
+    correct: 2
+  },
+  {
+    text: "Le tri à la source se fait :",
+    options: ["À l'incinérateur", "Au moment de la production", "Au dépotoir", "À l'hôpital"],
+    correct: 1
+  },
+  {
+    text: "Le codage couleur jaune correspond à :",
+    options: ["DAOM", "Déchets infectieux et piquants", "Déchets anatomiques", "Déchets recyclables"],
+    correct: 1
+  },
+  {
+    text: "Les aiguilles doivent être jetées dans :",
+    options: ["Une poubelle ordinaire", "Un collecteur jaune rigide", "Un sac noir", "Un sac rouge"],
+    correct: 1
+  },
+  {
+    text: "L'incinérateur Montfort atteint :",
+    options: ["100 °C", "Plus de 850 °C", "500 °C", "2000 °C"],
+    correct: 1
+  },
+  {
+    text: "La fosse à placentas sert à :",
+    options: ["Brûler les déchets", "Enfouir les placentas", "Stocker les médicaments", "Laver les instruments"],
+    correct: 1
+  },
+  {
+    text: "L'autoclave utilise :",
+    options: ["La chaleur sèche", "La vapeur sous pression", "Les UV", "Les produits chimiques"],
+    correct: 1
+  },
+  {
+    text: "Les EPI comprennent :",
+    options: ["Uniquement des gants", "Gants, blouse, masque", "Uniquement un masque", "Rien"],
+    correct: 1
+  },
+  {
+    text: "Le non-recapuchonnage des aiguilles prévient :",
+    options: ["La pollution", "Les AES", "Les infections respiratoires", "Le tétanos"],
+    correct: 1
+  },
+  {
+    text: "96,2 % du personnel en RDC n'a pas reçu de formation sur :",
+    options: ["La cuisine", "La gestion des DBM", "La comptabilité", "Le jardinage"],
+    correct: 1
+  },
+  {
+    text: "Le PGDBM est :",
+    options: ["Un médicament", "Le Plan de Gestion des Déchets Biomédicaux", "Un incinérateur", "Un pesticide"],
+    correct: 1
+  },
+  {
+    text: "La pré-collecte consiste à :",
+    options: ["Transporter les déchets à l'incinérateur", "Collecter les déchets dans les services", "Les traiter", "Les éliminer"],
+    correct: 1
+  },
+  {
+    text: "Le stockage intermédiaire doit être :",
+    options: ["Ouvert", "Fermé et aéré", "Humide", "Chauffé"],
+    correct: 1
+  },
+  {
+    text: "La lutte antivectorielle vise à :",
+    options: ["Nourrir les moustiques", "Éliminer les gîtes larvaires", "Planter des arbres", "Construire des routes"],
+    correct: 1
+  },
+  {
+    text: "Les déchets anatomiques peuvent être éliminés par :",
+    options: ["Recyclage", "Incinération ou fosse à placentas", "Compostage", "Vente"],
+    correct: 1
+  },
+  {
+    text: "La formation du personnel en gestion des DBM est :",
+    options: ["Facultative", "Une priorité", "Inutile", "Secondaire"],
+    correct: 1
+  },
+  {
+    text: "La mauvaise gestion des déchets contribue à :",
+    options: ["La baisse des maladies", "La propagation des infections", "La propreté", "La santé"],
+    correct: 1
+  },
+  {
+    text: "L'objectif principal de la gestion des déchets en 4e Humanité ITM est de :",
+    options: ["Remplacer l'ingénieur", "Trier, collecter et traiter les déchets en sécurité", "Vendre des déchets", "Construire des incinérateurs"],
+    correct: 1
+  }
+];
+
+try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+        questions.forEach(function (q) {
+            if (!q.text) q.text = q.question || q.q || q.enonce || q.titre || "";
+            if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+            if (typeof q.correct === "undefined") {
+                if (typeof q.answer !== "undefined") q.correct = q.answer;
+                else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+            }
+        });
+    }
+} catch (e) {}
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+const pageTitle = document.getElementById('pageTitle');
+pageTitle.textContent = "ECOLIA · " + COURSE_TITLE;
+document.title = "ECOLIA — " + COURSE_TITLE;
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim() || slides.length === 0) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp("(" + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ")", 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderEmptyState() {
+    contentDiv.innerHTML = '<div class="empty-state"><div class="icon">·</div><span class="tag">Bientôt disponible</span><h2>' + COURSE_TITLE + '</h2><p>Ce cours est en préparation. Le contenu sera ajouté prochainement.</p></div>';
+    slideCounterSpan.textContent = '0/0';
+    progressFill.style.width = '0%';
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    counterSpan.textContent = '—';
+}
+
+function renderQuiz() {
+    const qc = document.getElementById('quizQuestions');
+    if (!qc) return;
+    if (typeof questions === 'undefined' || questions.length === 0) {
+        qc.innerHTML = '<p style="color:#666;font-style:italic;">Quiz bientot disponible.</p>';
+        return;
+    }
+    let html = '';
+    questions.forEach((q, i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o, k) => {
+            html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>';
+        });
+        html += '</div>';
+    });
+    qc.innerHTML = html;
+    const submitBtn = document.getElementById('submitQuiz');
+    if (submitBtn) {
+        submitBtn.onclick = () => {
+            let score = 0;
+            questions.forEach((q, i) => {
+                const s = document.querySelector('input[name="q' + i + '"]:checked');
+                if (s && parseInt(s.value) === q.correct) score++;
+            });
+            const pct = Math.round(score/questions.length*100);
+            document.getElementById('quizResult').innerHTML =
+                '<div style="background:var(--bg2);padding:16px;border-radius:10px;margin-top:14px;">' +
+                '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong></div>';
+        };
+    }
+}
+
+function renderSlide(index, keepHighlight) {
+    if (keepHighlight === undefined) keepHighlight = true;
+    if (slides.length === 0) { renderEmptyState(); return; }
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    if (index === slides.length - 1) renderQuiz();
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    if (slides.length === 0) return;
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (slides.length && currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (slides.length && currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+<!-- ECOLIA_IMAGE_LOADER_START -->
+<script>
+(function () {
+  var SITE = "https://ecolia-course.github.io/";
+  var NATIVE = false;
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function abs(u) { return /^(https?:|data:|blob:)/i.test(u) ? u : (NATIVE ? SITE + u.replace(/^(\.\/|\/)+/, "") : u); }
+  function ext(u) { var m = String(u).split("?")[0].match(/\.(jpe?g|png|gif|webp|svg)$/i); return m ? m[1].toLowerCase() : "jpg"; }
+  function hide(img) { img.onerror = null; img.style.display = "none"; }
+  var table = null, queue = [], queued = {}, running = false;
+  function enqueue(full, fn) {
+    if (queued[fn]) return;
+    queued[fn] = 1; queue.push([full, fn]);
+    if (!running) { running = true; setTimeout(next, 2500); }
+  }
+  function next() {
+    if (!queue.length) { running = false; return; }
+    if (!navigator.onLine) { running = false; return; }
+    var q = queue.shift(), t0 = Date.now();
+    try { CoursInterface.download(q[0], q[1]); } catch (e) { return setTimeout(next, 500); }
+    (function wait() {
+      var ok = false;
+      try { ok = !!CoursInterface.exists(q[1]); } catch (e) {}
+      if (ok) setTimeout(next, 1500);
+      else if (Date.now() - t0 > 40000) next();
+      else setTimeout(wait, 700);
+    })();
+  }
+  function exists(fn) { try { return !!CoursInterface.exists(fn); } catch (e) { return false; } }
+  function show(img) {
+    if (!table || img.getAttribute("data-ecolia-done")) return;
+    var id = img.getAttribute("data-image-id");
+    var url = table[id];
+    if (typeof url !== "string" || !url.length) { console.warn("ECOLIA : image absente du JSON :", id); return; }
+    img.setAttribute("data-ecolia-done", "1");
+    if (!NATIVE) { img.onerror = function () { hide(img); }; img.setAttribute("src", url); return; }
+    var full = abs(url), fn = "img_" + id + "." + ext(url);
+    if (exists(fn)) {
+      img.onerror = function () {
+        try { CoursInterface["delete"](fn); } catch (e) {}
+        queued[fn] = 0;
+        img.onerror = function () { hide(img); };
+        img.setAttribute("src", full);
+      };
+      img.setAttribute("src", "https://app.local/cours/" + fn);
+    } else {
+      img.onerror = function () { hide(img); };
+      img.setAttribute("src", full);
+      enqueue(full, fn);
+    }
+  }
+  function scan(root) {
+    if (!root || !root.querySelectorAll) return;
+    if (root.matches && root.matches("img[data-image-id]")) show(root);
+    root.querySelectorAll("img[data-image-id]").forEach(show);
+  }
+  function prefetchAll() {
+    var ids = {};
+    try { JSON.stringify(slides).replace(/data-image-id=\\?"([^"\\]+)/g, function (m, id) { ids[id] = 1; }); } catch (e) {}
+    Object.keys(ids).forEach(function (id) {
+      var url = table[id];
+      if (typeof url !== "string" || !url.length) return;
+      var fn = "img_" + id + "." + ext(url);
+      if (!exists(fn)) enqueue(abs(url), fn);
+    });
+  }
+  function start(tbl) {
+    table = tbl;
+    scan(document.body);
+    new MutationObserver(function (muts) {
+      muts.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.nodeType === 1) scan(n); }); });
+    }).observe(document.body, { childList: true, subtree: true });
+    if (NATIVE) prefetchAll();
+  }
+  var JSON_URL = NATIVE ? SITE + "images_ecolia.json" : "images_ecolia.json";
+  var KEY = "ecolia_images_json";
+  fetch(JSON_URL, NATIVE ? { cache: "no-cache" } : undefined)
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (table) { if (NATIVE) lsSet(KEY, JSON.stringify(table)); start(table); })
+    .catch(function (e) {
+      var saved = null;
+      if (NATIVE) { try { saved = JSON.parse(lsGet(KEY) || "null"); } catch (x) {} }
+      if (saved) start(saved);
+      else console.warn("ECOLIA : JSON des images indisponible.", e);
+    });
+})();
+</script>
+<!-- ECOLIA_IMAGE_LOADER_END -->
+
+
+
+<!-- ECOLIA_AUDIO_PLAYER_START -->
+<style>
+  #ecolia-audio-btn, #ecolia-dl-btn {
+    width: 30px; height: 30px; min-width: 30px; padding: 0; margin: 0 4px 0 0;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    cursor: pointer; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent; outline: none;
+  }
+  #ecolia-audio-btn { border: none; background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-dl-btn { border: 1.5px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb); }
+  #ecolia-dl-btn.ecolia-full { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-btn.ecolia-fixed { position: fixed; top: 8px; left: 8px; z-index: 2147483000; }
+  #ecolia-audio-btn:active, #ecolia-dl-btn:active { transform: scale(.92); }
+  #ecolia-audio-btn svg, #ecolia-dl-btn svg { width: 15px; height: 15px; fill: currentColor; pointer-events: none; }
+  #ecolia-audio-btn.ecolia-off, #ecolia-dl-btn.ecolia-off { display: none; }
+  #ecolia-audio-banner {
+    display: none; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0;
+    padding: 8px 14px; font-size: .82rem; line-height: 1.35;
+    background: var(--soft, #eef3fb); color: var(--p1, #123); border-bottom: 1px solid var(--bd, #c9d6ea);
+  }
+  #ecolia-audio-banner.on { display: flex; }
+  #ecolia-audio-banner .eab-txt { flex: 1 1 180px; }
+  #ecolia-audio-banner .eab-act { display: flex; gap: 6px; flex-wrap: wrap; }
+  #ecolia-audio-banner button {
+    border: 1px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb);
+    border-radius: 16px; padding: 5px 12px; font-size: .8rem; cursor: pointer;
+  }
+  #ecolia-audio-banner button.pri { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-banner .eab-bar { display: none; flex-basis: 100%; height: 4px; border-radius: 2px; overflow: hidden; background: var(--bd, #c9d6ea); }
+  #ecolia-audio-banner .eab-bar i { display: block; height: 100%; width: 0; background: var(--p2, #2563eb); transition: width .2s; }
+</style>
+<script>
+(function () {
+  var CFG = {"code":"GestionDechets4","base":"https://ecolia-course.github.io/ecolia-media/audio_files/","available":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"count":19,"sizeMo":12,"sizes":{"1":943104,"2":835776,"3":621120,"4":605952,"5":754560,"6":624576,"7":553920,"8":480960,"9":516480,"10":550656,"11":592704,"12":607488,"13":666048,"14":578112,"15":618624,"16":703488,"17":530688,"18":1018560,"19":156096},"fallback":{"1":[["fr","Sommaire, Gestion des Déchets (Gestion des Déchets Biomédicaux et Assainissement). Présentation du cours. Trier, collecter, traiter: protéger la santé et l'environnement. Les déchets produits par les structures de santé ne sont pas des ordures ordinaires. Aiguilles, pansements souillés, placentas, médicaments périmés: ils peuvent transmettre des infections, polluer l'environnement et provoquer des accidents. En République Démocratique du Congo, 96,2 pour cent du personnel n'a pas reçu de formation sur la gestion des déchets biomédicaux, et les incinérateurs sont souvent vétustes ou absents. Ce cours vous apprendra à classer les déchets, à appliquer le tri à la source, à décrire les étapes de la gestion et à sensibiliser le personnel. Objectifs d'apprentissage. À la fin de ce cours, vous serez capable de: Classer les déchets d'activités de soins selon leurs catégories. Identifier les risques sanitaires et environnementaux. Appliquer le tri à la source et le conditionnement (codage couleur). Décrire les étapes de la gestion des déchets. Connaître les équipements de traitement (incinérateur, fosse à placentas, autoclave). Appliquer les règles de sécurité et utiliser les EPI. Participer à la formation et à la sensibilisation du personnel. Contribuer à l'assainissement et à la salubrité publique. Plan du cours. Huit chapitres progressifs. Introduction à la gestion des déchets. La classification des déchets d'activités de soins. Les risques sanitaires et environnementaux. Le tri à la source et le conditionnement. Les étapes de la gestion des déchets. Les équipements de traitement. La sécurité et la formation. L'assainissement et la salubrité publique."]],"2":[["fr","Chapitre 1, Pourquoi la gestion des déchets? Situation-problème. Une aiguille dans la poubelle ordinaire. Dans un hôpital de Kinshasa, un agent de surface se blesse avec une aiguille qui avait été jetée dans une poubelle ordinaire. L'aiguille provenait d'un service où l'on soignait des patients infectés par le VIH et les hépatites. L'agent est exposé à un risque majeur. Que s'est-il passé? Une erreur de tri à la source. Ce cas illustre l'importance de la gestion des déchets biomédicaux. Définition. Une chaîne de responsabilités. La gestion des déchets d'activités de soins (DAS) est l'ensemble des opérations visant à collecter, trier, conditionner, stocker, transporter, traiter et éliminer les déchets produits par les structures de santé, en minimisant les risques pour la santé et l'environnement. Importance en R D C. 96,2 pour cent du personnel n'a pas reçu de formation sur la gestion des déchets biomédicaux (DBM). Le tri sélectif est insuffisant. Les incinérateurs et équipements sont insuffisants ou vétustes. Les déchets sont souvent brûlés à l'air libre ou jetés dans des décharges non contrôlées. Cadre réglementaire. Le Plan de Gestion des Déchets Biomédicaux (PGDBM) et le Plan de Lutte contre les Infections et de Gestion des Déchets Biomédicaux (PLIGD) définissent les orientations nationales. La révision des référentiels pédagogiques des ITM ou ISTM est recommandée pour intégrer la gestion des DBM."]],"3":[["fr","Chapitre 1, Définition et cadre réglementaire. Fondements théoriques. Une obligation professionnelle. La gestion des déchets est une obligation professionnelle et une responsabilité de santé publique. Elle concerne tous les acteurs: soignants, agents de surface, techniciens d'assainissement, administrateurs. Le cadre réglementaire en R D C. PGDBM: Plan de Gestion des Déchets Biomédicaux. PLIGD: Plan de Lutte contre les Infections et de Gestion des Déchets Biomédicaux. Recommandations internationales: OMS, UNICEF (EHA en milieu de soins). Les principes. Principe de précaution: considérer tout déchet comme potentiellement infectieux. Principe de proximité: traiter les déchets au plus près de leur production. Principe pollueur-payeur: le producteur de déchets est responsable de leur élimination. Traçabilité: chaque étape doit être documentée. Erreur fréquente. Croire que les déchets de soins sont des ordures comme les autres. Ils présentent des risques infectieux, chimiques et radioactifs qui nécessitent une filière spécifique."]],"4":[["fr","Chapitre 2, La classification des déchets d'activités de soins. Fondements théoriques. Six grandes catégories. Les déchets d'activités de soins sont classés en plusieurs catégories selon leur nature et leur risque. Catégorie. Exemples. Filière. DAOM (déchets assimilables aux ordures ménagères). Emballages non souillés, restes alimentaires, papiers. Filière des déchets ménagers. Déchets infectieux. Pansements souillés, gants usagés, tubes de prélèvement, cultures. Incinération ou autoclave. Déchets piquants ou tranchants. Aiguilles, lames, ampoules. Collecteurs rigides jaunes. Déchets anatomiques. Tissus, organes, placentas. Incinération ou fosse à placentas. Déchets chimiques ou pharmaceutiques. Médicaments périmés, solvants, désinfectants. Filière spécifique. Déchets radioactifs. Résidus de médecine nucléaire. Filière réglementée. Erreur fréquente. Mélanger les déchets infectieux et les DAOM. Cela augmente le volume à traiter et le risque de contamination. Le tri à la source est la première barrière."]],"5":[["fr","Chapitre 2, Focus sur les déchets piquants et anatomiques. Les déchets piquants et tranchants. Une priorité absolue. Les déchets piquants et tranchants (aiguilles, lames, ampoules) sont les plus dangereux pour le personnel: ils peuvent provoquer des accidents d'exposition au sang (AES) et transmettre des infections graves (VIH, hépatites B et C, tétanos). Précautions. Ne jamais recapuchonner une aiguille. Jeter immédiatement dans un collecteur rigide jaune. Ne pas dépasser le niveau de remplissage maximal. Fermer hermétiquement le collecteur lorsqu'il est plein. Acheminer rapidement vers la filière de traitement. Les déchets anatomiques. Une sensibilité culturelle et sanitaire. Les déchets anatomiques (tissus, organes, placentas) doivent être traités avec respect et selon des règles strictes. Filières possibles. Incinération dans un incinérateur dédié. Fosse à placentas: fosse aménagée, couverte, dans l'enceinte de la structure de santé. Enfouissement contrôlé dans un site autorisé. Précautions. Respect des rites culturels. Pas d'enfouissement sauvage. Localisation à distance des sources d'eau. À retenir. La gestion des piquants ou tranchants et des anatomiques exige une rigueur absolue. Une aiguille mal jetée peut tuer; un placenta mal éliminé peut contaminer l'environnement."]],"6":[["fr","Chapitre 3, Les risques sanitaires. Fondements théoriques. Des risques multiples. La mauvaise gestion des déchets expose à plusieurs types de risques. Risques infectieux. Transmission d'agents pathogènes: VIH, hépatites B et C, tétanos, tuberculose. Voies de transmission: piqûre, contact cutanéo-muqueux, inhalation, ingestion. Accidents d'exposition au sang (AES). Piqûres avec des aiguilles contaminées. Coupures avec des lames, tessons. Projections sur les muqueuses (yeux, bouche). Conduite à tenir en cas d'AES: lavage abondant à l'eau et au savon, antiseptique, consultation médicale immédiate, déclaration, prophylaxie post-exposition si indiquée. Risques chimiques et toxiques. Exposition aux produits chimiques (désinfectants, solvants, médicaments cytotoxiques). Brûlures, intoxications, allergies. Erreur fréquente. Sous-estimer le risque d'AES lors de la manipulation des déchets. Les précautions standard s'appliquent à tous les déchets, car on ne connaît pas toujours le statut infectieux des patients."]],"7":[["fr","Chapitre 3, Les risques environnementaux. Fondements théoriques. Une pollution durable. La mauvaise gestion des déchets de soins pollue l'environnement et contamine la chaîne alimentaire. Sources de pollution. Brûlage à l'air libre: émission de dioxines, furanes, particules fines, métaux lourds. Décharges non contrôlées: infiltration dans les sols et les nappes phréatiques. Rejet dans les cours d'eau: contamination des ressources en eau. Mauvaise manipulation des produits chimiques: pollution des sols. Conséquences. Contamination des sols et des eaux. Contamination de la chaîne alimentaire (agriculture, élevage, pêche). Atteinte à la biodiversité. Contribution au changement climatique (incinération non contrôlée). Nuisances olfactives et visuelles. À retenir. Les déchets de soins ne sont pas seulement un problème de santé: c'est aussi un problème environnemental. Une gestion rigoureuse protège à la fois les patients, le personnel, les communautés et l'écosystème."]],"8":[["fr","Chapitre 4, Le tri à la source. Fondements théoriques. La première barrière. Le tri à la source consiste à séparer les déchets au moment de leur production, par le producteur (soignant), dans des contenants dédiés. C'est la première barrière de sécurité. Le codage couleur. Couleur. Type de déchets. Jaune. Déchets infectieux et piquants ou tranchants. Noir. DAOM (ordures ménagères). Rouge. Déchets anatomiques (ou selon protocoles locaux). Bleu. Déchets chimiques et pharmaceutiques. Vert. Déchets recyclables (selon les filières). Le tri à la source: chaque déchet dans son contenant. Bonnes pratiques. Ne pas remplir excessivement les sacs (max 2 sur 3 ou 3 sur 4). Fermer hermétiquement les sacs. Étiqueter clairement les contenants. Ne jamais mélanger les catégories. Former le personnel au tri."]],"9":[["fr","Chapitre 4, Le conditionnement. Fondements théoriques. Des contenants adaptés. Le conditionnement est l'ensemble des opérations qui consistent à placer les déchets dans des contenants adaptés à leur catégorie, en vue de leur stockage et de leur transport. Les contenants. Sacs en plastique: adaptés aux DAOM et aux déchets infectieux (sacs jaunes). Collecteurs rigides jaunes: pour les piquants et tranchants, avec un couvercle et un système de fermeture. Poubelles étiquetées: pour les déchets de soins, avec un couvercle. Contenants étanches: pour les déchets liquides. Bonnes pratiques. Utiliser des contenants conformes aux normes. Éviter les sacs surchargés (ils se déchirent). Ne pas compacter les déchets à la main. Fermer hermétiquement les contenants avant transport. Erreur fréquente. Utiliser des sacs non conformes ou surchargés. Les sacs se déchirent et exposent le personnel aux déchets. Un conditionnement rigoureux est indispensable."]],"10":[["fr","Chapitre 5, Les étapes de la gestion des déchets. Fondements théoriques. Une chaîne de sept étapes. Tri à la source: séparation au moment de la production. Pré-collecte: collecte des déchets dans les services, au plus près du lieu de production. Collecte: transfert des déchets vers un local de stockage intermédiaire. Stockage intermédiaire: local fermé, aéré, à l'abri du soleil, avec des contenants identifiés; durée limitée. Transport: vers le lieu de traitement (incinérateur, autoclave, site d'enfouissement); véhicules dédiés, étanches. Traitement: incinération, autoclavage, désinfection chimique, broyage. Élimination finale: enfouissement contrôlé, rejet en filière agréée. Erreur fréquente. Négliger le stockage intermédiaire. Les déchets s'accumulent, attirent les vecteurs, dégagent des odeurs, deviennent un danger. Le local doit être fermé, aéré et régulièrement nettoyé."]],"11":[["fr","Chapitre 5, Le stockage, le transport et l'élimination. Le stockage intermédiaire. Un local dédié. Localisation: à l'écart des zones de soins, à l'abri du soleil. Construction: sol lavable, murs lavables, ventilation. Accès: réservé au personnel formé. Durée: limitée selon la filière (souvent 24-48 heures pour les infectieux). Nettoyage: quotidien, désinfection régulière. Le transport. Éviter les fuites et les expositions. Véhicules dédiés: identifiés, étanches, fermés. Contenants hermétiques: jamais de sacs ouverts. Itinéraires: éviter les zones fréquentées aux heures de pointe. Personnel formé: EPI, précautions. Traçabilité: bordereaux de suivi. L'élimination finale. Une filière contrôlée. Enfouissement contrôlé: site autorisé, fosses étanches. Rejet en filière agréée: pour les déchets recyclables. Interdiction: rejet dans la nature, décharges sauvages, incinération à l'air libre."]],"12":[["fr","Chapitre 6, L'incinérateur Montfort. Fondements théoriques. Détruire les déchets infectieux. L'incinérateur Montfort est un incinérateur simple, robuste et adapté aux structures de santé de première ligne. Il est utilisé pour détruire les déchets infectieux et anatomiques. Caractéristiques. Chambre de combustion en briques réfractaires. Température: plus de 850 degrés Celsius pour une combustion complète. Chargement: par le haut, en petites quantités. Cheminée: évacuation des fumées. Cendres: à enfouir dans une fosse dédiée. Surveillance. Signes de combustion incomplète: fumée excessive, cendres non calcinées. Formation du personnel à la surveillance et à la maintenance. Contrôle de la température: ne pas surcharger l'incinérateur. L'incinérateur Montfort: détruire les déchets infectieux à haute température. Erreur fréquente. Utiliser un incinérateur sans surveillance de la température. Une combustion incomplète génère des polluants toxiques (dioxines, furanes) et ne détruit pas les pathogènes. La surveillance est indispensable."]],"13":[["fr","Chapitre 6, La fosse à placentas et les autres équipements. La fosse à placentas. Une solution simple pour les anatomiques. La fosse à placentas est une fosse creusée et aménagée pour l'enfouissement des placentas et autres déchets anatomiques. Caractéristiques. Localisation: dans l'enceinte de la structure, à distance des sources d'eau. Construction: parois maçonnées, couvercle, profondeur suffisante. Utilisation: chaque dépôt est recouvert de terre ou de chaux. Fermeture: définitive lorsqu'elle est pleine; une nouvelle fosse est alors aménagée. Les autres équipements. Compléter la filière. Autoclave: stérilisation par vapeur sous pression (121 degrés Celsius ou 134 degrés Celsius) pour les déchets infectieux et les instruments. Broyeur: réduction du volume des déchets (verre, objets). Poubelles et collecteurs: étiquetés, dédiés à chaque catégorie. Fosses de cendres: pour les résidus d'incinération. À retenir. La fosse à placentas est une solution simple et culturellement acceptable pour les déchets anatomiques. Elle doit être construite et entretenue selon les règles, pour éviter toute contamination de l'environnement."]],"14":[["fr","Chapitre 7, La sécurité et les équipements de protection individuelle. Fondements théoriques. Protéger le personnel. La manipulation des déchets expose à des risques. Les équipements de protection individuelle (EPI) sont indispensables. Les EPI. Gants résistants (nitrile, latex épais). Blouse ou combinaison de travail. Masque (en cas de risque d'aérosols). Lunettes de protection contre les projections. Chaussures de sécurité fermées. Casque si nécessaire (zones de travail particulières). Les précautions. Ne pas recapuchonner les aiguilles. Ne pas compacter les déchets à la main. Se laver les mains après manipulation. Ne pas manger, boire ou fumer dans les zones de travail. Déclarer tout accident d'exposition. La protection du personnel de collecte: une priorité absolue. Erreur fréquente. Confier la manipulation des déchets à du personnel non formé (filles et garçons de salle) sans encadrement. C'est une source majeure d'accidents. Toute personne manipulant les déchets doit être formée et équipée."]],"15":[["fr","Chapitre 7, La formation du personnel. Un constat préoccupant. Un besoin urgent de formation. En R D C, 96,2 pour cent du personnel n'a pas reçu de formation sur la gestion des déchets biomédicaux. C'est une cause majeure de mauvaises pratiques et d'accidents. Les contenus de la formation. Risques liés à la manipulation des DBM. Tri à la source et codage couleur. Conditionnement et étiquetage. Étapes de la gestion: collecte, stockage, transport, traitement. Utilisation des EPI. Maintenance des équipements (incinérateur Montfort). Conduite à tenir en cas d'AES. Traçabilité et documents. Méthodes pédagogiques. Ateliers pratiques. Simulations (tri, manipulation d'aiguilles). Supports visuels (affiches, fiches). Évaluation des acquis. Recyclage régulier. À retenir. La formation est un investissement, pas un coût. Un personnel formé réduit les accidents, améliore la qualité des soins et protège l'environnement. La révision des référentiels pédagogiques des ITM ou ISTM est une priorité nationale."]],"16":[["fr","Chapitre 8, L'assainissement et la salubrité publique. Fondements théoriques. Au-delà des déchets de soins. L'assainissement englobe toutes les mesures visant à préserver la salubrité publique: gestion des déchets solides et liquides, latrines, eaux usées, lutte antivectorielle. Les latrines. Conception: fosse étanche, dalle, superstructure, ventilation. Entretien: nettoyage régulier, vidange périodique. Prévention: distance des sources d'eau, pas de latrines à proximité d'un puits. L'évacuation des eaux usées. Fosses septiques: pour les eaux domestiques. Réseaux d'assainissement: pour les zones urbaines. Traitement avant rejet dans le milieu naturel. La lutte antivectorielle. Élimination des gîtes larvaires (eaux stagnantes). Désherbage, assèchement des zones humides. Pulvérisations d'insecticides. Moustiquaires imprégnées. La salubrité publique. Propreté des marchés, des écoles, des quartiers. Gestion des déchets ménagers. Éducation à l'hygiène. Erreur fréquente. Négliger l'assainissement autour des structures de santé. Les déchets et les eaux stagnantes attirent les vecteurs (mouches, moustiques, rongeurs) et favorisent les épidémies. L'assainissement fait partie intégrante de la prévention."]],"17":[["fr","Chapitre 8, Le cas des épidémies. Fondements théoriques. Quand la gestion des déchets devient vitale. Lors des épidémies (choléra, Ebola, rougeole), la gestion des déchets prend une importance particulière. Les déchets contaminés peuvent être une source majeure de transmission. Mesures renforcées en période d'épidémie. Tri strict des déchets contaminés. Double emballage pour les déchets très infectieux. Incinération prioritaire. EPI renforcés (combinaison, masque F F P2, double gants). Formation accélérée du personnel. Traçabilité renforcée. Le rôle des équipes d'urgence. Former rapidement le personnel. Organiser la filière. Surveiller les AES. Assurer l'approvisionnement en EPI et en consommables. À retenir. Les épidémies rappellent l'importance d'une gestion des déchets rigoureuse et anticipée. En temps normal, c'est une obligation; en temps d'épidémie, c'est une question de survie."]],"18":[["fr","Synthèse, Trier, collecter, traiter, former. Synthèse générale. Les points clés du cours de gestion des déchets. Définition: gestion des DAS égale tri, collecte, stockage, transport, traitement, élimination. Cadre: PGDBM, PLIGD, recommandations OMS ou UNICEF. Classification: DAOM, infectieux, piquants ou tranchants, anatomiques, chimiques, radioactifs. Risques sanitaires: infections, AES, produits chimiques. Risques environnementaux: pollution des sols, de l'eau, de l'air. Tri à la source: codage couleur (jaune, noir, rouge, bleu, vert). Conditionnement: sacs, collecteurs rigides, étiquetage. Étapes: tri, pré-collecte, collecte, stockage, transport, traitement, élimination. Incinérateur Montfort: combustion à plus de 850 degrés Celsius, surveillance indispensable. Fosse à placentas: pour les déchets anatomiques. Autoclave: stérilisation par vapeur sous pression. EPI: gants, blouse, masque, lunettes, chaussures fermées. Formation: 96,2 pour cent du personnel non formé; priorité nationale. Assainissement: latrines, eaux usées, lutte antivectorielle, salubrité publique. Message final. Une responsabilité partagée. La gestion des déchets de soins est l'affaire de tous: soignants, agents de surface, techniciens d'assainissement, administrateurs, patients et communautés. Chacun a un rôle à jouer. Une filière bien organisée protège la santé, l'environnement et la dignité des personnes."]],"19":[["fr","Évaluation finale, Gestion des Déchets. Consignes. Répondez aux questions suivantes en choisissant la seule bonne réponse parmi les quatre propositions. Chaque question est indépendante et porte sur les notions développées dans le cours. Prenez le temps de relire les chapitres en cas de doute."]]}};
+  var CACHE = "ecolia-cours-v1";                       // même cache que l'application
+  var PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  var PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+  var DL = '<svg viewBox="0 0 24 24"><path d="M11 3h2v9.2l3.6-3.6L18 10l-6 6-6-6 1.4-1.4L11 12.2V3zM5 19h14v2H5z"/></svg>';
+  var OK = '<svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>';
+  // Réparation du quiz : certains cours stockent les choix sous "opts" (ou autre) au lieu de "options"
+  try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+      questions.forEach(function (q) {
+        if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+        if (q.text === undefined) q.text = q.question || q.q || q.enonce || q.titre || "";
+        if (typeof q.correct === "undefined") {
+          if (typeof q.answer !== "undefined") q.correct = q.answer;
+          else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+        }
+      });
+    }
+  } catch (e) {}
+  var synth = window.speechSynthesis || null;
+  var HAS_CACHE = !!(window.caches && window.caches.open);
+  var NATIVE = false;           // APK ECOLIA : pont Java "CoursInterface" (fichiers dans le dossier de l'application)
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  var LATER = "ecolia_audio_later_" + CFG.code;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+  function init() {
+    if (document.getElementById("ecolia-audio-btn")) return;
+
+    // ---------- éléments de l'interface ----------
+    var btn = document.createElement("button");
+    btn.id = "ecolia-audio-btn"; btn.type = "button"; btn.className = "ecolia-off";
+    btn.setAttribute("aria-label", "Écouter la leçon"); btn.innerHTML = PLAY;
+    var dlBtn = document.createElement("button");
+    dlBtn.id = "ecolia-dl-btn"; dlBtn.type = "button"; dlBtn.className = "ecolia-off";
+    dlBtn.innerHTML = DL;
+    var host = document.querySelector(".header-right");
+    if (host) { host.insertBefore(dlBtn, host.firstChild); host.insertBefore(btn, dlBtn); }   // dans la barre du haut : ne scrolle jamais
+    else { btn.className += " ecolia-fixed"; document.body.appendChild(btn); }
+
+    var banner = document.createElement("div");
+    banner.id = "ecolia-audio-banner";
+    banner.innerHTML = '<span class="eab-txt"></span><span class="eab-act"></span><div class="eab-bar"><i></i></div>';
+    var content = document.getElementById("content");
+    if (content && content.parentNode) content.parentNode.insertBefore(banner, content);
+    else document.body.insertBefore(banner, document.body.firstChild);
+    var txtEl = banner.querySelector(".eab-txt"), actEl = banner.querySelector(".eab-act");
+    var barEl = banner.querySelector(".eab-bar"), barI = barEl.firstChild;
+
+    var audio = new Audio();            // un seul élément Audio, réutilisé (exigé par les navigateurs mobiles)
+    audio.preload = "auto";
+    var st = { idx: -1, auto: false, advancing: false, mode: null, speaking: false, token: 0, chunks: [], ci: 0, blobUrl: null, playTok: 0 };
+    var dl = { state: "none", cached: 0, busy: false, cancel: false };   // none | partial | full
+    var bnMode = null, hideTimer = null;
+    if (synth && synth.getVoices) { try { synth.getVoices(); } catch (e) {} }
+
+    function cur() {
+      try { if (typeof currentSlide === "number") return currentSlide; } catch (e) {}
+      return 0;
+    }
+    function hasMp3(i) { return CFG.available.indexOf(i + 1) !== -1; }
+    function fb(i) { return CFG.fallback && CFG.fallback[String(i + 1)]; }
+    function hasAudio(i) { return hasMp3(i) || (!!synth && !!fb(i)); }
+    function urlN(n) {   // dans l'APK la page est sur https://app.local : une adresse relative doit pointer vers le site
+      var b = CFG.base;
+      if (NATIVE && !/^https?:/i.test(b)) b = "https://ecolia-course.github.io/" + b.replace(/^(\.\.\/|\.\/)+/, "");
+      return new URL(b + nameN(n), location.href).href;
+    }
+    function setIcon(playing) { btn.innerHTML = playing ? PAUSE : PLAY; }
+    function isPlaying() { return st.mode === "mp3" ? !audio.paused : (st.mode === "tts" && st.speaking); }
+    function mo() { return "≈ " + CFG.sizeMo + " Mo"; }
+    function nameN(n) { return "audio_" + CFG.code + "_" + n + ".mp3"; }
+
+    // ====================================================================
+    //  Stockage hors ligne : 2 moteurs, même interface
+    //    - APK : fichiers du dossier de l'application (CoursInterface), servis par https://app.local/cours/
+    //    - Web : Cache Storage du navigateur (même cache que l'application web)
+    // ====================================================================
+    function nativeStore() {
+      var okKey = "ecolia_audio_ok_" + CFG.code;
+      function readOk() { try { return JSON.parse(lsGet(okKey) || "[]"); } catch (e) { return []; } }
+      function writeOk(a) { lsSet(okKey, JSON.stringify(a)); }
+      function exists(n) { try { return !!CoursInterface.exists(nameN(n)); } catch (e) { return false; } }
+      function local(n) { return location.origin + "/cours/" + nameN(n); }
+      function verify(n) {                                   // fichier complet ? (taille exacte connue à la génération)
+        return fetch(local(n), { cache: "no-store" }).then(function (r) { return r.blob(); }).then(function (b) {
+          var exp = CFG.sizes && CFG.sizes[String(n)];
+          return (b.size > 2000 && (!exp || b.size === exp)) ? b : null;
+        }).catch(function () { return null; });
+      }
+      return {
+        list: function () {
+          var ok = readOk().filter(exists); writeOk(ok); return Promise.resolve(ok);
+        },
+        get: function (n) { return exists(n) ? verify(n) : Promise.resolve(null); },
+        put: function (n) {
+          return new Promise(function (res, rej) {
+            try { CoursInterface.download(urlN(n), nameN(n)); } catch (e) { return rej(e); }
+            var t0 = Date.now();
+            function next() { if (Date.now() - t0 > 120000) rej(new Error("délai dépassé")); else setTimeout(poll, 800); }
+            function poll() {
+              if (!exists(n)) return next();
+              verify(n).then(function (b) {
+                if (!b) return next();
+                var ok = readOk(); if (ok.indexOf(n) < 0) ok.push(n); writeOk(ok); res();
+              });
+            }
+            setTimeout(poll, 800);
+          });
+        },
+        del: function (n) {
+          try { CoursInterface.delete(nameN(n)); } catch (e) {}
+          writeOk(readOk().filter(function (x) { return x !== n; }));
+          return Promise.resolve();
+        }
+      };
+    }
+    function cacheStore() {
+      return {
+        list: function () {
+          return caches.open(CACHE).then(function (c) {
+            return Promise.all(CFG.available.map(function (n) {
+              return c.match(urlN(n)).then(function (r) {
+                if (!r) return 0;
+                if ((r.headers.get("content-type") || "").indexOf("audio") !== 0) { c.delete(urlN(n)); return 0; }   // ancien contenu invalide
+                return n;
+              });
+            }));
+          }).then(function (a) { return a.filter(Boolean); });
+        },
+        get: function (n) {
+          return caches.open(CACHE).then(function (c) { return c.match(urlN(n)); })
+            .then(function (r) { return r ? r.blob() : null; }).then(function (b) { return b && b.size > 2000 ? b : null; });
+        },
+        put: function (n) {
+          var u = urlN(n);
+          return fetch(u, { cache: "no-store" }).then(function (r) {
+            if (!r.ok || r.status !== 200) throw new Error("HTTP " + r.status);
+            return r.blob();
+          }).then(function (b) {
+            if (b.size < 2000 || (b.type && b.type.indexOf("audio") !== 0 && b.type.indexOf("octet") < 0)) throw new Error("fichier invalide");
+            return caches.open(CACHE).then(function (c) { return c.put(u, new Response(b, { headers: { "Content-Type": "audio/mpeg" } })); });
+          });
+        },
+        del: function (n) { return caches.open(CACHE).then(function (c) { return c.delete(urlN(n)); }); }
+      };
+    }
+    var store = NATIVE ? nativeStore() : (HAS_CACHE ? cacheStore() : null);
+
+    // ====================================================================
+    //  Bannière : invitation, confirmations, progression
+    // ====================================================================
+    function showBanner(mode, text, buttons, pct) {
+      clearTimeout(hideTimer);
+      bnMode = mode;
+      txtEl.textContent = text;
+      actEl.innerHTML = "";
+      (buttons || []).forEach(function (b) {
+        var e = document.createElement("button");
+        e.type = "button"; e.textContent = b.label; if (b.pri) e.className = "pri";
+        e.addEventListener("click", function (ev) { ev.stopPropagation(); b.fn(); });
+        actEl.appendChild(e);
+      });
+      if (typeof pct === "number") { barEl.style.display = "block"; barI.style.width = pct + "%"; }
+      else barEl.style.display = "none";
+      banner.classList.add("on");
+    }
+    function hideBanner() { clearTimeout(hideTimer); bnMode = null; banner.classList.remove("on"); }
+    function flash(text) { showBanner("info", text, []); hideTimer = setTimeout(hideBanner, 4000); }
+
+    function refreshUI() {
+      var show = !!store && CFG.available.length > 0;
+      dlBtn.classList.toggle("ecolia-off", !show);
+      dlBtn.classList.toggle("ecolia-full", dl.state === "full");
+      dlBtn.innerHTML = dl.state === "full" ? OK : DL;
+      dlBtn.setAttribute("aria-label", dl.state === "full" ? "Audios téléchargés : supprimer" : "Télécharger les audios");
+      dlBtn.title = dlBtn.getAttribute("aria-label");
+    }
+    function refreshCacheState(done) {
+      if (!store) { dl.state = "none"; refreshUI(); if (done) done(); return; }
+      store.list().then(function (ok) {
+        dl.cached = ok.length;
+        dl.state = dl.cached === 0 ? "none" : (dl.cached >= CFG.available.length ? "full" : "partial");
+      }).catch(function () { dl.state = "none"; }).then(function () { refreshUI(); if (done) done(); });
+    }
+
+    function askDownload(fromInvite) {
+      var left = CFG.available.length - dl.cached;
+      var txt = dl.state === "partial"
+        ? "Il reste " + left + " audio(s) à télécharger pour écouter ce cours sans internet."
+        : "🔊 Télécharger les audios de ce cours (" + mo() + ") pour les écouter sans internet ? Wi-Fi recommandé.";
+      showBanner(fromInvite ? "invite" : "confirm", txt, [
+        { label: fromInvite ? "Plus tard" : "Annuler", fn: function () { if (fromInvite) lsSet(LATER, "1"); hideBanner(); } },
+        { label: "Télécharger", pri: true, fn: startDownload }
+      ]);
+    }
+    function askDelete() {
+      showBanner("confirm", "Supprimer les audios téléchargés de ce cours (" + mo() + ") ? Vous pourrez toujours les écouter en ligne.", [
+        { label: "Annuler", fn: hideBanner },
+        { label: "Supprimer", pri: true, fn: doDelete }
+      ]);
+    }
+
+    function startDownload() {
+      if (dl.busy || !store) return;
+      dl.busy = true; dl.cancel = false;
+      var total = CFG.available.length, done = 0, quota = false, fails = 0, todo = [];
+      store.list().then(function (have) {
+        CFG.available.forEach(function (n) { if (have.indexOf(n) < 0) todo.push(n); });
+        done = total - todo.length;
+        function paint() {
+          var msg = "Téléchargement des audios : " + done + " / " + total;
+          if (bnMode === "progress") {                  // met à jour sans recréer les boutons (sinon un appui peut être perdu)
+            txtEl.textContent = msg; barI.style.width = Math.round(done / total * 100) + "%";
+          } else {
+            showBanner("progress", msg, [
+              { label: "Annuler", fn: function () { dl.cancel = true; } }
+            ], Math.round(done / total * 100));
+          }
+        }
+        paint();
+        function worker() {
+          if (dl.cancel || quota || !todo.length) return Promise.resolve();
+          var n = todo.shift();
+          return store.put(n).then(function () { done++; paint(); }).catch(function (e) {
+            if (e && (e.name === "QuotaExceededError" || /quota/i.test(String(e.message)))) quota = true;
+            fails++;
+          }).then(worker);
+        }
+        return Promise.all([worker(), worker()]);
+      }).catch(function () { fails++; }).then(function () {
+        dl.busy = false;
+        refreshCacheState(function () {
+          if (dl.state === "full") flash("✓ Audios téléchargés : le cours se lit maintenant sans internet.");
+          else if (dl.cancel) flash("Téléchargement interrompu (" + dl.cached + " / " + total + "). Vous pourrez reprendre plus tard.");
+          else showBanner("error", quota ? "Espace insuffisant sur l'appareil. Libérez de la place puis réessayez."
+            : "Certains audios n'ont pas pu être téléchargés (connexion ?).", [
+            { label: "Fermer", fn: hideBanner }, { label: "Réessayer", pri: true, fn: startDownload }
+          ]);
+        });
+      });
+    }
+    function doDelete() {
+      if (!store) return;
+      Promise.all(CFG.available.map(function (n) { return store.del(n); })).catch(function () {}).then(function () {
+        lsDel(LATER);
+        refreshCacheState(function () { flash("Audios supprimés de cet appareil."); });
+      });
+    }
+
+    dlBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (dl.busy) return;
+      if (dl.state === "full") askDelete(); else askDownload(false);
+    });
+
+    // ====================================================================
+    //  Voix intégrée au téléphone (hors ligne, sans limite)
+    // ====================================================================
+    function pickVoice(lang) {
+      var vs = [];
+      try { vs = synth.getVoices() || []; } catch (e) {}
+      var pre = lang === "en" ? "en" : "fr", best = null;
+      for (var k = 0; k < vs.length; k++) {
+        var v = vs[k];
+        if ((v.lang || "").toLowerCase().indexOf(pre) !== 0) continue;
+        if (!best || (v.localService && !best.localService)) best = v;
+      }
+      return best;
+    }
+    function hardSplit(text, max) {
+      var out = [];
+      while (text.length > max) {
+        var cut = text.lastIndexOf(" ", max);
+        if (cut < 40) cut = max;
+        out.push(text.slice(0, cut)); text = text.slice(cut).replace(/^\s+/, "");
+      }
+      if (text) out.push(text);
+      return out;
+    }
+    function buildChunks(segs) {                  // morceaux courts : évite l'arrêt des longs textes sur Chrome
+      var out = [];
+      segs.forEach(function (s) {
+        var cur2 = "", parts = s[1].match(/[^.!?;:]+[.!?;:]*\s*/g) || [s[1]];
+        parts.forEach(function (p) {
+          if (cur2 && (cur2 + p).length > 160) { out.push({ lang: s[0], text: cur2.trim() }); cur2 = p; }
+          else cur2 += p;
+        });
+        if (cur2.trim()) out.push({ lang: s[0], text: cur2.trim() });
+      });
+      var res = [];
+      out.forEach(function (c) { hardSplit(c.text, 190).forEach(function (t) { res.push({ lang: c.lang, text: t }); }); });
+      return res;
+    }
+    function speakFrom(tk) {
+      if (tk !== st.token) return;
+      if (st.ci >= st.chunks.length) {
+        st.speaking = false; st.mode = null; st.ci = 0; setIcon(false);
+        if (st.auto) goNext();
+        return;
+      }
+      var c = st.chunks[st.ci];
+      var u = new SpeechSynthesisUtterance(c.text);
+      u.lang = c.lang === "en" ? "en-US" : "fr-FR";
+      var v = pickVoice(c.lang);
+      if (v) { u.voice = v; u.lang = v.lang; }
+      u.rate = 0.95;
+      u.onend = function () { if (tk !== st.token) return; st.ci++; speakFrom(tk); };
+      u.onerror = function () { if (tk !== st.token) return; st.speaking = false; setIcon(false); st.auto = false; };
+      synth.speak(u);
+    }
+    function startTts(from) {
+      st.token++;
+      var tk = st.token;
+      st.mode = "tts"; st.speaking = true; st.ci = from || 0; setIcon(true);
+      var busy = false;
+      try { busy = synth.speaking || synth.pending; synth.cancel(); } catch (e) {}
+      if (busy) setTimeout(function () { speakFrom(tk); }, 120);   // laisse cancel() se terminer
+      else speakFrom(tk);                                          // sinon tout de suite (exigé par iOS)
+    }
+    function playVoice() {
+      if (!(synth && fb(st.idx))) { st.auto = false; return false; }
+      if (!st.chunks.length) st.chunks = buildChunks(fb(st.idx));
+      startTts(st.ci);
+      return true;
+    }
+
+    // ====================================================================
+    //  Lecture
+    // ====================================================================
+    function freeBlob() { if (st.blobUrl) { try { URL.revokeObjectURL(st.blobUrl); } catch (e) {} st.blobUrl = null; } }
+    function stopAll() {
+      st.playTok++;
+      try { audio.pause(); audio.currentTime = 0; } catch (e) {}
+      st.token++;
+      try { if (synth) synth.cancel(); } catch (e) {}
+      st.speaking = false; st.mode = null; st.chunks = []; st.ci = 0;
+      setIcon(false);
+    }
+    function pauseNow() {
+      if (st.mode === "mp3") audio.pause();
+      else if (st.mode === "tts") {
+        st.token++;
+        try { synth.cancel(); } catch (e) {}
+        st.speaking = false; setIcon(false);      // st.ci conservé : la reprise repart de la phrase en cours
+      }
+    }
+    function startAudio(src, tok) {
+      if (tok !== st.playTok) return;
+      if (audio.getAttribute("data-src") !== src) { audio.setAttribute("data-src", src); audio.src = src; }
+      var p = audio.play();
+      if (p && p.catch) p.catch(function (err) {
+        console.warn("ECOLIA audio :", err);
+        if (tok !== st.playTok) return;
+        if (!(err && err.name === "NotAllowedError") && playVoice()) return;   // lecture impossible : voix du téléphone
+        setIcon(false); st.auto = false;
+      });
+    }
+    function playCurrent() {
+      var i = st.idx;
+      if (hasMp3(i)) {
+        var tok = ++st.playTok, u = urlN(i + 1);
+        st.mode = "mp3";
+        if (!navigator.onLine && dl.state === "none") { st.mode = null; if (playVoice()) return; }   // hors ligne et non téléchargé
+        if (store && dl.state !== "none") {                     // téléchargé : lecture locale, sans réseau
+          store.get(i + 1)
+            .then(function (b) {
+              if (tok !== st.playTok) return;
+              if (b) { freeBlob(); st.blobUrl = URL.createObjectURL(new Blob([b], { type: "audio/mpeg" })); startAudio(st.blobUrl, tok); }
+              else startAudio(u, tok);
+            }).catch(function () { startAudio(u, tok); });
+        } else startAudio(u, tok);                              // sinon lecture en ligne (appel immédiat, exigé par iOS)
+      } else if (!playVoice()) {
+        st.auto = false;
+      }
+    }
+
+    function onSlideChange(i) {
+      var wasAdvancing = st.advancing;
+      st.advancing = false;
+      st.idx = i;
+      btn.classList.toggle("ecolia-off", !hasAudio(i));
+      stopAll();
+      audio.removeAttribute("data-src");
+      freeBlob();
+      if (bnMode === "invite" && i !== 0) hideBanner();       // l'invitation n'apparaît qu'à la première slide
+      if (wasAdvancing && st.auto) setTimeout(playCurrent, 500);   // enchaînement automatique
+      else st.auto = false;                                         // changement manuel : on coupe tout
+    }
+    function goNext() {
+      if (st.idx + 1 >= CFG.count) { st.auto = false; return; }
+      st.advancing = true;
+      if (typeof nextSlide === "function") nextSlide();
+      else { var nb = document.getElementById("nextBtn"); if (nb) nb.click(); }
+      setTimeout(function () { st.advancing = false; }, 4000);
+    }
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var i = cur();
+      if (i !== st.idx) onSlideChange(i);
+      if (isPlaying()) { st.auto = false; pauseNow(); }
+      else { st.auto = true; playCurrent(); }
+    });
+    audio.addEventListener("play", function () { setIcon(true); });
+    audio.addEventListener("pause", function () { if (st.mode === "mp3") setIcon(false); });
+    audio.addEventListener("error", function () {
+      if (st.mode === "mp3" && playVoice()) return;            // fichier introuvable / hors ligne : voix du téléphone
+      setIcon(false); st.auto = false;
+    });
+    audio.addEventListener("ended", function () { setIcon(false); if (st.auto) goNext(); });
+    window.addEventListener("pagehide", function () { stopAll(); freeBlob(); });
+
+    // ---------- démarrage ----------
+    refreshCacheState(function () {
+      if (store && CFG.available.length && dl.state !== "full" && navigator.onLine && cur() === 0 && !lsGet(LATER)) askDownload(true);
+    });
+    st.idx = -1;
+    setInterval(function () { var i = cur(); if (i !== st.idx) onSlideChange(i); }, 250);   // suit la slide affichée
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+<!-- ECOLIA_AUDIO_PLAYER_END -->
+</body>
+</html>

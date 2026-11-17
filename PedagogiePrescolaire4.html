@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="violet">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>ECOLIA — Pedagogie Prescolaire4</title>
+<style>
+[data-theme="bleu"]   { --p1:#0d2b4f; --p2:#1565c0; --p3:#07172e; --p4:#12437a; --p5:#5b8fd0; --bg:#e8f0fb; --bg2:#cfdff5; --bd:#a9c3e8; --soft:#dde8f7; --btn:#2a67b0; }
+[data-theme="vert"]   { --p1:#14442e; --p2:#2e7d32; --p3:#0b2b1a; --p4:#1f5c3a; --p5:#4f9a6b; --bg:#e8f5ec; --bg2:#c8e6d2; --bd:#a5cdb2; --soft:#dcefe2; --btn:#2f7a4f; }
+[data-theme="violet"] { --p1:#2d1b4e; --p2:#6a1b9a; --p3:#1a0f2e; --p4:#4a148c; --p5:#9c6fd0; --bg:#f1e9fb; --bg2:#dccbf2; --bd:#c4a8e6; --soft:#e8ddf6; --btn:#7e3fb2; }
+[data-theme="rouge"]  { --p1:#4a1010; --p2:#b71c1c; --p3:#2b0a0a; --p4:#8e1b1b; --p5:#d9706a; --bg:#fbeaea; --bg2:#f3cdcb; --bd:#e8a9a5; --soft:#f8dede; --btn:#a62a2a; }
+[data-theme="orange"] { --p1:#4e2a0c; --p2:#ef6c00; --p3:#2e1604; --p4:#b34a00; --p5:#f0a15a; --bg:#fff1e0; --bg2:#fbdcb8; --bd:#f3c08a; --soft:#fdebd6; --btn:#c9650a; }
+[data-theme="teal"]   { --p1:#0b3a3a; --p2:#00796b; --p3:#062626; --p4:#00574b; --p5:#4db6ac; --bg:#e0f2f1; --bg2:#b2dfdb; --bd:#80cbc4; --soft:#d5ecea; --btn:#26897d; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:linear-gradient(160deg,var(--p1) 0%,var(--p2) 50%,var(--p3) 100%); display:flex; justify-content:center; align-items:center; padding:8px; }
+.container { width:100%; max-width:1400px; background:#fefdf8; border-radius:20px; overflow:hidden; display:flex; flex-direction:column; height:100%; max-height:100vh; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.progress-bar { height:4px; background:var(--bg2); flex-shrink:0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--p5),var(--p4)); width:0%; transition:width 0.3s; }
+.header { padding:10px 16px; background:var(--bg); border-bottom:1px solid var(--bd); display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+.header h1 { color:var(--p4); font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box { display:flex; background:white; border-radius:20px; padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.search-box input { border:none; padding:6px 10px; border-radius:20px; outline:none; width:130px; font-size:0.8rem; }
+.search-box button { background:none; border:none; cursor:pointer; padding:4px 8px; font-size:0.85rem; color:var(--p2); }
+.badge { background:var(--p5); color:white; padding:4px 10px; border-radius:20px; font-weight:bold; font-size:0.75rem; }
+.search-nav { display:none; gap:4px; background:var(--bg2); padding:2px 8px; border-radius:20px; align-items:center; font-size:0.75rem; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:0.9rem; color:var(--p4); padding:2px 4px; }
+.content { padding:28px 32px; flex:1; overflow-y:auto; background:#fff; scroll-behavior:smooth; line-height:1.85; }
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.slide-title { color:var(--p1); font-size:1.5rem; font-weight:700; padding-bottom:12px; margin-bottom:20px; border-bottom:2px solid var(--p5); }
+.slide-content { color:var(--p3); font-size:1rem; }
+.empty-state { display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-height:60vh; padding:40px 20px; gap:18px; }
+.empty-state .icon { width:72px; height:72px; border-radius:50%; background:var(--bg); border:2px solid var(--bd); display:flex; align-items:center; justify-content:center; color:var(--p2); font-size:2rem; font-weight:300; }
+.empty-state h2 { color:var(--p1); font-size:1.4rem; font-weight:700; margin:0; }
+.empty-state p { color:#666; font-size:0.95rem; max-width:520px; line-height:1.7; }
+.empty-state .tag { display:inline-block; padding:6px 14px; background:var(--bg); color:var(--p4); border:1px solid var(--bd); border-radius:20px; font-size:0.8rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; }
+.bloc { padding:18px 22px; border-radius:12px; margin:22px 0; line-height:1.85; }
+.bloc-label { font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; opacity:0.7; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:var(--bg); border-left:4px solid var(--p5); }
+.theorie .bloc-label { color:var(--p4); }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.sources { background:#f5f5f5; padding:12px 16px; border-radius:10px; margin-top:26px; font-size:0.82rem; color:#666; border-left:3px solid #999; line-height:1.6; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:var(--p1); }
+.quiz-container { padding:22px; background:var(--bg); border-radius:16px; }
+.quiz-question { background:white; border-radius:10px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.quiz-question p { font-weight:600; margin-bottom:10px; color:var(--p1); }
+.quiz-question label { display:block; padding:8px 10px; margin:4px 0; border-radius:6px; cursor:pointer; transition:background 0.2s; }
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit { background:var(--btn); color:white; border:none; padding:12px 24px; border-radius:30px; font-size:1rem; cursor:pointer; font-weight:600; margin-top:14px; }
+.quiz-result { margin-top:16px; font-weight:600; }
+.controls { padding:8px 16px; background:#fafafa; border-top:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0; }
+.nav-btn { background:white; color:var(--p4); border:1px solid #ccc; padding:8px 14px; border-radius:8px; font-size:0.82rem; cursor:pointer; font-weight:500; }
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:var(--soft); }
+.content::-webkit-scrollbar-thumb { background:var(--p5); border-radius:3px; }
+@media (max-width:600px) { body { padding:0; } .container { border-radius:0; max-height:100vh; } .content { padding:20px 18px; } .slide-title { font-size:1.25rem; } .search-box input { width:90px; } .header h1 { font-size:0.85rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="header">
+<h1 id="pageTitle">ECOLIA</h1>
+<div class="header-right">
+<div class="search-box">
+<input id="searchInput" placeholder="Rechercher" type="text"/>
+<button id="searchBtn">⌕</button>
+</div>
+<div class="search-nav" id="searchNav">
+<button id="prevResultBtn">‹</button>
+<span id="resultCounter">0/0</span>
+<button id="nextResultBtn">›</button>
+</div>
+<span class="badge" id="slideCounter">0/0</span>
+</div>
+</div>
+<div class="content" id="content"></div>
+<div class="controls">
+<button class="nav-btn" id="prevBtn">← Précédent</button>
+<span class="counter" id="counter">—</span>
+<button class="nav-btn" id="nextBtn">Suivant →</button>
+</div>
+</div>
+<script>
+const COURSE_TITLE = "Pédagogie Préscolaire";
+const slides = [
+{
+    title: "Sommaire — Pédagogie Préscolaire",
+    content: `
+        <div class="bloc resume">
+            <div class="bloc-label">Présentation du cours</div>
+            <h3>Pédagogie Préscolaire — 4e Humanité (6e HP)</h3>
+            <p><strong>Niveau :</strong> 4e Humanité / Terminale, section Pédagogique (option Pédagogie Générale).</p>
+            <p><strong>Objectif général :</strong> Former l'élève-maître à l'éducation préscolaire, en lui donnant les connaissances et les compétences nécessaires pour accompagner le développement harmonieux des enfants de 0 à 6 ans.</p>
+        </div>
+        <div class="bloc theorie">
+            <div class="bloc-label">Objectifs spécifiques</div>
+            <ol>
+                <li>Décrire le développement de l'enfant de 0 à 6 ans.</li>
+                <li>Identifier les principes et les finalités de l'éducation préscolaire.</li>
+                <li>Concevoir et animer des activités adaptées aux différents domaines.</li>
+                <li>Organiser un environnement sécurisant et stimulant.</li>
+                <li>Évaluer les progrès des enfants de manière formative.</li>
+                <li>Collaborer avec les familles.</li>
+            </ol>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Organisation des chapitres</div>
+            <ul>
+                <li><strong>Chapitre I :</strong> Introduction à la pédagogie préscolaire.</li>
+                <li><strong>Chapitre II :</strong> Les grands pédagogues du préscolaire.</li>
+                <li><strong>Chapitre III :</strong> Le développement de l'enfant de 0 à 6 ans.</li>
+                <li><strong>Chapitre IV :</strong> Les principes de l'éducation préscolaire.</li>
+                <li><strong>Chapitre V :</strong> Les domaines d'activités au préscolaire.</li>
+                <li><strong>Chapitre VI :</strong> L'organisation de l'espace et du temps.</li>
+                <li><strong>Chapitre VII :</strong> L'évaluation au préscolaire.</li>
+                <li><strong>Chapitre VIII :</strong> Le partenariat avec les familles et la communauté.</li>
+            </ul>
+            <p><strong>Prérequis :</strong> Psychologie de l'Enfant ; Pédagogie Générale ; notions de base en didactique.</p>
+        </div>
+        <div class="sources">
+            <p><strong>Sources :</strong> Programme National de Pédagogie (2009) ; Manuel de Psychologie du Développement (4e HP) ; Documents officiels du MEPST sur la petite enfance et le préscolaire ; Références pédagogiques UNESCO/UNICEF.</p>
+        </div>
+    `
+},
+{
+    title: "Leçon 1 — Qu'est-ce que la pédagogie préscolaire ?",
+    content: `
+        <div class="bloc cas">
+            <div class="bloc-label">Situation de départ</div>
+            <p>Dans une école maternelle de Kinshasa, les enfants jouent, chantent, manipulent des objets. Est-ce seulement une garderie ou une véritable éducation ?</p>
+        </div>
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Définition</h3>
+            <p>La pédagogie préscolaire est la science et l'art de l'éducation des enfants de 0 à 6 ans, avant l'entrée à l'école primaire. Elle vise le <strong>développement global</strong> de l'enfant (physique, cognitif, langagier, affectif, social) dans un environnement sécurisant et stimulant.</p>
+            <h3>Importance</h3>
+            <ul>
+                <li>Les premières années sont déterminantes pour le développement du cerveau.</li>
+                <li>Une éducation préscolaire de qualité favorise la réussite scolaire future.</li>
+                <li>Elle réduit les inégalités sociales.</li>
+                <li>Elle favorise la socialisation et l'autonomie.</li>
+            </ul>
+            <h3>Finalités</h3>
+            <ul>
+                <li>Développer toutes les potentialités de l'enfant.</li>
+                <li>Favoriser son autonomie, sa socialisation, sa confiance en soi.</li>
+                <li>Préparer l'entrée à l'école primaire.</li>
+            </ul>
+            <h3>Historique</h3>
+            <p>Le préscolaire s'est développé en Europe au XIXe siècle (Froebel, Montessori). En RDC, il reste peu développé, principalement en milieu urbain, mais des efforts sont en cours pour sa généralisation.</p>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Une classe maternelle bien organisée n'est pas un simple lieu de garde : les enfants y développent le langage, la motricité, la socialisation et l'autonomie à travers des activités structurées.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Le préscolaire est une véritable éducation, pas une garderie.</li>
+                <li>Il vise le développement global de l'enfant.</li>
+                <li>Erreur fréquente : scolariser trop tôt le préscolaire en imposant des activités assises.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 2 — Froebel et le jardin d'enfants",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Friedrich Froebel (1782-1852)</h3>
+            <p>Pédagogue allemand, Froebel est le fondateur du <strong>Kindergarten</strong> (« jardin d'enfants »). Il voit l'enfant comme une plante à cultiver : l'éducateur est un jardinier qui accompagne son développement.</p>
+            <h3>Principes</h3>
+            <ul>
+                <li>Le <strong>jeu</strong> est l'activité naturelle et éducative par excellence.</li>
+                <li>L'enfant apprend par l'activité et l'exploration libre.</li>
+                <li>L'éducateur observe, guide et propose, sans imposer.</li>
+                <li>L'environnement doit être riche, naturel et sécurisé.</li>
+            </ul>
+            <h3>Le matériel Froebel : les « dons »</h3>
+            <p>Froebel a conçu une série d'objets (boules, cubes, cylindres, bâtonnets, papiers colorés) pour manipuler, construire et représenter. Ces « dons » stimulent la créativité et la compréhension des formes.</p>
+            <figure>
+                <img data-image-id="pedagogieprescolaire4_img01" alt="Illustration d'un jardin d'enfants Froebel">
+                <figcaption>Le jardin d'enfants de Froebel : un espace où l'enfant cultive son développement par le jeu et la manipulation.</figcaption>
+            </figure>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Dans une classe maternelle d'aujourd'hui, les coins de jeux symboliques, les blocs de construction et le matériel de manipulation s'inspirent directement de l'héritage de Froebel.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Froebel est le père du jardin d'enfants.</li>
+                <li>Le jeu est le mode d'apprentissage privilégié du jeune enfant.</li>
+                <li>Erreur fréquente : transformer le jardin d'enfants en classe formelle.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 3 — Montessori : autonomie et matériel auto-correctif",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Maria Montessori (1870-1952)</h3>
+            <p>Médecin et pédagogue italienne, Montessori a développé une pédagogie centrée sur l'<strong>autonomie</strong> et l'<strong>indépendance</strong> de l'enfant, dans un environnement préparé et respectueux de son rythme.</p>
+            <h3>Principes</h3>
+            <ul>
+                <li><strong>Environnement préparé :</strong> espace ordonné, accessible, adapté à la taille de l'enfant.</li>
+                <li><strong>Matériel auto-correctif :</strong> l'enfant peut vérifier lui-même s'il a réussi, sans intervention de l'adulte.</li>
+                <li><strong>Respect du rythme :</strong> chacun progresse à son rythme.</li>
+                <li><strong>L'adulte est un guide :</strong> il observe, prépare l'environnement, montre, puis se retire.</li>
+            </ul>
+            <h3>Domaines d'activité</h3>
+            <ul>
+                <li><strong>Vie pratique :</strong> verser, transvaser, boutonner, laver.</li>
+                <li><strong>Sensoriel :</strong> discriminer les couleurs, les formes, les textures, les sons, les odeurs.</li>
+                <li><strong>Langage :</strong> vocabulaire, lettres rugueuses.</li>
+                <li><strong>Mathématiques :</strong> nombres, quantités, opérations concrètes.</li>
+            </ul>
+            <figure>
+                <img data-image-id="pedagogieprescolaire4_img02" alt="Matériel Montessori">
+                <figcaption>Le matériel Montessori : conçu pour être manipulé, il permet à l'enfant de s'auto-corriger.</figcaption>
+            </figure>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Un enfant transvase des graines d'un bol à un autre avec une cuillère. Si les graines tombent, il recommence : c'est lui qui corrige, développant sa concentration et sa motricité fine.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Montessori met l'accent sur l'autonomie et le respect du rythme.</li>
+                <li>Le matériel auto-correctif permet à l'enfant de progresser seul.</li>
+                <li>Erreur fréquente : aider l'enfant avant qu'il n'ait essayé par lui-même.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 4 — Decroly, Piaget et Vygotsky au préscolaire",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Ovide Decroly (1871-1932)</h3>
+            <p>Médecin et pédagogue belge, Decroly propose la pédagogie des <strong>centres d'intérêt</strong>. L'enfant apprend globalement, à partir de ses intérêts et de son environnement. Il est aussi l'inventeur de la <strong>méthode globale de lecture</strong>.</p>
+            <h3>Jean Piaget (1896-1980)</h3>
+            <p>Le développement cognitif se fait par <strong>stades</strong>. Au préscolaire : stade <strong>sensori-moteur</strong> (0-2 ans) et stade <strong>préopératoire</strong> (2-7 ans). L'enfant apprend par l'action et la manipulation.</p>
+            <h3>Lev Vygotsky (1896-1934)</h3>
+            <p>Les interactions sociales et le langage jouent un rôle central dans le développement. La <strong>Zone Proximale de Développement (ZPD)</strong> désigne l'écart entre ce que l'enfant sait faire seul et ce qu'il peut faire avec l'aide d'un adulte ou d'un pair plus compétent. L'adulte <strong>étaye</strong> pour faire progresser l'enfant.</p>
+            <h3>Tableau comparatif</h3>
+            <table>
+                <thead><tr><th>Auteur</th><th>Apport principal</th></tr></thead>
+                <tbody>
+                    <tr><td>Decroly</td><td>Centres d'intérêt, méthode globale</td></tr>
+                    <tr><td>Piaget</td><td>Stades du développement cognitif</td></tr>
+                    <tr><td>Vygotsky</td><td>ZPD, rôle des interactions sociales</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Un enfant ne sait pas encore boutonner sa veste seul. Avec l'aide d'un adulte qui montre lentement, il y parvient. C'est la ZPD de Vygotsky en action.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Decroly : partir des intérêts de l'enfant.</li>
+                <li>Piaget : respecter les stades du développement.</li>
+                <li>Vygotsky : étayer pour faire progresser dans la ZPD.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 5 — Le développement de 0 à 6 ans",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Développement moteur</h3>
+            <ul>
+                <li>0-3 mois : tenir la tête, suivre du regard.</li>
+                <li>6 mois : s'asseoir avec appui, préhension.</li>
+                <li>9-12 mois : tenir debout, premiers pas.</li>
+                <li>18 mois : marcher, courir maladroitement.</li>
+                <li>3 ans : courir, sauter, grimper.</li>
+                <li>4-6 ans : motricité fine (découper, dessiner), coordination.</li>
+            </ul>
+            <h3>Développement langagier</h3>
+            <ul>
+                <li>Cris, babillage (0-1 an).</li>
+                <li>Premiers mots (12-18 mois).</li>
+                <li>Phrases simples (2-3 ans).</li>
+                <li>Vocabulaire en expansion, phrases complexes (3-6 ans).</li>
+            </ul>
+            <h3>Développement cognitif</h3>
+            <ul>
+                <li>Stade sensori-moteur (0-2 ans) : exploration par les sens et le mouvement.</li>
+                <li>Stade préopératoire (2-7 ans) : pensée symbolique (jeu, dessin), égocentrisme, raisonnement intuitif.</li>
+            </ul>
+            <h3>Développement affectif et social</h3>
+            <ul>
+                <li>Attachement (Bowlby) : besoin de sécurité affective.</li>
+                <li>Socialisation progressive : jeu parallèle, puis coopératif.</li>
+                <li>Apprentissage des règles et du partage.</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Un enfant de 4 ans qui parle de son « doudou » comme s'il était vivant illustre la pensée symbolique. Un enfant de 5 ans qui joue à la marchande avec d'autres enfants illustre la socialisation et le jeu coopératif.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Le développement est global (moteur, cognitif, langagier, affectif, social).</li>
+                <li>Chaque enfant a son propre rythme.</li>
+                <li>Erreur fréquente : comparer les enfants entre eux et imposer un rythme uniforme.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 6 — Les principes de l'éducation préscolaire",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Les principes fondamentaux</h3>
+            <ul>
+                <li><strong>Activité :</strong> l'enfant apprend en agissant, en manipulant, en explorant.</li>
+                <li><strong>Jeu :</strong> le mode d'apprentissage privilégié du jeune enfant (jeu libre, jeu symbolique, jeu de construction).</li>
+                <li><strong>Globalité :</strong> l'enfant apprend de manière globale ; les activités ne sont pas cloisonnées par discipline.</li>
+                <li><strong>Socialisation :</strong> apprendre à vivre avec les autres (partage, respect, coopération, règles).</li>
+                <li><strong>Bienveillance :</strong> environnement affectif sécurisant, relations chaleureuses, routines stables.</li>
+                <li><strong>Respect du rythme :</strong> chaque enfant se développe à son rythme ; différencier sans comparer.</li>
+            </ul>
+            <h3>Conséquences pédagogiques</h3>
+            <ul>
+                <li>Privilégier le mouvement et le jeu, pas les fiches assises.</li>
+                <li>Varier les activités (calmes/actives, individuelles/collectives).</li>
+                <li>Observer chaque enfant pour adapter.</li>
+                <li>Créer un climat de confiance.</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Une matinée préscolaire bien structurée alterne accueil, regroupement, ateliers, collation, récréation, repos et activités calmes. Les enfants apprennent en jouant et en manipulant.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Les principes du préscolaire découlent du développement de l'enfant.</li>
+                <li>Le jeu et l'activité sont les moteurs de l'apprentissage.</li>
+                <li>Erreur fréquente : scolariser trop tôt en imposant des activités formelles.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 7 — Le domaine du langage",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Objectifs</h3>
+            <ul>
+                <li>Comprendre et s'exprimer oralement.</li>
+                <li>Enrichir le vocabulaire.</li>
+                <li>Développer la conscience phonologique (sons de la langue).</li>
+                <li>Préparer l'entrée dans l'écrit (sans le formaliser trop tôt).</li>
+            </ul>
+            <h3>Activités</h3>
+            <ul>
+                <li>Dialogues, conversations guidées.</li>
+                <li>Comptines, chansons, jeux de doigts.</li>
+                <li>Histoires, contes, lecture d'albums.</li>
+                <li>Jeux de rôle.</li>
+                <li>Description d'images.</li>
+                <li>Jeux de vocabulaire.</li>
+            </ul>
+            <h3>Rôle de l'enseignant</h3>
+            <ul>
+                <li>Parler beaucoup et clairement.</li>
+                <li>Écouter l'enfant.</li>
+                <li>Reformuler, enrichir le vocabulaire.</li>
+                <li>Créer des situations de communication réelles.</li>
+                <li>Valoriser les langues nationales (lingala, kikongo, kiswahili, tshiluba).</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Une comptine en lingala accompagne le retour au calme. Les enfants répètent, frappent le rythme, apprennent du vocabulaire et développent leur conscience phonologique en s'amusant.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Le langage se développe par la parole et l'écoute.</li>
+                <li>Les comptines et histoires sont des supports privilégiés.</li>
+                <li>Erreur fréquente : négliger les langues nationales au préscolaire.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 8 — Le domaine de la motricité",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Motricité globale</h3>
+            <ul>
+                <li>Courir, sauter, grimper, lancer, ramper.</li>
+                <li>Développe la coordination, l'équilibre, l'endurance.</li>
+                <li>Activités : parcours moteurs, jeux de ballon, rondes.</li>
+            </ul>
+            <h3>Motricité fine</h3>
+            <ul>
+                <li>Pincer, transvaser, découper, enfiler, dessiner.</li>
+                <li>Prépare à l'écriture.</li>
+                <li>Activités : transvasement de graines, enfilage de perles, découpage, modelage.</li>
+            </ul>
+            <h3>Organisation</h3>
+            <ul>
+                <li>Espace sécurisé et délimité.</li>
+                <li>Matériel adapté et varié.</li>
+                <li>Progressivité (du simple au complexe).</li>
+                <li>Surveillance constante.</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Un parcours moteur simple (bancs à enjamber, cerceaux à traverser, corde à sauter) développe l'équilibre, la coordination et la confiance en soi. Les enfants s'amusent tout en apprenant.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Motricité globale : grands mouvements.</li>
+                <li>Motricité fine : mouvements précis.</li>
+                <li>Erreur fréquente : sous-estimer l'importance de la motricité fine pour préparer l'écriture.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 9 — Le domaine des mathématiques",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Notions à développer</h3>
+            <ul>
+                <li><strong>Quantité :</strong> beaucoup/peu, plus/moins, autant.</li>
+                <li><strong>Nombre :</strong> comptine numérique (1, 2, 3…), correspondance terme à terme.</li>
+                <li><strong>Forme :</strong> rond, carré, triangle.</li>
+                <li><strong>Grandeur :</strong> grand/petit, long/court, lourd/léger.</li>
+                <li><strong>Espace :</strong> sur/sous, devant/derrière, à côté, dans.</li>
+                <li><strong>Temps :</strong> avant/après, matin/soir, hier/demain.</li>
+            </ul>
+            <h3>Activités</h3>
+            <ul>
+                <li>Comptage d'objets concrets.</li>
+                <li>Tri et classification (par couleur, forme, taille).</li>
+                <li>Puzzles, jeux de construction.</li>
+                <li>Jeux de société simples (dés, cases).</li>
+                <li>Comparaison de quantités.</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Tri de boutons par couleur, taille et forme : les enfants apprennent à observer, à classer, à nommer. Ce sont les bases des mathématiques, sans avoir l'air d'une leçon.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Les mathématiques au préscolaire se construisent par la manipulation.</li>
+                <li>Le jeu est le support privilégié.</li>
+                <li>Erreur fréquente : imposer des exercices écrits avant que l'enfant n'ait compris concrètement.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 10 — Découverte du monde, arts et vie pratique",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Découverte du monde</h3>
+            <ul>
+                <li>Observer la nature (plantes, animaux, saisons).</li>
+                <li>Expériences simples (eau, air, lumière, dissolution).</li>
+                <li>Sorties dans le quartier, au marché, au jardin.</li>
+                <li>Élevage, jardinage.</li>
+            </ul>
+            <h3>Arts</h3>
+            <ul>
+                <li><strong>Arts plastiques :</strong> dessin, peinture, modelage, collage.</li>
+                <li><strong>Musique :</strong> chants, comptines, jeux de rythme, fabrication d'instruments.</li>
+                <li><strong>Expression corporelle :</strong> mime, danse, jeu dramatique.</li>
+            </ul>
+            <h3>Vie pratique</h3>
+            <ul>
+                <li>Autonomie dans les gestes quotidiens : se laver, s'habiller, manger, ranger.</li>
+                <li>Transvasement, boutonnage, laçage, préparation de la collation.</li>
+                <li>Responsabilisation (rôles tournants dans la classe).</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Un atelier de jardinage dans la cour de l'école permet aux enfants d'observer la germination, de prendre soin des plantes, de comprendre le cycle de la vie. C'est à la fois sciences, vie pratique et émerveillement.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Tous les domaines sont essentiels au développement global.</li>
+                <li>La découverte du monde, les arts et la vie pratique complètent les apprentissages académiques.</li>
+                <li>Erreur fréquente : privilégier le langage et les mathématiques au détriment des autres domaines.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 11 — Aménager l'espace préscolaire",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Les coins d'activités</h3>
+            <ul>
+                <li><strong>Coin regroupement :</strong> causerie, lecture, chants.</li>
+                <li><strong>Coin jeux symboliques :</strong> cuisine, poupées, déguisements.</li>
+                <li><strong>Coin construction :</strong> blocs, briques, puzzles.</li>
+                <li><strong>Coin arts :</strong> peinture, dessin, modelage.</li>
+                <li><strong>Coin manipulation :</strong> transvasement, laçage, tri.</li>
+                <li><strong>Coin sciences :</strong> plantes, objets à observer.</li>
+            </ul>
+            <figure>
+                <img data-image-id="pedagogieprescolaire4_img03" alt="Aménagement d'une classe préscolaire avec coins d'activités">
+                <figcaption>Une classe préscolaire organisée en coins d'activités favorise l'autonomie et l'exploration.</figcaption>
+            </figure>
+            <h3>Caractéristiques d'un bon espace</h3>
+            <ul>
+                <li><strong>Sécurisé :</strong> pas de coins dangereux, matériel adapté.</li>
+                <li><strong>Accessible :</strong> matériel à hauteur d'enfant, rangement identifiable.</li>
+                <li><strong>Évolutif :</strong> aménagement qui évolue selon les projets.</li>
+                <li><strong>Stimulant :</strong> couleurs, objets variés, affichages.</li>
+                <li><strong>Matériel de récupération :</strong> boîtes, bouchons, tissus, objets naturels.</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Dans une école de Matete, une classe maternelle aménage des coins avec des palettes, des bouteilles, des tissus récupérés. Les enfants circulent librement entre les activités, sous la surveillance de l'enseignant.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>L'espace préscolaire doit être organisé en coins d'activités.</li>
+                <li>Il doit être sécurisé, accessible et stimulant.</li>
+                <li>Erreur fréquente : organiser un espace trop statique, inadapté au besoin de mouvement.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 12 — Organiser le temps : routines et emploi du temps",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Importance des routines</h3>
+            <p>Les routines sécurisent l'enfant. Elles lui permettent d'anticiper, de se repérer dans le temps, de développer son autonomie.</p>
+            <h3>Une journée type</h3>
+            <ul>
+                <li><strong>Accueil :</strong> arrivée, salutations, jeux libres.</li>
+                <li><strong>Regroupement :</strong> causerie, comptines, présentation de la journée.</li>
+                <li><strong>Ateliers :</strong> activités dirigées par domaine (langage, motricité, mathématiques, arts…).</li>
+                <li><strong>Collation :</strong> moment de socialisation et d'hygiène.</li>
+                <li><strong>Récréation :</strong> motricité libre, socialisation.</li>
+                <li><strong>Repos :</strong> sieste ou temps calme.</li>
+                <li><strong>Activités calmes :</strong> histoires, chants, jeux de doigts.</li>
+                <li><strong>Départ :</strong> rangement, retour au calme, salutations.</li>
+            </ul>
+            <h3>Principes d'organisation</h3>
+            <ul>
+                <li>Alterner activités calmes et actives.</li>
+                <li>Prévoir des temps de jeu libre.</li>
+                <li>Respecter les besoins physiologiques (faim, repos, mouvement).</li>
+                <li>Garder une certaine souplesse.</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Une matinée préscolaire à Kinshasa peut être organisée ainsi : accueil (30 min), regroupement (20 min), ateliers (45 min), collation (15 min), récréation (30 min), activités calmes (30 min), départ. Cette régularité sécurise les enfants.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Les routines sécurisent et structurent le temps.</li>
+                <li>Un bon emploi du temps alterne les types d'activités.</li>
+                <li>Erreur fréquente : surcharger la journée, sans temps libre.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 13 — L'évaluation au préscolaire",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Principes</h3>
+            <ul>
+                <li><strong>Formative :</strong> elle vise à aider l'enfant à progresser, pas à le classer.</li>
+                <li><strong>Bienveillante :</strong> elle valorise les progrès, ne sanctionne pas.</li>
+                <li><strong>Continue :</strong> elle s'appuie sur l'observation quotidienne.</li>
+                <li><strong>Globale :</strong> elle prend en compte tous les domaines (moteur, langagier, cognitif, social, affectif).</li>
+            </ul>
+            <h3>Outils</h3>
+            <ul>
+                <li>Grilles d'observation.</li>
+                <li>Cahier de progrès.</li>
+                <li>Portfolio (recueil de réalisations).</li>
+                <li>Photos, dessins, productions diverses.</li>
+                <li>Entretiens avec les parents.</li>
+            </ul>
+            <h3>Communication aux parents</h3>
+            <p>L'évaluation est partagée lors de rencontres régulières. Elle est formulée de manière positive et constructive, en identifiant les acquis et les besoins.</p>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>L'enseignant observe qu'un enfant qui ne parlait pas commence à participer aux comptines. Il le note dans son cahier de progrès et en parle aux parents lors de la réunion trimestrielle.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>L'évaluation préscolaire est formative et descriptive.</li>
+                <li>Elle s'appuie sur l'observation continue.</li>
+                <li>Erreur fréquente : utiliser des notes chiffrées ou des évaluations sommatives.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 14 — Le partenariat avec les familles",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Pourquoi travailler avec les familles ?</h3>
+            <p>La famille est le premier milieu éducatif de l'enfant. La collaboration entre l'école et la famille est essentielle pour le développement harmonieux de l'enfant.</p>
+            <h3>Formes de partenariat</h3>
+            <ul>
+                <li>Réunions de parents.</li>
+                <li>Entretiens individuels.</li>
+                <li>Cahier de liaison.</li>
+                <li>Participation à des activités (fêtes, sorties, ateliers).</li>
+                <li>Communication régulière sur les progrès.</li>
+            </ul>
+            <h3>Rôle de la communauté</h3>
+            <p>Les ressources locales (artisans, agriculteurs, artistes) peuvent enrichir les activités préscolaires. Les sorties dans le quartier, au marché, au jardin sont des occasions d'apprentissage.</p>
+            <h3>Attitude professionnelle</h3>
+            <ul>
+                <li>Écouter les familles.</li>
+                <li>Respecter leurs réalités culturelles et sociales.</li>
+                <li>Créer un climat de confiance.</li>
+                <li>Travailler ensemble pour l'enfant.</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Une école maternelle organise une matinée portes ouvertes : les parents participent à un atelier de comptines avec leurs enfants. Ce moment renforce le lien école-famille et valorise les apprentissages.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Les parents sont des partenaires, pas de simples spectateurs.</li>
+                <li>La communication régulière est la clé.</li>
+                <li>Erreur fréquente : ne solliciter les parents qu'en cas de problème.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 15 — Étude de cas : une classe préscolaire à Kinshasa",
+    content: `
+        <div class="bloc cas">
+            <div class="bloc-label">Situation</div>
+            <p>Un élève-maître est affecté dans une classe maternelle de 30 enfants de 4 ans à Kinshasa. La salle est petite, le matériel rare, et plusieurs enfants ne parlent pas français à la maison (lingala, kikongo).</p>
+        </div>
+        <div class="bloc theorie">
+            <div class="bloc-label">Analyse et solutions</div>
+            <h3>Défis</h3>
+            <ul>
+                <li>Manque de matériel pédagogique.</li>
+                <li>Diversité linguistique.</li>
+                <li>Classe nombreuse et espace réduit.</li>
+                <li>Attentes des parents parfois centrées sur la lecture et l'écriture.</li>
+            </ul>
+            <h3>Stratégies</h3>
+            <ul>
+                <li>Aménager des coins d'activités avec du matériel de récupération (boîtes, bouchons, tissus, objets naturels).</li>
+                <li>Valoriser les langues nationales dans les comptines et les histoires pour faciliter la transition vers le français.</li>
+                <li>Mettre en place des routines stables et des rôles tournants pour responsabiliser les enfants.</li>
+                <li>Communiquer avec les parents sur les objectifs du préscolaire (développement global, pas scolarisation forcée).</li>
+                <li>Observer chaque enfant et consigner ses progrès dans un cahier.</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Mise en œuvre</div>
+            <p>L'élève-maître organise des coins d'activités, met en place des routines stables, utilise des comptines en lingala et en français. Il observe chaque enfant, note ses progrès et en parle aux parents lors des réunions. La classe devient un espace d'apprentissage épanouissant, malgré les contraintes.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Les contraintes matérielles se surmontent par la créativité.</li>
+                <li>La diversité linguistique est une richesse.</li>
+                <li>Erreur fréquente : vouloir scolariser trop vite le préscolaire pour rassurer les parents.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Évaluation finale — Pédagogie Préscolaire",
+    content: `
+        <div class="bloc resume">
+            <div class="bloc-label">Évaluation finale</div>
+            <p>20 questions à choix multiple. Une seule réponse est correcte par question. Choisis la réponse qui te semble juste, puis valide.</p>
+        </div>
+        <div class="quiz-container">
+            <div id="quizQuestions"></div>
+            <button id="submitQuiz" class="quiz-btn-submit">Valider mes réponses</button>
+            <div id="quizResult" class="quiz-result"></div>
+        </div>
+    `
+}
+];
+const questions = [
+    { text: "La pédagogie préscolaire concerne les enfants de :", options: ["0 à 6 ans", "6 à 12 ans", "12 à 18 ans", "3 à 8 ans"], correct: 0 },
+    { text: "Le « jardin d'enfants » a été créé par :", options: ["Montessori", "Froebel", "Decroly", "Piaget"], correct: 1 },
+    { text: "La pédagogie Montessori met l'accent sur :", options: ["L'autonomie et le matériel auto-correctif", "Les centres d'intérêt", "Le jeu libre uniquement", "L'enseignement magistral"], correct: 0 },
+    { text: "Les centres d'intérêt sont associés à :", options: ["Decroly", "Froebel", "Vygotsky", "Montessori"], correct: 0 },
+    { text: "Selon Piaget, l'enfant de 4 ans est au stade :", options: ["Sensori-moteur", "Préopératoire", "Opérations concrètes", "Opérations formelles"], correct: 1 },
+    { text: "La ZPD est un concept de :", options: ["Piaget", "Vygotsky", "Montessori", "Froebel"], correct: 1 },
+    { text: "Le jeu au préscolaire est :", options: ["Une perte de temps", "Le mode d'apprentissage privilégié", "Une récompense", "Une activité secondaire"], correct: 1 },
+    { text: "Un principe de l'éducation préscolaire est :", options: ["La globalité", "Le cloisonnement des matières", "L'évaluation chiffrée", "L'immobilité"], correct: 0 },
+    { text: "Le domaine « vie pratique » vise à développer :", options: ["L'autonomie dans les gestes quotidiens", "Les mathématiques avancées", "La lecture", "L'écriture"], correct: 0 },
+    { text: "L'aménagement de l'espace préscolaire doit être :", options: ["Sécurisé et accessible", "Statique et rigide", "Vide", "Réservé aux adultes"], correct: 0 },
+    { text: "L'évaluation au préscolaire est principalement :", options: ["Formative et bienveillante", "Sommative et chiffrée", "Comparative", "Éliminatoire"], correct: 0 },
+    { text: "Le portfolio est :", options: ["Un recueil de réalisations de l'enfant", "Un cahier de notes", "Un manuel", "Un emploi du temps"], correct: 0 },
+    { text: "Le partenariat avec les familles est :", options: ["Essentiel au préscolaire", "Inutile", "Réservé aux parents aisés", "Optionnel"], correct: 0 },
+    { text: "La motricité fine concerne :", options: ["Les mouvements précis (pincer, découper)", "La course et le saut", "La parole", "La pensée"], correct: 0 },
+    { text: "Une comptine sert à :", options: ["Développer le langage et le rythme", "Enseigner les mathématiques avancées", "Remplacer le jeu", "Évaluer les enfants"], correct: 0 },
+    { text: "Un coin d'activités au préscolaire est :", options: ["Un espace dédié à un type de jeu ou d'apprentissage", "Une punition", "Un bureau d'enseignant", "Un placard"], correct: 0 },
+    { text: "L'enseignant au préscolaire doit :", options: ["Parler aux enfants et les écouter", "Rester silencieux", "Interdire le jeu", "Donner des notes"], correct: 0 },
+    { text: "Le matériel de récupération est :", options: ["Utile face au manque de matériel", "Interdit", "Dangereux", "Inutile"], correct: 0 },
+    { text: "Le développement global de l'enfant inclut :", options: ["Le physique, le cognitif, l'affectif et le social", "Uniquement le cognitif", "Uniquement le physique", "Uniquement le langage"], correct: 0 },
+    { text: "L'objectif principal de la pédagogie préscolaire est de :", options: ["Accompagner le développement harmonieux de l'enfant", "Préparer à l'examen", "Enseigner la lecture formellement", "Classer les enfants"], correct: 0 }
+];
+
+try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+        questions.forEach(function (q) {
+            if (!q.text) q.text = q.question || q.q || q.enonce || q.titre || "";
+            if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+            if (typeof q.correct === "undefined") {
+                if (typeof q.answer !== "undefined") q.correct = q.answer;
+                else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+            }
+        });
+    }
+} catch (e) {}
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+const pageTitle = document.getElementById('pageTitle');
+pageTitle.textContent = "ECOLIA · " + COURSE_TITLE;
+document.title = "ECOLIA — " + COURSE_TITLE;
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim() || slides.length === 0) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp("(" + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ")", 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderEmptyState() {
+    contentDiv.innerHTML = '<div class="empty-state"><div class="icon">·</div><span class="tag">Bientôt disponible</span><h2>' + COURSE_TITLE + '</h2><p>Ce cours est en préparation. Le contenu sera ajouté prochainement.</p></div>';
+    slideCounterSpan.textContent = '0/0';
+    progressFill.style.width = '0%';
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    counterSpan.textContent = '—';
+}
+
+function renderQuiz() {
+    const qc = document.getElementById('quizQuestions');
+    if (!qc) return;
+    if (typeof questions === 'undefined' || questions.length === 0) {
+        qc.innerHTML = '<p style="color:#666;font-style:italic;">Quiz bientot disponible.</p>';
+        return;
+    }
+    let html = '';
+    questions.forEach((q, i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o, k) => {
+            html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>';
+        });
+        html += '</div>';
+    });
+    qc.innerHTML = html;
+    const submitBtn = document.getElementById('submitQuiz');
+    if (submitBtn) {
+        submitBtn.onclick = () => {
+            let score = 0;
+            questions.forEach((q, i) => {
+                const s = document.querySelector('input[name="q' + i + '"]:checked');
+                if (s && parseInt(s.value) === q.correct) score++;
+            });
+            const pct = Math.round(score/questions.length*100);
+            document.getElementById('quizResult').innerHTML =
+                '<div style="background:var(--bg2);padding:16px;border-radius:10px;margin-top:14px;">' +
+                '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong></div>';
+        };
+    }
+}
+
+function renderSlide(index, keepHighlight) {
+    if (keepHighlight === undefined) keepHighlight = true;
+    if (slides.length === 0) { renderEmptyState(); return; }
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    if (index === slides.length - 1) renderQuiz();
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    if (slides.length === 0) return;
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (slides.length && currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (slides.length && currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+<!-- ECOLIA_IMAGE_LOADER_START -->
+<script>
+(function () {
+  var SITE = "https://ecolia-course.github.io/";
+  var NATIVE = false;
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function abs(u) { return /^(https?:|data:|blob:)/i.test(u) ? u : (NATIVE ? SITE + u.replace(/^(\.\/|\/)+/, "") : u); }
+  function ext(u) { var m = String(u).split("?")[0].match(/\.(jpe?g|png|gif|webp|svg)$/i); return m ? m[1].toLowerCase() : "jpg"; }
+  function hide(img) { img.onerror = null; img.style.display = "none"; }
+  var table = null, queue = [], queued = {}, running = false;
+  function enqueue(full, fn) {
+    if (queued[fn]) return;
+    queued[fn] = 1; queue.push([full, fn]);
+    if (!running) { running = true; setTimeout(next, 2500); }
+  }
+  function next() {
+    if (!queue.length) { running = false; return; }
+    if (!navigator.onLine) { running = false; return; }
+    var q = queue.shift(), t0 = Date.now();
+    try { CoursInterface.download(q[0], q[1]); } catch (e) { return setTimeout(next, 500); }
+    (function wait() {
+      var ok = false;
+      try { ok = !!CoursInterface.exists(q[1]); } catch (e) {}
+      if (ok) setTimeout(next, 1500);
+      else if (Date.now() - t0 > 40000) next();
+      else setTimeout(wait, 700);
+    })();
+  }
+  function exists(fn) { try { return !!CoursInterface.exists(fn); } catch (e) { return false; } }
+  function show(img) {
+    if (!table || img.getAttribute("data-ecolia-done")) return;
+    var id = img.getAttribute("data-image-id");
+    var url = table[id];
+    if (typeof url !== "string" || !url.length) { console.warn("ECOLIA : image absente du JSON :", id); return; }
+    img.setAttribute("data-ecolia-done", "1");
+    if (!NATIVE) { img.onerror = function () { hide(img); }; img.setAttribute("src", url); return; }
+    var full = abs(url), fn = "img_" + id + "." + ext(url);
+    if (exists(fn)) {
+      img.onerror = function () {
+        try { CoursInterface["delete"](fn); } catch (e) {}
+        queued[fn] = 0;
+        img.onerror = function () { hide(img); };
+        img.setAttribute("src", full);
+      };
+      img.setAttribute("src", "https://app.local/cours/" + fn);
+    } else {
+      img.onerror = function () { hide(img); };
+      img.setAttribute("src", full);
+      enqueue(full, fn);
+    }
+  }
+  function scan(root) {
+    if (!root || !root.querySelectorAll) return;
+    if (root.matches && root.matches("img[data-image-id]")) show(root);
+    root.querySelectorAll("img[data-image-id]").forEach(show);
+  }
+  function prefetchAll() {
+    var ids = {};
+    try { JSON.stringify(slides).replace(/data-image-id=\\?"([^"\\]+)/g, function (m, id) { ids[id] = 1; }); } catch (e) {}
+    Object.keys(ids).forEach(function (id) {
+      var url = table[id];
+      if (typeof url !== "string" || !url.length) return;
+      var fn = "img_" + id + "." + ext(url);
+      if (!exists(fn)) enqueue(abs(url), fn);
+    });
+  }
+  function start(tbl) {
+    table = tbl;
+    scan(document.body);
+    new MutationObserver(function (muts) {
+      muts.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.nodeType === 1) scan(n); }); });
+    }).observe(document.body, { childList: true, subtree: true });
+    if (NATIVE) prefetchAll();
+  }
+  var JSON_URL = NATIVE ? SITE + "images_ecolia.json" : "images_ecolia.json";
+  var KEY = "ecolia_images_json";
+  fetch(JSON_URL, NATIVE ? { cache: "no-cache" } : undefined)
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (table) { if (NATIVE) lsSet(KEY, JSON.stringify(table)); start(table); })
+    .catch(function (e) {
+      var saved = null;
+      if (NATIVE) { try { saved = JSON.parse(lsGet(KEY) || "null"); } catch (x) {} }
+      if (saved) start(saved);
+      else console.warn("ECOLIA : JSON des images indisponible.", e);
+    });
+})();
+</script>
+<!-- ECOLIA_IMAGE_LOADER_END -->
+
+
+
+<!-- ECOLIA_AUDIO_PLAYER_START -->
+<style>
+  #ecolia-audio-btn, #ecolia-dl-btn {
+    width: 30px; height: 30px; min-width: 30px; padding: 0; margin: 0 4px 0 0;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    cursor: pointer; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent; outline: none;
+  }
+  #ecolia-audio-btn { border: none; background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-dl-btn { border: 1.5px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb); }
+  #ecolia-dl-btn.ecolia-full { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-btn.ecolia-fixed { position: fixed; top: 8px; left: 8px; z-index: 2147483000; }
+  #ecolia-audio-btn:active, #ecolia-dl-btn:active { transform: scale(.92); }
+  #ecolia-audio-btn svg, #ecolia-dl-btn svg { width: 15px; height: 15px; fill: currentColor; pointer-events: none; }
+  #ecolia-audio-btn.ecolia-off, #ecolia-dl-btn.ecolia-off { display: none; }
+  #ecolia-audio-banner {
+    display: none; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0;
+    padding: 8px 14px; font-size: .82rem; line-height: 1.35;
+    background: var(--soft, #eef3fb); color: var(--p1, #123); border-bottom: 1px solid var(--bd, #c9d6ea);
+  }
+  #ecolia-audio-banner.on { display: flex; }
+  #ecolia-audio-banner .eab-txt { flex: 1 1 180px; }
+  #ecolia-audio-banner .eab-act { display: flex; gap: 6px; flex-wrap: wrap; }
+  #ecolia-audio-banner button {
+    border: 1px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb);
+    border-radius: 16px; padding: 5px 12px; font-size: .8rem; cursor: pointer;
+  }
+  #ecolia-audio-banner button.pri { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-banner .eab-bar { display: none; flex-basis: 100%; height: 4px; border-radius: 2px; overflow: hidden; background: var(--bd, #c9d6ea); }
+  #ecolia-audio-banner .eab-bar i { display: block; height: 100%; width: 0; background: var(--p2, #2563eb); transition: width .2s; }
+</style>
+<script>
+(function () {
+  var CFG = {"code":"PedagogiePrescolaire4","base":"https://ecolia-course.github.io/ecolia-media/audio_files/","available":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17],"count":17,"sizeMo":13,"sizes":{"1":768384,"2":899520,"3":737088,"4":864192,"5":874560,"6":909888,"7":755520,"8":595200,"9":600192,"10":634560,"11":719808,"12":779712,"13":846528,"14":629568,"15":685824,"16":838848,"17":115584},"fallback":{"1":[["fr","Sommaire, Pédagogie Préscolaire. Présentation du cours. Pédagogie Préscolaire, 4e Humanité (6e HP). Niveau: 4e Humanité ou Terminale, section Pédagogique (option Pédagogie Générale). Objectif général: Former l'élève-maître à l'éducation préscolaire, en lui donnant les connaissances et les compétences nécessaires pour accompagner le développement harmonieux des enfants de 0 à 6 ans. Objectifs spécifiques. Décrire le développement de l'enfant de 0 à 6 ans. Identifier les principes et les finalités de l'éducation préscolaire. Concevoir et animer des activités adaptées aux différents domaines. Organiser un environnement sécurisant et stimulant. Évaluer les progrès des enfants de manière formative. Collaborer avec les familles. Organisation des chapitres. Chapitre I: Introduction à la pédagogie préscolaire. Chapitre II: Les grands pédagogues du préscolaire. Chapitre III: Le développement de l'enfant de 0 à 6 ans. Chapitre IV: Les principes de l'éducation préscolaire. Chapitre V: Les domaines d'activités au préscolaire. Chapitre VI: L'organisation de l'espace et du temps. Chapitre VII: L'évaluation au préscolaire. Chapitre VIII: Le partenariat avec les familles et la communauté. Prérequis: Psychologie de l'Enfant; Pédagogie Générale; notions de base en didactique."]],"2":[["fr","Leçon 1, Qu'est-ce que la pédagogie préscolaire? Situation de départ. Dans une école maternelle de Kinshasa, les enfants jouent, chantent, manipulent des objets. Est-ce seulement une garderie ou une véritable éducation? Fondements théoriques. Définition. La pédagogie préscolaire est la science et l'art de l'éducation des enfants de 0 à 6 ans, avant l'entrée à l'école primaire. Elle vise le développement global de l'enfant (physique, cognitif, langagier, affectif, social) dans un environnement sécurisant et stimulant. Importance. Les premières années sont déterminantes pour le développement du cerveau. Une éducation préscolaire de qualité favorise la réussite scolaire future. Elle réduit les inégalités sociales. Elle favorise la socialisation et l'autonomie. Finalités. Développer toutes les potentialités de l'enfant. Favoriser son autonomie, sa socialisation, sa confiance en soi. Préparer l'entrée à l'école primaire. Historique. Le préscolaire s'est développé en Europe au XIXe siècle (Froebel, Montessori). En R D C, il reste peu développé, principalement en milieu urbain, mais des efforts sont en cours pour sa généralisation. Exemple concret. Une classe maternelle bien organisée n'est pas un simple lieu de garde: les enfants y développent le langage, la motricité, la socialisation et l'autonomie à travers des activités structurées. À retenir. Le préscolaire est une véritable éducation, pas une garderie. Il vise le développement global de l'enfant. Erreur fréquente: scolariser trop tôt le préscolaire en imposant des activités assises."]],"3":[["fr","Leçon 2, Froebel et le jardin d'enfants. Fondements théoriques. Friedrich Froebel (1782-1852). Pédagogue allemand, Froebel est le fondateur du Kindergarten (« jardin d'enfants »). Il voit l'enfant comme une plante à cultiver: l'éducateur est un jardinier qui accompagne son développement. Principes. Le jeu est l'activité naturelle et éducative par excellence. L'enfant apprend par l'activité et l'exploration libre. L'éducateur observe, guide et propose, sans imposer. L'environnement doit être riche, naturel et sécurisé. Le matériel Froebel: les « dons ». Froebel a conçu une série d'objets (boules, cubes, cylindres, bâtonnets, papiers colorés) pour manipuler, construire et représenter. Ces « dons » stimulent la créativité et la compréhension des formes. Le jardin d'enfants de Froebel: un espace où l'enfant cultive son développement par le jeu et la manipulation. Exemple concret. Dans une classe maternelle d'aujourd'hui, les coins de jeux symboliques, les blocs de construction et le matériel de manipulation s'inspirent directement de l'héritage de Froebel. À retenir. Froebel est le père du jardin d'enfants. Le jeu est le mode d'apprentissage privilégié du jeune enfant. Erreur fréquente: transformer le jardin d'enfants en classe formelle."]],"4":[["fr","Leçon 3, Montessori: autonomie et matériel auto-correctif. Fondements théoriques. Maria Montessori (1870-1952). Médecin et pédagogue italienne, Montessori a développé une pédagogie centrée sur l'autonomie et l'indépendance de l'enfant, dans un environnement préparé et respectueux de son rythme. Principes. Environnement préparé: espace ordonné, accessible, adapté à la taille de l'enfant. Matériel auto-correctif: l'enfant peut vérifier lui-même s'il a réussi, sans intervention de l'adulte. Respect du rythme: chacun progresse à son rythme. L'adulte est un guide: il observe, prépare l'environnement, montre, puis se retire. Domaines d'activité. Vie pratique: verser, transvaser, boutonner, laver. Sensoriel: discriminer les couleurs, les formes, les textures, les sons, les odeurs. Langage: vocabulaire, lettres rugueuses. Mathématiques: nombres, quantités, opérations concrètes. Le matériel Montessori: conçu pour être manipulé, il permet à l'enfant de s'auto-corriger. Exemple concret. Un enfant transvase des graines d'un bol à un autre avec une cuillère. Si les graines tombent, il recommence: c'est lui qui corrige, développant sa concentration et sa motricité fine. À retenir. Montessori met l'accent sur l'autonomie et le respect du rythme. Le matériel auto-correctif permet à l'enfant de progresser seul. Erreur fréquente: aider l'enfant avant qu'il n'ait essayé par lui-même."]],"5":[["fr","Leçon 4, Decroly, Piaget et Vygotsky au préscolaire. Fondements théoriques. Ovide Decroly (1871-1932). Médecin et pédagogue belge, Decroly propose la pédagogie des centres d'intérêt. L'enfant apprend globalement, à partir de ses intérêts et de son environnement. Il est aussi l'inventeur de la méthode globale de lecture. Jean Piaget (1896-1980). Le développement cognitif se fait par stades. Au préscolaire: stade sensori-moteur (0-2 ans) et stade préopératoire (2-7 ans). L'enfant apprend par l'action et la manipulation. Lev Vygotsky (1896-1934). Les interactions sociales et le langage jouent un rôle central dans le développement. La Zone Proximale de Développement (ZPD) désigne l'écart entre ce que l'enfant sait faire seul et ce qu'il peut faire avec l'aide d'un adulte ou d'un pair plus compétent. L'adulte étaye pour faire progresser l'enfant. Tableau comparatif. Auteur. Apport principal. Decroly. Centres d'intérêt, méthode globale. Piaget. Stades du développement cognitif. Vygotsky. ZPD, rôle des interactions sociales. Exemple concret. Un enfant ne sait pas encore boutonner sa veste seul. Avec l'aide d'un adulte qui montre lentement, il y parvient. C'est la ZPD de Vygotsky en action. À retenir. Decroly: partir des intérêts de l'enfant. Piaget: respecter les stades du développement. Vygotsky: étayer pour faire progresser dans la ZPD."]],"6":[["fr","Leçon 5, Le développement de 0 à 6 ans. Fondements théoriques. Développement moteur. 0-3 mois: tenir la tête, suivre du regard. 6 mois: s'asseoir avec appui, préhension. 9-12 mois: tenir debout, premiers pas. 18 mois: marcher, courir maladroitement. 3 ans: courir, sauter, grimper. 4-6 ans: motricité fine (découper, dessiner), coordination. Développement langagier. Cris, babillage (0-1 an). Premiers mots (12-18 mois). Phrases simples (2-3 ans). Vocabulaire en expansion, phrases complexes (3-6 ans). Développement cognitif. Stade sensori-moteur (0-2 ans): exploration par les sens et le mouvement. Stade préopératoire (2-7 ans): pensée symbolique (jeu, dessin), égocentrisme, raisonnement intuitif. Développement affectif et social. Attachement (Bowlby): besoin de sécurité affective. Socialisation progressive: jeu parallèle, puis coopératif. Apprentissage des règles et du partage. Exemple concret. Un enfant de 4 ans qui parle de son « doudou » comme s'il était vivant illustre la pensée symbolique. Un enfant de 5 ans qui joue à la marchande avec d'autres enfants illustre la socialisation et le jeu coopératif. À retenir. Le développement est global (moteur, cognitif, langagier, affectif, social). Chaque enfant a son propre rythme. Erreur fréquente: comparer les enfants entre eux et imposer un rythme uniforme."]],"7":[["fr","Leçon 6, Les principes de l'éducation préscolaire. Fondements théoriques. Les principes fondamentaux. Activité: l'enfant apprend en agissant, en manipulant, en explorant. Jeu: le mode d'apprentissage privilégié du jeune enfant (jeu libre, jeu symbolique, jeu de construction). Globalité: l'enfant apprend de manière globale; les activités ne sont pas cloisonnées par discipline. Socialisation: apprendre à vivre avec les autres (partage, respect, coopération, règles). Bienveillance: environnement affectif sécurisant, relations chaleureuses, routines stables. Respect du rythme: chaque enfant se développe à son rythme; différencier sans comparer. Conséquences pédagogiques. Privilégier le mouvement et le jeu, pas les fiches assises. Varier les activités (calmes ou actives, individuelles ou collectives). Observer chaque enfant pour adapter. Créer un climat de confiance. Exemple concret. Une matinée préscolaire bien structurée alterne accueil, regroupement, ateliers, collation, récréation, repos et activités calmes. Les enfants apprennent en jouant et en manipulant. À retenir. Les principes du préscolaire découlent du développement de l'enfant. Le jeu et l'activité sont les moteurs de l'apprentissage. Erreur fréquente: scolariser trop tôt en imposant des activités formelles."]],"8":[["fr","Leçon 7, Le domaine du langage. Fondements théoriques. Objectifs. Comprendre et s'exprimer oralement. Enrichir le vocabulaire. Développer la conscience phonologique (sons de la langue). Préparer l'entrée dans l'écrit (sans le formaliser trop tôt). Activités. Dialogues, conversations guidées. Comptines, chansons, jeux de doigts. Histoires, contes, lecture d'albums. Jeux de rôle. Description d'images. Jeux de vocabulaire. Rôle de l'enseignant. Parler beaucoup et clairement. Écouter l'enfant. Reformuler, enrichir le vocabulaire. Créer des situations de communication réelles. Valoriser les langues nationales (lingala, kikongo, kiswahili, tshiluba). Exemple concret. Une comptine en lingala accompagne le retour au calme. Les enfants répètent, frappent le rythme, apprennent du vocabulaire et développent leur conscience phonologique en s'amusant. À retenir. Le langage se développe par la parole et l'écoute. Les comptines et histoires sont des supports privilégiés. Erreur fréquente: négliger les langues nationales au préscolaire."]],"9":[["fr","Leçon 8, Le domaine de la motricité. Fondements théoriques. Motricité globale. Courir, sauter, grimper, lancer, ramper. Développe la coordination, l'équilibre, l'endurance. Activités: parcours moteurs, jeux de ballon, rondes. Motricité fine. Pincer, transvaser, découper, enfiler, dessiner. Prépare à l'écriture. Activités: transvasement de graines, enfilage de perles, découpage, modelage. Organisation. Espace sécurisé et délimité. Matériel adapté et varié. Progressivité (du simple au complexe). Surveillance constante. Exemple concret. Un parcours moteur simple (bancs à enjamber, cerceaux à traverser, corde à sauter) développe l'équilibre, la coordination et la confiance en soi. Les enfants s'amusent tout en apprenant. À retenir. Motricité globale: grands mouvements. Motricité fine: mouvements précis. Erreur fréquente: sous-estimer l'importance de la motricité fine pour préparer l'écriture."]],"10":[["fr","Leçon 9, Le domaine des mathématiques. Fondements théoriques. Notions à développer. Quantité: beaucoup ou peu, plus ou moins, autant. Nombre: comptine numérique (1, 2, 3…), correspondance terme à terme. Forme: rond, carré, triangle. Grandeur: grand ou petit, long ou court, lourd ou léger. Espace: sur ou sous, devant ou derrière, à côté, dans. Temps: avant ou après, matin ou soir, hier ou demain. Activités. Comptage d'objets concrets. Tri et classification (par couleur, forme, taille). Puzzles, jeux de construction. Jeux de société simples (dés, cases). Comparaison de quantités. Exemple concret. Tri de boutons par couleur, taille et forme: les enfants apprennent à observer, à classer, à nommer. Ce sont les bases des mathématiques, sans avoir l'air d'une leçon. À retenir. Les mathématiques au préscolaire se construisent par la manipulation. Le jeu est le support privilégié. Erreur fréquente: imposer des exercices écrits avant que l'enfant n'ait compris concrètement."]],"11":[["fr","Leçon 10, Découverte du monde, arts et vie pratique. Fondements théoriques. Découverte du monde. Observer la nature (plantes, animaux, saisons). Expériences simples (eau, air, lumière, dissolution). Sorties dans le quartier, au marché, au jardin. Élevage, jardinage. Arts. Arts plastiques: dessin, peinture, modelage, collage. Musique: chants, comptines, jeux de rythme, fabrication d'instruments. Expression corporelle: mime, danse, jeu dramatique. Vie pratique. Autonomie dans les gestes quotidiens: se laver, s'habiller, manger, ranger. Transvasement, boutonnage, laçage, préparation de la collation. Responsabilisation (rôles tournants dans la classe). Exemple concret. Un atelier de jardinage dans la cour de l'école permet aux enfants d'observer la germination, de prendre soin des plantes, de comprendre le cycle de la vie. C'est à la fois sciences, vie pratique et émerveillement. À retenir. Tous les domaines sont essentiels au développement global. La découverte du monde, les arts et la vie pratique complètent les apprentissages académiques. Erreur fréquente: privilégier le langage et les mathématiques au détriment des autres domaines."]],"12":[["fr","Leçon 11, Aménager l'espace préscolaire. Fondements théoriques. Les coins d'activités. Coin regroupement: causerie, lecture, chants. Coin jeux symboliques: cuisine, poupées, déguisements. Coin construction: blocs, briques, puzzles. Coin arts: peinture, dessin, modelage. Coin manipulation: transvasement, laçage, tri. Coin sciences: plantes, objets à observer. Une classe préscolaire organisée en coins d'activités favorise l'autonomie et l'exploration. Caractéristiques d'un bon espace. Sécurisé: pas de coins dangereux, matériel adapté. Accessible: matériel à hauteur d'enfant, rangement identifiable. Évolutif: aménagement qui évolue selon les projets. Stimulant: couleurs, objets variés, affichages. Matériel de récupération: boîtes, bouchons, tissus, objets naturels. Exemple concret. Dans une école de Matete, une classe maternelle aménage des coins avec des palettes, des bouteilles, des tissus récupérés. Les enfants circulent librement entre les activités, sous la surveillance de l'enseignant. À retenir. L'espace préscolaire doit être organisé en coins d'activités. Il doit être sécurisé, accessible et stimulant. Erreur fréquente: organiser un espace trop statique, inadapté au besoin de mouvement."]],"13":[["fr","Leçon 12, Organiser le temps: routines et emploi du temps. Fondements théoriques. Importance des routines. Les routines sécurisent l'enfant. Elles lui permettent d'anticiper, de se repérer dans le temps, de développer son autonomie. Une journée type. Accueil: arrivée, salutations, jeux libres. Regroupement: causerie, comptines, présentation de la journée. Ateliers: activités dirigées par domaine (langage, motricité, mathématiques, arts…). Collation: moment de socialisation et d'hygiène. Récréation: motricité libre, socialisation. Repos: sieste ou temps calme. Activités calmes: histoires, chants, jeux de doigts. Départ: rangement, retour au calme, salutations. Principes d'organisation. Alterner activités calmes et actives. Prévoir des temps de jeu libre. Respecter les besoins physiologiques (faim, repos, mouvement). Garder une certaine souplesse. Exemple concret. Une matinée préscolaire à Kinshasa peut être organisée ainsi: accueil (30 minutes), regroupement (20 minutes), ateliers (45 minutes), collation (15 minutes), récréation (30 minutes), activités calmes (30 minutes), départ. Cette régularité sécurise les enfants. À retenir. Les routines sécurisent et structurent le temps. Un bon emploi du temps alterne les types d'activités. Erreur fréquente: surcharger la journée, sans temps libre."]],"14":[["fr","Leçon 13, L'évaluation au préscolaire. Fondements théoriques. Principes. Formative: elle vise à aider l'enfant à progresser, pas à le classer. Bienveillante: elle valorise les progrès, ne sanctionne pas. Continue: elle s'appuie sur l'observation quotidienne. Globale: elle prend en compte tous les domaines (moteur, langagier, cognitif, social, affectif). Outils. Grilles d'observation. Cahier de progrès. Portfolio (recueil de réalisations). Photos, dessins, productions diverses. Entretiens avec les parents. Communication aux parents. L'évaluation est partagée lors de rencontres régulières. Elle est formulée de manière positive et constructive, en identifiant les acquis et les besoins. Exemple concret. L'enseignant observe qu'un enfant qui ne parlait pas commence à participer aux comptines. Il le note dans son cahier de progrès et en parle aux parents lors de la réunion trimestrielle. À retenir. L'évaluation préscolaire est formative et descriptive. Elle s'appuie sur l'observation continue. Erreur fréquente: utiliser des notes chiffrées ou des évaluations sommatives."]],"15":[["fr","Leçon 14, Le partenariat avec les familles. Fondements théoriques. Pourquoi travailler avec les familles? La famille est le premier milieu éducatif de l'enfant. La collaboration entre l'école et la famille est essentielle pour le développement harmonieux de l'enfant. Formes de partenariat. Réunions de parents. Entretiens individuels. Cahier de liaison. Participation à des activités (fêtes, sorties, ateliers). Communication régulière sur les progrès. Rôle de la communauté. Les ressources locales (artisans, agriculteurs, artistes) peuvent enrichir les activités préscolaires. Les sorties dans le quartier, au marché, au jardin sont des occasions d'apprentissage. Attitude professionnelle. Écouter les familles. Respecter leurs réalités culturelles et sociales. Créer un climat de confiance. Travailler ensemble pour l'enfant. Exemple concret. Une école maternelle organise une matinée portes ouvertes: les parents participent à un atelier de comptines avec leurs enfants. Ce moment renforce le lien école-famille et valorise les apprentissages. À retenir. Les parents sont des partenaires, pas de simples spectateurs. La communication régulière est la clé. Erreur fréquente: ne solliciter les parents qu'en cas de problème."]],"16":[["fr","Leçon 15, Étude de cas: une classe préscolaire à Kinshasa. Situation. Un élève-maître est affecté dans une classe maternelle de 30 enfants de 4 ans à Kinshasa. La salle est petite, le matériel rare, et plusieurs enfants ne parlent pas français à la maison (lingala, kikongo). Analyse et solutions. Défis. Manque de matériel pédagogique. Diversité linguistique. Classe nombreuse et espace réduit. Attentes des parents parfois centrées sur la lecture et l'écriture. Stratégies. Aménager des coins d'activités avec du matériel de récupération (boîtes, bouchons, tissus, objets naturels). Valoriser les langues nationales dans les comptines et les histoires pour faciliter la transition vers le français. Mettre en place des routines stables et des rôles tournants pour responsabiliser les enfants. Communiquer avec les parents sur les objectifs du préscolaire (développement global, pas scolarisation forcée). Observer chaque enfant et consigner ses progrès dans un cahier. Mise en œuvre. L'élève-maître organise des coins d'activités, met en place des routines stables, utilise des comptines en lingala et en français. Il observe chaque enfant, note ses progrès et en parle aux parents lors des réunions. La classe devient un espace d'apprentissage épanouissant, malgré les contraintes. À retenir. Les contraintes matérielles se surmontent par la créativité. La diversité linguistique est une richesse. Erreur fréquente: vouloir scolariser trop vite le préscolaire pour rassurer les parents."]],"17":[["fr","Évaluation finale, Pédagogie Préscolaire. Évaluation finale. 20 questions à choix multiple. Une seule réponse est correcte par question. Choisis la réponse qui te semble juste, puis valide."]]}};
+  var CACHE = "ecolia-cours-v1";                       // même cache que l'application
+  var PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  var PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+  var DL = '<svg viewBox="0 0 24 24"><path d="M11 3h2v9.2l3.6-3.6L18 10l-6 6-6-6 1.4-1.4L11 12.2V3zM5 19h14v2H5z"/></svg>';
+  var OK = '<svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>';
+  // Réparation du quiz : certains cours stockent les choix sous "opts" (ou autre) au lieu de "options"
+  try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+      questions.forEach(function (q) {
+        if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+        if (q.text === undefined) q.text = q.question || q.q || q.enonce || q.titre || "";
+        if (typeof q.correct === "undefined") {
+          if (typeof q.answer !== "undefined") q.correct = q.answer;
+          else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+        }
+      });
+    }
+  } catch (e) {}
+  var synth = window.speechSynthesis || null;
+  var HAS_CACHE = !!(window.caches && window.caches.open);
+  var NATIVE = false;           // APK ECOLIA : pont Java "CoursInterface" (fichiers dans le dossier de l'application)
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  var LATER = "ecolia_audio_later_" + CFG.code;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+  function init() {
+    if (document.getElementById("ecolia-audio-btn")) return;
+
+    // ---------- éléments de l'interface ----------
+    var btn = document.createElement("button");
+    btn.id = "ecolia-audio-btn"; btn.type = "button"; btn.className = "ecolia-off";
+    btn.setAttribute("aria-label", "Écouter la leçon"); btn.innerHTML = PLAY;
+    var dlBtn = document.createElement("button");
+    dlBtn.id = "ecolia-dl-btn"; dlBtn.type = "button"; dlBtn.className = "ecolia-off";
+    dlBtn.innerHTML = DL;
+    var host = document.querySelector(".header-right");
+    if (host) { host.insertBefore(dlBtn, host.firstChild); host.insertBefore(btn, dlBtn); }   // dans la barre du haut : ne scrolle jamais
+    else { btn.className += " ecolia-fixed"; document.body.appendChild(btn); }
+
+    var banner = document.createElement("div");
+    banner.id = "ecolia-audio-banner";
+    banner.innerHTML = '<span class="eab-txt"></span><span class="eab-act"></span><div class="eab-bar"><i></i></div>';
+    var content = document.getElementById("content");
+    if (content && content.parentNode) content.parentNode.insertBefore(banner, content);
+    else document.body.insertBefore(banner, document.body.firstChild);
+    var txtEl = banner.querySelector(".eab-txt"), actEl = banner.querySelector(".eab-act");
+    var barEl = banner.querySelector(".eab-bar"), barI = barEl.firstChild;
+
+    var audio = new Audio();            // un seul élément Audio, réutilisé (exigé par les navigateurs mobiles)
+    audio.preload = "auto";
+    var st = { idx: -1, auto: false, advancing: false, mode: null, speaking: false, token: 0, chunks: [], ci: 0, blobUrl: null, playTok: 0 };
+    var dl = { state: "none", cached: 0, busy: false, cancel: false };   // none | partial | full
+    var bnMode = null, hideTimer = null;
+    if (synth && synth.getVoices) { try { synth.getVoices(); } catch (e) {} }
+
+    function cur() {
+      try { if (typeof currentSlide === "number") return currentSlide; } catch (e) {}
+      return 0;
+    }
+    function hasMp3(i) { return CFG.available.indexOf(i + 1) !== -1; }
+    function fb(i) { return CFG.fallback && CFG.fallback[String(i + 1)]; }
+    function hasAudio(i) { return hasMp3(i) || (!!synth && !!fb(i)); }
+    function urlN(n) {   // dans l'APK la page est sur https://app.local : une adresse relative doit pointer vers le site
+      var b = CFG.base;
+      if (NATIVE && !/^https?:/i.test(b)) b = "https://ecolia-course.github.io/" + b.replace(/^(\.\.\/|\.\/)+/, "");
+      return new URL(b + nameN(n), location.href).href;
+    }
+    function setIcon(playing) { btn.innerHTML = playing ? PAUSE : PLAY; }
+    function isPlaying() { return st.mode === "mp3" ? !audio.paused : (st.mode === "tts" && st.speaking); }
+    function mo() { return "≈ " + CFG.sizeMo + " Mo"; }
+    function nameN(n) { return "audio_" + CFG.code + "_" + n + ".mp3"; }
+
+    // ====================================================================
+    //  Stockage hors ligne : 2 moteurs, même interface
+    //    - APK : fichiers du dossier de l'application (CoursInterface), servis par https://app.local/cours/
+    //    - Web : Cache Storage du navigateur (même cache que l'application web)
+    // ====================================================================
+    function nativeStore() {
+      var okKey = "ecolia_audio_ok_" + CFG.code;
+      function readOk() { try { return JSON.parse(lsGet(okKey) || "[]"); } catch (e) { return []; } }
+      function writeOk(a) { lsSet(okKey, JSON.stringify(a)); }
+      function exists(n) { try { return !!CoursInterface.exists(nameN(n)); } catch (e) { return false; } }
+      function local(n) { return location.origin + "/cours/" + nameN(n); }
+      function verify(n) {                                   // fichier complet ? (taille exacte connue à la génération)
+        return fetch(local(n), { cache: "no-store" }).then(function (r) { return r.blob(); }).then(function (b) {
+          var exp = CFG.sizes && CFG.sizes[String(n)];
+          return (b.size > 2000 && (!exp || b.size === exp)) ? b : null;
+        }).catch(function () { return null; });
+      }
+      return {
+        list: function () {
+          var ok = readOk().filter(exists); writeOk(ok); return Promise.resolve(ok);
+        },
+        get: function (n) { return exists(n) ? verify(n) : Promise.resolve(null); },
+        put: function (n) {
+          return new Promise(function (res, rej) {
+            try { CoursInterface.download(urlN(n), nameN(n)); } catch (e) { return rej(e); }
+            var t0 = Date.now();
+            function next() { if (Date.now() - t0 > 120000) rej(new Error("délai dépassé")); else setTimeout(poll, 800); }
+            function poll() {
+              if (!exists(n)) return next();
+              verify(n).then(function (b) {
+                if (!b) return next();
+                var ok = readOk(); if (ok.indexOf(n) < 0) ok.push(n); writeOk(ok); res();
+              });
+            }
+            setTimeout(poll, 800);
+          });
+        },
+        del: function (n) {
+          try { CoursInterface.delete(nameN(n)); } catch (e) {}
+          writeOk(readOk().filter(function (x) { return x !== n; }));
+          return Promise.resolve();
+        }
+      };
+    }
+    function cacheStore() {
+      return {
+        list: function () {
+          return caches.open(CACHE).then(function (c) {
+            return Promise.all(CFG.available.map(function (n) {
+              return c.match(urlN(n)).then(function (r) {
+                if (!r) return 0;
+                if ((r.headers.get("content-type") || "").indexOf("audio") !== 0) { c.delete(urlN(n)); return 0; }   // ancien contenu invalide
+                return n;
+              });
+            }));
+          }).then(function (a) { return a.filter(Boolean); });
+        },
+        get: function (n) {
+          return caches.open(CACHE).then(function (c) { return c.match(urlN(n)); })
+            .then(function (r) { return r ? r.blob() : null; }).then(function (b) { return b && b.size > 2000 ? b : null; });
+        },
+        put: function (n) {
+          var u = urlN(n);
+          return fetch(u, { cache: "no-store" }).then(function (r) {
+            if (!r.ok || r.status !== 200) throw new Error("HTTP " + r.status);
+            return r.blob();
+          }).then(function (b) {
+            if (b.size < 2000 || (b.type && b.type.indexOf("audio") !== 0 && b.type.indexOf("octet") < 0)) throw new Error("fichier invalide");
+            return caches.open(CACHE).then(function (c) { return c.put(u, new Response(b, { headers: { "Content-Type": "audio/mpeg" } })); });
+          });
+        },
+        del: function (n) { return caches.open(CACHE).then(function (c) { return c.delete(urlN(n)); }); }
+      };
+    }
+    var store = NATIVE ? nativeStore() : (HAS_CACHE ? cacheStore() : null);
+
+    // ====================================================================
+    //  Bannière : invitation, confirmations, progression
+    // ====================================================================
+    function showBanner(mode, text, buttons, pct) {
+      clearTimeout(hideTimer);
+      bnMode = mode;
+      txtEl.textContent = text;
+      actEl.innerHTML = "";
+      (buttons || []).forEach(function (b) {
+        var e = document.createElement("button");
+        e.type = "button"; e.textContent = b.label; if (b.pri) e.className = "pri";
+        e.addEventListener("click", function (ev) { ev.stopPropagation(); b.fn(); });
+        actEl.appendChild(e);
+      });
+      if (typeof pct === "number") { barEl.style.display = "block"; barI.style.width = pct + "%"; }
+      else barEl.style.display = "none";
+      banner.classList.add("on");
+    }
+    function hideBanner() { clearTimeout(hideTimer); bnMode = null; banner.classList.remove("on"); }
+    function flash(text) { showBanner("info", text, []); hideTimer = setTimeout(hideBanner, 4000); }
+
+    function refreshUI() {
+      var show = !!store && CFG.available.length > 0;
+      dlBtn.classList.toggle("ecolia-off", !show);
+      dlBtn.classList.toggle("ecolia-full", dl.state === "full");
+      dlBtn.innerHTML = dl.state === "full" ? OK : DL;
+      dlBtn.setAttribute("aria-label", dl.state === "full" ? "Audios téléchargés : supprimer" : "Télécharger les audios");
+      dlBtn.title = dlBtn.getAttribute("aria-label");
+    }
+    function refreshCacheState(done) {
+      if (!store) { dl.state = "none"; refreshUI(); if (done) done(); return; }
+      store.list().then(function (ok) {
+        dl.cached = ok.length;
+        dl.state = dl.cached === 0 ? "none" : (dl.cached >= CFG.available.length ? "full" : "partial");
+      }).catch(function () { dl.state = "none"; }).then(function () { refreshUI(); if (done) done(); });
+    }
+
+    function askDownload(fromInvite) {
+      var left = CFG.available.length - dl.cached;
+      var txt = dl.state === "partial"
+        ? "Il reste " + left + " audio(s) à télécharger pour écouter ce cours sans internet."
+        : "🔊 Télécharger les audios de ce cours (" + mo() + ") pour les écouter sans internet ? Wi-Fi recommandé.";
+      showBanner(fromInvite ? "invite" : "confirm", txt, [
+        { label: fromInvite ? "Plus tard" : "Annuler", fn: function () { if (fromInvite) lsSet(LATER, "1"); hideBanner(); } },
+        { label: "Télécharger", pri: true, fn: startDownload }
+      ]);
+    }
+    function askDelete() {
+      showBanner("confirm", "Supprimer les audios téléchargés de ce cours (" + mo() + ") ? Vous pourrez toujours les écouter en ligne.", [
+        { label: "Annuler", fn: hideBanner },
+        { label: "Supprimer", pri: true, fn: doDelete }
+      ]);
+    }
+
+    function startDownload() {
+      if (dl.busy || !store) return;
+      dl.busy = true; dl.cancel = false;
+      var total = CFG.available.length, done = 0, quota = false, fails = 0, todo = [];
+      store.list().then(function (have) {
+        CFG.available.forEach(function (n) { if (have.indexOf(n) < 0) todo.push(n); });
+        done = total - todo.length;
+        function paint() {
+          var msg = "Téléchargement des audios : " + done + " / " + total;
+          if (bnMode === "progress") {                  // met à jour sans recréer les boutons (sinon un appui peut être perdu)
+            txtEl.textContent = msg; barI.style.width = Math.round(done / total * 100) + "%";
+          } else {
+            showBanner("progress", msg, [
+              { label: "Annuler", fn: function () { dl.cancel = true; } }
+            ], Math.round(done / total * 100));
+          }
+        }
+        paint();
+        function worker() {
+          if (dl.cancel || quota || !todo.length) return Promise.resolve();
+          var n = todo.shift();
+          return store.put(n).then(function () { done++; paint(); }).catch(function (e) {
+            if (e && (e.name === "QuotaExceededError" || /quota/i.test(String(e.message)))) quota = true;
+            fails++;
+          }).then(worker);
+        }
+        return Promise.all([worker(), worker()]);
+      }).catch(function () { fails++; }).then(function () {
+        dl.busy = false;
+        refreshCacheState(function () {
+          if (dl.state === "full") flash("✓ Audios téléchargés : le cours se lit maintenant sans internet.");
+          else if (dl.cancel) flash("Téléchargement interrompu (" + dl.cached + " / " + total + "). Vous pourrez reprendre plus tard.");
+          else showBanner("error", quota ? "Espace insuffisant sur l'appareil. Libérez de la place puis réessayez."
+            : "Certains audios n'ont pas pu être téléchargés (connexion ?).", [
+            { label: "Fermer", fn: hideBanner }, { label: "Réessayer", pri: true, fn: startDownload }
+          ]);
+        });
+      });
+    }
+    function doDelete() {
+      if (!store) return;
+      Promise.all(CFG.available.map(function (n) { return store.del(n); })).catch(function () {}).then(function () {
+        lsDel(LATER);
+        refreshCacheState(function () { flash("Audios supprimés de cet appareil."); });
+      });
+    }
+
+    dlBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (dl.busy) return;
+      if (dl.state === "full") askDelete(); else askDownload(false);
+    });
+
+    // ====================================================================
+    //  Voix intégrée au téléphone (hors ligne, sans limite)
+    // ====================================================================
+    function pickVoice(lang) {
+      var vs = [];
+      try { vs = synth.getVoices() || []; } catch (e) {}
+      var pre = lang === "en" ? "en" : "fr", best = null;
+      for (var k = 0; k < vs.length; k++) {
+        var v = vs[k];
+        if ((v.lang || "").toLowerCase().indexOf(pre) !== 0) continue;
+        if (!best || (v.localService && !best.localService)) best = v;
+      }
+      return best;
+    }
+    function hardSplit(text, max) {
+      var out = [];
+      while (text.length > max) {
+        var cut = text.lastIndexOf(" ", max);
+        if (cut < 40) cut = max;
+        out.push(text.slice(0, cut)); text = text.slice(cut).replace(/^\s+/, "");
+      }
+      if (text) out.push(text);
+      return out;
+    }
+    function buildChunks(segs) {                  // morceaux courts : évite l'arrêt des longs textes sur Chrome
+      var out = [];
+      segs.forEach(function (s) {
+        var cur2 = "", parts = s[1].match(/[^.!?;:]+[.!?;:]*\s*/g) || [s[1]];
+        parts.forEach(function (p) {
+          if (cur2 && (cur2 + p).length > 160) { out.push({ lang: s[0], text: cur2.trim() }); cur2 = p; }
+          else cur2 += p;
+        });
+        if (cur2.trim()) out.push({ lang: s[0], text: cur2.trim() });
+      });
+      var res = [];
+      out.forEach(function (c) { hardSplit(c.text, 190).forEach(function (t) { res.push({ lang: c.lang, text: t }); }); });
+      return res;
+    }
+    function speakFrom(tk) {
+      if (tk !== st.token) return;
+      if (st.ci >= st.chunks.length) {
+        st.speaking = false; st.mode = null; st.ci = 0; setIcon(false);
+        if (st.auto) goNext();
+        return;
+      }
+      var c = st.chunks[st.ci];
+      var u = new SpeechSynthesisUtterance(c.text);
+      u.lang = c.lang === "en" ? "en-US" : "fr-FR";
+      var v = pickVoice(c.lang);
+      if (v) { u.voice = v; u.lang = v.lang; }
+      u.rate = 0.95;
+      u.onend = function () { if (tk !== st.token) return; st.ci++; speakFrom(tk); };
+      u.onerror = function () { if (tk !== st.token) return; st.speaking = false; setIcon(false); st.auto = false; };
+      synth.speak(u);
+    }
+    function startTts(from) {
+      st.token++;
+      var tk = st.token;
+      st.mode = "tts"; st.speaking = true; st.ci = from || 0; setIcon(true);
+      var busy = false;
+      try { busy = synth.speaking || synth.pending; synth.cancel(); } catch (e) {}
+      if (busy) setTimeout(function () { speakFrom(tk); }, 120);   // laisse cancel() se terminer
+      else speakFrom(tk);                                          // sinon tout de suite (exigé par iOS)
+    }
+    function playVoice() {
+      if (!(synth && fb(st.idx))) { st.auto = false; return false; }
+      if (!st.chunks.length) st.chunks = buildChunks(fb(st.idx));
+      startTts(st.ci);
+      return true;
+    }
+
+    // ====================================================================
+    //  Lecture
+    // ====================================================================
+    function freeBlob() { if (st.blobUrl) { try { URL.revokeObjectURL(st.blobUrl); } catch (e) {} st.blobUrl = null; } }
+    function stopAll() {
+      st.playTok++;
+      try { audio.pause(); audio.currentTime = 0; } catch (e) {}
+      st.token++;
+      try { if (synth) synth.cancel(); } catch (e) {}
+      st.speaking = false; st.mode = null; st.chunks = []; st.ci = 0;
+      setIcon(false);
+    }
+    function pauseNow() {
+      if (st.mode === "mp3") audio.pause();
+      else if (st.mode === "tts") {
+        st.token++;
+        try { synth.cancel(); } catch (e) {}
+        st.speaking = false; setIcon(false);      // st.ci conservé : la reprise repart de la phrase en cours
+      }
+    }
+    function startAudio(src, tok) {
+      if (tok !== st.playTok) return;
+      if (audio.getAttribute("data-src") !== src) { audio.setAttribute("data-src", src); audio.src = src; }
+      var p = audio.play();
+      if (p && p.catch) p.catch(function (err) {
+        console.warn("ECOLIA audio :", err);
+        if (tok !== st.playTok) return;
+        if (!(err && err.name === "NotAllowedError") && playVoice()) return;   // lecture impossible : voix du téléphone
+        setIcon(false); st.auto = false;
+      });
+    }
+    function playCurrent() {
+      var i = st.idx;
+      if (hasMp3(i)) {
+        var tok = ++st.playTok, u = urlN(i + 1);
+        st.mode = "mp3";
+        if (!navigator.onLine && dl.state === "none") { st.mode = null; if (playVoice()) return; }   // hors ligne et non téléchargé
+        if (store && dl.state !== "none") {                     // téléchargé : lecture locale, sans réseau
+          store.get(i + 1)
+            .then(function (b) {
+              if (tok !== st.playTok) return;
+              if (b) { freeBlob(); st.blobUrl = URL.createObjectURL(new Blob([b], { type: "audio/mpeg" })); startAudio(st.blobUrl, tok); }
+              else startAudio(u, tok);
+            }).catch(function () { startAudio(u, tok); });
+        } else startAudio(u, tok);                              // sinon lecture en ligne (appel immédiat, exigé par iOS)
+      } else if (!playVoice()) {
+        st.auto = false;
+      }
+    }
+
+    function onSlideChange(i) {
+      var wasAdvancing = st.advancing;
+      st.advancing = false;
+      st.idx = i;
+      btn.classList.toggle("ecolia-off", !hasAudio(i));
+      stopAll();
+      audio.removeAttribute("data-src");
+      freeBlob();
+      if (bnMode === "invite" && i !== 0) hideBanner();       // l'invitation n'apparaît qu'à la première slide
+      if (wasAdvancing && st.auto) setTimeout(playCurrent, 500);   // enchaînement automatique
+      else st.auto = false;                                         // changement manuel : on coupe tout
+    }
+    function goNext() {
+      if (st.idx + 1 >= CFG.count) { st.auto = false; return; }
+      st.advancing = true;
+      if (typeof nextSlide === "function") nextSlide();
+      else { var nb = document.getElementById("nextBtn"); if (nb) nb.click(); }
+      setTimeout(function () { st.advancing = false; }, 4000);
+    }
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var i = cur();
+      if (i !== st.idx) onSlideChange(i);
+      if (isPlaying()) { st.auto = false; pauseNow(); }
+      else { st.auto = true; playCurrent(); }
+    });
+    audio.addEventListener("play", function () { setIcon(true); });
+    audio.addEventListener("pause", function () { if (st.mode === "mp3") setIcon(false); });
+    audio.addEventListener("error", function () {
+      if (st.mode === "mp3" && playVoice()) return;            // fichier introuvable / hors ligne : voix du téléphone
+      setIcon(false); st.auto = false;
+    });
+    audio.addEventListener("ended", function () { setIcon(false); if (st.auto) goNext(); });
+    window.addEventListener("pagehide", function () { stopAll(); freeBlob(); });
+
+    // ---------- démarrage ----------
+    refreshCacheState(function () {
+      if (store && CFG.available.length && dl.state !== "full" && navigator.onLine && cur() === 0 && !lsGet(LATER)) askDownload(true);
+    });
+    st.idx = -1;
+    setInterval(function () { var i = cur(); if (i !== st.idx) onSlideChange(i); }, 250);   // suit la slide affichée
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+<!-- ECOLIA_AUDIO_PLAYER_END -->
+</body>
+</html>

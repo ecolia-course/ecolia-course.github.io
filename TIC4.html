@@ -1,0 +1,1435 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="vert">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>ECOLIA — TIC4</title>
+<style>
+[data-theme="bleu"]   { --p1:#0d2b4f; --p2:#1565c0; --p3:#07172e; --p4:#12437a; --p5:#5b8fd0; --bg:#e8f0fb; --bg2:#cfdff5; --bd:#a9c3e8; --soft:#dde8f7; --btn:#2a67b0; }
+[data-theme="vert"]   { --p1:#14442e; --p2:#2e7d32; --p3:#0b2b1a; --p4:#1f5c3a; --p5:#4f9a6b; --bg:#e8f5ec; --bg2:#c8e6d2; --bd:#a5cdb2; --soft:#dcefe2; --btn:#2f7a4f; }
+[data-theme="violet"] { --p1:#2d1b4e; --p2:#6a1b9a; --p3:#1a0f2e; --p4:#4a148c; --p5:#9c6fd0; --bg:#f1e9fb; --bg2:#dccbf2; --bd:#c4a8e6; --soft:#e8ddf6; --btn:#7e3fb2; }
+[data-theme="rouge"]  { --p1:#4a1010; --p2:#b71c1c; --p3:#2b0a0a; --p4:#8e1b1b; --p5:#d9706a; --bg:#fbeaea; --bg2:#f3cdcb; --bd:#e8a9a5; --soft:#f8dede; --btn:#a62a2a; }
+[data-theme="orange"] { --p1:#4e2a0c; --p2:#ef6c00; --p3:#2e1604; --p4:#b34a00; --p5:#f0a15a; --bg:#fff1e0; --bg2:#fbdcb8; --bd:#f3c08a; --soft:#fdebd6; --btn:#c9650a; }
+[data-theme="teal"]   { --p1:#0b3a3a; --p2:#00796b; --p3:#062626; --p4:#00574b; --p5:#4db6ac; --bg:#e0f2f1; --bg2:#b2dfdb; --bd:#80cbc4; --soft:#d5ecea; --btn:#26897d; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:linear-gradient(160deg,var(--p1) 0%,var(--p2) 50%,var(--p3) 100%); display:flex; justify-content:center; align-items:center; padding:8px; }
+.container { width:100%; max-width:1400px; background:#fefdf8; border-radius:20px; overflow:hidden; display:flex; flex-direction:column; height:100%; max-height:100vh; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.progress-bar { height:4px; background:var(--bg2); flex-shrink:0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--p5),var(--p4)); width:0%; transition:width 0.3s; }
+.header { padding:10px 16px; background:var(--bg); border-bottom:1px solid var(--bd); display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+.header h1 { color:var(--p4); font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box { display:flex; background:white; border-radius:20px; padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.search-box input { border:none; padding:6px 10px; border-radius:20px; outline:none; width:130px; font-size:0.8rem; }
+.search-box button { background:none; border:none; cursor:pointer; padding:4px 8px; font-size:0.85rem; color:var(--p2); }
+.badge { background:var(--p5); color:white; padding:4px 10px; border-radius:20px; font-weight:bold; font-size:0.75rem; }
+.search-nav { display:none; gap:4px; background:var(--bg2); padding:2px 8px; border-radius:20px; align-items:center; font-size:0.75rem; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:0.9rem; color:var(--p4); padding:2px 4px; }
+.content { padding:28px 32px; flex:1; overflow-y:auto; background:#fff; scroll-behavior:smooth; line-height:1.85; }
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.slide-title { color:var(--p1); font-size:1.5rem; font-weight:700; padding-bottom:12px; margin-bottom:20px; border-bottom:2px solid var(--p5); }
+.slide-content { color:var(--p3); font-size:1rem; }
+.empty-state { display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-height:60vh; padding:40px 20px; gap:18px; }
+.empty-state .icon { width:72px; height:72px; border-radius:50%; background:var(--bg); border:2px solid var(--bd); display:flex; align-items:center; justify-content:center; color:var(--p2); font-size:2rem; font-weight:300; }
+.empty-state h2 { color:var(--p1); font-size:1.4rem; font-weight:700; margin:0; }
+.empty-state p { color:#666; font-size:0.95rem; max-width:520px; line-height:1.7; }
+.empty-state .tag { display:inline-block; padding:6px 14px; background:var(--bg); color:var(--p4); border:1px solid var(--bd); border-radius:20px; font-size:0.8rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; }
+.bloc { padding:18px 22px; border-radius:12px; margin:22px 0; line-height:1.85; }
+.bloc-label { font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; opacity:0.7; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:var(--bg); border-left:4px solid var(--p5); }
+.theorie .bloc-label { color:var(--p4); }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.sources { background:#f5f5f5; padding:12px 16px; border-radius:10px; margin-top:26px; font-size:0.82rem; color:#666; border-left:3px solid #999; line-height:1.6; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:var(--p1); }
+.quiz-container { padding:22px; background:var(--bg); border-radius:16px; }
+.quiz-question { background:white; border-radius:10px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.quiz-question p { font-weight:600; margin-bottom:10px; color:var(--p1); }
+.quiz-question label { display:block; padding:8px 10px; margin:4px 0; border-radius:6px; cursor:pointer; transition:background 0.2s; }
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit { background:var(--btn); color:white; border:none; padding:12px 24px; border-radius:30px; font-size:1rem; cursor:pointer; font-weight:600; margin-top:14px; }
+.quiz-result { margin-top:16px; font-weight:600; }
+.controls { padding:8px 16px; background:#fafafa; border-top:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0; }
+.nav-btn { background:white; color:var(--p4); border:1px solid #ccc; padding:8px 14px; border-radius:8px; font-size:0.82rem; cursor:pointer; font-weight:500; }
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:var(--soft); }
+.content::-webkit-scrollbar-thumb { background:var(--p5); border-radius:3px; }
+@media (max-width:600px) { body { padding:0; } .container { border-radius:0; max-height:100vh; } .content { padding:20px 18px; } .slide-title { font-size:1.25rem; } .search-box input { width:90px; } .header h1 { font-size:0.85rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="header">
+<h1 id="pageTitle">ECOLIA</h1>
+<div class="header-right">
+<div class="search-box">
+<input id="searchInput" placeholder="Rechercher" type="text"/>
+<button id="searchBtn">⌕</button>
+</div>
+<div class="search-nav" id="searchNav">
+<button id="prevResultBtn">‹</button>
+<span id="resultCounter">0/0</span>
+<button id="nextResultBtn">›</button>
+</div>
+<span class="badge" id="slideCounter">0/0</span>
+</div>
+</div>
+<div class="content" id="content"></div>
+<div class="controls">
+<button class="nav-btn" id="prevBtn">← Précédent</button>
+<span class="counter" id="counter">—</span>
+<button class="nav-btn" id="nextBtn">Suivant →</button>
+</div>
+</div>
+<script>
+const COURSE_TITLE = "Technologies de l'Information et de la Communication (TIC)";
+const slides = [
+{
+    title: "Sommaire — Technologies de l'Information et de la Communication",
+    content: `
+        <div class="bloc resume">
+            <div class="bloc-label">Présentation du cours</div>
+            <h3>TIC — 4e Humanité</h3>
+            <p><strong>Niveau :</strong> 4e Humanité / Terminale (tronc commun, humanités scientifiques et générales).</p>
+            <p><strong>Statut :</strong> Matière officielle avec programme national dédié (Domaine d'Apprentissage des Sciences).</p>
+            <p><strong>Objectif général :</strong> Rendre l'élève capable d'utiliser les TIC comme outil d'apprentissage, de communication et de production, de manière responsable et efficace.</p>
+        </div>
+        <div class="bloc theorie">
+            <div class="bloc-label">Objectifs spécifiques</div>
+            <ol>
+                <li>Comprendre les concepts fondamentaux des TIC et de l'ordinateur.</li>
+                <li>Utiliser un système d'exploitation et gérer fichiers et dossiers.</li>
+                <li>Maîtriser les bases du traitement de texte, du tableur et des présentations.</li>
+                <li>Naviguer sur internet et rechercher l'information.</li>
+                <li>Adopter des pratiques responsables et sécurisées en ligne.</li>
+            </ol>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Organisation des chapitres</div>
+            <ul>
+                <li><strong>Chapitre I :</strong> Introduction aux TIC et à l'ordinateur.</li>
+                <li><strong>Chapitre II :</strong> Le système d'exploitation.</li>
+                <li><strong>Chapitre III :</strong> Le traitement de texte.</li>
+                <li><strong>Chapitre IV :</strong> Le tableur.</li>
+                <li><strong>Chapitre V :</strong> Les présentations.</li>
+                <li><strong>Chapitre VI :</strong> Internet et sécurité numérique.</li>
+            </ul>
+            <p><strong>Prérequis :</strong> notions de base en informatique (souris, clavier, fichiers).</p>
+        </div>
+        <div class="sources">
+            <p><strong>Sources :</strong> Manuel de TIC, 4e Humanités Scientifiques, conforme au Programme National (RDC) ; Programme National du Cours de TIC en 4e année des Humanités Scientifiques.</p>
+        </div>
+    `
+},
+{
+    title: "Leçon 1 — Qu'est-ce que les TIC ?",
+    content: `
+        <div class="bloc cas">
+            <div class="bloc-label">Situation de départ</div>
+            <p>Un élève utilise son téléphone pour envoyer un message à un ami, un autre consulte un cours en ligne, un troisième prend une photo et la partage. Qu'ont-ils en commun ? Tous utilisent les TIC.</p>
+        </div>
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Définition</h3>
+            <p>Les <strong>TIC</strong> (Technologies de l'Information et de la Communication) désignent l'ensemble des outils, techniques et services qui permettent de produire, traiter, stocker, transporter et diffuser l'information sous forme numérique (texte, son, image, vidéo).</p>
+            <h3>Les grandes catégories</h3>
+            <ul>
+                <li><strong>Matériel :</strong> ordinateur, téléphone, tablette, imprimante, scanner, modem.</li>
+                <li><strong>Logiciels :</strong> système d'exploitation, applications, navigateurs.</li>
+                <li><strong>Réseaux :</strong> internet, réseaux locaux, téléphonie mobile.</li>
+                <li><strong>Services :</strong> courrier électronique, sites web, réseaux sociaux, plateformes d'apprentissage.</li>
+            </ul>
+            <h3>Rôles des TIC</h3>
+            <ul>
+                <li>Communication (courriel, messagerie, appels vidéo).</li>
+                <li>Information (recherche, médias, bibliothèques en ligne).</li>
+                <li>Apprentissage (cours en ligne, exercices interactifs).</li>
+                <li>Production (rédaction, calcul, création graphique).</li>
+                <li>Gestion (bases de données, gestion de stocks).</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Une école de Kinshasa utilise une plateforme en ligne pour partager les cours et les devoirs avec les élèves. C'est un usage concret des TIC au service de l'éducation.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Les TIC englobent matériel, logiciels, réseaux et services.</li>
+                <li>Elles sont présentes dans tous les domaines de la vie.</li>
+                <li>Erreur fréquente : réduire les TIC à l'ordinateur ; le téléphone et internet en font partie.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 2 — L'ordinateur : composants",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Définition</h3>
+            <p>L'ordinateur est une machine électronique programmable qui traite l'information selon des instructions (programmes).</p>
+            <h3>Les composants internes</h3>
+            <ul>
+                <li><strong>Le processeur (CPU) :</strong> « cerveau » de l'ordinateur, il exécute les instructions.</li>
+                <li><strong>La mémoire RAM :</strong> mémoire de travail, rapide, temporaire (s'efface à l'arrêt).</li>
+                <li><strong>Le disque dur (ou SSD) :</strong> mémoire de stockage permanente.</li>
+                <li><strong>La carte mère :</strong> relie les composants.</li>
+                <li><strong>La carte graphique :</strong> gère l'affichage.</li>
+            </ul>
+            <h3>Les unités</h3>
+            <ul>
+                <li><strong>Unité centrale :</strong> boîtier qui contient les composants.</li>
+                <li><strong>Écran :</strong> affiche l'information.</li>
+                <li><strong>Clavier et souris :</strong> permettent de saisir et de commander.</li>
+            </ul>
+            <figure>
+                <img data-image-id="tic4_img01" alt="Schéma des composants d'un ordinateur">
+                <figcaption>Les principaux composants d'un ordinateur : unité centrale, écran, clavier, souris.</figcaption>
+            </figure>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Un ordinateur avec 4 Go de RAM est suffisant pour la bureautique (traitement de texte, tableur, navigation simple). Pour le montage vidéo, il faut davantage de RAM et un processeur plus puissant.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Le processeur exécute, la RAM travaille, le disque dur stocke.</li>
+                <li>Chaque composant a un rôle précis et complémentaire.</li>
+                <li>Erreur fréquente : confondre RAM (temporaire) et disque dur (permanent).</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 3 — Les périphériques",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Définition</h3>
+            <p>Un périphérique est un appareil connecté à l'ordinateur pour lui permettre d'entrer des données, de sortir des résultats ou de communiquer.</p>
+            <h3>Les trois catégories</h3>
+            <ul>
+                <li><strong>Périphériques d'entrée :</strong> clavier, souris, scanner, micro, webcam, lecteur d'empreintes.</li>
+                <li><strong>Périphériques de sortie :</strong> écran, imprimante, haut-parleurs, projecteur.</li>
+                <li><strong>Périphériques d'entrée-sortie :</strong> modem, clé USB, disque dur externe, écran tactile.</li>
+            </ul>
+            <h3>Exemples d'utilisation</h3>
+            <ul>
+                <li>Le <strong>scanner</strong> numérise un document papier pour le stocker sur l'ordinateur.</li>
+                <li>L'<strong>imprimante</strong> imprime un document numérique sur papier.</li>
+                <li>La <strong>clé USB</strong> permet de transférer des fichiers entre ordinateurs.</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Un agent d'une entreprise de Kinshasa scanne les factures reçues, les enregistre sur son ordinateur, puis les imprime pour les archiver. Il utilise trois périphériques : scanner, ordinateur, imprimante.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Entrée : l'information entre dans l'ordinateur.</li>
+                <li>Sortie : l'information sort de l'ordinateur.</li>
+                <li>Erreur fréquente : classer le scanner comme périphérique de sortie ; c'est un périphérique d'entrée.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 4 — Les unités de mesure de l'information",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Le bit et l'octet</h3>
+            <p>L'unité de base de l'information est le <strong>bit</strong> (0 ou 1). Un <strong>octet</strong> (byte en anglais) = 8 bits. L'octet représente environ un caractère (une lettre, un chiffre).</p>
+            <h3>Les multiples</h3>
+            <table>
+                <thead><tr><th>Unité</th><th>Valeur</th></tr></thead>
+                <tbody>
+                    <tr><td>1 octet</td><td>8 bits</td></tr>
+                    <tr><td>1 kilooctet (Ko)</td><td>1 024 octets</td></tr>
+                    <tr><td>1 mégaoctet (Mo)</td><td>1 024 Ko</td></tr>
+                    <tr><td>1 gigaoctet (Go)</td><td>1 024 Mo</td></tr>
+                    <tr><td>1 téraoctet (To)</td><td>1 024 Go</td></tr>
+                </tbody>
+            </table>
+            <h3>Exemples concrets</h3>
+            <ul>
+                <li>Une page de texte : quelques Ko.</li>
+                <li>Une photo de bonne qualité : 2 à 5 Mo.</li>
+                <li>Une chanson MP3 : 3 à 5 Mo.</li>
+                <li>Un film en haute définition : 1 à 5 Go.</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exercice corrigé</div>
+            <p>Une clé USB de 8 Go peut stocker combien de photos de 4 Mo ?</p>
+            <p><strong>Calcul :</strong> 8 Go = 8 × 1 024 Mo = 8 192 Mo. 8 192 ÷ 4 = 2 048 photos (environ).</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>1 octet = 8 bits.</li>
+                <li>Les multiples vont par 1 024 (et non 1 000).</li>
+                <li>Erreur fréquente : confondre Mo et Go (facteur 1 024).</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 5 — Le système d'exploitation",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Définition</h3>
+            <p>Le système d'exploitation (SE) est le logiciel de base qui permet à l'utilisateur de commander l'ordinateur et qui gère les ressources matérielles et logicielles.</p>
+            <h3>Rôles du système d'exploitation</h3>
+            <ul>
+                <li>Démarrer l'ordinateur et charger les programmes.</li>
+                <li>Gérer les fichiers et les dossiers.</li>
+                <li>Gérer la mémoire, le processeur, les périphériques.</li>
+                <li>Assurer la sécurité (comptes utilisateurs, mots de passe).</li>
+                <li>Fournir une interface graphique (bureau, fenêtres, icônes).</li>
+            </ul>
+            <h3>Exemples de systèmes d'exploitation</h3>
+            <ul>
+                <li><strong>Windows</strong> (Microsoft).</li>
+                <li><strong>macOS</strong> (Apple).</li>
+                <li><strong>Linux</strong> (Ubuntu, Debian, etc.).</li>
+                <li><strong>Android</strong> et <strong>iOS</strong> (pour téléphones et tablettes).</li>
+            </ul>
+            <h3>Le bureau</h3>
+            <p>Le bureau est l'espace principal affiché à l'écran après le démarrage. Il contient des icônes (raccourcis vers les programmes, fichiers, dossiers), une barre des tâches et une zone de notification.</p>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Lorsque vous allumez un ordinateur sous Windows, le système d'exploitation charge le bureau, les icônes et la barre des tâches. Sans SE, l'ordinateur ne pourrait pas fonctionner.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Le SE est le logiciel de base de l'ordinateur.</li>
+                <li>Il gère les ressources et fournit l'interface utilisateur.</li>
+                <li>Erreur fréquente : confondre le SE avec un logiciel applicatif (Word, Excel).</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 6 — Gérer fichiers et dossiers",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Définitions</h3>
+            <ul>
+                <li><strong>Fichier :</strong> ensemble de données enregistré sur un support (document, image, vidéo…). Il possède un nom et une extension.</li>
+                <li><strong>Dossier (répertoire) :</strong> conteneur qui regroupe des fichiers et d'autres dossiers, pour organiser le stockage.</li>
+            </ul>
+            <h3>Les extensions courantes</h3>
+            <ul>
+                <li><strong>.docx</strong> : document Word.</li>
+                <li><strong>.xlsx</strong> : feuille de calcul Excel.</li>
+                <li><strong>.pptx</strong> : présentation PowerPoint.</li>
+                <li><strong>.pdf</strong> : document portable.</li>
+                <li><strong>.jpg / .png</strong> : image.</li>
+                <li><strong>.mp3 / .mp4</strong> : audio / vidéo.</li>
+            </ul>
+            <h3>Opérations de base</h3>
+            <ul>
+                <li>Créer un fichier ou un dossier.</li>
+                <li>Renommer, copier, déplacer, supprimer.</li>
+                <li>Rechercher un fichier (par nom, type, date).</li>
+                <li>Organiser par dossiers thématiques (ex. : « Cours », « Photos », « Documents »).</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Un élève crée un dossier « 4e Humanité » et y range des sous-dossiers par matière (Français, Maths, TIC). Il retrouve ainsi facilement ses documents.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>L'extension indique le type de fichier.</li>
+                <li>Une bonne organisation évite la perte de documents.</li>
+                <li>Erreur fréquente : tout enregistrer pêle-mêle sur le bureau ; mieux vaut organiser en dossiers.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 7 — Le traitement de texte : interface",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Définition</h3>
+            <p>Un logiciel de traitement de texte permet de saisir, mettre en forme et imprimer des documents écrits. L'exemple le plus courant est <strong>Microsoft Word</strong>, mais il existe aussi LibreOffice Writer, Google Docs.</p>
+            <h3>L'interface</h3>
+            <ul>
+                <li><strong>Ruban (ou barre d'outils) :</strong> regroupe les commandes par onglets (Accueil, Insertion, Mise en page, etc.).</li>
+                <li><strong>Zone de saisie :</strong> espace où l'on tape le texte.</li>
+                <li><strong>Curseur :</strong> indique la position de saisie.</li>
+                <li><strong>Barre d'état :</strong> affiche des informations (page, mots, langue).</li>
+            </ul>
+            <h3>Opérations de base</h3>
+            <ul>
+                <li>Saisir du texte.</li>
+                <li>Sélectionner (souris ou clavier).</li>
+                <li>Couper, copier, coller.</li>
+                <li>Enregistrer (Ctrl + S) et imprimer.</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exercice guidé</div>
+            <p><strong>Rédiger une lettre simple :</strong> ouvrir Word, taper l'en-tête (expéditeur, date), le corps de la lettre, la formule de politesse et la signature. Enregistrer sous « lettre.docx ».</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Le traitement de texte est l'outil de base de la bureautique.</li>
+                <li>Maîtriser les raccourcis (Ctrl+C, Ctrl+V, Ctrl+S) fait gagner du temps.</li>
+                <li>Erreur fréquente : oublier d'enregistrer régulièrement.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 8 — Mise en forme d'un document",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Mise en forme des caractères</h3>
+            <ul>
+                <li><strong>Police :</strong> type de caractère (Times New Roman, Arial, etc.).</li>
+                <li><strong>Taille :</strong> en points (12, 14, 16…).</li>
+                <li><strong>Style :</strong> gras (Ctrl+G), italique (Ctrl+I), souligné (Ctrl+U).</li>
+                <li><strong>Couleur</strong> du texte et surlignage.</li>
+            </ul>
+            <h3>Mise en forme des paragraphes</h3>
+            <ul>
+                <li><strong>Alignement :</strong> à gauche, centré, à droite, justifié.</li>
+                <li><strong>Interligne :</strong> simple, 1,5, double.</li>
+                <li><strong>Retrait :</strong> première ligne, retrait gauche/droit.</li>
+                <li><strong>Listes à puces</strong> ou numérotées.</li>
+            </ul>
+            <h3>Mise en page</h3>
+            <ul>
+                <li>Marges, orientation (portrait ou paysage).</li>
+                <li>En-tête et pied de page.</li>
+                <li>Numérotation des pages.</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exercice guidé</div>
+            <p>Mettre en forme un devoir : titre en gras et centré (16 pt), corps du texte justifié (12 pt), interligne 1,5, avec un en-tête indiquant le nom, la classe et la date.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Une bonne mise en forme améliore la lisibilité du document.</li>
+                <li>La cohérence (mêmes polices, mêmes tailles) est essentielle.</li>
+                <li>Erreur fréquente : multiplier les polices et les couleurs, ce qui rend le document confus.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 9 — Le tableur : cellules et formules",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Définition</h3>
+            <p>Un tableur est un logiciel qui permet de calculer, organiser et analyser des données chiffrées sous forme de tableaux. Exemple : <strong>Microsoft Excel</strong>, LibreOffice Calc, Google Sheets.</p>
+            <h3>Structure</h3>
+            <ul>
+                <li><strong>Classeur :</strong> fichier du tableur, composé de feuilles.</li>
+                <li><strong>Feuille :</strong> grille de cellules.</li>
+                <li><strong>Cellule :</strong> intersection d'une ligne (1, 2, 3…) et d'une colonne (A, B, C…). Exemple : A1.</li>
+                <li><strong>Plage :</strong> ensemble de cellules (ex. : A1:A10).</li>
+            </ul>
+            <h3>Formules de base</h3>
+            <ul>
+                <li>Une formule commence toujours par <strong>=</strong>.</li>
+                <li><strong>=A1+B1</strong> additionne les cellules A1 et B1.</li>
+                <li><strong>=SOMME(A1:A10)</strong> additionne les cellules A1 à A10.</li>
+                <li><strong>=MOYENNE(A1:A10)</strong> calcule la moyenne.</li>
+                <li><strong>=MAX(A1:A10)</strong> renvoie la valeur maximale.</li>
+                <li><strong>=MIN(A1:A10)</strong> renvoie la valeur minimale.</li>
+                <li><strong>=A1*2</strong> multiplie la cellule A1 par 2.</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exercice corrigé</div>
+            <p>Un élève a les notes suivantes en B2, B3, B4, B5 : 12, 15, 10, 14. Calculez la moyenne avec une formule.</p>
+            <p><strong>Formule :</strong> =MOYENNE(B2:B5) → résultat : (12+15+10+14)/4 = 12,75.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>La cellule est l'unité de base du tableur.</li>
+                <li>Toute formule commence par =.</li>
+                <li>Erreur fréquente : taper le résultat à la main au lieu d'utiliser une formule (le calcul ne se met pas à jour).</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 10 — Créer un graphique",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Utilité du graphique</h3>
+            <p>Un graphique facilite la visualisation des données et la communication des résultats. Il permet de repérer des tendances, des comparaisons, des répartitions.</p>
+            <h3>Types de graphiques</h3>
+            <ul>
+                <li><strong>Histogramme (colonnes) :</strong> compare des valeurs (ex. : ventes par produit).</li>
+                <li><strong>Courbe :</strong> montre une évolution dans le temps (ex. : chiffre d'affaires mensuel).</li>
+                <li><strong>Diagramme circulaire (camembert) :</strong> montre une répartition en pourcentages (ex. : parts de marché).</li>
+                <li><strong>Diagramme en barres :</strong> compare des catégories.</li>
+            </ul>
+            <h3>Procédure dans Excel</h3>
+            <ol>
+                <li>Sélectionner les données (avec les étiquettes).</li>
+                <li>Aller dans l'onglet <strong>Insertion</strong>.</li>
+                <li>Choisir le type de graphique.</li>
+                <li>Personnaliser : titre, axes, légende, couleurs.</li>
+            </ol>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exercice guidé</div>
+            <p>À partir d'un tableau de ventes (produits et quantités), construire un histogramme. Ajouter un titre « Ventes par produit » et nommer les axes.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Choisir le graphique adapté au type de données.</li>
+                <li>Toujours titrer et légender le graphique.</li>
+                <li>Erreur fréquente : utiliser un camembert pour des données qui ne sont pas des parts d'un tout.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 11 — Les présentations",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Définition</h3>
+            <p>Un logiciel de présentation (PowerPoint, LibreOffice Impress, Google Slides) permet de créer des diaporamas pour exposer une information à un auditoire.</p>
+            <h3>Structure d'une présentation</h3>
+            <ul>
+                <li><strong>Diapositive de titre :</strong> sujet, auteur, date.</li>
+                <li><strong>Diapositives de contenu :</strong> une idée par diapositive, textes courts, images.</li>
+                <li><strong>Diapositive de conclusion :</strong> synthèse et remerciements.</li>
+            </ul>
+            <h3>Conseils de conception</h3>
+            <ul>
+                <li>Texte lisible : taille suffisante, contraste de couleurs.</li>
+                <li>Peu de texte par diapositive (mots-clés, phrases courtes).</li>
+                <li>Une idée par diapositive.</li>
+                <li>Images pertinentes.</li>
+                <li>Cohérence visuelle (mêmes polices, mêmes couleurs).</li>
+                <li>Transitions sobres.</li>
+            </ul>
+            <h3>Présenter oralement</h3>
+            <ul>
+                <li>Ne pas lire mot à mot les diapositives.</li>
+                <li>Regarder l'auditoire.</li>
+                <li>Gérer le temps.</li>
+                <li>Répéter avant la présentation.</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Une présentation sur le parc de Virunga : diapositive de titre, diapositive sur la biodiversité, diapositive sur les menaces, diapositive sur les solutions, diapositive de conclusion. Chaque diapositive comporte une image et 3 à 5 points clés.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>La présentation appuie le discours, elle ne le remplace pas.</li>
+                <li>Une diapositive = une idée.</li>
+                <li>Erreur fréquente : surcharger les diapositives de texte.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 12 — Internet : navigation et recherche",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Définition</h3>
+            <p>Internet est un réseau mondial qui relie des millions d'ordinateurs et permet d'échanger des informations. Le <strong>Web</strong> est l'un des services d'internet : il regroupe les sites accessibles via un navigateur.</p>
+            <h3>Les navigateurs</h3>
+            <ul>
+                <li>Chrome, Firefox, Edge, Safari, Opera.</li>
+            </ul>
+            <h3>Les moteurs de recherche</h3>
+            <ul>
+                <li>Google, Bing, DuckDuckGo.</li>
+                <li>Utiliser des mots-clés précis.</li>
+                <li>Vérifier la fiabilité des sources.</li>
+            </ul>
+            <h3>Bonnes pratiques de recherche</h3>
+            <ul>
+                <li>Formuler une requête précise.</li>
+                <li>Utiliser les guillemets pour une expression exacte.</li>
+                <li>Croiser plusieurs sources.</li>
+                <li>Vérifier la date et l'auteur de l'information.</li>
+                <li>Privilégier les sites officiels, éducatifs, institutionnels.</li>
+            </ul>
+            <h3>Le courrier électronique</h3>
+            <ul>
+                <li>Adresse : nom@domaine.</li>
+                <li>Champs : À, Cc, Cci, Objet, Corps, Pièce jointe.</li>
+                <li>Règles de politesse : salutation, corps clair, formule de politesse, signature.</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Pour rechercher des informations sur les bourses d'études, on peut taper : « bourses d'études RDC 2025 site:gouv.cd » afin de restreindre la recherche aux sites officiels.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Internet donne accès à une immense quantité d'informations.</li>
+                <li>Il faut vérifier la fiabilité des sources.</li>
+                <li>Erreur fréquente : croire tout ce qu'on trouve en ligne.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 13 — Sécurité numérique",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Les risques numériques</h3>
+            <ul>
+                <li><strong>Virus et logiciels malveillants :</strong> programmes qui endommagent l'ordinateur ou volent des données.</li>
+                <li><strong>Phishing (hameçonnage) :</strong> tentative de récupérer des informations personnelles en se faisant passer pour un organisme de confiance.</li>
+                <li><strong>Usurpation d'identité.</strong></li>
+                <li><strong>Cyberharcèlement.</strong></li>
+                <li><strong>Vol de données personnelles.</strong></li>
+                <li><strong>Arnaques en ligne.</strong></li>
+            </ul>
+            <h3>Les bonnes pratiques</h3>
+            <ul>
+                <li><strong>Mots de passe forts :</strong> au moins 8 caractères, mélangeant majuscules, minuscules, chiffres et symboles. Ne pas utiliser le même mot de passe partout.</li>
+                <li><strong>Mises à jour :</strong> installer les mises à jour du système et des logiciels.</li>
+                <li><strong>Antivirus :</strong> en installer un et le mettre à jour.</li>
+                <li><strong>Prudence avec les liens et pièces jointes :</strong> ne pas cliquer sur tout.</li>
+                <li><strong>Sauvegardes :</strong> sauvegarder régulièrement les données importantes.</li>
+                <li><strong>Paramètres de confidentialité :</strong> limiter la diffusion d'informations personnelles.</li>
+                <li><strong>Respect des autres :</strong> ne pas diffuser de contenus nuisibles, ne pas harceler.</li>
+            </ul>
+            <h3>Protection des données personnelles</h3>
+            <p>Ne pas partager en ligne : adresse complète, numéro de téléphone, mots de passe, photos personnelles sensibles. Vérifier les paramètres de confidentialité des réseaux sociaux.</p>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Un message reçu par courriel annonce que vous avez « gagné un prix » et demande vos coordonnées bancaires : c'est du phishing. Il faut le supprimer, ne jamais cliquer sur le lien et ne pas répondre.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>La sécurité numérique est l'affaire de tous.</li>
+                <li>Un mot de passe fort et unique pour chaque compte est une première protection.</li>
+                <li>Erreur fréquente : partager ses mots de passe ou ses informations personnelles.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 14 — Usages responsables des TIC",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Les TIC au service du bien commun</h3>
+            <ul>
+                <li>Apprentissage en ligne, bibliothèques numériques.</li>
+                <li>Communication à distance.</li>
+                <li>Entrepreneuriat numérique.</li>
+                <li>Accès aux services publics en ligne.</li>
+                <li>Participation citoyenne.</li>
+            </ul>
+            <h3>Usages responsables</h3>
+            <ul>
+                <li><strong>Respect de la vie privée :</strong> ne pas diffuser d'images ou d'informations d'autrui sans consentement.</li>
+                <li><strong>Respect du droit d'auteur :</strong> citer ses sources, ne pas copier-coller sans référence.</li>
+                <li><strong>Lutte contre la désinformation :</strong> vérifier avant de partager.</li>
+                <li><strong>Respect du temps et de l'attention :</strong> éviter la dépendance aux écrans.</li>
+                <li><strong>Respect de soi-même :</strong> protéger son image en ligne.</li>
+            </ul>
+            <h3>Le numérique et la vie quotidienne</h3>
+            <ul>
+                <li>Gestion des paiements mobiles (M-Pesa, Orange Money, Airtel Money).</li>
+                <li>Suivi de la santé, cours en ligne, e-administration.</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Un élève utilise son téléphone pour consulter des cours, mais évite de partager des rumeurs ou des images choquantes. Il vérifie l'information avant de la diffuser.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Les TIC sont un outil puissant pour apprendre et communiquer.</li>
+                <li>Elles exigent des usages responsables et respectueux.</li>
+                <li>Erreur fréquente : croire que tout ce qui est en ligne est libre et vrai.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Évaluation finale — TIC",
+    content: `
+        <div class="bloc resume">
+            <div class="bloc-label">Évaluation finale</div>
+            <p>20 questions à choix multiple. Une seule réponse est correcte par question. Choisis la réponse qui te semble juste, puis valide.</p>
+        </div>
+        <div class="quiz-container">
+            <div id="quizQuestions"></div>
+            <button id="submitQuiz" class="quiz-btn-submit">Valider mes réponses</button>
+            <div id="quizResult" class="quiz-result"></div>
+        </div>
+    `
+}
+];
+const questions = [
+    { text: "Que signifie TIC ?", options: ["Techniques de l'Information et de la Communication", "Technologie Informatique et Communication", "Transmission d'Information Codée", "Télécommunication Internationale"], correct: 0 },
+    { text: "Quel est le rôle du système d'exploitation ?", options: ["Gérer les ressources de l'ordinateur", "Naviguer sur internet", "Rédiger des textes", "Créer des images"], correct: 0 },
+    { text: "Quelle unité de mesure est la plus grande ?", options: ["Kilooctet", "Mégaoctet", "Gigaoctet", "Octet"], correct: 2 },
+    { text: "Un tableur sert à :", options: ["Calculer et organiser des données", "Dessiner", "Naviguer", "Écouter de la musique"], correct: 0 },
+    { text: "Quel logiciel est un traitement de texte ?", options: ["Excel", "Word", "PowerPoint", "Chrome"], correct: 1 },
+    { text: "La sécurité en ligne implique :", options: ["Partager son mot de passe", "Utiliser des mots de passe forts", "Cliquer sur tous les liens", "Donner ses informations personnelles"], correct: 1 },
+    { text: "Un périphérique d'entrée est :", options: ["L'écran", "Le clavier", "L'imprimante", "Le haut-parleur"], correct: 1 },
+    { text: "PowerPoint sert à :", options: ["Créer des présentations", "Calculer", "Naviguer", "Programmer"], correct: 0 },
+    { text: "Internet est :", options: ["Un réseau mondial", "Un logiciel", "Un ordinateur", "Un fichier"], correct: 0 },
+    { text: "Que fait la formule =SOMME(A1:A5) ?", options: ["Additionne les cellules A1 à A5", "Soustrait", "Multiplie", "Divise"], correct: 0 },
+    { text: "Un fichier est :", options: ["Un ensemble de données enregistré", "Un dossier", "Un logiciel", "Un périphérique"], correct: 0 },
+    { text: "La mémoire RAM est :", options: ["Une mémoire volatile", "Une mémoire permanente", "Un disque dur", "Un écran"], correct: 0 },
+    { text: "Le courrier électronique permet :", options: ["D'envoyer des messages", "De calculer", "D'imprimer", "De dessiner"], correct: 0 },
+    { text: "Un virus informatique est :", options: ["Un programme malveillant", "Un logiciel utile", "Un périphérique", "Un fichier texte"], correct: 0 },
+    { text: "Que signifie « sauvegarder » ?", options: ["Enregistrer une copie de sécurité", "Effacer", "Imprimer", "Modifier"], correct: 0 },
+    { text: "L'unité centrale contient :", options: ["Le processeur et la mémoire", "L'écran", "Le clavier", "La souris"], correct: 0 },
+    { text: "La navigation sur internet se fait via :", options: ["Un navigateur", "Un tableur", "Un traitement de texte", "Un antivirus"], correct: 0 },
+    { text: "Un mot de passe fort contient :", options: ["Uniquement des lettres", "Des majuscules, minuscules, chiffres et symboles", "Son prénom", "1234"], correct: 1 },
+    { text: "Les TIC en 4e Humanité visent à :", options: ["Former des programmeurs experts", "Utiliser les outils numériques de manière responsable", "Remplacer tous les cours", "Ignorer la technologie"], correct: 1 },
+    { text: "Que faire avant d'éteindre l'ordinateur ?", options: ["Fermer les programmes et enregistrer", "Arracher la prise", "Laisser les programmes ouverts", "Rien"], correct: 0 }
+];
+
+try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+        questions.forEach(function (q) {
+            if (!q.text) q.text = q.question || q.q || q.enonce || q.titre || "";
+            if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+            if (typeof q.correct === "undefined") {
+                if (typeof q.answer !== "undefined") q.correct = q.answer;
+                else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+            }
+        });
+    }
+} catch (e) {}
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+const pageTitle = document.getElementById('pageTitle');
+pageTitle.textContent = "ECOLIA · " + COURSE_TITLE;
+document.title = "ECOLIA — " + COURSE_TITLE;
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim() || slides.length === 0) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp("(" + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ")", 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderEmptyState() {
+    contentDiv.innerHTML = '<div class="empty-state"><div class="icon">·</div><span class="tag">Bientôt disponible</span><h2>' + COURSE_TITLE + '</h2><p>Ce cours est en préparation. Le contenu sera ajouté prochainement.</p></div>';
+    slideCounterSpan.textContent = '0/0';
+    progressFill.style.width = '0%';
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    counterSpan.textContent = '—';
+}
+
+function renderQuiz() {
+    const qc = document.getElementById('quizQuestions');
+    if (!qc) return;
+    if (typeof questions === 'undefined' || questions.length === 0) {
+        qc.innerHTML = '<p style="color:#666;font-style:italic;">Quiz bientot disponible.</p>';
+        return;
+    }
+    let html = '';
+    questions.forEach((q, i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o, k) => {
+            html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>';
+        });
+        html += '</div>';
+    });
+    qc.innerHTML = html;
+    const submitBtn = document.getElementById('submitQuiz');
+    if (submitBtn) {
+        submitBtn.onclick = () => {
+            let score = 0;
+            questions.forEach((q, i) => {
+                const s = document.querySelector('input[name="q' + i + '"]:checked');
+                if (s && parseInt(s.value) === q.correct) score++;
+            });
+            const pct = Math.round(score/questions.length*100);
+            document.getElementById('quizResult').innerHTML =
+                '<div style="background:var(--bg2);padding:16px;border-radius:10px;margin-top:14px;">' +
+                '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong></div>';
+        };
+    }
+}
+
+function renderSlide(index, keepHighlight) {
+    if (keepHighlight === undefined) keepHighlight = true;
+    if (slides.length === 0) { renderEmptyState(); return; }
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    if (index === slides.length - 1) renderQuiz();
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    if (slides.length === 0) return;
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (slides.length && currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (slides.length && currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+<!-- ECOLIA_IMAGE_LOADER_START -->
+<script>
+(function () {
+  var SITE = "https://ecolia-course.github.io/";
+  var NATIVE = false;
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function abs(u) { return /^(https?:|data:|blob:)/i.test(u) ? u : (NATIVE ? SITE + u.replace(/^(\.\/|\/)+/, "") : u); }
+  function ext(u) { var m = String(u).split("?")[0].match(/\.(jpe?g|png|gif|webp|svg)$/i); return m ? m[1].toLowerCase() : "jpg"; }
+  function hide(img) { img.onerror = null; img.style.display = "none"; }
+  var table = null, queue = [], queued = {}, running = false;
+  function enqueue(full, fn) {
+    if (queued[fn]) return;
+    queued[fn] = 1; queue.push([full, fn]);
+    if (!running) { running = true; setTimeout(next, 2500); }
+  }
+  function next() {
+    if (!queue.length) { running = false; return; }
+    if (!navigator.onLine) { running = false; return; }
+    var q = queue.shift(), t0 = Date.now();
+    try { CoursInterface.download(q[0], q[1]); } catch (e) { return setTimeout(next, 500); }
+    (function wait() {
+      var ok = false;
+      try { ok = !!CoursInterface.exists(q[1]); } catch (e) {}
+      if (ok) setTimeout(next, 1500);
+      else if (Date.now() - t0 > 40000) next();
+      else setTimeout(wait, 700);
+    })();
+  }
+  function exists(fn) { try { return !!CoursInterface.exists(fn); } catch (e) { return false; } }
+  function show(img) {
+    if (!table || img.getAttribute("data-ecolia-done")) return;
+    var id = img.getAttribute("data-image-id");
+    var url = table[id];
+    if (typeof url !== "string" || !url.length) { console.warn("ECOLIA : image absente du JSON :", id); return; }
+    img.setAttribute("data-ecolia-done", "1");
+    if (!NATIVE) { img.onerror = function () { hide(img); }; img.setAttribute("src", url); return; }
+    var full = abs(url), fn = "img_" + id + "." + ext(url);
+    if (exists(fn)) {
+      img.onerror = function () {
+        try { CoursInterface["delete"](fn); } catch (e) {}
+        queued[fn] = 0;
+        img.onerror = function () { hide(img); };
+        img.setAttribute("src", full);
+      };
+      img.setAttribute("src", "https://app.local/cours/" + fn);
+    } else {
+      img.onerror = function () { hide(img); };
+      img.setAttribute("src", full);
+      enqueue(full, fn);
+    }
+  }
+  function scan(root) {
+    if (!root || !root.querySelectorAll) return;
+    if (root.matches && root.matches("img[data-image-id]")) show(root);
+    root.querySelectorAll("img[data-image-id]").forEach(show);
+  }
+  function prefetchAll() {
+    var ids = {};
+    try { JSON.stringify(slides).replace(/data-image-id=\\?"([^"\\]+)/g, function (m, id) { ids[id] = 1; }); } catch (e) {}
+    Object.keys(ids).forEach(function (id) {
+      var url = table[id];
+      if (typeof url !== "string" || !url.length) return;
+      var fn = "img_" + id + "." + ext(url);
+      if (!exists(fn)) enqueue(abs(url), fn);
+    });
+  }
+  function start(tbl) {
+    table = tbl;
+    scan(document.body);
+    new MutationObserver(function (muts) {
+      muts.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.nodeType === 1) scan(n); }); });
+    }).observe(document.body, { childList: true, subtree: true });
+    if (NATIVE) prefetchAll();
+  }
+  var JSON_URL = NATIVE ? SITE + "images_ecolia.json" : "images_ecolia.json";
+  var KEY = "ecolia_images_json";
+  fetch(JSON_URL, NATIVE ? { cache: "no-cache" } : undefined)
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (table) { if (NATIVE) lsSet(KEY, JSON.stringify(table)); start(table); })
+    .catch(function (e) {
+      var saved = null;
+      if (NATIVE) { try { saved = JSON.parse(lsGet(KEY) || "null"); } catch (x) {} }
+      if (saved) start(saved);
+      else console.warn("ECOLIA : JSON des images indisponible.", e);
+    });
+})();
+</script>
+<!-- ECOLIA_IMAGE_LOADER_END -->
+
+
+
+<!-- ECOLIA_AUDIO_PLAYER_START -->
+<style>
+  #ecolia-audio-btn, #ecolia-dl-btn {
+    width: 30px; height: 30px; min-width: 30px; padding: 0; margin: 0 4px 0 0;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    cursor: pointer; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent; outline: none;
+  }
+  #ecolia-audio-btn { border: none; background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-dl-btn { border: 1.5px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb); }
+  #ecolia-dl-btn.ecolia-full { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-btn.ecolia-fixed { position: fixed; top: 8px; left: 8px; z-index: 2147483000; }
+  #ecolia-audio-btn:active, #ecolia-dl-btn:active { transform: scale(.92); }
+  #ecolia-audio-btn svg, #ecolia-dl-btn svg { width: 15px; height: 15px; fill: currentColor; pointer-events: none; }
+  #ecolia-audio-btn.ecolia-off, #ecolia-dl-btn.ecolia-off { display: none; }
+  #ecolia-audio-banner {
+    display: none; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0;
+    padding: 8px 14px; font-size: .82rem; line-height: 1.35;
+    background: var(--soft, #eef3fb); color: var(--p1, #123); border-bottom: 1px solid var(--bd, #c9d6ea);
+  }
+  #ecolia-audio-banner.on { display: flex; }
+  #ecolia-audio-banner .eab-txt { flex: 1 1 180px; }
+  #ecolia-audio-banner .eab-act { display: flex; gap: 6px; flex-wrap: wrap; }
+  #ecolia-audio-banner button {
+    border: 1px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb);
+    border-radius: 16px; padding: 5px 12px; font-size: .8rem; cursor: pointer;
+  }
+  #ecolia-audio-banner button.pri { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-banner .eab-bar { display: none; flex-basis: 100%; height: 4px; border-radius: 2px; overflow: hidden; background: var(--bd, #c9d6ea); }
+  #ecolia-audio-banner .eab-bar i { display: block; height: 100%; width: 0; background: var(--p2, #2563eb); transition: width .2s; }
+</style>
+<script>
+(function () {
+  var CFG = {"code":"TIC4","base":"https://ecolia-course.github.io/ecolia-media/audio_files/","available":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],"count":16,"sizeMo":12,"sizes":{"1":687168,"2":984000,"3":728832,"4":692352,"5":721152,"6":772416,"7":731520,"8":717696,"9":708672,"10":955392,"11":659712,"12":765504,"13":795264,"14":907776,"15":677376,"16":105024},"fallback":{"1":[["fr","Sommaire, Technologies de l'Information et de la Communication. Présentation du cours. T I C, 4e Humanité. Niveau: 4e Humanité ou Terminale (tronc commun, humanités scientifiques et générales). Statut: Matière officielle avec programme national dédié (Domaine d'Apprentissage des Sciences). Objectif général: Rendre l'élève capable d'utiliser les T I C comme outil d'apprentissage, de communication et de production, de manière responsable et efficace. Objectifs spécifiques. Comprendre les concepts fondamentaux des T I C et de l'ordinateur. Utiliser un système d'exploitation et gérer fichiers et dossiers. Maîtriser les bases du traitement de texte, du tableur et des présentations. Naviguer sur internet et rechercher l'information. Adopter des pratiques responsables et sécurisées en ligne. Organisation des chapitres. Chapitre I: Introduction aux T I C et à l'ordinateur. Chapitre II: Le système d'exploitation. Chapitre III: Le traitement de texte. Chapitre IV: Le tableur. Chapitre V: Les présentations. Chapitre VI: Internet et sécurité numérique. Prérequis: notions de base en informatique (souris, clavier, fichiers)."]],"2":[["fr","Leçon 1, Qu'est-ce que les T I C? Situation de départ. Un élève utilise son téléphone pour envoyer un message à un ami, un autre consulte un cours en ligne, un troisième prend une photo et la partage. Qu'ont-ils en commun? Tous utilisent les T I C. Fondements théoriques. Définition. Les T I C (Technologies de l'Information et de la Communication) désignent l'ensemble des outils, techniques et services qui permettent de produire, traiter, stocker, transporter et diffuser l'information sous forme numérique (texte, son, image, vidéo). Les grandes catégories. Matériel: ordinateur, téléphone, tablette, imprimante, scanner, modem. Logiciels: système d'exploitation, applications, navigateurs. Réseaux: internet, réseaux locaux, téléphonie mobile. Services: courrier électronique, sites web, réseaux sociaux, plateformes d'apprentissage. Rôles des T I C. Communication (courriel, messagerie, appels vidéo). Information (recherche, médias, bibliothèques en ligne). Apprentissage (cours en ligne, exercices interactifs). Production (rédaction, calcul, création graphique). Gestion (bases de données, gestion de stocks). Exemple concret. Une école de Kinshasa utilise une plateforme en ligne pour partager les cours et les devoirs avec les élèves. C'est un usage concret des T I C au service de l'éducation. À retenir. Les T I C englobent matériel, logiciels, réseaux et services. Elles sont présentes dans tous les domaines de la vie. Erreur fréquente: réduire les T I C à l'ordinateur; le téléphone et internet en font partie."]],"3":[["fr","Leçon 2, L'ordinateur: composants. Fondements théoriques. Définition. L'ordinateur est une machine électronique programmable qui traite l'information selon des instructions (programmes). Les composants internes. Le processeur (CPU): « cerveau » de l'ordinateur, il exécute les instructions. La mémoire RAM: mémoire de travail, rapide, temporaire (s'efface à l'arrêt). Le disque dur (ou SSD): mémoire de stockage permanente. La carte mère: relie les composants. La carte graphique: gère l'affichage. Les unités. Unité centrale: boîtier qui contient les composants. Écran: affiche l'information. Clavier et souris: permettent de saisir et de commander. Les principaux composants d'un ordinateur: unité centrale, écran, clavier, souris. Exemple concret. Un ordinateur avec 4 Go de RAM est suffisant pour la bureautique (traitement de texte, tableur, navigation simple). Pour le montage vidéo, il faut davantage de RAM et un processeur plus puissant. À retenir. Le processeur exécute, la RAM travaille, le disque dur stocke. Chaque composant a un rôle précis et complémentaire. Erreur fréquente: confondre RAM (temporaire) et disque dur (permanent)."]],"4":[["fr","Leçon 3, Les périphériques. Fondements théoriques. Définition. Un périphérique est un appareil connecté à l'ordinateur pour lui permettre d'entrer des données, de sortir des résultats ou de communiquer. Les trois catégories. Périphériques d'entrée: clavier, souris, scanner, micro, webcam, lecteur d'empreintes. Périphériques de sortie: écran, imprimante, haut-parleurs, projecteur. Périphériques d'entrée-sortie: modem, clé USB, disque dur externe, écran tactile. Exemples d'utilisation. Le scanner numérise un document papier pour le stocker sur l'ordinateur. L'imprimante imprime un document numérique sur papier. La clé USB permet de transférer des fichiers entre ordinateurs. Exemple concret. Un agent d'une entreprise de Kinshasa scanne les factures reçues, les enregistre sur son ordinateur, puis les imprime pour les archiver. Il utilise trois périphériques: scanner, ordinateur, imprimante. À retenir. Entrée: l'information entre dans l'ordinateur. Sortie: l'information sort de l'ordinateur. Erreur fréquente: classer le scanner comme périphérique de sortie; c'est un périphérique d'entrée."]],"5":[["fr","Leçon 4, Les unités de mesure de l'information. Fondements théoriques. Le bit et l'octet. L'unité de base de l'information est le bit (0 ou 1). Un octet (byte en anglais) égale 8 bits. L'octet représente environ un caractère (une lettre, un chiffre). Les multiples. Unité. Valeur. 1 octet. 8 bits. 1 kilooctet (Ko). 1 024 octets. 1 mégaoctet (Mo). 1 024 Ko. 1 gigaoctet (Go). 1 024 Mo. 1 téraoctet (To). 1 024 Go. Exemples concrets. Une page de texte: quelques Ko. Une photo de bonne qualité: 2 à 5 Mo. Une chanson M P3: 3 à 5 Mo. Un film en haute définition: 1 à 5 Go. Exercice corrigé. Une clé USB de 8 Go peut stocker combien de photos de 4 Mo? Calcul: 8 Go égale 8 multiplié par 1 024 Mo égale 8 192 Mo. 8 192 divisé par 4 égale 2 048 photos (environ). À retenir. 1 octet égale 8 bits. Les multiples vont par 1 024 (et non 1 000). Erreur fréquente: confondre Mo et Go (facteur 1 024)."]],"6":[["fr","Leçon 5, Le système d'exploitation. Fondements théoriques. Définition. Le système d'exploitation (SE) est le logiciel de base qui permet à l'utilisateur de commander l'ordinateur et qui gère les ressources matérielles et logicielles. Rôles du système d'exploitation. Démarrer l'ordinateur et charger les programmes. Gérer les fichiers et les dossiers. Gérer la mémoire, le processeur, les périphériques. Assurer la sécurité (comptes utilisateurs, mots de passe). Fournir une interface graphique (bureau, fenêtres, icônes). Exemples de systèmes d'exploitation. Windows (Microsoft). macOS (Apple). Linux (Ubuntu, Debian, etc.). Android et iOS (pour téléphones et tablettes). Le bureau. Le bureau est l'espace principal affiché à l'écran après le démarrage. Il contient des icônes (raccourcis vers les programmes, fichiers, dossiers), une barre des tâches et une zone de notification. Exemple concret. Lorsque vous allumez un ordinateur sous Windows, le système d'exploitation charge le bureau, les icônes et la barre des tâches. Sans SE, l'ordinateur ne pourrait pas fonctionner. À retenir. Le SE est le logiciel de base de l'ordinateur. Il gère les ressources et fournit l'interface utilisateur. Erreur fréquente: confondre le SE avec un logiciel applicatif (Word, Excel)."]],"7":[["fr","Leçon 6, Gérer fichiers et dossiers. Fondements théoriques. Définitions. Fichier: ensemble de données enregistré sur un support (document, image, vidéo…). Il possède un nom et une extension. Dossier (répertoire): conteneur qui regroupe des fichiers et d'autres dossiers, pour organiser le stockage. Les extensions courantes. .docx: document Word. .xlsx: feuille de calcul Excel. .pptx: présentation PowerPoint. .pdf: document portable. .jpg ou.png: image. .mp3 ou.mp4: audio ou vidéo. Opérations de base. Créer un fichier ou un dossier. Renommer, copier, déplacer, supprimer. Rechercher un fichier (par nom, type, date). Organiser par dossiers thématiques (ex.: « Cours », « Photos », « Documents »). Exemple concret. Un élève crée un dossier « 4e Humanité » et y range des sous-dossiers par matière (Français, Maths, T I C). Il retrouve ainsi facilement ses documents. À retenir. L'extension indique le type de fichier. Une bonne organisation évite la perte de documents. Erreur fréquente: tout enregistrer pêle-mêle sur le bureau; mieux vaut organiser en dossiers."]],"8":[["fr","Leçon 7, Le traitement de texte: interface. Fondements théoriques. Définition. Un logiciel de traitement de texte permet de saisir, mettre en forme et imprimer des documents écrits. L'exemple le plus courant est Microsoft Word, mais il existe aussi LibreOffice Writer, Google Docs. L'interface. Ruban (ou barre d'outils): regroupe les commandes par onglets (Accueil, Insertion, Mise en page, etc.). Zone de saisie: espace où l'on tape le texte. Curseur: indique la position de saisie. Barre d'état: affiche des informations (page, mots, langue). Opérations de base. Saisir du texte. Sélectionner (souris ou clavier). Couper, copier, coller. Enregistrer (Ctrl plus S) et imprimer. Exercice guidé. Rédiger une lettre simple: ouvrir Word, taper l'en-tête (expéditeur, date), le corps de la lettre, la formule de politesse et la signature. Enregistrer sous « lettre.docx ». À retenir. Le traitement de texte est l'outil de base de la bureautique. Maîtriser les raccourcis (Ctrl plus C, Ctrl plus V, Ctrl plus S) fait gagner du temps. Erreur fréquente: oublier d'enregistrer régulièrement."]],"9":[["fr","Leçon 8, Mise en forme d'un document. Fondements théoriques. Mise en forme des caractères. Police: type de caractère (Times New Roman, Arial, etc.). Taille: en points (12, 14, 16…). Style: gras (Ctrl plus G), italique (Ctrl plus I), souligné (Ctrl plus U). Couleur du texte et surlignage. Mise en forme des paragraphes. Alignement: à gauche, centré, à droite, justifié. Interligne: simple, 1,5, double. Retrait: première ligne, retrait gauche ou droit. Listes à puces ou numérotées. Mise en page. Marges, orientation (portrait ou paysage). En-tête et pied de page. Numérotation des pages. Exercice guidé. Mettre en forme un devoir: titre en gras et centré (16 pt), corps du texte justifié (12 pt), interligne 1,5, avec un en-tête indiquant le nom, la classe et la date. À retenir. Une bonne mise en forme améliore la lisibilité du document. La cohérence (mêmes polices, mêmes tailles) est essentielle. Erreur fréquente: multiplier les polices et les couleurs, ce qui rend le document confus."]],"10":[["fr","Leçon 9, Le tableur: cellules et formules. Fondements théoriques. Définition. Un tableur est un logiciel qui permet de calculer, organiser et analyser des données chiffrées sous forme de tableaux. Exemple: Microsoft Excel, LibreOffice Calc, Google Sheets. Structure. Classeur: fichier du tableur, composé de feuilles. Feuille: grille de cellules. Cellule: intersection d'une ligne (1, 2, 3…) et d'une colonne (A, B, C…). Exemple: A1. Plage: ensemble de cellules (ex.: A1:A10). Formules de base. Une formule commence toujours par égale. égale A1 plus B1 additionne les cellules A1 et B1. égale SOMME(A1:A10) additionne les cellules A1 à A10. égale MOYENNE(A1:A10) calcule la moyenne. égale MAX(A1:A10) renvoie la valeur maximale. égale MIN(A1:A10) renvoie la valeur minimale. égale A1 multiplié par 2 multiplie la cellule A1 par 2. Exercice corrigé. Un élève a les notes suivantes en B2, B3, B4, B5: 12, 15, 10, 14. Calculez la moyenne avec une formule. Formule: égale MOYENNE(B2:B5), donc résultat: (12 plus 15 plus 10 plus 14)/4 égale 12,75. À retenir. La cellule est l'unité de base du tableur. Toute formule commence par égale. Erreur fréquente: taper le résultat à la main au lieu d'utiliser une formule (le calcul ne se met pas à jour)."]],"11":[["fr","Leçon 10, Créer un graphique. Fondements théoriques. Utilité du graphique. Un graphique facilite la visualisation des données et la communication des résultats. Il permet de repérer des tendances, des comparaisons, des répartitions. Types de graphiques. Histogramme (colonnes): compare des valeurs (ex.: ventes par produit). Courbe: montre une évolution dans le temps (ex.: chiffre d'affaires mensuel). Diagramme circulaire (camembert): montre une répartition en pourcentages (ex.: parts de marché). Diagramme en barres: compare des catégories. Procédure dans Excel. Sélectionner les données (avec les étiquettes). Aller dans l'onglet Insertion. Choisir le type de graphique. Personnaliser: titre, axes, légende, couleurs. Exercice guidé. À partir d'un tableau de ventes (produits et quantités), construire un histogramme. Ajouter un titre « Ventes par produit » et nommer les axes. À retenir. Choisir le graphique adapté au type de données. Toujours titrer et légender le graphique. Erreur fréquente: utiliser un camembert pour des données qui ne sont pas des parts d'un tout."]],"12":[["fr","Leçon 11, Les présentations. Fondements théoriques. Définition. Un logiciel de présentation (PowerPoint, LibreOffice Impress, Google Slides) permet de créer des diaporamas pour exposer une information à un auditoire. Structure d'une présentation. Diapositive de titre: sujet, auteur, date. Diapositives de contenu: une idée par diapositive, textes courts, images. Diapositive de conclusion: synthèse et remerciements. Conseils de conception. Texte lisible: taille suffisante, contraste de couleurs. Peu de texte par diapositive (mots-clés, phrases courtes). Une idée par diapositive. Images pertinentes. Cohérence visuelle (mêmes polices, mêmes couleurs). Transitions sobres. Présenter oralement. Ne pas lire mot à mot les diapositives. Regarder l'auditoire. Gérer le temps. Répéter avant la présentation. Exemple concret. Une présentation sur le parc de Virunga: diapositive de titre, diapositive sur la biodiversité, diapositive sur les menaces, diapositive sur les solutions, diapositive de conclusion. Chaque diapositive comporte une image et 3 à 5 points clés. À retenir. La présentation appuie le discours, elle ne le remplace pas. Une diapositive égale une idée. Erreur fréquente: surcharger les diapositives de texte."]],"13":[["fr","Leçon 12, Internet: navigation et recherche. Fondements théoriques. Définition. Internet est un réseau mondial qui relie des millions d'ordinateurs et permet d'échanger des informations. Le Web est l'un des services d'internet: il regroupe les sites accessibles via un navigateur. Les navigateurs. Chrome, Firefox, Edge, Safari, Opera. Les moteurs de recherche. Google, Bing, DuckDuckGo. Utiliser des mots-clés précis. Vérifier la fiabilité des sources. Bonnes pratiques de recherche. Formuler une requête précise. Utiliser les guillemets pour une expression exacte. Croiser plusieurs sources. Vérifier la date et l'auteur de l'information. Privilégier les sites officiels, éducatifs, institutionnels. Le courrier électronique. Adresse: nom@domaine. Champs: À, Cc, Cci, Objet, Corps, Pièce jointe. Règles de politesse: salutation, corps clair, formule de politesse, signature. Exemple concret. Pour rechercher des informations sur les bourses d'études, on peut taper: « bourses d'études R D C 2025 site:gouv.cd » afin de restreindre la recherche aux sites officiels. À retenir. Internet donne accès à une immense quantité d'informations. Il faut vérifier la fiabilité des sources. Erreur fréquente: croire tout ce qu'on trouve en ligne."]],"14":[["fr","Leçon 13, Sécurité numérique. Fondements théoriques. Les risques numériques. Virus et logiciels malveillants: programmes qui endommagent l'ordinateur ou volent des données. Phishing (hameçonnage): tentative de récupérer des informations personnelles en se faisant passer pour un organisme de confiance. Usurpation d'identité. Cyberharcèlement. Vol de données personnelles. Arnaques en ligne. Les bonnes pratiques. Mots de passe forts: au moins 8 caractères, mélangeant majuscules, minuscules, chiffres et symboles. Ne pas utiliser le même mot de passe partout. Mises à jour: installer les mises à jour du système et des logiciels. Antivirus: en installer un et le mettre à jour. Prudence avec les liens et pièces jointes: ne pas cliquer sur tout. Sauvegardes: sauvegarder régulièrement les données importantes. Paramètres de confidentialité: limiter la diffusion d'informations personnelles. Respect des autres: ne pas diffuser de contenus nuisibles, ne pas harceler. Protection des données personnelles. Ne pas partager en ligne: adresse complète, numéro de téléphone, mots de passe, photos personnelles sensibles. Vérifier les paramètres de confidentialité des réseaux sociaux. Exemple concret. Un message reçu par courriel annonce que vous avez « gagné un prix » et demande vos coordonnées bancaires: c'est du phishing. Il faut le supprimer, ne jamais cliquer sur le lien et ne pas répondre. À retenir. La sécurité numérique est l'affaire de tous. Un mot de passe fort et unique pour chaque compte est une première protection. Erreur fréquente: partager ses mots de passe ou ses informations personnelles."]],"15":[["fr","Leçon 14, Usages responsables des T I C. Fondements théoriques. Les T I C au service du bien commun. Apprentissage en ligne, bibliothèques numériques. Communication à distance. Entrepreneuriat numérique. Accès aux services publics en ligne. Participation citoyenne. Usages responsables. Respect de la vie privée: ne pas diffuser d'images ou d'informations d'autrui sans consentement. Respect du droit d'auteur: citer ses sources, ne pas copier-coller sans référence. Lutte contre la désinformation: vérifier avant de partager. Respect du temps et de l'attention: éviter la dépendance aux écrans. Respect de soi-même: protéger son image en ligne. Le numérique et la vie quotidienne. Gestion des paiements mobiles (M-Pesa, Orange Money, Airtel Money). Suivi de la santé, cours en ligne, e-administration. Exemple concret. Un élève utilise son téléphone pour consulter des cours, mais évite de partager des rumeurs ou des images choquantes. Il vérifie l'information avant de la diffuser. À retenir. Les T I C sont un outil puissant pour apprendre et communiquer. Elles exigent des usages responsables et respectueux. Erreur fréquente: croire que tout ce qui est en ligne est libre et vrai."]],"16":[["fr","Évaluation finale, T I C. Évaluation finale. 20 questions à choix multiple. Une seule réponse est correcte par question. Choisis la réponse qui te semble juste, puis valide."]]}};
+  var CACHE = "ecolia-cours-v1";                       // même cache que l'application
+  var PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  var PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+  var DL = '<svg viewBox="0 0 24 24"><path d="M11 3h2v9.2l3.6-3.6L18 10l-6 6-6-6 1.4-1.4L11 12.2V3zM5 19h14v2H5z"/></svg>';
+  var OK = '<svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>';
+  // Réparation du quiz : certains cours stockent les choix sous "opts" (ou autre) au lieu de "options"
+  try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+      questions.forEach(function (q) {
+        if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+        if (q.text === undefined) q.text = q.question || q.q || q.enonce || q.titre || "";
+        if (typeof q.correct === "undefined") {
+          if (typeof q.answer !== "undefined") q.correct = q.answer;
+          else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+        }
+      });
+    }
+  } catch (e) {}
+  var synth = window.speechSynthesis || null;
+  var HAS_CACHE = !!(window.caches && window.caches.open);
+  var NATIVE = false;           // APK ECOLIA : pont Java "CoursInterface" (fichiers dans le dossier de l'application)
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  var LATER = "ecolia_audio_later_" + CFG.code;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+  function init() {
+    if (document.getElementById("ecolia-audio-btn")) return;
+
+    // ---------- éléments de l'interface ----------
+    var btn = document.createElement("button");
+    btn.id = "ecolia-audio-btn"; btn.type = "button"; btn.className = "ecolia-off";
+    btn.setAttribute("aria-label", "Écouter la leçon"); btn.innerHTML = PLAY;
+    var dlBtn = document.createElement("button");
+    dlBtn.id = "ecolia-dl-btn"; dlBtn.type = "button"; dlBtn.className = "ecolia-off";
+    dlBtn.innerHTML = DL;
+    var host = document.querySelector(".header-right");
+    if (host) { host.insertBefore(dlBtn, host.firstChild); host.insertBefore(btn, dlBtn); }   // dans la barre du haut : ne scrolle jamais
+    else { btn.className += " ecolia-fixed"; document.body.appendChild(btn); }
+
+    var banner = document.createElement("div");
+    banner.id = "ecolia-audio-banner";
+    banner.innerHTML = '<span class="eab-txt"></span><span class="eab-act"></span><div class="eab-bar"><i></i></div>';
+    var content = document.getElementById("content");
+    if (content && content.parentNode) content.parentNode.insertBefore(banner, content);
+    else document.body.insertBefore(banner, document.body.firstChild);
+    var txtEl = banner.querySelector(".eab-txt"), actEl = banner.querySelector(".eab-act");
+    var barEl = banner.querySelector(".eab-bar"), barI = barEl.firstChild;
+
+    var audio = new Audio();            // un seul élément Audio, réutilisé (exigé par les navigateurs mobiles)
+    audio.preload = "auto";
+    var st = { idx: -1, auto: false, advancing: false, mode: null, speaking: false, token: 0, chunks: [], ci: 0, blobUrl: null, playTok: 0 };
+    var dl = { state: "none", cached: 0, busy: false, cancel: false };   // none | partial | full
+    var bnMode = null, hideTimer = null;
+    if (synth && synth.getVoices) { try { synth.getVoices(); } catch (e) {} }
+
+    function cur() {
+      try { if (typeof currentSlide === "number") return currentSlide; } catch (e) {}
+      return 0;
+    }
+    function hasMp3(i) { return CFG.available.indexOf(i + 1) !== -1; }
+    function fb(i) { return CFG.fallback && CFG.fallback[String(i + 1)]; }
+    function hasAudio(i) { return hasMp3(i) || (!!synth && !!fb(i)); }
+    function urlN(n) {   // dans l'APK la page est sur https://app.local : une adresse relative doit pointer vers le site
+      var b = CFG.base;
+      if (NATIVE && !/^https?:/i.test(b)) b = "https://ecolia-course.github.io/" + b.replace(/^(\.\.\/|\.\/)+/, "");
+      return new URL(b + nameN(n), location.href).href;
+    }
+    function setIcon(playing) { btn.innerHTML = playing ? PAUSE : PLAY; }
+    function isPlaying() { return st.mode === "mp3" ? !audio.paused : (st.mode === "tts" && st.speaking); }
+    function mo() { return "≈ " + CFG.sizeMo + " Mo"; }
+    function nameN(n) { return "audio_" + CFG.code + "_" + n + ".mp3"; }
+
+    // ====================================================================
+    //  Stockage hors ligne : 2 moteurs, même interface
+    //    - APK : fichiers du dossier de l'application (CoursInterface), servis par https://app.local/cours/
+    //    - Web : Cache Storage du navigateur (même cache que l'application web)
+    // ====================================================================
+    function nativeStore() {
+      var okKey = "ecolia_audio_ok_" + CFG.code;
+      function readOk() { try { return JSON.parse(lsGet(okKey) || "[]"); } catch (e) { return []; } }
+      function writeOk(a) { lsSet(okKey, JSON.stringify(a)); }
+      function exists(n) { try { return !!CoursInterface.exists(nameN(n)); } catch (e) { return false; } }
+      function local(n) { return location.origin + "/cours/" + nameN(n); }
+      function verify(n) {                                   // fichier complet ? (taille exacte connue à la génération)
+        return fetch(local(n), { cache: "no-store" }).then(function (r) { return r.blob(); }).then(function (b) {
+          var exp = CFG.sizes && CFG.sizes[String(n)];
+          return (b.size > 2000 && (!exp || b.size === exp)) ? b : null;
+        }).catch(function () { return null; });
+      }
+      return {
+        list: function () {
+          var ok = readOk().filter(exists); writeOk(ok); return Promise.resolve(ok);
+        },
+        get: function (n) { return exists(n) ? verify(n) : Promise.resolve(null); },
+        put: function (n) {
+          return new Promise(function (res, rej) {
+            try { CoursInterface.download(urlN(n), nameN(n)); } catch (e) { return rej(e); }
+            var t0 = Date.now();
+            function next() { if (Date.now() - t0 > 120000) rej(new Error("délai dépassé")); else setTimeout(poll, 800); }
+            function poll() {
+              if (!exists(n)) return next();
+              verify(n).then(function (b) {
+                if (!b) return next();
+                var ok = readOk(); if (ok.indexOf(n) < 0) ok.push(n); writeOk(ok); res();
+              });
+            }
+            setTimeout(poll, 800);
+          });
+        },
+        del: function (n) {
+          try { CoursInterface.delete(nameN(n)); } catch (e) {}
+          writeOk(readOk().filter(function (x) { return x !== n; }));
+          return Promise.resolve();
+        }
+      };
+    }
+    function cacheStore() {
+      return {
+        list: function () {
+          return caches.open(CACHE).then(function (c) {
+            return Promise.all(CFG.available.map(function (n) {
+              return c.match(urlN(n)).then(function (r) {
+                if (!r) return 0;
+                if ((r.headers.get("content-type") || "").indexOf("audio") !== 0) { c.delete(urlN(n)); return 0; }   // ancien contenu invalide
+                return n;
+              });
+            }));
+          }).then(function (a) { return a.filter(Boolean); });
+        },
+        get: function (n) {
+          return caches.open(CACHE).then(function (c) { return c.match(urlN(n)); })
+            .then(function (r) { return r ? r.blob() : null; }).then(function (b) { return b && b.size > 2000 ? b : null; });
+        },
+        put: function (n) {
+          var u = urlN(n);
+          return fetch(u, { cache: "no-store" }).then(function (r) {
+            if (!r.ok || r.status !== 200) throw new Error("HTTP " + r.status);
+            return r.blob();
+          }).then(function (b) {
+            if (b.size < 2000 || (b.type && b.type.indexOf("audio") !== 0 && b.type.indexOf("octet") < 0)) throw new Error("fichier invalide");
+            return caches.open(CACHE).then(function (c) { return c.put(u, new Response(b, { headers: { "Content-Type": "audio/mpeg" } })); });
+          });
+        },
+        del: function (n) { return caches.open(CACHE).then(function (c) { return c.delete(urlN(n)); }); }
+      };
+    }
+    var store = NATIVE ? nativeStore() : (HAS_CACHE ? cacheStore() : null);
+
+    // ====================================================================
+    //  Bannière : invitation, confirmations, progression
+    // ====================================================================
+    function showBanner(mode, text, buttons, pct) {
+      clearTimeout(hideTimer);
+      bnMode = mode;
+      txtEl.textContent = text;
+      actEl.innerHTML = "";
+      (buttons || []).forEach(function (b) {
+        var e = document.createElement("button");
+        e.type = "button"; e.textContent = b.label; if (b.pri) e.className = "pri";
+        e.addEventListener("click", function (ev) { ev.stopPropagation(); b.fn(); });
+        actEl.appendChild(e);
+      });
+      if (typeof pct === "number") { barEl.style.display = "block"; barI.style.width = pct + "%"; }
+      else barEl.style.display = "none";
+      banner.classList.add("on");
+    }
+    function hideBanner() { clearTimeout(hideTimer); bnMode = null; banner.classList.remove("on"); }
+    function flash(text) { showBanner("info", text, []); hideTimer = setTimeout(hideBanner, 4000); }
+
+    function refreshUI() {
+      var show = !!store && CFG.available.length > 0;
+      dlBtn.classList.toggle("ecolia-off", !show);
+      dlBtn.classList.toggle("ecolia-full", dl.state === "full");
+      dlBtn.innerHTML = dl.state === "full" ? OK : DL;
+      dlBtn.setAttribute("aria-label", dl.state === "full" ? "Audios téléchargés : supprimer" : "Télécharger les audios");
+      dlBtn.title = dlBtn.getAttribute("aria-label");
+    }
+    function refreshCacheState(done) {
+      if (!store) { dl.state = "none"; refreshUI(); if (done) done(); return; }
+      store.list().then(function (ok) {
+        dl.cached = ok.length;
+        dl.state = dl.cached === 0 ? "none" : (dl.cached >= CFG.available.length ? "full" : "partial");
+      }).catch(function () { dl.state = "none"; }).then(function () { refreshUI(); if (done) done(); });
+    }
+
+    function askDownload(fromInvite) {
+      var left = CFG.available.length - dl.cached;
+      var txt = dl.state === "partial"
+        ? "Il reste " + left + " audio(s) à télécharger pour écouter ce cours sans internet."
+        : "🔊 Télécharger les audios de ce cours (" + mo() + ") pour les écouter sans internet ? Wi-Fi recommandé.";
+      showBanner(fromInvite ? "invite" : "confirm", txt, [
+        { label: fromInvite ? "Plus tard" : "Annuler", fn: function () { if (fromInvite) lsSet(LATER, "1"); hideBanner(); } },
+        { label: "Télécharger", pri: true, fn: startDownload }
+      ]);
+    }
+    function askDelete() {
+      showBanner("confirm", "Supprimer les audios téléchargés de ce cours (" + mo() + ") ? Vous pourrez toujours les écouter en ligne.", [
+        { label: "Annuler", fn: hideBanner },
+        { label: "Supprimer", pri: true, fn: doDelete }
+      ]);
+    }
+
+    function startDownload() {
+      if (dl.busy || !store) return;
+      dl.busy = true; dl.cancel = false;
+      var total = CFG.available.length, done = 0, quota = false, fails = 0, todo = [];
+      store.list().then(function (have) {
+        CFG.available.forEach(function (n) { if (have.indexOf(n) < 0) todo.push(n); });
+        done = total - todo.length;
+        function paint() {
+          var msg = "Téléchargement des audios : " + done + " / " + total;
+          if (bnMode === "progress") {                  // met à jour sans recréer les boutons (sinon un appui peut être perdu)
+            txtEl.textContent = msg; barI.style.width = Math.round(done / total * 100) + "%";
+          } else {
+            showBanner("progress", msg, [
+              { label: "Annuler", fn: function () { dl.cancel = true; } }
+            ], Math.round(done / total * 100));
+          }
+        }
+        paint();
+        function worker() {
+          if (dl.cancel || quota || !todo.length) return Promise.resolve();
+          var n = todo.shift();
+          return store.put(n).then(function () { done++; paint(); }).catch(function (e) {
+            if (e && (e.name === "QuotaExceededError" || /quota/i.test(String(e.message)))) quota = true;
+            fails++;
+          }).then(worker);
+        }
+        return Promise.all([worker(), worker()]);
+      }).catch(function () { fails++; }).then(function () {
+        dl.busy = false;
+        refreshCacheState(function () {
+          if (dl.state === "full") flash("✓ Audios téléchargés : le cours se lit maintenant sans internet.");
+          else if (dl.cancel) flash("Téléchargement interrompu (" + dl.cached + " / " + total + "). Vous pourrez reprendre plus tard.");
+          else showBanner("error", quota ? "Espace insuffisant sur l'appareil. Libérez de la place puis réessayez."
+            : "Certains audios n'ont pas pu être téléchargés (connexion ?).", [
+            { label: "Fermer", fn: hideBanner }, { label: "Réessayer", pri: true, fn: startDownload }
+          ]);
+        });
+      });
+    }
+    function doDelete() {
+      if (!store) return;
+      Promise.all(CFG.available.map(function (n) { return store.del(n); })).catch(function () {}).then(function () {
+        lsDel(LATER);
+        refreshCacheState(function () { flash("Audios supprimés de cet appareil."); });
+      });
+    }
+
+    dlBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (dl.busy) return;
+      if (dl.state === "full") askDelete(); else askDownload(false);
+    });
+
+    // ====================================================================
+    //  Voix intégrée au téléphone (hors ligne, sans limite)
+    // ====================================================================
+    function pickVoice(lang) {
+      var vs = [];
+      try { vs = synth.getVoices() || []; } catch (e) {}
+      var pre = lang === "en" ? "en" : "fr", best = null;
+      for (var k = 0; k < vs.length; k++) {
+        var v = vs[k];
+        if ((v.lang || "").toLowerCase().indexOf(pre) !== 0) continue;
+        if (!best || (v.localService && !best.localService)) best = v;
+      }
+      return best;
+    }
+    function hardSplit(text, max) {
+      var out = [];
+      while (text.length > max) {
+        var cut = text.lastIndexOf(" ", max);
+        if (cut < 40) cut = max;
+        out.push(text.slice(0, cut)); text = text.slice(cut).replace(/^\s+/, "");
+      }
+      if (text) out.push(text);
+      return out;
+    }
+    function buildChunks(segs) {                  // morceaux courts : évite l'arrêt des longs textes sur Chrome
+      var out = [];
+      segs.forEach(function (s) {
+        var cur2 = "", parts = s[1].match(/[^.!?;:]+[.!?;:]*\s*/g) || [s[1]];
+        parts.forEach(function (p) {
+          if (cur2 && (cur2 + p).length > 160) { out.push({ lang: s[0], text: cur2.trim() }); cur2 = p; }
+          else cur2 += p;
+        });
+        if (cur2.trim()) out.push({ lang: s[0], text: cur2.trim() });
+      });
+      var res = [];
+      out.forEach(function (c) { hardSplit(c.text, 190).forEach(function (t) { res.push({ lang: c.lang, text: t }); }); });
+      return res;
+    }
+    function speakFrom(tk) {
+      if (tk !== st.token) return;
+      if (st.ci >= st.chunks.length) {
+        st.speaking = false; st.mode = null; st.ci = 0; setIcon(false);
+        if (st.auto) goNext();
+        return;
+      }
+      var c = st.chunks[st.ci];
+      var u = new SpeechSynthesisUtterance(c.text);
+      u.lang = c.lang === "en" ? "en-US" : "fr-FR";
+      var v = pickVoice(c.lang);
+      if (v) { u.voice = v; u.lang = v.lang; }
+      u.rate = 0.95;
+      u.onend = function () { if (tk !== st.token) return; st.ci++; speakFrom(tk); };
+      u.onerror = function () { if (tk !== st.token) return; st.speaking = false; setIcon(false); st.auto = false; };
+      synth.speak(u);
+    }
+    function startTts(from) {
+      st.token++;
+      var tk = st.token;
+      st.mode = "tts"; st.speaking = true; st.ci = from || 0; setIcon(true);
+      var busy = false;
+      try { busy = synth.speaking || synth.pending; synth.cancel(); } catch (e) {}
+      if (busy) setTimeout(function () { speakFrom(tk); }, 120);   // laisse cancel() se terminer
+      else speakFrom(tk);                                          // sinon tout de suite (exigé par iOS)
+    }
+    function playVoice() {
+      if (!(synth && fb(st.idx))) { st.auto = false; return false; }
+      if (!st.chunks.length) st.chunks = buildChunks(fb(st.idx));
+      startTts(st.ci);
+      return true;
+    }
+
+    // ====================================================================
+    //  Lecture
+    // ====================================================================
+    function freeBlob() { if (st.blobUrl) { try { URL.revokeObjectURL(st.blobUrl); } catch (e) {} st.blobUrl = null; } }
+    function stopAll() {
+      st.playTok++;
+      try { audio.pause(); audio.currentTime = 0; } catch (e) {}
+      st.token++;
+      try { if (synth) synth.cancel(); } catch (e) {}
+      st.speaking = false; st.mode = null; st.chunks = []; st.ci = 0;
+      setIcon(false);
+    }
+    function pauseNow() {
+      if (st.mode === "mp3") audio.pause();
+      else if (st.mode === "tts") {
+        st.token++;
+        try { synth.cancel(); } catch (e) {}
+        st.speaking = false; setIcon(false);      // st.ci conservé : la reprise repart de la phrase en cours
+      }
+    }
+    function startAudio(src, tok) {
+      if (tok !== st.playTok) return;
+      if (audio.getAttribute("data-src") !== src) { audio.setAttribute("data-src", src); audio.src = src; }
+      var p = audio.play();
+      if (p && p.catch) p.catch(function (err) {
+        console.warn("ECOLIA audio :", err);
+        if (tok !== st.playTok) return;
+        if (!(err && err.name === "NotAllowedError") && playVoice()) return;   // lecture impossible : voix du téléphone
+        setIcon(false); st.auto = false;
+      });
+    }
+    function playCurrent() {
+      var i = st.idx;
+      if (hasMp3(i)) {
+        var tok = ++st.playTok, u = urlN(i + 1);
+        st.mode = "mp3";
+        if (!navigator.onLine && dl.state === "none") { st.mode = null; if (playVoice()) return; }   // hors ligne et non téléchargé
+        if (store && dl.state !== "none") {                     // téléchargé : lecture locale, sans réseau
+          store.get(i + 1)
+            .then(function (b) {
+              if (tok !== st.playTok) return;
+              if (b) { freeBlob(); st.blobUrl = URL.createObjectURL(new Blob([b], { type: "audio/mpeg" })); startAudio(st.blobUrl, tok); }
+              else startAudio(u, tok);
+            }).catch(function () { startAudio(u, tok); });
+        } else startAudio(u, tok);                              // sinon lecture en ligne (appel immédiat, exigé par iOS)
+      } else if (!playVoice()) {
+        st.auto = false;
+      }
+    }
+
+    function onSlideChange(i) {
+      var wasAdvancing = st.advancing;
+      st.advancing = false;
+      st.idx = i;
+      btn.classList.toggle("ecolia-off", !hasAudio(i));
+      stopAll();
+      audio.removeAttribute("data-src");
+      freeBlob();
+      if (bnMode === "invite" && i !== 0) hideBanner();       // l'invitation n'apparaît qu'à la première slide
+      if (wasAdvancing && st.auto) setTimeout(playCurrent, 500);   // enchaînement automatique
+      else st.auto = false;                                         // changement manuel : on coupe tout
+    }
+    function goNext() {
+      if (st.idx + 1 >= CFG.count) { st.auto = false; return; }
+      st.advancing = true;
+      if (typeof nextSlide === "function") nextSlide();
+      else { var nb = document.getElementById("nextBtn"); if (nb) nb.click(); }
+      setTimeout(function () { st.advancing = false; }, 4000);
+    }
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var i = cur();
+      if (i !== st.idx) onSlideChange(i);
+      if (isPlaying()) { st.auto = false; pauseNow(); }
+      else { st.auto = true; playCurrent(); }
+    });
+    audio.addEventListener("play", function () { setIcon(true); });
+    audio.addEventListener("pause", function () { if (st.mode === "mp3") setIcon(false); });
+    audio.addEventListener("error", function () {
+      if (st.mode === "mp3" && playVoice()) return;            // fichier introuvable / hors ligne : voix du téléphone
+      setIcon(false); st.auto = false;
+    });
+    audio.addEventListener("ended", function () { setIcon(false); if (st.auto) goNext(); });
+    window.addEventListener("pagehide", function () { stopAll(); freeBlob(); });
+
+    // ---------- démarrage ----------
+    refreshCacheState(function () {
+      if (store && CFG.available.length && dl.state !== "full" && navigator.onLine && cur() === 0 && !lsGet(LATER)) askDownload(true);
+    });
+    st.idx = -1;
+    setInterval(function () { var i = cur(); if (i !== st.idx) onSlideChange(i); }, 250);   // suit la slide affichée
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+<!-- ECOLIA_AUDIO_PLAYER_END -->
+</body>
+</html>

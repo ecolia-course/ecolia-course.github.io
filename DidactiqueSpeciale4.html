@@ -1,0 +1,1454 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="orange">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>ECOLIA — Didactique Speciale4</title>
+<style>
+[data-theme="bleu"]   { --p1:#0d2b4f; --p2:#1565c0; --p3:#07172e; --p4:#12437a; --p5:#5b8fd0; --bg:#e8f0fb; --bg2:#cfdff5; --bd:#a9c3e8; --soft:#dde8f7; --btn:#2a67b0; }
+[data-theme="vert"]   { --p1:#14442e; --p2:#2e7d32; --p3:#0b2b1a; --p4:#1f5c3a; --p5:#4f9a6b; --bg:#e8f5ec; --bg2:#c8e6d2; --bd:#a5cdb2; --soft:#dcefe2; --btn:#2f7a4f; }
+[data-theme="violet"] { --p1:#2d1b4e; --p2:#6a1b9a; --p3:#1a0f2e; --p4:#4a148c; --p5:#9c6fd0; --bg:#f1e9fb; --bg2:#dccbf2; --bd:#c4a8e6; --soft:#e8ddf6; --btn:#7e3fb2; }
+[data-theme="rouge"]  { --p1:#4a1010; --p2:#b71c1c; --p3:#2b0a0a; --p4:#8e1b1b; --p5:#d9706a; --bg:#fbeaea; --bg2:#f3cdcb; --bd:#e8a9a5; --soft:#f8dede; --btn:#a62a2a; }
+[data-theme="orange"] { --p1:#4e2a0c; --p2:#ef6c00; --p3:#2e1604; --p4:#b34a00; --p5:#f0a15a; --bg:#fff1e0; --bg2:#fbdcb8; --bd:#f3c08a; --soft:#fdebd6; --btn:#c9650a; }
+[data-theme="teal"]   { --p1:#0b3a3a; --p2:#00796b; --p3:#062626; --p4:#00574b; --p5:#4db6ac; --bg:#e0f2f1; --bg2:#b2dfdb; --bd:#80cbc4; --soft:#d5ecea; --btn:#26897d; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:linear-gradient(160deg,var(--p1) 0%,var(--p2) 50%,var(--p3) 100%); display:flex; justify-content:center; align-items:center; padding:8px; }
+.container { width:100%; max-width:1400px; background:#fefdf8; border-radius:20px; overflow:hidden; display:flex; flex-direction:column; height:100%; max-height:100vh; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.progress-bar { height:4px; background:var(--bg2); flex-shrink:0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--p5),var(--p4)); width:0%; transition:width 0.3s; }
+.header { padding:10px 16px; background:var(--bg); border-bottom:1px solid var(--bd); display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+.header h1 { color:var(--p4); font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box { display:flex; background:white; border-radius:20px; padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.search-box input { border:none; padding:6px 10px; border-radius:20px; outline:none; width:130px; font-size:0.8rem; }
+.search-box button { background:none; border:none; cursor:pointer; padding:4px 8px; font-size:0.85rem; color:var(--p2); }
+.badge { background:var(--p5); color:white; padding:4px 10px; border-radius:20px; font-weight:bold; font-size:0.75rem; }
+.search-nav { display:none; gap:4px; background:var(--bg2); padding:2px 8px; border-radius:20px; align-items:center; font-size:0.75rem; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:0.9rem; color:var(--p4); padding:2px 4px; }
+.content { padding:28px 32px; flex:1; overflow-y:auto; background:#fff; scroll-behavior:smooth; line-height:1.85; }
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.slide-title { color:var(--p1); font-size:1.5rem; font-weight:700; padding-bottom:12px; margin-bottom:20px; border-bottom:2px solid var(--p5); }
+.slide-content { color:var(--p3); font-size:1rem; }
+.empty-state { display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-height:60vh; padding:40px 20px; gap:18px; }
+.empty-state .icon { width:72px; height:72px; border-radius:50%; background:var(--bg); border:2px solid var(--bd); display:flex; align-items:center; justify-content:center; color:var(--p2); font-size:2rem; font-weight:300; }
+.empty-state h2 { color:var(--p1); font-size:1.4rem; font-weight:700; margin:0; }
+.empty-state p { color:#666; font-size:0.95rem; max-width:520px; line-height:1.7; }
+.empty-state .tag { display:inline-block; padding:6px 14px; background:var(--bg); color:var(--p4); border:1px solid var(--bd); border-radius:20px; font-size:0.8rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; }
+.bloc { padding:18px 22px; border-radius:12px; margin:22px 0; line-height:1.85; }
+.bloc-label { font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; opacity:0.7; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:var(--bg); border-left:4px solid var(--p5); }
+.theorie .bloc-label { color:var(--p4); }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.sources { background:#f5f5f5; padding:12px 16px; border-radius:10px; margin-top:26px; font-size:0.82rem; color:#666; border-left:3px solid #999; line-height:1.6; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:var(--p1); }
+.quiz-container { padding:22px; background:var(--bg); border-radius:16px; }
+.quiz-question { background:white; border-radius:10px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.quiz-question p { font-weight:600; margin-bottom:10px; color:var(--p1); }
+.quiz-question label { display:block; padding:8px 10px; margin:4px 0; border-radius:6px; cursor:pointer; transition:background 0.2s; }
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit { background:var(--btn); color:white; border:none; padding:12px 24px; border-radius:30px; font-size:1rem; cursor:pointer; font-weight:600; margin-top:14px; }
+.quiz-result { margin-top:16px; font-weight:600; }
+.controls { padding:8px 16px; background:#fafafa; border-top:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0; }
+.nav-btn { background:white; color:var(--p4); border:1px solid #ccc; padding:8px 14px; border-radius:8px; font-size:0.82rem; cursor:pointer; font-weight:500; }
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:var(--soft); }
+.content::-webkit-scrollbar-thumb { background:var(--p5); border-radius:3px; }
+@media (max-width:600px) { body { padding:0; } .container { border-radius:0; max-height:100vh; } .content { padding:20px 18px; } .slide-title { font-size:1.25rem; } .search-box input { width:90px; } .header h1 { font-size:0.85rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="header">
+<h1 id="pageTitle">ECOLIA</h1>
+<div class="header-right">
+<div class="search-box">
+<input id="searchInput" placeholder="Rechercher" type="text"/>
+<button id="searchBtn">⌕</button>
+</div>
+<div class="search-nav" id="searchNav">
+<button id="prevResultBtn">‹</button>
+<span id="resultCounter">0/0</span>
+<button id="nextResultBtn">›</button>
+</div>
+<span class="badge" id="slideCounter">0/0</span>
+</div>
+</div>
+<div class="content" id="content"></div>
+<div class="controls">
+<button class="nav-btn" id="prevBtn">← Précédent</button>
+<span class="counter" id="counter">—</span>
+<button class="nav-btn" id="nextBtn">Suivant →</button>
+</div>
+</div>
+<script>
+const COURSE_TITLE = "Didactique Spéciale (Didactique des Disciplines)";
+const slides = [
+{
+    title: "Sommaire — Didactique Spéciale",
+    content: `
+        <div class="bloc resume">
+            <div class="bloc-label">Présentation du cours</div>
+            <h3>Didactique Spéciale — 4e Humanité (6e HP)</h3>
+            <p><strong>Niveau :</strong> 4e Humanité / Terminale, section Pédagogique (toutes options).</p>
+            <p><strong>Objectif général :</strong> Rendre l'élève-maître capable de concevoir, mettre en œuvre et évaluer des situations d'enseignement-apprentissage disciplinaires, en mobilisant les principes de la didactique et en les adaptant au contexte congolais.</p>
+        </div>
+        <div class="bloc theorie">
+            <div class="bloc-label">Objectifs spécifiques</div>
+            <ol>
+                <li>Distinguer didactique générale et didactique des disciplines.</li>
+                <li>Appliquer la démarche de transposition didactique à un contenu du programme national.</li>
+                <li>Analyser un programme et un manuel scolaire.</li>
+                <li>Concevoir une fiche de préparation (PPO/APC) pour une leçon.</li>
+                <li>Sélectionner des méthodes et des supports pertinents selon la discipline.</li>
+                <li>Construire des outils d'évaluation adaptés.</li>
+            </ol>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Organisation des chapitres</div>
+            <ul>
+                <li><strong>Chapitre I :</strong> Introduction à la didactique des disciplines.</li>
+                <li><strong>Chapitre II :</strong> La transposition didactique.</li>
+                <li><strong>Chapitre III :</strong> La situation d'enseignement-apprentissage.</li>
+                <li><strong>Chapitre IV :</strong> La conception d'une leçon.</li>
+                <li><strong>Chapitre V :</strong> Les méthodes et supports didactiques.</li>
+                <li><strong>Chapitre VI :</strong> L'évaluation des apprentissages.</li>
+                <li><strong>Chapitre VII :</strong> Didactique et contexte congolais.</li>
+            </ul>
+            <p><strong>Prérequis :</strong> Pédagogie Générale ; Psychologie de l'Enfant ; maîtrise des contenus disciplinaires du primaire.</p>
+        </div>
+        <div class="sources">
+            <p><strong>Sources :</strong> Manuel officiel « Didactique de Discipline » 2ème Année Pédagogie Générale (édition 2025) ; Fiches pédagogiques officielles « Didactique Spéciale : Chimie » (édition 2025) ; Programme National des Humanités Pédagogiques Rénovées.</p>
+        </div>
+    `
+},
+{
+    title: "Leçon 1 — Didactique, pédagogie et sciences de l'éducation",
+    content: `
+        <div class="bloc cas">
+            <div class="bloc-label">Situation de départ</div>
+            <p>Un enseignant connaît bien sa matière et sait gérer une classe. Mais ses élèves ne comprennent pas les fractions. Est-ce un problème de pédagogie ou de didactique ?</p>
+        </div>
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Définitions</h3>
+            <ul>
+                <li><strong>Pédagogie :</strong> réflexion sur les relations enseignant-élève, la gestion de la classe et les méthodes d'éducation.</li>
+                <li><strong>Didactique :</strong> étude des conditions et des processus de transmission et d'appropriation des savoirs dans une discipline donnée.</li>
+                <li><strong>Sciences de l'éducation :</strong> ensemble des recherches sur l'éducation (pédagogie, didactique, psychologie, sociologie, philosophie).</li>
+            </ul>
+            <h3>Didactique générale et didactique des disciplines</h3>
+            <ul>
+                <li><strong>Didactique générale :</strong> principes communs à tout enseignement (transposition, situation, évaluation).</li>
+                <li><strong>Didactique des disciplines :</strong> spécificités de chaque matière (méthodes propres aux mathématiques, au français, aux sciences, etc.).</li>
+            </ul>
+            <p><strong>Exemple :</strong> enseigner les fractions ne mobilise pas les mêmes démarches qu'enseigner la lecture.</p>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Un enseignant qui connaît ses fractions et gère bien sa classe mais ne sait pas comment les rendre accessibles aux élèves a un problème didactique : il lui faut apprendre à transposer le savoir, à choisir des situations, des supports, des exemples adaptés.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Pédagogie et didactique sont complémentaires mais distinctes.</li>
+                <li>Chaque discipline a sa propre logique d'enseignement.</li>
+                <li>Erreur fréquente : croire qu'une bonne méthode générale suffit pour toutes les disciplines.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 2 — La transposition didactique",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Définition</h3>
+            <p>La transposition didactique est le processus par lequel un <strong>savoir savant</strong> (ou un savoir de référence) est transformé en <strong>savoir scolaire enseignable</strong>, adapté au niveau des élèves et aux contraintes du programme.</p>
+            <h3>Les étapes</h3>
+            <ol>
+                <li><strong>Identifier le savoir à enseigner</strong> dans le programme.</li>
+                <li><strong>Analyser sa structure</strong> et ses concepts clés.</li>
+                <li><strong>Le simplifier et le reformuler</strong> en fonction des prérequis des élèves.</li>
+                <li><strong>Concevoir des situations et des supports</strong> pour le rendre accessible.</li>
+                <li><strong>Prévoir les obstacles</strong> et les erreurs fréquentes.</li>
+            </ol>
+            <figure>
+                <img data-image-id="didactique4_img01" alt="Schéma du processus de transposition didactique">
+                <figcaption>La chaîne de la transposition didactique : du savoir savant au savoir appris.</figcaption>
+            </figure>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple corrigé</div>
+            <p><strong>Savoir savant :</strong> le cycle de l'eau (évaporation, condensation, précipitation, infiltration).</p>
+            <p><strong>Transposition pour des élèves de 4e primaire :</strong></p>
+            <ul>
+                <li>Expérience concrète : eau chauffée dans une casserole, condensation sur un couvercle froid.</li>
+                <li>Schéma simple avec des flèches.</li>
+                <li>Récit (« l'eau voyage »).</li>
+                <li>Vocabulaire adapté : évaporation, nuage, pluie.</li>
+            </ul>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>La transposition est au cœur de l'acte d'enseigner.</li>
+                <li>Elle ne consiste pas à appauvrir le savoir, mais à le rendre accessible.</li>
+                <li>Erreur fréquente : recopier tel quel un contenu savant, ou au contraire l'appauvrir à l'excès.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 3 — Analyser le programme national",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Rôle du programme</h3>
+            <p>Le programme national est la <strong>boussole</strong> de l'enseignant. Il fixe les compétences, les contenus et les orientations méthodologiques.</p>
+            <h3>Comment l'analyser</h3>
+            <ul>
+                <li>Repérer les compétences visées.</li>
+                <li>Identifier les contenus essentiels et les notions clés.</li>
+                <li>Noter les orientations méthodologiques (approche par compétences, méthodes actives).</li>
+                <li>Repérer les liens avec les classes précédentes et suivantes.</li>
+                <li>Prévoir la progression annuelle et périodique.</li>
+            </ul>
+            <h3>Exemple</h3>
+            <p>Dans le programme de français du primaire, la compétence « lire et comprendre un texte court » se transpose en activités concrètes : lecture silencieuse, questions de compréhension, reformulation.</p>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exercice guidé</div>
+            <p>Analyser la compétence « résoudre des problèmes de proportionnalité » (mathématiques, 5e primaire).</p>
+            <ul>
+                <li>Savoirs : notion de proportion, règle de trois.</li>
+                <li>Savoir-faire : identifier une situation de proportionnalité, poser le calcul, interpréter le résultat.</li>
+                <li>Savoir-être : rigueur, vérification.</li>
+                <li>Situations : achats au marché, recettes de cuisine, partages.</li>
+            </ul>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Le programme est le cadre de référence.</li>
+                <li>Il doit être lu, analysé, adapté au contexte.</li>
+                <li>Erreur fréquente : ignorer le programme ou le suivre mécaniquement.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 4 — Analyser un manuel scolaire",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Le manuel, un outil, pas un programme</h3>
+            <p>Le manuel est un support pédagogique conçu pour aider l'enseignant et l'élève. Il ne remplace pas le programme : il le met en œuvre.</p>
+            <h3>Comment l'analyser</h3>
+            <ul>
+                <li>Vérifier la conformité au programme.</li>
+                <li>Identifier la structure (chapitres, leçons, exercices).</li>
+                <li>Évaluer la clarté des explications.</li>
+                <li>Vérifier l'adéquation au niveau des élèves.</li>
+                <li>Repérer les activités et les supports proposés.</li>
+                <li>Identifier les limites ou les manques.</li>
+            </ul>
+            <h3>Adapter le manuel</h3>
+            <ul>
+                <li>Sélectionner les activités pertinentes.</li>
+                <li>Adapter au contexte local (exemples, ressources).</li>
+                <li>Compléter si nécessaire.</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Un manuel de sciences propose une expérience avec du matériel de laboratoire coûteux. L'enseignant adapte en utilisant du matériel local (bouteilles, eau, vinaigre, bicarbonate) pour une expérience équivalente.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Le manuel est un outil au service de l'enseignant.</li>
+                <li>Il doit être adapté au contexte.</li>
+                <li>Erreur fréquente : suivre le manuel sans réfléchir.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 5 — La situation d'enseignement-apprentissage",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Les composantes d'une situation</h3>
+            <ul>
+                <li><strong>L'objet :</strong> le savoir à apprendre.</li>
+                <li><strong>La tâche :</strong> ce que l'élève doit faire.</li>
+                <li><strong>Le dispositif :</strong> les conditions matérielles et sociales.</li>
+                <li><strong>Le contrat didactique :</strong> les attentes réciproques entre enseignant et élèves.</li>
+            </ul>
+            <h3>La situation-problème</h3>
+            <p>Une tâche complexe, contextualisée, qui oblige l'élève à mobiliser des ressources pour construire une solution. Elle est au cœur de l'APC.</p>
+            <h3>Exemple (cas pédagogique fictif)</h3>
+            <p>« Les élèves de 4e primaire doivent organiser une collecte de déchets dans la cour de l'école et proposer un plan de tri. Ils mobilisent des savoirs en sciences (classification des déchets), en mathématiques (comptage, pourcentages) et en éducation civique (responsabilité environnementale). »</p>
+            <h3>Rôle de l'enseignant</h3>
+            <ul>
+                <li>Concevoir la situation.</li>
+                <li>Étayer (scaffolding).</li>
+                <li>Observer, réguler.</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Pour enseigner la notion de « besoin » en éducation civique, l'enseignant propose : « La coopérative de l'école dispose d'une petite somme d'argent. Comment la répartir entre craies, savon et plants pour le jardin ? » Les élèves doivent analyser, justifier, décider.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Une situation structurée favorise l'apprentissage.</li>
+                <li>La situation-problème est au cœur de l'APC.</li>
+                <li>Erreur fréquente : proposer des tâches trop simples ou trop complexes, sans étayage.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 6 — Concevoir une leçon : objectifs PPO et APC",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Objectifs en PPO</h3>
+            <p>Objectif opérationnel = verbe d'action + condition + critère de réussite.</p>
+            <p><strong>Exemple :</strong> « À la fin de la leçon, l'élève sera capable de lire à haute voix un texte de 5 lignes en respectant la ponctuation, sans erreur de prononciation. »</p>
+            <h3>Objectifs en APC</h3>
+            <p>Formulation en termes de compétences : savoirs, savoir-faire, savoir-être mobilisés dans une situation.</p>
+            <p><strong>Exemple :</strong> « L'élève sera capable de résoudre un problème de proportionnalité lié à un achat, en justifiant sa démarche. »</p>
+            <h3>Différences</h3>
+            <table>
+                <thead><tr><th>Critère</th><th>PPO</th><th>APC</th></tr></thead>
+                <tbody>
+                    <tr><td>Centration</td><td>Objectifs</td><td>Compétences</td></tr>
+                    <tr><td>Situation</td><td>Exercices scolaires</td><td>Situations-problèmes</td></tr>
+                    <tr><td>Évaluation</td><td>Restitution</td><td>Mobilisation en situation</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exercice guidé</div>
+            <p>Rédiger un objectif opérationnel pour une leçon de français au primaire.</p>
+            <p><strong>Corrigé :</strong> « À la fin de la leçon, l'élève sera capable de rédiger trois phrases correctes décrivant une image, sans erreur d'accord. »</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Les objectifs structurent la leçon.</li>
+                <li>Ils doivent être clairs et évaluables.</li>
+                <li>Erreur fréquente : formuler des objectifs vagues (« comprendre… »).</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 7 — La fiche de préparation",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Les rubriques</h3>
+            <ol>
+                <li><strong>Identification :</strong> classe, discipline, thème, date, durée.</li>
+                <li><strong>Objectifs :</strong> PPO ou APC.</li>
+                <li><strong>Prérequis :</strong> ce que l'élève doit déjà savoir.</li>
+                <li><strong>Matériel :</strong> nécessaire à la leçon.</li>
+                <li><strong>Déroulement :</strong> introduction, développement, conclusion.</li>
+                <li><strong>Évaluation :</strong> comment vérifier les acquis.</li>
+                <li><strong>Observations :</strong> remarques après la leçon.</li>
+            </ol>
+            <figure>
+                <img data-image-id="didactique4_img02" alt="Modèle de fiche de préparation de leçon">
+                <figcaption>Les rubriques d'une fiche de préparation : un outil structurant pour l'enseignant.</figcaption>
+            </figure>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple guidé</div>
+            <p>Fiche de préparation pour une leçon de mathématiques (4e primaire) sur les fractions :</p>
+            <ul>
+                <li><strong>Objectif :</strong> reconnaître et représenter une fraction simple.</li>
+                <li><strong>Prérequis :</strong> partage en parts égales.</li>
+                <li><strong>Matériel :</strong> objets concrets (galettes, papiers), dessins.</li>
+                <li><strong>Déroulement :</strong> manipulation de parts de galette, représentation symbolique, exercices.</li>
+                <li><strong>Évaluation :</strong> demander à l'élève de représenter une fraction donnée.</li>
+            </ul>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>La fiche de préparation guide la leçon.</li>
+                <li>Elle doit être claire et réaliste.</li>
+                <li>Erreur fréquente : rédiger un déroulement vague (« expliquer la leçon »).</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 8 — Le déroulement d'une leçon",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Le déroulement type (APC)</h3>
+            <ol>
+                <li><strong>Mise en situation :</strong> présenter une situation-problème, susciter la curiosité.</li>
+                <li><strong>Recherche :</strong> les élèves explorent, manipulent, échangent.</li>
+                <li><strong>Institutionnalisation :</strong> l'enseignant formalise le savoir.</li>
+                <li><strong>Réinvestissement :</strong> exercices d'application.</li>
+                <li><strong>Évaluation :</strong> vérification des acquis.</li>
+            </ol>
+            <h3>Le déroulement type (PPO)</h3>
+            <ol>
+                <li><strong>Rappel des prérequis.</strong></li>
+                <li><strong>Présentation de l'objectif.</strong></li>
+                <li><strong>Activités d'apprentissage.</strong></li>
+                <li><strong>Institutionnalisation.</strong></li>
+                <li><strong>Exercices d'application.</strong></li>
+                <li><strong>Évaluation.</strong></li>
+            </ol>
+            <h3>Prévoir les réponses des élèves</h3>
+            <p>L'enseignant anticipe les erreurs possibles, les questions, les blocages. Il prépare des relances.</p>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Pour une leçon sur les fractions, l'enseignant prévoit que certains élèves confondront numérateur et dénominateur. Il a préparé un exemple concret (1/2 de galette = 1 part sur 2) pour corriger cette confusion.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Le déroulement structure l'activité.</li>
+                <li>Anticiper les réponses améliore l'efficacité.</li>
+                <li>Erreur fréquente : improviser sans prévoir les obstacles.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 9 — Les méthodes actives",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Définition</h3>
+            <p>Les méthodes actives rendent l'élève acteur de son apprentissage : il participe, manipule, explore, coopère, produit.</p>
+            <h3>Exemples</h3>
+            <ul>
+                <li><strong>Travail de groupe :</strong> coopération sur une tâche commune.</li>
+                <li><strong>Étude de cas :</strong> analyse d'une situation concrète.</li>
+                <li><strong>Jeu de rôle :</strong> simulation d'une situation.</li>
+                <li><strong>Résolution de problèmes :</strong> recherche active de solutions.</li>
+                <li><strong>Pédagogie de projet :</strong> réalisation concrète (exposition, jardin, spectacle).</li>
+                <li><strong>Classe inversée :</strong> l'élève prépare la leçon à la maison.</li>
+            </ul>
+            <h3>Rôle de l'enseignant</h3>
+            <ul>
+                <li>Concevoir des situations d'apprentissage.</li>
+                <li>Guider, observer, réguler.</li>
+                <li>Encourager la coopération.</li>
+                <li>Adapter les méthodes au contexte.</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Une leçon sur les circuits électriques : les élèves manipulent des piles, des fils, des ampoules en petits groupes. Ils observent, testent, verbalisent. C'est plus efficace qu'un cours magistral sur le même sujet.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Les méthodes actives impliquent l'élève.</li>
+                <li>Elles sont plus efficaces que le seul cours magistral.</li>
+                <li>Erreur fréquente : les ignorer par manque de temps ou de matériel.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 10 — Les supports didactiques",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Types de supports</h3>
+            <ul>
+                <li>Tableau noir, craies.</li>
+                <li>Manuels scolaires.</li>
+                <li>Objets réels, matériel de manipulation.</li>
+                <li>Images, schémas, cartes.</li>
+                <li>Matériel de récupération.</li>
+                <li>Ressources numériques (si disponibles).</li>
+            </ul>
+            <h3>Adaptation au contexte congolais</h3>
+            <p>Face à la pénurie de matériel, l'enseignant doit concevoir des expériences à faible coût :</p>
+            <ul>
+                <li>Indicateur à base de jus de chou rouge.</li>
+                <li>Modèles moléculaires avec des fruits ou de l'argile.</li>
+                <li>Boussoles avec une aiguille et un aimant.</li>
+                <li>Volcans avec du bicarbonate et du vinaigre.</li>
+            </ul>
+            <figure>
+                <img data-image-id="didactique4_img03" alt="Matériel didactique de récupération">
+                <figcaption>Faire de la pénurie une ressource pédagogique : des supports simples et efficaces.</figcaption>
+            </figure>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Pour une leçon sur les états de l'eau, l'enseignant utilise une casserole, de l'eau, un couvercle et un réfrigérateur (ou de la glace). Il montre l'évaporation, la condensation, la solidification. Matériel simple, expérience concrète.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Les supports facilitent l'apprentissage.</li>
+                <li>Le matériel de récupération est une ressource précieuse.</li>
+                <li>Erreur fréquente : renoncer à une activité par manque de matériel.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 11 — L'évaluation des apprentissages",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Les types d'évaluation</h3>
+            <ul>
+                <li><strong>Diagnostique :</strong> avant l'apprentissage, pour repérer les prérequis.</li>
+                <li><strong>Formative :</strong> pendant l'apprentissage, pour réguler et aider.</li>
+                <li><strong>Sommative :</strong> en fin de séquence, pour certifier les acquis.</li>
+            </ul>
+            <h3>Les outils</h3>
+            <ul>
+                <li>Grilles d'observation.</li>
+                <li>Grilles de critères.</li>
+                <li>Exercices corrigés.</li>
+                <li>Épreuves.</li>
+            </ul>
+            <h3>Construction d'une grille</h3>
+            <ol>
+                <li>Définir les critères (pertinence, exactitude, structuration).</li>
+                <li>Préciser les indicateurs.</li>
+                <li>Définir les niveaux de maîtrise.</li>
+            </ol>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple guidé</div>
+            <p>Pour une production écrite, grille avec critères :</p>
+            <ul>
+                <li>Respect du sujet (pertinence).</li>
+                <li>Organisation du texte (structure).</li>
+                <li>Correction de la langue (orthographe, grammaire).</li>
+                <li>Richesse du vocabulaire.</li>
+            </ul>
+            <p>Chaque critère est évalué : très bien / bien / à améliorer.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>L'évaluation sert à aider, pas seulement à classer.</li>
+                <li>Les critères doivent être explicites.</li>
+                <li>Erreur fréquente : évaluer uniquement la mémorisation.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 12 — Didactique et classes pléthoriques",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Les défis</h3>
+            <ul>
+                <li>Effectifs de 50 à 100 élèves.</li>
+                <li>Hétérogénéité des niveaux.</li>
+                <li>Manque de matériel.</li>
+                <li>Bruit et gestion difficile.</li>
+            </ul>
+            <h3>Stratégies didactiques</h3>
+            <ul>
+                <li>Travail en sous-groupes.</li>
+                <li>Rôles tournants (capitaine, secrétaire, rapporteur).</li>
+                <li>Consignes écrites affichées.</li>
+                <li>Fiches d'activités différenciées.</li>
+                <li>Matériel collectif centralisé.</li>
+                <li>Ateliers tournants.</li>
+            </ul>
+            <h3>Adapter les supports</h3>
+            <ul>
+                <li>Utiliser le tableau avec efficacité (plan, schéma).</li>
+                <li>Fiches individuelles (mais coût du papier).</li>
+                <li>Ardoises ou cahiers de brouillon.</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Dans une classe de 80 élèves à Kinshasa, l'enseignant organise quatre ateliers tournants : lecture guidée, exercices écrits, jeu éducatif, projet. Chaque groupe passe 15 minutes à chaque atelier. Tous sont actifs, l'enseignant peut aider ceux qui en ont besoin.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Les classes pléthoriques exigent une organisation rigoureuse.</li>
+                <li>Ateliers et sous-groupes sont efficaces.</li>
+                <li>Erreur fréquente : recourir au cours magistral exclusif.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 13 — Didactique et ressources limitées",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Le matériel de récupération</h3>
+            <p>Face au manque de matériel, l'enseignant conçoit ses supports à partir de ressources locales :</p>
+            <ul>
+                <li>Bouteilles plastiques (volumes, densités, filtres).</li>
+                <li>Bouchons (jetons, marqueurs).</li>
+                <li>Graines (comptage, maracas).</li>
+                <li>Bois, argile (modèles, maquettes).</li>
+                <li>Papier journal (fabrication de papier recyclé).</li>
+                <li>Objets naturels (feuilles, cailloux, sable).</li>
+            </ul>
+            <h3>Exploiter l'environnement</h3>
+            <ul>
+                <li>Sorties dans le quartier, au marché, au jardin.</li>
+                <li>Observation de la nature.</li>
+                <li>Enquêtes auprès des habitants.</li>
+            </ul>
+            <h3>Créativité pédagogique</h3>
+            <p>L'enseignant transforme la contrainte en opportunité : chaque objet peut devenir un support d'apprentissage.</p>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Pour une leçon sur les fractions, l'enseignant découpe des galettes en parts égales avec des feuilles de papier ou des couvercles. Les élèves manipulent, comparent, comprennent. Aucun matériel coûteux n'est nécessaire.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Les ressources locales sont des supports pédagogiques.</li>
+                <li>L'enseignant doit être créatif.</li>
+                <li>Erreur fréquente : croire que l'apprentissage exige du matériel coûteux.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 14 — Didactique et éducation inclusive",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Définition</h3>
+            <p>L'éducation inclusive vise à scolariser tous les enfants, y compris ceux à besoins spécifiques (handicap, troubles d'apprentissage, différences culturelles), dans l'école ordinaire, avec les adaptations nécessaires.</p>
+            <h3>Adaptations possibles</h3>
+            <ul>
+                <li><strong>Déficience visuelle :</strong> place devant, éclairage, supports agrandis, lecture à voix haute.</li>
+                <li><strong>Déficience auditive :</strong> place devant, langage clair, langue des signes si possible, supports visuels.</li>
+                <li><strong>Dyslexie :</strong> consignes courtes, temps supplémentaire, police claire.</li>
+                <li><strong>TDAH :</strong> consignes courtes, séances courtes, valorisation, mouvements autorisés.</li>
+                <li><strong>Handicap moteur :</strong> accessibilité, adaptation du matériel, positionnement.</li>
+            </ul>
+            <h3>Principes</h3>
+            <ul>
+                <li>Objectifs communs, chemins variés.</li>
+                <li>Collaboration avec les familles et les spécialistes.</li>
+                <li>Climat de classe inclusif (respect, coopération).</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Un élève malvoyant peut réussir en classe si l'enseignant lui imprime des supports agrandis et l'installe au premier rang. Ce sont des adaptations simples mais essentielles.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>L'inclusion est un droit et une nécessité.</li>
+                <li>Des adaptations simples peuvent transformer la scolarité d'un élève.</li>
+                <li>Erreur fréquente : exclure un élève par manque d'adaptation.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 15 — Synthèse : de la théorie à la salle de classe",
+    content: `
+        <div class="bloc resume">
+            <div class="bloc-label">Synthèse générale</div>
+            <h3>Les grands enseignements</h3>
+            <ul>
+                <li>La didactique étudie les conditions de transmission des savoirs disciplinaires.</li>
+                <li>La transposition didactique transforme le savoir savant en savoir enseignable.</li>
+                <li>Une situation d'apprentissage a plusieurs composantes (objet, tâche, dispositif, contrat).</li>
+                <li>Les objectifs (PPO, APC) structurent la leçon.</li>
+                <li>Les méthodes actives et les supports adaptés favorisent l'apprentissage.</li>
+                <li>L'évaluation formative guide la progression.</li>
+                <li>Les classes pléthoriques, les ressources limitées et la diversité exigent une adaptation constante.</li>
+            </ul>
+        </div>
+        <div class="bloc theorie">
+            <div class="bloc-label">Le rôle de l'enseignant</div>
+            <ul>
+                <li>Concevoir des situations d'apprentissage signifiantes.</li>
+                <li>Adapter au contexte local.</li>
+                <li>Différencier selon les élèves.</li>
+                <li>Évaluer pour aider.</li>
+                <li>Se former en continu.</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Pour aller plus loin</div>
+            <p>Observer des enseignants expérimentés, analyser leurs pratiques, tester de nouvelles situations, échanger avec des collègues. La didactique s'apprend autant par la théorie que par la pratique réflexive.</p>
+        </div>
+    `
+},
+{
+    title: "Évaluation finale — Didactique Spéciale",
+    content: `
+        <div class="bloc resume">
+            <div class="bloc-label">Évaluation finale</div>
+            <p>20 questions à choix multiple. Une seule réponse est correcte par question. Choisis la réponse qui te semble juste, puis valide.</p>
+        </div>
+        <div class="quiz-container">
+            <div id="quizQuestions"></div>
+            <button id="submitQuiz" class="quiz-btn-submit">Valider mes réponses</button>
+            <div id="quizResult" class="quiz-result"></div>
+        </div>
+    `
+}
+];
+const questions = [
+    { text: "La didactique étudie :", options: ["Les relations enseignant-élève", "La transmission et l'appropriation des savoirs disciplinaires", "L'administration scolaire", "La psychologie de l'enfant"], correct: 1 },
+    { text: "La transposition didactique transforme :", options: ["Le savoir savant en savoir enseignable", "L'élève en enseignant", "Le programme en manuel", "La classe en laboratoire"], correct: 0 },
+    { text: "Le programme national est :", options: ["Un simple manuel", "La référence officielle des contenus et compétences", "Un document facultatif", "Un recueil d'exercices"], correct: 1 },
+    { text: "Une situation-problème est :", options: ["Une tâche complexe et contextualisée", "Un exercice mécanique", "Une évaluation sommative", "Un cours magistral"], correct: 0 },
+    { text: "Le contrat didactique désigne :", options: ["Les attentes réciproques entre enseignant et élèves", "Le règlement de l'école", "Le salaire de l'enseignant", "Le planning des cours"], correct: 0 },
+    { text: "En PPO, un objectif opérationnel contient :", options: ["Un verbe d'action, une condition, un critère", "Uniquement un verbe", "Une note", "Un résumé"], correct: 0 },
+    { text: "La fiche de préparation comprend :", options: ["Uniquement le titre", "Objectifs, prérequis, matériel, déroulement, évaluation", "La liste des élèves", "Le résumé du cours précédent"], correct: 1 },
+    { text: "L'évaluation formative vise à :", options: ["Noter les élèves", "Aider l'élève à progresser", "Classer les élèves", "Sanctionner"], correct: 1 },
+    { text: "Les méthodes actives :", options: ["Rendent l'élève acteur de son apprentissage", "Maintiennent l'élève passif", "Suppriment l'enseignant", "Évitent les exercices"], correct: 0 },
+    { text: "Face à la pénurie de matériel, l'enseignant peut :", options: ["Renoncer aux expériences", "Utiliser du matériel de récupération", "Attendre des subventions", "Se limiter au cours magistral"], correct: 1 },
+    { text: "Une grille d'évaluation contient :", options: ["Des critères et des indicateurs", "Uniquement une note", "Le nom des élèves", "Le programme complet"], correct: 0 },
+    { text: "L'APC exige de partir :", options: ["De situations concrètes", "De théories abstraites", "De la mémorisation", "De l'évaluation finale"], correct: 0 },
+    { text: "La didactique des disciplines est :", options: ["Identique à la pédagogie", "Spécifique à chaque matière", "Réservée aux mathématiques", "Inutile au primaire"], correct: 1 },
+    { text: "Un obstacle épistémologique est :", options: ["Une difficulté liée à la nature même du savoir", "Un manque de matériel", "Un élève indiscipliné", "Un programme trop long"], correct: 0 },
+    { text: "Le rôle de l'enseignant dans une situation-problème est de :", options: ["Donner la solution", "Étayer et guider", "Laisser les élèves seuls", "Évaluer sans aide"], correct: 1 },
+    { text: "Une classe pléthorique est une classe :", options: ["Avec peu d'élèves", "Avec un effectif très élevé", "Sans enseignant", "Avec des élèves surdoués"], correct: 1 },
+    { text: "L'évaluation diagnostique se fait :", options: ["Avant l'apprentissage", "Pendant", "Après", "Jamais"], correct: 0 },
+    { text: "Les supports didactiques doivent être :", options: ["Adaptés à la discipline et au contexte", "Identiques pour toutes les disciplines", "Uniquement des manuels", "Coûteux"], correct: 0 },
+    { text: "L'éducation inclusive vise à :", options: ["Séparer les élèves handicapés", "Scolariser tous les enfants avec les adaptations nécessaires", "Réserver l'école aux meilleurs", "Ignorer les différences"], correct: 1 },
+    { text: "L'objectif principal de la didactique spéciale est de :", options: ["Apprendre des théories", "Concevoir et mettre en œuvre des situations d'enseignement-apprentissage adaptées", "Remplacer la pédagogie générale", "Étudier l'histoire de l'éducation"], correct: 1 }
+];
+
+try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+        questions.forEach(function (q) {
+            if (!q.text) q.text = q.question || q.q || q.enonce || q.titre || "";
+            if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+            if (typeof q.correct === "undefined") {
+                if (typeof q.answer !== "undefined") q.correct = q.answer;
+                else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+            }
+        });
+    }
+} catch (e) {}
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+const pageTitle = document.getElementById('pageTitle');
+pageTitle.textContent = "ECOLIA · " + COURSE_TITLE;
+document.title = "ECOLIA — " + COURSE_TITLE;
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim() || slides.length === 0) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp("(" + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ")", 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderEmptyState() {
+    contentDiv.innerHTML = '<div class="empty-state"><div class="icon">·</div><span class="tag">Bientôt disponible</span><h2>' + COURSE_TITLE + '</h2><p>Ce cours est en préparation. Le contenu sera ajouté prochainement.</p></div>';
+    slideCounterSpan.textContent = '0/0';
+    progressFill.style.width = '0%';
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    counterSpan.textContent = '—';
+}
+
+function renderQuiz() {
+    const qc = document.getElementById('quizQuestions');
+    if (!qc) return;
+    if (typeof questions === 'undefined' || questions.length === 0) {
+        qc.innerHTML = '<p style="color:#666;font-style:italic;">Quiz bientot disponible.</p>';
+        return;
+    }
+    let html = '';
+    questions.forEach((q, i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o, k) => {
+            html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>';
+        });
+        html += '</div>';
+    });
+    qc.innerHTML = html;
+    const submitBtn = document.getElementById('submitQuiz');
+    if (submitBtn) {
+        submitBtn.onclick = () => {
+            let score = 0;
+            questions.forEach((q, i) => {
+                const s = document.querySelector('input[name="q' + i + '"]:checked');
+                if (s && parseInt(s.value) === q.correct) score++;
+            });
+            const pct = Math.round(score/questions.length*100);
+            document.getElementById('quizResult').innerHTML =
+                '<div style="background:var(--bg2);padding:16px;border-radius:10px;margin-top:14px;">' +
+                '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong></div>';
+        };
+    }
+}
+
+function renderSlide(index, keepHighlight) {
+    if (keepHighlight === undefined) keepHighlight = true;
+    if (slides.length === 0) { renderEmptyState(); return; }
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    if (index === slides.length - 1) renderQuiz();
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    if (slides.length === 0) return;
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (slides.length && currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (slides.length && currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+<!-- ECOLIA_IMAGE_LOADER_START -->
+<script>
+(function () {
+  var SITE = "https://ecolia-course.github.io/";
+  var NATIVE = false;
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function abs(u) { return /^(https?:|data:|blob:)/i.test(u) ? u : (NATIVE ? SITE + u.replace(/^(\.\/|\/)+/, "") : u); }
+  function ext(u) { var m = String(u).split("?")[0].match(/\.(jpe?g|png|gif|webp|svg)$/i); return m ? m[1].toLowerCase() : "jpg"; }
+  function hide(img) { img.onerror = null; img.style.display = "none"; }
+  var table = null, queue = [], queued = {}, running = false;
+  function enqueue(full, fn) {
+    if (queued[fn]) return;
+    queued[fn] = 1; queue.push([full, fn]);
+    if (!running) { running = true; setTimeout(next, 2500); }
+  }
+  function next() {
+    if (!queue.length) { running = false; return; }
+    if (!navigator.onLine) { running = false; return; }
+    var q = queue.shift(), t0 = Date.now();
+    try { CoursInterface.download(q[0], q[1]); } catch (e) { return setTimeout(next, 500); }
+    (function wait() {
+      var ok = false;
+      try { ok = !!CoursInterface.exists(q[1]); } catch (e) {}
+      if (ok) setTimeout(next, 1500);
+      else if (Date.now() - t0 > 40000) next();
+      else setTimeout(wait, 700);
+    })();
+  }
+  function exists(fn) { try { return !!CoursInterface.exists(fn); } catch (e) { return false; } }
+  function show(img) {
+    if (!table || img.getAttribute("data-ecolia-done")) return;
+    var id = img.getAttribute("data-image-id");
+    var url = table[id];
+    if (typeof url !== "string" || !url.length) { console.warn("ECOLIA : image absente du JSON :", id); return; }
+    img.setAttribute("data-ecolia-done", "1");
+    if (!NATIVE) { img.onerror = function () { hide(img); }; img.setAttribute("src", url); return; }
+    var full = abs(url), fn = "img_" + id + "." + ext(url);
+    if (exists(fn)) {
+      img.onerror = function () {
+        try { CoursInterface["delete"](fn); } catch (e) {}
+        queued[fn] = 0;
+        img.onerror = function () { hide(img); };
+        img.setAttribute("src", full);
+      };
+      img.setAttribute("src", "https://app.local/cours/" + fn);
+    } else {
+      img.onerror = function () { hide(img); };
+      img.setAttribute("src", full);
+      enqueue(full, fn);
+    }
+  }
+  function scan(root) {
+    if (!root || !root.querySelectorAll) return;
+    if (root.matches && root.matches("img[data-image-id]")) show(root);
+    root.querySelectorAll("img[data-image-id]").forEach(show);
+  }
+  function prefetchAll() {
+    var ids = {};
+    try { JSON.stringify(slides).replace(/data-image-id=\\?"([^"\\]+)/g, function (m, id) { ids[id] = 1; }); } catch (e) {}
+    Object.keys(ids).forEach(function (id) {
+      var url = table[id];
+      if (typeof url !== "string" || !url.length) return;
+      var fn = "img_" + id + "." + ext(url);
+      if (!exists(fn)) enqueue(abs(url), fn);
+    });
+  }
+  function start(tbl) {
+    table = tbl;
+    scan(document.body);
+    new MutationObserver(function (muts) {
+      muts.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.nodeType === 1) scan(n); }); });
+    }).observe(document.body, { childList: true, subtree: true });
+    if (NATIVE) prefetchAll();
+  }
+  var JSON_URL = NATIVE ? SITE + "images_ecolia.json" : "images_ecolia.json";
+  var KEY = "ecolia_images_json";
+  fetch(JSON_URL, NATIVE ? { cache: "no-cache" } : undefined)
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (table) { if (NATIVE) lsSet(KEY, JSON.stringify(table)); start(table); })
+    .catch(function (e) {
+      var saved = null;
+      if (NATIVE) { try { saved = JSON.parse(lsGet(KEY) || "null"); } catch (x) {} }
+      if (saved) start(saved);
+      else console.warn("ECOLIA : JSON des images indisponible.", e);
+    });
+})();
+</script>
+<!-- ECOLIA_IMAGE_LOADER_END -->
+
+
+
+<!-- ECOLIA_AUDIO_PLAYER_START -->
+<style>
+  #ecolia-audio-btn, #ecolia-dl-btn {
+    width: 30px; height: 30px; min-width: 30px; padding: 0; margin: 0 4px 0 0;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    cursor: pointer; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent; outline: none;
+  }
+  #ecolia-audio-btn { border: none; background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-dl-btn { border: 1.5px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb); }
+  #ecolia-dl-btn.ecolia-full { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-btn.ecolia-fixed { position: fixed; top: 8px; left: 8px; z-index: 2147483000; }
+  #ecolia-audio-btn:active, #ecolia-dl-btn:active { transform: scale(.92); }
+  #ecolia-audio-btn svg, #ecolia-dl-btn svg { width: 15px; height: 15px; fill: currentColor; pointer-events: none; }
+  #ecolia-audio-btn.ecolia-off, #ecolia-dl-btn.ecolia-off { display: none; }
+  #ecolia-audio-banner {
+    display: none; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0;
+    padding: 8px 14px; font-size: .82rem; line-height: 1.35;
+    background: var(--soft, #eef3fb); color: var(--p1, #123); border-bottom: 1px solid var(--bd, #c9d6ea);
+  }
+  #ecolia-audio-banner.on { display: flex; }
+  #ecolia-audio-banner .eab-txt { flex: 1 1 180px; }
+  #ecolia-audio-banner .eab-act { display: flex; gap: 6px; flex-wrap: wrap; }
+  #ecolia-audio-banner button {
+    border: 1px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb);
+    border-radius: 16px; padding: 5px 12px; font-size: .8rem; cursor: pointer;
+  }
+  #ecolia-audio-banner button.pri { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-banner .eab-bar { display: none; flex-basis: 100%; height: 4px; border-radius: 2px; overflow: hidden; background: var(--bd, #c9d6ea); }
+  #ecolia-audio-banner .eab-bar i { display: block; height: 100%; width: 0; background: var(--p2, #2563eb); transition: width .2s; }
+</style>
+<script>
+(function () {
+  var CFG = {"code":"DidactiqueSpeciale4","base":"https://ecolia-course.github.io/ecolia-media/audio_files/","available":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17],"count":17,"sizeMo":12,"sizes":{"1":771840,"2":853824,"3":724032,"4":750528,"5":619584,"6":807168,"7":724416,"8":646464,"9":633984,"10":663744,"11":634944,"12":576384,"13":601152,"14":655104,"15":758784,"16":595200,"17":114624},"fallback":{"1":[["fr","Sommaire, Didactique Spéciale. Présentation du cours. Didactique Spéciale, 4e Humanité (6e HP). Niveau: 4e Humanité ou Terminale, section Pédagogique (toutes options). Objectif général: Rendre l'élève-maître capable de concevoir, mettre en œuvre et évaluer des situations d'enseignement-apprentissage disciplinaires, en mobilisant les principes de la didactique et en les adaptant au contexte congolais. Objectifs spécifiques. Distinguer didactique générale et didactique des disciplines. Appliquer la démarche de transposition didactique à un contenu du programme national. Analyser un programme et un manuel scolaire. Concevoir une fiche de préparation (PPO ou APC) pour une leçon. Sélectionner des méthodes et des supports pertinents selon la discipline. Construire des outils d'évaluation adaptés. Organisation des chapitres. Chapitre I: Introduction à la didactique des disciplines. Chapitre II: La transposition didactique. Chapitre III: La situation d'enseignement-apprentissage. Chapitre IV: La conception d'une leçon. Chapitre V: Les méthodes et supports didactiques. Chapitre VI: L'évaluation des apprentissages. Chapitre VII: Didactique et contexte congolais. Prérequis: Pédagogie Générale; Psychologie de l'Enfant; maîtrise des contenus disciplinaires du primaire."]],"2":[["fr","Leçon 1, Didactique, pédagogie et sciences de l'éducation. Situation de départ. Un enseignant connaît bien sa matière et sait gérer une classe. Mais ses élèves ne comprennent pas les fractions. Est-ce un problème de pédagogie ou de didactique? Fondements théoriques. Définitions. Pédagogie: réflexion sur les relations enseignant-élève, la gestion de la classe et les méthodes d'éducation. Didactique: étude des conditions et des processus de transmission et d'appropriation des savoirs dans une discipline donnée. Sciences de l'éducation: ensemble des recherches sur l'éducation (pédagogie, didactique, psychologie, sociologie, philosophie). Didactique générale et didactique des disciplines. Didactique générale: principes communs à tout enseignement (transposition, situation, évaluation). Didactique des disciplines: spécificités de chaque matière (méthodes propres aux mathématiques, au français, aux sciences, etc.). Exemple: enseigner les fractions ne mobilise pas les mêmes démarches qu'enseigner la lecture. Exemple concret. Un enseignant qui connaît ses fractions et gère bien sa classe mais ne sait pas comment les rendre accessibles aux élèves a un problème didactique: il lui faut apprendre à transposer le savoir, à choisir des situations, des supports, des exemples adaptés. À retenir. Pédagogie et didactique sont complémentaires mais distinctes. Chaque discipline a sa propre logique d'enseignement. Erreur fréquente: croire qu'une bonne méthode générale suffit pour toutes les disciplines."]],"3":[["fr","Leçon 2, La transposition didactique. Fondements théoriques. Définition. La transposition didactique est le processus par lequel un savoir savant (ou un savoir de référence) est transformé en savoir scolaire enseignable, adapté au niveau des élèves et aux contraintes du programme. Les étapes. Identifier le savoir à enseigner dans le programme. Analyser sa structure et ses concepts clés. Le simplifier et le reformuler en fonction des prérequis des élèves. Concevoir des situations et des supports pour le rendre accessible. Prévoir les obstacles et les erreurs fréquentes. La chaîne de la transposition didactique: du savoir savant au savoir appris. Exemple corrigé. Savoir savant: le cycle de l'eau (évaporation, condensation, précipitation, infiltration). Transposition pour des élèves de 4e primaire: Expérience concrète: eau chauffée dans une casserole, condensation sur un couvercle froid. Schéma simple avec des flèches. Récit (« l'eau voyage »). Vocabulaire adapté: évaporation, nuage, pluie. À retenir. La transposition est au cœur de l'acte d'enseigner. Elle ne consiste pas à appauvrir le savoir, mais à le rendre accessible. Erreur fréquente: recopier tel quel un contenu savant, ou au contraire l'appauvrir à l'excès."]],"4":[["fr","Leçon 3, Analyser le programme national. Fondements théoriques. Rôle du programme. Le programme national est la boussole de l'enseignant. Il fixe les compétences, les contenus et les orientations méthodologiques. Comment l'analyser. Repérer les compétences visées. Identifier les contenus essentiels et les notions clés. Noter les orientations méthodologiques (approche par compétences, méthodes actives). Repérer les liens avec les classes précédentes et suivantes. Prévoir la progression annuelle et périodique. Exemple. Dans le programme de français du primaire, la compétence « lire et comprendre un texte court » se transpose en activités concrètes: lecture silencieuse, questions de compréhension, reformulation. Exercice guidé. Analyser la compétence « résoudre des problèmes de proportionnalité » (mathématiques, 5e primaire). Savoirs: notion de proportion, règle de trois. Savoir-faire: identifier une situation de proportionnalité, poser le calcul, interpréter le résultat. Savoir-être: rigueur, vérification. Situations: achats au marché, recettes de cuisine, partages. À retenir. Le programme est le cadre de référence. Il doit être lu, analysé, adapté au contexte. Erreur fréquente: ignorer le programme ou le suivre mécaniquement."]],"5":[["fr","Leçon 4, Analyser un manuel scolaire. Fondements théoriques. Le manuel, un outil, pas un programme. Le manuel est un support pédagogique conçu pour aider l'enseignant et l'élève. Il ne remplace pas le programme: il le met en œuvre. Comment l'analyser. Vérifier la conformité au programme. Identifier la structure (chapitres, leçons, exercices). Évaluer la clarté des explications. Vérifier l'adéquation au niveau des élèves. Repérer les activités et les supports proposés. Identifier les limites ou les manques. Adapter le manuel. Sélectionner les activités pertinentes. Adapter au contexte local (exemples, ressources). Compléter si nécessaire. Exemple concret. Un manuel de sciences propose une expérience avec du matériel de laboratoire coûteux. L'enseignant adapte en utilisant du matériel local (bouteilles, eau, vinaigre, bicarbonate) pour une expérience équivalente. À retenir. Le manuel est un outil au service de l'enseignant. Il doit être adapté au contexte. Erreur fréquente: suivre le manuel sans réfléchir."]],"6":[["fr","Leçon 5, La situation d'enseignement-apprentissage. Fondements théoriques. Les composantes d'une situation. L'objet: le savoir à apprendre. La tâche: ce que l'élève doit faire. Le dispositif: les conditions matérielles et sociales. Le contrat didactique: les attentes réciproques entre enseignant et élèves. La situation-problème. Une tâche complexe, contextualisée, qui oblige l'élève à mobiliser des ressources pour construire une solution. Elle est au cœur de l'APC. Exemple (cas pédagogique fictif). « Les élèves de 4e primaire doivent organiser une collecte de déchets dans la cour de l'école et proposer un plan de tri. Ils mobilisent des savoirs en sciences (classification des déchets), en mathématiques (comptage, pourcentages) et en éducation civique (responsabilité environnementale). ». Rôle de l'enseignant. Concevoir la situation. Étayer (scaffolding). Observer, réguler. Exemple concret. Pour enseigner la notion de « besoin » en éducation civique, l'enseignant propose: « La coopérative de l'école dispose d'une petite somme d'argent. Comment la répartir entre craies, savon et plants pour le jardin? » Les élèves doivent analyser, justifier, décider. À retenir. Une situation structurée favorise l'apprentissage. La situation-problème est au cœur de l'APC. Erreur fréquente: proposer des tâches trop simples ou trop complexes, sans étayage."]],"7":[["fr","Leçon 6, Concevoir une leçon: objectifs PPO et APC. Fondements théoriques. Objectifs en PPO. Objectif opérationnel égale verbe d'action plus condition plus critère de réussite. Exemple: « À la fin de la leçon, l'élève sera capable de lire à haute voix un texte de 5 lignes en respectant la ponctuation, sans erreur de prononciation. ». Objectifs en APC. Formulation en termes de compétences: savoirs, savoir-faire, savoir-être mobilisés dans une situation. Exemple: « L'élève sera capable de résoudre un problème de proportionnalité lié à un achat, en justifiant sa démarche. ». Différences. Critère. PPO. APC. Centration. Objectifs. Compétences. Situation. Exercices scolaires. Situations-problèmes. Évaluation. Restitution. Mobilisation en situation. Exercice guidé. Rédiger un objectif opérationnel pour une leçon de français au primaire. Corrigé: « À la fin de la leçon, l'élève sera capable de rédiger trois phrases correctes décrivant une image, sans erreur d'accord. ». À retenir. Les objectifs structurent la leçon. Ils doivent être clairs et évaluables. Erreur fréquente: formuler des objectifs vagues (« comprendre… »)."]],"8":[["fr","Leçon 7, La fiche de préparation. Fondements théoriques. Les rubriques. Identification: classe, discipline, thème, date, durée. Objectifs: PPO ou APC. Prérequis: ce que l'élève doit déjà savoir. Matériel: nécessaire à la leçon. Déroulement: introduction, développement, conclusion. Évaluation: comment vérifier les acquis. Observations: remarques après la leçon. Les rubriques d'une fiche de préparation: un outil structurant pour l'enseignant. Exemple guidé. Fiche de préparation pour une leçon de mathématiques (4e primaire) sur les fractions: Objectif: reconnaître et représenter une fraction simple. Prérequis: partage en parts égales. Matériel: objets concrets (galettes, papiers), dessins. Déroulement: manipulation de parts de galette, représentation symbolique, exercices. Évaluation: demander à l'élève de représenter une fraction donnée. À retenir. La fiche de préparation guide la leçon. Elle doit être claire et réaliste. Erreur fréquente: rédiger un déroulement vague (« expliquer la leçon »)."]],"9":[["fr","Leçon 8, Le déroulement d'une leçon. Fondements théoriques. Le déroulement type (APC). Mise en situation: présenter une situation-problème, susciter la curiosité. Recherche: les élèves explorent, manipulent, échangent. Institutionnalisation: l'enseignant formalise le savoir. Réinvestissement: exercices d'application. Évaluation: vérification des acquis. Le déroulement type (PPO). Rappel des prérequis. Présentation de l'objectif. Activités d'apprentissage. Institutionnalisation. Exercices d'application. Évaluation. Prévoir les réponses des élèves. L'enseignant anticipe les erreurs possibles, les questions, les blocages. Il prépare des relances. Exemple concret. Pour une leçon sur les fractions, l'enseignant prévoit que certains élèves confondront numérateur et dénominateur. Il a préparé un exemple concret (1 sur 2 de galette égale 1 part sur 2) pour corriger cette confusion. À retenir. Le déroulement structure l'activité. Anticiper les réponses améliore l'efficacité. Erreur fréquente: improviser sans prévoir les obstacles."]],"10":[["fr","Leçon 9, Les méthodes actives. Fondements théoriques. Définition. Les méthodes actives rendent l'élève acteur de son apprentissage: il participe, manipule, explore, coopère, produit. Exemples. Travail de groupe: coopération sur une tâche commune. Étude de cas: analyse d'une situation concrète. Jeu de rôle: simulation d'une situation. Résolution de problèmes: recherche active de solutions. Pédagogie de projet: réalisation concrète (exposition, jardin, spectacle). Classe inversée: l'élève prépare la leçon à la maison. Rôle de l'enseignant. Concevoir des situations d'apprentissage. Guider, observer, réguler. Encourager la coopération. Adapter les méthodes au contexte. Exemple concret. Une leçon sur les circuits électriques: les élèves manipulent des piles, des fils, des ampoules en petits groupes. Ils observent, testent, verbalisent. C'est plus efficace qu'un cours magistral sur le même sujet. À retenir. Les méthodes actives impliquent l'élève. Elles sont plus efficaces que le seul cours magistral. Erreur fréquente: les ignorer par manque de temps ou de matériel."]],"11":[["fr","Leçon 10, Les supports didactiques. Fondements théoriques. Types de supports. Tableau noir, craies. Manuels scolaires. Objets réels, matériel de manipulation. Images, schémas, cartes. Matériel de récupération. Ressources numériques (si disponibles). Adaptation au contexte congolais. Face à la pénurie de matériel, l'enseignant doit concevoir des expériences à faible coût: Indicateur à base de jus de chou rouge. Modèles moléculaires avec des fruits ou de l'argile. Boussoles avec une aiguille et un aimant. Volcans avec du bicarbonate et du vinaigre. Faire de la pénurie une ressource pédagogique: des supports simples et efficaces. Exemple concret. Pour une leçon sur les états de l'eau, l'enseignant utilise une casserole, de l'eau, un couvercle et un réfrigérateur (ou de la glace). Il montre l'évaporation, la condensation, la solidification. Matériel simple, expérience concrète. À retenir. Les supports facilitent l'apprentissage. Le matériel de récupération est une ressource précieuse. Erreur fréquente: renoncer à une activité par manque de matériel."]],"12":[["fr","Leçon 11, L'évaluation des apprentissages. Fondements théoriques. Les types d'évaluation. Diagnostique: avant l'apprentissage, pour repérer les prérequis. Formative: pendant l'apprentissage, pour réguler et aider. Sommative: en fin de séquence, pour certifier les acquis. Les outils. Grilles d'observation. Grilles de critères. Exercices corrigés. Épreuves. Construction d'une grille. Définir les critères (pertinence, exactitude, structuration). Préciser les indicateurs. Définir les niveaux de maîtrise. Exemple guidé. Pour une production écrite, grille avec critères: Respect du sujet (pertinence). Organisation du texte (structure). Correction de la langue (orthographe, grammaire). Richesse du vocabulaire. Chaque critère est évalué: très bien ou bien ou à améliorer. À retenir. L'évaluation sert à aider, pas seulement à classer. Les critères doivent être explicites. Erreur fréquente: évaluer uniquement la mémorisation."]],"13":[["fr","Leçon 12, Didactique et classes pléthoriques. Fondements théoriques. Les défis. Effectifs de 50 à 100 élèves. Hétérogénéité des niveaux. Manque de matériel. Bruit et gestion difficile. Stratégies didactiques. Travail en sous-groupes. Rôles tournants (capitaine, secrétaire, rapporteur). Consignes écrites affichées. Fiches d'activités différenciées. Matériel collectif centralisé. Ateliers tournants. Adapter les supports. Utiliser le tableau avec efficacité (plan, schéma). Fiches individuelles (mais coût du papier). Ardoises ou cahiers de brouillon. Exemple concret. Dans une classe de 80 élèves à Kinshasa, l'enseignant organise quatre ateliers tournants: lecture guidée, exercices écrits, jeu éducatif, projet. Chaque groupe passe 15 minutes à chaque atelier. Tous sont actifs, l'enseignant peut aider ceux qui en ont besoin. À retenir. Les classes pléthoriques exigent une organisation rigoureuse. Ateliers et sous-groupes sont efficaces. Erreur fréquente: recourir au cours magistral exclusif."]],"14":[["fr","Leçon 13, Didactique et ressources limitées. Fondements théoriques. Le matériel de récupération. Face au manque de matériel, l'enseignant conçoit ses supports à partir de ressources locales: Bouteilles plastiques (volumes, densités, filtres). Bouchons (jetons, marqueurs). Graines (comptage, maracas). Bois, argile (modèles, maquettes). Papier journal (fabrication de papier recyclé). Objets naturels (feuilles, cailloux, sable). Exploiter l'environnement. Sorties dans le quartier, au marché, au jardin. Observation de la nature. Enquêtes auprès des habitants. Créativité pédagogique. L'enseignant transforme la contrainte en opportunité: chaque objet peut devenir un support d'apprentissage. Exemple concret. Pour une leçon sur les fractions, l'enseignant découpe des galettes en parts égales avec des feuilles de papier ou des couvercles. Les élèves manipulent, comparent, comprennent. Aucun matériel coûteux n'est nécessaire. À retenir. Les ressources locales sont des supports pédagogiques. L'enseignant doit être créatif. Erreur fréquente: croire que l'apprentissage exige du matériel coûteux."]],"15":[["fr","Leçon 14, Didactique et éducation inclusive. Fondements théoriques. Définition. L'éducation inclusive vise à scolariser tous les enfants, y compris ceux à besoins spécifiques (handicap, troubles d'apprentissage, différences culturelles), dans l'école ordinaire, avec les adaptations nécessaires. Adaptations possibles. Déficience visuelle: place devant, éclairage, supports agrandis, lecture à voix haute. Déficience auditive: place devant, langage clair, langue des signes si possible, supports visuels. Dyslexie: consignes courtes, temps supplémentaire, police claire. TDAH: consignes courtes, séances courtes, valorisation, mouvements autorisés. Handicap moteur: accessibilité, adaptation du matériel, positionnement. Principes. Objectifs communs, chemins variés. Collaboration avec les familles et les spécialistes. Climat de classe inclusif (respect, coopération). Exemple concret. Un élève malvoyant peut réussir en classe si l'enseignant lui imprime des supports agrandis et l'installe au premier rang. Ce sont des adaptations simples mais essentielles. À retenir. L'inclusion est un droit et une nécessité. Des adaptations simples peuvent transformer la scolarité d'un élève. Erreur fréquente: exclure un élève par manque d'adaptation."]],"16":[["fr","Leçon 15, Synthèse: de la théorie à la salle de classe. Synthèse générale. Les grands enseignements. La didactique étudie les conditions de transmission des savoirs disciplinaires. La transposition didactique transforme le savoir savant en savoir enseignable. Une situation d'apprentissage a plusieurs composantes (objet, tâche, dispositif, contrat). Les objectifs (PPO, APC) structurent la leçon. Les méthodes actives et les supports adaptés favorisent l'apprentissage. L'évaluation formative guide la progression. Les classes pléthoriques, les ressources limitées et la diversité exigent une adaptation constante. Le rôle de l'enseignant. Concevoir des situations d'apprentissage signifiantes. Adapter au contexte local. Différencier selon les élèves. Évaluer pour aider. Se former en continu. Pour aller plus loin. Observer des enseignants expérimentés, analyser leurs pratiques, tester de nouvelles situations, échanger avec des collègues. La didactique s'apprend autant par la théorie que par la pratique réflexive."]],"17":[["fr","Évaluation finale, Didactique Spéciale. Évaluation finale. 20 questions à choix multiple. Une seule réponse est correcte par question. Choisis la réponse qui te semble juste, puis valide."]]}};
+  var CACHE = "ecolia-cours-v1";                       // même cache que l'application
+  var PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  var PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+  var DL = '<svg viewBox="0 0 24 24"><path d="M11 3h2v9.2l3.6-3.6L18 10l-6 6-6-6 1.4-1.4L11 12.2V3zM5 19h14v2H5z"/></svg>';
+  var OK = '<svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>';
+  // Réparation du quiz : certains cours stockent les choix sous "opts" (ou autre) au lieu de "options"
+  try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+      questions.forEach(function (q) {
+        if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+        if (q.text === undefined) q.text = q.question || q.q || q.enonce || q.titre || "";
+        if (typeof q.correct === "undefined") {
+          if (typeof q.answer !== "undefined") q.correct = q.answer;
+          else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+        }
+      });
+    }
+  } catch (e) {}
+  var synth = window.speechSynthesis || null;
+  var HAS_CACHE = !!(window.caches && window.caches.open);
+  var NATIVE = false;           // APK ECOLIA : pont Java "CoursInterface" (fichiers dans le dossier de l'application)
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  var LATER = "ecolia_audio_later_" + CFG.code;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+  function init() {
+    if (document.getElementById("ecolia-audio-btn")) return;
+
+    // ---------- éléments de l'interface ----------
+    var btn = document.createElement("button");
+    btn.id = "ecolia-audio-btn"; btn.type = "button"; btn.className = "ecolia-off";
+    btn.setAttribute("aria-label", "Écouter la leçon"); btn.innerHTML = PLAY;
+    var dlBtn = document.createElement("button");
+    dlBtn.id = "ecolia-dl-btn"; dlBtn.type = "button"; dlBtn.className = "ecolia-off";
+    dlBtn.innerHTML = DL;
+    var host = document.querySelector(".header-right");
+    if (host) { host.insertBefore(dlBtn, host.firstChild); host.insertBefore(btn, dlBtn); }   // dans la barre du haut : ne scrolle jamais
+    else { btn.className += " ecolia-fixed"; document.body.appendChild(btn); }
+
+    var banner = document.createElement("div");
+    banner.id = "ecolia-audio-banner";
+    banner.innerHTML = '<span class="eab-txt"></span><span class="eab-act"></span><div class="eab-bar"><i></i></div>';
+    var content = document.getElementById("content");
+    if (content && content.parentNode) content.parentNode.insertBefore(banner, content);
+    else document.body.insertBefore(banner, document.body.firstChild);
+    var txtEl = banner.querySelector(".eab-txt"), actEl = banner.querySelector(".eab-act");
+    var barEl = banner.querySelector(".eab-bar"), barI = barEl.firstChild;
+
+    var audio = new Audio();            // un seul élément Audio, réutilisé (exigé par les navigateurs mobiles)
+    audio.preload = "auto";
+    var st = { idx: -1, auto: false, advancing: false, mode: null, speaking: false, token: 0, chunks: [], ci: 0, blobUrl: null, playTok: 0 };
+    var dl = { state: "none", cached: 0, busy: false, cancel: false };   // none | partial | full
+    var bnMode = null, hideTimer = null;
+    if (synth && synth.getVoices) { try { synth.getVoices(); } catch (e) {} }
+
+    function cur() {
+      try { if (typeof currentSlide === "number") return currentSlide; } catch (e) {}
+      return 0;
+    }
+    function hasMp3(i) { return CFG.available.indexOf(i + 1) !== -1; }
+    function fb(i) { return CFG.fallback && CFG.fallback[String(i + 1)]; }
+    function hasAudio(i) { return hasMp3(i) || (!!synth && !!fb(i)); }
+    function urlN(n) {   // dans l'APK la page est sur https://app.local : une adresse relative doit pointer vers le site
+      var b = CFG.base;
+      if (NATIVE && !/^https?:/i.test(b)) b = "https://ecolia-course.github.io/" + b.replace(/^(\.\.\/|\.\/)+/, "");
+      return new URL(b + nameN(n), location.href).href;
+    }
+    function setIcon(playing) { btn.innerHTML = playing ? PAUSE : PLAY; }
+    function isPlaying() { return st.mode === "mp3" ? !audio.paused : (st.mode === "tts" && st.speaking); }
+    function mo() { return "≈ " + CFG.sizeMo + " Mo"; }
+    function nameN(n) { return "audio_" + CFG.code + "_" + n + ".mp3"; }
+
+    // ====================================================================
+    //  Stockage hors ligne : 2 moteurs, même interface
+    //    - APK : fichiers du dossier de l'application (CoursInterface), servis par https://app.local/cours/
+    //    - Web : Cache Storage du navigateur (même cache que l'application web)
+    // ====================================================================
+    function nativeStore() {
+      var okKey = "ecolia_audio_ok_" + CFG.code;
+      function readOk() { try { return JSON.parse(lsGet(okKey) || "[]"); } catch (e) { return []; } }
+      function writeOk(a) { lsSet(okKey, JSON.stringify(a)); }
+      function exists(n) { try { return !!CoursInterface.exists(nameN(n)); } catch (e) { return false; } }
+      function local(n) { return location.origin + "/cours/" + nameN(n); }
+      function verify(n) {                                   // fichier complet ? (taille exacte connue à la génération)
+        return fetch(local(n), { cache: "no-store" }).then(function (r) { return r.blob(); }).then(function (b) {
+          var exp = CFG.sizes && CFG.sizes[String(n)];
+          return (b.size > 2000 && (!exp || b.size === exp)) ? b : null;
+        }).catch(function () { return null; });
+      }
+      return {
+        list: function () {
+          var ok = readOk().filter(exists); writeOk(ok); return Promise.resolve(ok);
+        },
+        get: function (n) { return exists(n) ? verify(n) : Promise.resolve(null); },
+        put: function (n) {
+          return new Promise(function (res, rej) {
+            try { CoursInterface.download(urlN(n), nameN(n)); } catch (e) { return rej(e); }
+            var t0 = Date.now();
+            function next() { if (Date.now() - t0 > 120000) rej(new Error("délai dépassé")); else setTimeout(poll, 800); }
+            function poll() {
+              if (!exists(n)) return next();
+              verify(n).then(function (b) {
+                if (!b) return next();
+                var ok = readOk(); if (ok.indexOf(n) < 0) ok.push(n); writeOk(ok); res();
+              });
+            }
+            setTimeout(poll, 800);
+          });
+        },
+        del: function (n) {
+          try { CoursInterface.delete(nameN(n)); } catch (e) {}
+          writeOk(readOk().filter(function (x) { return x !== n; }));
+          return Promise.resolve();
+        }
+      };
+    }
+    function cacheStore() {
+      return {
+        list: function () {
+          return caches.open(CACHE).then(function (c) {
+            return Promise.all(CFG.available.map(function (n) {
+              return c.match(urlN(n)).then(function (r) {
+                if (!r) return 0;
+                if ((r.headers.get("content-type") || "").indexOf("audio") !== 0) { c.delete(urlN(n)); return 0; }   // ancien contenu invalide
+                return n;
+              });
+            }));
+          }).then(function (a) { return a.filter(Boolean); });
+        },
+        get: function (n) {
+          return caches.open(CACHE).then(function (c) { return c.match(urlN(n)); })
+            .then(function (r) { return r ? r.blob() : null; }).then(function (b) { return b && b.size > 2000 ? b : null; });
+        },
+        put: function (n) {
+          var u = urlN(n);
+          return fetch(u, { cache: "no-store" }).then(function (r) {
+            if (!r.ok || r.status !== 200) throw new Error("HTTP " + r.status);
+            return r.blob();
+          }).then(function (b) {
+            if (b.size < 2000 || (b.type && b.type.indexOf("audio") !== 0 && b.type.indexOf("octet") < 0)) throw new Error("fichier invalide");
+            return caches.open(CACHE).then(function (c) { return c.put(u, new Response(b, { headers: { "Content-Type": "audio/mpeg" } })); });
+          });
+        },
+        del: function (n) { return caches.open(CACHE).then(function (c) { return c.delete(urlN(n)); }); }
+      };
+    }
+    var store = NATIVE ? nativeStore() : (HAS_CACHE ? cacheStore() : null);
+
+    // ====================================================================
+    //  Bannière : invitation, confirmations, progression
+    // ====================================================================
+    function showBanner(mode, text, buttons, pct) {
+      clearTimeout(hideTimer);
+      bnMode = mode;
+      txtEl.textContent = text;
+      actEl.innerHTML = "";
+      (buttons || []).forEach(function (b) {
+        var e = document.createElement("button");
+        e.type = "button"; e.textContent = b.label; if (b.pri) e.className = "pri";
+        e.addEventListener("click", function (ev) { ev.stopPropagation(); b.fn(); });
+        actEl.appendChild(e);
+      });
+      if (typeof pct === "number") { barEl.style.display = "block"; barI.style.width = pct + "%"; }
+      else barEl.style.display = "none";
+      banner.classList.add("on");
+    }
+    function hideBanner() { clearTimeout(hideTimer); bnMode = null; banner.classList.remove("on"); }
+    function flash(text) { showBanner("info", text, []); hideTimer = setTimeout(hideBanner, 4000); }
+
+    function refreshUI() {
+      var show = !!store && CFG.available.length > 0;
+      dlBtn.classList.toggle("ecolia-off", !show);
+      dlBtn.classList.toggle("ecolia-full", dl.state === "full");
+      dlBtn.innerHTML = dl.state === "full" ? OK : DL;
+      dlBtn.setAttribute("aria-label", dl.state === "full" ? "Audios téléchargés : supprimer" : "Télécharger les audios");
+      dlBtn.title = dlBtn.getAttribute("aria-label");
+    }
+    function refreshCacheState(done) {
+      if (!store) { dl.state = "none"; refreshUI(); if (done) done(); return; }
+      store.list().then(function (ok) {
+        dl.cached = ok.length;
+        dl.state = dl.cached === 0 ? "none" : (dl.cached >= CFG.available.length ? "full" : "partial");
+      }).catch(function () { dl.state = "none"; }).then(function () { refreshUI(); if (done) done(); });
+    }
+
+    function askDownload(fromInvite) {
+      var left = CFG.available.length - dl.cached;
+      var txt = dl.state === "partial"
+        ? "Il reste " + left + " audio(s) à télécharger pour écouter ce cours sans internet."
+        : "🔊 Télécharger les audios de ce cours (" + mo() + ") pour les écouter sans internet ? Wi-Fi recommandé.";
+      showBanner(fromInvite ? "invite" : "confirm", txt, [
+        { label: fromInvite ? "Plus tard" : "Annuler", fn: function () { if (fromInvite) lsSet(LATER, "1"); hideBanner(); } },
+        { label: "Télécharger", pri: true, fn: startDownload }
+      ]);
+    }
+    function askDelete() {
+      showBanner("confirm", "Supprimer les audios téléchargés de ce cours (" + mo() + ") ? Vous pourrez toujours les écouter en ligne.", [
+        { label: "Annuler", fn: hideBanner },
+        { label: "Supprimer", pri: true, fn: doDelete }
+      ]);
+    }
+
+    function startDownload() {
+      if (dl.busy || !store) return;
+      dl.busy = true; dl.cancel = false;
+      var total = CFG.available.length, done = 0, quota = false, fails = 0, todo = [];
+      store.list().then(function (have) {
+        CFG.available.forEach(function (n) { if (have.indexOf(n) < 0) todo.push(n); });
+        done = total - todo.length;
+        function paint() {
+          var msg = "Téléchargement des audios : " + done + " / " + total;
+          if (bnMode === "progress") {                  // met à jour sans recréer les boutons (sinon un appui peut être perdu)
+            txtEl.textContent = msg; barI.style.width = Math.round(done / total * 100) + "%";
+          } else {
+            showBanner("progress", msg, [
+              { label: "Annuler", fn: function () { dl.cancel = true; } }
+            ], Math.round(done / total * 100));
+          }
+        }
+        paint();
+        function worker() {
+          if (dl.cancel || quota || !todo.length) return Promise.resolve();
+          var n = todo.shift();
+          return store.put(n).then(function () { done++; paint(); }).catch(function (e) {
+            if (e && (e.name === "QuotaExceededError" || /quota/i.test(String(e.message)))) quota = true;
+            fails++;
+          }).then(worker);
+        }
+        return Promise.all([worker(), worker()]);
+      }).catch(function () { fails++; }).then(function () {
+        dl.busy = false;
+        refreshCacheState(function () {
+          if (dl.state === "full") flash("✓ Audios téléchargés : le cours se lit maintenant sans internet.");
+          else if (dl.cancel) flash("Téléchargement interrompu (" + dl.cached + " / " + total + "). Vous pourrez reprendre plus tard.");
+          else showBanner("error", quota ? "Espace insuffisant sur l'appareil. Libérez de la place puis réessayez."
+            : "Certains audios n'ont pas pu être téléchargés (connexion ?).", [
+            { label: "Fermer", fn: hideBanner }, { label: "Réessayer", pri: true, fn: startDownload }
+          ]);
+        });
+      });
+    }
+    function doDelete() {
+      if (!store) return;
+      Promise.all(CFG.available.map(function (n) { return store.del(n); })).catch(function () {}).then(function () {
+        lsDel(LATER);
+        refreshCacheState(function () { flash("Audios supprimés de cet appareil."); });
+      });
+    }
+
+    dlBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (dl.busy) return;
+      if (dl.state === "full") askDelete(); else askDownload(false);
+    });
+
+    // ====================================================================
+    //  Voix intégrée au téléphone (hors ligne, sans limite)
+    // ====================================================================
+    function pickVoice(lang) {
+      var vs = [];
+      try { vs = synth.getVoices() || []; } catch (e) {}
+      var pre = lang === "en" ? "en" : "fr", best = null;
+      for (var k = 0; k < vs.length; k++) {
+        var v = vs[k];
+        if ((v.lang || "").toLowerCase().indexOf(pre) !== 0) continue;
+        if (!best || (v.localService && !best.localService)) best = v;
+      }
+      return best;
+    }
+    function hardSplit(text, max) {
+      var out = [];
+      while (text.length > max) {
+        var cut = text.lastIndexOf(" ", max);
+        if (cut < 40) cut = max;
+        out.push(text.slice(0, cut)); text = text.slice(cut).replace(/^\s+/, "");
+      }
+      if (text) out.push(text);
+      return out;
+    }
+    function buildChunks(segs) {                  // morceaux courts : évite l'arrêt des longs textes sur Chrome
+      var out = [];
+      segs.forEach(function (s) {
+        var cur2 = "", parts = s[1].match(/[^.!?;:]+[.!?;:]*\s*/g) || [s[1]];
+        parts.forEach(function (p) {
+          if (cur2 && (cur2 + p).length > 160) { out.push({ lang: s[0], text: cur2.trim() }); cur2 = p; }
+          else cur2 += p;
+        });
+        if (cur2.trim()) out.push({ lang: s[0], text: cur2.trim() });
+      });
+      var res = [];
+      out.forEach(function (c) { hardSplit(c.text, 190).forEach(function (t) { res.push({ lang: c.lang, text: t }); }); });
+      return res;
+    }
+    function speakFrom(tk) {
+      if (tk !== st.token) return;
+      if (st.ci >= st.chunks.length) {
+        st.speaking = false; st.mode = null; st.ci = 0; setIcon(false);
+        if (st.auto) goNext();
+        return;
+      }
+      var c = st.chunks[st.ci];
+      var u = new SpeechSynthesisUtterance(c.text);
+      u.lang = c.lang === "en" ? "en-US" : "fr-FR";
+      var v = pickVoice(c.lang);
+      if (v) { u.voice = v; u.lang = v.lang; }
+      u.rate = 0.95;
+      u.onend = function () { if (tk !== st.token) return; st.ci++; speakFrom(tk); };
+      u.onerror = function () { if (tk !== st.token) return; st.speaking = false; setIcon(false); st.auto = false; };
+      synth.speak(u);
+    }
+    function startTts(from) {
+      st.token++;
+      var tk = st.token;
+      st.mode = "tts"; st.speaking = true; st.ci = from || 0; setIcon(true);
+      var busy = false;
+      try { busy = synth.speaking || synth.pending; synth.cancel(); } catch (e) {}
+      if (busy) setTimeout(function () { speakFrom(tk); }, 120);   // laisse cancel() se terminer
+      else speakFrom(tk);                                          // sinon tout de suite (exigé par iOS)
+    }
+    function playVoice() {
+      if (!(synth && fb(st.idx))) { st.auto = false; return false; }
+      if (!st.chunks.length) st.chunks = buildChunks(fb(st.idx));
+      startTts(st.ci);
+      return true;
+    }
+
+    // ====================================================================
+    //  Lecture
+    // ====================================================================
+    function freeBlob() { if (st.blobUrl) { try { URL.revokeObjectURL(st.blobUrl); } catch (e) {} st.blobUrl = null; } }
+    function stopAll() {
+      st.playTok++;
+      try { audio.pause(); audio.currentTime = 0; } catch (e) {}
+      st.token++;
+      try { if (synth) synth.cancel(); } catch (e) {}
+      st.speaking = false; st.mode = null; st.chunks = []; st.ci = 0;
+      setIcon(false);
+    }
+    function pauseNow() {
+      if (st.mode === "mp3") audio.pause();
+      else if (st.mode === "tts") {
+        st.token++;
+        try { synth.cancel(); } catch (e) {}
+        st.speaking = false; setIcon(false);      // st.ci conservé : la reprise repart de la phrase en cours
+      }
+    }
+    function startAudio(src, tok) {
+      if (tok !== st.playTok) return;
+      if (audio.getAttribute("data-src") !== src) { audio.setAttribute("data-src", src); audio.src = src; }
+      var p = audio.play();
+      if (p && p.catch) p.catch(function (err) {
+        console.warn("ECOLIA audio :", err);
+        if (tok !== st.playTok) return;
+        if (!(err && err.name === "NotAllowedError") && playVoice()) return;   // lecture impossible : voix du téléphone
+        setIcon(false); st.auto = false;
+      });
+    }
+    function playCurrent() {
+      var i = st.idx;
+      if (hasMp3(i)) {
+        var tok = ++st.playTok, u = urlN(i + 1);
+        st.mode = "mp3";
+        if (!navigator.onLine && dl.state === "none") { st.mode = null; if (playVoice()) return; }   // hors ligne et non téléchargé
+        if (store && dl.state !== "none") {                     // téléchargé : lecture locale, sans réseau
+          store.get(i + 1)
+            .then(function (b) {
+              if (tok !== st.playTok) return;
+              if (b) { freeBlob(); st.blobUrl = URL.createObjectURL(new Blob([b], { type: "audio/mpeg" })); startAudio(st.blobUrl, tok); }
+              else startAudio(u, tok);
+            }).catch(function () { startAudio(u, tok); });
+        } else startAudio(u, tok);                              // sinon lecture en ligne (appel immédiat, exigé par iOS)
+      } else if (!playVoice()) {
+        st.auto = false;
+      }
+    }
+
+    function onSlideChange(i) {
+      var wasAdvancing = st.advancing;
+      st.advancing = false;
+      st.idx = i;
+      btn.classList.toggle("ecolia-off", !hasAudio(i));
+      stopAll();
+      audio.removeAttribute("data-src");
+      freeBlob();
+      if (bnMode === "invite" && i !== 0) hideBanner();       // l'invitation n'apparaît qu'à la première slide
+      if (wasAdvancing && st.auto) setTimeout(playCurrent, 500);   // enchaînement automatique
+      else st.auto = false;                                         // changement manuel : on coupe tout
+    }
+    function goNext() {
+      if (st.idx + 1 >= CFG.count) { st.auto = false; return; }
+      st.advancing = true;
+      if (typeof nextSlide === "function") nextSlide();
+      else { var nb = document.getElementById("nextBtn"); if (nb) nb.click(); }
+      setTimeout(function () { st.advancing = false; }, 4000);
+    }
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var i = cur();
+      if (i !== st.idx) onSlideChange(i);
+      if (isPlaying()) { st.auto = false; pauseNow(); }
+      else { st.auto = true; playCurrent(); }
+    });
+    audio.addEventListener("play", function () { setIcon(true); });
+    audio.addEventListener("pause", function () { if (st.mode === "mp3") setIcon(false); });
+    audio.addEventListener("error", function () {
+      if (st.mode === "mp3" && playVoice()) return;            // fichier introuvable / hors ligne : voix du téléphone
+      setIcon(false); st.auto = false;
+    });
+    audio.addEventListener("ended", function () { setIcon(false); if (st.auto) goNext(); });
+    window.addEventListener("pagehide", function () { stopAll(); freeBlob(); });
+
+    // ---------- démarrage ----------
+    refreshCacheState(function () {
+      if (store && CFG.available.length && dl.state !== "full" && navigator.onLine && cur() === 0 && !lsGet(LATER)) askDownload(true);
+    });
+    st.idx = -1;
+    setInterval(function () { var i = cur(); if (i !== st.idx) onSlideChange(i); }, 250);   // suit la slide affichée
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+<!-- ECOLIA_AUDIO_PLAYER_END -->
+</body>
+</html>

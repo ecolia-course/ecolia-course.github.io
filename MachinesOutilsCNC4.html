@@ -1,0 +1,1969 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="bleu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>ECOLIA — Machines Outils C N C4</title>
+<style>
+[data-theme="bleu"]   { --p1:#0d2b4f; --p2:#1565c0; --p3:#07172e; --p4:#12437a; --p5:#5b8fd0; --bg:#e8f0fb; --bg2:#cfdff5; --bd:#a9c3e8; --soft:#dde8f7; --btn:#2a67b0; }
+[data-theme="vert"]   { --p1:#14442e; --p2:#2e7d32; --p3:#0b2b1a; --p4:#1f5c3a; --p5:#4f9a6b; --bg:#e8f5ec; --bg2:#c8e6d2; --bd:#a5cdb2; --soft:#dcefe2; --btn:#2f7a4f; }
+[data-theme="violet"] { --p1:#2d1b4e; --p2:#6a1b9a; --p3:#1a0f2e; --p4:#4a148c; --p5:#9c6fd0; --bg:#f1e9fb; --bg2:#dccbf2; --bd:#c4a8e6; --soft:#e8ddf6; --btn:#7e3fb2; }
+[data-theme="rouge"]  { --p1:#4a1010; --p2:#b71c1c; --p3:#2b0a0a; --p4:#8e1b1b; --p5:#d9706a; --bg:#fbeaea; --bg2:#f3cdcb; --bd:#e8a9a5; --soft:#f8dede; --btn:#a62a2a; }
+[data-theme="orange"] { --p1:#4e2a0c; --p2:#ef6c00; --p3:#2e1604; --p4:#b34a00; --p5:#f0a15a; --bg:#fff1e0; --bg2:#fbdcb8; --bd:#f3c08a; --soft:#fdebd6; --btn:#c9650a; }
+[data-theme="teal"]   { --p1:#0b3a3a; --p2:#00796b; --p3:#062626; --p4:#00574b; --p5:#4db6ac; --bg:#e0f2f1; --bg2:#b2dfdb; --bd:#80cbc4; --soft:#d5ecea; --btn:#26897d; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:linear-gradient(160deg,var(--p1) 0%,var(--p2) 50%,var(--p3) 100%); display:flex; justify-content:center; align-items:center; padding:8px; }
+.container { width:100%; max-width:1400px; background:#fefdf8; border-radius:20px; overflow:hidden; display:flex; flex-direction:column; height:100%; max-height:100vh; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.progress-bar { height:4px; background:var(--bg2); flex-shrink:0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--p5),var(--p4)); width:0%; transition:width 0.3s; }
+.header { padding:10px 16px; background:var(--bg); border-bottom:1px solid var(--bd); display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+.header h1 { color:var(--p4); font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box { display:flex; background:white; border-radius:20px; padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.search-box input { border:none; padding:6px 10px; border-radius:20px; outline:none; width:130px; font-size:0.8rem; }
+.search-box button { background:none; border:none; cursor:pointer; padding:4px 8px; font-size:0.85rem; color:var(--p2); }
+.badge { background:var(--p5); color:white; padding:4px 10px; border-radius:20px; font-weight:bold; font-size:0.75rem; }
+.search-nav { display:none; gap:4px; background:var(--bg2); padding:2px 8px; border-radius:20px; align-items:center; font-size:0.75rem; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:0.9rem; color:var(--p4); padding:2px 4px; }
+.content { padding:28px 32px; flex:1; overflow-y:auto; background:#fff; scroll-behavior:smooth; line-height:1.85; }
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.slide-title { color:var(--p1); font-size:1.5rem; font-weight:700; padding-bottom:12px; margin-bottom:20px; border-bottom:2px solid var(--p5); }
+.slide-content { color:var(--p3); font-size:1rem; }
+.empty-state { display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-height:60vh; padding:40px 20px; gap:18px; }
+.empty-state .icon { width:72px; height:72px; border-radius:50%; background:var(--bg); border:2px solid var(--bd); display:flex; align-items:center; justify-content:center; color:var(--p2); font-size:2rem; font-weight:300; }
+.empty-state h2 { color:var(--p1); font-size:1.4rem; font-weight:700; margin:0; }
+.empty-state p { color:#666; font-size:0.95rem; max-width:520px; line-height:1.7; }
+.empty-state .tag { display:inline-block; padding:6px 14px; background:var(--bg); color:var(--p4); border:1px solid var(--bd); border-radius:20px; font-size:0.8rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; }
+.bloc { padding:18px 22px; border-radius:12px; margin:22px 0; line-height:1.85; }
+.bloc-label { font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; opacity:0.7; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:var(--bg); border-left:4px solid var(--p5); }
+.theorie .bloc-label { color:var(--p4); }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.sources { background:#f5f5f5; padding:12px 16px; border-radius:10px; margin-top:26px; font-size:0.82rem; color:#666; border-left:3px solid #999; line-height:1.6; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:var(--p1); }
+.quiz-container { padding:22px; background:var(--bg); border-radius:16px; }
+.quiz-question { background:white; border-radius:10px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.quiz-question p { font-weight:600; margin-bottom:10px; color:var(--p1); }
+.quiz-question label { display:block; padding:8px 10px; margin:4px 0; border-radius:6px; cursor:pointer; transition:background 0.2s; }
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit { background:var(--btn); color:white; border:none; padding:12px 24px; border-radius:30px; font-size:1rem; cursor:pointer; font-weight:600; margin-top:14px; }
+.quiz-result { margin-top:16px; font-weight:600; }
+.controls { padding:8px 16px; background:#fafafa; border-top:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0; }
+.nav-btn { background:white; color:var(--p4); border:1px solid #ccc; padding:8px 14px; border-radius:8px; font-size:0.82rem; cursor:pointer; font-weight:500; }
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:var(--soft); }
+.content::-webkit-scrollbar-thumb { background:var(--p5); border-radius:3px; }
+@media (max-width:600px) { body { padding:0; } .container { border-radius:0; max-height:100vh; } .content { padding:20px 18px; } .slide-title { font-size:1.25rem; } .search-box input { width:90px; } .header h1 { font-size:0.85rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="header">
+<h1 id="pageTitle">ECOLIA</h1>
+<div class="header-right">
+<div class="search-box">
+<input id="searchInput" placeholder="Rechercher" type="text"/>
+<button id="searchBtn">⌕</button>
+</div>
+<div class="search-nav" id="searchNav">
+<button id="prevResultBtn">‹</button>
+<span id="resultCounter">0/0</span>
+<button id="nextResultBtn">›</button>
+</div>
+<span class="badge" id="slideCounter">0/0</span>
+</div>
+</div>
+<div class="content" id="content"></div>
+<div class="controls">
+<button class="nav-btn" id="prevBtn">← Précédent</button>
+<span class="counter" id="counter">—</span>
+<button class="nav-btn" id="nextBtn">Suivant →</button>
+</div>
+</div>
+<script>
+const COURSE_TITLE = "Machines-Outils CNC (Usinage à Commande Numérique)";
+const slides = [
+  {
+    title: "Sommaire — Machines-Outils CNC",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Présentation du cours</div>
+        <h3>Bienvenue en Machines-Outils CNC</h3>
+        <p>Ce cours de 4<sup>e</sup> année des Humanités Techniques Industrielles vous prépare à <strong>préparer, réaliser et contrôler des opérations d'usinage</strong> sur machines-outils conventionnelles et à commande numérique. Vous apprendrez à lire un plan de définition, rédiger une gamme d'usinage, choisir les outils et les paramètres de coupe, programmer un programme CNC simple en code ISO et contrôler la qualité d'une pièce.</p>
+        <p>L'usinage est au cœur de la fabrication mécanique et de la maintenance industrielle. Dans un pays où les pièces de rechange sont souvent importées à grands frais, le technicien formé à l'usinage peut fabriquer localement et réduire les délais et les coûts. C'est une compétence stratégique pour les ateliers de Kinshasa, de Lubumbashi, de Goma et des mines du Lualaba.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Objectifs d'apprentissage</div>
+        <ul>
+          <li>Identifier les principaux procédés d'usinage et leurs domaines d'application.</li>
+          <li>Décrire l'architecture des machines-outils conventionnelles et CNC.</li>
+          <li>Choisir les outils de coupe et calculer les paramètres (Vc, f, ap, N).</li>
+          <li>Rédiger une gamme d'usinage simple.</li>
+          <li>Programmer un programme CNC simple en code ISO.</li>
+          <li>Contrôler la qualité dimensionnelle d'une pièce.</li>
+          <li>Appliquer les règles de sécurité en atelier.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Plan du cours</div>
+        <ol>
+          <li>Chapitre I — Introduction à l'usinage et sécurité en atelier</li>
+          <li>Chapitre II — Les machines-outils conventionnelles</li>
+          <li>Chapitre III — Les outils de coupe et les paramètres</li>
+          <li>Chapitre IV — La préparation du travail</li>
+          <li>Chapitre V — Les machines-outils à commande numérique (CNC)</li>
+          <li>Chapitre VI — La programmation CNC en code ISO</li>
+          <li>Chapitre VII — Le contrôle dimensionnel et la qualité</li>
+          <li>Chapitre VIII — Applications et projets</li>
+        </ol>
+      </div>
+
+      <div class="sources">
+        <div class="bloc-label">Sources du cours</div>
+        <p>Fiches pédagogiques officielles <em>Cours de Programme de Fabrication Mécanique</em>, 4<sup>e</sup> année, option Mécanique (Édition 2025) ; Programme National de Mécanique Générale Industrielle (RDC) ; Manuels congolais <em>Construction Mécanique</em> et <em>Projet de Construction Mécanique</em> ; norme ISO 6983 (programmation CNC) ; manuels constructeurs Siemens, Fanuc, Haas.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Pourquoi les machines-outils CNC ?",
+    content: `
+      <div class="bloc cas">
+        <div class="bloc-label">Situation-problème</div>
+        <h3>Une pompe minière arrêtée au Lualaba</h3>
+        <p>Dans une mine du Lualaba, une pompe d'exhaure tombe en panne. L'arbre de transmission est cassé. Commande d'une pièce importée : 6 semaines de délai et un coût élevé. Mais l'atelier de maintenance de la mine dispose d'un tour et d'une fraiseuse. Le technicien peut-il fabriquer la pièce localement ?</p>
+        <p>S'il maîtrise l'usinage, oui. Il analyse le plan, choisit les outils et les paramètres, réalise la pièce, la contrôle et remet la pompe en service en quelques jours. <strong>La maîtrise de l'usinage transforme un mois et demi d'arrêt en trois jours de réparation.</strong> C'est cela, la valeur du technicien A2 formé en fabrication mécanique et CNC.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>L'usinage, base de la fabrication</h3>
+        <p>L'<strong>usinage</strong> regroupe l'ensemble des procédés qui consistent à <strong>enlever de la matière</strong> d'une pièce brute pour obtenir une forme, des dimensions et un état de surface conformes à un plan. Il se fait par <strong>enlèvement de copeaux</strong> à l'aide d'outils de coupe.</p>
+        <p>L'usinage intervient à toutes les étapes industrielles :</p>
+        <ul>
+          <li><strong>Fabrication</strong> de pièces neuves (arbres, pignons, supports, bagues).</li>
+          <li><strong>Maintenance</strong> : réparation, remplacement, adaptation de pièces de rechange.</li>
+          <li><strong>Prototypage</strong> : réalisation de pièces uniques ou de petites séries.</li>
+          <li><strong>Outillage</strong> : fabrication de montages, gabarits, moules.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Usinage = enlèvement de matière par copeaux.</li>
+          <li>Au cœur de la fabrication et de la maintenance.</li>
+          <li>Compétence stratégique pour réduire les délais et les coûts en RDC.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — La sécurité en atelier d'usinage",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les risques de l'atelier</h3>
+        <p>Un atelier d'usinage présente plusieurs dangers graves :</p>
+        <ul>
+          <li><strong>Happement</strong> par les parties tournantes (mandrin, broche, courroie).</li>
+          <li><strong>Projection de copeaux</strong> ou de liquide de coupe dans les yeux.</li>
+          <li><strong>Coupures</strong> par les copeaux et les arêtes vives.</li>
+          <li><strong>Écrasement</strong> par les pièces lourdes.</li>
+          <li><strong>Électrisation</strong> par les armoires et câbles.</li>
+          <li><strong>Incendie</strong> par les huiles et lubrifiants.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les règles fondamentales</div>
+        <ul>
+          <li><strong>EPI obligatoires</strong> : lunettes de protection, chaussures de sécurité, blouse ajustée, pas de cravate ni de manches larges, cheveux attachés.</li>
+          <li><strong>Protecteurs en place</strong> : carter de mandrin, capot de courroie, écran de protection contre les copeaux. On ne les démonte jamais pour « aller plus vite ».</li>
+          <li><strong>Arrêt d'urgence</strong> : toujours accessible, câblé en sécurité positive (contact NC).</li>
+          <li><strong>Consignation</strong> avant toute intervention (maintenance, changement d'outil lourd) : couper l'énergie, cadenasser, vérifier l'absence de tension.</li>
+          <li><strong>Gestion des copeaux</strong> : jamais à mains nues, utiliser un crochet ou une brosse.</li>
+          <li><strong>Lubrification et ventilation</strong> : aérer l'atelier, ne pas inhaler les brouillards d'huile.</li>
+        </ul>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Un élève retire ses lunettes pour « mieux voir » en perçant un trou. Un copeau est projeté dans son œil. <strong>Le port des lunettes est non négociable</strong> dès qu'une machine tourne. Aucun travail ne justifie un risque oculaire.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>EPI : lunettes, chaussures, blouse, cheveux attachés.</li>
+          <li>Protecteurs en place, arrêts d'urgence accessibles.</li>
+          <li>Consignation avant intervention.</li>
+          <li>Copeaux : jamais à mains nues.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Les procédés d'usinage",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Six procédés à connaître</h3>
+        <table>
+          <thead>
+            <tr><th>Procédé</th><th>Principe</th><th>Exemple d'application</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Tournage</strong></td><td>La pièce tourne, l'outil est fixe.</td><td>Arbres, portées cylindriques, faces, filetages.</td></tr>
+            <tr><td><strong>Fraisage</strong></td><td>L'outil (fraise) tourne, la pièce est fixe.</td><td>Surfaçage, rainures, épaulements, logements.</td></tr>
+            <tr><td><strong>Perçage</strong></td><td>Un foret tourne et avance dans la matière.</td><td>Trous traversants ou borgnes.</td></tr>
+            <tr><td><strong>Alésage</strong></td><td>Agrandissement et calibrage d'un trou existant.</td><td>Logement de roulement, précision dimensionnelle.</td></tr>
+            <tr><td><strong>Sciage</strong></td><td>Découpe de barres et de profilés.</td><td>Préparation de bruts avant usinage.</td></tr>
+            <tr><td><strong>Rectification</strong></td><td>Finition de haute précision à la meule.</td><td>Portées de paliers, surfaces de référence.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Application concrète</div>
+        <p>Pour fabriquer un arbre de transmission de pompe, on combine plusieurs procédés : <strong>sciage</strong> du brut, <strong>tournage</strong> des portées cylindriques, <strong>dressage</strong> des faces, <strong>perçage</strong> et <strong>taraudage</strong> des trous de fixation, puis <strong>contrôle</strong> dimensionnel. Aucun procédé à lui seul ne suffit : le technicien maîtrise l'enchaînement.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Tournage : pièce en rotation, outil fixe.</li>
+          <li>Fraisage : outil en rotation, pièce fixe.</li>
+          <li>Perçage, alésage, sciage, rectification complètent l'éventail.</li>
+          <li>Un projet d'usinage combine plusieurs procédés.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — Le tour conventionnel",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Architecture d'un tour parallèle</h3>
+        <p>Le <strong>tour</strong> est la machine de base du tournage : il fait tourner la pièce et déplace un outil de coupe. Ses organes principaux sont :</p>
+        <ul>
+          <li><strong>Le banc</strong> : bâti rigide, guide de tous les mouvements.</li>
+          <li><strong>La poupée fixe</strong> : contient la broche et le mandrin qui porte la pièce.</li>
+          <li><strong>La poupée mobile</strong> : support de la contre-pointe pour les pièces longues.</li>
+          <li><strong>Le chariot</strong> : support de la tourelle, se déplace longitudinalement et transversalement.</li>
+          <li><strong>La tourelle porte-outils</strong> : fixe l'outil de coupe.</li>
+          <li><strong>La boîte de vitesses</strong> : règle la vitesse de broche.</li>
+          <li><strong>La boîte d'avances</strong> : règle la vitesse d'avance du chariot.</li>
+        </ul>
+      </div>
+
+      <figure>
+        <img data-image-id="machinesoutilscnc4_img01" alt="Schéma annoté d'un tour parallèle montrant la poupée fixe, la poupée mobile, le chariot, la tourelle porte-outils et le banc.">
+        <figcaption>L'architecture d'un tour parallèle.</figcaption>
+      </figure>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Opérations courantes au tour</div>
+        <ul>
+          <li><strong>Chariotage</strong> : réduction du diamètre d'une pièce cylindrique.</li>
+          <li><strong>Dressage</strong> : usinage d'une face plane perpendiculaire à l'axe.</li>
+          <li><strong>Perçage</strong> : au foret monté dans la contre-pointe.</li>
+          <li><strong>Alésage</strong> : agrandissement d'un trou existant.</li>
+          <li><strong>Filetage</strong> : réalisation d'un pas de vis (métrique ou autre).</li>
+          <li><strong>Gorges et chanfreins</strong> : formes particulières (dégagements, entrées).</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Tour : la pièce tourne, l'outil est fixe.</li>
+          <li>Organes : banc, poupée fixe, poupée mobile, chariot, tourelle.</li>
+          <li>Opérations : chariotage, dressage, perçage, alésage, filetage.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — La fraiseuse conventionnelle",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Architecture d'une fraiseuse</h3>
+        <p>La <strong>fraiseuse</strong> fait tourner une <strong>fraise</strong> (outil multi-dents) et déplace la pièce (ou la broche) selon plusieurs axes. Ses organes :</p>
+        <ul>
+          <li><strong>Le bâti (colonne)</strong> : support rigide.</li>
+          <li><strong>La broche</strong> : porte la fraise et tourne à grande vitesse.</li>
+          <li><strong>La table</strong> : support de la pièce (ou de l'étau), mobile selon X (longitudinal) et Y (transversal).</li>
+          <li><strong>Le chariot (console)</strong> : mobile selon Z (vertical).</li>
+          <li><strong>Le tête de fraisage</strong> : orientable sur les fraiseuses universelles.</li>
+        </ul>
+        <p>On distingue :</p>
+        <ul>
+          <li><strong>Fraiseuse horizontale</strong> : broche horizontale, pour surfacer et rainurer.</li>
+          <li><strong>Fraiseuse verticale</strong> : broche verticale, pour surfacer, percer, rainurer.</li>
+          <li><strong>Fraiseuse universelle</strong> : tête orientable, la plus polyvalente.</li>
+        </ul>
+      </div>
+
+      <figure>
+        <img data-image-id="machinesoutilscnc4_img02" alt="Schéma annoté d'une fraiseuse verticale montrant la broche, la table, l'étau et la colonne.">
+        <figcaption>L'architecture d'une fraiseuse verticale.</figcaption>
+      </figure>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Opérations courantes</div>
+        <ul>
+          <li><strong>Surfaçage</strong> : usinage d'une face plane.</li>
+          <li><strong>Rainurage</strong> : réalisation de rainures (clavetage, gorge).</li>
+          <li><strong>Épaulement</strong> : usinage d'une marche d'escalier.</li>
+          <li><strong>Moulurage</strong> : profils particuliers (avec fraises de forme).</li>
+          <li><strong>Perçage et alésage</strong> : avec forets ou alésoirs sur la broche.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Confondre tournage et fraisage. Au <strong>tournage</strong>, c'est la <strong>pièce</strong> qui tourne, l'outil est fixe. Au <strong>fraisage</strong>, c'est l'<strong>outil</strong> qui tourne, la pièce est fixe (ou se déplace lentement sur la table). Cette distinction est fondamentale : elle détermine le choix de la machine et de l'outil.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Fraiseuse : l'outil tourne, la pièce est fixe.</li>
+          <li>Horizontale, verticale ou universelle.</li>
+          <li>Surfaçage, rainurage, épaulement, perçage.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — Les outils de coupe",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Quatre matériaux principaux</h3>
+        <table>
+          <thead>
+            <tr><th>Matériau</th><th>Caractéristiques</th><th>Usage typique</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>HSS</strong> (acier rapide)</td><td>Économique, résistant aux chocs, mais sensible à la chaleur.</td><td>Petites vitesses, forets, outils à main, tarauds.</td></tr>
+            <tr><td><strong>Carbure</strong> (plaquettes)</td><td>Très dur, résiste à haute température, mais fragile.</td><td>Tournage et fraisage modernes, vitesses élevées.</td></tr>
+            <tr><td><strong>Céramique</strong></td><td>Extrêmement dur, résiste à très haute température, fragile.</td><td>Finitions à très haute vitesse sur aciers durs et fontes.</td></tr>
+            <tr><td><strong>Diamant</strong> (PCD)</td><td>Le plus dur, mais très fragile et cher.</td><td>Usinage de l'aluminium, des composites, des plastiques.</td></tr>
+          </tbody>
+        </table>
+        <p>Le choix dépend du <strong>matériau usiné</strong>, de la <strong>vitesse de coupe</strong> visée, de la <strong>durée de vie</strong> souhaitée et du <strong>coût</strong>. En atelier conventionnel, on utilise souvent le HSS pour les petits travaux et le carbure pour la production.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">La géométrie de l'outil</div>
+        <p>Un outil de coupe comporte plusieurs angles qui déterminent sa performance :</p>
+        <ul>
+          <li><strong>Angle de coupe</strong> : inclinaison de la face d'attaque. Plus il est grand, plus la coupe est facile mais plus l'outil est fragile.</li>
+          <li><strong>Angle de dépouille</strong> : évite le frottement entre l'outil et la pièce.</li>
+          <li><strong>Angle d'arête</strong> : formé par la face d'attaque et la face de dépouille.</li>
+          <li><strong>Rayon de bec</strong> : rayon de l'arête ; plus il est grand, meilleur est l'état de surface.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">L'usure de l'outil</div>
+        <ul>
+          <li><strong>Usure en dépouille</strong> : élargissement progressif de la face de dépouille.</li>
+          <li><strong>Usure en cratère</strong> : creusement de la face d'attaque.</li>
+          <li><strong>Rupture</strong> : casse de l'arête (choc, vibrations).</li>
+        </ul>
+        <p>Surveiller l'usure est indispensable : un outil usé chauffe, vibre, donne une mauvaise surface et peut casser en produisant un projectile dangereux.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>HSS, carbure, céramique, diamant.</li>
+          <li>Choix selon matériau, vitesse et coût.</li>
+          <li>Angles : coupe, dépouille, arête, rayon de bec.</li>
+          <li>Surveiller l'usure : sécurité et qualité.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — Les paramètres de coupe",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Quatre grandeurs à maîtriser</h3>
+        <p>Le succès d'une opération d'usinage dépend du bon réglage des <strong>paramètres de coupe</strong> :</p>
+        <ul>
+          <li><strong>Vitesse de coupe Vc</strong> (m/min) : vitesse relative entre l'outil et la pièce. Dépend du matériau usiné et du matériau de l'outil.</li>
+          <li><strong>Avance f</strong> (mm/tr en tournage, mm/dent en fraisage) : déplacement de l'outil par tour ou par dent.</li>
+          <li><strong>Profondeur de passe ap</strong> (mm) : épaisseur de matière enlevée à chaque passe.</li>
+          <li><strong>Vitesse de broche N</strong> (tr/min) : vitesse de rotation de la broche, calculée à partir de Vc.</li>
+        </ul>
+      </div>
+
+      <figure>
+        <img data-image-id="machinesoutilscnc4_img03" alt="Schéma illustrant la vitesse de coupe, l'avance et la profondeur de passe sur une opération de tournage.">
+        <figcaption>Les paramètres de coupe en tournage : Vc, f et ap.</figcaption>
+      </figure>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">La formule de la vitesse de broche</div>
+        <p>La vitesse de coupe et la vitesse de broche sont reliées par le diamètre de la pièce (tournage) ou de l'outil (fraisage) :</p>
+        <p><strong>N = (1000 × Vc) / (π × D)</strong></p>
+        <p>avec N en tr/min, Vc en m/min, D en mm. Le facteur 1000 convertit les mm en m.</p>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Exemple corrigé</div>
+        <p><strong>Donnée :</strong> on chariote un arbre en acier doux avec un outil carbure. Vc = 120 m/min, diamètre initial D = 50 mm.<br>
+        <strong>Question :</strong> quelle vitesse de broche N ?<br>
+        <strong>Formule :</strong> N = (1000 × 120) / (π × 50).<br>
+        <strong>Calcul :</strong> N = 120 000 / 157,1 ≈ <strong>764 tr/min</strong>.<br>
+        <strong>Interprétation :</strong> on règle la boîte de vitesses du tour sur la vitesse disponible la plus proche (par exemple 750 tr/min). Une vitesse trop élevée usera l'outil ; trop basse, elle donnera une surface rugueuse.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Utiliser une Vc trop élevée avec un outil HSS : l'outil chauffe, s'use rapidement, peut casser. Chaque couple outil/matière a une plage de Vc recommandée (par exemple 20-30 m/min pour HSS sur acier doux, 150-250 m/min pour carbure).</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Vc en m/min, f en mm/tr, ap en mm.</li>
+          <li>N = (1000 × Vc) / (π × D).</li>
+          <li>Choisir Vc selon outil et matériau.</li>
+          <li>Trop vite = usure ; trop lent = mauvais état de surface.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — La lubrification",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Pourquoi lubrifier ?</h3>
+        <p>La lubrification joue quatre rôles essentiels :</p>
+        <ul>
+          <li><strong>Réduire le frottement</strong> entre l'outil et la pièce.</li>
+          <li><strong>Évacuer la chaleur</strong> produite par la coupe (jusqu'à 80 % de la chaleur part dans le copeau et le lubrifiant).</li>
+          <li><strong>Améliorer l'état de surface</strong> (moins de rugosité).</li>
+          <li><strong>Protéger de la corrosion</strong> et évacuer les copeaux.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les types de lubrification</div>
+        <ul>
+          <li><strong>Huile soluble</strong> (émulsion eau + huile) : la plus courante, bon refroidissement, coût modéré.</li>
+          <li><strong>Huile entière</strong> : meilleure lubrification, mais moins bon refroidissement et plus salissante.</li>
+          <li><strong>Lubrification à sec</strong> : pour certains matériaux (fonte, certains aluminium) ou avec outils céramique. Nécessite une aspiration des poussières.</li>
+          <li><strong>Lubrification minimale (MQL)</strong> : micro-gouttelettes d'huile, économique et écologique.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Précautions</div>
+        <ul>
+          <li>Ne jamais inhaler les brouillards d'huile : ventiler l'atelier.</li>
+          <li>Éviter le contact prolongé avec la peau (dermatites).</li>
+          <li>Vérifier régulièrement la concentration de l'émulsion.</li>
+          <li>Récupérer et recycler les huiles usagées.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Lubrification : frottement, chaleur, surface, corrosion.</li>
+          <li>Huile soluble, huile entière, à sec, MQL.</li>
+          <li>Ventiler, éviter le contact peau.</li>
+          <li>Recycler les huiles usagées.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre IV — La préparation du travail",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Lire le dessin de définition</h3>
+        <p>Avant toute action, le technicien lit le <strong>dessin de définition</strong> de la pièce et repère :</p>
+        <ul>
+          <li>les vues (face, dessus, côté), les coupes et les sections ;</li>
+          <li>les <strong>cotes</strong> (dimensions nominales) et les <strong>tolérances</strong> (± 0,05 mm, H7, etc.) ;</li>
+          <li>les <strong>états de surface</strong> (Ra, Rz) ;</li>
+          <li>les <strong>matériaux</strong>, les traitements thermiques, les filetages ;</li>
+          <li>les <strong>formes particulières</strong> (chanfreins, gorges, rainures).</li>
+        </ul>
+        <p>Une lecture incomplète conduit à une pièce non conforme ou inutilisable.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Rédiger la gamme d'usinage</div>
+        <p>La <strong>gamme d'usinage</strong> est le document qui décrit, dans l'ordre, toutes les opérations nécessaires pour fabriquer la pièce. Elle précise pour chaque étape :</p>
+        <ul>
+          <li>la <strong>machine</strong> utilisée (tour, fraiseuse, perceuse) ;</li>
+          <li>l'<strong>outil</strong> et ses paramètres (Vc, f, ap) ;</li>
+          <li>le <strong>montage</strong> de la pièce (mandrin, étau, entre-pointes) ;</li>
+          <li>le <strong>temps</strong> prévu ;</li>
+          <li>le <strong>contrôle</strong> à réaliser.</li>
+        </ul>
+        <p>Exemple de gamme pour un arbre simple : sciage du brut → montage entre-pointes → chariotage des portées → dressage des faces → perçage et taraudage → contrôle.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Montage des pièces et des outils</div>
+        <ul>
+          <li><strong>Au tour</strong> : mandrin 3 mors (pièces courtes), mandrin 4 mors (pièces excentrées), entre-pointes (pièces longues), plateau.</li>
+          <li><strong>À la fraiseuse</strong> : étau (pièces petites et moyennes), brides (grandes pièces), diviseur (usinages angulaires ou réguliers).</li>
+          <li><strong>Outils</strong> : portes-outils, pinces, mandrins de perçage, fraises.</li>
+        </ul>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Négliger le sens de montage de la pièce ou de l'outil. Une fraise montée à l'envers tourne dans le mauvais sens ; un foret mal engagé peut casser et projeter des fragments. <strong>La préparation est une étape de sécurité autant que de qualité.</strong></p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Lire le plan : cotes, tolérances, états de surface.</li>
+          <li>Gamme d'usinage : opérations dans l'ordre.</li>
+          <li>Montage pièce et outils adaptés.</li>
+          <li>Préparer = qualité + sécurité.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre V — L'architecture d'une CNC",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Une machine pilotée par programme</h3>
+        <p>Une <strong>machine-outil à commande numérique (CNC)</strong> est pilotée par un programme informatique qui commande les déplacements des axes et la rotation de la broche. Ses organes :</p>
+        <ul>
+          <li><strong>Les axes</strong> : X, Y, Z (linéaires) et parfois A, B, C (rotatifs). Chaque axe est équipé d'un moteur (souvent un servomoteur) et d'un codeur de position.</li>
+          <li><strong>La broche</strong> : porte l'outil (fraiseuse) ou la pièce (tour), avec variation de vitesse.</li>
+          <li><strong>Le magasin d'outils</strong> : changeur automatique qui amène l'outil voulu à la broche (M06).</li>
+          <li><strong>Le pupitre de commande</strong> : écran, clavier, boutons (départ cycle, arrêt, arrêt d'urgence, jog).</li>
+          <li><strong>Le bâti</strong> : structure rigide et précise (souvent en fonte ou en béton polymère).</li>
+        </ul>
+      </div>
+
+      <figure>
+        <img data-image-id="machinesoutilscnc4_img04" alt="Photo annotée d'une machine CNC montrant les axes X, Y, Z, la broche et le pupitre de commande.">
+        <figcaption>L'architecture d'une machine-outil à commande numérique.</figcaption>
+      </figure>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Avantages et inconvénients</div>
+        <table>
+          <thead>
+            <tr><th>Avantages</th><th>Inconvénients</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Précision et répétabilité élevées.</td><td>Coût d'investissement important.</td></tr>
+            <tr><td>Productivité (usinage rapide et continu).</td><td>Maintenance spécialisée.</td></tr>
+            <tr><td>Flexibilité (changement de programme immédiat).</td><td>Formation nécessaire.</td></tr>
+            <tr><td>Usinage de formes complexes impossibles en conventionnel.</td><td>Sensible aux coupures d'énergie et aux pannes électroniques.</td></tr>
+            <tr><td>Réduction des erreurs humaines sur les dimensions.</td><td>Nécessite un poste de programmation (CAO/FAO).</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Axes X, Y, Z (+ A, B, C), broche, magasin d'outils, pupitre.</li>
+          <li>Précision, productivité, flexibilité.</li>
+          <li>Coût, maintenance, formation.</li>
+          <li>Une CNC ne remplace pas la connaissance de l'usinage.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre V — Les modes de fonctionnement d'une CNC",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Quatre modes principaux</h3>
+        <ul>
+          <li><strong>Mode manuel (Jog)</strong> : déplacement des axes à l'aide des boutons ou de la manivelle électronique. Utile pour le montage, le réglage, la prise d'origine.</li>
+          <li><strong>Mode MDI</strong> (Manual Data Input) : saisie et exécution d'un bloc d'instructions unique. Utile pour un perçage simple, une mesure, un déplacement ponctuel.</li>
+          <li><strong>Mode édition</strong> : création et modification du programme dans la mémoire de la machine.</li>
+          <li><strong>Mode automatique</strong> : exécution complète du programme, bloc par bloc ou en continu.</li>
+        </ul>
+        <p>Certains pupitres proposent aussi : <strong>DNC</strong> (exécution depuis un PC externe), <strong>MDI rapide</strong>, <strong>retour à l'origine</strong>, <strong>simulation graphique</strong> (vérification du programme sans usiner).</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Bonnes pratiques</div>
+        <ul>
+          <li><strong>Prise d'origine</strong> : toujours positionner la pièce par rapport à l'origine programme (G54-G59) avant d'usiner.</li>
+          <li><strong>Simulation</strong> : avant la première pièce, simuler le programme en mode graphique pour détecter les collisions.</li>
+          <li><strong>Première pièce</strong> : exécuter en mode bloc par bloc, l'avance réduite, pour vérifier chaque étape.</li>
+          <li><strong>Arrêt d'urgence</strong> : accessible et testé avant tout cycle.</li>
+        </ul>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Exécuter un programme en mode automatique sans simulation ni vérification. Une erreur de signe (X-20 au lieu de X+20) peut provoquer une collision outil/mandrin et endommager la machine. <strong>Toujours simuler avant d'usiner.</strong></p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Manuel, MDI, édition, automatique.</li>
+          <li>Prise d'origine avant usinage.</li>
+          <li>Simulation avant exécution.</li>
+          <li>Première pièce en bloc par bloc.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VI — La structure d'un programme ISO",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Anatomie d'un programme</h3>
+        <p>Un programme CNC en code ISO (norme ISO 6983) est composé de :</p>
+        <ul>
+          <li><strong>Numéro de programme</strong> : O0001 par exemple.</li>
+          <li><strong>Blocs</strong> : chaque ligne porte un numéro N (N10, N20…) et une ou plusieurs instructions.</li>
+          <li><strong>Fonctions G</strong> : commandes préparatoires (déplacements, unités, coordonnées).</li>
+          <li><strong>Coordonnées</strong> : X, Y, Z, éventuellement I, J, K pour les centres d'arcs.</li>
+          <li><strong>Paramètres</strong> : F (avance), S (vitesse broche), T (numéro d'outil).</li>
+          <li><strong>Fonctions M</strong> : commandes auxiliaires (broche, arrosage, fin de programme).</li>
+        </ul>
+        <p>Le programme se termine typiquement par <strong>M30</strong> (fin de programme, retour au début).</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Exemple de squelette</div>
+        <pre style="white-space:pre-wrap;background:#f4f4f4;padding:10px;border-radius:6px;">
+O0001 ;
+N10 G21 G90 ;      (mm, coordonnées absolues)
+N20 G00 X0 Y0 Z5 ; (déplacement rapide au-dessus de la pièce)
+...                 (usinage)
+Nxx M30 ;           (fin de programme)
+        </pre>
+        <p>Ce squelette minimal montre les éléments indispensables : numéro, unités, mode, déplacement initial, usinage, fin.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Oxxxx = numéro de programme.</li>
+          <li>Nxx = numéro de bloc.</li>
+          <li>G, X-Y-Z, F, S, T, M.</li>
+          <li>M30 = fin de programme.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VI — Les fonctions G et M",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Fonctions G (préparatoires)</h3>
+        <table>
+          <thead>
+            <tr><th>Code</th><th>Signification</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>G00</td><td>Déplacement rapide (sans usinage)</td></tr>
+            <tr><td>G01</td><td>Interpolation linéaire à avance programmée</td></tr>
+            <tr><td>G02 / G03</td><td>Interpolation circulaire (sens horaire / antihoraire)</td></tr>
+            <tr><td>G20 / G21</td><td>Unités pouces / millimètres</td></tr>
+            <tr><td>G90 / G91</td><td>Coordonnées absolues / relatives</td></tr>
+            <tr><td>G54 à G59</td><td>Origines pièce (décalages)</td></tr>
+            <tr><td>G81</td><td>Cycle de perçage</td></tr>
+            <tr><td>G84</td><td>Cycle de taraudage / filetage</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Fonctions M (auxiliaires)</div>
+        <table>
+          <thead>
+            <tr><th>Code</th><th>Signification</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>M03 / M04</td><td>Rotation broche sens horaire / antihoraire</td></tr>
+            <tr><td>M05</td><td>Arrêt broche</td></tr>
+            <tr><td>M06</td><td>Changement d'outil</td></tr>
+            <tr><td>M08 / M09</td><td>Arrosage marche / arrêt</td></tr>
+            <tr><td>M30</td><td>Fin de programme et retour au début</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Coordonnées absolues vs relatives</div>
+        <ul>
+          <li><strong>G90 (absolues)</strong> : chaque position est donnée par rapport à l'origine pièce (point de référence fixe). Plus lisible.</li>
+          <li><strong>G91 (relatives)</strong> : chaque position est donnée par rapport à la position précédente (incréments). Utile pour des répétitions.</li>
+        </ul>
+        <p>Exemple : à partir de X=10, se déplacer à X=30.<br>
+        En G90 : <code>G90 X30</code>. En G91 : <code>G91 X20</code> (déplacement de +20).</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>G00 rapide ; G01 linéaire ; G02/G03 circulaire.</li>
+          <li>G90 absolu ; G91 relatif.</li>
+          <li>M03 broche ; M05 arrêt ; M30 fin.</li>
+          <li>Maîtriser ces codes = base du programme CNC.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VI — Exemple de programme de chariotage",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Énoncé</div>
+        <h3>Réduire un diamètre de 45 mm à 40 mm sur 50 mm</h3>
+        <p>On dispose d'un brut cylindrique de diamètre 45 mm. On veut réduire son diamètre à 40 mm sur une longueur de 50 mm, puis dégager l'outil. On travaille en mm (G21), en coordonnées absolues (G90), avec une avance de 0,2 mm/tr.</p>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Programme commenté</div>
+        <pre style="white-space:pre-wrap;background:#f4f4f4;padding:10px;border-radius:6px;">
+O0002 ;
+N10 G21 G90 ;             (mm, coordonnées absolues)
+N20 G00 X45 Z2 ;          (approche rapide au-dessus du brut)
+N30 G01 Z0 F0.2 ;         (mise au contact de la face)
+N40 X40 ;                 (descente au diamètre 40)
+N50 G01 Z-50 F0.2 ;       (chariotage sur 50 mm)
+N60 G00 X45 Z2 ;          (dégagement rapide)
+N70 M30 ;                 (fin de programme)
+        </pre>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Décryptage ligne par ligne</div>
+        <ul>
+          <li><strong>N10</strong> : on fixe les unités (mm) et le mode absolu.</li>
+          <li><strong>N20</strong> : on s'approche rapidement au-dessus et à droite du brut (Z = 2 mm de sécurité).</li>
+          <li><strong>N30</strong> : on met l'outil en contact avec la face avant à Z = 0 (F de 0,2 mm/tr).</li>
+          <li><strong>N40</strong> : on descend au diamètre 40 mm (X = 40).</li>
+          <li><strong>N50</strong> : on chariote sur 50 mm en Z négatif.</li>
+          <li><strong>N60</strong> : on dégage rapidement pour ne pas heurter la pièce.</li>
+          <li><strong>N70</strong> : fin de programme.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Oublier <strong>G21</strong> (unités mm) ou <strong>G90</strong> (absolu). Si la machine reste en pouces par défaut, la pièce sera 25,4 fois plus grande ou plus petite. Si elle est en relatif, le déplacement sera cumulatif et faussera la position. Toujours déclarer les unités et le mode en début de programme.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>G21 G90 en tête pour être clair.</li>
+          <li>G00 pour l'approche rapide.</li>
+          <li>G01 avec F pour l'usinage.</li>
+          <li>G00 pour le dégagement.</li>
+          <li>M30 en fin.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VII — Le contrôle dimensionnel",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les instruments de mesure</h3>
+        <table>
+          <thead>
+            <tr><th>Instrument</th><th>Précision</th><th>Usage</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Pied à coulisse</strong></td><td>0,02 ou 0,05 mm</td><td>Mesures extérieures, intérieures, profondeurs.</td></tr>
+            <tr><td><strong>Micromètre</strong></td><td>0,01 mm</td><td>Mesures extérieures précises.</td></tr>
+            <tr><td><strong>Jauge de profondeur</strong></td><td>0,05 mm</td><td>Mesures de profondeurs et de trous.</td></tr>
+            <tr><td><strong>Comparateur</strong></td><td>0,001 à 0,01 mm</td><td>Écarts par rapport à une référence (contrôle relatif).</td></tr>
+            <tr><td><strong>Rugosimètre</strong></td><td>Ra, Rz</td><td>État de surface (rugosité).</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <figure>
+        <img data-image-id="machinesoutilscnc4_img05" alt="Pied à coulisse et micromètre utilisés pour le contrôle dimensionnel d'une pièce mécanique.">
+        <figcaption>Le contrôle dimensionnel : pied à coulisse et micromètre.</figcaption>
+      </figure>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les tolérances</div>
+        <p>Une <strong>tolérance</strong> est l'écart admissible autour d'une dimension nominale. Exemple : une cote <strong>25 ± 0,05 mm</strong> signifie que la pièce est acceptable si sa dimension réelle est comprise entre 24,95 mm et 25,05 mm. En dehors, elle est <strong>non conforme</strong>.</p>
+        <p>Les tolérances sont indiquées sur le dessin de définition sous forme :</p>
+        <ul>
+          <li>numérique : 25 ± 0,05 ;</li>
+          <li>ou symbolique (qualités ISO) : 25 H7, 25 g6, etc., qui correspondent à des intervalles précis dans les tableaux normalisés.</li>
+        </ul>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Exemple corrigé</div>
+        <p><strong>Donnée :</strong> une cote est spécifiée 25 ± 0,05 mm. Le pied à coulisse indique 25,08 mm.<br>
+        <strong>Question :</strong> la pièce est-elle conforme ?<br>
+        <strong>Raisonnement :</strong> l'intervalle admissible est [24,95 ; 25,05]. 25,08 &gt; 25,05.<br>
+        <strong>Réponse :</strong> <strong>Non conforme</strong>. Il faut soit retoucher la pièce (si la cote peut être reprise), soit la rebuter.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Mesurer sans vérifier le zéro de l'instrument. Un pied à coulisse déréglé ou un micromètre dont le zéro est faux fausse toutes les mesures. <strong>Toujours vérifier le zéro avant de mesurer</strong>, et nettoyer les becs de mesure.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Pied à coulisse (0,02-0,05 mm), micromètre (0,01 mm), comparateur.</li>
+          <li>Tolérance : intervalle admissible.</li>
+          <li>25 ± 0,05 = [24,95 ; 25,05].</li>
+          <li>Vérifier le zéro avant de mesurer.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VII — La conformité et le rapport d'usinage",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Qu'est-ce qu'une pièce conforme ?</h3>
+        <p>Une pièce est <strong>conforme</strong> si toutes ses caractéristiques respectent le dessin de définition :</p>
+        <ul>
+          <li>dimensions dans les tolérances ;</li>
+          <li>états de surface conformes (Ra, Rz) ;</li>
+          <li>formes et positions (perpendicularité, parallélisme, concentricité) dans les tolérances géométriques ;</li>
+          <li>matériau et traitements conformes.</li>
+        </ul>
+        <p>Si une seule caractéristique est hors tolérance, la pièce est <strong>non conforme</strong> : elle peut être retouchée (si la cote le permet), rebutée ou dérogée (avec accord du bureau d'études, cas rare).</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Le rapport d'usinage</div>
+        <p>Le <strong>rapport d'usinage</strong> est un document qui accompagne la pièce finie et atteste de sa qualité. Il comporte :</p>
+        <ul>
+          <li>l'identification de la pièce (nom, numéro de plan, matériau) ;</li>
+          <li>la gamme d'usinage suivie ;</li>
+          <li>les paramètres de coupe réellement utilisés ;</li>
+          <li>les résultats des contrôles dimensionnels (avec valeurs mesurées) ;</li>
+          <li>les observations (incidents, retouches, remarques) ;</li>
+          <li>la signature du technicien et la date.</li>
+        </ul>
+        <p>Le rapport est essentiel pour la traçabilité et pour le retour d'expérience en cas de problème.</p>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Bonnes pratiques</div>
+        <ul>
+          <li>Numéroter les pièces et conserver les rapports pendant des années.</li>
+          <li>Photographier les pièces sensibles avec leur rapport.</li>
+          <li>Consigner les <strong>écarts</strong> observés, même minimes, pour ajuster les réglages la prochaine fois.</li>
+          <li>Signer et dater : la traçabilité engage la responsabilité du technicien.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Conformité = toutes les caractéristiques respectées.</li>
+          <li>Une seule non-conformité = pièce non conforme.</li>
+          <li>Rapport d'usinage = traçabilité et qualité.</li>
+          <li>Consigner les écarts pour progresser.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VIII — Applications RDC et projet d'usinage",
+    content: `
+      <div class="bloc cas">
+        <div class="bloc-label">Contextualisation</div>
+        <h3>L'usinage dans l'industrie congolaise</h3>
+        <ul>
+          <li><strong>Ateliers de Kinshasa</strong> : fabrication de pièces de rechange pour l'agroalimentaire (moulins, malaxeurs, pompes), les transports, les infrastructures.</li>
+          <li><strong>Lubumbashi et le Lualaba</strong> : maintenance des équipements miniers (concasseurs, pompes, convoyeurs, treuils).</li>
+          <li><strong>Goma</strong> : réparation des machines agricoles et des véhicules.</li>
+          <li><strong>Port de Boma</strong> : usinage de pièces pour grues et systèmes de levage.</li>
+        </ul>
+        <p>Le technicien A2 qui maîtrise l'usinage devient un acteur clé de la <strong>maintenance locale</strong> : il fabrique une pièce en quelques jours au lieu d'attendre une importation de plusieurs semaines. C'est un levier économique majeur.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Démarche de projet</div>
+        <ol>
+          <li><strong>Analyser le plan</strong> de définition (cotes, tolérances, matériaux).</li>
+          <li><strong>Préparer la gamme</strong> d'usinage (opérations, machines, outils, paramètres).</li>
+          <li><strong>Préparer la machine</strong> : montage pièce, montage outils, prise d'origine.</li>
+          <li><strong>Réaliser</strong> l'usinage en respectant les paramètres et la sécurité.</li>
+          <li><strong>Contrôler</strong> la pièce (dimensions, états de surface, conformité).</li>
+          <li><strong>Rédiger</strong> le rapport d'usinage.</li>
+        </ol>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Projet type : arbre de transmission</div>
+        <p><strong>Pièce :</strong> arbre de transmission simple pour une pompe minière. Brut : barre d'acier doux Ø50, longueur 150 mm. Portée utile : Ø40 sur 80 mm, avec deux épaulements et un filetage M30 en bout.</p>
+        <p><strong>Gamme simplifiée :</strong></p>
+        <ol>
+          <li>Sciage du brut à 150 mm.</li>
+          <li>Montage entre-pointes sur le tour.</li>
+          <li>Chariotage des portées à Ø40 sur 80 mm.</li>
+          <li>Dressage des deux faces.</li>
+          <li>Filetage M30 en bout.</li>
+          <li>Contrôle dimensionnel (diamètres, longueur, filetage).</li>
+          <li>Rapport d'usinage.</li>
+        </ol>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>L'usinage réduit les délais et les coûts en RDC.</li>
+          <li>Démarche : plan → gamme → machine → usinage → contrôle → rapport.</li>
+          <li>Compétence stratégique pour la maintenance.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Synthèse générale du cours",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Ce qu'il faut retenir</div>
+        <h3>Les idées maîtresses</h3>
+        <ol>
+          <li><strong>Usinage = enlèvement de matière</strong> pour obtenir une pièce conforme.</li>
+          <li><strong>Procédés</strong> : tournage, fraisage, perçage, alésage, sciage, rectification.</li>
+          <li><strong>Tour</strong> : pièce en rotation. <strong>Fraiseuse</strong> : outil en rotation.</li>
+          <li><strong>Outils</strong> : HSS, carbure, céramique, diamant ; choix selon matériau et vitesse.</li>
+          <li><strong>Paramètres</strong> : Vc, f, ap, N. Formule : N = (1000 × Vc) / (π × D).</li>
+          <li><strong>Gamme d'usinage</strong> : ordre des opérations, machines, outils, contrôles.</li>
+          <li><strong>CNC</strong> : axes X, Y, Z ; broche ; magasin d'outils ; modes manuel, MDI, automatique.</li>
+          <li><strong>Programme ISO</strong> : G00, G01, G02/G03, G90/G91, M03/M05, M30.</li>
+          <li><strong>Contrôle</strong> : pied à coulisse, micromètre, comparateur, rugosimètre.</li>
+          <li><strong>Sécurité</strong> : EPI, protecteurs, consignation, gestion des copeaux.</li>
+        </ol>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Tableau récapitulatif des fonctions G et M essentielles</div>
+        <table>
+          <thead>
+            <tr><th>Code</th><th>Rôle</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>G00</td><td>Déplacement rapide</td></tr>
+            <tr><td>G01</td><td>Interpolation linéaire à F</td></tr>
+            <tr><td>G02 / G03</td><td>Arc horaire / antihoraire</td></tr>
+            <tr><td>G20 / G21</td><td>Pouces / mm</td></tr>
+            <tr><td>G90 / G91</td><td>Absolu / relatif</td></tr>
+            <tr><td>G54 à G59</td><td>Origines pièce</td></tr>
+            <tr><td>M03 / M04</td><td>Broche horaire / antihoraire</td></tr>
+            <tr><td>M05</td><td>Arrêt broche</td></tr>
+            <tr><td>M06</td><td>Changement d'outil</td></tr>
+            <tr><td>M08 / M09</td><td>Arrosage / arrêt</td></tr>
+            <tr><td>M30</td><td>Fin de programme</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les erreurs à ne plus commettre</div>
+        <ul>
+          <li>Travailler sans lunettes ou avec des vêtements flottants.</li>
+          <li>Confondre tournage et fraisage.</li>
+          <li>Choisir une Vc trop élevée pour l'outil utilisé.</li>
+          <li>Oublier G21 ou G90 en tête de programme.</li>
+          <li>Exécuter un programme sans simulation.</li>
+          <li>Mesurer sans vérifier le zéro de l'instrument.</li>
+          <li>Négliger le rapport d'usinage.</li>
+          <li>Retirer un protecteur de sécurité.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Évaluation finale — Machines-Outils CNC",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Consigne</div>
+        <p>Répondez aux 22 questions ci-dessous. Chaque question a une seule bonne réponse. Cliquez sur « Valider mes réponses » pour obtenir votre score. Bonne chance !</p>
+      </div>
+
+      <div class="quiz-container">
+        <div id="quizQuestions"></div>
+        <button id="submitQuiz" class="quiz-btn-submit">
+          Valider mes réponses
+        </button>
+        <div id="quizResult" class="quiz-result"></div>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Conseil</div>
+        <p>En cas d'erreur, relisez la diapositive correspondante. Les questions couvrent les procédés, les machines, les outils, les paramètres, la programmation, le contrôle et la sécurité.</p>
+      </div>
+    `
+  }
+];
+const questions = [
+  {
+    text: "L'usinage consiste à :",
+    options: [
+      "Ajouter de la matière pour former une pièce",
+      "Enlever de la matière pour obtenir une pièce conforme à un plan",
+      "Souder deux pièces",
+      "Peindre la surface d'une pièce"
+    ],
+    correct: 1
+  },
+  {
+    text: "Au tournage, c'est :",
+    options: [
+      "L'outil qui tourne",
+      "Les deux (pièce et outil) qui tournent",
+      "La pièce qui tourne et l'outil qui reste fixe",
+      "Ni la pièce ni l'outil ne tournent"
+    ],
+    correct: 2
+  },
+  {
+    text: "Au fraisage, c'est :",
+    options: [
+      "L'outil (la fraise) qui tourne, la pièce est fixe",
+      "La pièce qui tourne, l'outil est fixe",
+      "Les deux qui tournent à la même vitesse",
+      "Aucun élément ne tourne"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le HSS est :",
+    options: [
+      "Un carbure",
+      "Un acier rapide",
+      "Une céramique",
+      "Un diamant synthétique"
+    ],
+    correct: 1
+  },
+  {
+    text: "La vitesse de coupe Vc s'exprime en :",
+    options: [
+      "m/min",
+      "m/s²",
+      "tr/min",
+      "mm/tr"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'avance f en tournage s'exprime en :",
+    options: [
+      "m/min",
+      "mm/tr",
+      "tr/min",
+      "mm"
+    ],
+    correct: 1
+  },
+  {
+    text: "La profondeur de passe ap s'exprime en :",
+    options: [
+      "m/min",
+      "tr/min",
+      "mm",
+      "mm/tr"
+    ],
+    correct: 2
+  },
+  {
+    text: "La vitesse de broche N se calcule par :",
+    options: [
+      "N = (1000 × Vc) / (π × D)",
+      "N = Vc × π × D",
+      "N = π × D / Vc",
+      "N = Vc × D"
+    ],
+    correct: 0
+  },
+  {
+    text: "La lubrification en usinage sert notamment à :",
+    options: [
+      "Augmenter la vitesse de coupe",
+      "Réduire le frottement et évacuer la chaleur",
+      "Changer la couleur du copeau",
+      "Remplacer l'outil de coupe"
+    ],
+    correct: 1
+  },
+  {
+    text: "La gamme d'usinage décrit :",
+    options: [
+      "Les opérations à réaliser, dans l'ordre, avec machines et outils",
+      "Le prix de la pièce",
+      "Le nom du client",
+      "La couleur de la pièce"
+    ],
+    correct: 0
+  },
+  {
+    text: "Une machine CNC est pilotée par :",
+    options: [
+      "Un programme informatique",
+      "Un levier manuel uniquement",
+      "Une manivelle mécanique",
+      "Un opérateur qui agit directement sur l'outil"
+    ],
+    correct: 0
+  },
+  {
+    text: "Les axes linéaires principaux d'une CNC sont :",
+    options: [
+      "A, B, C",
+      "U, V, W",
+      "X, Y, Z",
+      "I, J, K"
+    ],
+    correct: 2
+  },
+  {
+    text: "G00 signifie :",
+    options: [
+      "Interpolation linéaire à avance programmée",
+      "Déplacement rapide sans usinage",
+      "Interpolation circulaire horaire",
+      "Fin de programme"
+    ],
+    correct: 1
+  },
+  {
+    text: "G01 signifie :",
+    options: [
+      "Déplacement rapide",
+      "Interpolation linéaire à avance programmée",
+      "Interpolation circulaire",
+      "Cycle de perçage"
+    ],
+    correct: 1
+  },
+  {
+    text: "G02 et G03 signifient :",
+    options: [
+      "Déplacements rapides",
+      "Interpolations linéaires",
+      "Interpolations circulaires (horaire / antihoraire)",
+      "Fin de programme"
+    ],
+    correct: 2
+  },
+  {
+    text: "G90 signifie :",
+    options: [
+      "Coordonnées relatives",
+      "Coordonnées absolues",
+      "Unités en pouces",
+      "Arrêt de la broche"
+    ],
+    correct: 1
+  },
+  {
+    text: "G91 signifie :",
+    options: [
+      "Coordonnées absolues",
+      "Coordonnées relatives",
+      "Unités en mm",
+      "Changement d'outil"
+    ],
+    correct: 1
+  },
+  {
+    text: "M03 signifie :",
+    options: [
+      "Arrêt de la broche",
+      "Rotation de la broche dans le sens horaire",
+      "Changement d'outil",
+      "Fin de programme"
+    ],
+    correct: 1
+  },
+  {
+    text: "M30 signifie :",
+    options: [
+      "Rotation de la broche",
+      "Arrêt de la broche",
+      "Fin de programme et retour au début",
+      "Arrosage"
+    ],
+    correct: 2
+  },
+  {
+    text: "Le pied à coulisse permet de mesurer :",
+    options: [
+      "Uniquement la température",
+      "Uniquement la rugosité",
+      "Uniquement la dureté",
+      "Dimensions extérieures, intérieures et profondeurs"
+    ],
+    correct: 3
+  },
+  {
+    text: "Une cote spécifiée 25 ± 0,05 mm est conforme si la mesure vaut :",
+    options: [
+      "25,10 mm",
+      "25,07 mm",
+      "24,97 mm",
+      "26,00 mm"
+    ],
+    correct: 2
+  },
+  {
+    text: "L'objectif principal du cours de machines-outils CNC en 4ᵉ Humanité Technique est de :",
+    options: [
+      "Remplacer l'ingénieur en fabrication mécanique",
+      "Préparer, réaliser et contrôler des opérations d'usinage simples en sécurité",
+      "Fabriquer des machines CNC",
+      "Construire des centrales hydroélectriques"
+    ],
+    correct: 1
+  }
+];
+
+try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+        questions.forEach(function (q) {
+            if (!q.text) q.text = q.question || q.q || q.enonce || q.titre || "";
+            if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+            if (typeof q.correct === "undefined") {
+                if (typeof q.answer !== "undefined") q.correct = q.answer;
+                else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+            }
+        });
+    }
+} catch (e) {}
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+const pageTitle = document.getElementById('pageTitle');
+pageTitle.textContent = "ECOLIA · " + COURSE_TITLE;
+document.title = "ECOLIA — " + COURSE_TITLE;
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim() || slides.length === 0) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp("(" + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ")", 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderEmptyState() {
+    contentDiv.innerHTML = '<div class="empty-state"><div class="icon">·</div><span class="tag">Bientôt disponible</span><h2>' + COURSE_TITLE + '</h2><p>Ce cours est en préparation. Le contenu sera ajouté prochainement.</p></div>';
+    slideCounterSpan.textContent = '0/0';
+    progressFill.style.width = '0%';
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    counterSpan.textContent = '—';
+}
+
+function renderQuiz() {
+    const qc = document.getElementById('quizQuestions');
+    if (!qc) return;
+    if (typeof questions === 'undefined' || questions.length === 0) {
+        qc.innerHTML = '<p style="color:#666;font-style:italic;">Quiz bientot disponible.</p>';
+        return;
+    }
+    let html = '';
+    questions.forEach((q, i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o, k) => {
+            html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>';
+        });
+        html += '</div>';
+    });
+    qc.innerHTML = html;
+    const submitBtn = document.getElementById('submitQuiz');
+    if (submitBtn) {
+        submitBtn.onclick = () => {
+            let score = 0;
+            questions.forEach((q, i) => {
+                const s = document.querySelector('input[name="q' + i + '"]:checked');
+                if (s && parseInt(s.value) === q.correct) score++;
+            });
+            const pct = Math.round(score/questions.length*100);
+            document.getElementById('quizResult').innerHTML =
+                '<div style="background:var(--bg2);padding:16px;border-radius:10px;margin-top:14px;">' +
+                '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong></div>';
+        };
+    }
+}
+
+function renderSlide(index, keepHighlight) {
+    if (keepHighlight === undefined) keepHighlight = true;
+    if (slides.length === 0) { renderEmptyState(); return; }
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    if (index === slides.length - 1) renderQuiz();
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    if (slides.length === 0) return;
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (slides.length && currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (slides.length && currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+<!-- ECOLIA_IMAGE_LOADER_START -->
+<script>
+(function () {
+  var SITE = "https://ecolia-course.github.io/";
+  var NATIVE = false;
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function abs(u) { return /^(https?:|data:|blob:)/i.test(u) ? u : (NATIVE ? SITE + u.replace(/^(\.\/|\/)+/, "") : u); }
+  function ext(u) { var m = String(u).split("?")[0].match(/\.(jpe?g|png|gif|webp|svg)$/i); return m ? m[1].toLowerCase() : "jpg"; }
+  function hide(img) { img.onerror = null; img.style.display = "none"; }
+  var table = null, queue = [], queued = {}, running = false;
+  function enqueue(full, fn) {
+    if (queued[fn]) return;
+    queued[fn] = 1; queue.push([full, fn]);
+    if (!running) { running = true; setTimeout(next, 2500); }
+  }
+  function next() {
+    if (!queue.length) { running = false; return; }
+    if (!navigator.onLine) { running = false; return; }
+    var q = queue.shift(), t0 = Date.now();
+    try { CoursInterface.download(q[0], q[1]); } catch (e) { return setTimeout(next, 500); }
+    (function wait() {
+      var ok = false;
+      try { ok = !!CoursInterface.exists(q[1]); } catch (e) {}
+      if (ok) setTimeout(next, 1500);
+      else if (Date.now() - t0 > 40000) next();
+      else setTimeout(wait, 700);
+    })();
+  }
+  function exists(fn) { try { return !!CoursInterface.exists(fn); } catch (e) { return false; } }
+  function show(img) {
+    if (!table || img.getAttribute("data-ecolia-done")) return;
+    var id = img.getAttribute("data-image-id");
+    var url = table[id];
+    if (typeof url !== "string" || !url.length) { console.warn("ECOLIA : image absente du JSON :", id); return; }
+    img.setAttribute("data-ecolia-done", "1");
+    if (!NATIVE) { img.onerror = function () { hide(img); }; img.setAttribute("src", url); return; }
+    var full = abs(url), fn = "img_" + id + "." + ext(url);
+    if (exists(fn)) {
+      img.onerror = function () {
+        try { CoursInterface["delete"](fn); } catch (e) {}
+        queued[fn] = 0;
+        img.onerror = function () { hide(img); };
+        img.setAttribute("src", full);
+      };
+      img.setAttribute("src", "https://app.local/cours/" + fn);
+    } else {
+      img.onerror = function () { hide(img); };
+      img.setAttribute("src", full);
+      enqueue(full, fn);
+    }
+  }
+  function scan(root) {
+    if (!root || !root.querySelectorAll) return;
+    if (root.matches && root.matches("img[data-image-id]")) show(root);
+    root.querySelectorAll("img[data-image-id]").forEach(show);
+  }
+  function prefetchAll() {
+    var ids = {};
+    try { JSON.stringify(slides).replace(/data-image-id=\\?"([^"\\]+)/g, function (m, id) { ids[id] = 1; }); } catch (e) {}
+    Object.keys(ids).forEach(function (id) {
+      var url = table[id];
+      if (typeof url !== "string" || !url.length) return;
+      var fn = "img_" + id + "." + ext(url);
+      if (!exists(fn)) enqueue(abs(url), fn);
+    });
+  }
+  function start(tbl) {
+    table = tbl;
+    scan(document.body);
+    new MutationObserver(function (muts) {
+      muts.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.nodeType === 1) scan(n); }); });
+    }).observe(document.body, { childList: true, subtree: true });
+    if (NATIVE) prefetchAll();
+  }
+  var JSON_URL = NATIVE ? SITE + "images_ecolia.json" : "images_ecolia.json";
+  var KEY = "ecolia_images_json";
+  fetch(JSON_URL, NATIVE ? { cache: "no-cache" } : undefined)
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (table) { if (NATIVE) lsSet(KEY, JSON.stringify(table)); start(table); })
+    .catch(function (e) {
+      var saved = null;
+      if (NATIVE) { try { saved = JSON.parse(lsGet(KEY) || "null"); } catch (x) {} }
+      if (saved) start(saved);
+      else console.warn("ECOLIA : JSON des images indisponible.", e);
+    });
+})();
+</script>
+<!-- ECOLIA_IMAGE_LOADER_END -->
+
+
+
+<!-- ECOLIA_AUDIO_PLAYER_START -->
+<style>
+  #ecolia-audio-btn, #ecolia-dl-btn {
+    width: 30px; height: 30px; min-width: 30px; padding: 0; margin: 0 4px 0 0;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    cursor: pointer; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent; outline: none;
+  }
+  #ecolia-audio-btn { border: none; background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-dl-btn { border: 1.5px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb); }
+  #ecolia-dl-btn.ecolia-full { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-btn.ecolia-fixed { position: fixed; top: 8px; left: 8px; z-index: 2147483000; }
+  #ecolia-audio-btn:active, #ecolia-dl-btn:active { transform: scale(.92); }
+  #ecolia-audio-btn svg, #ecolia-dl-btn svg { width: 15px; height: 15px; fill: currentColor; pointer-events: none; }
+  #ecolia-audio-btn.ecolia-off, #ecolia-dl-btn.ecolia-off { display: none; }
+  #ecolia-audio-banner {
+    display: none; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0;
+    padding: 8px 14px; font-size: .82rem; line-height: 1.35;
+    background: var(--soft, #eef3fb); color: var(--p1, #123); border-bottom: 1px solid var(--bd, #c9d6ea);
+  }
+  #ecolia-audio-banner.on { display: flex; }
+  #ecolia-audio-banner .eab-txt { flex: 1 1 180px; }
+  #ecolia-audio-banner .eab-act { display: flex; gap: 6px; flex-wrap: wrap; }
+  #ecolia-audio-banner button {
+    border: 1px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb);
+    border-radius: 16px; padding: 5px 12px; font-size: .8rem; cursor: pointer;
+  }
+  #ecolia-audio-banner button.pri { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-banner .eab-bar { display: none; flex-basis: 100%; height: 4px; border-radius: 2px; overflow: hidden; background: var(--bd, #c9d6ea); }
+  #ecolia-audio-banner .eab-bar i { display: block; height: 100%; width: 0; background: var(--p2, #2563eb); transition: width .2s; }
+</style>
+<script>
+(function () {
+  var CFG = {"code":"MachinesOutilsCNC4","base":"https://ecolia-course.github.io/ecolia-media/audio_files/","available":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],"count":20,"sizeMo":20,"sizes":{"1":981696,"2":879168,"3":913152,"4":769920,"5":761856,"6":956928,"7":1095360,"8":1333056,"9":757440,"10":1192512,"11":991296,"12":929472,"13":853632,"14":1034688,"15":1250688,"16":1404096,"17":935232,"18":1121280,"19":1258560,"20":248640},"fallback":{"1":[["fr","Sommaire, Machines-Outils CNC. Présentation du cours. Bienvenue en Machines-Outils CNC. Ce cours de 4e année des Humanités Techniques Industrielles vous prépare à préparer, réaliser et contrôler des opérations d'usinage sur machines-outils conventionnelles et à commande numérique. Vous apprendrez à lire un plan de définition, rédiger une gamme d'usinage, choisir les outils et les paramètres de coupe, programmer un programme CNC simple en code ISO et contrôler la qualité d'une pièce. L'usinage est au cœur de la fabrication mécanique et de la maintenance industrielle. Dans un pays où les pièces de rechange sont souvent importées à grands frais, le technicien formé à l'usinage peut fabriquer localement et réduire les délais et les coûts. C'est une compétence stratégique pour les ateliers de Kinshasa, de Lubumbashi, de Goma et des mines du Lualaba. Objectifs d'apprentissage. Identifier les principaux procédés d'usinage et leurs domaines d'application. Décrire l'architecture des machines-outils conventionnelles et CNC. Choisir les outils de coupe et calculer les paramètres (Vc, f, ap, N). Rédiger une gamme d'usinage simple. Programmer un programme CNC simple en code ISO. Contrôler la qualité dimensionnelle d'une pièce. Appliquer les règles de sécurité en atelier. Plan du cours. Chapitre I, Introduction à l'usinage et sécurité en atelier. Chapitre II, Les machines-outils conventionnelles. Chapitre III, Les outils de coupe et les paramètres. Chapitre IV, La préparation du travail. Chapitre V, Les machines-outils à commande numérique (CNC). Chapitre VI, La programmation CNC en code ISO. Chapitre VII, Le contrôle dimensionnel et la qualité. Chapitre VIII, Applications et projets."]],"2":[["fr","Chapitre I, Pourquoi les machines-outils CNC? Situation-problème. Une pompe minière arrêtée au Lualaba. Dans une mine du Lualaba, une pompe d'exhaure tombe en panne. L'arbre de transmission est cassé. Commande d'une pièce importée: 6 semaines de délai et un coût élevé. Mais l'atelier de maintenance de la mine dispose d'un tour et d'une fraiseuse. Le technicien peut-il fabriquer la pièce localement? S'il maîtrise l'usinage, oui. Il analyse le plan, choisit les outils et les paramètres, réalise la pièce, la contrôle et remet la pompe en service en quelques jours. La maîtrise de l'usinage transforme un mois et demi d'arrêt en trois jours de réparation. C'est cela, la valeur du technicien A2 formé en fabrication mécanique et CNC. Fondements théoriques. L'usinage, base de la fabrication. L'usinage regroupe l'ensemble des procédés qui consistent à enlever de la matière d'une pièce brute pour obtenir une forme, des dimensions et un état de surface conformes à un plan. Il se fait par enlèvement de copeaux à l'aide d'outils de coupe. L'usinage intervient à toutes les étapes industrielles: Fabrication de pièces neuves (arbres, pignons, supports, bagues). Maintenance: réparation, remplacement, adaptation de pièces de rechange. Prototypage: réalisation de pièces uniques ou de petites séries. Outillage: fabrication de montages, gabarits, moules. Points clés. Usinage égale enlèvement de matière par copeaux. Au cœur de la fabrication et de la maintenance. Compétence stratégique pour réduire les délais et les coûts en R D C."]],"3":[["fr","Chapitre I, La sécurité en atelier d'usinage. Fondements théoriques. Les risques de l'atelier. Un atelier d'usinage présente plusieurs dangers graves: Happement par les parties tournantes (mandrin, broche, courroie). Projection de copeaux ou de liquide de coupe dans les yeux. Coupures par les copeaux et les arêtes vives. Écrasement par les pièces lourdes. Électrisation par les armoires et câbles. Incendie par les huiles et lubrifiants. Les règles fondamentales. EPI obligatoires: lunettes de protection, chaussures de sécurité, blouse ajustée, pas de cravate ni de manches larges, cheveux attachés. Protecteurs en place: carter de mandrin, capot de courroie, écran de protection contre les copeaux. On ne les démonte jamais pour « aller plus vite ». Arrêt d'urgence: toujours accessible, câblé en sécurité positive (contact NC). Consignation avant toute intervention (maintenance, changement d'outil lourd): couper l'énergie, cadenasser, vérifier l'absence de tension. Gestion des copeaux: jamais à mains nues, utiliser un crochet ou une brosse. Lubrification et ventilation: aérer l'atelier, ne pas inhaler les brouillards d'huile. Erreur fréquente. Un élève retire ses lunettes pour « mieux voir » en perçant un trou. Un copeau est projeté dans son œil. Le port des lunettes est non négociable dès qu'une machine tourne. Aucun travail ne justifie un risque oculaire. Points clés. EPI: lunettes, chaussures, blouse, cheveux attachés. Protecteurs en place, arrêts d'urgence accessibles. Consignation avant intervention. Copeaux: jamais à mains nues."]],"4":[["fr","Chapitre I, Les procédés d'usinage. Fondements théoriques. Six procédés à connaître. Procédé. Principe. Exemple d'application. Tournage. La pièce tourne, l'outil est fixe. Arbres, portées cylindriques, faces, filetages. Fraisage. L'outil (fraise) tourne, la pièce est fixe. Surfaçage, rainures, épaulements, logements. Perçage. Un foret tourne et avance dans la matière. Trous traversants ou borgnes. Alésage. Agrandissement et calibrage d'un trou existant. Logement de roulement, précision dimensionnelle. Sciage. Découpe de barres et de profilés. Préparation de bruts avant usinage. Rectification. Finition de haute précision à la meule. Portées de paliers, surfaces de référence. Application concrète. Pour fabriquer un arbre de transmission de pompe, on combine plusieurs procédés: sciage du brut, tournage des portées cylindriques, dressage des faces, perçage et taraudage des trous de fixation, puis contrôle dimensionnel. Aucun procédé à lui seul ne suffit: le technicien maîtrise l'enchaînement. Points clés. Tournage: pièce en rotation, outil fixe. Fraisage: outil en rotation, pièce fixe. Perçage, alésage, sciage, rectification complètent l'éventail. Un projet d'usinage combine plusieurs procédés."]],"5":[["fr","Chapitre II, Le tour conventionnel. Fondements théoriques. Architecture d'un tour parallèle. Le tour est la machine de base du tournage: il fait tourner la pièce et déplace un outil de coupe. Ses organes principaux sont: Le banc: bâti rigide, guide de tous les mouvements. La poupée fixe: contient la broche et le mandrin qui porte la pièce. La poupée mobile: support de la contre-pointe pour les pièces longues. Le chariot: support de la tourelle, se déplace longitudinalement et transversalement. La tourelle porte-outils: fixe l'outil de coupe. La boîte de vitesses: règle la vitesse de broche. La boîte d'avances: règle la vitesse d'avance du chariot. L'architecture d'un tour parallèle. Opérations courantes au tour. Chariotage: réduction du diamètre d'une pièce cylindrique. Dressage: usinage d'une face plane perpendiculaire à l'axe. Perçage: au foret monté dans la contre-pointe. Alésage: agrandissement d'un trou existant. Filetage: réalisation d'un pas de vis (métrique ou autre). Gorges et chanfreins: formes particulières (dégagements, entrées). Points clés. Tour: la pièce tourne, l'outil est fixe. Organes: banc, poupée fixe, poupée mobile, chariot, tourelle. Opérations: chariotage, dressage, perçage, alésage, filetage."]],"6":[["fr","Chapitre II, La fraiseuse conventionnelle. Fondements théoriques. Architecture d'une fraiseuse. La fraiseuse fait tourner une fraise (outil multi-dents) et déplace la pièce (ou la broche) selon plusieurs axes. Ses organes: Le bâti (colonne): support rigide. La broche: porte la fraise et tourne à grande vitesse. La table: support de la pièce (ou de l'étau), mobile selon X (longitudinal) et Y (transversal). Le chariot (console): mobile selon Z (vertical). Le tête de fraisage: orientable sur les fraiseuses universelles. On distingue: Fraiseuse horizontale: broche horizontale, pour surfacer et rainurer. Fraiseuse verticale: broche verticale, pour surfacer, percer, rainurer. Fraiseuse universelle: tête orientable, la plus polyvalente. L'architecture d'une fraiseuse verticale. Opérations courantes. Surfaçage: usinage d'une face plane. Rainurage: réalisation de rainures (clavetage, gorge). Épaulement: usinage d'une marche d'escalier. Moulurage: profils particuliers (avec fraises de forme). Perçage et alésage: avec forets ou alésoirs sur la broche. Erreur fréquente. Confondre tournage et fraisage. Au tournage, c'est la pièce qui tourne, l'outil est fixe. Au fraisage, c'est l'outil qui tourne, la pièce est fixe (ou se déplace lentement sur la table). Cette distinction est fondamentale: elle détermine le choix de la machine et de l'outil. Points clés. Fraiseuse: l'outil tourne, la pièce est fixe. Horizontale, verticale ou universelle. Surfaçage, rainurage, épaulement, perçage."]],"7":[["fr","Chapitre III, Les outils de coupe. Fondements théoriques. Quatre matériaux principaux. Matériau. Caractéristiques. Usage typique. HSS (acier rapide). Économique, résistant aux chocs, mais sensible à la chaleur. Petites vitesses, forets, outils à main, tarauds. Carbure (plaquettes). Très dur, résiste à haute température, mais fragile. Tournage et fraisage modernes, vitesses élevées. Céramique. Extrêmement dur, résiste à très haute température, fragile. Finitions à très haute vitesse sur aciers durs et fontes. Diamant (PCD). Le plus dur, mais très fragile et cher. Usinage de l'aluminium, des composites, des plastiques. Le choix dépend du matériau usiné, de la vitesse de coupe visée, de la durée de vie souhaitée et du coût. En atelier conventionnel, on utilise souvent le HSS pour les petits travaux et le carbure pour la production. La géométrie de l'outil. Un outil de coupe comporte plusieurs angles qui déterminent sa performance: Angle de coupe: inclinaison de la face d'attaque. Plus il est grand, plus la coupe est facile mais plus l'outil est fragile. Angle de dépouille: évite le frottement entre l'outil et la pièce. Angle d'arête: formé par la face d'attaque et la face de dépouille. Rayon de bec: rayon de l'arête; plus il est grand, meilleur est l'état de surface. L'usure de l'outil. Usure en dépouille: élargissement progressif de la face de dépouille. Usure en cratère: creusement de la face d'attaque. Rupture: casse de l'arête (choc, vibrations). Surveiller l'usure est indispensable: un outil usé chauffe, vibre, donne une mauvaise surface et peut casser en produisant un projectile dangereux. Points clés. HSS, carbure, céramique, diamant. Choix selon matériau, vitesse et coût. Angles: coupe, dépouille, arête, rayon de bec. Surveiller l'usure: sécurité et qualité."]],"8":[["fr","Chapitre III, Les paramètres de coupe. Fondements théoriques. Quatre grandeurs à maîtriser. Le succès d'une opération d'usinage dépend du bon réglage des paramètres de coupe: Vitesse de coupe Vc (m ou min): vitesse relative entre l'outil et la pièce. Dépend du matériau usiné et du matériau de l'outil. Avance f (mm ou tr en tournage, mm ou dent en fraisage): déplacement de l'outil par tour ou par dent. Profondeur de passe ap (mm): épaisseur de matière enlevée à chaque passe. Vitesse de broche N (tr ou min): vitesse de rotation de la broche, calculée à partir de Vc. Les paramètres de coupe en tournage: Vc, f et ap. La formule de la vitesse de broche. La vitesse de coupe et la vitesse de broche sont reliées par le diamètre de la pièce (tournage) ou de l'outil (fraisage): N égale (1000 multiplié par Vc) ou ( pi multiplié par D). avec N en tr ou min, Vc en m ou min, D en mm. Le facteur 1000 convertit les mm en m. Exemple corrigé. Donnée: on chariote un arbre en acier doux avec un outil carbure. Vc égale 120 mètres par minute, diamètre initial D égale 50 millimètres. Question: quelle vitesse de broche N? Formule: N égale (1000 multiplié par 120) ou ( pi multiplié par 50). Calcul: N égale 120 000 sur 157,1 environ égal à 764 tr ou min. Interprétation: on règle la boîte de vitesses du tour sur la vitesse disponible la plus proche (par exemple 750 tr ou min). Une vitesse trop élevée usera l'outil; trop basse, elle donnera une surface rugueuse. Erreur fréquente. Utiliser une Vc trop élevée avec un outil HSS: l'outil chauffe, s'use rapidement, peut casser. Chaque couple outil ou matière a une plage de Vc recommandée (par exemple 20-30 mètres par minute pour HSS sur acier doux, 150-250 mètres par minute pour carbure). Points clés. Vc en m ou min, f en mm ou tr, ap en mm. N égale (1000 multiplié par Vc) ou ( pi multiplié par D). Choisir Vc selon outil et matériau. Trop vite égale usure; trop lent égale mauvais état de surface."]],"9":[["fr","Chapitre III, La lubrification. Fondements théoriques. Pourquoi lubrifier? La lubrification joue quatre rôles essentiels: Réduire le frottement entre l'outil et la pièce. Évacuer la chaleur produite par la coupe (jusqu'à 80 pour cent de la chaleur part dans le copeau et le lubrifiant). Améliorer l'état de surface (moins de rugosité). Protéger de la corrosion et évacuer les copeaux. Les types de lubrification. Huile soluble (émulsion eau plus huile): la plus courante, bon refroidissement, coût modéré. Huile entière: meilleure lubrification, mais moins bon refroidissement et plus salissante. Lubrification à sec: pour certains matériaux (fonte, certains aluminium) ou avec outils céramique. Nécessite une aspiration des poussières. Lubrification minimale (MQL): micro-gouttelettes d'huile, économique et écologique. Précautions. Ne jamais inhaler les brouillards d'huile: ventiler l'atelier. Éviter le contact prolongé avec la peau (dermatites). Vérifier régulièrement la concentration de l'émulsion. Récupérer et recycler les huiles usagées. Points clés. Lubrification: frottement, chaleur, surface, corrosion. Huile soluble, huile entière, à sec, MQL. Ventiler, éviter le contact peau. Recycler les huiles usagées."]],"10":[["fr","Chapitre IV, La préparation du travail. Fondements théoriques. Lire le dessin de définition. Avant toute action, le technicien lit le dessin de définition de la pièce et repère: les vues (face, dessus, côté), les coupes et les sections; les cotes (dimensions nominales) et les tolérances (± 0,05 millimètres, H7, etc.); les états de surface (Ra, Rz); les matériaux, les traitements thermiques, les filetages; les formes particulières (chanfreins, gorges, rainures). Une lecture incomplète conduit à une pièce non conforme ou inutilisable. Rédiger la gamme d'usinage. La gamme d'usinage est le document qui décrit, dans l'ordre, toutes les opérations nécessaires pour fabriquer la pièce. Elle précise pour chaque étape: la machine utilisée (tour, fraiseuse, perceuse); l'outil et ses paramètres (Vc, f, ap); le montage de la pièce (mandrin, étau, entre-pointes); le temps prévu; le contrôle à réaliser. Exemple de gamme pour un arbre simple: sciage du brut, donc montage entre-pointes, donc chariotage des portées, donc dressage des faces, donc perçage et taraudage, donc contrôle. Montage des pièces et des outils. Au tour: mandrin 3 mors (pièces courtes), mandrin 4 mors (pièces excentrées), entre-pointes (pièces longues), plateau. À la fraiseuse: étau (pièces petites et moyennes), brides (grandes pièces), diviseur (usinages angulaires ou réguliers). Outils: portes-outils, pinces, mandrins de perçage, fraises. Erreur fréquente. Négliger le sens de montage de la pièce ou de l'outil. Une fraise montée à l'envers tourne dans le mauvais sens; un foret mal engagé peut casser et projeter des fragments. La préparation est une étape de sécurité autant que de qualité. Points clés. Lire le plan: cotes, tolérances, états de surface. Gamme d'usinage: opérations dans l'ordre. Montage pièce et outils adaptés. Préparer égale qualité plus sécurité."]],"11":[["fr","Chapitre V, L'architecture d'une CNC. Fondements théoriques. Une machine pilotée par programme. Une machine-outil à commande numérique (CNC) est pilotée par un programme informatique qui commande les déplacements des axes et la rotation de la broche. Ses organes: Les axes: X, Y, Z (linéaires) et parfois A, B, C (rotatifs). Chaque axe est équipé d'un moteur (souvent un servomoteur) et d'un codeur de position. La broche: porte l'outil (fraiseuse) ou la pièce (tour), avec variation de vitesse. Le magasin d'outils: changeur automatique qui amène l'outil voulu à la broche (M06). Le pupitre de commande: écran, clavier, boutons (départ cycle, arrêt, arrêt d'urgence, jog). Le bâti: structure rigide et précise (souvent en fonte ou en béton polymère). L'architecture d'une machine-outil à commande numérique. Avantages et inconvénients. Avantages. Inconvénients. Précision et répétabilité élevées. Coût d'investissement important. Productivité (usinage rapide et continu). Maintenance spécialisée. Flexibilité (changement de programme immédiat). Formation nécessaire. Usinage de formes complexes impossibles en conventionnel. Sensible aux coupures d'énergie et aux pannes électroniques. Réduction des erreurs humaines sur les dimensions. Nécessite un poste de programmation (CAO ou FAO). Points clés. Axes X, Y, Z ( plus A, B, C), broche, magasin d'outils, pupitre. Précision, productivité, flexibilité. Coût, maintenance, formation. Une CNC ne remplace pas la connaissance de l'usinage."]],"12":[["fr","Chapitre V, Les modes de fonctionnement d'une CNC. Fondements théoriques. Quatre modes principaux. Mode manuel (Jog): déplacement des axes à l'aide des boutons ou de la manivelle électronique. Utile pour le montage, le réglage, la prise d'origine. Mode MDI (Manual Data Input): saisie et exécution d'un bloc d'instructions unique. Utile pour un perçage simple, une mesure, un déplacement ponctuel. Mode édition: création et modification du programme dans la mémoire de la machine. Mode automatique: exécution complète du programme, bloc par bloc ou en continu. Certains pupitres proposent aussi: DNC (exécution depuis un PC externe), MDI rapide, retour à l'origine, simulation graphique (vérification du programme sans usiner). Bonnes pratiques. Prise d'origine: toujours positionner la pièce par rapport à l'origine programme (G54-G59) avant d'usiner. Simulation: avant la première pièce, simuler le programme en mode graphique pour détecter les collisions. Première pièce: exécuter en mode bloc par bloc, l'avance réduite, pour vérifier chaque étape. Arrêt d'urgence: accessible et testé avant tout cycle. Erreur fréquente. Exécuter un programme en mode automatique sans simulation ni vérification. Une erreur de signe (X-20 au lieu de X plus 20) peut provoquer une collision outil ou mandrin et endommager la machine. Toujours simuler avant d'usiner. Points clés. Manuel, MDI, édition, automatique. Prise d'origine avant usinage. Simulation avant exécution. Première pièce en bloc par bloc."]],"13":[["fr","Chapitre VI, La structure d'un programme ISO. Fondements théoriques. Anatomie d'un programme. Un programme CNC en code ISO (norme ISO 6983) est composé de: Numéro de programme: O0001 par exemple. Blocs: chaque ligne porte un numéro N (N10, N20…) et une ou plusieurs instructions. Fonctions G: commandes préparatoires (déplacements, unités, coordonnées). Coordonnées: X, Y, Z, éventuellement I, J, K pour les centres d'arcs. Paramètres: F (avance), S (vitesse broche), T (numéro d'outil). Fonctions M: commandes auxiliaires (broche, arrosage, fin de programme). Le programme se termine typiquement par M30 (fin de programme, retour au début). Exemple de squelette. O0001; N10 G21 G90; (mm, coordonnées absolues). N20 G00 X0 Y0 Z5; (déplacement rapide au-dessus de la pièce). ... (usinage). Nxx M30; (fin de programme). Ce squelette minimal montre les éléments indispensables: numéro, unités, mode, déplacement initial, usinage, fin. Points clés. Oxxxx égale numéro de programme. Nxx égale numéro de bloc. G, X-Y-Z, F, S, T, M. M30 égale fin de programme."]],"14":[["fr","Chapitre VI, Les fonctions G et M. Fondements théoriques. Fonctions G (préparatoires). Code. Signification. G00. Déplacement rapide (sans usinage). G01. Interpolation linéaire à avance programmée. G02 ou G03. Interpolation circulaire (sens horaire ou antihoraire). G20 ou G21. Unités pouces ou millimètres. G90 ou G91. Coordonnées absolues ou relatives. G54 à G59. Origines pièce (décalages). G81. Cycle de perçage. G84. Cycle de taraudage ou filetage. Fonctions M (auxiliaires). Code. Signification. M03 ou M04. Rotation broche sens horaire ou antihoraire. M05. Arrêt broche. M06. Changement d'outil. M08 ou M09. Arrosage marche ou arrêt. M30. Fin de programme et retour au début. Coordonnées absolues vs relatives. G90 (absolues): chaque position est donnée par rapport à l'origine pièce (point de référence fixe). Plus lisible. G91 (relatives): chaque position est donnée par rapport à la position précédente (incréments). Utile pour des répétitions. Exemple: à partir de X égale 10, se déplacer à X égale 30. En G90: G90 X30. En G91: G91 X20 (déplacement de plus 20). Points clés. G00 rapide; G01 linéaire; G02/G03 circulaire. G90 absolu; G91 relatif. M03 broche; M05 arrêt; M30 fin. Maîtriser ces codes égale base du programme CNC."]],"15":[["fr","Chapitre VI, Exemple de programme de chariotage. Énoncé. Réduire un diamètre de 45 millimètres à 40 millimètres sur 50 millimètres. On dispose d'un brut cylindrique de diamètre 45 millimètres. On veut réduire son diamètre à 40 millimètres sur une longueur de 50 millimètres, puis dégager l'outil. On travaille en mm (G21), en coordonnées absolues (G90), avec une avance de 0,2 millimètres ou tr. Programme commenté. O0002; N10 G21 G90; (mm, coordonnées absolues). N20 G00 X45 Z2; (approche rapide au-dessus du brut). N30 G01 Z0 F0.2; (mise au contact de la face). N40 X40; (descente au diamètre 40). N50 G01 Z-50 F0.2; (chariotage sur 50 millimètres). N60 G00 X45 Z2; (dégagement rapide). N70 M30; (fin de programme). Décryptage ligne par ligne. N10: on fixe les unités (mm) et le mode absolu. N20: on s'approche rapidement au-dessus et à droite du brut (Z égale 2 millimètres de sécurité). N30: on met l'outil en contact avec la face avant à Z égale 0 (F de 0,2 millimètres ou tr). N40: on descend au diamètre 40 millimètres (X égale 40). N50: on chariote sur 50 millimètres en Z négatif. N60: on dégage rapidement pour ne pas heurter la pièce. N70: fin de programme. Erreur fréquente. Oublier G21 (unités mm) ou G90 (absolu). Si la machine reste en pouces par défaut, la pièce sera 25,4 fois plus grande ou plus petite. Si elle est en relatif, le déplacement sera cumulatif et faussera la position. Toujours déclarer les unités et le mode en début de programme. Points clés. G21 G90 en tête pour être clair. G00 pour l'approche rapide. G01 avec F pour l'usinage. G00 pour le dégagement. M30 en fin."]],"16":[["fr","Chapitre VII, Le contrôle dimensionnel. Fondements théoriques. Les instruments de mesure. Instrument. Précision. Usage. Pied à coulisse. 0,02 ou 0,05 millimètres. Mesures extérieures, intérieures, profondeurs. Micromètre. 0,01 millimètres. Mesures extérieures précises. Jauge de profondeur. 0,05 millimètres. Mesures de profondeurs et de trous. Comparateur. 0,001 à 0,01 millimètres. Écarts par rapport à une référence (contrôle relatif). Rugosimètre. Ra, Rz. État de surface (rugosité). Le contrôle dimensionnel: pied à coulisse et micromètre. Les tolérances. Une tolérance est l'écart admissible autour d'une dimension nominale. Exemple: une cote 25 ± 0,05 millimètres signifie que la pièce est acceptable si sa dimension réelle est comprise entre 24,95 millimètres et 25,05 millimètres. En dehors, elle est non conforme. Les tolérances sont indiquées sur le dessin de définition sous forme: numérique: 25 ± 0,05; ou symbolique (qualités ISO): 25 H7, 25 g6, etc., qui correspondent à des intervalles précis dans les tableaux normalisés. Exemple corrigé. Donnée: une cote est spécifiée 25 ± 0,05 millimètres. Le pied à coulisse indique 25,08 millimètres. Question: la pièce est-elle conforme? Raisonnement: l'intervalle admissible est [24,95; 25,05]. 25,08 supérieur à 25,05. Réponse: Non conforme. Il faut soit retoucher la pièce (si la cote peut être reprise), soit la rebuter. Erreur fréquente. Mesurer sans vérifier le zéro de l'instrument. Un pied à coulisse déréglé ou un micromètre dont le zéro est faux fausse toutes les mesures. Toujours vérifier le zéro avant de mesurer, et nettoyer les becs de mesure. Points clés. Pied à coulisse (0,02-0,05 millimètres), micromètre (0,01 millimètres), comparateur. Tolérance: intervalle admissible. 25 ± 0,05 égale [24,95; 25,05]. Vérifier le zéro avant de mesurer."]],"17":[["fr","Chapitre VII, La conformité et le rapport d'usinage. Fondements théoriques. Qu'est-ce qu'une pièce conforme? Une pièce est conforme si toutes ses caractéristiques respectent le dessin de définition: dimensions dans les tolérances; états de surface conformes (Ra, Rz); formes et positions (perpendicularité, parallélisme, concentricité) dans les tolérances géométriques; matériau et traitements conformes. Si une seule caractéristique est hors tolérance, la pièce est non conforme: elle peut être retouchée (si la cote le permet), rebutée ou dérogée (avec accord du bureau d'études, cas rare). Le rapport d'usinage. Le rapport d'usinage est un document qui accompagne la pièce finie et atteste de sa qualité. Il comporte: l'identification de la pièce (nom, numéro de plan, matériau); la gamme d'usinage suivie; les paramètres de coupe réellement utilisés; les résultats des contrôles dimensionnels (avec valeurs mesurées); les observations (incidents, retouches, remarques); la signature du technicien et la date. Le rapport est essentiel pour la traçabilité et pour le retour d'expérience en cas de problème. Bonnes pratiques. Numéroter les pièces et conserver les rapports pendant des années. Photographier les pièces sensibles avec leur rapport. Consigner les écarts observés, même minimes, pour ajuster les réglages la prochaine fois. Signer et dater: la traçabilité engage la responsabilité du technicien. Points clés. Conformité égale toutes les caractéristiques respectées. Une seule non-conformité égale pièce non conforme. Rapport d'usinage égale traçabilité et qualité. Consigner les écarts pour progresser."]],"18":[["fr","Chapitre VIII, Applications R D C et projet d'usinage. Contextualisation. L'usinage dans l'industrie congolaise. Ateliers de Kinshasa: fabrication de pièces de rechange pour l'agroalimentaire (moulins, malaxeurs, pompes), les transports, les infrastructures. Lubumbashi et le Lualaba: maintenance des équipements miniers (concasseurs, pompes, convoyeurs, treuils). Goma: réparation des machines agricoles et des véhicules. Port de Boma: usinage de pièces pour grues et systèmes de levage. Le technicien A2 qui maîtrise l'usinage devient un acteur clé de la maintenance locale: il fabrique une pièce en quelques jours au lieu d'attendre une importation de plusieurs semaines. C'est un levier économique majeur. Démarche de projet. Analyser le plan de définition (cotes, tolérances, matériaux). Préparer la gamme d'usinage (opérations, machines, outils, paramètres). Préparer la machine: montage pièce, montage outils, prise d'origine. Réaliser l'usinage en respectant les paramètres et la sécurité. Contrôler la pièce (dimensions, états de surface, conformité). Rédiger le rapport d'usinage. Projet type: arbre de transmission. Pièce: arbre de transmission simple pour une pompe minière. Brut: barre d'acier doux Ø50, longueur 150 millimètres. Portée utile: Ø40 sur 80 millimètres, avec deux épaulements et un filetage M30 en bout. Gamme simplifiée: Sciage du brut à 150 millimètres. Montage entre-pointes sur le tour. Chariotage des portées à Ø40 sur 80 millimètres. Dressage des deux faces. Filetage M30 en bout. Contrôle dimensionnel (diamètres, longueur, filetage). Rapport d'usinage. Points clés. L'usinage réduit les délais et les coûts en R D C. Démarche: plan, donc gamme, donc machine, donc usinage, donc contrôle, donc rapport. Compétence stratégique pour la maintenance."]],"19":[["fr","Synthèse générale du cours. Ce qu'il faut retenir. Les idées maîtresses. Usinage égale enlèvement de matière pour obtenir une pièce conforme. Procédés: tournage, fraisage, perçage, alésage, sciage, rectification. Tour: pièce en rotation. Fraiseuse: outil en rotation. Outils: HSS, carbure, céramique, diamant; choix selon matériau et vitesse. Paramètres: Vc, f, ap, N. Formule: N égale (1000 multiplié par Vc) ou ( pi multiplié par D). Gamme d'usinage: ordre des opérations, machines, outils, contrôles. CNC: axes X, Y, Z; broche; magasin d'outils; modes manuel, MDI, automatique. Programme ISO: G00, G01, G02/G03, G90/G91, M03/M05, M30. Contrôle: pied à coulisse, micromètre, comparateur, rugosimètre. Sécurité: EPI, protecteurs, consignation, gestion des copeaux. Tableau récapitulatif des fonctions G et M essentielles. Code. Rôle. G00. Déplacement rapide. G01. Interpolation linéaire à F. G02 ou G03. Arc horaire ou antihoraire. G20 ou G21. Pouces ou mm. G90 ou G91. Absolu ou relatif. G54 à G59. Origines pièce. M03 ou M04. Broche horaire ou antihoraire. M05. Arrêt broche. M06. Changement d'outil. M08 ou M09. Arrosage ou arrêt. M30. Fin de programme. Les erreurs à ne plus commettre. Travailler sans lunettes ou avec des vêtements flottants. Confondre tournage et fraisage. Choisir une Vc trop élevée pour l'outil utilisé. Oublier G21 ou G90 en tête de programme. Exécuter un programme sans simulation. Mesurer sans vérifier le zéro de l'instrument. Négliger le rapport d'usinage. Retirer un protecteur de sécurité."]],"20":[["fr","Évaluation finale, Machines-Outils CNC. Consigne. Répondez aux 22 questions ci-dessous. Chaque question a une seule bonne réponse. Cliquez sur « Valider mes réponses » pour obtenir votre score. Bonne chance! Conseil. En cas d'erreur, relisez la diapositive correspondante. Les questions couvrent les procédés, les machines, les outils, les paramètres, la programmation, le contrôle et la sécurité."]]}};
+  var CACHE = "ecolia-cours-v1";                       // même cache que l'application
+  var PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  var PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+  var DL = '<svg viewBox="0 0 24 24"><path d="M11 3h2v9.2l3.6-3.6L18 10l-6 6-6-6 1.4-1.4L11 12.2V3zM5 19h14v2H5z"/></svg>';
+  var OK = '<svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>';
+  // Réparation du quiz : certains cours stockent les choix sous "opts" (ou autre) au lieu de "options"
+  try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+      questions.forEach(function (q) {
+        if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+        if (q.text === undefined) q.text = q.question || q.q || q.enonce || q.titre || "";
+        if (typeof q.correct === "undefined") {
+          if (typeof q.answer !== "undefined") q.correct = q.answer;
+          else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+        }
+      });
+    }
+  } catch (e) {}
+  var synth = window.speechSynthesis || null;
+  var HAS_CACHE = !!(window.caches && window.caches.open);
+  var NATIVE = false;           // APK ECOLIA : pont Java "CoursInterface" (fichiers dans le dossier de l'application)
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  var LATER = "ecolia_audio_later_" + CFG.code;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+  function init() {
+    if (document.getElementById("ecolia-audio-btn")) return;
+
+    // ---------- éléments de l'interface ----------
+    var btn = document.createElement("button");
+    btn.id = "ecolia-audio-btn"; btn.type = "button"; btn.className = "ecolia-off";
+    btn.setAttribute("aria-label", "Écouter la leçon"); btn.innerHTML = PLAY;
+    var dlBtn = document.createElement("button");
+    dlBtn.id = "ecolia-dl-btn"; dlBtn.type = "button"; dlBtn.className = "ecolia-off";
+    dlBtn.innerHTML = DL;
+    var host = document.querySelector(".header-right");
+    if (host) { host.insertBefore(dlBtn, host.firstChild); host.insertBefore(btn, dlBtn); }   // dans la barre du haut : ne scrolle jamais
+    else { btn.className += " ecolia-fixed"; document.body.appendChild(btn); }
+
+    var banner = document.createElement("div");
+    banner.id = "ecolia-audio-banner";
+    banner.innerHTML = '<span class="eab-txt"></span><span class="eab-act"></span><div class="eab-bar"><i></i></div>';
+    var content = document.getElementById("content");
+    if (content && content.parentNode) content.parentNode.insertBefore(banner, content);
+    else document.body.insertBefore(banner, document.body.firstChild);
+    var txtEl = banner.querySelector(".eab-txt"), actEl = banner.querySelector(".eab-act");
+    var barEl = banner.querySelector(".eab-bar"), barI = barEl.firstChild;
+
+    var audio = new Audio();            // un seul élément Audio, réutilisé (exigé par les navigateurs mobiles)
+    audio.preload = "auto";
+    var st = { idx: -1, auto: false, advancing: false, mode: null, speaking: false, token: 0, chunks: [], ci: 0, blobUrl: null, playTok: 0 };
+    var dl = { state: "none", cached: 0, busy: false, cancel: false };   // none | partial | full
+    var bnMode = null, hideTimer = null;
+    if (synth && synth.getVoices) { try { synth.getVoices(); } catch (e) {} }
+
+    function cur() {
+      try { if (typeof currentSlide === "number") return currentSlide; } catch (e) {}
+      return 0;
+    }
+    function hasMp3(i) { return CFG.available.indexOf(i + 1) !== -1; }
+    function fb(i) { return CFG.fallback && CFG.fallback[String(i + 1)]; }
+    function hasAudio(i) { return hasMp3(i) || (!!synth && !!fb(i)); }
+    function urlN(n) {   // dans l'APK la page est sur https://app.local : une adresse relative doit pointer vers le site
+      var b = CFG.base;
+      if (NATIVE && !/^https?:/i.test(b)) b = "https://ecolia-course.github.io/" + b.replace(/^(\.\.\/|\.\/)+/, "");
+      return new URL(b + nameN(n), location.href).href;
+    }
+    function setIcon(playing) { btn.innerHTML = playing ? PAUSE : PLAY; }
+    function isPlaying() { return st.mode === "mp3" ? !audio.paused : (st.mode === "tts" && st.speaking); }
+    function mo() { return "≈ " + CFG.sizeMo + " Mo"; }
+    function nameN(n) { return "audio_" + CFG.code + "_" + n + ".mp3"; }
+
+    // ====================================================================
+    //  Stockage hors ligne : 2 moteurs, même interface
+    //    - APK : fichiers du dossier de l'application (CoursInterface), servis par https://app.local/cours/
+    //    - Web : Cache Storage du navigateur (même cache que l'application web)
+    // ====================================================================
+    function nativeStore() {
+      var okKey = "ecolia_audio_ok_" + CFG.code;
+      function readOk() { try { return JSON.parse(lsGet(okKey) || "[]"); } catch (e) { return []; } }
+      function writeOk(a) { lsSet(okKey, JSON.stringify(a)); }
+      function exists(n) { try { return !!CoursInterface.exists(nameN(n)); } catch (e) { return false; } }
+      function local(n) { return location.origin + "/cours/" + nameN(n); }
+      function verify(n) {                                   // fichier complet ? (taille exacte connue à la génération)
+        return fetch(local(n), { cache: "no-store" }).then(function (r) { return r.blob(); }).then(function (b) {
+          var exp = CFG.sizes && CFG.sizes[String(n)];
+          return (b.size > 2000 && (!exp || b.size === exp)) ? b : null;
+        }).catch(function () { return null; });
+      }
+      return {
+        list: function () {
+          var ok = readOk().filter(exists); writeOk(ok); return Promise.resolve(ok);
+        },
+        get: function (n) { return exists(n) ? verify(n) : Promise.resolve(null); },
+        put: function (n) {
+          return new Promise(function (res, rej) {
+            try { CoursInterface.download(urlN(n), nameN(n)); } catch (e) { return rej(e); }
+            var t0 = Date.now();
+            function next() { if (Date.now() - t0 > 120000) rej(new Error("délai dépassé")); else setTimeout(poll, 800); }
+            function poll() {
+              if (!exists(n)) return next();
+              verify(n).then(function (b) {
+                if (!b) return next();
+                var ok = readOk(); if (ok.indexOf(n) < 0) ok.push(n); writeOk(ok); res();
+              });
+            }
+            setTimeout(poll, 800);
+          });
+        },
+        del: function (n) {
+          try { CoursInterface.delete(nameN(n)); } catch (e) {}
+          writeOk(readOk().filter(function (x) { return x !== n; }));
+          return Promise.resolve();
+        }
+      };
+    }
+    function cacheStore() {
+      return {
+        list: function () {
+          return caches.open(CACHE).then(function (c) {
+            return Promise.all(CFG.available.map(function (n) {
+              return c.match(urlN(n)).then(function (r) {
+                if (!r) return 0;
+                if ((r.headers.get("content-type") || "").indexOf("audio") !== 0) { c.delete(urlN(n)); return 0; }   // ancien contenu invalide
+                return n;
+              });
+            }));
+          }).then(function (a) { return a.filter(Boolean); });
+        },
+        get: function (n) {
+          return caches.open(CACHE).then(function (c) { return c.match(urlN(n)); })
+            .then(function (r) { return r ? r.blob() : null; }).then(function (b) { return b && b.size > 2000 ? b : null; });
+        },
+        put: function (n) {
+          var u = urlN(n);
+          return fetch(u, { cache: "no-store" }).then(function (r) {
+            if (!r.ok || r.status !== 200) throw new Error("HTTP " + r.status);
+            return r.blob();
+          }).then(function (b) {
+            if (b.size < 2000 || (b.type && b.type.indexOf("audio") !== 0 && b.type.indexOf("octet") < 0)) throw new Error("fichier invalide");
+            return caches.open(CACHE).then(function (c) { return c.put(u, new Response(b, { headers: { "Content-Type": "audio/mpeg" } })); });
+          });
+        },
+        del: function (n) { return caches.open(CACHE).then(function (c) { return c.delete(urlN(n)); }); }
+      };
+    }
+    var store = NATIVE ? nativeStore() : (HAS_CACHE ? cacheStore() : null);
+
+    // ====================================================================
+    //  Bannière : invitation, confirmations, progression
+    // ====================================================================
+    function showBanner(mode, text, buttons, pct) {
+      clearTimeout(hideTimer);
+      bnMode = mode;
+      txtEl.textContent = text;
+      actEl.innerHTML = "";
+      (buttons || []).forEach(function (b) {
+        var e = document.createElement("button");
+        e.type = "button"; e.textContent = b.label; if (b.pri) e.className = "pri";
+        e.addEventListener("click", function (ev) { ev.stopPropagation(); b.fn(); });
+        actEl.appendChild(e);
+      });
+      if (typeof pct === "number") { barEl.style.display = "block"; barI.style.width = pct + "%"; }
+      else barEl.style.display = "none";
+      banner.classList.add("on");
+    }
+    function hideBanner() { clearTimeout(hideTimer); bnMode = null; banner.classList.remove("on"); }
+    function flash(text) { showBanner("info", text, []); hideTimer = setTimeout(hideBanner, 4000); }
+
+    function refreshUI() {
+      var show = !!store && CFG.available.length > 0;
+      dlBtn.classList.toggle("ecolia-off", !show);
+      dlBtn.classList.toggle("ecolia-full", dl.state === "full");
+      dlBtn.innerHTML = dl.state === "full" ? OK : DL;
+      dlBtn.setAttribute("aria-label", dl.state === "full" ? "Audios téléchargés : supprimer" : "Télécharger les audios");
+      dlBtn.title = dlBtn.getAttribute("aria-label");
+    }
+    function refreshCacheState(done) {
+      if (!store) { dl.state = "none"; refreshUI(); if (done) done(); return; }
+      store.list().then(function (ok) {
+        dl.cached = ok.length;
+        dl.state = dl.cached === 0 ? "none" : (dl.cached >= CFG.available.length ? "full" : "partial");
+      }).catch(function () { dl.state = "none"; }).then(function () { refreshUI(); if (done) done(); });
+    }
+
+    function askDownload(fromInvite) {
+      var left = CFG.available.length - dl.cached;
+      var txt = dl.state === "partial"
+        ? "Il reste " + left + " audio(s) à télécharger pour écouter ce cours sans internet."
+        : "🔊 Télécharger les audios de ce cours (" + mo() + ") pour les écouter sans internet ? Wi-Fi recommandé.";
+      showBanner(fromInvite ? "invite" : "confirm", txt, [
+        { label: fromInvite ? "Plus tard" : "Annuler", fn: function () { if (fromInvite) lsSet(LATER, "1"); hideBanner(); } },
+        { label: "Télécharger", pri: true, fn: startDownload }
+      ]);
+    }
+    function askDelete() {
+      showBanner("confirm", "Supprimer les audios téléchargés de ce cours (" + mo() + ") ? Vous pourrez toujours les écouter en ligne.", [
+        { label: "Annuler", fn: hideBanner },
+        { label: "Supprimer", pri: true, fn: doDelete }
+      ]);
+    }
+
+    function startDownload() {
+      if (dl.busy || !store) return;
+      dl.busy = true; dl.cancel = false;
+      var total = CFG.available.length, done = 0, quota = false, fails = 0, todo = [];
+      store.list().then(function (have) {
+        CFG.available.forEach(function (n) { if (have.indexOf(n) < 0) todo.push(n); });
+        done = total - todo.length;
+        function paint() {
+          var msg = "Téléchargement des audios : " + done + " / " + total;
+          if (bnMode === "progress") {                  // met à jour sans recréer les boutons (sinon un appui peut être perdu)
+            txtEl.textContent = msg; barI.style.width = Math.round(done / total * 100) + "%";
+          } else {
+            showBanner("progress", msg, [
+              { label: "Annuler", fn: function () { dl.cancel = true; } }
+            ], Math.round(done / total * 100));
+          }
+        }
+        paint();
+        function worker() {
+          if (dl.cancel || quota || !todo.length) return Promise.resolve();
+          var n = todo.shift();
+          return store.put(n).then(function () { done++; paint(); }).catch(function (e) {
+            if (e && (e.name === "QuotaExceededError" || /quota/i.test(String(e.message)))) quota = true;
+            fails++;
+          }).then(worker);
+        }
+        return Promise.all([worker(), worker()]);
+      }).catch(function () { fails++; }).then(function () {
+        dl.busy = false;
+        refreshCacheState(function () {
+          if (dl.state === "full") flash("✓ Audios téléchargés : le cours se lit maintenant sans internet.");
+          else if (dl.cancel) flash("Téléchargement interrompu (" + dl.cached + " / " + total + "). Vous pourrez reprendre plus tard.");
+          else showBanner("error", quota ? "Espace insuffisant sur l'appareil. Libérez de la place puis réessayez."
+            : "Certains audios n'ont pas pu être téléchargés (connexion ?).", [
+            { label: "Fermer", fn: hideBanner }, { label: "Réessayer", pri: true, fn: startDownload }
+          ]);
+        });
+      });
+    }
+    function doDelete() {
+      if (!store) return;
+      Promise.all(CFG.available.map(function (n) { return store.del(n); })).catch(function () {}).then(function () {
+        lsDel(LATER);
+        refreshCacheState(function () { flash("Audios supprimés de cet appareil."); });
+      });
+    }
+
+    dlBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (dl.busy) return;
+      if (dl.state === "full") askDelete(); else askDownload(false);
+    });
+
+    // ====================================================================
+    //  Voix intégrée au téléphone (hors ligne, sans limite)
+    // ====================================================================
+    function pickVoice(lang) {
+      var vs = [];
+      try { vs = synth.getVoices() || []; } catch (e) {}
+      var pre = lang === "en" ? "en" : "fr", best = null;
+      for (var k = 0; k < vs.length; k++) {
+        var v = vs[k];
+        if ((v.lang || "").toLowerCase().indexOf(pre) !== 0) continue;
+        if (!best || (v.localService && !best.localService)) best = v;
+      }
+      return best;
+    }
+    function hardSplit(text, max) {
+      var out = [];
+      while (text.length > max) {
+        var cut = text.lastIndexOf(" ", max);
+        if (cut < 40) cut = max;
+        out.push(text.slice(0, cut)); text = text.slice(cut).replace(/^\s+/, "");
+      }
+      if (text) out.push(text);
+      return out;
+    }
+    function buildChunks(segs) {                  // morceaux courts : évite l'arrêt des longs textes sur Chrome
+      var out = [];
+      segs.forEach(function (s) {
+        var cur2 = "", parts = s[1].match(/[^.!?;:]+[.!?;:]*\s*/g) || [s[1]];
+        parts.forEach(function (p) {
+          if (cur2 && (cur2 + p).length > 160) { out.push({ lang: s[0], text: cur2.trim() }); cur2 = p; }
+          else cur2 += p;
+        });
+        if (cur2.trim()) out.push({ lang: s[0], text: cur2.trim() });
+      });
+      var res = [];
+      out.forEach(function (c) { hardSplit(c.text, 190).forEach(function (t) { res.push({ lang: c.lang, text: t }); }); });
+      return res;
+    }
+    function speakFrom(tk) {
+      if (tk !== st.token) return;
+      if (st.ci >= st.chunks.length) {
+        st.speaking = false; st.mode = null; st.ci = 0; setIcon(false);
+        if (st.auto) goNext();
+        return;
+      }
+      var c = st.chunks[st.ci];
+      var u = new SpeechSynthesisUtterance(c.text);
+      u.lang = c.lang === "en" ? "en-US" : "fr-FR";
+      var v = pickVoice(c.lang);
+      if (v) { u.voice = v; u.lang = v.lang; }
+      u.rate = 0.95;
+      u.onend = function () { if (tk !== st.token) return; st.ci++; speakFrom(tk); };
+      u.onerror = function () { if (tk !== st.token) return; st.speaking = false; setIcon(false); st.auto = false; };
+      synth.speak(u);
+    }
+    function startTts(from) {
+      st.token++;
+      var tk = st.token;
+      st.mode = "tts"; st.speaking = true; st.ci = from || 0; setIcon(true);
+      var busy = false;
+      try { busy = synth.speaking || synth.pending; synth.cancel(); } catch (e) {}
+      if (busy) setTimeout(function () { speakFrom(tk); }, 120);   // laisse cancel() se terminer
+      else speakFrom(tk);                                          // sinon tout de suite (exigé par iOS)
+    }
+    function playVoice() {
+      if (!(synth && fb(st.idx))) { st.auto = false; return false; }
+      if (!st.chunks.length) st.chunks = buildChunks(fb(st.idx));
+      startTts(st.ci);
+      return true;
+    }
+
+    // ====================================================================
+    //  Lecture
+    // ====================================================================
+    function freeBlob() { if (st.blobUrl) { try { URL.revokeObjectURL(st.blobUrl); } catch (e) {} st.blobUrl = null; } }
+    function stopAll() {
+      st.playTok++;
+      try { audio.pause(); audio.currentTime = 0; } catch (e) {}
+      st.token++;
+      try { if (synth) synth.cancel(); } catch (e) {}
+      st.speaking = false; st.mode = null; st.chunks = []; st.ci = 0;
+      setIcon(false);
+    }
+    function pauseNow() {
+      if (st.mode === "mp3") audio.pause();
+      else if (st.mode === "tts") {
+        st.token++;
+        try { synth.cancel(); } catch (e) {}
+        st.speaking = false; setIcon(false);      // st.ci conservé : la reprise repart de la phrase en cours
+      }
+    }
+    function startAudio(src, tok) {
+      if (tok !== st.playTok) return;
+      if (audio.getAttribute("data-src") !== src) { audio.setAttribute("data-src", src); audio.src = src; }
+      var p = audio.play();
+      if (p && p.catch) p.catch(function (err) {
+        console.warn("ECOLIA audio :", err);
+        if (tok !== st.playTok) return;
+        if (!(err && err.name === "NotAllowedError") && playVoice()) return;   // lecture impossible : voix du téléphone
+        setIcon(false); st.auto = false;
+      });
+    }
+    function playCurrent() {
+      var i = st.idx;
+      if (hasMp3(i)) {
+        var tok = ++st.playTok, u = urlN(i + 1);
+        st.mode = "mp3";
+        if (!navigator.onLine && dl.state === "none") { st.mode = null; if (playVoice()) return; }   // hors ligne et non téléchargé
+        if (store && dl.state !== "none") {                     // téléchargé : lecture locale, sans réseau
+          store.get(i + 1)
+            .then(function (b) {
+              if (tok !== st.playTok) return;
+              if (b) { freeBlob(); st.blobUrl = URL.createObjectURL(new Blob([b], { type: "audio/mpeg" })); startAudio(st.blobUrl, tok); }
+              else startAudio(u, tok);
+            }).catch(function () { startAudio(u, tok); });
+        } else startAudio(u, tok);                              // sinon lecture en ligne (appel immédiat, exigé par iOS)
+      } else if (!playVoice()) {
+        st.auto = false;
+      }
+    }
+
+    function onSlideChange(i) {
+      var wasAdvancing = st.advancing;
+      st.advancing = false;
+      st.idx = i;
+      btn.classList.toggle("ecolia-off", !hasAudio(i));
+      stopAll();
+      audio.removeAttribute("data-src");
+      freeBlob();
+      if (bnMode === "invite" && i !== 0) hideBanner();       // l'invitation n'apparaît qu'à la première slide
+      if (wasAdvancing && st.auto) setTimeout(playCurrent, 500);   // enchaînement automatique
+      else st.auto = false;                                         // changement manuel : on coupe tout
+    }
+    function goNext() {
+      if (st.idx + 1 >= CFG.count) { st.auto = false; return; }
+      st.advancing = true;
+      if (typeof nextSlide === "function") nextSlide();
+      else { var nb = document.getElementById("nextBtn"); if (nb) nb.click(); }
+      setTimeout(function () { st.advancing = false; }, 4000);
+    }
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var i = cur();
+      if (i !== st.idx) onSlideChange(i);
+      if (isPlaying()) { st.auto = false; pauseNow(); }
+      else { st.auto = true; playCurrent(); }
+    });
+    audio.addEventListener("play", function () { setIcon(true); });
+    audio.addEventListener("pause", function () { if (st.mode === "mp3") setIcon(false); });
+    audio.addEventListener("error", function () {
+      if (st.mode === "mp3" && playVoice()) return;            // fichier introuvable / hors ligne : voix du téléphone
+      setIcon(false); st.auto = false;
+    });
+    audio.addEventListener("ended", function () { setIcon(false); if (st.auto) goNext(); });
+    window.addEventListener("pagehide", function () { stopAll(); freeBlob(); });
+
+    // ---------- démarrage ----------
+    refreshCacheState(function () {
+      if (store && CFG.available.length && dl.state !== "full" && navigator.onLine && cur() === 0 && !lsGet(LATER)) askDownload(true);
+    });
+    st.idx = -1;
+    setInterval(function () { var i = cur(); if (i !== st.idx) onSlideChange(i); }, 250);   // suit la slide affichée
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+<!-- ECOLIA_AUDIO_PLAYER_END -->
+</body>
+</html>

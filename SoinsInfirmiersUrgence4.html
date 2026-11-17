@@ -1,0 +1,2048 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="bleu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>ECOLIA — Soins Infirmiers Urgence4</title>
+<style>
+[data-theme="bleu"]   { --p1:#0d2b4f; --p2:#1565c0; --p3:#07172e; --p4:#12437a; --p5:#5b8fd0; --bg:#e8f0fb; --bg2:#cfdff5; --bd:#a9c3e8; --soft:#dde8f7; --btn:#2a67b0; }
+[data-theme="vert"]   { --p1:#14442e; --p2:#2e7d32; --p3:#0b2b1a; --p4:#1f5c3a; --p5:#4f9a6b; --bg:#e8f5ec; --bg2:#c8e6d2; --bd:#a5cdb2; --soft:#dcefe2; --btn:#2f7a4f; }
+[data-theme="violet"] { --p1:#2d1b4e; --p2:#6a1b9a; --p3:#1a0f2e; --p4:#4a148c; --p5:#9c6fd0; --bg:#f1e9fb; --bg2:#dccbf2; --bd:#c4a8e6; --soft:#e8ddf6; --btn:#7e3fb2; }
+[data-theme="rouge"]  { --p1:#4a1010; --p2:#b71c1c; --p3:#2b0a0a; --p4:#8e1b1b; --p5:#d9706a; --bg:#fbeaea; --bg2:#f3cdcb; --bd:#e8a9a5; --soft:#f8dede; --btn:#a62a2a; }
+[data-theme="orange"] { --p1:#4e2a0c; --p2:#ef6c00; --p3:#2e1604; --p4:#b34a00; --p5:#f0a15a; --bg:#fff1e0; --bg2:#fbdcb8; --bd:#f3c08a; --soft:#fdebd6; --btn:#c9650a; }
+[data-theme="teal"]   { --p1:#0b3a3a; --p2:#00796b; --p3:#062626; --p4:#00574b; --p5:#4db6ac; --bg:#e0f2f1; --bg2:#b2dfdb; --bd:#80cbc4; --soft:#d5ecea; --btn:#26897d; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:linear-gradient(160deg,var(--p1) 0%,var(--p2) 50%,var(--p3) 100%); display:flex; justify-content:center; align-items:center; padding:8px; }
+.container { width:100%; max-width:1400px; background:#fefdf8; border-radius:20px; overflow:hidden; display:flex; flex-direction:column; height:100%; max-height:100vh; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.progress-bar { height:4px; background:var(--bg2); flex-shrink:0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--p5),var(--p4)); width:0%; transition:width 0.3s; }
+.header { padding:10px 16px; background:var(--bg); border-bottom:1px solid var(--bd); display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+.header h1 { color:var(--p4); font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box { display:flex; background:white; border-radius:20px; padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.search-box input { border:none; padding:6px 10px; border-radius:20px; outline:none; width:130px; font-size:0.8rem; }
+.search-box button { background:none; border:none; cursor:pointer; padding:4px 8px; font-size:0.85rem; color:var(--p2); }
+.badge { background:var(--p5); color:white; padding:4px 10px; border-radius:20px; font-weight:bold; font-size:0.75rem; }
+.search-nav { display:none; gap:4px; background:var(--bg2); padding:2px 8px; border-radius:20px; align-items:center; font-size:0.75rem; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:0.9rem; color:var(--p4); padding:2px 4px; }
+.content { padding:28px 32px; flex:1; overflow-y:auto; background:#fff; scroll-behavior:smooth; line-height:1.85; }
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.slide-title { color:var(--p1); font-size:1.5rem; font-weight:700; padding-bottom:12px; margin-bottom:20px; border-bottom:2px solid var(--p5); }
+.slide-content { color:var(--p3); font-size:1rem; }
+.empty-state { display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-height:60vh; padding:40px 20px; gap:18px; }
+.empty-state .icon { width:72px; height:72px; border-radius:50%; background:var(--bg); border:2px solid var(--bd); display:flex; align-items:center; justify-content:center; color:var(--p2); font-size:2rem; font-weight:300; }
+.empty-state h2 { color:var(--p1); font-size:1.4rem; font-weight:700; margin:0; }
+.empty-state p { color:#666; font-size:0.95rem; max-width:520px; line-height:1.7; }
+.empty-state .tag { display:inline-block; padding:6px 14px; background:var(--bg); color:var(--p4); border:1px solid var(--bd); border-radius:20px; font-size:0.8rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; }
+.bloc { padding:18px 22px; border-radius:12px; margin:22px 0; line-height:1.85; }
+.bloc-label { font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; opacity:0.7; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:var(--bg); border-left:4px solid var(--p5); }
+.theorie .bloc-label { color:var(--p4); }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.sources { background:#f5f5f5; padding:12px 16px; border-radius:10px; margin-top:26px; font-size:0.82rem; color:#666; border-left:3px solid #999; line-height:1.6; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:var(--p1); }
+.quiz-container { padding:22px; background:var(--bg); border-radius:16px; }
+.quiz-question { background:white; border-radius:10px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.quiz-question p { font-weight:600; margin-bottom:10px; color:var(--p1); }
+.quiz-question label { display:block; padding:8px 10px; margin:4px 0; border-radius:6px; cursor:pointer; transition:background 0.2s; }
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit { background:var(--btn); color:white; border:none; padding:12px 24px; border-radius:30px; font-size:1rem; cursor:pointer; font-weight:600; margin-top:14px; }
+.quiz-result { margin-top:16px; font-weight:600; }
+.controls { padding:8px 16px; background:#fafafa; border-top:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0; }
+.nav-btn { background:white; color:var(--p4); border:1px solid #ccc; padding:8px 14px; border-radius:8px; font-size:0.82rem; cursor:pointer; font-weight:500; }
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:var(--soft); }
+.content::-webkit-scrollbar-thumb { background:var(--p5); border-radius:3px; }
+@media (max-width:600px) { body { padding:0; } .container { border-radius:0; max-height:100vh; } .content { padding:20px 18px; } .slide-title { font-size:1.25rem; } .search-box input { width:90px; } .header h1 { font-size:0.85rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="header">
+<h1 id="pageTitle">ECOLIA</h1>
+<div class="header-right">
+<div class="search-box">
+<input id="searchInput" placeholder="Rechercher" type="text"/>
+<button id="searchBtn">⌕</button>
+</div>
+<div class="search-nav" id="searchNav">
+<button id="prevResultBtn">‹</button>
+<span id="resultCounter">0/0</span>
+<button id="nextResultBtn">›</button>
+</div>
+<span class="badge" id="slideCounter">0/0</span>
+</div>
+</div>
+<div class="content" id="content"></div>
+<div class="controls">
+<button class="nav-btn" id="prevBtn">← Précédent</button>
+<span class="counter" id="counter">—</span>
+<button class="nav-btn" id="nextBtn">Suivant →</button>
+</div>
+</div>
+<script>
+const COURSE_TITLE = "Soins Infirmiers d'Urgence (Urgences Médicales et Chirurgicales)";
+const slides = [
+  {
+    title: "Sommaire — Soins Infirmiers d'Urgence",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Bienvenue</div>
+        <h3>Les soins infirmiers d'urgence : évaluer, trier, secourir, transmettre</h3>
+        <p>Les <strong>soins infirmiers d'urgence</strong> sont l'ensemble des savoirs et des gestes qui permettent de reconnaître une situation d'urgence, d'évaluer rapidement l'état d'un patient, d'appliquer les gestes de premiers secours et de collaborer efficacement au sein de l'équipe de soins. En République Démocratique du Congo, les urgences représentent un défi majeur : accidents de la voie publique, hémorragies de la délivrance, paludisme grave, déshydratations sévères, brûlures, intoxications.</p>
+        <p>Ce cours s'adresse aux élèves de 4<sup>e</sup> Humanité de la section ITM (Institut Technique Médical), filière Soins Infirmiers. Il prépare le futur infirmier A2 à réagir avec méthode face à l'urgence, à appliquer les gestes qui sauvent, et à transmettre clairement les informations à l'équipe médicale.</p>
+        <p><strong>Important :</strong> ce cours présente les principes et gestes de base. Les actes qui nécessitent une qualification professionnelle (intubation, injections, prescription) relèvent du médecin ou de l'infirmier diplômé, et doivent être réalisés sous supervision. Le rôle de l'élève est de connaître, comprendre et savoir alerter.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Objectifs d'apprentissage</div>
+        <p>À la fin de ce cours, l'élève doit être capable de :</p>
+        <ol>
+          <li>Décrire l'organisation des urgences en RDC et les aspects médico-légaux.</li>
+          <li>Réaliser une évaluation primaire (ABCDE) et secondaire (AMPLE).</li>
+          <li>Appliquer une méthode de triage pour prioriser les patients.</li>
+          <li>Réaliser les gestes d'urgence vitale (RCP, PLS, désobstruction, contrôle des hémorragies, immobilisation).</li>
+          <li>Reconnaître les principales urgences médicales et chirurgicales.</li>
+          <li>Assurer la traçabilité des soins et la transmission SBAR.</li>
+          <li>Respecter les principes éthiques et médico-légaux.</li>
+        </ol>
+      </div>
+
+      <div class="bloc cas">
+        <div class="bloc-label">Grands chapitres du cours</div>
+        <ul>
+          <li><strong>Chapitre I</strong> — Organisation des urgences et aspects médico-légaux.</li>
+          <li><strong>Chapitre II</strong> — Évaluation et triage.</li>
+          <li><strong>Chapitre III</strong> — Gestes d'urgence vitale.</li>
+          <li><strong>Chapitre IV</strong> — Urgences respiratoires et cardiovasculaires.</li>
+          <li><strong>Chapitre V</strong> — Urgences neurologiques et métaboliques.</li>
+          <li><strong>Chapitre VI</strong> — Urgences chirurgicales et traumatologiques.</li>
+          <li><strong>Chapitre VII</strong> — Urgences obstétricales et pédiatriques.</li>
+          <li><strong>Chapitre VIII</strong> — Traçabilité, communication et éthique.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Pourquoi les soins d'urgence en RDC ?",
+    content: `
+      <div class="bloc cas">
+        <div class="bloc-label">Situation-problème</div>
+        <p>Aux urgences d'un hôpital général de Kinshasa, trois patients arrivent presque en même temps : un enfant inconscient après une chute, une femme enceinte qui saigne abondamment, et un homme qui se plaint de douleurs abdominales. L'infirmier est seul avec un aide-soignant. Qui doit-il prendre en charge en premier ? Que faire en attendant le médecin ? Pourquoi documenter ses actions ?</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Un enjeu de santé publique</h3>
+        <p>En RDC, les urgences sont fréquentes :</p>
+        <ul>
+          <li><strong>Accidents de la voie publique</strong> (traumatismes, fractures, traumatismes crâniens).</li>
+          <li><strong>Urgences obstétricales</strong> (hémorragies de la délivrance, éclampsie, dystocie).</li>
+          <li><strong>Urgences pédiatriques</strong> (paludisme grave, déshydratation, détresses respiratoires).</li>
+          <li><strong>Urgences médicales</strong> (coma, convulsions, AVC, hypoglycémie, intoxications).</li>
+          <li><strong>Brûlures et plaies graves</strong>.</li>
+        </ul>
+        <p>Le <strong>Plan National de Développement Sanitaire (PNDS)</strong> de la RDC place les soins d'urgence parmi les priorités. La dissémination du <strong>cours Soins d'Urgence de Base (SUB) de l'OMS</strong> dans les écoles d'infirmiers en est un pilier. Les structures d'urgence des hôpitaux de Kinshasa et du Kongo Central ont été formées à ces outils.</p>
+
+        <h3>Le rôle de l'infirmier</h3>
+        <p>L'infirmier est souvent le <strong>premier soignant</strong> à recevoir le patient. Il doit :</p>
+        <ul>
+          <li>Reconnaître l'urgence et alerter.</li>
+          <li>Évaluer rapidement la gravité.</li>
+          <li>Appliquer les gestes qui sauvent.</li>
+          <li>Préparer le patient et le matériel.</li>
+          <li>Documenter et transmettre.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Les urgences sont fréquentes en RDC. L'infirmier joue un rôle central : reconnaître, évaluer, agir, documenter, transmettre. Le cours SUB de l'OMS est une référence nationale.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — L'organisation des urgences",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Définition de l'urgence</h3>
+        <p>L'<strong>urgence</strong> est une situation où le pronostic vital ou fonctionnel est engagé à court terme, nécessitant une intervention immédiate. On distingue :</p>
+        <ul>
+          <li><strong>L'urgence vitale absolue</strong> : la vie est menacée dans les minutes qui suivent (arrêt cardiaque, hémorragie massive, détresse respiratoire sévère).</li>
+          <li><strong>L'urgence relative (ou potentielle)</strong> : la situation peut se dégrader si elle n'est pas prise en charge dans un délai raisonnable (douleur thoracique, fracture fermée, fièvre élevée).</li>
+        </ul>
+
+        <h3>L'AMU (Aide Médicale Urgente)</h3>
+        <p>L'<strong>AMU</strong> organise la prise en charge pré-hospitalière et hospitalière. Ses acteurs :</p>
+        <ul>
+          <li><strong>La régulation médicale</strong> : reçoit les appels, évalue la gravité, oriente.</li>
+          <li><strong>Les équipes mobiles</strong> (SAMU, SMUR) : interviennent sur place.</li>
+          <li><strong>Les services d'urgence hospitaliers</strong> : accueillent et prennent en charge.</li>
+          <li><strong>Les infirmiers</strong> : souvent en première ligne.</li>
+          <li><strong>Les ambulanciers</strong> : transportent dans de bonnes conditions.</li>
+        </ul>
+
+        <h3>Le parcours du patient aux urgences</h3>
+        <ol>
+          <li><strong>Accueil</strong> : identification, motif, première évaluation.</li>
+          <li><strong>Triage</strong> : priorisation selon la gravité.</li>
+          <li><strong>Évaluation médicale et infirmière</strong> (ABCDE, AMPLE).</li>
+          <li><strong>Soins d'urgence</strong> : stabilisation, traitement initial.</li>
+          <li><strong>Orientation</strong> : hospitalisation, bloc, réanimation, retour à domicile.</li>
+          <li><strong>Traçabilité</strong> : dossier, transmission.</li>
+        </ol>
+
+        <h3>En RDC</h3>
+        <p>Les hôpitaux de référence (CUK, HGR de Kinshasa, HGR du Kongo Central) ont progressivement structuré leurs urgences : salles d'accueil, triage, dossiers cliniques standardisés, formation des prestataires. Le défi reste l'insuffisance des moyens et la surcharge.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>L'urgence engage le pronostic vital ou fonctionnel. L'AMU organise la prise en charge pré-hospitalière et hospitalière. Le parcours du patient comprend : accueil, triage, évaluation, soins, orientation, traçabilité.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Le cadre médico-légal et éthique",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Des responsabilités encadrées</h3>
+        <p>L'exercice des soins d'urgence est encadré par des règles juridiques et éthiques. L'infirmier doit connaître ses droits et ses devoirs.</p>
+
+        <h4>Le devoir de soins</h4>
+        <p>Tout professionnel de santé doit porter assistance à une personne en danger. En France, l'article 223-6 du Code pénal parle de <strong>non-assistance à personne en danger</strong>. En RDC, le code de déontologie infirmier impose les mêmes principes : le soignant ne peut pas refuser de prendre en charge une urgence vitale, même en dehors de son service.</p>
+
+        <h4>L'obligation de moyens</h4>
+        <p>Le soignant n'est pas tenu à un résultat, mais il doit mettre en œuvre tous les moyens disponibles conformes aux bonnes pratiques. Cela suppose :</p>
+        <ul>
+          <li>Une formation à jour.</li>
+          <li>Une vigilance constante.</li>
+          <li>Une documentation rigoureuse.</li>
+        </ul>
+
+        <h4>Le secret professionnel</h4>
+        <p>Le secret professionnel interdit de divulguer les informations relatives au patient (identité, état de santé, traitements). Des exceptions existent :</p>
+        <ul>
+          <li>Signalement de certaines maladies à déclaration obligatoire (tétanos, choléra, rage).</li>
+          <li>Signalement de violences sur mineur ou personne vulnérable.</li>
+          <li>Réquisition judiciaire.</li>
+        </ul>
+
+        <h4>Le consentement</h4>
+        <p>Le patient doit être informé et consentir aux soins. En urgence vitale, si le patient est inconscient et que la vie est en jeu, les soins sont pratiqués sans attendre : c'est l'exception d'urgence, qui s'appuie sur la présomption de consentement.</p>
+
+        <h4>La traçabilité</h4>
+        <p>Chaque observation, chaque geste, chaque administration doivent être notés dans le dossier. La traçabilité protège le patient (continuité des soins) et le soignant (en cas de litige).</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Négliger la documentation est une erreur grave. Une absence de trace écrite rend le soignant vulnérable en cas de poursuite et compromet la continuité des soins. En urgence, on note ce qu'on a fait, à quelle heure, et l'évolution.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — L'évaluation primaire : ABCDE",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>ABCDE : la méthode de survie</h3>
+        <p>L'<strong>évaluation primaire</strong> est la première étape de toute prise en charge urgente. Elle suit une séquence stricte, <strong>ABCDE</strong>, qui recherche et traite immédiatement les détresses vitales.</p>
+
+        <h4>A — Airway (voies aériennes)</h4>
+        <p>Les voies aériennes sont-elles libres ? Signes d'obstruction : bruits respiratoires bruyants, tirage, impossibilité de parler, cyanose, absence de passage d'air. <strong>Action :</strong> bascule de la tête, subluxation mandibulaire, aspiration si nécessaire, corps étranger à retirer.</p>
+
+        <h4>B — Breathing (respiration)</h4>
+        <p>Le patient respire-t-il ? Fréquence, amplitude, symétrie, saturation en oxygène (si disponible). Signes de détresse : polypnée, cyanose, tirage, balancement thoraco-abdominal, sueurs. <strong>Action :</strong> position adaptée, oxygène si disponible, appel médical.</p>
+
+        <h4>C — Circulation</h4>
+        <p>Le cœur fonctionne-t-il ? Pouls, fréquence cardiaque, tension artérielle (si disponible), temps de recoloration cutanée, état des muqueuses. Signes de choc : pâleur, marbrures, tachycardie, hypotension. <strong>Action :</strong> compression d'une hémorragie, position adaptée, voie veineuse si compétence, appel médical.</p>
+
+        <h4>D — Disability (état neurologique)</h4>
+        <p>Évaluation rapide de la conscience : alerte, réponse à la voix, réponse à la douleur, absence de réponse (AVPU). Score de Glasgow si possible. Pupilles : taille, symétrie, réactivité. <strong>Action :</strong> surveiller, noter, alerter.</p>
+
+        <h4>E — Exposure (exposition)</h4>
+        <p>Déshabiller partiellement le patient pour chercher d'autres lésions : plaies, fractures, brûlures, hémorragies internes. <strong>Précaution :</strong> maintenir la chaleur, respecter la pudeur.</p>
+
+        <h4>Règle d'or</h4>
+        <p>On ne passe pas à l'étape suivante tant que l'étape précédente n'est pas stabilisée. Une hémorragie massive se contrôle avant d'évaluer le neuro ; une obstruction des voies aériennes se traite avant tout le reste.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>ABCDE : Airway, Breathing, Circulation, Disability, Exposure. On traite chaque étape avant de passer à la suivante. C'est la séquence de survie.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — L'évaluation secondaire : AMPLE",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>AMPLE : l'enquête après la stabilisation</h3>
+        <p>Une fois le patient stabilisé (ABCDE maîtrisé), on réalise une <strong>évaluation secondaire</strong> plus détaillée. La méthode <strong>AMPLE</strong> permet de recueillir l'histoire du patient, souvent auprès de lui-même ou de son entourage.</p>
+
+        <h4>A — Antécédents</h4>
+        <p>Maladies connues : diabète, hypertension, asthme, épilepsie, allergies, tuberculose, VIH. Chirurgies antérieures. Hospitalisations récentes.</p>
+
+        <h4>M — Médicaments</h4>
+        <p>Traitements en cours : antidiabétiques, antihypertenseurs, anticoagulants, antiépileptiques. Certains médicaments modifient la réponse à l'urgence (par exemple : un patient sous anticoagulant saignera plus).</p>
+
+        <h4>P — Passé médical</h4>
+        <p>Événements médicaux récents : fièvre, douleur thoracique, malaise, chute. Symptômes précédant l'urgence.</p>
+
+        <h4>L — Last meal (dernier repas)</h4>
+        <p>Heure et contenu du dernier repas. Important en cas d'anesthésie ou de chirurgie (risque d'inhalation), et pour évaluer l'état d'hydratation ou une hypoglycémie.</p>
+
+        <h4>E — Events (événements) et environnement</h4>
+        <p>Circonstances de l'urgence : accident, chute, agression, intoxication, contexte infectieux. Ce que l'entourage a observé (convulsions, perte de connaissance, douleur brutale).</p>
+
+        <h4>L'examen secondaire</h4>
+        <p>Après AMPLE, on réalise un examen complet, de la tête aux pieds : inspection, palpation, auscultation. On recherche : plaies, hématomes, déformations, douleurs localisées, signes infectieux. On complète par les constantes (pouls, tension, température, fréquence respiratoire, saturation).</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>AMPLE : Antécédents, Médicaments, Passé médical, Last meal, Events. Cette enquête complète l'ABCDE et permet d'orienter le diagnostic et la prise en charge.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — Le triage : prioriser les patients",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Qu'est-ce que le triage ?</h3>
+        <p>Le <strong>triage</strong> est l'opération qui consiste à classer les patients selon la gravité de leur état, afin de leur attribuer un ordre de prise en charge. Il permet de traiter d'abord les plus graves, de ne pas engorger les urgences et d'utiliser au mieux les ressources disponibles.</p>
+
+        <h4>Principes</h4>
+        <ul>
+          <li>Réalisé dès l'arrivée du patient, avant tout examen approfondi.</li>
+          <li>Rapide (quelques minutes).</li>
+          <li>Répété régulièrement : l'état du patient peut évoluer.</li>
+          <li>Confie au personnel formé (souvent l'infirmier organisateur de l'accueil).</li>
+        </ul>
+
+        <h4>Les échelles de triage</h4>
+        <p>Il existe plusieurs échelles. La plus utilisée internationalement est l'<strong>Échelle Canadienne de Triage et de Gravité (ETG)</strong>, qui distingue 5 niveaux :</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Niveau</th>
+              <th>Gravité</th>
+              <th>Délai de prise en charge</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Niveau 1 — Réanimation</td><td>Menace vitale immédiate</td><td>Immédiat</td></tr>
+            <tr><td>Niveau 2 — Très urgent</td><td>Menace vitale potentielle</td><td>≤ 15 minutes</td></tr>
+            <tr><td>Niveau 3 — Urgent</td><td>État stable mais nécessitant des soins rapides</td><td>≤ 30 minutes</td></tr>
+            <tr><td>Niveau 4 — Moins urgent</td><td>État stable, examens complémentaires</td><td>≤ 60 minutes</td></tr>
+            <tr><td>Niveau 5 — Non urgent</td><td>Consultation différée possible</td><td>≤ 120 minutes</td></tr>
+          </tbody>
+        </table>
+
+        <h4>Critères de priorisation</h4>
+        <ul>
+          <li>Détresse vitale (respiratoire, circulatoire, neurologique).</li>
+          <li>Hémorragie active.</li>
+          <li>Douleur thoracique aiguë.</li>
+          <li>Traumatisme grave, brûlure étendue.</li>
+          <li>Urgence obstétricale (hémorragie, éclampsie).</li>
+          <li>Coma, convulsions.</li>
+          <li>Intoxication grave.</li>
+        </ul>
+
+        <h4>Exemple pratique</h4>
+        <p>Trois patients arrivent : (1) un homme qui saigne abondamment d'une plaie au bras, (2) un enfant qui tousse depuis trois jours, (3) une femme qui convulse. Priorité : la femme qui convulse (détresse neurologique), puis l'homme qui saigne (détresse circulatoire), puis l'enfant (urgence relative).</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Traiter les patients par ordre d'arrivée est une erreur. Le triage sert précisément à dépasser l'ordre d'arrivée pour traiter les plus graves d'abord. Un patient arrivé en dernier avec un arrêt cardiaque passe avant tous les autres.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — La réanimation cardio-pulmonaire (RCP)",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Reconnaître l'arrêt cardiaque</h3>
+        <p>L'<strong>arrêt cardiaque</strong> est l'interruption brutale de la circulation sanguine. Sans intervention immédiate, les lésions cérébrales surviennent en 3 à 5 minutes, et la mort en moins de 10 minutes. Chaque minute de retard à débuter la RCP réduit les chances de survie de 10 %.</p>
+
+        <h4>Signes</h4>
+        <ul>
+          <li><strong>Perte de conscience brutale</strong>.</li>
+          <li><strong>Absence de respiration</strong> (ou gasps isolés, inefficaces).</li>
+          <li><strong>Absence de pouls</strong> (chez le professionnel, la vérification du pouls n'excède pas 10 secondes).</li>
+          <li>Pâleur ou cyanose, immobilité.</li>
+        </ul>
+
+        <h4>Les étapes de la RCP adulte</h4>
+        <ol>
+          <li><strong>Sécuriser la scène</strong> : vérifier qu'il n'y a pas de danger (circulation, électrocution, émanation).</li>
+          <li><strong>Vérifier la conscience</strong> : stimuler la victime, appeler à l'aide.</li>
+          <li><strong>Appeler les secours</strong> : numéro d'urgence, demander un défibrillateur si disponible.</li>
+          <li><strong>Libérer les voies aériennes</strong> : bascule de la tête, subluxation mandibulaire.</li>
+          <li><strong>Vérifier la respiration</strong> : observer la poitrine pendant 10 secondes maximum.</li>
+          <li><strong>Débuter les compressions thoraciques</strong> : 30 compressions pour 2 insufflations (si formé aux insufflations), sinon <strong>compressions seules</strong>.</li>
+        </ol>
+
+        <h4>Technique des compressions</h4>
+        <ul>
+          <li>Position : à genoux à côté de la victime, bras tendus, mains superposées au centre du thorax (sur le sternum, entre les seins).</li>
+          <li>Fréquence : 100 à 120 compressions par minute.</li>
+          <li>Profondeur : 5 à 6 cm chez l'adulte, en laissant le thorax reprendre sa forme entre chaque compression.</li>
+          <li>Relais : changer de celui qui comprime toutes les 2 minutes (fatigue).</li>
+        </ul>
+
+        <h4>Chez l'enfant et le nourrisson</h4>
+        <p>Chez l'enfant (1 an à la puberté) : 5 insufflations initiales puis 15 compressions / 2 insufflations. Chez le nourrisson (&lt; 1 an) : 5 insufflations puis 15 compressions / 2 insufflations, avec une technique adaptée (2 doigts ou 2 pouces).</p>
+
+        <h4>Le défibrillateur (DAE)</h4>
+        <p>S'il est disponible, il est appliqué dès que possible. Il analyse le rythme et délivre un choc si nécessaire. La RCP doit être poursuivie entre les chocs.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Ne pas débuter la RCP par peur de « faire mal » est une erreur mortelle. Une RCP bien faite ou même imparfaite est toujours meilleure que l'absence de RCP. Face à un patient inconscient qui ne respire pas, on comprime sans hésiter.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — PLS, désobstruction et contrôle des hémorragies",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>La PLS (Position Latérale de Sécurité)</h3>
+        <p>La <strong>PLS</strong> est indiquée chez une victime <strong>inconsciente qui respire</strong>. Elle libère les voies aériennes et évite que la langue ou les vomissements n'obstruent la respiration.</p>
+        <p><strong>Technique :</strong> allonger la victime sur le côté, un bras sous la tête, l'autre bras replié, une jambe fléchie pour stabiliser. Le visage doit rester dégagé. Surveiller la respiration en continu.</p>
+        <p><strong>Contre-indication :</strong> ne jamais mettre en PLS un patient qui ne respire pas (RCP à la place) ou suspect d'un traumatisme du rachis avant immobilisation.</p>
+
+        <h3>La désobstruction des voies aériennes</h3>
+        <p>En cas d'<strong>obstruction totale</strong> par un corps étranger, la victime ne peut plus parler, tousser ni respirer. Elle porte souvent les mains à sa gorge. Il faut agir vite.</p>
+
+        <h4>Adulte et enfant conscient</h4>
+        <ul>
+          <li>Donner <strong>5 claques dans le dos</strong>, entre les omoplates, en penchant la victime vers l'avant.</li>
+          <li>Si échec, réaliser la <strong>manœuvre de Heimlich</strong> : se placer derrière la victime, poing juste au-dessus du nombril, tirer vers soi et vers le haut, 5 fois.</li>
+          <li>Alterner 5 claques et 5 compressions abdominales jusqu'à expulsion.</li>
+        </ul>
+
+        <h4>Nourrisson</h4>
+        <ul>
+          <li>5 claques dans le dos, tête plus basse que le corps, puis 5 compressions thoraciques (2 doigts).</li>
+          <li>Ne jamais faire de compressions abdominales chez le nourrisson.</li>
+        </ul>
+
+        <h4>Victime inconsciente</h4>
+        <p>Allonger la victime, débuter la RCP. Les compressions peuvent parfois expulser le corps étranger.</p>
+
+        <h3>Le contrôle des hémorragies</h3>
+        <p>Une hémorragie externe abondante peut tuer en quelques minutes. La priorité est le <strong>contrôle immédiat</strong>.</p>
+        <ul>
+          <li><strong>Compression directe</strong> : appuyer fortement sur la plaie avec un tissu propre ou la main gantée.</li>
+          <li><strong>Pansement compressif</strong> : maintenir la pression avec un bandage sans interrompre la compression.</li>
+          <li><strong>Élévation</strong> du membre si possible (sauf suspicion de fracture).</li>
+          <li><strong>Garrot</strong> : en dernier recours, si la compression directe échoue ou si la plaie est très large. Noter l'heure de pose.</li>
+          <li><strong>Allonger</strong> la victime pour limiter le choc.</li>
+          <li><strong>Alerter</strong> les secours.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>PLS : victime inconsciente qui respire. Désobstruction : 5 claques + 5 compressions (abdominales chez l'adulte, thoraciques chez le nourrisson). Hémorragie : compression directe d'abord, garrot en dernier recours.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — L'immobilisation et la mobilisation",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Pourquoi immobiliser ?</h3>
+        <p>L'<strong>immobilisation</strong> vise à prévenir l'aggravation des lésions, notamment en cas de traumatisme. Une mobilisation inadaptée peut transformer une fracture fermée en fracture ouverte, déplacer une lésion vertébrale et provoquer une paralysie définitive.</p>
+
+        <h3>Les principales immobilisations</h3>
+        <ul>
+          <li><strong>Rachis cervical</strong> : collier cervical (ou maintien manuel tête-tronc en attendant) dès qu'un traumatisme crânien, facial ou cervical est suspecté.</li>
+          <li><strong>Rachis dorso-lombaire</strong> : plan dur (planche de bois, portoir rigide), mobilisation en bloc (tête, tronc, jambes dans l'axe).</li>
+          <li><strong>Membres</strong> : attelles provisoires (planchette, journal, carton, attelle de fortune), en immobilisant les articulations au-dessus et en dessous de la fracture.</li>
+          <li><strong>Bassin</strong> : suspicion de fracture du bassin → ne pas mobiliser, alerter, laisser sur place jusqu'à l'arrivée des secours.</li>
+        </ul>
+
+        <h3>Vérification après immobilisation</h3>
+        <ul>
+          <li><strong>Circulation</strong> : pouls distal perçu ? extrémités chaudes ? couleur normale ?</li>
+          <li><strong>Sensibilité</strong> : le patient sent-il ses doigts, ses orteils ?</li>
+          <li><strong>Motricité</strong> : peut-il bouger les doigts ou les orteils ?</li>
+        </ul>
+        <p>Une immobilisation trop serrée peut couper la circulation : elle doit être ajustée, mais pas au point de faire disparaître le pouls distal.</p>
+
+        <h3>Prévention du choc</h3>
+        <p>En traumatologie, le patient peut basculer dans le choc : le garder au chaud, allongé, rassuré, surveillé. Ne pas donner à boire ni à manger (risque d'anesthésie).</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Déplacer un patient traumatisé sans immobilisation est une erreur grave. Une fracture fermée peut devenir ouverte ; une lésion vertébrale peut provoquer une paralysie. Toute suspicion de traumatisme grave impose une immobilisation avant tout déplacement.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre IV — Les urgences respiratoires",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Reconnaître une détresse respiratoire</h3>
+        <p>La <strong>détresse respiratoire</strong> est l'incapacité de l'appareil respiratoire à assurer les échanges gazeux. Elle peut être aiguë (asthme, corps étranger, œdème pulmonaire) ou chronique décompensée (BPCO). C'est une urgence fréquente.</p>
+
+        <h4>Signes de détresse respiratoire</h4>
+        <ul>
+          <li><strong>Dyspnée</strong> : difficulté à respirer, sensation d'étouffement.</li>
+          <li><strong>Polypnée</strong> : fréquence respiratoire élevée (&gt; 20/min chez l'adulte, &gt; 40/min chez le nourrisson).</li>
+          <li><strong>Tirage</strong> : creusement des espaces intercostaux et sus-sternal.</li>
+          <li><strong>Balancement thoraco-abdominal</strong> : signe de fatigue respiratoire.</li>
+          <li><strong>Cyanose</strong> : coloration bleutée des lèvres, du bout des doigts.</li>
+          <li><strong>Sueurs</strong>, agitation, angoisse.</li>
+          <li><strong>Difficulté à parler</strong> : ne peut dire qu'un mot à la fois.</li>
+        </ul>
+
+        <h4>Causes fréquentes</h4>
+        <ul>
+          <li><strong>Asthme aigu grave</strong> : sifflements, oppression, toux sèche.</li>
+          <li><strong>Corps étranger</strong> dans les voies aériennes.</li>
+          <li><strong>Œdème pulmonaire</strong> : insuffisance cardiaque, dyspnée brutale, mousse.</li>
+          <li><strong>Pneumonie</strong> : fièvre, toux, difficultés respiratoires.</li>
+          <li><strong>Épanchement pleural</strong>, pneumothorax.</li>
+        </ul>
+
+        <h4>Conduite à tenir</h4>
+        <ol>
+          <li><strong>Position demi-assise</strong> : facilite la respiration.</li>
+          <li><strong>Oxygène</strong> : si disponible, à haut débit (sauf indication particulière).</li>
+          <li><strong>Aérosol</strong> de bronchodilatateur (salbutamol) si prescrit dans le cadre de l'asthme.</li>
+          <li><strong>Surveillance</strong> : fréquence respiratoire, saturation, conscience.</li>
+          <li><strong>Alerte</strong> du médecin, préparation du matériel d'intubation si besoin.</li>
+          <li><strong>Réconforter</strong> le patient, l'aider à respirer, éviter l'agitation.</li>
+        </ol>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Une détresse respiratoire se reconnaît à la polypnée, au tirage, au balancement thoraco-abdominal, à la cyanose. Position demi-assise, oxygène, aérosol si prescrit, surveillance, alerte. Le corps étranger impose la désobstruction immédiate.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre IV — L'arrêt cardiaque et les états de choc",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>L'arrêt cardiaque</h3>
+        <p>Nous avons vu la RCP au chapitre III. Il faut retenir :</p>
+        <ul>
+          <li>Reconnaissance : perte de conscience + absence de respiration + absence de pouls.</li>
+          <li>Action : appeler les secours, débuter la RCP immédiatement (30 compressions / 2 insufflations), défibrillation si disponible.</li>
+          <li>Poursuivre jusqu'à l'arrivée des secours, la reprise d'une respiration spontanée, ou l'épuisement physique.</li>
+        </ul>
+
+        <h3>Les états de choc</h3>
+        <p>Le <strong>choc</strong> est une insuffisance circulatoire aiguë qui empêche les organes de recevoir suffisamment d'oxygène. C'est une urgence vitale : sans traitement, les organes s'arrêtent les uns après les autres.</p>
+
+        <h4>Les grands types de choc</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Type de choc</th>
+              <th>Cause principale</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Choc hypovolémique</td><td>Perte de sang (hémorragie) ou de liquide (déshydratation, brûlure)</td></tr>
+            <tr><td>Choc cardiogénique</td><td>Défaillance du cœur (infarctus, insuffisance cardiaque)</td></tr>
+            <tr><td>Choc septique</td><td>Infection grave (sepsis)</td></tr>
+            <tr><td>Choc anaphylactique</td><td>Réaction allergique sévère</td></tr>
+            <tr><td>Choc obstructif</td><td>Compression du cœur (embolie, tamponnade, pneumothorax)</td></tr>
+          </tbody>
+        </table>
+
+        <h4>Signes communs de choc</h4>
+        <ul>
+          <li>Pâleur, sueurs, marbrures (peau marbrée).</li>
+          <li>Tachycardie (pouls rapide et filant).</li>
+          <li>Hypotension (tension basse).</li>
+          <li>Respiration rapide.</li>
+          <li>Anxiété, agitation puis confusion.</li>
+          <li>Soif intense.</li>
+          <li>Diminution des urines.</li>
+        </ul>
+
+        <h4>Conduite à tenir</h4>
+        <ol>
+          <li><strong>Position adaptée</strong> : jambes surélevées en cas de choc hypovolémique ; demi-assise en cas de choc cardiogénique.</li>
+          <li><strong>Oxygène</strong> à haut débit.</li>
+          <li><strong>Voie veineuse</strong> et remplissage (si compétence et prescription).</li>
+          <li><strong>Contrôle de la cause</strong> : compression d'hémorragie, adrénaline en cas d'anaphylaxie (sur prescription), antibiotiques en cas de sepsis.</li>
+          <li><strong>Alerte</strong> immédiate du médecin.</li>
+          <li><strong>Surveillance</strong> : conscience, pouls, tension, respiration.</li>
+        </ol>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Donner à boire à un patient en choc est une erreur. Le patient peut vomir et inhaler, ou aggraver une hémorragie interne qui nécessite une chirurgie urgente. Ne rien donner par la bouche, sauf indication médicale explicite.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre V — Les urgences neurologiques",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le coma</h3>
+        <p>Le <strong>coma</strong> est une perte de conscience prolongée, avec absence de réaction aux stimulations. L'évaluation utilise le <strong>score de Glasgow</strong> (ouverture des yeux, réponse verbale, réponse motrice) et le score <strong>AVPU</strong> (Alerte, réagit à la Voix, à la Douleur, ne réagit Pas).</p>
+        <p><strong>Causes :</strong> traumatisme crânien, hypoglycémie, intoxication, AVC, infection (paludisme grave), épilepsie, hypoxie.</p>
+        <p><strong>Conduite à tenir :</strong> libérer les voies aériennes, mettre en PLS si respiration conservée, surveiller, prendre la glycémie si possible, alerter le médecin.</p>
+
+        <h3>Les convulsions</h3>
+        <p>Les <strong>convulsions</strong> sont des contractions musculaires involontaires, souvent généralisées, dues à une hyperactivité électrique cérébrale. Causes : épilepsie, fièvre chez l'enfant (convulsions fébriles), hypoglycémie, paludisme grave, méningite.</p>
+        <p><strong>Conduite à tenir :</strong></p>
+        <ul>
+          <li><strong>Protéger la tête</strong> de la victime.</li>
+          <li><strong>Libérer les voies aériennes</strong> et desserrer les vêtements.</li>
+          <li><strong>Ne pas contenir</strong> les mouvements.</li>
+          <li><strong>Ne pas mettre</strong> d'objet dans la bouche.</li>
+          <li><strong>Chronométrer</strong> la durée.</li>
+          <li>Après la crise : PLS, surveillance, recherche de la cause, alerte.</li>
+        </ul>
+
+        <h3>L'AVC (accident vasculaire cérébral)</h3>
+        <p>L'<strong>AVC</strong> est une interruption de la circulation sanguine dans une partie du cerveau. Signes d'alerte (méthode <strong>FAST</strong> en anglais) :</p>
+        <ul>
+          <li><strong>F</strong>ace : bouche déviée, asymétrie du visage.</li>
+          <li><strong>A</strong>rms : faiblesse d'un bras (ne peut pas lever les deux bras).</li>
+          <li><strong>S</strong>peech : troubles de la parole, mots incompréhensibles.</li>
+          <li><strong>T</strong>ime : noter l'heure de début, appeler immédiatement.</li>
+        </ul>
+        <p><strong>Conduite à tenir :</strong> alerter, noter l'heure de début, position demi-assise, surveiller, transfert rapide vers un centre spécialisé. Chaque minute compte : « time is brain ».</p>
+
+        <h3>L'hypoglycémie</h3>
+        <p>Signes : sueurs, tremblements, palpitations, faim, confusion, troubles du comportement, voire coma. Causes : diabète traité (insuline, sulfamides), jeûne prolongé, alcoolisme.</p>
+        <p><strong>Conduite à tenir :</strong> si conscient : resucrage (sucre, jus sucré). Si inconscient : ne rien donner par la bouche, alerter, glycémie si possible, perfusion de sérum glucosé sur prescription.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Coma : Glasgow/AVPU, PLS si respiration conservée. Convulsions : protéger, ne pas contenir, ne rien mettre dans la bouche. AVC : FAST, chaque minute compte. Hypoglycémie : resucrage si conscient, alerte si inconscient.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VI — Les urgences traumatologiques",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les traumatismes crâniens</h3>
+        <p>Un <strong>traumatisme crânien</strong> peut passer inaperçu. Il faut rechercher :</p>
+        <ul>
+          <li>Perte de connaissance initiale, même brève.</li>
+          <li>Céphalées intenses, vomissements.</li>
+          <li>Confusion, agitation, troubles du comportement.</li>
+          <li>Asymétrie pupillaire.</li>
+          <li>Convulsions, déficit moteur.</li>
+          <li>Écoulement de sang ou de liquide clair par le nez ou l'oreille.</li>
+        </ul>
+        <p><strong>Conduite à tenir :</strong> immobilisation cervicale, surveillance neurologique régulière (Glasgow, pupilles), position demi-assise si conscient, PLS si inconscient et respire, transfert vers un centre avec scanner.</p>
+
+        <h3>Les fractures</h3>
+        <p>Une <strong>fracture</strong> est une rupture de la continuité d'un os. Signes : douleur, déformation, gonflement, impossibilité de bouger le membre, crépitation.</p>
+        <p><strong>Conduite à tenir :</strong></p>
+        <ul>
+          <li>Immobiliser avec une attelle provisoire.</li>
+          <li>Vérifier la circulation distale (pouls, couleur, sensibilité) avant et après l'immobilisation.</li>
+          <li>Ne pas tenter de réduire une fracture.</li>
+          <li>Couvrir une fracture ouverte avec un pansement propre, ne pas réintégrer les fragments.</li>
+          <li>Antalgique sur prescription.</li>
+          <li>Transfert pour radiographie.</li>
+        </ul>
+
+        <h3>Les plaies</h3>
+        <ul>
+          <li>Nettoyer à l'eau et au savon, ou au sérum physiologique.</li>
+          <li>Désinfecter, couvrir avec un pansement stérile.</li>
+          <li>Rechercher un corps étranger (ne pas retirer un objet planté : il peut comprimer un vaisseau).</li>
+          <li>Vérifier la vaccination antitétanique (rappel si nécessaire).</li>
+          <li>Surveiller les signes d'infection (rougeur, chaleur, pus, fièvre).</li>
+        </ul>
+
+        <h3>Les brûlures</h3>
+        <p>L'évaluation d'une brûlure repose sur :</p>
+        <ul>
+          <li>La <strong>surface</strong> (règle des 9 de Wallace, ou paume du patient = 1 %).</li>
+          <li>La <strong>profondeur</strong> (1er degré : rougeur ; 2e degré : cloques ; 3e degré : peau blanche ou noire, indolore).</li>
+          <li>La <strong>localisation</strong> (face, mains, périnée, articulations = gravité).</li>
+          <li>L'âge et l'état général du patient.</li>
+        </ul>
+        <p><strong>Conduite à tenir :</strong></p>
+        <ul>
+          <li>Refroidir à l'eau tempérée (15 – 25 °C) pendant 10 à 20 minutes, si la brûlure est récente.</li>
+          <li>Retirer les vêtements non collés et les bijoux.</li>
+          <li>Ne pas percer les cloques.</li>
+          <li>Couvrir avec un pansement propre (pas de coton, pas de corps gras).</li>
+          <li>Prévenir le choc : position allongée, réchauffement, hydratation (sur prescription).</li>
+          <li>Transfert rapide si brûlure grave (surface étendue, profondeur, localisation).</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Appliquer du beurre, de l'huile, du dentifrice ou de la terre sur une brûlure est une erreur. Ces substances aggravent la brûlure, favorisent l'infection et compliquent le nettoyage. On refroidit à l'eau tempérée et on couvre proprement.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VI — L'abdomen aigu et les urgences chirurgicales",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>L'abdomen aigu</h3>
+        <p>L'<strong>abdomen aigu</strong> est une douleur abdominale intense, d'apparition brutale, qui nécessite souvent une intervention chirurgicale urgente. Il ne faut pas le confondre avec une simple indigestion.</p>
+
+        <h4>Signes d'alerte</h4>
+        <ul>
+          <li>Douleur intense, localisée ou diffuse.</li>
+          <li>Défense abdominale (le ventre est dur, le patient refuse la palpation).</li>
+          <li>Contracture (ventre de bois).</li>
+          <li>Fièvre, tachycardie.</li>
+          <li>Vomissements, arrêt des matières et des gaz.</li>
+          <li>Signes de choc (pâleur, sueurs, hypotension).</li>
+        </ul>
+
+        <h4>Causes fréquentes</h4>
+        <ul>
+          <li><strong>Appendicite</strong> : douleur en bas à droite, fièvre, nausées.</li>
+          <li><strong>Péritonite</strong> : douleur diffuse, ventre de bois, fièvre élevée.</li>
+          <li><strong>Occlusion intestinale</strong> : vomissements, arrêt des matières et des gaz, ballonnement.</li>
+          <li><strong>Perforation d'ulcère</strong> : douleur brutale en coup de poignard, ventre de bois.</li>
+          <li><strong>Cholécystite, pancréatite, colique néphrétique</strong>.</li>
+        </ul>
+
+        <h4>Conduite à tenir</h4>
+        <ul>
+          <li><strong>À jeun</strong> strict (rien par la bouche) : préparation à une éventuelle chirurgie.</li>
+          <li><strong>Pas d'antalgique</strong> avant l'examen médical (peut masquer les signes).</li>
+          <li><strong>Pas de lavement, pas de laxatif</strong> (risque de perforation).</li>
+          <li><strong>Position demi-assise</strong>, genoux fléchis pour détendre l'abdomen.</li>
+          <li><strong>Surveillance</strong> : pouls, tension, température, douleur.</li>
+          <li><strong>Alerte chirurgicale</strong> : transfert rapide au bloc ou vers un hôpital de référence.</li>
+        </ul>
+
+        <h3>Autres urgences chirurgicales</h3>
+        <ul>
+          <li><strong>Hémorragie interne</strong> (rupture de rate, grossesse extra-utérine, traumatisme abdominal) : signes de choc, abdomen sensible, alerte immédiate.</li>
+          <li><strong>Traumatisme du bassin</strong> : risque hémorragique majeur, immobilisation, transfert.</li>
+          <li><strong>Plaie pénétrante de l'abdomen</strong> : ne pas retirer l'objet, couvrir, transférer.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Donner à manger ou à boire à un patient qui présente un abdomen aigu est une erreur. En cas de chirurgie, l'estomac doit être vide. De même, donner un antalgique avant l'examen peut masquer les signes et retarder le diagnostic.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VII — Les urgences obstétricales (notions)",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Une priorité de santé publique</h3>
+        <p>Les urgences obstétricales sont une cause majeure de mortalité maternelle en RDC. L'infirmier doit savoir les reconnaître et alerter immédiatement.</p>
+
+        <h3>L'hémorragie de la délivrance</h3>
+        <p>L'<strong>hémorragie de la délivrance</strong> est une perte de sang abondante après l'accouchement (plus de 500 mL dans les 24 heures). C'est la première cause de mortalité maternelle dans le monde.</p>
+        <p><strong>Signes :</strong> saignement abondant, utérus mou (ne se contracte pas), pâleur, tachycardie, chute de tension, angoisse.</p>
+        <p><strong>Conduite à tenir :</strong></p>
+        <ul>
+          <li>Alerter immédiatement le médecin ou la sage-femme.</li>
+          <li>Massage utérin (si compétence) pour stimuler la contraction.</li>
+          <li>Perfusion, oxygène, position allongée jambes surélevées.</li>
+          <li>Surveillance rapprochée.</li>
+          <li>Transfert au bloc si nécessaire.</li>
+        </ul>
+
+        <h3>L'éclampsie</h3>
+        <p>L'<strong>éclampsie</strong> est une complication grave de la grossesse : convulsions chez une femme enceinte hypertendue. Peut survenir avant, pendant ou après l'accouchement.</p>
+        <p><strong>Signes précurseurs (pré-éclampsie) :</strong> hypertension, œdèmes, protéinurie, maux de tête, troubles visuels, douleur en barre épigastrique.</p>
+        <p><strong>Conduite à tenir en cas de crise :</strong></p>
+        <ul>
+          <li>Protéger la patiente (éloigner les objets dangereux, protéger la tête).</li>
+          <li>Position latérale, libérer les voies aériennes.</li>
+          <li>Alerter immédiatement.</li>
+          <li>Préparer le sulfate de magnésium (sur prescription).</li>
+          <li>Surveillance : tension, conscience, respiration.</li>
+        </ul>
+
+        <h3>Autres urgences obstétricales</h3>
+        <ul>
+          <li><strong>Souffrance fœtale aiguë</strong> : bradycardie fœtale, méconium → extraction rapide.</li>
+          <li><strong>Procidence du cordon</strong> : le cordon sort avant le bébé → position genu-pectorale, transfert immédiat.</li>
+          <li><strong>Rupture utérine</strong> : douleur brutale, choc → bloc en urgence.</li>
+          <li><strong>Grossesse extra-utérine rompue</strong> : douleur brutale, choc → bloc en urgence.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Sous-estimer une hémorragie de la délivrance est une erreur mortelle. Une femme qui saigne abondamment après l'accouchement doit être prise en charge dans les minutes qui suivent. Le massage utérin, la perfusion et le transfert rapide sauvent des vies.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VII — Les urgences pédiatriques (notions)",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les spécificités de l'enfant</h3>
+        <p>L'enfant n'est pas un petit adulte. Ses particularités anatomiques et physiologiques modifient la présentation des urgences et la conduite à tenir :</p>
+        <ul>
+          <li>Voies aériennes plus étroites, plus facilement obstruables.</li>
+          <li>Réserves énergétiques faibles : décompensation rapide.</li>
+          <li>Surface corporelle plus grande par rapport au poids : refroidissement et déshydratation plus rapides.</li>
+          <li>Signes de gravité parfois discrets : un enfant qui joue peut s'effondrer brutalement.</li>
+        </ul>
+
+        <h3>La déshydratation</h3>
+        <p>Cause fréquente : diarrhée, vomissements. Cause majeure de mortalité infantile en RDC.</p>
+        <p><strong>Signes :</strong> soif intense, bouche sèche, yeux enfoncés, pli cutané persistant, fontanelle déprimée (nourrisson), oligurie, somnolence.</p>
+        <p><strong>Conduite à tenir :</strong></p>
+        <ul>
+          <li>Réhydratation orale (SRO – Sels de Réhydratation Orale) si la déshydratation est modérée et l'enfant peut boire.</li>
+          <li>Réhydratation veineuse si déshydratation sévère, refus de boire, vomissements incoercibles.</li>
+          <li>Surveillance du poids, des urines, de l'état de conscience.</li>
+        </ul>
+
+        <h3>La détresse respiratoire du nourrisson</h3>
+        <p>Signes : fréquence respiratoire élevée, tirage, geignement, battement des ailes du nez, cyanose, difficultés à téter.</p>
+        <p><strong>Causes :</strong> bronchiolite, pneumonie, corps étranger, asthme du nourrisson.</p>
+        <p><strong>Conduite à tenir :</strong> position demi-assise, libération des voies aériennes, oxygène, alerte, transfert.</p>
+
+        <h3>Les convulsions fébriles</h3>
+        <p>Chez l'enfant de 6 mois à 5 ans, une fièvre élevée peut déclencher des convulsions. Souvent bénignes mais impressionnantes.</p>
+        <p><strong>Conduite à tenir :</strong> protéger la tête, libérer les voies aériennes, ne pas contenir, déshabiller, donner un antipyrétique si prescrit, alerter, surveiller.</p>
+
+        <h3>La réanimation du nouveau-né</h3>
+        <p>À la naissance, si le nouveau-né ne respire pas :</p>
+        <ul>
+          <li>Sécher, stimuler (frictionner le dos, la plante des pieds).</li>
+          <li>Libérer les voies aériennes.</li>
+          <li>Ventiler au masque si nécessaire (sur prescription/protocole).</li>
+          <li>Alerter le médecin ou la sage-femme.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Chez l'enfant, la déshydratation, les détresses respiratoires et les convulsions fébriles sont les urgences les plus fréquentes. La réhydratation orale (SRO) est une mesure simple et vitale. La réanimation du nouveau-né repose sur le séchage, la stimulation et la ventilation.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VIII — La traçabilité et la transmission SBAR",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Documenter, c'est soigner</h3>
+        <p>La <strong>traçabilité</strong> est l'enregistrement précis, daté et signé de tout ce qui est observé et fait pour le patient. Ce n'est pas une perte de temps : c'est une exigence professionnelle.</p>
+
+        <h4>Ce qu'on doit noter</h4>
+        <ul>
+          <li>L'heure d'arrivée, le motif, l'état initial.</li>
+          <li>Les constantes (pouls, tension, température, fréquence respiratoire, saturation, glycémie).</li>
+          <li>Les gestes effectués (perfusion, pansement, immobilisation, injection).</li>
+          <li>Les médicaments administrés (nom, dose, voie, heure).</li>
+          <li>L'évolution de l'état, les transmissions.</li>
+          <li>Les appels au médecin et les prescriptions reçues.</li>
+        </ul>
+
+        <h3>La transmission SBAR</h3>
+        <p>La méthode <strong>SBAR</strong> (Situation, Background, Assessment, Recommendation) structure la transmission orale entre soignants. Elle est utilisée dans les urgences et les blocs opératoires.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Lettre</th>
+              <th>Signification</th>
+              <th>Exemple</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>S</strong></td>
+              <td>Situation</td>
+              <td>« Je vous appelle pour M. K., 45 ans, admis aux urgences pour douleur thoracique. »</td>
+            </tr>
+            <tr>
+              <td><strong>B</strong></td>
+              <td>Background (contexte)</td>
+              <td>« Antécédents d'hypertension, sous traitement. Douleur apparue il y a 45 minutes. »</td>
+            </tr>
+            <tr>
+              <td><strong>A</strong></td>
+              <td>Assessment (évaluation)</td>
+              <td>« Constantes : TA 160/95, pouls 105, SpO₂ 94 %. Douleur 7/10. Sueurs. »</td>
+            </tr>
+            <tr>
+              <td><strong>R</strong></td>
+              <td>Recommendation (recommandation)</td>
+              <td>« Je pense à un syndrome coronarien aigu. Pouvez-vous venir rapidement ? »</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4>Avantages de SBAR</h4>
+        <ul>
+          <li>Communication claire, structurée, rapide.</li>
+          <li>Réduction des erreurs et des omissions.</li>
+          <li>Meilleure prise en charge du patient.</li>
+          <li>Renforce la sécurité et la collaboration dans l'équipe.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Omettre de documenter une intervention est une erreur grave. En cas de litige, l'absence de trace écrite rend le soignant vulnérable et compromet la continuité des soins. « Ce qui n'est pas écrit n'a pas été fait » : cette règle résume l'exigence de traçabilité.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VIII — Éthique et communication en urgence",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les principes éthiques en urgence</h3>
+
+        <h4>Le respect de la personne</h4>
+        <p>Chaque patient est une personne, avec sa dignité, sa culture, ses croyances. En urgence, on respecte la pudeur, on explique ce qu'on fait, on rassure, même si le patient est inconscient (il peut entendre).</p>
+
+        <h4>Le consentement</h4>
+        <p>En urgence vitale, si le patient est inconscient, la loi présume le consentement : les soins se font sans attendre. Si le patient est conscient, on l'informe et on respecte son refus, sauf mise en danger grave d'autrui.</p>
+
+        <h4>L'équité</h4>
+        <p>Tous les patients ont droit aux mêmes soins, quels que soient leur origine, leur religion, leur situation sociale, leur capacité à payer. Le triage repose sur la gravité, pas sur le statut.</p>
+
+        <h4>La confidentialité</h4>
+        <p>Le secret professionnel s'applique aussi aux urgences. On ne divulgue pas les informations du patient aux curieux, aux médias, aux autres patients. On partage l'information uniquement avec l'équipe soignante concernée.</p>
+
+        <h4>La non-malfaisance</h4>
+        <p>« D'abord, ne pas nuire. » Ne pas faire de gestes hors de sa compétence. Ne pas donner de médicaments sans prescription. Ne pas retarder un transfert nécessaire. Reconnaître ses limites et appeler à l'aide.</p>
+
+        <h3>La communication avec le patient et la famille</h3>
+        <ul>
+          <li><strong>Informer</strong> sans jargon, avec des mots simples.</li>
+          <li><strong>Rassurer</strong> : expliquer ce qu'on fait, pourquoi.</li>
+          <li><strong>Écouter</strong> : la plainte du patient est une information diagnostique.</li>
+          <li><strong>Annoncer</strong> les mauvaises nouvelles avec tact et humanité, si possible en présence du médecin.</li>
+          <li><strong>Respecter la famille</strong> : elle peut aider à recueillir l'histoire (AMPLE), à rassurer le patient, à prendre des décisions.</li>
+        </ul>
+
+        <h3>La gestion du stress</h3>
+        <p>Les urgences sont stressantes. L'infirmier doit apprendre à :</p>
+        <ul>
+          <li>Respirer, prendre une seconde pour évaluer.</li>
+          <li>Prioriser, ne pas se disperser.</li>
+          <li>Travailler en équipe, déléguer ce qui peut l'être.</li>
+          <li>Se protéger (gants, précautions standard).</li>
+          <li>Demander de l'aide sans honte.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Les principes éthiques (respect, consentement, équité, confidentialité, non-malfaisance) s'appliquent en urgence. La communication avec le patient et la famille est un soin. La gestion du stress est une compétence professionnelle.</p>
+      </div>
+    `
+  },
+  {
+    title: "Synthèse — Évaluer, trier, secourir, transmettre",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Synthèse générale</div>
+        <h3>Les cinq compétences du soignant d'urgence</h3>
+        <ol>
+          <li><strong>Organiser</strong> : connaître les structures, les acteurs, le cadre légal et éthique.</li>
+          <li><strong>Évaluer</strong> : ABCDE (primaire) puis AMPLE (secondaire).</li>
+          <li><strong>Trier</strong> : prioriser selon la gravité (échelles de triage).</li>
+          <li><strong>Secourir</strong> : appliquer les gestes vitaux (RCP, PLS, désobstruction, hémorragies, immobilisation) et prendre en charge les urgences spécifiques.</li>
+          <li><strong>Transmettre</strong> : documenter, utiliser SBAR, respecter l'éthique.</li>
+        </ol>
+
+        <h3>Tableau récapitulatif des urgences</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Situation</th>
+              <th>Gestes immédiats</th>
+              <th>Priorité</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Arrêt cardiaque</td><td>RCP immédiate, alerter, DAE si disponible</td><td>Absolue</td></tr>
+            <tr><td>Hémorragie massive</td><td>Compression directe, allonger, alerter</td><td>Absolue</td></tr>
+            <tr><td>Obstruction des voies aériennes</td><td>Claques + Heimlich, RCP si inconscient</td><td>Absolue</td></tr>
+            <tr><td>Détresse respiratoire</td><td>Position demi-assise, oxygène, aérosol si prescrit</td><td>Absolue</td></tr>
+            <tr><td>Choc</td><td>Position adaptée, oxygène, voie veineuse, alerter</td><td>Absolue</td></tr>
+            <tr><td>Coma</td><td>PLS si respiration conservée, surveiller, alerter</td><td>Absolue</td></tr>
+            <tr><td>Convulsions</td><td>Protéger, ne pas contenir, PLS après</td><td>Très urgente</td></tr>
+            <tr><td>AVC</td><td>FAST, alerter, transfert rapide</td><td>Absolue</td></tr>
+            <tr><td>Hypoglycémie</td><td>Resucrage si conscient, alerter si inconscient</td><td>Très urgente</td></tr>
+            <tr><td>Traumatisme grave</td><td>Immobiliser, surveiller, transférer</td><td>Très urgente</td></tr>
+            <tr><td>Brûlure étendue</td><td>Refroidir, couvrir, transférer</td><td>Très urgente</td></tr>
+            <tr><td>Abdomen aigu</td><td>À jeun, alerter, transfert chirurgical</td><td>Très urgente</td></tr>
+            <tr><td>Hémorragie de la délivrance</td><td>Massage utérin, alerter, perfusion, transfert</td><td>Absolue</td></tr>
+            <tr><td>Éclampsie</td><td>Protéger, PLS, alerter, magnésium si prescrit</td><td>Absolue</td></tr>
+            <tr><td>Déshydratation sévère</td><td>SRO ou réhydratation veineuse, surveiller</td><td>Très urgente</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bloc cas">
+        <div class="bloc-label">Étude de cas (cas pédagogique)</div>
+        <p>« Un infirmier A2 est de garde aux urgences d'un hôpital de Kinshasa. Il reçoit un patient inconscient, victime d'un accident de la voie publique. Il applique l'ABCDE, immobilise la colonne cervicale, contrôle une hémorragie du scalp, alerte le médecin et prépare le transfert vers le bloc. Il documente ses actions et transmet le dossier à l'équipe suivante. »</p>
+        <p><strong>Analyse :</strong> la démarche est exemplaire. L'infirmier a appliqué la séquence ABCDE, a immobilisé le rachis, a contrôlé l'hémorragie, a alerté, a préparé le transfert, a documenté et transmis. Il a mobilisé toutes les compétences du cours : évaluation, triage, gestes vitaux, communication, éthique.</p>
+      </div>
+
+      <div class="bloc sources">
+        <div class="bloc-label">Sources du cours</div>
+        <ul>
+          <li>AMURDC — <em>Feedback projet pilote implementation des outils</em> (2023) : PNDS, cours SUB de l'OMS, triage, formation des prestataires.</li>
+          <li>Le Potentiel (2026) — formation de 200 professionnels de santé à la gestion des situations d'urgence.</li>
+          <li>LePoint.cd (2025) — rôle des infirmiers aux urgences (triage, détection des cas prioritaires).</li>
+          <li>Bioformation — <em>Les soins infirmiers d'urgence</em> (2025).</li>
+          <li>Diplomatique.be — réforme du curriculum de la formation infirmière en RDC (ITM).</li>
+          <li>OMS — <em>Soins d'Urgence de Base</em> (cours SUB).</li>
+          <li>Hôpital HEAL Africa — formation en soins d'urgence cliniques.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Évaluation finale — Soins Infirmiers d'Urgence",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Consigne</div>
+        <p>Répondez aux questions ci-dessous en sélectionnant la bonne réponse parmi les quatre propositions. Le QCM couvre l'ensemble du cours. Cliquez ensuite sur « Valider mes réponses » pour obtenir votre score.</p>
+      </div>
+
+      <div class="quiz-container">
+        <div id="quizQuestions"></div>
+        <button id="submitQuiz" class="quiz-btn-submit">
+          Valider mes réponses
+        </button>
+        <div id="quizResult" class="quiz-result"></div>
+      </div>
+    `
+  }
+];
+const questions = [
+  {
+    text: "L'urgence vitale est une situation où :",
+    options: [
+      "Le pronostic vital ou fonctionnel est engagé à court terme",
+      "Le patient a simplement mal",
+      "Le patient est fatigué",
+      "Le patient a de la fièvre"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'ABCDE de l'évaluation primaire signifie :",
+    options: [
+      "Airway, Breathing, Circulation, Disability, Exposure",
+      "Alerte, Bilan, Compression, Défibrillation, Évacuation",
+      "Analyse, Bilan, Contrôle, Diagnostic, Évaluation",
+      "Aucune de ces réponses"
+    ],
+    correct: 0
+  },
+  {
+    text: "Dans l'évaluation primaire ABCDE, la lettre C correspond à :",
+    options: [
+      "Circulation (pouls, tension, hémorragies)",
+      "Conscience",
+      "Céphalée",
+      "Convulsions"
+    ],
+    correct: 0
+  },
+  {
+    text: "La méthode AMPLE sert à :",
+    options: [
+      "Recueillir l'histoire du patient (antécédents, médicaments, dernier repas, événements)",
+      "Réaliser une RCP",
+      "Contrôler une hémorragie",
+      "Faire une immobilisation"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le triage aux urgences sert à :",
+    options: [
+      "Prioriser les patients selon leur gravité",
+      "Traiter les patients par ordre d'arrivée",
+      "Éviter de recevoir des patients",
+      "Remplir les dossiers"
+    ],
+    correct: 0
+  },
+  {
+    text: "Une urgence vitale absolue parmi les situations suivantes est :",
+    options: [
+      "Arrêt cardiaque",
+      "Douleur dentaire",
+      "Rhume banal",
+      "Entorse bénigne"
+    ],
+    correct: 0
+  },
+  {
+    text: "Chez un adulte en arrêt cardiaque, la RCP commence par :",
+    options: [
+      "30 compressions thoraciques suivies de 2 insufflations (si formé)",
+      "5 insufflations initiales",
+      "Poser un garrot",
+      "Donner à boire"
+    ],
+    correct: 0
+  },
+  {
+    text: "La fréquence des compressions thoraciques chez l'adulte est de :",
+    options: [
+      "100 à 120 par minute",
+      "30 à 50 par minute",
+      "200 à 250 par minute",
+      "10 par minute"
+    ],
+    correct: 0
+  },
+  {
+    text: "La PLS est indiquée chez :",
+    options: [
+      "Une victime inconsciente qui respire",
+      "Une victime qui ne respire pas",
+      "Une victime qui saigne",
+      "Une victime qui a une fracture"
+    ],
+    correct: 0
+  },
+  {
+    text: "En cas d'obstruction totale des voies aériennes chez l'adulte conscient, il faut :",
+    options: [
+      "Donner 5 claques dans le dos puis 5 compressions abdominales (Heimlich)",
+      "Donner à boire",
+      "Allonger la victime",
+      "Attendre"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le contrôle d'une hémorragie externe abondante se fait d'abord par :",
+    options: [
+      "Compression directe sur la plaie",
+      "Garrot immédiat",
+      "Application de glace",
+      "Élévation seule"
+    ],
+    correct: 0
+  },
+  {
+    text: "Une détresse respiratoire se reconnaît notamment à :",
+    options: [
+      "Polypnée, tirage, balancement thoraco-abdominal, cyanose",
+      "Bradycardie et hypotension",
+      "Fièvre et diarrhée",
+      "Douleur abdominale"
+    ],
+    correct: 0
+  },
+  {
+    text: "Un patient en état de choc présente souvent :",
+    options: [
+      "Pâleur, tachycardie, hypotension, sueurs",
+      "Rougeur, bradycardie, hypertension",
+      "Fièvre isolée",
+      "Aucun signe"
+    ],
+    correct: 0
+  },
+  {
+    text: "En cas de convulsions, il faut :",
+    options: [
+      "Protéger la tête et ne pas contenir les mouvements",
+      "Contenir les mouvements",
+      "Mettre un objet dans la bouche",
+      "Donner à boire"
+    ],
+    correct: 0
+  },
+  {
+    text: "Les signes d'alerte de l'AVC (FAST) incluent :",
+    options: [
+      "Bouche déviée, faiblesse d'un bras, troubles de la parole",
+      "Fièvre et toux",
+      "Diarrhée et vomissements",
+      "Douleur thoracique"
+    ],
+    correct: 0
+  },
+  {
+    text: "En cas d'hypoglycémie chez un patient conscient, il faut :",
+    options: [
+      "Resucrer avec du sucre ou un jus sucré",
+      "Donner de l'eau",
+      "Ne rien faire",
+      "Attendre"
+    ],
+    correct: 0
+  },
+  {
+    text: "En cas de brûlure récente, il faut d'abord :",
+    options: [
+      "Refroidir à l'eau tempérée pendant 10 à 20 minutes",
+      "Appliquer du beurre",
+      "Percer les cloques",
+      "Couvrir de terre"
+    ],
+    correct: 0
+  },
+  {
+    text: "Face à un abdomen aigu, avant l'examen médical, il faut :",
+    options: [
+      "Laisser le patient à jeun, ne pas donner d'antalgique ni de laxatif",
+      "Donner à manger",
+      "Donner un laxatif",
+      "Donner un antalgique immédiatement"
+    ],
+    correct: 0
+  },
+  {
+    text: "En cas de traumatisme avec suspicion d'atteinte du rachis, il faut :",
+    options: [
+      "Immobiliser avant tout déplacement",
+      "Asseoir le patient",
+      "Faire marcher le patient",
+      "Le laisser seul"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'hémorragie de la délivrance est :",
+    options: [
+      "Une urgence obstétricale majeure, à prendre en charge immédiatement",
+      "Un événement normal après l'accouchement",
+      "Une urgence pédiatrique",
+      "Une urgence chirurgicale banale"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'éclampsie est :",
+    options: [
+      "Une complication de la grossesse avec convulsions et hypertension",
+      "Une infection urinaire",
+      "Une hémorragie de la délivrance",
+      "Une complication du diabète"
+    ],
+    correct: 0
+  },
+  {
+    text: "Chez l'enfant, la déshydratation se traite d'abord par :",
+    options: [
+      "Réhydratation orale (SRO) si elle est modérée",
+      "Chirurgie",
+      "Antibiotiques",
+      "Repos"
+    ],
+    correct: 0
+  },
+  {
+    text: "La transmission SBAR signifie :",
+    options: [
+      "Situation, Background (contexte), Assessment (évaluation), Recommendation (recommandation)",
+      "Soins, Bilan, Analyse, Résultat",
+      "Symptômes, Bilan, Alerte, Réanimation",
+      "Aucune de ces réponses"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le secret professionnel impose de :",
+    options: [
+      "Ne pas divulguer les informations du patient, sauf exceptions légales",
+      "Tout dire à la famille",
+      "Publier les cas sur les réseaux sociaux",
+      "Ignorer le patient"
+    ],
+    correct: 0
+  },
+  {
+    text: "La traçabilité des soins est importante parce qu'elle :",
+    options: [
+      "Assure la continuité des soins et protège le patient et le soignant",
+      "Permet de remplir les dossiers pour les statistiques uniquement",
+      "Ralentit les soins",
+      "N'a aucune utilité en urgence"
+    ],
+    correct: 0
+  },
+  {
+    text: "En urgence vitale, si le patient est inconscient :",
+    options: [
+      "La loi présume le consentement, les soins se font sans attendre",
+      "Il faut attendre la famille",
+      "Il faut refuser les soins",
+      "Il faut faire signer un papier au patient"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le cours Soins d'Urgence de Base (SUB) de l'OMS est :",
+    options: [
+      "Une référence pour la formation des infirmiers en RDC",
+      "Une formation réservée aux médecins",
+      "Un cours interdit en RDC",
+      "Un cours universitaire uniquement"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'objectif principal des soins infirmiers d'urgence en 4<sup>e</sup> Humanité est de rendre l'élève capable de :",
+    options: [
+      "Reconnaître une urgence, évaluer, appliquer les gestes qui sauvent et transmettre",
+      "Remplacer le médecin dans toutes les situations",
+      "Gérer seul un hôpital",
+      "Étudier la littérature médicale"
+    ],
+    correct: 0
+  }
+];
+
+try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+        questions.forEach(function (q) {
+            if (!q.text) q.text = q.question || q.q || q.enonce || q.titre || "";
+            if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+            if (typeof q.correct === "undefined") {
+                if (typeof q.answer !== "undefined") q.correct = q.answer;
+                else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+            }
+        });
+    }
+} catch (e) {}
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+const pageTitle = document.getElementById('pageTitle');
+pageTitle.textContent = "ECOLIA · " + COURSE_TITLE;
+document.title = "ECOLIA — " + COURSE_TITLE;
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim() || slides.length === 0) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp("(" + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ")", 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderEmptyState() {
+    contentDiv.innerHTML = '<div class="empty-state"><div class="icon">·</div><span class="tag">Bientôt disponible</span><h2>' + COURSE_TITLE + '</h2><p>Ce cours est en préparation. Le contenu sera ajouté prochainement.</p></div>';
+    slideCounterSpan.textContent = '0/0';
+    progressFill.style.width = '0%';
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    counterSpan.textContent = '—';
+}
+
+function renderQuiz() {
+    const qc = document.getElementById('quizQuestions');
+    if (!qc) return;
+    if (typeof questions === 'undefined' || questions.length === 0) {
+        qc.innerHTML = '<p style="color:#666;font-style:italic;">Quiz bientot disponible.</p>';
+        return;
+    }
+    let html = '';
+    questions.forEach((q, i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o, k) => {
+            html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>';
+        });
+        html += '</div>';
+    });
+    qc.innerHTML = html;
+    const submitBtn = document.getElementById('submitQuiz');
+    if (submitBtn) {
+        submitBtn.onclick = () => {
+            let score = 0;
+            questions.forEach((q, i) => {
+                const s = document.querySelector('input[name="q' + i + '"]:checked');
+                if (s && parseInt(s.value) === q.correct) score++;
+            });
+            const pct = Math.round(score/questions.length*100);
+            document.getElementById('quizResult').innerHTML =
+                '<div style="background:var(--bg2);padding:16px;border-radius:10px;margin-top:14px;">' +
+                '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong></div>';
+        };
+    }
+}
+
+function renderSlide(index, keepHighlight) {
+    if (keepHighlight === undefined) keepHighlight = true;
+    if (slides.length === 0) { renderEmptyState(); return; }
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    if (index === slides.length - 1) renderQuiz();
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    if (slides.length === 0) return;
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (slides.length && currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (slides.length && currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+<!-- ECOLIA_IMAGE_LOADER_START -->
+<script>
+(function () {
+  var SITE = "https://ecolia-course.github.io/";
+  var NATIVE = false;
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function abs(u) { return /^(https?:|data:|blob:)/i.test(u) ? u : (NATIVE ? SITE + u.replace(/^(\.\/|\/)+/, "") : u); }
+  function ext(u) { var m = String(u).split("?")[0].match(/\.(jpe?g|png|gif|webp|svg)$/i); return m ? m[1].toLowerCase() : "jpg"; }
+  function hide(img) { img.onerror = null; img.style.display = "none"; }
+  var table = null, queue = [], queued = {}, running = false;
+  function enqueue(full, fn) {
+    if (queued[fn]) return;
+    queued[fn] = 1; queue.push([full, fn]);
+    if (!running) { running = true; setTimeout(next, 2500); }
+  }
+  function next() {
+    if (!queue.length) { running = false; return; }
+    if (!navigator.onLine) { running = false; return; }
+    var q = queue.shift(), t0 = Date.now();
+    try { CoursInterface.download(q[0], q[1]); } catch (e) { return setTimeout(next, 500); }
+    (function wait() {
+      var ok = false;
+      try { ok = !!CoursInterface.exists(q[1]); } catch (e) {}
+      if (ok) setTimeout(next, 1500);
+      else if (Date.now() - t0 > 40000) next();
+      else setTimeout(wait, 700);
+    })();
+  }
+  function exists(fn) { try { return !!CoursInterface.exists(fn); } catch (e) { return false; } }
+  function show(img) {
+    if (!table || img.getAttribute("data-ecolia-done")) return;
+    var id = img.getAttribute("data-image-id");
+    var url = table[id];
+    if (typeof url !== "string" || !url.length) { console.warn("ECOLIA : image absente du JSON :", id); return; }
+    img.setAttribute("data-ecolia-done", "1");
+    if (!NATIVE) { img.onerror = function () { hide(img); }; img.setAttribute("src", url); return; }
+    var full = abs(url), fn = "img_" + id + "." + ext(url);
+    if (exists(fn)) {
+      img.onerror = function () {
+        try { CoursInterface["delete"](fn); } catch (e) {}
+        queued[fn] = 0;
+        img.onerror = function () { hide(img); };
+        img.setAttribute("src", full);
+      };
+      img.setAttribute("src", "https://app.local/cours/" + fn);
+    } else {
+      img.onerror = function () { hide(img); };
+      img.setAttribute("src", full);
+      enqueue(full, fn);
+    }
+  }
+  function scan(root) {
+    if (!root || !root.querySelectorAll) return;
+    if (root.matches && root.matches("img[data-image-id]")) show(root);
+    root.querySelectorAll("img[data-image-id]").forEach(show);
+  }
+  function prefetchAll() {
+    var ids = {};
+    try { JSON.stringify(slides).replace(/data-image-id=\\?"([^"\\]+)/g, function (m, id) { ids[id] = 1; }); } catch (e) {}
+    Object.keys(ids).forEach(function (id) {
+      var url = table[id];
+      if (typeof url !== "string" || !url.length) return;
+      var fn = "img_" + id + "." + ext(url);
+      if (!exists(fn)) enqueue(abs(url), fn);
+    });
+  }
+  function start(tbl) {
+    table = tbl;
+    scan(document.body);
+    new MutationObserver(function (muts) {
+      muts.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.nodeType === 1) scan(n); }); });
+    }).observe(document.body, { childList: true, subtree: true });
+    if (NATIVE) prefetchAll();
+  }
+  var JSON_URL = NATIVE ? SITE + "images_ecolia.json" : "images_ecolia.json";
+  var KEY = "ecolia_images_json";
+  fetch(JSON_URL, NATIVE ? { cache: "no-cache" } : undefined)
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (table) { if (NATIVE) lsSet(KEY, JSON.stringify(table)); start(table); })
+    .catch(function (e) {
+      var saved = null;
+      if (NATIVE) { try { saved = JSON.parse(lsGet(KEY) || "null"); } catch (x) {} }
+      if (saved) start(saved);
+      else console.warn("ECOLIA : JSON des images indisponible.", e);
+    });
+})();
+</script>
+<!-- ECOLIA_IMAGE_LOADER_END -->
+
+
+
+<!-- ECOLIA_AUDIO_PLAYER_START -->
+<style>
+  #ecolia-audio-btn, #ecolia-dl-btn {
+    width: 30px; height: 30px; min-width: 30px; padding: 0; margin: 0 4px 0 0;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    cursor: pointer; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent; outline: none;
+  }
+  #ecolia-audio-btn { border: none; background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-dl-btn { border: 1.5px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb); }
+  #ecolia-dl-btn.ecolia-full { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-btn.ecolia-fixed { position: fixed; top: 8px; left: 8px; z-index: 2147483000; }
+  #ecolia-audio-btn:active, #ecolia-dl-btn:active { transform: scale(.92); }
+  #ecolia-audio-btn svg, #ecolia-dl-btn svg { width: 15px; height: 15px; fill: currentColor; pointer-events: none; }
+  #ecolia-audio-btn.ecolia-off, #ecolia-dl-btn.ecolia-off { display: none; }
+  #ecolia-audio-banner {
+    display: none; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0;
+    padding: 8px 14px; font-size: .82rem; line-height: 1.35;
+    background: var(--soft, #eef3fb); color: var(--p1, #123); border-bottom: 1px solid var(--bd, #c9d6ea);
+  }
+  #ecolia-audio-banner.on { display: flex; }
+  #ecolia-audio-banner .eab-txt { flex: 1 1 180px; }
+  #ecolia-audio-banner .eab-act { display: flex; gap: 6px; flex-wrap: wrap; }
+  #ecolia-audio-banner button {
+    border: 1px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb);
+    border-radius: 16px; padding: 5px 12px; font-size: .8rem; cursor: pointer;
+  }
+  #ecolia-audio-banner button.pri { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-banner .eab-bar { display: none; flex-basis: 100%; height: 4px; border-radius: 2px; overflow: hidden; background: var(--bd, #c9d6ea); }
+  #ecolia-audio-banner .eab-bar i { display: block; height: 100%; width: 0; background: var(--p2, #2563eb); transition: width .2s; }
+</style>
+<script>
+(function () {
+  var CFG = {"code":"SoinsInfirmiersUrgence4","base":"https://ecolia-course.github.io/ecolia-media/audio_files/","available":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21],"count":21,"sizeMo":26,"sizes":{"1":1323072,"2":995136,"3":1169088,"4":1086912,"5":1326528,"6":1114944,"7":1238208,"8":1343040,"9":1317120,"10":1034688,"11":1115904,"12":1199808,"13":1501056,"14":1550208,"15":1173504,"16":1231872,"17":1395264,"18":1145664,"19":1268736,"20":1616640,"21":160320},"fallback":{"1":[["fr","Sommaire, Soins Infirmiers d'Urgence. Bienvenue. Les soins infirmiers d'urgence: évaluer, trier, secourir, transmettre. Les soins infirmiers d'urgence sont l'ensemble des savoirs et des gestes qui permettent de reconnaître une situation d'urgence, d'évaluer rapidement l'état d'un patient, d'appliquer les gestes de premiers secours et de collaborer efficacement au sein de l'équipe de soins. En République Démocratique du Congo, les urgences représentent un défi majeur: accidents de la voie publique, hémorragies de la délivrance, paludisme grave, déshydratations sévères, brûlures, intoxications. Ce cours s'adresse aux élèves de 4e Humanité de la section ITM (Institut Technique Médical), filière Soins Infirmiers. Il prépare le futur infirmier A2 à réagir avec méthode face à l'urgence, à appliquer les gestes qui sauvent, et à transmettre clairement les informations à l'équipe médicale. Important: ce cours présente les principes et gestes de base. Les actes qui nécessitent une qualification professionnelle (intubation, injections, prescription) relèvent du médecin ou de l'infirmier diplômé, et doivent être réalisés sous supervision. Le rôle de l'élève est de connaître, comprendre et savoir alerter. Objectifs d'apprentissage. À la fin de ce cours, l'élève doit être capable de: Décrire l'organisation des urgences en R D C et les aspects médico-légaux. Réaliser une évaluation primaire (ABCDE) et secondaire (AMPLE). Appliquer une méthode de triage pour prioriser les patients. Réaliser les gestes d'urgence vitale (RCP, PLS, désobstruction, contrôle des hémorragies, immobilisation). Reconnaître les principales urgences médicales et chirurgicales. Assurer la traçabilité des soins et la transmission SBAR. Respecter les principes éthiques et médico-légaux. Grands chapitres du cours. Chapitre I, Organisation des urgences et aspects médico-légaux. Chapitre II, Évaluation et triage. Chapitre III, Gestes d'urgence vitale. Chapitre IV, Urgences respiratoires et cardiovasculaires. Chapitre V, Urgences neurologiques et métaboliques. Chapitre VI, Urgences chirurgicales et traumatologiques. Chapitre VII, Urgences obstétricales et pédiatriques. Chapitre VIII, Traçabilité, communication et éthique."]],"2":[["fr","Chapitre I, Pourquoi les soins d'urgence en R D C? Situation-problème. Aux urgences d'un hôpital général de Kinshasa, trois patients arrivent presque en même temps: un enfant inconscient après une chute, une femme enceinte qui saigne abondamment, et un homme qui se plaint de douleurs abdominales. L'infirmier est seul avec un aide-soignant. Qui doit-il prendre en charge en premier? Que faire en attendant le médecin? Pourquoi documenter ses actions? Fondements théoriques. Un enjeu de santé publique. En R D C, les urgences sont fréquentes: Accidents de la voie publique (traumatismes, fractures, traumatismes crâniens). Urgences obstétricales (hémorragies de la délivrance, éclampsie, dystocie). Urgences pédiatriques (paludisme grave, déshydratation, détresses respiratoires). Urgences médicales (coma, convulsions, AVC, hypoglycémie, intoxications). Brûlures et plaies graves. Le Plan National de Développement Sanitaire (PNDS) de la R D C place les soins d'urgence parmi les priorités. La dissémination du cours Soins d'Urgence de Base (SUB) de l'OMS dans les écoles d'infirmiers en est un pilier. Les structures d'urgence des hôpitaux de Kinshasa et du Kongo Central ont été formées à ces outils. Le rôle de l'infirmier. L'infirmier est souvent le premier soignant à recevoir le patient. Il doit: Reconnaître l'urgence et alerter. Évaluer rapidement la gravité. Appliquer les gestes qui sauvent. Préparer le patient et le matériel. Documenter et transmettre. À retenir. Les urgences sont fréquentes en R D C. L'infirmier joue un rôle central: reconnaître, évaluer, agir, documenter, transmettre. Le cours SUB de l'OMS est une référence nationale."]],"3":[["fr","Chapitre I, L'organisation des urgences. Fondements théoriques. Définition de l'urgence. L'urgence est une situation où le pronostic vital ou fonctionnel est engagé à court terme, nécessitant une intervention immédiate. On distingue: L'urgence vitale absolue: la vie est menacée dans les minutes qui suivent (arrêt cardiaque, hémorragie massive, détresse respiratoire sévère). L'urgence relative (ou potentielle): la situation peut se dégrader si elle n'est pas prise en charge dans un délai raisonnable (douleur thoracique, fracture fermée, fièvre élevée). L'AMU (Aide Médicale Urgente). L'AMU organise la prise en charge pré-hospitalière et hospitalière. Ses acteurs: La régulation médicale: reçoit les appels, évalue la gravité, oriente. Les équipes mobiles (SAMU, SMUR): interviennent sur place. Les services d'urgence hospitaliers: accueillent et prennent en charge. Les infirmiers: souvent en première ligne. Les ambulanciers: transportent dans de bonnes conditions. Le parcours du patient aux urgences. Accueil: identification, motif, première évaluation. Triage: priorisation selon la gravité. Évaluation médicale et infirmière (ABCDE, AMPLE). Soins d'urgence: stabilisation, traitement initial. Orientation: hospitalisation, bloc, réanimation, retour à domicile. Traçabilité: dossier, transmission. En R D C. Les hôpitaux de référence (CUK, HGR de Kinshasa, HGR du Kongo Central) ont progressivement structuré leurs urgences: salles d'accueil, triage, dossiers cliniques standardisés, formation des prestataires. Le défi reste l'insuffisance des moyens et la surcharge. À retenir. L'urgence engage le pronostic vital ou fonctionnel. L'AMU organise la prise en charge pré-hospitalière et hospitalière. Le parcours du patient comprend: accueil, triage, évaluation, soins, orientation, traçabilité."]],"4":[["fr","Chapitre I, Le cadre médico-légal et éthique. Fondements théoriques. Des responsabilités encadrées. L'exercice des soins d'urgence est encadré par des règles juridiques et éthiques. L'infirmier doit connaître ses droits et ses devoirs. Le devoir de soins. Tout professionnel de santé doit porter assistance à une personne en danger. En France, l'article 223-6 du Code pénal parle de non-assistance à personne en danger. En R D C, le code de déontologie infirmier impose les mêmes principes: le soignant ne peut pas refuser de prendre en charge une urgence vitale, même en dehors de son service. L'obligation de moyens. Le soignant n'est pas tenu à un résultat, mais il doit mettre en œuvre tous les moyens disponibles conformes aux bonnes pratiques. Cela suppose: Une formation à jour. Une vigilance constante. Une documentation rigoureuse. Le secret professionnel. Le secret professionnel interdit de divulguer les informations relatives au patient (identité, état de santé, traitements). Des exceptions existent: Signalement de certaines maladies à déclaration obligatoire (tétanos, choléra, rage). Signalement de violences sur mineur ou personne vulnérable. Réquisition judiciaire. Le consentement. Le patient doit être informé et consentir aux soins. En urgence vitale, si le patient est inconscient et que la vie est en jeu, les soins sont pratiqués sans attendre: c'est l'exception d'urgence, qui s'appuie sur la présomption de consentement. La traçabilité. Chaque observation, chaque geste, chaque administration doivent être notés dans le dossier. La traçabilité protège le patient (continuité des soins) et le soignant (en cas de litige). Erreur fréquente. Négliger la documentation est une erreur grave. Une absence de trace écrite rend le soignant vulnérable en cas de poursuite et compromet la continuité des soins. En urgence, on note ce qu'on a fait, à quelle heure, et l'évolution."]],"5":[["fr","Chapitre II, L'évaluation primaire: ABCDE. Fondements théoriques. ABCDE: la méthode de survie. L'évaluation primaire est la première étape de toute prise en charge urgente. Elle suit une séquence stricte, ABCDE, qui recherche et traite immédiatement les détresses vitales. A, Airway (voies aériennes). Les voies aériennes sont-elles libres? Signes d'obstruction: bruits respiratoires bruyants, tirage, impossibilité de parler, cyanose, absence de passage d'air. Action: bascule de la tête, subluxation mandibulaire, aspiration si nécessaire, corps étranger à retirer. B, Breathing (respiration). Le patient respire-t-il? Fréquence, amplitude, symétrie, saturation en oxygène (si disponible). Signes de détresse: polypnée, cyanose, tirage, balancement thoraco-abdominal, sueurs. Action: position adaptée, oxygène si disponible, appel médical. C, Circulation. Le cœur fonctionne-t-il? Pouls, fréquence cardiaque, tension artérielle (si disponible), temps de recoloration cutanée, état des muqueuses. Signes de choc: pâleur, marbrures, tachycardie, hypotension. Action: compression d'une hémorragie, position adaptée, voie veineuse si compétence, appel médical. D, Disability (état neurologique). Évaluation rapide de la conscience: alerte, réponse à la voix, réponse à la douleur, absence de réponse (AVPU). Score de Glasgow si possible. Pupilles: taille, symétrie, réactivité. Action: surveiller, noter, alerter. E, Exposure (exposition). Déshabiller partiellement le patient pour chercher d'autres lésions: plaies, fractures, brûlures, hémorragies internes. Précaution: maintenir la chaleur, respecter la pudeur. Règle d'or. On ne passe pas à l'étape suivante tant que l'étape précédente n'est pas stabilisée. Une hémorragie massive se contrôle avant d'évaluer le neuro; une obstruction des voies aériennes se traite avant tout le reste. À retenir. ABCDE: Airway, Breathing, Circulation, Disability, Exposure. On traite chaque étape avant de passer à la suivante. C'est la séquence de survie."]],"6":[["fr","Chapitre II, L'évaluation secondaire: AMPLE. Fondements théoriques. AMPLE: l'enquête après la stabilisation. Une fois le patient stabilisé (ABCDE maîtrisé), on réalise une évaluation secondaire plus détaillée. La méthode AMPLE permet de recueillir l'histoire du patient, souvent auprès de lui-même ou de son entourage. A, Antécédents. Maladies connues: diabète, hypertension, asthme, épilepsie, allergies, tuberculose, VIH. Chirurgies antérieures. Hospitalisations récentes. M, Médicaments. Traitements en cours: antidiabétiques, antihypertenseurs, anticoagulants, antiépileptiques. Certains médicaments modifient la réponse à l'urgence (par exemple: un patient sous anticoagulant saignera plus). P, Passé médical. Événements médicaux récents: fièvre, douleur thoracique, malaise, chute. Symptômes précédant l'urgence. L, Last meal (dernier repas). Heure et contenu du dernier repas. Important en cas d'anesthésie ou de chirurgie (risque d'inhalation), et pour évaluer l'état d'hydratation ou une hypoglycémie. E, Events (événements) et environnement. Circonstances de l'urgence: accident, chute, agression, intoxication, contexte infectieux. Ce que l'entourage a observé (convulsions, perte de connaissance, douleur brutale). L'examen secondaire. Après AMPLE, on réalise un examen complet, de la tête aux pieds: inspection, palpation, auscultation. On recherche: plaies, hématomes, déformations, douleurs localisées, signes infectieux. On complète par les constantes (pouls, tension, température, fréquence respiratoire, saturation). À retenir. AMPLE: Antécédents, Médicaments, Passé médical, Last meal, Events. Cette enquête complète l'ABCDE et permet d'orienter le diagnostic et la prise en charge."]],"7":[["fr","Chapitre II, Le triage: prioriser les patients. Fondements théoriques. Qu'est-ce que le triage? Le triage est l'opération qui consiste à classer les patients selon la gravité de leur état, afin de leur attribuer un ordre de prise en charge. Il permet de traiter d'abord les plus graves, de ne pas engorger les urgences et d'utiliser au mieux les ressources disponibles. Principes. Réalisé dès l'arrivée du patient, avant tout examen approfondi. Rapide (quelques minutes). Répété régulièrement: l'état du patient peut évoluer. Confie au personnel formé (souvent l'infirmier organisateur de l'accueil). Les échelles de triage. Il existe plusieurs échelles. La plus utilisée internationalement est l'Échelle Canadienne de Triage et de Gravité (ETG), qui distingue 5 niveaux: Niveau. Gravité. Délai de prise en charge. Niveau 1, Réanimation. Menace vitale immédiate. Immédiat. Niveau 2, Très urgent. Menace vitale potentielle. inférieur ou égal à 15 minutes. Niveau 3, Urgent. État stable mais nécessitant des soins rapides. inférieur ou égal à 30 minutes. Niveau 4, Moins urgent. État stable, examens complémentaires. inférieur ou égal à 60 minutes. Niveau 5, Non urgent. Consultation différée possible. inférieur ou égal à 120 minutes. Critères de priorisation. Détresse vitale (respiratoire, circulatoire, neurologique). Hémorragie active. Douleur thoracique aiguë. Traumatisme grave, brûlure étendue. Urgence obstétricale (hémorragie, éclampsie). Coma, convulsions. Intoxication grave. Exemple pratique. Trois patients arrivent: (1) un homme qui saigne abondamment d'une plaie au bras, (2) un enfant qui tousse depuis trois jours, (3) une femme qui convulse. Priorité: la femme qui convulse (détresse neurologique), puis l'homme qui saigne (détresse circulatoire), puis l'enfant (urgence relative). Erreur fréquente. Traiter les patients par ordre d'arrivée est une erreur. Le triage sert précisément à dépasser l'ordre d'arrivée pour traiter les plus graves d'abord. Un patient arrivé en dernier avec un arrêt cardiaque passe avant tous les autres."]],"8":[["fr","Chapitre III, La réanimation cardio-pulmonaire (RCP). Fondements théoriques. Reconnaître l'arrêt cardiaque. L'arrêt cardiaque est l'interruption brutale de la circulation sanguine. Sans intervention immédiate, les lésions cérébrales surviennent en 3 à 5 minutes, et la mort en moins de 10 minutes. Chaque minute de retard à débuter la RCP réduit les chances de survie de 10 pour cent. Signes. Perte de conscience brutale. Absence de respiration (ou gasps isolés, inefficaces). Absence de pouls (chez le professionnel, la vérification du pouls n'excède pas 10 secondes). Pâleur ou cyanose, immobilité. Les étapes de la RCP adulte. Sécuriser la scène: vérifier qu'il n'y a pas de danger (circulation, électrocution, émanation). Vérifier la conscience: stimuler la victime, appeler à l'aide. Appeler les secours: numéro d'urgence, demander un défibrillateur si disponible. Libérer les voies aériennes: bascule de la tête, subluxation mandibulaire. Vérifier la respiration: observer la poitrine pendant 10 secondes maximum. Débuter les compressions thoraciques: 30 compressions pour 2 insufflations (si formé aux insufflations), sinon compressions seules. Technique des compressions. Position: à genoux à côté de la victime, bras tendus, mains superposées au centre du thorax (sur le sternum, entre les seins). Fréquence: 100 à 120 compressions par minute. Profondeur: 5 à 6 centimètres chez l'adulte, en laissant le thorax reprendre sa forme entre chaque compression. Relais: changer de celui qui comprime toutes les 2 minutes (fatigue). Chez l'enfant et le nourrisson. Chez l'enfant (1 an à la puberté): 5 insufflations initiales puis 15 compressions ou 2 insufflations. Chez le nourrisson ( inférieur à 1 an): 5 insufflations puis 15 compressions ou 2 insufflations, avec une technique adaptée (2 doigts ou 2 pouces). Le défibrillateur (DAE). S'il est disponible, il est appliqué dès que possible. Il analyse le rythme et délivre un choc si nécessaire. La RCP doit être poursuivie entre les chocs. Erreur fréquente. Ne pas débuter la RCP par peur de « faire mal » est une erreur mortelle. Une RCP bien faite ou même imparfaite est toujours meilleure que l'absence de RCP. Face à un patient inconscient qui ne respire pas, on comprime sans hésiter."]],"9":[["fr","Chapitre III, PLS, désobstruction et contrôle des hémorragies. Fondements théoriques. La PLS (Position Latérale de Sécurité). La PLS est indiquée chez une victime inconsciente qui respire. Elle libère les voies aériennes et évite que la langue ou les vomissements n'obstruent la respiration. Technique: allonger la victime sur le côté, un bras sous la tête, l'autre bras replié, une jambe fléchie pour stabiliser. Le visage doit rester dégagé. Surveiller la respiration en continu. Contre-indication: ne jamais mettre en PLS un patient qui ne respire pas (RCP à la place) ou suspect d'un traumatisme du rachis avant immobilisation. La désobstruction des voies aériennes. En cas d'obstruction totale par un corps étranger, la victime ne peut plus parler, tousser ni respirer. Elle porte souvent les mains à sa gorge. Il faut agir vite. Adulte et enfant conscient. Donner 5 claques dans le dos, entre les omoplates, en penchant la victime vers l'avant. Si échec, réaliser la manœuvre de Heimlich: se placer derrière la victime, poing juste au-dessus du nombril, tirer vers soi et vers le haut, 5 fois. Alterner 5 claques et 5 compressions abdominales jusqu'à expulsion. Nourrisson. 5 claques dans le dos, tête plus basse que le corps, puis 5 compressions thoraciques (2 doigts). Ne jamais faire de compressions abdominales chez le nourrisson. Victime inconsciente. Allonger la victime, débuter la RCP. Les compressions peuvent parfois expulser le corps étranger. Le contrôle des hémorragies. Une hémorragie externe abondante peut tuer en quelques minutes. La priorité est le contrôle immédiat. Compression directe: appuyer fortement sur la plaie avec un tissu propre ou la main gantée. Pansement compressif: maintenir la pression avec un bandage sans interrompre la compression. Élévation du membre si possible (sauf suspicion de fracture). Garrot: en dernier recours, si la compression directe échoue ou si la plaie est très large. Noter l'heure de pose. Allonger la victime pour limiter le choc. Alerter les secours. À retenir. PLS: victime inconsciente qui respire. Désobstruction: 5 claques plus 5 compressions (abdominales chez l'adulte, thoraciques chez le nourrisson). Hémorragie: compression directe d'abord, garrot en dernier recours."]],"10":[["fr","Chapitre III, L'immobilisation et la mobilisation. Fondements théoriques. Pourquoi immobiliser? L'immobilisation vise à prévenir l'aggravation des lésions, notamment en cas de traumatisme. Une mobilisation inadaptée peut transformer une fracture fermée en fracture ouverte, déplacer une lésion vertébrale et provoquer une paralysie définitive. Les principales immobilisations. Rachis cervical: collier cervical (ou maintien manuel tête-tronc en attendant) dès qu'un traumatisme crânien, facial ou cervical est suspecté. Rachis dorso-lombaire: plan dur (planche de bois, portoir rigide), mobilisation en bloc (tête, tronc, jambes dans l'axe). Membres: attelles provisoires (planchette, journal, carton, attelle de fortune), en immobilisant les articulations au-dessus et en dessous de la fracture. Bassin: suspicion de fracture du bassin, donc ne pas mobiliser, alerter, laisser sur place jusqu'à l'arrivée des secours. Vérification après immobilisation. Circulation: pouls distal perçu? extrémités chaudes? couleur normale? Sensibilité: le patient sent-il ses doigts, ses orteils? Motricité: peut-il bouger les doigts ou les orteils? Une immobilisation trop serrée peut couper la circulation: elle doit être ajustée, mais pas au point de faire disparaître le pouls distal. Prévention du choc. En traumatologie, le patient peut basculer dans le choc: le garder au chaud, allongé, rassuré, surveillé. Ne pas donner à boire ni à manger (risque d'anesthésie). Erreur fréquente. Déplacer un patient traumatisé sans immobilisation est une erreur grave. Une fracture fermée peut devenir ouverte; une lésion vertébrale peut provoquer une paralysie. Toute suspicion de traumatisme grave impose une immobilisation avant tout déplacement."]],"11":[["fr","Chapitre IV, Les urgences respiratoires. Fondements théoriques. Reconnaître une détresse respiratoire. La détresse respiratoire est l'incapacité de l'appareil respiratoire à assurer les échanges gazeux. Elle peut être aiguë (asthme, corps étranger, œdème pulmonaire) ou chronique décompensée (BPCO). C'est une urgence fréquente. Signes de détresse respiratoire. Dyspnée: difficulté à respirer, sensation d'étouffement. Polypnée: fréquence respiratoire élevée ( supérieur à 20/min chez l'adulte, supérieur à 40/min chez le nourrisson). Tirage: creusement des espaces intercostaux et sus-sternal. Balancement thoraco-abdominal: signe de fatigue respiratoire. Cyanose: coloration bleutée des lèvres, du bout des doigts. Sueurs, agitation, angoisse. Difficulté à parler: ne peut dire qu'un mot à la fois. Causes fréquentes. Asthme aigu grave: sifflements, oppression, toux sèche. Corps étranger dans les voies aériennes. Œdème pulmonaire: insuffisance cardiaque, dyspnée brutale, mousse. Pneumonie: fièvre, toux, difficultés respiratoires. Épanchement pleural, pneumothorax. Conduite à tenir. Position demi-assise: facilite la respiration. Oxygène: si disponible, à haut débit (sauf indication particulière). Aérosol de bronchodilatateur (salbutamol) si prescrit dans le cadre de l'asthme. Surveillance: fréquence respiratoire, saturation, conscience. Alerte du médecin, préparation du matériel d'intubation si besoin. Réconforter le patient, l'aider à respirer, éviter l'agitation. À retenir. Une détresse respiratoire se reconnaît à la polypnée, au tirage, au balancement thoraco-abdominal, à la cyanose. Position demi-assise, oxygène, aérosol si prescrit, surveillance, alerte. Le corps étranger impose la désobstruction immédiate."]],"12":[["fr","Chapitre IV, L'arrêt cardiaque et les états de choc. Fondements théoriques. L'arrêt cardiaque. Nous avons vu la RCP au chapitre III. Il faut retenir: Reconnaissance: perte de conscience plus absence de respiration plus absence de pouls. Action: appeler les secours, débuter la RCP immédiatement (30 compressions ou 2 insufflations), défibrillation si disponible. Poursuivre jusqu'à l'arrivée des secours, la reprise d'une respiration spontanée, ou l'épuisement physique. Les états de choc. Le choc est une insuffisance circulatoire aiguë qui empêche les organes de recevoir suffisamment d'oxygène. C'est une urgence vitale: sans traitement, les organes s'arrêtent les uns après les autres. Les grands types de choc. Type de choc. Cause principale. Choc hypovolémique. Perte de sang (hémorragie) ou de liquide (déshydratation, brûlure). Choc cardiogénique. Défaillance du cœur (infarctus, insuffisance cardiaque). Choc septique. Infection grave (sepsis). Choc anaphylactique. Réaction allergique sévère. Choc obstructif. Compression du cœur (embolie, tamponnade, pneumothorax). Signes communs de choc. Pâleur, sueurs, marbrures (peau marbrée). Tachycardie (pouls rapide et filant). Hypotension (tension basse). Respiration rapide. Anxiété, agitation puis confusion. Soif intense. Diminution des urines. Conduite à tenir. Position adaptée: jambes surélevées en cas de choc hypovolémique; demi-assise en cas de choc cardiogénique. Oxygène à haut débit. Voie veineuse et remplissage (si compétence et prescription). Contrôle de la cause: compression d'hémorragie, adrénaline en cas d'anaphylaxie (sur prescription), antibiotiques en cas de sepsis. Alerte immédiate du médecin. Surveillance: conscience, pouls, tension, respiration. Erreur fréquente. Donner à boire à un patient en choc est une erreur. Le patient peut vomir et inhaler, ou aggraver une hémorragie interne qui nécessite une chirurgie urgente. Ne rien donner par la bouche, sauf indication médicale explicite."]],"13":[["fr","Chapitre V, Les urgences neurologiques. Fondements théoriques. Le coma. Le coma est une perte de conscience prolongée, avec absence de réaction aux stimulations. L'évaluation utilise le score de Glasgow (ouverture des yeux, réponse verbale, réponse motrice) et le score AVPU (Alerte, réagit à la Voix, à la Douleur, ne réagit Pas). Causes: traumatisme crânien, hypoglycémie, intoxication, AVC, infection (paludisme grave), épilepsie, hypoxie. Conduite à tenir: libérer les voies aériennes, mettre en PLS si respiration conservée, surveiller, prendre la glycémie si possible, alerter le médecin. Les convulsions. Les convulsions sont des contractions musculaires involontaires, souvent généralisées, dues à une hyperactivité électrique cérébrale. Causes: épilepsie, fièvre chez l'enfant (convulsions fébriles), hypoglycémie, paludisme grave, méningite. Conduite à tenir: Protéger la tête de la victime. Libérer les voies aériennes et desserrer les vêtements. Ne pas contenir les mouvements. Ne pas mettre d'objet dans la bouche. Chronométrer la durée. Après la crise: PLS, surveillance, recherche de la cause, alerte. L'AVC (accident vasculaire cérébral). L'AVC est une interruption de la circulation sanguine dans une partie du cerveau. Signes d'alerte (méthode FAST en anglais): Face: bouche déviée, asymétrie du visage. Arms: faiblesse d'un bras (ne peut pas lever les deux bras). Speech: troubles de la parole, mots incompréhensibles. Time: noter l'heure de début, appeler immédiatement. Conduite à tenir: alerter, noter l'heure de début, position demi-assise, surveiller, transfert rapide vers un centre spécialisé. Chaque minute compte: « time is brain ». L'hypoglycémie. Signes: sueurs, tremblements, palpitations, faim, confusion, troubles du comportement, voire coma. Causes: diabète traité (insuline, sulfamides), jeûne prolongé, alcoolisme. Conduite à tenir: si conscient: resucrage (sucre, jus sucré). Si inconscient: ne rien donner par la bouche, alerter, glycémie si possible, perfusion de sérum glucosé sur prescription. À retenir. Coma: Glasgow ou AVPU, PLS si respiration conservée. Convulsions: protéger, ne pas contenir, ne rien mettre dans la bouche. AVC: FAST, chaque minute compte. Hypoglycémie: resucrage si conscient, alerte si inconscient."]],"14":[["fr","Chapitre VI, Les urgences traumatologiques. Fondements théoriques. Les traumatismes crâniens. Un traumatisme crânien peut passer inaperçu. Il faut rechercher: Perte de connaissance initiale, même brève. Céphalées intenses, vomissements. Confusion, agitation, troubles du comportement. Asymétrie pupillaire. Convulsions, déficit moteur. Écoulement de sang ou de liquide clair par le nez ou l'oreille. Conduite à tenir: immobilisation cervicale, surveillance neurologique régulière (Glasgow, pupilles), position demi-assise si conscient, PLS si inconscient et respire, transfert vers un centre avec scanner. Les fractures. Une fracture est une rupture de la continuité d'un os. Signes: douleur, déformation, gonflement, impossibilité de bouger le membre, crépitation. Conduite à tenir: Immobiliser avec une attelle provisoire. Vérifier la circulation distale (pouls, couleur, sensibilité) avant et après l'immobilisation. Ne pas tenter de réduire une fracture. Couvrir une fracture ouverte avec un pansement propre, ne pas réintégrer les fragments. Antalgique sur prescription. Transfert pour radiographie. Les plaies. Nettoyer à l'eau et au savon, ou au sérum physiologique. Désinfecter, couvrir avec un pansement stérile. Rechercher un corps étranger (ne pas retirer un objet planté: il peut comprimer un vaisseau). Vérifier la vaccination antitétanique (rappel si nécessaire). Surveiller les signes d'infection (rougeur, chaleur, pus, fièvre). Les brûlures. L'évaluation d'une brûlure repose sur: La surface (règle des 9 de Wallace, ou paume du patient égale 1 pour cent ). La profondeur (1er degré: rougeur; 2e degré: cloques; 3e degré: peau blanche ou noire, indolore). La localisation (face, mains, périnée, articulations égale gravité). L'âge et l'état général du patient. Conduite à tenir: Refroidir à l'eau tempérée (15 moins 25 degrés Celsius) pendant 10 à 20 minutes, si la brûlure est récente. Retirer les vêtements non collés et les bijoux. Ne pas percer les cloques. Couvrir avec un pansement propre (pas de coton, pas de corps gras). Prévenir le choc: position allongée, réchauffement, hydratation (sur prescription). Transfert rapide si brûlure grave (surface étendue, profondeur, localisation). Erreur fréquente. Appliquer du beurre, de l'huile, du dentifrice ou de la terre sur une brûlure est une erreur. Ces substances aggravent la brûlure, favorisent l'infection et compliquent le nettoyage. On refroidit à l'eau tempérée et on couvre proprement."]],"15":[["fr","Chapitre VI, L'abdomen aigu et les urgences chirurgicales. Fondements théoriques. L'abdomen aigu. L'abdomen aigu est une douleur abdominale intense, d'apparition brutale, qui nécessite souvent une intervention chirurgicale urgente. Il ne faut pas le confondre avec une simple indigestion. Signes d'alerte. Douleur intense, localisée ou diffuse. Défense abdominale (le ventre est dur, le patient refuse la palpation). Contracture (ventre de bois). Fièvre, tachycardie. Vomissements, arrêt des matières et des gaz. Signes de choc (pâleur, sueurs, hypotension). Causes fréquentes. Appendicite: douleur en bas à droite, fièvre, nausées. Péritonite: douleur diffuse, ventre de bois, fièvre élevée. Occlusion intestinale: vomissements, arrêt des matières et des gaz, ballonnement. Perforation d'ulcère: douleur brutale en coup de poignard, ventre de bois. Cholécystite, pancréatite, colique néphrétique. Conduite à tenir. À jeun strict (rien par la bouche): préparation à une éventuelle chirurgie. Pas d'antalgique avant l'examen médical (peut masquer les signes). Pas de lavement, pas de laxatif (risque de perforation). Position demi-assise, genoux fléchis pour détendre l'abdomen. Surveillance: pouls, tension, température, douleur. Alerte chirurgicale: transfert rapide au bloc ou vers un hôpital de référence. Autres urgences chirurgicales. Hémorragie interne (rupture de rate, grossesse extra-utérine, traumatisme abdominal): signes de choc, abdomen sensible, alerte immédiate. Traumatisme du bassin: risque hémorragique majeur, immobilisation, transfert. Plaie pénétrante de l'abdomen: ne pas retirer l'objet, couvrir, transférer. Erreur fréquente. Donner à manger ou à boire à un patient qui présente un abdomen aigu est une erreur. En cas de chirurgie, l'estomac doit être vide. De même, donner un antalgique avant l'examen peut masquer les signes et retarder le diagnostic."]],"16":[["fr","Chapitre VII, Les urgences obstétricales (notions). Fondements théoriques. Une priorité de santé publique. Les urgences obstétricales sont une cause majeure de mortalité maternelle en R D C. L'infirmier doit savoir les reconnaître et alerter immédiatement. L'hémorragie de la délivrance. L'hémorragie de la délivrance est une perte de sang abondante après l'accouchement (plus de 500 mL dans les 24 heures). C'est la première cause de mortalité maternelle dans le monde. Signes: saignement abondant, utérus mou (ne se contracte pas), pâleur, tachycardie, chute de tension, angoisse. Conduite à tenir: Alerter immédiatement le médecin ou la sage-femme. Massage utérin (si compétence) pour stimuler la contraction. Perfusion, oxygène, position allongée jambes surélevées. Surveillance rapprochée. Transfert au bloc si nécessaire. L'éclampsie. L'éclampsie est une complication grave de la grossesse: convulsions chez une femme enceinte hypertendue. Peut survenir avant, pendant ou après l'accouchement. Signes précurseurs (pré-éclampsie): hypertension, œdèmes, protéinurie, maux de tête, troubles visuels, douleur en barre épigastrique. Conduite à tenir en cas de crise: Protéger la patiente (éloigner les objets dangereux, protéger la tête). Position latérale, libérer les voies aériennes. Alerter immédiatement. Préparer le sulfate de magnésium (sur prescription). Surveillance: tension, conscience, respiration. Autres urgences obstétricales. Souffrance fœtale aiguë: bradycardie fœtale, méconium, donc extraction rapide. Procidence du cordon: le cordon sort avant le bébé, donc position genu-pectorale, transfert immédiat. Rupture utérine: douleur brutale, choc, donc bloc en urgence. Grossesse extra-utérine rompue: douleur brutale, choc, donc bloc en urgence. Erreur fréquente. Sous-estimer une hémorragie de la délivrance est une erreur mortelle. Une femme qui saigne abondamment après l'accouchement doit être prise en charge dans les minutes qui suivent. Le massage utérin, la perfusion et le transfert rapide sauvent des vies."]],"17":[["fr","Chapitre VII, Les urgences pédiatriques (notions). Fondements théoriques. Les spécificités de l'enfant. L'enfant n'est pas un petit adulte. Ses particularités anatomiques et physiologiques modifient la présentation des urgences et la conduite à tenir: Voies aériennes plus étroites, plus facilement obstruables. Réserves énergétiques faibles: décompensation rapide. Surface corporelle plus grande par rapport au poids: refroidissement et déshydratation plus rapides. Signes de gravité parfois discrets: un enfant qui joue peut s'effondrer brutalement. La déshydratation. Cause fréquente: diarrhée, vomissements. Cause majeure de mortalité infantile en R D C. Signes: soif intense, bouche sèche, yeux enfoncés, pli cutané persistant, fontanelle déprimée (nourrisson), oligurie, somnolence. Conduite à tenir: Réhydratation orale (SRO, Sels de Réhydratation Orale) si la déshydratation est modérée et l'enfant peut boire. Réhydratation veineuse si déshydratation sévère, refus de boire, vomissements incoercibles. Surveillance du poids, des urines, de l'état de conscience. La détresse respiratoire du nourrisson. Signes: fréquence respiratoire élevée, tirage, geignement, battement des ailes du nez, cyanose, difficultés à téter. Causes: bronchiolite, pneumonie, corps étranger, asthme du nourrisson. Conduite à tenir: position demi-assise, libération des voies aériennes, oxygène, alerte, transfert. Les convulsions fébriles. Chez l'enfant de 6 mois à 5 ans, une fièvre élevée peut déclencher des convulsions. Souvent bénignes mais impressionnantes. Conduite à tenir: protéger la tête, libérer les voies aériennes, ne pas contenir, déshabiller, donner un antipyrétique si prescrit, alerter, surveiller. La réanimation du nouveau-né. À la naissance, si le nouveau-né ne respire pas: Sécher, stimuler (frictionner le dos, la plante des pieds). Libérer les voies aériennes. Ventiler au masque si nécessaire (sur prescription ou protocole). Alerter le médecin ou la sage-femme. À retenir. Chez l'enfant, la déshydratation, les détresses respiratoires et les convulsions fébriles sont les urgences les plus fréquentes. La réhydratation orale (SRO) est une mesure simple et vitale. La réanimation du nouveau-né repose sur le séchage, la stimulation et la ventilation."]],"18":[["fr","Chapitre VIII, La traçabilité et la transmission SBAR. Fondements théoriques. Documenter, c'est soigner. La traçabilité est l'enregistrement précis, daté et signé de tout ce qui est observé et fait pour le patient. Ce n'est pas une perte de temps: c'est une exigence professionnelle. Ce qu'on doit noter. L'heure d'arrivée, le motif, l'état initial. Les constantes (pouls, tension, température, fréquence respiratoire, saturation, glycémie). Les gestes effectués (perfusion, pansement, immobilisation, injection). Les médicaments administrés (nom, dose, voie, heure). L'évolution de l'état, les transmissions. Les appels au médecin et les prescriptions reçues. La transmission SBAR. La méthode SBAR (Situation, Background, Assessment, Recommendation) structure la transmission orale entre soignants. Elle est utilisée dans les urgences et les blocs opératoires. Lettre. Signification. Exemple. S. Situation. « Je vous appelle pour M. K., 45 ans, admis aux urgences pour douleur thoracique. ». B. Background (contexte). « Antécédents d'hypertension, sous traitement. Douleur apparue il y a 45 minutes. ». A. Assessment (évaluation). « Constantes: TA 160 sur 95, pouls 105, Sp O2 94 pour cent. Douleur 7 sur 10. Sueurs. ». R. Recommendation (recommandation). « Je pense à un syndrome coronarien aigu. Pouvez-vous venir rapidement? ». Avantages de SBAR. Communication claire, structurée, rapide. Réduction des erreurs et des omissions. Meilleure prise en charge du patient. Renforce la sécurité et la collaboration dans l'équipe. Erreur fréquente. Omettre de documenter une intervention est une erreur grave. En cas de litige, l'absence de trace écrite rend le soignant vulnérable et compromet la continuité des soins. « Ce qui n'est pas écrit n'a pas été fait »: cette règle résume l'exigence de traçabilité."]],"19":[["fr","Chapitre VIII, Éthique et communication en urgence. Fondements théoriques. Les principes éthiques en urgence. Le respect de la personne. Chaque patient est une personne, avec sa dignité, sa culture, ses croyances. En urgence, on respecte la pudeur, on explique ce qu'on fait, on rassure, même si le patient est inconscient (il peut entendre). Le consentement. En urgence vitale, si le patient est inconscient, la loi présume le consentement: les soins se font sans attendre. Si le patient est conscient, on l'informe et on respecte son refus, sauf mise en danger grave d'autrui. L'équité. Tous les patients ont droit aux mêmes soins, quels que soient leur origine, leur religion, leur situation sociale, leur capacité à payer. Le triage repose sur la gravité, pas sur le statut. La confidentialité. Le secret professionnel s'applique aussi aux urgences. On ne divulgue pas les informations du patient aux curieux, aux médias, aux autres patients. On partage l'information uniquement avec l'équipe soignante concernée. La non-malfaisance. « D'abord, ne pas nuire. » Ne pas faire de gestes hors de sa compétence. Ne pas donner de médicaments sans prescription. Ne pas retarder un transfert nécessaire. Reconnaître ses limites et appeler à l'aide. La communication avec le patient et la famille. Informer sans jargon, avec des mots simples. Rassurer: expliquer ce qu'on fait, pourquoi. Écouter: la plainte du patient est une information diagnostique. Annoncer les mauvaises nouvelles avec tact et humanité, si possible en présence du médecin. Respecter la famille: elle peut aider à recueillir l'histoire (AMPLE), à rassurer le patient, à prendre des décisions. La gestion du stress. Les urgences sont stressantes. L'infirmier doit apprendre à: Respirer, prendre une seconde pour évaluer. Prioriser, ne pas se disperser. Travailler en équipe, déléguer ce qui peut l'être. Se protéger (gants, précautions standard). Demander de l'aide sans honte. À retenir. Les principes éthiques (respect, consentement, équité, confidentialité, non-malfaisance) s'appliquent en urgence. La communication avec le patient et la famille est un soin. La gestion du stress est une compétence professionnelle."]],"20":[["fr","Synthèse, Évaluer, trier, secourir, transmettre. Synthèse générale. Les cinq compétences du soignant d'urgence. Organiser: connaître les structures, les acteurs, le cadre légal et éthique. Évaluer: ABCDE (primaire) puis AMPLE (secondaire). Trier: prioriser selon la gravité (échelles de triage). Secourir: appliquer les gestes vitaux (RCP, PLS, désobstruction, hémorragies, immobilisation) et prendre en charge les urgences spécifiques. Transmettre: documenter, utiliser SBAR, respecter l'éthique. Tableau récapitulatif des urgences. Situation. Gestes immédiats. Priorité. Arrêt cardiaque. RCP immédiate, alerter, DAE si disponible. Absolue. Hémorragie massive. Compression directe, allonger, alerter. Absolue. Obstruction des voies aériennes. Claques plus Heimlich, RCP si inconscient. Absolue. Détresse respiratoire. Position demi-assise, oxygène, aérosol si prescrit. Absolue. Choc. Position adaptée, oxygène, voie veineuse, alerter. Absolue. Coma. PLS si respiration conservée, surveiller, alerter. Absolue. Convulsions. Protéger, ne pas contenir, PLS après. Très urgente. AVC. FAST, alerter, transfert rapide. Absolue. Hypoglycémie. Resucrage si conscient, alerter si inconscient. Très urgente. Traumatisme grave. Immobiliser, surveiller, transférer. Très urgente. Brûlure étendue. Refroidir, couvrir, transférer. Très urgente. Abdomen aigu. À jeun, alerter, transfert chirurgical. Très urgente. Hémorragie de la délivrance. Massage utérin, alerter, perfusion, transfert. Absolue. Éclampsie. Protéger, PLS, alerter, magnésium si prescrit. Absolue. Déshydratation sévère. SRO ou réhydratation veineuse, surveiller. Très urgente. Étude de cas (cas pédagogique). « Un infirmier A2 est de garde aux urgences d'un hôpital de Kinshasa. Il reçoit un patient inconscient, victime d'un accident de la voie publique. Il applique l'ABCDE, immobilise la colonne cervicale, contrôle une hémorragie du scalp, alerte le médecin et prépare le transfert vers le bloc. Il documente ses actions et transmet le dossier à l'équipe suivante. ». Analyse: la démarche est exemplaire. L'infirmier a appliqué la séquence ABCDE, a immobilisé le rachis, a contrôlé l'hémorragie, a alerté, a préparé le transfert, a documenté et transmis. Il a mobilisé toutes les compétences du cours: évaluation, triage, gestes vitaux, communication, éthique."]],"21":[["fr","Évaluation finale, Soins Infirmiers d'Urgence. Consigne. Répondez aux questions ci-dessous en sélectionnant la bonne réponse parmi les quatre propositions. Le QCM couvre l'ensemble du cours. Cliquez ensuite sur « Valider mes réponses » pour obtenir votre score."]]}};
+  var CACHE = "ecolia-cours-v1";                       // même cache que l'application
+  var PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  var PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+  var DL = '<svg viewBox="0 0 24 24"><path d="M11 3h2v9.2l3.6-3.6L18 10l-6 6-6-6 1.4-1.4L11 12.2V3zM5 19h14v2H5z"/></svg>';
+  var OK = '<svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>';
+  // Réparation du quiz : certains cours stockent les choix sous "opts" (ou autre) au lieu de "options"
+  try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+      questions.forEach(function (q) {
+        if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+        if (q.text === undefined) q.text = q.question || q.q || q.enonce || q.titre || "";
+        if (typeof q.correct === "undefined") {
+          if (typeof q.answer !== "undefined") q.correct = q.answer;
+          else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+        }
+      });
+    }
+  } catch (e) {}
+  var synth = window.speechSynthesis || null;
+  var HAS_CACHE = !!(window.caches && window.caches.open);
+  var NATIVE = false;           // APK ECOLIA : pont Java "CoursInterface" (fichiers dans le dossier de l'application)
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  var LATER = "ecolia_audio_later_" + CFG.code;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+  function init() {
+    if (document.getElementById("ecolia-audio-btn")) return;
+
+    // ---------- éléments de l'interface ----------
+    var btn = document.createElement("button");
+    btn.id = "ecolia-audio-btn"; btn.type = "button"; btn.className = "ecolia-off";
+    btn.setAttribute("aria-label", "Écouter la leçon"); btn.innerHTML = PLAY;
+    var dlBtn = document.createElement("button");
+    dlBtn.id = "ecolia-dl-btn"; dlBtn.type = "button"; dlBtn.className = "ecolia-off";
+    dlBtn.innerHTML = DL;
+    var host = document.querySelector(".header-right");
+    if (host) { host.insertBefore(dlBtn, host.firstChild); host.insertBefore(btn, dlBtn); }   // dans la barre du haut : ne scrolle jamais
+    else { btn.className += " ecolia-fixed"; document.body.appendChild(btn); }
+
+    var banner = document.createElement("div");
+    banner.id = "ecolia-audio-banner";
+    banner.innerHTML = '<span class="eab-txt"></span><span class="eab-act"></span><div class="eab-bar"><i></i></div>';
+    var content = document.getElementById("content");
+    if (content && content.parentNode) content.parentNode.insertBefore(banner, content);
+    else document.body.insertBefore(banner, document.body.firstChild);
+    var txtEl = banner.querySelector(".eab-txt"), actEl = banner.querySelector(".eab-act");
+    var barEl = banner.querySelector(".eab-bar"), barI = barEl.firstChild;
+
+    var audio = new Audio();            // un seul élément Audio, réutilisé (exigé par les navigateurs mobiles)
+    audio.preload = "auto";
+    var st = { idx: -1, auto: false, advancing: false, mode: null, speaking: false, token: 0, chunks: [], ci: 0, blobUrl: null, playTok: 0 };
+    var dl = { state: "none", cached: 0, busy: false, cancel: false };   // none | partial | full
+    var bnMode = null, hideTimer = null;
+    if (synth && synth.getVoices) { try { synth.getVoices(); } catch (e) {} }
+
+    function cur() {
+      try { if (typeof currentSlide === "number") return currentSlide; } catch (e) {}
+      return 0;
+    }
+    function hasMp3(i) { return CFG.available.indexOf(i + 1) !== -1; }
+    function fb(i) { return CFG.fallback && CFG.fallback[String(i + 1)]; }
+    function hasAudio(i) { return hasMp3(i) || (!!synth && !!fb(i)); }
+    function urlN(n) {   // dans l'APK la page est sur https://app.local : une adresse relative doit pointer vers le site
+      var b = CFG.base;
+      if (NATIVE && !/^https?:/i.test(b)) b = "https://ecolia-course.github.io/" + b.replace(/^(\.\.\/|\.\/)+/, "");
+      return new URL(b + nameN(n), location.href).href;
+    }
+    function setIcon(playing) { btn.innerHTML = playing ? PAUSE : PLAY; }
+    function isPlaying() { return st.mode === "mp3" ? !audio.paused : (st.mode === "tts" && st.speaking); }
+    function mo() { return "≈ " + CFG.sizeMo + " Mo"; }
+    function nameN(n) { return "audio_" + CFG.code + "_" + n + ".mp3"; }
+
+    // ====================================================================
+    //  Stockage hors ligne : 2 moteurs, même interface
+    //    - APK : fichiers du dossier de l'application (CoursInterface), servis par https://app.local/cours/
+    //    - Web : Cache Storage du navigateur (même cache que l'application web)
+    // ====================================================================
+    function nativeStore() {
+      var okKey = "ecolia_audio_ok_" + CFG.code;
+      function readOk() { try { return JSON.parse(lsGet(okKey) || "[]"); } catch (e) { return []; } }
+      function writeOk(a) { lsSet(okKey, JSON.stringify(a)); }
+      function exists(n) { try { return !!CoursInterface.exists(nameN(n)); } catch (e) { return false; } }
+      function local(n) { return location.origin + "/cours/" + nameN(n); }
+      function verify(n) {                                   // fichier complet ? (taille exacte connue à la génération)
+        return fetch(local(n), { cache: "no-store" }).then(function (r) { return r.blob(); }).then(function (b) {
+          var exp = CFG.sizes && CFG.sizes[String(n)];
+          return (b.size > 2000 && (!exp || b.size === exp)) ? b : null;
+        }).catch(function () { return null; });
+      }
+      return {
+        list: function () {
+          var ok = readOk().filter(exists); writeOk(ok); return Promise.resolve(ok);
+        },
+        get: function (n) { return exists(n) ? verify(n) : Promise.resolve(null); },
+        put: function (n) {
+          return new Promise(function (res, rej) {
+            try { CoursInterface.download(urlN(n), nameN(n)); } catch (e) { return rej(e); }
+            var t0 = Date.now();
+            function next() { if (Date.now() - t0 > 120000) rej(new Error("délai dépassé")); else setTimeout(poll, 800); }
+            function poll() {
+              if (!exists(n)) return next();
+              verify(n).then(function (b) {
+                if (!b) return next();
+                var ok = readOk(); if (ok.indexOf(n) < 0) ok.push(n); writeOk(ok); res();
+              });
+            }
+            setTimeout(poll, 800);
+          });
+        },
+        del: function (n) {
+          try { CoursInterface.delete(nameN(n)); } catch (e) {}
+          writeOk(readOk().filter(function (x) { return x !== n; }));
+          return Promise.resolve();
+        }
+      };
+    }
+    function cacheStore() {
+      return {
+        list: function () {
+          return caches.open(CACHE).then(function (c) {
+            return Promise.all(CFG.available.map(function (n) {
+              return c.match(urlN(n)).then(function (r) {
+                if (!r) return 0;
+                if ((r.headers.get("content-type") || "").indexOf("audio") !== 0) { c.delete(urlN(n)); return 0; }   // ancien contenu invalide
+                return n;
+              });
+            }));
+          }).then(function (a) { return a.filter(Boolean); });
+        },
+        get: function (n) {
+          return caches.open(CACHE).then(function (c) { return c.match(urlN(n)); })
+            .then(function (r) { return r ? r.blob() : null; }).then(function (b) { return b && b.size > 2000 ? b : null; });
+        },
+        put: function (n) {
+          var u = urlN(n);
+          return fetch(u, { cache: "no-store" }).then(function (r) {
+            if (!r.ok || r.status !== 200) throw new Error("HTTP " + r.status);
+            return r.blob();
+          }).then(function (b) {
+            if (b.size < 2000 || (b.type && b.type.indexOf("audio") !== 0 && b.type.indexOf("octet") < 0)) throw new Error("fichier invalide");
+            return caches.open(CACHE).then(function (c) { return c.put(u, new Response(b, { headers: { "Content-Type": "audio/mpeg" } })); });
+          });
+        },
+        del: function (n) { return caches.open(CACHE).then(function (c) { return c.delete(urlN(n)); }); }
+      };
+    }
+    var store = NATIVE ? nativeStore() : (HAS_CACHE ? cacheStore() : null);
+
+    // ====================================================================
+    //  Bannière : invitation, confirmations, progression
+    // ====================================================================
+    function showBanner(mode, text, buttons, pct) {
+      clearTimeout(hideTimer);
+      bnMode = mode;
+      txtEl.textContent = text;
+      actEl.innerHTML = "";
+      (buttons || []).forEach(function (b) {
+        var e = document.createElement("button");
+        e.type = "button"; e.textContent = b.label; if (b.pri) e.className = "pri";
+        e.addEventListener("click", function (ev) { ev.stopPropagation(); b.fn(); });
+        actEl.appendChild(e);
+      });
+      if (typeof pct === "number") { barEl.style.display = "block"; barI.style.width = pct + "%"; }
+      else barEl.style.display = "none";
+      banner.classList.add("on");
+    }
+    function hideBanner() { clearTimeout(hideTimer); bnMode = null; banner.classList.remove("on"); }
+    function flash(text) { showBanner("info", text, []); hideTimer = setTimeout(hideBanner, 4000); }
+
+    function refreshUI() {
+      var show = !!store && CFG.available.length > 0;
+      dlBtn.classList.toggle("ecolia-off", !show);
+      dlBtn.classList.toggle("ecolia-full", dl.state === "full");
+      dlBtn.innerHTML = dl.state === "full" ? OK : DL;
+      dlBtn.setAttribute("aria-label", dl.state === "full" ? "Audios téléchargés : supprimer" : "Télécharger les audios");
+      dlBtn.title = dlBtn.getAttribute("aria-label");
+    }
+    function refreshCacheState(done) {
+      if (!store) { dl.state = "none"; refreshUI(); if (done) done(); return; }
+      store.list().then(function (ok) {
+        dl.cached = ok.length;
+        dl.state = dl.cached === 0 ? "none" : (dl.cached >= CFG.available.length ? "full" : "partial");
+      }).catch(function () { dl.state = "none"; }).then(function () { refreshUI(); if (done) done(); });
+    }
+
+    function askDownload(fromInvite) {
+      var left = CFG.available.length - dl.cached;
+      var txt = dl.state === "partial"
+        ? "Il reste " + left + " audio(s) à télécharger pour écouter ce cours sans internet."
+        : "🔊 Télécharger les audios de ce cours (" + mo() + ") pour les écouter sans internet ? Wi-Fi recommandé.";
+      showBanner(fromInvite ? "invite" : "confirm", txt, [
+        { label: fromInvite ? "Plus tard" : "Annuler", fn: function () { if (fromInvite) lsSet(LATER, "1"); hideBanner(); } },
+        { label: "Télécharger", pri: true, fn: startDownload }
+      ]);
+    }
+    function askDelete() {
+      showBanner("confirm", "Supprimer les audios téléchargés de ce cours (" + mo() + ") ? Vous pourrez toujours les écouter en ligne.", [
+        { label: "Annuler", fn: hideBanner },
+        { label: "Supprimer", pri: true, fn: doDelete }
+      ]);
+    }
+
+    function startDownload() {
+      if (dl.busy || !store) return;
+      dl.busy = true; dl.cancel = false;
+      var total = CFG.available.length, done = 0, quota = false, fails = 0, todo = [];
+      store.list().then(function (have) {
+        CFG.available.forEach(function (n) { if (have.indexOf(n) < 0) todo.push(n); });
+        done = total - todo.length;
+        function paint() {
+          var msg = "Téléchargement des audios : " + done + " / " + total;
+          if (bnMode === "progress") {                  // met à jour sans recréer les boutons (sinon un appui peut être perdu)
+            txtEl.textContent = msg; barI.style.width = Math.round(done / total * 100) + "%";
+          } else {
+            showBanner("progress", msg, [
+              { label: "Annuler", fn: function () { dl.cancel = true; } }
+            ], Math.round(done / total * 100));
+          }
+        }
+        paint();
+        function worker() {
+          if (dl.cancel || quota || !todo.length) return Promise.resolve();
+          var n = todo.shift();
+          return store.put(n).then(function () { done++; paint(); }).catch(function (e) {
+            if (e && (e.name === "QuotaExceededError" || /quota/i.test(String(e.message)))) quota = true;
+            fails++;
+          }).then(worker);
+        }
+        return Promise.all([worker(), worker()]);
+      }).catch(function () { fails++; }).then(function () {
+        dl.busy = false;
+        refreshCacheState(function () {
+          if (dl.state === "full") flash("✓ Audios téléchargés : le cours se lit maintenant sans internet.");
+          else if (dl.cancel) flash("Téléchargement interrompu (" + dl.cached + " / " + total + "). Vous pourrez reprendre plus tard.");
+          else showBanner("error", quota ? "Espace insuffisant sur l'appareil. Libérez de la place puis réessayez."
+            : "Certains audios n'ont pas pu être téléchargés (connexion ?).", [
+            { label: "Fermer", fn: hideBanner }, { label: "Réessayer", pri: true, fn: startDownload }
+          ]);
+        });
+      });
+    }
+    function doDelete() {
+      if (!store) return;
+      Promise.all(CFG.available.map(function (n) { return store.del(n); })).catch(function () {}).then(function () {
+        lsDel(LATER);
+        refreshCacheState(function () { flash("Audios supprimés de cet appareil."); });
+      });
+    }
+
+    dlBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (dl.busy) return;
+      if (dl.state === "full") askDelete(); else askDownload(false);
+    });
+
+    // ====================================================================
+    //  Voix intégrée au téléphone (hors ligne, sans limite)
+    // ====================================================================
+    function pickVoice(lang) {
+      var vs = [];
+      try { vs = synth.getVoices() || []; } catch (e) {}
+      var pre = lang === "en" ? "en" : "fr", best = null;
+      for (var k = 0; k < vs.length; k++) {
+        var v = vs[k];
+        if ((v.lang || "").toLowerCase().indexOf(pre) !== 0) continue;
+        if (!best || (v.localService && !best.localService)) best = v;
+      }
+      return best;
+    }
+    function hardSplit(text, max) {
+      var out = [];
+      while (text.length > max) {
+        var cut = text.lastIndexOf(" ", max);
+        if (cut < 40) cut = max;
+        out.push(text.slice(0, cut)); text = text.slice(cut).replace(/^\s+/, "");
+      }
+      if (text) out.push(text);
+      return out;
+    }
+    function buildChunks(segs) {                  // morceaux courts : évite l'arrêt des longs textes sur Chrome
+      var out = [];
+      segs.forEach(function (s) {
+        var cur2 = "", parts = s[1].match(/[^.!?;:]+[.!?;:]*\s*/g) || [s[1]];
+        parts.forEach(function (p) {
+          if (cur2 && (cur2 + p).length > 160) { out.push({ lang: s[0], text: cur2.trim() }); cur2 = p; }
+          else cur2 += p;
+        });
+        if (cur2.trim()) out.push({ lang: s[0], text: cur2.trim() });
+      });
+      var res = [];
+      out.forEach(function (c) { hardSplit(c.text, 190).forEach(function (t) { res.push({ lang: c.lang, text: t }); }); });
+      return res;
+    }
+    function speakFrom(tk) {
+      if (tk !== st.token) return;
+      if (st.ci >= st.chunks.length) {
+        st.speaking = false; st.mode = null; st.ci = 0; setIcon(false);
+        if (st.auto) goNext();
+        return;
+      }
+      var c = st.chunks[st.ci];
+      var u = new SpeechSynthesisUtterance(c.text);
+      u.lang = c.lang === "en" ? "en-US" : "fr-FR";
+      var v = pickVoice(c.lang);
+      if (v) { u.voice = v; u.lang = v.lang; }
+      u.rate = 0.95;
+      u.onend = function () { if (tk !== st.token) return; st.ci++; speakFrom(tk); };
+      u.onerror = function () { if (tk !== st.token) return; st.speaking = false; setIcon(false); st.auto = false; };
+      synth.speak(u);
+    }
+    function startTts(from) {
+      st.token++;
+      var tk = st.token;
+      st.mode = "tts"; st.speaking = true; st.ci = from || 0; setIcon(true);
+      var busy = false;
+      try { busy = synth.speaking || synth.pending; synth.cancel(); } catch (e) {}
+      if (busy) setTimeout(function () { speakFrom(tk); }, 120);   // laisse cancel() se terminer
+      else speakFrom(tk);                                          // sinon tout de suite (exigé par iOS)
+    }
+    function playVoice() {
+      if (!(synth && fb(st.idx))) { st.auto = false; return false; }
+      if (!st.chunks.length) st.chunks = buildChunks(fb(st.idx));
+      startTts(st.ci);
+      return true;
+    }
+
+    // ====================================================================
+    //  Lecture
+    // ====================================================================
+    function freeBlob() { if (st.blobUrl) { try { URL.revokeObjectURL(st.blobUrl); } catch (e) {} st.blobUrl = null; } }
+    function stopAll() {
+      st.playTok++;
+      try { audio.pause(); audio.currentTime = 0; } catch (e) {}
+      st.token++;
+      try { if (synth) synth.cancel(); } catch (e) {}
+      st.speaking = false; st.mode = null; st.chunks = []; st.ci = 0;
+      setIcon(false);
+    }
+    function pauseNow() {
+      if (st.mode === "mp3") audio.pause();
+      else if (st.mode === "tts") {
+        st.token++;
+        try { synth.cancel(); } catch (e) {}
+        st.speaking = false; setIcon(false);      // st.ci conservé : la reprise repart de la phrase en cours
+      }
+    }
+    function startAudio(src, tok) {
+      if (tok !== st.playTok) return;
+      if (audio.getAttribute("data-src") !== src) { audio.setAttribute("data-src", src); audio.src = src; }
+      var p = audio.play();
+      if (p && p.catch) p.catch(function (err) {
+        console.warn("ECOLIA audio :", err);
+        if (tok !== st.playTok) return;
+        if (!(err && err.name === "NotAllowedError") && playVoice()) return;   // lecture impossible : voix du téléphone
+        setIcon(false); st.auto = false;
+      });
+    }
+    function playCurrent() {
+      var i = st.idx;
+      if (hasMp3(i)) {
+        var tok = ++st.playTok, u = urlN(i + 1);
+        st.mode = "mp3";
+        if (!navigator.onLine && dl.state === "none") { st.mode = null; if (playVoice()) return; }   // hors ligne et non téléchargé
+        if (store && dl.state !== "none") {                     // téléchargé : lecture locale, sans réseau
+          store.get(i + 1)
+            .then(function (b) {
+              if (tok !== st.playTok) return;
+              if (b) { freeBlob(); st.blobUrl = URL.createObjectURL(new Blob([b], { type: "audio/mpeg" })); startAudio(st.blobUrl, tok); }
+              else startAudio(u, tok);
+            }).catch(function () { startAudio(u, tok); });
+        } else startAudio(u, tok);                              // sinon lecture en ligne (appel immédiat, exigé par iOS)
+      } else if (!playVoice()) {
+        st.auto = false;
+      }
+    }
+
+    function onSlideChange(i) {
+      var wasAdvancing = st.advancing;
+      st.advancing = false;
+      st.idx = i;
+      btn.classList.toggle("ecolia-off", !hasAudio(i));
+      stopAll();
+      audio.removeAttribute("data-src");
+      freeBlob();
+      if (bnMode === "invite" && i !== 0) hideBanner();       // l'invitation n'apparaît qu'à la première slide
+      if (wasAdvancing && st.auto) setTimeout(playCurrent, 500);   // enchaînement automatique
+      else st.auto = false;                                         // changement manuel : on coupe tout
+    }
+    function goNext() {
+      if (st.idx + 1 >= CFG.count) { st.auto = false; return; }
+      st.advancing = true;
+      if (typeof nextSlide === "function") nextSlide();
+      else { var nb = document.getElementById("nextBtn"); if (nb) nb.click(); }
+      setTimeout(function () { st.advancing = false; }, 4000);
+    }
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var i = cur();
+      if (i !== st.idx) onSlideChange(i);
+      if (isPlaying()) { st.auto = false; pauseNow(); }
+      else { st.auto = true; playCurrent(); }
+    });
+    audio.addEventListener("play", function () { setIcon(true); });
+    audio.addEventListener("pause", function () { if (st.mode === "mp3") setIcon(false); });
+    audio.addEventListener("error", function () {
+      if (st.mode === "mp3" && playVoice()) return;            // fichier introuvable / hors ligne : voix du téléphone
+      setIcon(false); st.auto = false;
+    });
+    audio.addEventListener("ended", function () { setIcon(false); if (st.auto) goNext(); });
+    window.addEventListener("pagehide", function () { stopAll(); freeBlob(); });
+
+    // ---------- démarrage ----------
+    refreshCacheState(function () {
+      if (store && CFG.available.length && dl.state !== "full" && navigator.onLine && cur() === 0 && !lsGet(LATER)) askDownload(true);
+    });
+    st.idx = -1;
+    setInterval(function () { var i = cur(); if (i !== st.idx) onSlideChange(i); }, 250);   // suit la slide affichée
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+<!-- ECOLIA_AUDIO_PLAYER_END -->
+</body>
+</html>

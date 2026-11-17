@@ -1,0 +1,1408 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="violet">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>ECOLIA — Droit4</title>
+<style>
+[data-theme="bleu"]   { --p1:#0d2b4f; --p2:#1565c0; --p3:#07172e; --p4:#12437a; --p5:#5b8fd0; --bg:#e8f0fb; --bg2:#cfdff5; --bd:#a9c3e8; --soft:#dde8f7; --btn:#2a67b0; }
+[data-theme="vert"]   { --p1:#14442e; --p2:#2e7d32; --p3:#0b2b1a; --p4:#1f5c3a; --p5:#4f9a6b; --bg:#e8f5ec; --bg2:#c8e6d2; --bd:#a5cdb2; --soft:#dcefe2; --btn:#2f7a4f; }
+[data-theme="violet"] { --p1:#2d1b4e; --p2:#6a1b9a; --p3:#1a0f2e; --p4:#4a148c; --p5:#9c6fd0; --bg:#f1e9fb; --bg2:#dccbf2; --bd:#c4a8e6; --soft:#e8ddf6; --btn:#7e3fb2; }
+[data-theme="rouge"]  { --p1:#4a1010; --p2:#b71c1c; --p3:#2b0a0a; --p4:#8e1b1b; --p5:#d9706a; --bg:#fbeaea; --bg2:#f3cdcb; --bd:#e8a9a5; --soft:#f8dede; --btn:#a62a2a; }
+[data-theme="orange"] { --p1:#4e2a0c; --p2:#ef6c00; --p3:#2e1604; --p4:#b34a00; --p5:#f0a15a; --bg:#fff1e0; --bg2:#fbdcb8; --bd:#f3c08a; --soft:#fdebd6; --btn:#c9650a; }
+[data-theme="teal"]   { --p1:#0b3a3a; --p2:#00796b; --p3:#062626; --p4:#00574b; --p5:#4db6ac; --bg:#e0f2f1; --bg2:#b2dfdb; --bd:#80cbc4; --soft:#d5ecea; --btn:#26897d; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:linear-gradient(160deg,var(--p1) 0%,var(--p2) 50%,var(--p3) 100%); display:flex; justify-content:center; align-items:center; padding:8px; }
+.container { width:100%; max-width:1400px; background:#fefdf8; border-radius:20px; overflow:hidden; display:flex; flex-direction:column; height:100%; max-height:100vh; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.progress-bar { height:4px; background:var(--bg2); flex-shrink:0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--p5),var(--p4)); width:0%; transition:width 0.3s; }
+.header { padding:10px 16px; background:var(--bg); border-bottom:1px solid var(--bd); display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+.header h1 { color:var(--p4); font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box { display:flex; background:white; border-radius:20px; padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.search-box input { border:none; padding:6px 10px; border-radius:20px; outline:none; width:130px; font-size:0.8rem; }
+.search-box button { background:none; border:none; cursor:pointer; padding:4px 8px; font-size:0.85rem; color:var(--p2); }
+.badge { background:var(--p5); color:white; padding:4px 10px; border-radius:20px; font-weight:bold; font-size:0.75rem; }
+.search-nav { display:none; gap:4px; background:var(--bg2); padding:2px 8px; border-radius:20px; align-items:center; font-size:0.75rem; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:0.9rem; color:var(--p4); padding:2px 4px; }
+.content { padding:28px 32px; flex:1; overflow-y:auto; background:#fff; scroll-behavior:smooth; line-height:1.85; }
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.slide-title { color:var(--p1); font-size:1.5rem; font-weight:700; padding-bottom:12px; margin-bottom:20px; border-bottom:2px solid var(--p5); }
+.slide-content { color:var(--p3); font-size:1rem; }
+.empty-state { display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-height:60vh; padding:40px 20px; gap:18px; }
+.empty-state .icon { width:72px; height:72px; border-radius:50%; background:var(--bg); border:2px solid var(--bd); display:flex; align-items:center; justify-content:center; color:var(--p2); font-size:2rem; font-weight:300; }
+.empty-state h2 { color:var(--p1); font-size:1.4rem; font-weight:700; margin:0; }
+.empty-state p { color:#666; font-size:0.95rem; max-width:520px; line-height:1.7; }
+.empty-state .tag { display:inline-block; padding:6px 14px; background:var(--bg); color:var(--p4); border:1px solid var(--bd); border-radius:20px; font-size:0.8rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; }
+.bloc { padding:18px 22px; border-radius:12px; margin:22px 0; line-height:1.85; }
+.bloc-label { font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; opacity:0.7; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:var(--bg); border-left:4px solid var(--p5); }
+.theorie .bloc-label { color:var(--p4); }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.sources { background:#f5f5f5; padding:12px 16px; border-radius:10px; margin-top:26px; font-size:0.82rem; color:#666; border-left:3px solid #999; line-height:1.6; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:var(--p1); }
+.quiz-container { padding:22px; background:var(--bg); border-radius:16px; }
+.quiz-question { background:white; border-radius:10px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.quiz-question p { font-weight:600; margin-bottom:10px; color:var(--p1); }
+.quiz-question label { display:block; padding:8px 10px; margin:4px 0; border-radius:6px; cursor:pointer; transition:background 0.2s; }
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit { background:var(--btn); color:white; border:none; padding:12px 24px; border-radius:30px; font-size:1rem; cursor:pointer; font-weight:600; margin-top:14px; }
+.quiz-result { margin-top:16px; font-weight:600; }
+.controls { padding:8px 16px; background:#fafafa; border-top:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0; }
+.nav-btn { background:white; color:var(--p4); border:1px solid #ccc; padding:8px 14px; border-radius:8px; font-size:0.82rem; cursor:pointer; font-weight:500; }
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:var(--soft); }
+.content::-webkit-scrollbar-thumb { background:var(--p5); border-radius:3px; }
+@media (max-width:600px) { body { padding:0; } .container { border-radius:0; max-height:100vh; } .content { padding:20px 18px; } .slide-title { font-size:1.25rem; } .search-box input { width:90px; } .header h1 { font-size:0.85rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="header">
+<h1 id="pageTitle">ECOLIA</h1>
+<div class="header-right">
+<div class="search-box">
+<input id="searchInput" placeholder="Rechercher" type="text"/>
+<button id="searchBtn">⌕</button>
+</div>
+<div class="search-nav" id="searchNav">
+<button id="prevResultBtn">‹</button>
+<span id="resultCounter">0/0</span>
+<button id="nextResultBtn">›</button>
+</div>
+<span class="badge" id="slideCounter">0/0</span>
+</div>
+</div>
+<div class="content" id="content"></div>
+<div class="controls">
+<button class="nav-btn" id="prevBtn">← Précédent</button>
+<span class="counter" id="counter">—</span>
+<button class="nav-btn" id="nextBtn">Suivant →</button>
+</div>
+</div>
+<script>
+const COURSE_TITLE = "Droit (Droit civil, commercial et social)";
+const slides = [
+  {
+    title: "Sommaire — Droit civil, commercial et social",
+    content: `
+      <div class="bloc resume">
+        <h3>Bienvenue dans le cours de Droit</h3>
+        <p>Ce cours de <strong>Droit civil, commercial et social</strong> s'adresse aux élèves de la 4<sup>e</sup> année des Humanités, section Commerciale et Gestion. Il vous apprendra les règles juridiques qui encadrent la vie des affaires et les relations de travail en République Démocratique du Congo, dans un contexte marqué par l'adhésion du pays à l'OHADA depuis 2012.</p>
+        <h4>Objectifs du cours</h4>
+        <ul>
+          <li>Identifier les sources du droit et la hiérarchie des normes.</li>
+          <li>Distinguer les actes de commerce des actes civils et identifier le statut du commerçant.</li>
+          <li>Comprendre les obligations du commerçant (RCCM, comptabilité, publicité légale).</li>
+          <li>Analyser un contrat : formation, validité, exécution, sanction.</li>
+          <li>Connaître les principales formes de sociétés commerciales (SARL, SA).</li>
+          <li>Comprendre le contrat de travail et le lien de subordination.</li>
+          <li>Résoudre un cas pratique simple en qualifiant juridiquement les faits.</li>
+        </ul>
+        <h4>Les grands chapitres du cours</h4>
+        <ol>
+          <li>Introduction au droit : définition, branches, sources, hiérarchie.</li>
+          <li>Le droit commercial et le statut du commerçant (OHADA).</li>
+          <li>Les obligations du commerçant : RCCM, comptabilité, fonds de commerce.</li>
+          <li>Le contrat en droit civil et commercial.</li>
+          <li>Les sociétés commerciales : SARL et SA.</li>
+          <li>Le droit du travail : contrat de travail et lien de subordination.</li>
+        </ol>
+        <p><strong>Compétences visées :</strong> à la fin de ce cours, vous serez capable de sécuriser les relations juridiques d'une entreprise, de comprendre les obligations du commerçant et d'analyser une situation de travail. Ce cours est une initiation adaptée au niveau terminal des humanités commerciales. Il ne remplace pas le cours de Législation du Travail (qui approfondit le droit du travail) ni celui de Fiscalité (qui traite des impôts et taxes).</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 1 — Pourquoi le droit en Commerciale et Gestion ?",
+    content: `
+      <div class="bloc cas">
+        <div class="bloc-label">Situation-problème</div>
+        <h3>Un contrat non respecté, un salarié sans contrat</h3>
+        <p>À Kinshasa, une petite entreprise de vente de téléphones commande des marchandises à un fournisseur. Elles sont livrées, mais le fournisseur refuse de fournir la facture et réclame un prix plus élevé que celui convenu. Au même moment, un jeune employé travaille depuis trois mois sans contrat écrit et sans être déclaré. L'entrepreneur ne comprend pas ses obligations.</p>
+        <p><strong>Question de départ :</strong> Quelles règles juridiques permettent de sécuriser une relation commerciale et une relation de travail ? Que risque l'entrepreneur qui agit dans l'informel ?</p>
+        <p>Le droit répond à ces questions. En section Commerciale et Gestion, il n'est pas un cours théorique réservé aux futurs avocats : c'est un <strong>outil professionnel</strong> qui permet de prévenir les litiges, de protéger son patrimoine et de travailler dans la légalité.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 1 — Définition et branches du droit",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Qu'est-ce que le droit ?</h3>
+        <p>Le droit est l'<strong>ensemble des règles qui organisent la vie en société</strong> et dont le respect est garanti par la puissance publique. Il ne faut pas le confondre avec la morale (règles de conscience) ni avec la coutume (règles non écrites, locales) : le droit est sanctionné par l'État.</p>
+        <h4>Les grandes branches</h4>
+        <table>
+          <thead>
+            <tr><th>Branche</th><th>Objet</th><th>Exemples</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Droit public</strong></td><td>Rapports entre l'État et les citoyens</td><td>Droit constitutionnel, administratif, fiscal</td></tr>
+            <tr><td><strong>Droit privé</strong></td><td>Rapports entre particuliers</td><td>Droit civil, commercial, du travail</td></tr>
+          </tbody>
+        </table>
+        <p>Le <strong>droit civil</strong> régit les relations entre personnes privées (contrats, famille, propriété). Le <strong>droit commercial</strong> s'applique aux commerçants et aux actes de commerce. Le <strong>droit du travail</strong> organise les relations entre employeurs et travailleurs.</p>
+        <p><strong>Erreur fréquente :</strong> croire que le droit commercial est une branche du droit public. Il relève du droit privé, même s'il est encadré par des règles d'ordre public.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 1 — Les sources du droit et leur hiérarchie",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>D'où vient la règle de droit ?</h3>
+        <p>Les sources du droit sont les origines de la règle juridique. En RDC, on distingue :</p>
+        <ul>
+          <li><strong>La Constitution :</strong> norme suprême, elle organise l'État et garantit les droits fondamentaux.</li>
+          <li><strong>Les traités internationaux :</strong> dont les <strong>Actes Uniformes OHADA</strong> (RDC membre depuis 2012), directement applicables en droit des affaires.</li>
+          <li><strong>Les lois et ordonnances :</strong> votées par le Parlement et promulguées par le Président.</li>
+          <li><strong>Les règlements :</strong> décrets du Premier ministre, arrêtés ministériels, décisions administratives.</li>
+          <li><strong>La jurisprudence :</strong> décisions des juridictions qui interprètent et complètent la loi.</li>
+          <li><strong>La coutume et les usages :</strong> règles non écrites, appliquées dans certaines matières.</li>
+        </ul>
+        <h4>Hiérarchie des normes</h4>
+        <figure>
+          <img src="droit4_img01" alt="Pyramide de la hiérarchie des normes : Constitution au sommet, puis traités internationaux et Actes Uniformes OHADA, puis lois, puis règlements." />
+          <figcaption>La hiérarchie des normes juridiques</figcaption>
+        </figure>
+        <p>Une norme inférieure ne peut pas contredire une norme supérieure. Par exemple, un arrêté ministériel ne peut pas contredire une loi, et une loi ne peut pas contredire la Constitution.</p>
+        <p><strong>Erreur fréquente :</strong> croire que la jurisprudence n'est pas une source de droit. Elle l'est, mais de manière secondaire : elle interprète et complète la loi.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 2 — L'acte de commerce (OHADA)",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Qu'est-ce qu'un acte de commerce ?</h3>
+        <p>Selon l'Acte Uniforme relatif au Droit Commercial Général (AUDCG) de l'OHADA, l'<strong>acte de commerce par nature</strong> est celui par lequel une personne s'entremet dans la circulation des biens qu'elle produit ou achète, ou par lequel elle fournit des prestations de service avec l'intention d'en tirer un profit pécuniaire.</p>
+        <h4>Exemples d'actes de commerce par nature</h4>
+        <ul>
+          <li>Achat de biens pour les revendre (commerce de marchandises).</li>
+          <li>Opérations de banque et de change.</li>
+          <li>Transport de personnes ou de marchandises.</li>
+          <li>Manufacture (transformation de matières premières).</li>
+          <li>Location de meubles.</li>
+          <li>Opérations d'intermédiaires de commerce (courtage, commission).</li>
+        </ul>
+        <h4>Les actes de commerce par la forme</h4>
+        <p>Certains actes sont commerciaux par leur forme, quel que soit le statut de la personne : la <strong>lettre de change</strong>, le <strong>billet à ordre</strong>, le <strong>warrant</strong>.</p>
+        <p><strong>Erreur fréquente :</strong> confondre l'acte de commerce par nature (achat pour revente habituel) et l'acte civil. Un particulier qui vend sa voiture personnelle n'accomplit pas un acte de commerce.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 2 — Le statut du commerçant",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Qui est commerçant ?</h3>
+        <p>Selon l'article 2 de l'AUDCG, <strong>est commerçant celui qui fait de l'accomplissement d'actes de commerce par nature sa profession</strong>. Autrement dit, il ne suffit pas d'accomplir un acte de commerce isolé : il faut en faire son activité habituelle.</p>
+        <h4>Conditions pour être commerçant</h4>
+        <ul>
+          <li><strong>Capacité juridique :</strong> être majeur (18 ans en RDC) et ne pas être frappé d'incapacité.</li>
+          <li><strong>Absence d'incompatibilité :</strong> certaines fonctions interdisent l'exercice du commerce. C'est le cas notamment des fonctionnaires, des magistrats, des militaires.</li>
+          <li><strong>Absence de déchéance :</strong> ne pas avoir été condamné pour une infraction commerciale (faillite personnelle, banqueroute).</li>
+        </ul>
+        <p><strong>Erreur fréquente :</strong> croire qu'un fonctionnaire peut exercer librement le commerce. La loi prévoit une incompatibilité stricte, destinée à éviter les conflits d'intérêts.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 3 — Les obligations du commerçant : RCCM et comptabilité",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le RCCM et les livres comptables</h3>
+        <p><strong>Le Registre du Commerce et du Crédit Mobilier (RCCM).</strong> L'immatriculation au RCCM confère la qualité de commerçant et rend l'activité opposable aux tiers. Elle se fait auprès du Guichet Unique de Création d'Entreprise. Le RCCM est <strong>obligatoire</strong> : un commerçant non immatriculé ne peut pas se prévaloir de sa qualité et s'expose à des sanctions.</p>
+        <p><strong>Les obligations comptables.</strong> Le commerçant doit tenir des livres comptables conformément au système OHADA : <strong>Journal</strong>, <strong>Grand Livre</strong>, <strong>Livre d'Inventaire</strong>. Une comptabilité régulièrement tenue a une valeur de preuve entre commerçants. Elle est également indispensable pour établir les déclarations fiscales.</p>
+        <p><strong>La publicité légale.</strong> Les actes modifiant la situation du commerçant (changement d'activité, cession du fonds de commerce, changement d'adresse) doivent être publiés et inscrits au RCCM.</p>
+        <p><strong>Erreur fréquente :</strong> croire que le RCCM est facultatif ou réservé aux grandes entreprises. Il est obligatoire pour tout commerçant, quelle que soit la taille de l'entreprise.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 3 — Le fonds de commerce et le bail commercial",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le patrimoine professionnel du commerçant</h3>
+        <p><strong>Le fonds de commerce.</strong> C'est l'ensemble des éléments corporels et incorporels affectés à l'activité commerciale :</p>
+        <ul>
+          <li><strong>Éléments corporels :</strong> matériel, marchandises, mobilier.</li>
+          <li><strong>Éléments incorporels :</strong> clientèle, enseigne, nom commercial, droit au bail, licences.</li>
+        </ul>
+        <p>Le fonds de commerce peut être vendu, loué ou apporté en société. Il est distinct du patrimoine personnel du commerçant.</p>
+        <p><strong>Le bail à usage professionnel.</strong> Régime protecteur pour le commerçant locataire : durée minimale, droit au renouvellement, conditions de résiliation encadrées. Il protège le commerçant contre les évictions brutales.</p>
+        <p><strong>Erreur fréquente :</strong> confondre le fonds de commerce avec les murs du local. Les murs appartiennent au propriétaire ; le fonds de commerce est l'ensemble des éléments affectés à l'activité.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 4 — Le contrat : définition et conditions de validité",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Qu'est-ce qu'un contrat valable ?</h3>
+        <p><strong>Définition.</strong> Le contrat est une convention par laquelle une ou plusieurs personnes s'obligent envers une ou plusieurs autres à <strong>donner</strong>, à <strong>faire</strong> ou à <strong>ne pas faire</strong> quelque chose.</p>
+        <h4>Les quatre conditions de validité</h4>
+        <ol>
+          <li><strong>Consentement libre et éclairé :</strong> les parties doivent accepter sans contrainte et en connaissance de cause.</li>
+          <li><strong>Capacité des parties :</strong> être juridiquement capable de contracter (majeurs, non frappés d'incapacité).</li>
+          <li><strong>Objet certain et licite :</strong> la prestation doit être déterminée et conforme à la loi.</li>
+          <li><strong>Cause licite :</strong> la raison pour laquelle on contracte doit être conforme à l'ordre public et aux bonnes mœurs.</li>
+        </ol>
+        <p>Si l'une de ces conditions manque, le contrat peut être <strong>nul</strong> (nullité absolue ou relative selon le cas).</p>
+        <p><strong>Erreur fréquente :</strong> croire qu'un contrat verbal est toujours invalide. En droit commercial, la preuve est libre (sauf exceptions), et un contrat verbal peut être valable.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 4 — Les vices du consentement",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Quand le consentement est vicié</h3>
+        <p>Le consentement doit être libre et éclairé. Trois vices peuvent l'affecter :</p>
+        <ul>
+          <li><strong>L'erreur :</strong> une croyance fausse sur la réalité. Elle doit porter sur un élément essentiel du contrat (par exemple, la nature de la marchandise ou sa qualité).</li>
+          <li><strong>Le dol :</strong> une manœuvre frauduleuse destinée à tromper l'autre partie. Par exemple, cacher un vice caché d'une marchandise ou mentir sur sa provenance.</li>
+          <li><strong>La violence :</strong> une contrainte physique ou morale qui pousse une partie à contracter contre sa volonté.</li>
+        </ul>
+        <p>Lorsque le consentement est vicié, la partie victime peut demander la <strong>nullité relative</strong> du contrat, ainsi que des <strong>dommages-intérêts</strong> en cas de dol ou de violence.</p>
+        <p><strong>Erreur fréquente :</strong> confondre l'erreur spontanée (qui peut être une simple méprise) avec le dol (manœuvre intentionnelle). Le dol suppose une intention de tromper.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 4 — Exécution et inexécution du contrat",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Que faire quand le contrat n'est pas respecté ?</h3>
+        <p><strong>L'exécution du contrat.</strong> Les parties doivent exécuter de <strong>bonne foi</strong>. Chacune doit fournir la prestation convenue, dans les délais et conditions prévus.</p>
+        <h4>Les recours en cas d'inexécution</h4>
+        <ul>
+          <li><strong>L'exécution forcée :</strong> demander au juge d'ordonner l'exécution de l'obligation.</li>
+          <li><strong>Les dommages-intérêts :</strong> réclamer réparation du préjudice subi.</li>
+          <li><strong>La résolution du contrat :</strong> demander l'anéantissement du contrat avec effet rétroactif.</li>
+          <li><strong>L'exception d'inexécution :</strong> suspendre sa propre prestation tant que l'autre partie n'exécute pas.</li>
+        </ul>
+        <p><strong>Exemple corrigé.</strong> Un commerçant achète des marchandises à un fournisseur qui lui cache un vice caché (le dol). Le commerçant peut invoquer le dol, demander la nullité de la vente et réclamer des dommages-intérêts pour le préjudice subi.</p>
+        <p><strong>Erreur fréquente :</strong> croire qu'on peut se faire justice soi-même. En cas d'inexécution, il faut saisir le juge compétent.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 4 — La responsabilité civile",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Réparer le dommage causé à autrui</h3>
+        <p>La responsabilité civile est l'obligation de réparer le dommage causé à autrui par sa faute. Elle repose sur <strong>trois conditions cumulatives</strong> :</p>
+        <ol>
+          <li><strong>Une faute :</strong> un comportement contraire à la loi ou aux règles de prudence.</li>
+          <li><strong>Un dommage :</strong> un préjudice certain (matériel, corporel ou moral).</li>
+          <li><strong>Un lien de causalité :</strong> le dommage doit être la conséquence directe de la faute.</li>
+        </ol>
+        <p>La réparation prend la forme de <strong>dommages-intérêts</strong> versés à la victime.</p>
+        <p><strong>Exemple.</strong> Un commerçant livre des marchandises avariées à un client. Le client subit une perte financière. Si la faute (mauvaise conservation) est prouvée, le commerçant doit réparer le préjudice.</p>
+        <p><strong>Erreur fréquente :</strong> croire que toute faute entraîne automatiquement réparation. Il faut que les trois conditions soient réunies.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 5 — La SARL (Société à Responsabilité Limitée)",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>La forme la plus répandue en RDC</h3>
+        <p>La <strong>SARL</strong> est la forme de société la plus courante en RDC. Son capital est divisé en <strong>parts sociales</strong> détenues par les associés.</p>
+        <h4>Caractéristiques</h4>
+        <ul>
+          <li><strong>Responsabilité limitée :</strong> chaque associé n'est responsable qu'à hauteur de ses apports. Son patrimoine personnel est protégé.</li>
+          <li><strong>Gérance :</strong> la société est dirigée par un gérant, désigné par les associés dans les statuts.</li>
+          <li><strong>Nombre d'associés :</strong> limité (la loi fixe un minimum et un maximum).</li>
+          <li><strong>Personnalité morale :</strong> la SARL acquiert la personnalité morale à son immatriculation au RCCM. Elle dispose d'un patrimoine distinct de celui des associés.</li>
+        </ul>
+        <p>La SARL convient bien aux petites et moyennes entreprises familiales ou à plusieurs associés.</p>
+        <p><strong>Erreur fréquente :</strong> croire que la responsabilité des associés est totale. Elle est limitée aux apports : c'est le principal avantage de la SARL.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 5 — La SA (Société Anonyme)",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>La forme des grandes entreprises</h3>
+        <p>La <strong>SA</strong> est destinée aux grandes entreprises. Son capital est divisé en <strong>actions</strong>, librement négociables selon les statuts.</p>
+        <h4>Caractéristiques</h4>
+        <ul>
+          <li><strong>Responsabilité limitée :</strong> les actionnaires ne sont responsables qu'à hauteur de leurs apports.</li>
+          <li><strong>Administration :</strong> assurée par un <strong>conseil d'administration</strong> ou, selon les cas, par un administrateur général.</li>
+          <li><strong>Capital minimum :</strong> plus élevé que celui de la SARL.</li>
+          <li><strong>Transparence :</strong> obligations de publicité renforcées.</li>
+        </ul>
+        <figure>
+          <img src="droit4_img02" alt="Tableau comparatif : la SARL (parts sociales, responsabilité limitée aux apports, gérant) et la SA (actions, conseil d'administration)." />
+          <figcaption>SARL et SA : deux formes de sociétés</figcaption>
+        </figure>
+        <p><strong>Erreur fréquente :</strong> confondre <strong>parts sociales</strong> (SARL) et <strong>actions</strong> (SA). C'est une question classique d'examen.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 6 — Le contrat de travail : définition et éléments",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Trois éléments constitutifs</h3>
+        <p><strong>Définition.</strong> Le contrat de travail est une convention par laquelle une personne (le travailleur) s'engage à mettre son activité professionnelle sous la <strong>direction</strong> et l'<strong>autorité</strong> d'une autre (l'employeur), moyennant une <strong>rémunération</strong>.</p>
+        <h4>Les trois éléments constitutifs</h4>
+        <figure>
+          <img src="droit4_img03" alt="Schéma des trois éléments du contrat de travail : prestation de travail, rémunération, lien de subordination juridique." />
+          <figcaption>Les trois éléments du contrat de travail</figcaption>
+        </figure>
+        <ol>
+          <li><strong>Prestation de travail :</strong> le travailleur fournit une activité professionnelle.</li>
+          <li><strong>Rémunération :</strong> le travailleur reçoit un salaire en contrepartie.</li>
+          <li><strong>Lien de subordination juridique :</strong> le travailleur exécute son travail sous l'autorité de l'employeur.</li>
+        </ol>
+        <p><strong>Erreur fréquente :</strong> croire que le lien de parenté ou de solidarité suffit à caractériser un contrat de travail. Seul le lien de subordination juridique compte : un cousin qui travaille sous vos ordres est un salarié comme un autre.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 6 — Le lien de subordination",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>L'élément distinctif du contrat de travail</h3>
+        <p>Le <strong>lien de subordination</strong> est l'élément qui distingue le contrat de travail d'autres contrats voisins (contrat d'entreprise, contrat de mandat, contrat de société).</p>
+        <h4>Comment se manifeste-t-il ?</h4>
+        <ul>
+          <li>L'employeur donne des ordres et des directives.</li>
+          <li>Il contrôle l'exécution du travail et peut sanctionner.</li>
+          <li>Il fixe les horaires et le lieu de travail.</li>
+          <li>Le travailleur ne peut pas se faire remplacer librement.</li>
+        </ul>
+        <p><strong>Conséquence :</strong> si le lien de subordination existe, le contrat est un contrat de travail, même si les parties ont signé un autre intitulé (contrat de prestation, contrat de stage, etc.).</p>
+        <p><strong>Erreur fréquente :</strong> croire que l'absence de contrat écrit suffit à écarter la qualification de contrat de travail. Le contrat de travail peut être <strong>verbal</strong> : la loi impose seulement que certaines mentions soient écrites, mais la relation peut être prouvée par tous moyens.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 6 — CDI et CDD",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le contrat à durée indéterminée et le contrat à durée déterminée</h3>
+        <p><strong>Le CDI (contrat à durée indéterminée)</strong> est la <strong>forme normale et générale</strong> du contrat de travail. Il n'a pas de terme fixé. Il peut être rompu par la démission du salarié, le licenciement par l'employeur ou la rupture conventionnelle.</p>
+        <p><strong>Le CDD (contrat à durée déterminée)</strong> est conclu pour une durée précise. Il est strictement encadré par le Code du Travail pour éviter la précarité :</p>
+        <ul>
+          <li>Il doit être écrit.</li>
+          <li>Il ne peut être utilisé que dans des cas précis (remplacement d'un salarié absent, surcroît temporaire d'activité, travail saisonnier, etc.).</li>
+          <li>Sa durée maximale est limitée et son renouvellement est encadré.</li>
+        </ul>
+        <p><strong>La période d'essai.</strong> Phase préliminaire permettant à l'employeur d'évaluer les compétences du salarié et au salarié d'apprécier les conditions de travail. Sa durée maximale est fixée par la loi.</p>
+        <p><strong>Erreur fréquente :</strong> croire qu'on peut recourir librement au CDD. La loi impose des conditions strictes ; un CDD conclu hors des cas autorisés peut être requalifié en CDI.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 6 — Obligations du travailleur et de l'employeur",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Droits et devoirs réciproques</h3>
+        <h4>Obligations du travailleur</h4>
+        <ul>
+          <li><strong>Fournir la prestation convenue</strong> avec diligence.</li>
+          <li><strong>Obéir aux directives</strong> légitimes de l'employeur.</li>
+          <li><strong>Loyauté :</strong> ne pas concurrencer l'employeur, ne pas divulguer les secrets de l'entreprise.</li>
+          <li><strong>Discrétion professionnelle.</strong></li>
+          <li><strong>Respecter les règles de sécurité et de santé</strong> au travail.</li>
+        </ul>
+        <h4>Obligations de l'employeur</h4>
+        <ul>
+          <li><strong>Payer le salaire</strong> convenu aux échéances fixées.</li>
+          <li><strong>Fournir le travail</strong> promis (ne pas laisser le salarié sans activité).</li>
+          <li><strong>Assurer la sécurité et la santé</strong> du travailleur.</li>
+          <li><strong>Respecter la dignité</strong> et la vie privée du travailleur.</li>
+          <li><strong>Déclarer le salarié</strong> aux organismes sociaux.</li>
+        </ul>
+        <p><strong>Erreur fréquente :</strong> croire que l'employeur peut tout exiger du travailleur. Les directives doivent rester dans le cadre du contrat et de la loi.</p>
+      </div>
+    `
+  },
+  {
+    title: "Méthode — Résoudre un cas pratique juridique",
+    content: `
+      <div class="bloc exemple">
+        <div class="bloc-label">Méthode</div>
+        <h3>Qualifier les faits, identifier la règle, appliquer</h3>
+        <p>Résoudre un cas pratique en droit demande une méthode rigoureuse. Voici les étapes :</p>
+        <ol>
+          <li><strong>Lire attentivement les faits</strong> et repérer les personnes et les relations en cause.</li>
+          <li><strong>Qualifier juridiquement les faits :</strong> s'agit-il d'un acte de commerce ? d'un contrat de travail ? d'un contrat de vente ?</li>
+          <li><strong>Identifier la règle de droit applicable :</strong> article de loi, Acte Uniforme OHADA, Code du Travail, etc.</li>
+          <li><strong>Appliquer la règle au cas :</strong> la règle confirme-t-elle ou infirme-t-elle la prétention des parties ?</li>
+          <li><strong>Conclure :</strong> indiquer la solution juridique et, si nécessaire, les recours possibles.</li>
+        </ol>
+        <h4>Exemple corrigé</h4>
+        <p><strong>Faits :</strong> « Un jeune homme travaille depuis 6 mois dans un magasin de Kinshasa. Il reçoit un salaire mensuel et suit les horaires fixés par le propriétaire. Aucun contrat écrit n'a été signé. Le propriétaire affirme qu'il n'y a pas de contrat de travail. »</p>
+        <p><strong>Qualification :</strong> il existe une prestation de travail, une rémunération et un lien de subordination (horaires, ordres). Il s'agit donc d'un contrat de travail, même verbal.</p>
+        <p><strong>Règle :</strong> le contrat de travail peut être verbal ; le lien de subordination est l'élément déterminant.</p>
+        <p><strong>Conclusion :</strong> le jeune homme est bien lié par un contrat de travail. L'employeur doit respecter ses obligations (salaire, sécurité, déclaration aux organismes sociaux).</p>
+      </div>
+    `
+  },
+  {
+    title: "Synthèse — Le droit, outil du professionnel",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Synthèse</div>
+        <h3>Ce qu'il faut retenir</h3>
+        <p>Le droit est le cadre juridique de l'activité économique et professionnelle. Des sources du droit à l'acte de commerce, du contrat aux sociétés commerciales et au contrat de travail, ce cours vous a donné les outils pour sécuriser les relations d'affaires, comprendre les obligations du commerçant et analyser une situation de travail.</p>
+        <ul>
+          <li><strong>Sources du droit :</strong> Constitution, traités (dont Actes Uniformes OHADA), lois, règlements, jurisprudence, coutume.</li>
+          <li><strong>Acte de commerce :</strong> achat pour revente, banque, transport, manufacture, intermédiation.</li>
+          <li><strong>Commerçant :</strong> fait de l'accomplissement d'actes de commerce sa profession ; immatriculation au RCCM obligatoire.</li>
+          <li><strong>Contrat :</strong> quatre conditions de validité (consentement, capacité, objet, cause) ; vices du consentement (erreur, dol, violence).</li>
+          <li><strong>Sociétés :</strong> SARL = parts sociales, responsabilité limitée ; SA = actions, grandes entreprises.</li>
+          <li><strong>Contrat de travail :</strong> trois éléments dont le lien de subordination juridique ; CDI (forme normale) et CDD (encadré).</li>
+        </ul>
+        <p>En RDC, où l'informel reste important et où l'OHADA structure le droit des affaires, cette compétence juridique est un atout pour créer une entreprise, gérer des contrats et poursuivre des études supérieures en droit, gestion ou administration.</p>
+      </div>
+    `
+  },
+  {
+    title: "Évaluation finale — Droit civil, commercial et social",
+    content: `
+      <p>Répondez aux questions suivantes pour vérifier votre compréhension du cours. Une seule réponse est correcte par question.</p>
+      <div class="quiz-container">
+        <div id="quizQuestions"></div>
+        <button id="submitQuiz" class="quiz-btn-submit">
+          Valider mes réponses
+        </button>
+        <div id="quizResult" class="quiz-result"></div>
+      </div>
+    `
+  }
+];
+const questions = [
+  {
+    text: "Le droit commercial est une branche du :",
+    options: ["Droit public", "Droit privé", "Droit constitutionnel", "Droit pénal"],
+    correct: 1
+  },
+  {
+    text: "Selon l'OHADA, est commerçant celui qui :",
+    options: [
+      "Vend occasionnellement un bien",
+      "Fait de l'accomplissement d'actes de commerce par nature sa profession",
+      "Est salarié",
+      "Est fonctionnaire"
+    ],
+    correct: 1
+  },
+  {
+    text: "L'acte de commerce par nature est :",
+    options: [
+      "La lettre de change",
+      "L'achat de biens en vue de leur revente",
+      "Le mariage",
+      "Le contrat de travail"
+    ],
+    correct: 1
+  },
+  {
+    text: "La majorité civile et commerciale en RDC est fixée à :",
+    options: ["15 ans", "16 ans", "18 ans", "21 ans"],
+    correct: 2
+  },
+  {
+    text: "Le RCCM est :",
+    options: ["Facultatif", "Obligatoire pour le commerçant", "Réservé aux SA", "Un impôt"],
+    correct: 1
+  },
+  {
+    text: "Les conditions de validité d'un contrat sont :",
+    options: [
+      "Consentement, capacité, objet, cause",
+      "Prix, lieu, date",
+      "Signature, timbre, enregistrement",
+      "Témoins, notaire, publicité"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le dol est :",
+    options: [
+      "Une erreur spontanée",
+      "Une manœuvre frauduleuse",
+      "Une violence physique",
+      "Une incapacité"
+    ],
+    correct: 1
+  },
+  {
+    text: "Dans une SARL, le capital est divisé en :",
+    options: ["Actions", "Parts sociales", "Obligations", "Coupons"],
+    correct: 1
+  },
+  {
+    text: "Dans une SA, le capital est divisé en :",
+    options: ["Parts sociales", "Actions", "Obligations", "Parts d'intérêt"],
+    correct: 1
+  },
+  {
+    text: "La personnalité morale de la société naît :",
+    options: [
+      "À la signature des statuts",
+      "À l'immatriculation au RCCM",
+      "À la première vente",
+      "Au décès du gérant"
+    ],
+    correct: 1
+  },
+  {
+    text: "Le contrat de travail se caractérise par :",
+    options: [
+      "Un lien de parenté",
+      "Un lien de subordination juridique",
+      "Un lien d'amitié",
+      "Un lien de solidarité"
+    ],
+    correct: 1
+  },
+  {
+    text: "Le CDI est :",
+    options: [
+      "La forme normale et générale du contrat de travail",
+      "Interdit en RDC",
+      "Réservé aux cadres",
+      "Un contrat précaire"
+    ],
+    correct: 0
+  },
+  {
+    text: "La période d'essai permet :",
+    options: [
+      "De tester la relation de travail",
+      "D'éviter le salaire",
+      "De supprimer le contrat",
+      "De ne pas déclarer le salarié"
+    ],
+    correct: 0
+  },
+  {
+    text: "Une obligation du travailleur est :",
+    options: [
+      "De concurrencer l'employeur",
+      "De fournir la prestation convenue avec diligence et loyauté",
+      "De fixer son salaire",
+      "De ne pas respecter les consignes"
+    ],
+    correct: 1
+  },
+  {
+    text: "La responsabilité civile exige :",
+    options: [
+      "Une faute, un dommage et un lien de causalité",
+      "Uniquement une faute",
+      "Uniquement un dommage",
+      "Un contrat écrit"
+    ],
+    correct: 0
+  },
+  {
+    text: "Un contrat verbal en matière commerciale est :",
+    options: [
+      "Toujours nul",
+      "En principe valable (preuve libre)",
+      "Interdit",
+      "Réservé aux SA"
+    ],
+    correct: 1
+  },
+  {
+    text: "Le fonds de commerce comprend :",
+    options: [
+      "Uniquement le matériel",
+      "Les éléments corporels et incorporels (clientèle, enseigne)",
+      "Uniquement la clientèle",
+      "Le patrimoine personnel du commerçant"
+    ],
+    correct: 1
+  },
+  {
+    text: "Le bail à usage professionnel protège :",
+    options: [
+      "Le propriétaire uniquement",
+      "Le commerçant locataire (renouvellement, préavis)",
+      "L'État",
+      "Les salariés"
+    ],
+    correct: 1
+  },
+  {
+    text: "La SARL est la forme de société la plus répandue en RDC car :",
+    options: [
+      "Elle est obligatoire",
+      "La responsabilité des associés est limitée aux apports",
+      "Elle ne paie pas d'impôts",
+      "Elle n'a pas besoin de RCCM"
+    ],
+    correct: 1
+  },
+  {
+    text: "Un fonctionnaire qui veut exercer le commerce :",
+    options: [
+      "Le peut sans restriction",
+      "Est frappé d'une incompatibilité",
+      "Doit démissionner de son emploi",
+      "Doit créer une SA"
+    ],
+    correct: 1
+  },
+  {
+    text: "La mise en demeure sert à :",
+    options: [
+      "Informer le débiteur qu'il doit payer",
+      "Créer une société",
+      "Modifier le contrat",
+      "Licencier un salarié"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'objectif principal du cours de droit en 4e Humanité Commerciale est de :",
+    options: [
+      "Former des avocats",
+      "Comprendre et appliquer les règles juridiques de la vie des affaires et du travail",
+      "Remplacer la comptabilité",
+      "Étudier le droit constitutionnel approfondi"
+    ],
+    correct: 1
+  }
+];
+
+try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+        questions.forEach(function (q) {
+            if (!q.text) q.text = q.question || q.q || q.enonce || q.titre || "";
+            if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+            if (typeof q.correct === "undefined") {
+                if (typeof q.answer !== "undefined") q.correct = q.answer;
+                else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+            }
+        });
+    }
+} catch (e) {}
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+const pageTitle = document.getElementById('pageTitle');
+pageTitle.textContent = "ECOLIA · " + COURSE_TITLE;
+document.title = "ECOLIA — " + COURSE_TITLE;
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim() || slides.length === 0) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp("(" + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ")", 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderEmptyState() {
+    contentDiv.innerHTML = '<div class="empty-state"><div class="icon">·</div><span class="tag">Bientôt disponible</span><h2>' + COURSE_TITLE + '</h2><p>Ce cours est en préparation. Le contenu sera ajouté prochainement.</p></div>';
+    slideCounterSpan.textContent = '0/0';
+    progressFill.style.width = '0%';
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    counterSpan.textContent = '—';
+}
+
+function renderQuiz() {
+    const qc = document.getElementById('quizQuestions');
+    if (!qc) return;
+    if (typeof questions === 'undefined' || questions.length === 0) {
+        qc.innerHTML = '<p style="color:#666;font-style:italic;">Quiz bientot disponible.</p>';
+        return;
+    }
+    let html = '';
+    questions.forEach((q, i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o, k) => {
+            html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>';
+        });
+        html += '</div>';
+    });
+    qc.innerHTML = html;
+    const submitBtn = document.getElementById('submitQuiz');
+    if (submitBtn) {
+        submitBtn.onclick = () => {
+            let score = 0;
+            questions.forEach((q, i) => {
+                const s = document.querySelector('input[name="q' + i + '"]:checked');
+                if (s && parseInt(s.value) === q.correct) score++;
+            });
+            const pct = Math.round(score/questions.length*100);
+            document.getElementById('quizResult').innerHTML =
+                '<div style="background:var(--bg2);padding:16px;border-radius:10px;margin-top:14px;">' +
+                '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong></div>';
+        };
+    }
+}
+
+function renderSlide(index, keepHighlight) {
+    if (keepHighlight === undefined) keepHighlight = true;
+    if (slides.length === 0) { renderEmptyState(); return; }
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    if (index === slides.length - 1) renderQuiz();
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    if (slides.length === 0) return;
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (slides.length && currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (slides.length && currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+<!-- ECOLIA_IMAGE_LOADER_START -->
+<script>
+(function () {
+  var SITE = "https://ecolia-course.github.io/";
+  var NATIVE = false;
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function abs(u) { return /^(https?:|data:|blob:)/i.test(u) ? u : (NATIVE ? SITE + u.replace(/^(\.\/|\/)+/, "") : u); }
+  function ext(u) { var m = String(u).split("?")[0].match(/\.(jpe?g|png|gif|webp|svg)$/i); return m ? m[1].toLowerCase() : "jpg"; }
+  function hide(img) { img.onerror = null; img.style.display = "none"; }
+  var table = null, queue = [], queued = {}, running = false;
+  function enqueue(full, fn) {
+    if (queued[fn]) return;
+    queued[fn] = 1; queue.push([full, fn]);
+    if (!running) { running = true; setTimeout(next, 2500); }
+  }
+  function next() {
+    if (!queue.length) { running = false; return; }
+    if (!navigator.onLine) { running = false; return; }
+    var q = queue.shift(), t0 = Date.now();
+    try { CoursInterface.download(q[0], q[1]); } catch (e) { return setTimeout(next, 500); }
+    (function wait() {
+      var ok = false;
+      try { ok = !!CoursInterface.exists(q[1]); } catch (e) {}
+      if (ok) setTimeout(next, 1500);
+      else if (Date.now() - t0 > 40000) next();
+      else setTimeout(wait, 700);
+    })();
+  }
+  function exists(fn) { try { return !!CoursInterface.exists(fn); } catch (e) { return false; } }
+  function show(img) {
+    if (!table || img.getAttribute("data-ecolia-done")) return;
+    var id = img.getAttribute("data-image-id");
+    var url = table[id];
+    if (typeof url !== "string" || !url.length) { console.warn("ECOLIA : image absente du JSON :", id); return; }
+    img.setAttribute("data-ecolia-done", "1");
+    if (!NATIVE) { img.onerror = function () { hide(img); }; img.setAttribute("src", url); return; }
+    var full = abs(url), fn = "img_" + id + "." + ext(url);
+    if (exists(fn)) {
+      img.onerror = function () {
+        try { CoursInterface["delete"](fn); } catch (e) {}
+        queued[fn] = 0;
+        img.onerror = function () { hide(img); };
+        img.setAttribute("src", full);
+      };
+      img.setAttribute("src", "https://app.local/cours/" + fn);
+    } else {
+      img.onerror = function () { hide(img); };
+      img.setAttribute("src", full);
+      enqueue(full, fn);
+    }
+  }
+  function scan(root) {
+    if (!root || !root.querySelectorAll) return;
+    if (root.matches && root.matches("img[data-image-id]")) show(root);
+    root.querySelectorAll("img[data-image-id]").forEach(show);
+  }
+  function prefetchAll() {
+    var ids = {};
+    try { JSON.stringify(slides).replace(/data-image-id=\\?"([^"\\]+)/g, function (m, id) { ids[id] = 1; }); } catch (e) {}
+    Object.keys(ids).forEach(function (id) {
+      var url = table[id];
+      if (typeof url !== "string" || !url.length) return;
+      var fn = "img_" + id + "." + ext(url);
+      if (!exists(fn)) enqueue(abs(url), fn);
+    });
+  }
+  function start(tbl) {
+    table = tbl;
+    scan(document.body);
+    new MutationObserver(function (muts) {
+      muts.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.nodeType === 1) scan(n); }); });
+    }).observe(document.body, { childList: true, subtree: true });
+    if (NATIVE) prefetchAll();
+  }
+  var JSON_URL = NATIVE ? SITE + "images_ecolia.json" : "images_ecolia.json";
+  var KEY = "ecolia_images_json";
+  fetch(JSON_URL, NATIVE ? { cache: "no-cache" } : undefined)
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (table) { if (NATIVE) lsSet(KEY, JSON.stringify(table)); start(table); })
+    .catch(function (e) {
+      var saved = null;
+      if (NATIVE) { try { saved = JSON.parse(lsGet(KEY) || "null"); } catch (x) {} }
+      if (saved) start(saved);
+      else console.warn("ECOLIA : JSON des images indisponible.", e);
+    });
+})();
+</script>
+<!-- ECOLIA_IMAGE_LOADER_END -->
+
+
+
+<!-- ECOLIA_AUDIO_PLAYER_START -->
+<style>
+  #ecolia-audio-btn, #ecolia-dl-btn {
+    width: 30px; height: 30px; min-width: 30px; padding: 0; margin: 0 4px 0 0;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    cursor: pointer; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent; outline: none;
+  }
+  #ecolia-audio-btn { border: none; background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-dl-btn { border: 1.5px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb); }
+  #ecolia-dl-btn.ecolia-full { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-btn.ecolia-fixed { position: fixed; top: 8px; left: 8px; z-index: 2147483000; }
+  #ecolia-audio-btn:active, #ecolia-dl-btn:active { transform: scale(.92); }
+  #ecolia-audio-btn svg, #ecolia-dl-btn svg { width: 15px; height: 15px; fill: currentColor; pointer-events: none; }
+  #ecolia-audio-btn.ecolia-off, #ecolia-dl-btn.ecolia-off { display: none; }
+  #ecolia-audio-banner {
+    display: none; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0;
+    padding: 8px 14px; font-size: .82rem; line-height: 1.35;
+    background: var(--soft, #eef3fb); color: var(--p1, #123); border-bottom: 1px solid var(--bd, #c9d6ea);
+  }
+  #ecolia-audio-banner.on { display: flex; }
+  #ecolia-audio-banner .eab-txt { flex: 1 1 180px; }
+  #ecolia-audio-banner .eab-act { display: flex; gap: 6px; flex-wrap: wrap; }
+  #ecolia-audio-banner button {
+    border: 1px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb);
+    border-radius: 16px; padding: 5px 12px; font-size: .8rem; cursor: pointer;
+  }
+  #ecolia-audio-banner button.pri { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-banner .eab-bar { display: none; flex-basis: 100%; height: 4px; border-radius: 2px; overflow: hidden; background: var(--bd, #c9d6ea); }
+  #ecolia-audio-banner .eab-bar i { display: block; height: 100%; width: 0; background: var(--p2, #2563eb); transition: width .2s; }
+</style>
+<script>
+(function () {
+  var CFG = {"code":"Droit4","base":"https://ecolia-course.github.io/ecolia-media/audio_files/","available":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21],"count":21,"sizeMo":13,"sizes":{"1":1037952,"2":499776,"3":566400,"4":646080,"5":628032,"6":514944,"7":659712,"8":516672,"9":552192,"10":506304,"11":547968,"12":479616,"13":563904,"14":433152,"15":504384,"16":537024,"17":637824,"18":477120,"19":793344,"20":830592,"21":99648},"fallback":{"1":[["fr","Sommaire, Droit civil, commercial et social. Bienvenue dans le cours de Droit. Ce cours de Droit civil, commercial et social s'adresse aux élèves de la 4e année des Humanités, section Commerciale et Gestion. Il vous apprendra les règles juridiques qui encadrent la vie des affaires et les relations de travail en République Démocratique du Congo, dans un contexte marqué par l'adhésion du pays à l'OHADA depuis 2012. Objectifs du cours. Identifier les sources du droit et la hiérarchie des normes. Distinguer les actes de commerce des actes civils et identifier le statut du commerçant. Comprendre les obligations du commerçant (RCCM, comptabilité, publicité légale). Analyser un contrat: formation, validité, exécution, sanction. Connaître les principales formes de sociétés commerciales (SARL, SA). Comprendre le contrat de travail et le lien de subordination. Résoudre un cas pratique simple en qualifiant juridiquement les faits. Les grands chapitres du cours. Introduction au droit: définition, branches, sources, hiérarchie. Le droit commercial et le statut du commerçant (OHADA). Les obligations du commerçant: RCCM, comptabilité, fonds de commerce. Le contrat en droit civil et commercial. Les sociétés commerciales: SARL et SA. Le droit du travail: contrat de travail et lien de subordination. Compétences visées: à la fin de ce cours, vous serez capable de sécuriser les relations juridiques d'une entreprise, de comprendre les obligations du commerçant et d'analyser une situation de travail. Ce cours est une initiation adaptée au niveau terminal des humanités commerciales. Il ne remplace pas le cours de Législation du Travail (qui approfondit le droit du travail) ni celui de Fiscalité (qui traite des impôts et taxes)."]],"2":[["fr","Chapitre 1, Pourquoi le droit en Commerciale et Gestion? Situation-problème. Un contrat non respecté, un salarié sans contrat. À Kinshasa, une petite entreprise de vente de téléphones commande des marchandises à un fournisseur. Elles sont livrées, mais le fournisseur refuse de fournir la facture et réclame un prix plus élevé que celui convenu. Au même moment, un jeune employé travaille depuis trois mois sans contrat écrit et sans être déclaré. L'entrepreneur ne comprend pas ses obligations. Question de départ: Quelles règles juridiques permettent de sécuriser une relation commerciale et une relation de travail? Que risque l'entrepreneur qui agit dans l'informel? Le droit répond à ces questions. En section Commerciale et Gestion, il n'est pas un cours théorique réservé aux futurs avocats: c'est un outil professionnel qui permet de prévenir les litiges, de protéger son patrimoine et de travailler dans la légalité."]],"3":[["fr","Chapitre 1, Définition et branches du droit. Fondements théoriques. Qu'est-ce que le droit? Le droit est l'ensemble des règles qui organisent la vie en société et dont le respect est garanti par la puissance publique. Il ne faut pas le confondre avec la morale (règles de conscience) ni avec la coutume (règles non écrites, locales): le droit est sanctionné par l'État. Les grandes branches. Branche. Objet. Exemples. Droit public. Rapports entre l'État et les citoyens. Droit constitutionnel, administratif, fiscal. Droit privé. Rapports entre particuliers. Droit civil, commercial, du travail. Le droit civil régit les relations entre personnes privées (contrats, famille, propriété). Le droit commercial s'applique aux commerçants et aux actes de commerce. Le droit du travail organise les relations entre employeurs et travailleurs. Erreur fréquente: croire que le droit commercial est une branche du droit public. Il relève du droit privé, même s'il est encadré par des règles d'ordre public."]],"4":[["fr","Chapitre 1, Les sources du droit et leur hiérarchie. Fondements théoriques. D'où vient la règle de droit? Les sources du droit sont les origines de la règle juridique. En R D C, on distingue: La Constitution: norme suprême, elle organise l'État et garantit les droits fondamentaux. Les traités internationaux: dont les Actes Uniformes OHADA (R D C membre depuis 2012), directement applicables en droit des affaires. Les lois et ordonnances: votées par le Parlement et promulguées par le Président. Les règlements: décrets du Premier ministre, arrêtés ministériels, décisions administratives. La jurisprudence: décisions des juridictions qui interprètent et complètent la loi. La coutume et les usages: règles non écrites, appliquées dans certaines matières. Hiérarchie des normes. La hiérarchie des normes juridiques. Une norme inférieure ne peut pas contredire une norme supérieure. Par exemple, un arrêté ministériel ne peut pas contredire une loi, et une loi ne peut pas contredire la Constitution. Erreur fréquente: croire que la jurisprudence n'est pas une source de droit. Elle l'est, mais de manière secondaire: elle interprète et complète la loi."]],"5":[["fr","Chapitre 2, L'acte de commerce (OHADA). Fondements théoriques. Qu'est-ce qu'un acte de commerce? Selon l'Acte Uniforme relatif au Droit Commercial Général (AUDCG) de l'OHADA, l'acte de commerce par nature est celui par lequel une personne s'entremet dans la circulation des biens qu'elle produit ou achète, ou par lequel elle fournit des prestations de service avec l'intention d'en tirer un profit pécuniaire. Exemples d'actes de commerce par nature. Achat de biens pour les revendre (commerce de marchandises). Opérations de banque et de change. Transport de personnes ou de marchandises. Manufacture (transformation de matières premières). Location de meubles. Opérations d'intermédiaires de commerce (courtage, commission). Les actes de commerce par la forme. Certains actes sont commerciaux par leur forme, quel que soit le statut de la personne: la lettre de change, le billet à ordre, le warrant. Erreur fréquente: confondre l'acte de commerce par nature (achat pour revente habituel) et l'acte civil. Un particulier qui vend sa voiture personnelle n'accomplit pas un acte de commerce."]],"6":[["fr","Chapitre 2, Le statut du commerçant. Fondements théoriques. Qui est commerçant? Selon l'article 2 de l'AUDCG, est commerçant celui qui fait de l'accomplissement d'actes de commerce par nature sa profession. Autrement dit, il ne suffit pas d'accomplir un acte de commerce isolé: il faut en faire son activité habituelle. Conditions pour être commerçant. Capacité juridique: être majeur (18 ans en R D C) et ne pas être frappé d'incapacité. Absence d'incompatibilité: certaines fonctions interdisent l'exercice du commerce. C'est le cas notamment des fonctionnaires, des magistrats, des militaires. Absence de déchéance: ne pas avoir été condamné pour une infraction commerciale (faillite personnelle, banqueroute). Erreur fréquente: croire qu'un fonctionnaire peut exercer librement le commerce. La loi prévoit une incompatibilité stricte, destinée à éviter les conflits d'intérêts."]],"7":[["fr","Chapitre 3, Les obligations du commerçant: RCCM et comptabilité. Fondements théoriques. Le RCCM et les livres comptables. Le Registre du Commerce et du Crédit Mobilier (RCCM). L'immatriculation au RCCM confère la qualité de commerçant et rend l'activité opposable aux tiers. Elle se fait auprès du Guichet Unique de Création d'Entreprise. Le RCCM est obligatoire: un commerçant non immatriculé ne peut pas se prévaloir de sa qualité et s'expose à des sanctions. Les obligations comptables. Le commerçant doit tenir des livres comptables conformément au système OHADA: Journal, Grand Livre, Livre d'Inventaire. Une comptabilité régulièrement tenue a une valeur de preuve entre commerçants. Elle est également indispensable pour établir les déclarations fiscales. La publicité légale. Les actes modifiant la situation du commerçant (changement d'activité, cession du fonds de commerce, changement d'adresse) doivent être publiés et inscrits au RCCM. Erreur fréquente: croire que le RCCM est facultatif ou réservé aux grandes entreprises. Il est obligatoire pour tout commerçant, quelle que soit la taille de l'entreprise."]],"8":[["fr","Chapitre 3, Le fonds de commerce et le bail commercial. Fondements théoriques. Le patrimoine professionnel du commerçant. Le fonds de commerce. C'est l'ensemble des éléments corporels et incorporels affectés à l'activité commerciale: Éléments corporels: matériel, marchandises, mobilier. Éléments incorporels: clientèle, enseigne, nom commercial, droit au bail, licences. Le fonds de commerce peut être vendu, loué ou apporté en société. Il est distinct du patrimoine personnel du commerçant. Le bail à usage professionnel. Régime protecteur pour le commerçant locataire: durée minimale, droit au renouvellement, conditions de résiliation encadrées. Il protège le commerçant contre les évictions brutales. Erreur fréquente: confondre le fonds de commerce avec les murs du local. Les murs appartiennent au propriétaire; le fonds de commerce est l'ensemble des éléments affectés à l'activité."]],"9":[["fr","Chapitre 4, Le contrat: définition et conditions de validité. Fondements théoriques. Qu'est-ce qu'un contrat valable? Définition. Le contrat est une convention par laquelle une ou plusieurs personnes s'obligent envers une ou plusieurs autres à donner, à faire ou à ne pas faire quelque chose. Les quatre conditions de validité. Consentement libre et éclairé: les parties doivent accepter sans contrainte et en connaissance de cause. Capacité des parties: être juridiquement capable de contracter (majeurs, non frappés d'incapacité). Objet certain et licite: la prestation doit être déterminée et conforme à la loi. Cause licite: la raison pour laquelle on contracte doit être conforme à l'ordre public et aux bonnes mœurs. Si l'une de ces conditions manque, le contrat peut être nul (nullité absolue ou relative selon le cas). Erreur fréquente: croire qu'un contrat verbal est toujours invalide. En droit commercial, la preuve est libre (sauf exceptions), et un contrat verbal peut être valable."]],"10":[["fr","Chapitre 4, Les vices du consentement. Fondements théoriques. Quand le consentement est vicié. Le consentement doit être libre et éclairé. Trois vices peuvent l'affecter: L'erreur: une croyance fausse sur la réalité. Elle doit porter sur un élément essentiel du contrat (par exemple, la nature de la marchandise ou sa qualité). Le dol: une manœuvre frauduleuse destinée à tromper l'autre partie. Par exemple, cacher un vice caché d'une marchandise ou mentir sur sa provenance. La violence: une contrainte physique ou morale qui pousse une partie à contracter contre sa volonté. Lorsque le consentement est vicié, la partie victime peut demander la nullité relative du contrat, ainsi que des dommages-intérêts en cas de dol ou de violence. Erreur fréquente: confondre l'erreur spontanée (qui peut être une simple méprise) avec le dol (manœuvre intentionnelle). Le dol suppose une intention de tromper."]],"11":[["fr","Chapitre 4, Exécution et inexécution du contrat. Fondements théoriques. Que faire quand le contrat n'est pas respecté? L'exécution du contrat. Les parties doivent exécuter de bonne foi. Chacune doit fournir la prestation convenue, dans les délais et conditions prévus. Les recours en cas d'inexécution. L'exécution forcée: demander au juge d'ordonner l'exécution de l'obligation. Les dommages-intérêts: réclamer réparation du préjudice subi. La résolution du contrat: demander l'anéantissement du contrat avec effet rétroactif. L'exception d'inexécution: suspendre sa propre prestation tant que l'autre partie n'exécute pas. Exemple corrigé. Un commerçant achète des marchandises à un fournisseur qui lui cache un vice caché (le dol). Le commerçant peut invoquer le dol, demander la nullité de la vente et réclamer des dommages-intérêts pour le préjudice subi. Erreur fréquente: croire qu'on peut se faire justice soi-même. En cas d'inexécution, il faut saisir le juge compétent."]],"12":[["fr","Chapitre 4, La responsabilité civile. Fondements théoriques. Réparer le dommage causé à autrui. La responsabilité civile est l'obligation de réparer le dommage causé à autrui par sa faute. Elle repose sur trois conditions cumulatives: Une faute: un comportement contraire à la loi ou aux règles de prudence. Un dommage: un préjudice certain (matériel, corporel ou moral). Un lien de causalité: le dommage doit être la conséquence directe de la faute. La réparation prend la forme de dommages-intérêts versés à la victime. Exemple. Un commerçant livre des marchandises avariées à un client. Le client subit une perte financière. Si la faute (mauvaise conservation) est prouvée, le commerçant doit réparer le préjudice. Erreur fréquente: croire que toute faute entraîne automatiquement réparation. Il faut que les trois conditions soient réunies."]],"13":[["fr","Chapitre 5, La SARL (Société à Responsabilité Limitée). Fondements théoriques. La forme la plus répandue en R D C. La SARL est la forme de société la plus courante en R D C. Son capital est divisé en parts sociales détenues par les associés. Caractéristiques. Responsabilité limitée: chaque associé n'est responsable qu'à hauteur de ses apports. Son patrimoine personnel est protégé. Gérance: la société est dirigée par un gérant, désigné par les associés dans les statuts. Nombre d'associés: limité (la loi fixe un minimum et un maximum). Personnalité morale: la SARL acquiert la personnalité morale à son immatriculation au RCCM. Elle dispose d'un patrimoine distinct de celui des associés. La SARL convient bien aux petites et moyennes entreprises familiales ou à plusieurs associés. Erreur fréquente: croire que la responsabilité des associés est totale. Elle est limitée aux apports: c'est le principal avantage de la SARL."]],"14":[["fr","Chapitre 5, La SA (Société Anonyme). Fondements théoriques. La forme des grandes entreprises. La SA est destinée aux grandes entreprises. Son capital est divisé en actions, librement négociables selon les statuts. Caractéristiques. Responsabilité limitée: les actionnaires ne sont responsables qu'à hauteur de leurs apports. Administration: assurée par un conseil d'administration ou, selon les cas, par un administrateur général. Capital minimum: plus élevé que celui de la SARL. Transparence: obligations de publicité renforcées. SARL et SA: deux formes de sociétés. Erreur fréquente: confondre parts sociales (SARL) et actions (SA). C'est une question classique d'examen."]],"15":[["fr","Chapitre 6, Le contrat de travail: définition et éléments. Fondements théoriques. Trois éléments constitutifs. Définition. Le contrat de travail est une convention par laquelle une personne (le travailleur) s'engage à mettre son activité professionnelle sous la direction et l'autorité d'une autre (l'employeur), moyennant une rémunération. Les trois éléments constitutifs. Les trois éléments du contrat de travail. Prestation de travail: le travailleur fournit une activité professionnelle. Rémunération: le travailleur reçoit un salaire en contrepartie. Lien de subordination juridique: le travailleur exécute son travail sous l'autorité de l'employeur. Erreur fréquente: croire que le lien de parenté ou de solidarité suffit à caractériser un contrat de travail. Seul le lien de subordination juridique compte: un cousin qui travaille sous vos ordres est un salarié comme un autre."]],"16":[["fr","Chapitre 6, Le lien de subordination. Fondements théoriques. L'élément distinctif du contrat de travail. Le lien de subordination est l'élément qui distingue le contrat de travail d'autres contrats voisins (contrat d'entreprise, contrat de mandat, contrat de société). Comment se manifeste-t-il? L'employeur donne des ordres et des directives. Il contrôle l'exécution du travail et peut sanctionner. Il fixe les horaires et le lieu de travail. Le travailleur ne peut pas se faire remplacer librement. Conséquence: si le lien de subordination existe, le contrat est un contrat de travail, même si les parties ont signé un autre intitulé (contrat de prestation, contrat de stage, etc.). Erreur fréquente: croire que l'absence de contrat écrit suffit à écarter la qualification de contrat de travail. Le contrat de travail peut être verbal: la loi impose seulement que certaines mentions soient écrites, mais la relation peut être prouvée par tous moyens."]],"17":[["fr","Chapitre 6, CDI et CDD. Fondements théoriques. Le contrat à durée indéterminée et le contrat à durée déterminée. Le CDI (contrat à durée indéterminée) est la forme normale et générale du contrat de travail. Il n'a pas de terme fixé. Il peut être rompu par la démission du salarié, le licenciement par l'employeur ou la rupture conventionnelle. Le CDD (contrat à durée déterminée) est conclu pour une durée précise. Il est strictement encadré par le Code du Travail pour éviter la précarité: Il doit être écrit. Il ne peut être utilisé que dans des cas précis (remplacement d'un salarié absent, surcroît temporaire d'activité, travail saisonnier, etc.). Sa durée maximale est limitée et son renouvellement est encadré. La période d'essai. Phase préliminaire permettant à l'employeur d'évaluer les compétences du salarié et au salarié d'apprécier les conditions de travail. Sa durée maximale est fixée par la loi. Erreur fréquente: croire qu'on peut recourir librement au CDD. La loi impose des conditions strictes; un CDD conclu hors des cas autorisés peut être requalifié en CDI."]],"18":[["fr","Chapitre 6, Obligations du travailleur et de l'employeur. Fondements théoriques. Droits et devoirs réciproques. Obligations du travailleur. Fournir la prestation convenue avec diligence. Obéir aux directives légitimes de l'employeur. Loyauté: ne pas concurrencer l'employeur, ne pas divulguer les secrets de l'entreprise. Discrétion professionnelle. Respecter les règles de sécurité et de santé au travail. Obligations de l'employeur. Payer le salaire convenu aux échéances fixées. Fournir le travail promis (ne pas laisser le salarié sans activité). Assurer la sécurité et la santé du travailleur. Respecter la dignité et la vie privée du travailleur. Déclarer le salarié aux organismes sociaux. Erreur fréquente: croire que l'employeur peut tout exiger du travailleur. Les directives doivent rester dans le cadre du contrat et de la loi."]],"19":[["fr","Méthode, Résoudre un cas pratique juridique. Méthode. Qualifier les faits, identifier la règle, appliquer. Résoudre un cas pratique en droit demande une méthode rigoureuse. Voici les étapes: Lire attentivement les faits et repérer les personnes et les relations en cause. Qualifier juridiquement les faits: s'agit-il d'un acte de commerce? d'un contrat de travail? d'un contrat de vente? Identifier la règle de droit applicable: article de loi, Acte Uniforme OHADA, Code du Travail, etc. Appliquer la règle au cas: la règle confirme-t-elle ou infirme-t-elle la prétention des parties? Conclure: indiquer la solution juridique et, si nécessaire, les recours possibles. Exemple corrigé. Faits: « Un jeune homme travaille depuis 6 mois dans un magasin de Kinshasa. Il reçoit un salaire mensuel et suit les horaires fixés par le propriétaire. Aucun contrat écrit n'a été signé. Le propriétaire affirme qu'il n'y a pas de contrat de travail. ». Qualification: il existe une prestation de travail, une rémunération et un lien de subordination (horaires, ordres). Il s'agit donc d'un contrat de travail, même verbal. Règle: le contrat de travail peut être verbal; le lien de subordination est l'élément déterminant. Conclusion: le jeune homme est bien lié par un contrat de travail. L'employeur doit respecter ses obligations (salaire, sécurité, déclaration aux organismes sociaux)."]],"20":[["fr","Synthèse, Le droit, outil du professionnel. Synthèse. Ce qu'il faut retenir. Le droit est le cadre juridique de l'activité économique et professionnelle. Des sources du droit à l'acte de commerce, du contrat aux sociétés commerciales et au contrat de travail, ce cours vous a donné les outils pour sécuriser les relations d'affaires, comprendre les obligations du commerçant et analyser une situation de travail. Sources du droit: Constitution, traités (dont Actes Uniformes OHADA), lois, règlements, jurisprudence, coutume. Acte de commerce: achat pour revente, banque, transport, manufacture, intermédiation. Commerçant: fait de l'accomplissement d'actes de commerce sa profession; immatriculation au RCCM obligatoire. Contrat: quatre conditions de validité (consentement, capacité, objet, cause); vices du consentement (erreur, dol, violence). Sociétés: SARL égale parts sociales, responsabilité limitée; SA égale actions, grandes entreprises. Contrat de travail: trois éléments dont le lien de subordination juridique; CDI (forme normale) et CDD (encadré). En R D C, où l'informel reste important et où l'OHADA structure le droit des affaires, cette compétence juridique est un atout pour créer une entreprise, gérer des contrats et poursuivre des études supérieures en droit, gestion ou administration."]],"21":[["fr","Évaluation finale, Droit civil, commercial et social. Répondez aux questions suivantes pour vérifier votre compréhension du cours. Une seule réponse est correcte par question."]]}};
+  var CACHE = "ecolia-cours-v1";                       // même cache que l'application
+  var PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  var PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+  var DL = '<svg viewBox="0 0 24 24"><path d="M11 3h2v9.2l3.6-3.6L18 10l-6 6-6-6 1.4-1.4L11 12.2V3zM5 19h14v2H5z"/></svg>';
+  var OK = '<svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>';
+  // Réparation du quiz : certains cours stockent les choix sous "opts" (ou autre) au lieu de "options"
+  try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+      questions.forEach(function (q) {
+        if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+        if (q.text === undefined) q.text = q.question || q.q || q.enonce || q.titre || "";
+        if (typeof q.correct === "undefined") {
+          if (typeof q.answer !== "undefined") q.correct = q.answer;
+          else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+        }
+      });
+    }
+  } catch (e) {}
+  var synth = window.speechSynthesis || null;
+  var HAS_CACHE = !!(window.caches && window.caches.open);
+  var NATIVE = false;           // APK ECOLIA : pont Java "CoursInterface" (fichiers dans le dossier de l'application)
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  var LATER = "ecolia_audio_later_" + CFG.code;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+  function init() {
+    if (document.getElementById("ecolia-audio-btn")) return;
+
+    // ---------- éléments de l'interface ----------
+    var btn = document.createElement("button");
+    btn.id = "ecolia-audio-btn"; btn.type = "button"; btn.className = "ecolia-off";
+    btn.setAttribute("aria-label", "Écouter la leçon"); btn.innerHTML = PLAY;
+    var dlBtn = document.createElement("button");
+    dlBtn.id = "ecolia-dl-btn"; dlBtn.type = "button"; dlBtn.className = "ecolia-off";
+    dlBtn.innerHTML = DL;
+    var host = document.querySelector(".header-right");
+    if (host) { host.insertBefore(dlBtn, host.firstChild); host.insertBefore(btn, dlBtn); }   // dans la barre du haut : ne scrolle jamais
+    else { btn.className += " ecolia-fixed"; document.body.appendChild(btn); }
+
+    var banner = document.createElement("div");
+    banner.id = "ecolia-audio-banner";
+    banner.innerHTML = '<span class="eab-txt"></span><span class="eab-act"></span><div class="eab-bar"><i></i></div>';
+    var content = document.getElementById("content");
+    if (content && content.parentNode) content.parentNode.insertBefore(banner, content);
+    else document.body.insertBefore(banner, document.body.firstChild);
+    var txtEl = banner.querySelector(".eab-txt"), actEl = banner.querySelector(".eab-act");
+    var barEl = banner.querySelector(".eab-bar"), barI = barEl.firstChild;
+
+    var audio = new Audio();            // un seul élément Audio, réutilisé (exigé par les navigateurs mobiles)
+    audio.preload = "auto";
+    var st = { idx: -1, auto: false, advancing: false, mode: null, speaking: false, token: 0, chunks: [], ci: 0, blobUrl: null, playTok: 0 };
+    var dl = { state: "none", cached: 0, busy: false, cancel: false };   // none | partial | full
+    var bnMode = null, hideTimer = null;
+    if (synth && synth.getVoices) { try { synth.getVoices(); } catch (e) {} }
+
+    function cur() {
+      try { if (typeof currentSlide === "number") return currentSlide; } catch (e) {}
+      return 0;
+    }
+    function hasMp3(i) { return CFG.available.indexOf(i + 1) !== -1; }
+    function fb(i) { return CFG.fallback && CFG.fallback[String(i + 1)]; }
+    function hasAudio(i) { return hasMp3(i) || (!!synth && !!fb(i)); }
+    function urlN(n) {   // dans l'APK la page est sur https://app.local : une adresse relative doit pointer vers le site
+      var b = CFG.base;
+      if (NATIVE && !/^https?:/i.test(b)) b = "https://ecolia-course.github.io/" + b.replace(/^(\.\.\/|\.\/)+/, "");
+      return new URL(b + nameN(n), location.href).href;
+    }
+    function setIcon(playing) { btn.innerHTML = playing ? PAUSE : PLAY; }
+    function isPlaying() { return st.mode === "mp3" ? !audio.paused : (st.mode === "tts" && st.speaking); }
+    function mo() { return "≈ " + CFG.sizeMo + " Mo"; }
+    function nameN(n) { return "audio_" + CFG.code + "_" + n + ".mp3"; }
+
+    // ====================================================================
+    //  Stockage hors ligne : 2 moteurs, même interface
+    //    - APK : fichiers du dossier de l'application (CoursInterface), servis par https://app.local/cours/
+    //    - Web : Cache Storage du navigateur (même cache que l'application web)
+    // ====================================================================
+    function nativeStore() {
+      var okKey = "ecolia_audio_ok_" + CFG.code;
+      function readOk() { try { return JSON.parse(lsGet(okKey) || "[]"); } catch (e) { return []; } }
+      function writeOk(a) { lsSet(okKey, JSON.stringify(a)); }
+      function exists(n) { try { return !!CoursInterface.exists(nameN(n)); } catch (e) { return false; } }
+      function local(n) { return location.origin + "/cours/" + nameN(n); }
+      function verify(n) {                                   // fichier complet ? (taille exacte connue à la génération)
+        return fetch(local(n), { cache: "no-store" }).then(function (r) { return r.blob(); }).then(function (b) {
+          var exp = CFG.sizes && CFG.sizes[String(n)];
+          return (b.size > 2000 && (!exp || b.size === exp)) ? b : null;
+        }).catch(function () { return null; });
+      }
+      return {
+        list: function () {
+          var ok = readOk().filter(exists); writeOk(ok); return Promise.resolve(ok);
+        },
+        get: function (n) { return exists(n) ? verify(n) : Promise.resolve(null); },
+        put: function (n) {
+          return new Promise(function (res, rej) {
+            try { CoursInterface.download(urlN(n), nameN(n)); } catch (e) { return rej(e); }
+            var t0 = Date.now();
+            function next() { if (Date.now() - t0 > 120000) rej(new Error("délai dépassé")); else setTimeout(poll, 800); }
+            function poll() {
+              if (!exists(n)) return next();
+              verify(n).then(function (b) {
+                if (!b) return next();
+                var ok = readOk(); if (ok.indexOf(n) < 0) ok.push(n); writeOk(ok); res();
+              });
+            }
+            setTimeout(poll, 800);
+          });
+        },
+        del: function (n) {
+          try { CoursInterface.delete(nameN(n)); } catch (e) {}
+          writeOk(readOk().filter(function (x) { return x !== n; }));
+          return Promise.resolve();
+        }
+      };
+    }
+    function cacheStore() {
+      return {
+        list: function () {
+          return caches.open(CACHE).then(function (c) {
+            return Promise.all(CFG.available.map(function (n) {
+              return c.match(urlN(n)).then(function (r) {
+                if (!r) return 0;
+                if ((r.headers.get("content-type") || "").indexOf("audio") !== 0) { c.delete(urlN(n)); return 0; }   // ancien contenu invalide
+                return n;
+              });
+            }));
+          }).then(function (a) { return a.filter(Boolean); });
+        },
+        get: function (n) {
+          return caches.open(CACHE).then(function (c) { return c.match(urlN(n)); })
+            .then(function (r) { return r ? r.blob() : null; }).then(function (b) { return b && b.size > 2000 ? b : null; });
+        },
+        put: function (n) {
+          var u = urlN(n);
+          return fetch(u, { cache: "no-store" }).then(function (r) {
+            if (!r.ok || r.status !== 200) throw new Error("HTTP " + r.status);
+            return r.blob();
+          }).then(function (b) {
+            if (b.size < 2000 || (b.type && b.type.indexOf("audio") !== 0 && b.type.indexOf("octet") < 0)) throw new Error("fichier invalide");
+            return caches.open(CACHE).then(function (c) { return c.put(u, new Response(b, { headers: { "Content-Type": "audio/mpeg" } })); });
+          });
+        },
+        del: function (n) { return caches.open(CACHE).then(function (c) { return c.delete(urlN(n)); }); }
+      };
+    }
+    var store = NATIVE ? nativeStore() : (HAS_CACHE ? cacheStore() : null);
+
+    // ====================================================================
+    //  Bannière : invitation, confirmations, progression
+    // ====================================================================
+    function showBanner(mode, text, buttons, pct) {
+      clearTimeout(hideTimer);
+      bnMode = mode;
+      txtEl.textContent = text;
+      actEl.innerHTML = "";
+      (buttons || []).forEach(function (b) {
+        var e = document.createElement("button");
+        e.type = "button"; e.textContent = b.label; if (b.pri) e.className = "pri";
+        e.addEventListener("click", function (ev) { ev.stopPropagation(); b.fn(); });
+        actEl.appendChild(e);
+      });
+      if (typeof pct === "number") { barEl.style.display = "block"; barI.style.width = pct + "%"; }
+      else barEl.style.display = "none";
+      banner.classList.add("on");
+    }
+    function hideBanner() { clearTimeout(hideTimer); bnMode = null; banner.classList.remove("on"); }
+    function flash(text) { showBanner("info", text, []); hideTimer = setTimeout(hideBanner, 4000); }
+
+    function refreshUI() {
+      var show = !!store && CFG.available.length > 0;
+      dlBtn.classList.toggle("ecolia-off", !show);
+      dlBtn.classList.toggle("ecolia-full", dl.state === "full");
+      dlBtn.innerHTML = dl.state === "full" ? OK : DL;
+      dlBtn.setAttribute("aria-label", dl.state === "full" ? "Audios téléchargés : supprimer" : "Télécharger les audios");
+      dlBtn.title = dlBtn.getAttribute("aria-label");
+    }
+    function refreshCacheState(done) {
+      if (!store) { dl.state = "none"; refreshUI(); if (done) done(); return; }
+      store.list().then(function (ok) {
+        dl.cached = ok.length;
+        dl.state = dl.cached === 0 ? "none" : (dl.cached >= CFG.available.length ? "full" : "partial");
+      }).catch(function () { dl.state = "none"; }).then(function () { refreshUI(); if (done) done(); });
+    }
+
+    function askDownload(fromInvite) {
+      var left = CFG.available.length - dl.cached;
+      var txt = dl.state === "partial"
+        ? "Il reste " + left + " audio(s) à télécharger pour écouter ce cours sans internet."
+        : "🔊 Télécharger les audios de ce cours (" + mo() + ") pour les écouter sans internet ? Wi-Fi recommandé.";
+      showBanner(fromInvite ? "invite" : "confirm", txt, [
+        { label: fromInvite ? "Plus tard" : "Annuler", fn: function () { if (fromInvite) lsSet(LATER, "1"); hideBanner(); } },
+        { label: "Télécharger", pri: true, fn: startDownload }
+      ]);
+    }
+    function askDelete() {
+      showBanner("confirm", "Supprimer les audios téléchargés de ce cours (" + mo() + ") ? Vous pourrez toujours les écouter en ligne.", [
+        { label: "Annuler", fn: hideBanner },
+        { label: "Supprimer", pri: true, fn: doDelete }
+      ]);
+    }
+
+    function startDownload() {
+      if (dl.busy || !store) return;
+      dl.busy = true; dl.cancel = false;
+      var total = CFG.available.length, done = 0, quota = false, fails = 0, todo = [];
+      store.list().then(function (have) {
+        CFG.available.forEach(function (n) { if (have.indexOf(n) < 0) todo.push(n); });
+        done = total - todo.length;
+        function paint() {
+          var msg = "Téléchargement des audios : " + done + " / " + total;
+          if (bnMode === "progress") {                  // met à jour sans recréer les boutons (sinon un appui peut être perdu)
+            txtEl.textContent = msg; barI.style.width = Math.round(done / total * 100) + "%";
+          } else {
+            showBanner("progress", msg, [
+              { label: "Annuler", fn: function () { dl.cancel = true; } }
+            ], Math.round(done / total * 100));
+          }
+        }
+        paint();
+        function worker() {
+          if (dl.cancel || quota || !todo.length) return Promise.resolve();
+          var n = todo.shift();
+          return store.put(n).then(function () { done++; paint(); }).catch(function (e) {
+            if (e && (e.name === "QuotaExceededError" || /quota/i.test(String(e.message)))) quota = true;
+            fails++;
+          }).then(worker);
+        }
+        return Promise.all([worker(), worker()]);
+      }).catch(function () { fails++; }).then(function () {
+        dl.busy = false;
+        refreshCacheState(function () {
+          if (dl.state === "full") flash("✓ Audios téléchargés : le cours se lit maintenant sans internet.");
+          else if (dl.cancel) flash("Téléchargement interrompu (" + dl.cached + " / " + total + "). Vous pourrez reprendre plus tard.");
+          else showBanner("error", quota ? "Espace insuffisant sur l'appareil. Libérez de la place puis réessayez."
+            : "Certains audios n'ont pas pu être téléchargés (connexion ?).", [
+            { label: "Fermer", fn: hideBanner }, { label: "Réessayer", pri: true, fn: startDownload }
+          ]);
+        });
+      });
+    }
+    function doDelete() {
+      if (!store) return;
+      Promise.all(CFG.available.map(function (n) { return store.del(n); })).catch(function () {}).then(function () {
+        lsDel(LATER);
+        refreshCacheState(function () { flash("Audios supprimés de cet appareil."); });
+      });
+    }
+
+    dlBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (dl.busy) return;
+      if (dl.state === "full") askDelete(); else askDownload(false);
+    });
+
+    // ====================================================================
+    //  Voix intégrée au téléphone (hors ligne, sans limite)
+    // ====================================================================
+    function pickVoice(lang) {
+      var vs = [];
+      try { vs = synth.getVoices() || []; } catch (e) {}
+      var pre = lang === "en" ? "en" : "fr", best = null;
+      for (var k = 0; k < vs.length; k++) {
+        var v = vs[k];
+        if ((v.lang || "").toLowerCase().indexOf(pre) !== 0) continue;
+        if (!best || (v.localService && !best.localService)) best = v;
+      }
+      return best;
+    }
+    function hardSplit(text, max) {
+      var out = [];
+      while (text.length > max) {
+        var cut = text.lastIndexOf(" ", max);
+        if (cut < 40) cut = max;
+        out.push(text.slice(0, cut)); text = text.slice(cut).replace(/^\s+/, "");
+      }
+      if (text) out.push(text);
+      return out;
+    }
+    function buildChunks(segs) {                  // morceaux courts : évite l'arrêt des longs textes sur Chrome
+      var out = [];
+      segs.forEach(function (s) {
+        var cur2 = "", parts = s[1].match(/[^.!?;:]+[.!?;:]*\s*/g) || [s[1]];
+        parts.forEach(function (p) {
+          if (cur2 && (cur2 + p).length > 160) { out.push({ lang: s[0], text: cur2.trim() }); cur2 = p; }
+          else cur2 += p;
+        });
+        if (cur2.trim()) out.push({ lang: s[0], text: cur2.trim() });
+      });
+      var res = [];
+      out.forEach(function (c) { hardSplit(c.text, 190).forEach(function (t) { res.push({ lang: c.lang, text: t }); }); });
+      return res;
+    }
+    function speakFrom(tk) {
+      if (tk !== st.token) return;
+      if (st.ci >= st.chunks.length) {
+        st.speaking = false; st.mode = null; st.ci = 0; setIcon(false);
+        if (st.auto) goNext();
+        return;
+      }
+      var c = st.chunks[st.ci];
+      var u = new SpeechSynthesisUtterance(c.text);
+      u.lang = c.lang === "en" ? "en-US" : "fr-FR";
+      var v = pickVoice(c.lang);
+      if (v) { u.voice = v; u.lang = v.lang; }
+      u.rate = 0.95;
+      u.onend = function () { if (tk !== st.token) return; st.ci++; speakFrom(tk); };
+      u.onerror = function () { if (tk !== st.token) return; st.speaking = false; setIcon(false); st.auto = false; };
+      synth.speak(u);
+    }
+    function startTts(from) {
+      st.token++;
+      var tk = st.token;
+      st.mode = "tts"; st.speaking = true; st.ci = from || 0; setIcon(true);
+      var busy = false;
+      try { busy = synth.speaking || synth.pending; synth.cancel(); } catch (e) {}
+      if (busy) setTimeout(function () { speakFrom(tk); }, 120);   // laisse cancel() se terminer
+      else speakFrom(tk);                                          // sinon tout de suite (exigé par iOS)
+    }
+    function playVoice() {
+      if (!(synth && fb(st.idx))) { st.auto = false; return false; }
+      if (!st.chunks.length) st.chunks = buildChunks(fb(st.idx));
+      startTts(st.ci);
+      return true;
+    }
+
+    // ====================================================================
+    //  Lecture
+    // ====================================================================
+    function freeBlob() { if (st.blobUrl) { try { URL.revokeObjectURL(st.blobUrl); } catch (e) {} st.blobUrl = null; } }
+    function stopAll() {
+      st.playTok++;
+      try { audio.pause(); audio.currentTime = 0; } catch (e) {}
+      st.token++;
+      try { if (synth) synth.cancel(); } catch (e) {}
+      st.speaking = false; st.mode = null; st.chunks = []; st.ci = 0;
+      setIcon(false);
+    }
+    function pauseNow() {
+      if (st.mode === "mp3") audio.pause();
+      else if (st.mode === "tts") {
+        st.token++;
+        try { synth.cancel(); } catch (e) {}
+        st.speaking = false; setIcon(false);      // st.ci conservé : la reprise repart de la phrase en cours
+      }
+    }
+    function startAudio(src, tok) {
+      if (tok !== st.playTok) return;
+      if (audio.getAttribute("data-src") !== src) { audio.setAttribute("data-src", src); audio.src = src; }
+      var p = audio.play();
+      if (p && p.catch) p.catch(function (err) {
+        console.warn("ECOLIA audio :", err);
+        if (tok !== st.playTok) return;
+        if (!(err && err.name === "NotAllowedError") && playVoice()) return;   // lecture impossible : voix du téléphone
+        setIcon(false); st.auto = false;
+      });
+    }
+    function playCurrent() {
+      var i = st.idx;
+      if (hasMp3(i)) {
+        var tok = ++st.playTok, u = urlN(i + 1);
+        st.mode = "mp3";
+        if (!navigator.onLine && dl.state === "none") { st.mode = null; if (playVoice()) return; }   // hors ligne et non téléchargé
+        if (store && dl.state !== "none") {                     // téléchargé : lecture locale, sans réseau
+          store.get(i + 1)
+            .then(function (b) {
+              if (tok !== st.playTok) return;
+              if (b) { freeBlob(); st.blobUrl = URL.createObjectURL(new Blob([b], { type: "audio/mpeg" })); startAudio(st.blobUrl, tok); }
+              else startAudio(u, tok);
+            }).catch(function () { startAudio(u, tok); });
+        } else startAudio(u, tok);                              // sinon lecture en ligne (appel immédiat, exigé par iOS)
+      } else if (!playVoice()) {
+        st.auto = false;
+      }
+    }
+
+    function onSlideChange(i) {
+      var wasAdvancing = st.advancing;
+      st.advancing = false;
+      st.idx = i;
+      btn.classList.toggle("ecolia-off", !hasAudio(i));
+      stopAll();
+      audio.removeAttribute("data-src");
+      freeBlob();
+      if (bnMode === "invite" && i !== 0) hideBanner();       // l'invitation n'apparaît qu'à la première slide
+      if (wasAdvancing && st.auto) setTimeout(playCurrent, 500);   // enchaînement automatique
+      else st.auto = false;                                         // changement manuel : on coupe tout
+    }
+    function goNext() {
+      if (st.idx + 1 >= CFG.count) { st.auto = false; return; }
+      st.advancing = true;
+      if (typeof nextSlide === "function") nextSlide();
+      else { var nb = document.getElementById("nextBtn"); if (nb) nb.click(); }
+      setTimeout(function () { st.advancing = false; }, 4000);
+    }
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var i = cur();
+      if (i !== st.idx) onSlideChange(i);
+      if (isPlaying()) { st.auto = false; pauseNow(); }
+      else { st.auto = true; playCurrent(); }
+    });
+    audio.addEventListener("play", function () { setIcon(true); });
+    audio.addEventListener("pause", function () { if (st.mode === "mp3") setIcon(false); });
+    audio.addEventListener("error", function () {
+      if (st.mode === "mp3" && playVoice()) return;            // fichier introuvable / hors ligne : voix du téléphone
+      setIcon(false); st.auto = false;
+    });
+    audio.addEventListener("ended", function () { setIcon(false); if (st.auto) goNext(); });
+    window.addEventListener("pagehide", function () { stopAll(); freeBlob(); });
+
+    // ---------- démarrage ----------
+    refreshCacheState(function () {
+      if (store && CFG.available.length && dl.state !== "full" && navigator.onLine && cur() === 0 && !lsGet(LATER)) askDownload(true);
+    });
+    st.idx = -1;
+    setInterval(function () { var i = cur(); if (i !== st.idx) onSlideChange(i); }, 250);   // suit la slide affichée
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+<!-- ECOLIA_AUDIO_PLAYER_END -->
+</body>
+</html>

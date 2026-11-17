@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="rouge">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>ECOLIA — Puericulture Sante4</title>
+<style>
+[data-theme="bleu"]   { --p1:#0d2b4f; --p2:#1565c0; --p3:#07172e; --p4:#12437a; --p5:#5b8fd0; --bg:#e8f0fb; --bg2:#cfdff5; --bd:#a9c3e8; --soft:#dde8f7; --btn:#2a67b0; }
+[data-theme="vert"]   { --p1:#14442e; --p2:#2e7d32; --p3:#0b2b1a; --p4:#1f5c3a; --p5:#4f9a6b; --bg:#e8f5ec; --bg2:#c8e6d2; --bd:#a5cdb2; --soft:#dcefe2; --btn:#2f7a4f; }
+[data-theme="violet"] { --p1:#2d1b4e; --p2:#6a1b9a; --p3:#1a0f2e; --p4:#4a148c; --p5:#9c6fd0; --bg:#f1e9fb; --bg2:#dccbf2; --bd:#c4a8e6; --soft:#e8ddf6; --btn:#7e3fb2; }
+[data-theme="rouge"]  { --p1:#4a1010; --p2:#b71c1c; --p3:#2b0a0a; --p4:#8e1b1b; --p5:#d9706a; --bg:#fbeaea; --bg2:#f3cdcb; --bd:#e8a9a5; --soft:#f8dede; --btn:#a62a2a; }
+[data-theme="orange"] { --p1:#4e2a0c; --p2:#ef6c00; --p3:#2e1604; --p4:#b34a00; --p5:#f0a15a; --bg:#fff1e0; --bg2:#fbdcb8; --bd:#f3c08a; --soft:#fdebd6; --btn:#c9650a; }
+[data-theme="teal"]   { --p1:#0b3a3a; --p2:#00796b; --p3:#062626; --p4:#00574b; --p5:#4db6ac; --bg:#e0f2f1; --bg2:#b2dfdb; --bd:#80cbc4; --soft:#d5ecea; --btn:#26897d; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:linear-gradient(160deg,var(--p1) 0%,var(--p2) 50%,var(--p3) 100%); display:flex; justify-content:center; align-items:center; padding:8px; }
+.container { width:100%; max-width:1400px; background:#fefdf8; border-radius:20px; overflow:hidden; display:flex; flex-direction:column; height:100%; max-height:100vh; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.progress-bar { height:4px; background:var(--bg2); flex-shrink:0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--p5),var(--p4)); width:0%; transition:width 0.3s; }
+.header { padding:10px 16px; background:var(--bg); border-bottom:1px solid var(--bd); display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+.header h1 { color:var(--p4); font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box { display:flex; background:white; border-radius:20px; padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.search-box input { border:none; padding:6px 10px; border-radius:20px; outline:none; width:130px; font-size:0.8rem; }
+.search-box button { background:none; border:none; cursor:pointer; padding:4px 8px; font-size:0.85rem; color:var(--p2); }
+.badge { background:var(--p5); color:white; padding:4px 10px; border-radius:20px; font-weight:bold; font-size:0.75rem; }
+.search-nav { display:none; gap:4px; background:var(--bg2); padding:2px 8px; border-radius:20px; align-items:center; font-size:0.75rem; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:0.9rem; color:var(--p4); padding:2px 4px; }
+.content { padding:28px 32px; flex:1; overflow-y:auto; background:#fff; scroll-behavior:smooth; line-height:1.85; }
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.slide-title { color:var(--p1); font-size:1.5rem; font-weight:700; padding-bottom:12px; margin-bottom:20px; border-bottom:2px solid var(--p5); }
+.slide-content { color:var(--p3); font-size:1rem; }
+.empty-state { display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-height:60vh; padding:40px 20px; gap:18px; }
+.empty-state .icon { width:72px; height:72px; border-radius:50%; background:var(--bg); border:2px solid var(--bd); display:flex; align-items:center; justify-content:center; color:var(--p2); font-size:2rem; font-weight:300; }
+.empty-state h2 { color:var(--p1); font-size:1.4rem; font-weight:700; margin:0; }
+.empty-state p { color:#666; font-size:0.95rem; max-width:520px; line-height:1.7; }
+.empty-state .tag { display:inline-block; padding:6px 14px; background:var(--bg); color:var(--p4); border:1px solid var(--bd); border-radius:20px; font-size:0.8rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; }
+.bloc { padding:18px 22px; border-radius:12px; margin:22px 0; line-height:1.85; }
+.bloc-label { font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; opacity:0.7; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:var(--bg); border-left:4px solid var(--p5); }
+.theorie .bloc-label { color:var(--p4); }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.sources { background:#f5f5f5; padding:12px 16px; border-radius:10px; margin-top:26px; font-size:0.82rem; color:#666; border-left:3px solid #999; line-height:1.6; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:var(--p1); }
+.quiz-container { padding:22px; background:var(--bg); border-radius:16px; }
+.quiz-question { background:white; border-radius:10px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.quiz-question p { font-weight:600; margin-bottom:10px; color:var(--p1); }
+.quiz-question label { display:block; padding:8px 10px; margin:4px 0; border-radius:6px; cursor:pointer; transition:background 0.2s; }
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit { background:var(--btn); color:white; border:none; padding:12px 24px; border-radius:30px; font-size:1rem; cursor:pointer; font-weight:600; margin-top:14px; }
+.quiz-result { margin-top:16px; font-weight:600; }
+.controls { padding:8px 16px; background:#fafafa; border-top:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0; }
+.nav-btn { background:white; color:var(--p4); border:1px solid #ccc; padding:8px 14px; border-radius:8px; font-size:0.82rem; cursor:pointer; font-weight:500; }
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:var(--soft); }
+.content::-webkit-scrollbar-thumb { background:var(--p5); border-radius:3px; }
+@media (max-width:600px) { body { padding:0; } .container { border-radius:0; max-height:100vh; } .content { padding:20px 18px; } .slide-title { font-size:1.25rem; } .search-box input { width:90px; } .header h1 { font-size:0.85rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="header">
+<h1 id="pageTitle">ECOLIA</h1>
+<div class="header-right">
+<div class="search-box">
+<input id="searchInput" placeholder="Rechercher" type="text"/>
+<button id="searchBtn">⌕</button>
+</div>
+<div class="search-nav" id="searchNav">
+<button id="prevResultBtn">‹</button>
+<span id="resultCounter">0/0</span>
+<button id="nextResultBtn">›</button>
+</div>
+<span class="badge" id="slideCounter">0/0</span>
+</div>
+</div>
+<div class="content" id="content"></div>
+<div class="controls">
+<button class="nav-btn" id="prevBtn">← Précédent</button>
+<span class="counter" id="counter">—</span>
+<button class="nav-btn" id="nextBtn">Suivant →</button>
+</div>
+</div>
+<script>
+const COURSE_TITLE = "Puériculture et Santé";
+const slides = [
+{
+    title: "Sommaire — Puériculture et Santé",
+    content: `
+        <div class="bloc resume">
+            <div class="bloc-label">Présentation du cours</div>
+            <h3>Puériculture et Santé — 4e Humanité (6e HP)</h3>
+            <p><strong>Niveau :</strong> 4e Humanité / Terminale, section Pédagogique.</p>
+            <p><strong>Objectif général :</strong> Doter l'élève-maître des connaissances et des compétences pratiques pour assurer la santé, l'hygiène et le bien-être du jeune enfant, et pour sensibiliser les familles et les communautés aux bonnes pratiques de puériculture.</p>
+        </div>
+        <div class="bloc theorie">
+            <div class="bloc-label">Objectifs spécifiques</div>
+            <ol>
+                <li>Appliquer les gestes d'hygiène et de soin du nourrisson.</li>
+                <li>Concevoir une alimentation adaptée à l'âge de l'enfant.</li>
+                <li>Surveiller le développement et repérer les anomalies.</li>
+                <li>Prévenir les maladies et les accidents domestiques.</li>
+                <li>Réagir efficacement face à une urgence simple.</li>
+                <li>Mener des actions de sensibilisation à la santé infantile.</li>
+            </ol>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Organisation des chapitres</div>
+            <ul>
+                <li><strong>Chapitre I :</strong> Introduction à la puériculture et à la santé infantile.</li>
+                <li><strong>Chapitre II :</strong> Hygiène et soins du nourrisson.</li>
+                <li><strong>Chapitre III :</strong> Nutrition et alimentation.</li>
+                <li><strong>Chapitre IV :</strong> Surveillance du développement et signes d'alerte.</li>
+                <li><strong>Chapitre V :</strong> Prévention des maladies courantes.</li>
+                <li><strong>Chapitre VI :</strong> Prévention des accidents et premiers secours.</li>
+                <li><strong>Chapitre VII :</strong> Santé maternelle, infantile et sensibilisation communautaire.</li>
+            </ul>
+            <p><strong>Prérequis :</strong> Psychologie de l'Enfant ; notions de biologie ; Pédagogie Préscolaire.</p>
+        </div>
+        <div class="bloc theorie">
+            <div class="bloc-label">Limites du cours</div>
+            <p>Ce cours ne forme pas des médecins. Il situe l'action de l'éducateur dans le cadre de la <strong>prévention, de l'hygiène et des soins de base</strong>. Les actes médicaux relèvent exclusivement des professionnels de santé.</p>
+        </div>
+        <div class="sources">
+            <p><strong>Sources :</strong> Curriculum Officiel APC – MINEPST RDC : Puériculture 1re année et Protection de l'Enfant 4e année ; Fiches de l'option Pédagogie Maternelle (Hygiène et puériculture) ; Documents officiels du MEPST sur la petite enfance.</p>
+        </div>
+    `
+},
+{
+    title: "Leçon 1 — Qu'est-ce que la puériculture ?",
+    content: `
+        <div class="bloc cas">
+            <div class="bloc-label">Situation de départ</div>
+            <p>Une jeune maman ne sait pas comment donner le bain à son nouveau-né ni préparer un biberon. Vers qui peut-elle se tourner ? Quel rôle peut jouer l'éducateur de la petite enfance ?</p>
+        </div>
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Définition</h3>
+            <p>La puériculture est l'ensemble des soins et des pratiques visant à assurer la santé, l'hygiène et le bien-être du nourrisson et du jeune enfant. Elle englobe les soins corporels, l'alimentation, la prévention et la surveillance du développement.</p>
+            <h3>Importance</h3>
+            <ul>
+                <li>Les premières années sont déterminantes pour la santé future et le développement cérébral.</li>
+                <li>Une puériculture de qualité réduit la mortalité infantile.</li>
+                <li>Elle favorise un développement harmonieux.</li>
+            </ul>
+            <h3>Rôle de l'éducateur</h3>
+            <p>L'éducateur n'est pas un médecin, mais un <strong>acteur de prévention et de soins de base</strong>. Il :</p>
+            <ul>
+                <li>Applique les règles d'hygiène.</li>
+                <li>Surveille les signes d'alerte.</li>
+                <li>Accompagne les familles.</li>
+                <li>Oriente vers les structures de santé lorsque nécessaire.</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Dans une école maternelle de Matete, l'éducatrice remarque qu'un enfant a de la fièvre. Elle le met à l'écart, prévient les parents et les oriente vers le centre de santé. Elle n'administre pas de médicament.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>La puériculture englobe les soins, la prévention et la surveillance.</li>
+                <li>L'éducateur agit dans le cadre de ses compétences.</li>
+                <li>Erreur fréquente : poser un diagnostic ou prescrire un médicament.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 2 — L'hygiène du nourrisson : le bain",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Importance du bain</h3>
+            <ul>
+                <li>Nettoie la peau, prévient les infections.</li>
+                <li>Moment de relation privilégié avec l'adulte.</li>
+                <li>Permet d'observer le corps de l'enfant (rougeurs, boutons, plaies).</li>
+            </ul>
+            <h3>Les étapes</h3>
+            <ol>
+                <li><strong>Préparer :</strong> serviette propre, savon doux, vêtements propres, eau à température contrôlée.</li>
+                <li><strong>Contrôler la température :</strong> 36-38 °C (tester avec le coude).</li>
+                <li><strong>Laver :</strong> du haut vers le bas, en soutenant la tête du bébé.</li>
+                <li><strong>Rincer.</strong></li>
+                <li><strong>Sécher :</strong> délicatement, en insistant sur les plis (cou, aisselles, aine).</li>
+                <li><strong>Habiller :</strong> rapidement pour éviter le refroidissement.</li>
+            </ol>
+            <h3>Précautions</h3>
+            <ul>
+                <li>Ne jamais laisser un bébé seul dans l'eau, même quelques secondes.</li>
+                <li>Éviter les produits agressifs.</li>
+                <li>Soins particuliers du cordon ombilical chez le nouveau-né (propreté, séchage).</li>
+            </ul>
+            <figure>
+                <img data-image-id="puericulture4_img01" alt="Étapes du bain sécuritaire du nourrisson">
+                <figcaption>Le bain du nourrisson : un moment de soin, de relation et d'observation.</figcaption>
+            </figure>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Un bébé de 3 mois est baigné chaque jour à heure régulière, dans une petite bassine, avec de l'eau à 37 °C. Après le bain, sa peau est séchée délicatement et il est habillé chaudement. Ce rituel sécurise le bébé.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>La température de l'eau (36-38 °C) est essentielle.</li>
+                <li>Ne jamais laisser un bébé seul dans l'eau.</li>
+                <li>Erreur fréquente : utiliser des produits agressifs ou de l'eau non propre.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 3 — Le change et les soins de la peau",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Le change</h3>
+            <ul>
+                <li>Fréquence : à chaque couche souillée, avant et après les repas, avant et après la sieste.</li>
+                <li>Nettoyage à l'eau propre et au savon doux (ou lingettes adaptées).</li>
+                <li>Séchage soigneux, en insistant sur les plis.</li>
+                <li>Prévention de l'érythème fessier (rougeur) : changer souvent, laisser respirer, crème protectrice si nécessaire.</li>
+            </ul>
+            <h3>Hygiène des mains</h3>
+            <ul>
+                <li>Se laver les mains avant et après chaque change.</li>
+                <li>Lavage à l'eau et au savon pendant au moins 20 secondes.</li>
+                <li>Prévention des infections croisées.</li>
+            </ul>
+            <h3>Soins de la peau</h3>
+            <ul>
+                <li>Éviter les produits parfumés ou agressifs.</li>
+                <li>Protéger du soleil (chapeau, vêtements).</li>
+                <li>Surveiller les rougeurs, boutons, plaies.</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Une érythème fessier persistant peut signaler une infection (mycose) ou une intolérance. L'éducateur en parle aux parents, qui consultent un professionnel de santé.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Changer souvent et laver les mains sont essentiels.</li>
+                <li>La peau du bébé est fragile : douceur et propreté.</li>
+                <li>Erreur fréquente : utiliser des produits agressifs ou négliger le séchage des plis.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 4 — Hygiène bucco-dentaire et hygiène des mains",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Hygiène bucco-dentaire</h3>
+            <ul>
+                <li>Nettoyer les gencives du nourrisson avec une compresse humide.</li>
+                <li>Dès les premières dents, brosser avec une brosse souple et un peu de dentifrice fluoré adapté.</li>
+                <li>Éviter les biberons sucrés prolongés (caries du biberon).</li>
+                <li>Consultations dentaires régulières.</li>
+            </ul>
+            <h3>Hygiène des mains</h3>
+            <ul>
+                <li>Moment critique : avant les repas, après les toilettes, après le jeu, après le change.</li>
+                <li>Lavage à l'eau et au savon, ou solution hydro-alcoolique.</li>
+                <li>Apprendre aux enfants à se laver les mains.</li>
+                <li>Prévention des maladies diarrhéiques et respiratoires.</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Dans une école maternelle, l'enseignant a mis en place un rituel de lavage des mains avant la collation. Les enfants apprennent à se laver les mains correctement, en chantant une comptine.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>L'hygiène bucco-dentaire commence dès les premières dents.</li>
+                <li>Le lavage des mains est un geste barrière essentiel.</li>
+                <li>Erreur fréquente : négliger l'apprentissage du lavage des mains chez le jeune enfant.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 5 — L'allaitement maternel",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Recommandation</h3>
+            <p>L'OMS recommande l'<strong>allaitement maternel exclusif jusqu'à 6 mois</strong>, puis la poursuite de l'allaitement avec une alimentation complémentaire jusqu'à 2 ans ou plus.</p>
+            <h3>Avantages</h3>
+            <ul>
+                <li>Apport nutritionnel complet et adapté.</li>
+                <li>Protection immunitaire (anticorps maternels).</li>
+                <li>Prévention des infections (diarrhées, respiratoires).</li>
+                <li>Lien affectif mère-enfant.</li>
+                <li>Économique et écologique.</li>
+            </ul>
+            <h3>Bonnes pratiques</h3>
+            <ul>
+                <li>Allaitement à la demande, jour et nuit.</li>
+                <li>Position correcte (bien-être de la mère et du bébé).</li>
+                <li>Alimentation et hydratation de la mère.</li>
+                <li>Soutien de la famille et de la communauté.</li>
+            </ul>
+            <h3>Contre-indications (rares)</h3>
+            <p>Certaines maladies maternelles (VIH non traité, certaines infections) ou traitements peuvent contre-indiquer l'allaitement. Dans ces cas, un professionnel de santé conseille une alternative adaptée.</p>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Dans certaines communautés, des croyances poussent à donner de l'eau ou des décoctions au nouveau-né. Or, l'allaitement exclusif jusqu'à 6 mois est recommandé. L'éducateur peut sensibiliser les familles.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Allaitement maternel exclusif jusqu'à 6 mois.</li>
+                <li>Il protège l'enfant et favorise le lien affectif.</li>
+                <li>Erreur fréquente : donner de l'eau ou d'autres aliments avant 6 mois.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 6 — La préparation des biberons et la diversification",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Préparation des biberons</h3>
+            <ul>
+                <li><strong>Hygiène :</strong> se laver les mains, stériliser biberons et tétines.</li>
+                <li><strong>Eau :</strong> propre, bouillie puis refroidie.</li>
+                <li><strong>Dosage :</strong> respecter scrupuleusement les proportions indiquées sur la boîte de lait.</li>
+                <li><strong>Température :</strong> tiède (tester sur le poignet).</li>
+                <li><strong>Position :</strong> semi-assise, jamais couché avec le biberon.</li>
+            </ul>
+            <h3>La diversification alimentaire</h3>
+            <ul>
+                <li>Commence à 6 mois, en plus du lait.</li>
+                <li>Introduction progressive : bouillies enrichies, purées de légumes, fruits, protéines.</li>
+                <li>Respect des textures : liquide → purée → morceaux.</li>
+                <li>Introduction des allergènes progressivement.</li>
+                <li>Éviter le sucre et le sel ajoutés.</li>
+            </ul>
+            <figure>
+                <img data-image-id="puericulture4_img02" alt="Étapes de la diversification alimentaire">
+                <figcaption>La diversification alimentaire : des étapes progressives, adaptées à l'âge et aux capacités de l'enfant.</figcaption>
+            </figure>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>À 6 mois, on commence par une bouillie de maïs enrichie. À 8 mois, on introduit des purées de légumes et de fruits. À 12 mois, des morceaux fondants. À chaque étape, on surveille les réactions (allergies, digestion).</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>L'hygiène est essentielle dans la préparation des biberons.</li>
+                <li>La diversification commence à 6 mois, progressivement.</li>
+                <li>Erreur fréquente : donner des aliments inadaptés trop tôt (risque d'allergie, d'étouffement).</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 7 — L'équilibre nutritionnel et les carences",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Les besoins nutritionnels</h3>
+            <ul>
+                <li><strong>Énergie :</strong> glucides (manioc, riz, maïs, banane).</li>
+                <li><strong>Croissance :</strong> protéines (poisson, haricots, arachides, œufs).</li>
+                <li><strong>Vitamines et minéraux :</strong> fruits et légumes colorés.</li>
+                <li><strong>Eau :</strong> régulièrement.</li>
+            </ul>
+            <h3>Carences fréquentes en RDC</h3>
+            <ul>
+                <li><strong>Anémie :</strong> manque de fer (fatigue, pâleur).</li>
+                <li><strong>Carence en vitamine A :</strong> troubles de la vision, infections.</li>
+                <li><strong>Carence en iode :</strong> troubles de la thyroïde, retard mental.</li>
+                <li><strong>Malnutrition aiguë :</strong> amaigrissement, fonte musculaire.</li>
+                <li><strong>Retard de croissance :</strong> petite taille pour l'âge.</li>
+            </ul>
+            <h3>Rôle de l'éducateur</h3>
+            <ul>
+                <li>Repérer les signes de carence.</li>
+                <li>Orienter vers les structures de santé.</li>
+                <li>Sensibiliser les familles à une alimentation équilibrée, avec des produits locaux.</li>
+                <li>Promouvoir l'allaitement maternel.</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Une bouillie enrichie avec de la pâte d'arachide, du poisson séché en poudre et des feuilles vertes est un excellent complément nutritionnel, accessible avec des produits locaux.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Une alimentation équilibrée est la base de la santé.</li>
+                <li>Les carences sont fréquentes et doivent être repérées.</li>
+                <li>Erreur fréquente : se limiter à une alimentation monotone (uniquement manioc).</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 8 — Surveillance du développement : moteur et langagier",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Développement moteur</h3>
+            <ul>
+                <li>Tenir la tête : 3-4 mois.</li>
+                <li>S'asseoir sans appui : 6-9 mois.</li>
+                <li>Marcher : 12-18 mois.</li>
+                <li>Courir, sauter, grimper : 2-3 ans.</li>
+                <li>Motricité fine : découper, dessiner, boutonner (3-6 ans).</li>
+            </ul>
+            <h3>Développement langagier</h3>
+            <ul>
+                <li>Babillage : 6-9 mois.</li>
+                <li>Premiers mots : 12-18 mois.</li>
+                <li>Phrases simples : 2-3 ans.</li>
+                <li>Phrases complexes, vocabulaire étendu : 3-6 ans.</li>
+            </ul>
+            <h3>Signes d'alerte</h3>
+            <ul>
+                <li>Absence de tenue de tête à 4 mois.</li>
+                <li>Absence de marche à 18 mois.</li>
+                <li>Absence de babillage à 9 mois.</li>
+                <li>Absence de mots à 18 mois.</li>
+                <li>Absence de phrases à 3 ans.</li>
+                <li>Régression (perte d'acquis).</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Un enfant de 20 mois qui ne marche pas encore, ou un enfant de 2 ans qui ne parle pas du tout, doivent être signalés aux parents et orientés pour évaluation. L'éducateur ne pose pas de diagnostic, mais alerte.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Chaque âge a des acquisitions attendues.</li>
+                <li>Les signes d'alerte doivent être connus.</li>
+                <li>Erreur fréquente : banaliser un retard important ou, à l'inverse, s'alarmer sans raison.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 9 — Développement cognitif et social, signes d'alerte",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Développement cognitif</h3>
+            <ul>
+                <li>Exploration, curiosité.</li>
+                <li>Jeu symbolique (faire semblant).</li>
+                <li>Attention, mémoire.</li>
+                <li>Capacité à suivre des consignes simples.</li>
+            </ul>
+            <h3>Développement social</h3>
+            <ul>
+                <li>Attachement sécurisant.</li>
+                <li>Intérêt pour les autres enfants.</li>
+                <li>Jeu parallèle puis coopératif.</li>
+                <li>Apprentissage des règles et du partage.</li>
+                <li>Autonomie progressive.</li>
+            </ul>
+            <h3>Signes d'alerte cognitifs et sociaux</h3>
+            <ul>
+                <li>Enfant très passif, indifférent aux stimulations.</li>
+                <li>Absence de contact visuel, absence de réaction aux bruits.</li>
+                <li>Absence de jeu symbolique à 3 ans.</li>
+                <li>Isolement persistant, absence d'intérêt pour les autres.</li>
+                <li>Comportements répétitifs et stéréotypés.</li>
+                <li>Perte d'acquis (régression).</li>
+            </ul>
+            <h3>Rôle de l'éducateur</h3>
+            <ul>
+                <li>Observer chaque enfant.</li>
+                <li>Noter les comportements inhabituels.</li>
+                <li>En parler aux parents.</li>
+                <li>Orienter vers les professionnels (médecin, psychologue, orthophoniste).</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Un enfant de 3 ans qui ne parle pas, ne joue pas avec les autres et a des comportements répétitifs est orienté vers un spécialiste. Plus le repérage est précoce, plus la prise en charge est efficace.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Le développement cognitif et social se manifeste par la curiosité, le jeu et les relations.</li>
+                <li>Les signes d'alerte doivent être repérés tôt.</li>
+                <li>Erreur fréquente : attendre que l'enfant « grandisse » alors qu'un retard persiste.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 10 — Prévention du paludisme et des diarrhées",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Le paludisme</h3>
+            <ul>
+                <li><strong>Transmission :</strong> par la piqûre d'un moustique anophèle femelle.</li>
+                <li><strong>Signes :</strong> fièvre, frissons, fatigue, maux de tête, vomissements.</li>
+                <li><strong>Prévention :</strong> moustiquaires imprégnées, assainissement (élimination des eaux stagnantes), répulsifs, vêtements longs le soir.</li>
+                <li><strong>Traitement :</strong> consulter rapidement un centre de santé.</li>
+            </ul>
+            <figure>
+                <img data-image-id="puericulture4_img03" alt="Moustiquaire imprégnée au-dessus d'un lit d'enfant">
+                <figcaption>La moustiquaire imprégnée : un geste simple et efficace contre le paludisme.</figcaption>
+            </figure>
+            <h3>Les maladies diarrhéiques</h3>
+            <ul>
+                <li><strong>Transmission :</strong> eau et aliments contaminés, mains sales.</li>
+                <li><strong>Signes :</strong> selles liquides fréquentes, déshydratation (soif, yeux creux, peau sèche).</li>
+                <li><strong>Prévention :</strong> eau potable (bouillie ou traitée), lavage des mains, hygiène alimentaire, allaitement maternel.</li>
+                <li><strong>Réhydratation :</strong> solution de réhydratation orale (SRO), consulter si persistance.</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Dans une école maternelle, l'éducatrice sensibilise les familles à l'utilisation de la moustiquaire et au lavage des mains avant les repas. Ces gestes simples réduisent considérablement les maladies.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Le paludisme et les diarrhées sont des causes majeures de morbidité infantile.</li>
+                <li>La prévention repose sur des gestes simples et accessibles.</li>
+                <li>Erreur fréquente : sous-estimer l'importance du lavage des mains et de l'eau potable.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 11 — Autres maladies et vaccination",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Infections respiratoires</h3>
+            <ul>
+                <li>Transmission par les gouttelettes (toux, éternuements).</li>
+                <li>Prévention : aération, hygiène des mains, éviter les lieux surpeuplés.</li>
+                <li>Signes : toux, fièvre, difficultés respiratoires.</li>
+            </ul>
+            <h3>Rougeole, tuberculose, poliomyélite</h3>
+            <ul>
+                <li>Prévention par la <strong>vaccination</strong>.</li>
+                <li>Calendrier vaccinal : BCG, polio, DTC-HepB-Hib, rougeole, etc.</li>
+                <li>L'éducateur sensibilise les familles à l'importance des vaccins.</li>
+            </ul>
+            <h3>Parasitoses</h3>
+            <ul>
+                <li>Verminoses (ascaris, oxyures, ankylostomes).</li>
+                <li>Transmission : mains sales, aliments contaminés, sol.</li>
+                <li>Prévention : hygiène, chaussures, lavage des mains.</li>
+                <li>Signes : démangeaisons, douleurs abdominales, fatigue.</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Lors d'une journée de vaccination dans un quartier, l'école maternelle relaie l'information et encourage les parents à faire vacciner leurs enfants. La vaccination protège l'enfant et la communauté.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>La vaccination est un pilier de la prévention.</li>
+                <li>Les parasitoses se préviennent par l'hygiène.</li>
+                <li>Erreur fréquente : sous-estimer le rôle de la vaccination dans la protection collective.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 12 — Prévention des accidents domestiques",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Les principaux risques à la maison</h3>
+            <ul>
+                <li><strong>Brûlures :</strong> cuisine, fer à repasser, eau chaude.</li>
+                <li><strong>Chutes :</strong> escaliers, fenêtres, meubles.</li>
+                <li><strong>Noyades :</strong> bassines, puits, rivières.</li>
+                <li><strong>Intoxications :</strong> produits ménagers, médicaments, plantes toxiques.</li>
+                <li><strong>Étouffement :</strong> petits objets, aliments mal adaptés.</li>
+            </ul>
+            <h3>Mesures de prévention</h3>
+            <ul>
+                <li>Éloigner les sources de chaleur (cuisine, fer).</li>
+                <li>Ranger les produits toxiques hors de portée.</li>
+                <li>Sécuriser les escaliers, fenêtres, balcons.</li>
+                <li>Surveiller constamment les enfants près de l'eau.</li>
+                <li>Écarter les petits objets de la portée des jeunes enfants.</li>
+                <li>Utiliser des barrières et des protections adaptées.</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Dans une maison à Kinshasa, les produits ménagers sont rangés dans un placard fermé en hauteur. Les casseroles sont placées sur les feux arrière de la cuisinière, manches tournés vers l'intérieur. Ces gestes simples préviennent des accidents graves.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Les accidents domestiques sont fréquents chez le jeune enfant.</li>
+                <li>La prévention repose sur la sécurisation de l'environnement.</li>
+                <li>Erreur fréquente : sous-estimer la rapidité d'un accident (noyade dans une bassine, ingestion d'un produit).</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 13 — Les premiers secours",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Les principes</h3>
+            <ul>
+                <li><strong>Protéger :</strong> la victime, les témoins, soi-même.</li>
+                <li><strong>Alerter :</strong> appeler les secours, prévenir un adulte.</li>
+                <li><strong>Secourir :</strong> pratiquer les gestes adaptés à l'état de la victime.</li>
+            </ul>
+            <h3>Gestes de base</h3>
+            <ul>
+                <li><strong>Brûlure :</strong> refroidir à l'eau tempérée, ne pas percer les cloques, couvrir proprement, consulter.</li>
+                <li><strong>Chute :</strong> observer, rassurer, ne pas déplacer en cas de suspicion de fracture.</li>
+                <li><strong>Noyade :</strong> sortir de l'eau, vérifier la respiration, alerter.</li>
+                <li><strong>Intoxication :</strong> ne pas faire vomir, alerter, consulter.</li>
+                <li><strong>Étouffement :</strong> manœuvre de désobstruction si formé, alerter.</li>
+            </ul>
+            <figure>
+                <img data-image-id="puericulture4_img04" alt="Gestes de premiers secours sur un enfant">
+                <figcaption>Les gestes de premiers secours peuvent sauver des vies. Une formation pratique est indispensable.</figcaption>
+            </figure>
+            <h3>Ce qu'il ne faut pas faire</h3>
+            <ul>
+                <li>Appliquer des remèdes traditionnels dangereux (beurre sur une brûlure, huile, cendre).</li>
+                <li>Faire boire une victime inconsciente.</li>
+                <li>Déplacer une victime sans précaution.</li>
+                <li>Donner des médicaments sans prescription.</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Un enfant se brûle avec de l'eau chaude : on refroidit immédiatement la zone à l'eau tempérée pendant 10 à 15 minutes, sans percer les cloques. On alerte les parents et on consulte un professionnel de santé si nécessaire.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Protéger, alerter, secourir : trois principes simples et essentiels.</li>
+                <li>Ne jamais improviser des gestes dangereux.</li>
+                <li>Erreur fréquente : appliquer des remèdes traditionnels inadaptés sur une brûlure.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 14 — Santé maternelle, infantile et sensibilisation communautaire",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Suivi prénatal</h3>
+            <ul>
+                <li>Consultations régulières chez le professionnel de santé.</li>
+                <li>Supplémentation en fer et acide folique.</li>
+                <li>Vaccination maternelle.</li>
+                <li>Préparation à l'accouchement.</li>
+            </ul>
+            <h3>Vaccination infantile</h3>
+            <p>Le calendrier vaccinal protège l'enfant contre des maladies graves. L'éducateur informe et sensibilise les familles.</p>
+            <h3>Planning familial</h3>
+            <p>L'espacement des naissances protège la santé de la mère et de l'enfant. Il s'agit d'une décision libre et éclairée, soutenue par des conseils professionnels.</p>
+            <h3>Rôle de l'éducateur dans la communauté</h3>
+            <ul>
+                <li>Sensibiliser les familles aux bonnes pratiques d'hygiène, de nutrition, de prévention.</li>
+                <li>Organiser des journées portes ouvertes sur la santé.</li>
+                <li>Distribuer des affiches et des messages dans l'école et le quartier.</li>
+                <li>Collaborer avec les centres de santé et les organisations locales.</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Dans un quartier de Matete, l'école maternelle organise une journée sur la santé de l'enfant : ateliers lavage des mains, affiches sur le paludisme, information sur la vaccination, atelier sur la préparation de bouillie enrichie. Les parents participent activement.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>La santé maternelle et infantile est un enjeu de santé publique.</li>
+                <li>L'éducateur joue un rôle de relais dans la communauté.</li>
+                <li>Erreur fréquente : sous-estimer le pouvoir de la sensibilisation.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 15 — Synthèse : prendre soin pour mieux éduquer",
+    content: `
+        <div class="bloc resume">
+            <div class="bloc-label">Synthèse générale</div>
+            <h3>Les grands principes à retenir</h3>
+            <ol>
+                <li><strong>Hygiène :</strong> bain, change, hygiène des mains et bucco-dentaire.</li>
+                <li><strong>Nutrition :</strong> allaitement maternel, diversification progressive, équilibre alimentaire.</li>
+                <li><strong>Surveillance du développement :</strong> repérer les signes d'alerte.</li>
+                <li><strong>Prévention :</strong> paludisme, diarrhées, maladies infectieuses, vaccination, accidents domestiques.</li>
+                <li><strong>Premiers secours :</strong> protéger, alerter, secourir.</li>
+                <li><strong>Sensibilisation communautaire :</strong> informer les familles et le quartier.</li>
+            </ol>
+        </div>
+        <div class="bloc theorie">
+            <div class="bloc-label">Le rôle de l'éducateur</div>
+            <ul>
+                <li>Acteur de prévention et de soins de base.</li>
+                <li>Observateur attentif et bienveillant.</li>
+                <li>Relais entre la famille, l'école et les structures de santé.</li>
+                <li>Ne pose pas de diagnostic, ne prescrit pas de médicament.</li>
+                <li>Respecte les compétences professionnelles de chacun.</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Pour aller plus loin</div>
+            <p>Se former aux gestes de premiers secours, suivre l'actualité sanitaire, collaborer avec les centres de santé locaux, échanger avec d'autres éducateurs : la puériculture est une pratique qui s'affine tout au long de la carrière.</p>
+        </div>
+    `
+},
+{
+    title: "Évaluation finale — Puériculture et Santé",
+    content: `
+        <div class="bloc resume">
+            <div class="bloc-label">Évaluation finale</div>
+            <p>20 questions à choix multiple. Une seule réponse est correcte par question. Choisis la réponse qui te semble juste, puis valide.</p>
+        </div>
+        <div class="quiz-container">
+            <div id="quizQuestions"></div>
+            <button id="submitQuiz" class="quiz-btn-submit">Valider mes réponses</button>
+            <div id="quizResult" class="quiz-result"></div>
+        </div>
+    `
+}
+];
+const questions = [
+    { text: "La puériculture concerne les enfants de :", options: ["0 à 6 ans", "6 à 12 ans", "12 à 18 ans", "0 à 18 ans"], correct: 0 },
+    { text: "La température idéale du bain d'un nourrisson est :", options: ["30-32 °C", "36-38 °C", "40-42 °C", "25-28 °C"], correct: 1 },
+    { text: "L'allaitement maternel exclusif est recommandé jusqu'à :", options: ["3 mois", "6 mois", "1 an", "2 ans"], correct: 1 },
+    { text: "La diversification alimentaire commence généralement à :", options: ["3 mois", "6 mois", "9 mois", "1 an"], correct: 1 },
+    { text: "Un signe d'alerte du développement moteur est :", options: ["Un enfant qui marche à 12 mois", "Un enfant qui ne tient pas sa tête à 4 mois", "Un enfant qui court à 2 ans", "Un enfant qui saute à 3 ans"], correct: 1 },
+    { text: "Le paludisme est transmis par :", options: ["L'eau contaminée", "Les moustiques", "Les mains sales", "L'air"], correct: 1 },
+    { text: "La prévention des diarrhées passe par :", options: ["Le lavage des mains et l'eau potable", "L'exposition au soleil", "Le partage des gobelets", "L'arrêt de l'allaitement"], correct: 0 },
+    { text: "La vaccination protège contre :", options: ["Toutes les maladies", "Certaines maladies infectieuses", "Les accidents", "La malnutrition"], correct: 1 },
+    { text: "En cas de brûlure simple, il faut d'abord :", options: ["Appliquer du beurre", "Refroidir à l'eau tempérée", "Percer les cloques", "Couvrir avec de l'huile"], correct: 1 },
+    { text: "Un produit ménager doit être :", options: ["Laissé à portée de main", "Rangé hors de portée des enfants", "Utilisé comme jouet", "Mélangé avec des aliments"], correct: 1 },
+    { text: "Le rôle de l'éducateur face à un signe d'alerte est de :", options: ["Poser un diagnostic", "Observer, noter et orienter vers un professionnel", "Prescrire un médicament", "Ignorer le signe"], correct: 1 },
+    { text: "La moustiquaire imprégnée protège contre :", options: ["Les diarrhées", "Le paludisme", "La rougeole", "Les caries"], correct: 1 },
+    { text: "L'hygiène des mains est importante :", options: ["Uniquement avant les repas", "Avant et après de nombreuses activités (repas, change, soins)", "Une fois par jour", "Jamais"], correct: 1 },
+    { text: "La santé maternelle et infantile inclut :", options: ["Le suivi prénatal et la vaccination", "Uniquement l'accouchement", "Uniquement l'allaitement", "Uniquement la planification familiale"], correct: 0 },
+    { text: "Un enfant qui ne babille pas à 9 mois doit :", options: ["Être ignoré", "Être signalé et orienté", "Être puni", "Recevoir des médicaments"], correct: 1 },
+    { text: "La sensibilisation communautaire en santé infantile vise à :", options: ["Remplacer les centres de santé", "Informer et accompagner les familles", "Vendre des médicaments", "Isoler les malades"], correct: 1 },
+    { text: "L'éducateur de la petite enfance est :", options: ["Un médecin", "Un acteur de prévention et de soins de base", "Un pharmacien", "Un chirurgien"], correct: 1 },
+    { text: "La malnutrition peut entraîner :", options: ["Un retard de croissance et des troubles du développement", "Une amélioration de la santé", "Aucun effet", "Une immunité renforcée"], correct: 0 },
+    { text: "La préparation d'un biberon nécessite :", options: ["De l'eau propre et un dosage correct", "De l'eau non traitée", "Un dosage approximatif", "Aucune hygiène"], correct: 0 },
+    { text: "L'objectif principal de la puériculture et de la santé en 4e Humanité est de :", options: ["Former des médecins", "Préparer des éducateurs capables de prendre soin et de prévenir", "Remplacer les structures de santé", "Enseigner la chirurgie"], correct: 1 }
+];
+
+try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+        questions.forEach(function (q) {
+            if (!q.text) q.text = q.question || q.q || q.enonce || q.titre || "";
+            if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+            if (typeof q.correct === "undefined") {
+                if (typeof q.answer !== "undefined") q.correct = q.answer;
+                else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+            }
+        });
+    }
+} catch (e) {}
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+const pageTitle = document.getElementById('pageTitle');
+pageTitle.textContent = "ECOLIA · " + COURSE_TITLE;
+document.title = "ECOLIA — " + COURSE_TITLE;
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim() || slides.length === 0) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp("(" + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ")", 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderEmptyState() {
+    contentDiv.innerHTML = '<div class="empty-state"><div class="icon">·</div><span class="tag">Bientôt disponible</span><h2>' + COURSE_TITLE + '</h2><p>Ce cours est en préparation. Le contenu sera ajouté prochainement.</p></div>';
+    slideCounterSpan.textContent = '0/0';
+    progressFill.style.width = '0%';
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    counterSpan.textContent = '—';
+}
+
+function renderQuiz() {
+    const qc = document.getElementById('quizQuestions');
+    if (!qc) return;
+    if (typeof questions === 'undefined' || questions.length === 0) {
+        qc.innerHTML = '<p style="color:#666;font-style:italic;">Quiz bientot disponible.</p>';
+        return;
+    }
+    let html = '';
+    questions.forEach((q, i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o, k) => {
+            html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>';
+        });
+        html += '</div>';
+    });
+    qc.innerHTML = html;
+    const submitBtn = document.getElementById('submitQuiz');
+    if (submitBtn) {
+        submitBtn.onclick = () => {
+            let score = 0;
+            questions.forEach((q, i) => {
+                const s = document.querySelector('input[name="q' + i + '"]:checked');
+                if (s && parseInt(s.value) === q.correct) score++;
+            });
+            const pct = Math.round(score/questions.length*100);
+            document.getElementById('quizResult').innerHTML =
+                '<div style="background:var(--bg2);padding:16px;border-radius:10px;margin-top:14px;">' +
+                '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong></div>';
+        };
+    }
+}
+
+function renderSlide(index, keepHighlight) {
+    if (keepHighlight === undefined) keepHighlight = true;
+    if (slides.length === 0) { renderEmptyState(); return; }
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    if (index === slides.length - 1) renderQuiz();
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    if (slides.length === 0) return;
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (slides.length && currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (slides.length && currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+<!-- ECOLIA_IMAGE_LOADER_START -->
+<script>
+(function () {
+  var SITE = "https://ecolia-course.github.io/";
+  var NATIVE = false;
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function abs(u) { return /^(https?:|data:|blob:)/i.test(u) ? u : (NATIVE ? SITE + u.replace(/^(\.\/|\/)+/, "") : u); }
+  function ext(u) { var m = String(u).split("?")[0].match(/\.(jpe?g|png|gif|webp|svg)$/i); return m ? m[1].toLowerCase() : "jpg"; }
+  function hide(img) { img.onerror = null; img.style.display = "none"; }
+  var table = null, queue = [], queued = {}, running = false;
+  function enqueue(full, fn) {
+    if (queued[fn]) return;
+    queued[fn] = 1; queue.push([full, fn]);
+    if (!running) { running = true; setTimeout(next, 2500); }
+  }
+  function next() {
+    if (!queue.length) { running = false; return; }
+    if (!navigator.onLine) { running = false; return; }
+    var q = queue.shift(), t0 = Date.now();
+    try { CoursInterface.download(q[0], q[1]); } catch (e) { return setTimeout(next, 500); }
+    (function wait() {
+      var ok = false;
+      try { ok = !!CoursInterface.exists(q[1]); } catch (e) {}
+      if (ok) setTimeout(next, 1500);
+      else if (Date.now() - t0 > 40000) next();
+      else setTimeout(wait, 700);
+    })();
+  }
+  function exists(fn) { try { return !!CoursInterface.exists(fn); } catch (e) { return false; } }
+  function show(img) {
+    if (!table || img.getAttribute("data-ecolia-done")) return;
+    var id = img.getAttribute("data-image-id");
+    var url = table[id];
+    if (typeof url !== "string" || !url.length) { console.warn("ECOLIA : image absente du JSON :", id); return; }
+    img.setAttribute("data-ecolia-done", "1");
+    if (!NATIVE) { img.onerror = function () { hide(img); }; img.setAttribute("src", url); return; }
+    var full = abs(url), fn = "img_" + id + "." + ext(url);
+    if (exists(fn)) {
+      img.onerror = function () {
+        try { CoursInterface["delete"](fn); } catch (e) {}
+        queued[fn] = 0;
+        img.onerror = function () { hide(img); };
+        img.setAttribute("src", full);
+      };
+      img.setAttribute("src", "https://app.local/cours/" + fn);
+    } else {
+      img.onerror = function () { hide(img); };
+      img.setAttribute("src", full);
+      enqueue(full, fn);
+    }
+  }
+  function scan(root) {
+    if (!root || !root.querySelectorAll) return;
+    if (root.matches && root.matches("img[data-image-id]")) show(root);
+    root.querySelectorAll("img[data-image-id]").forEach(show);
+  }
+  function prefetchAll() {
+    var ids = {};
+    try { JSON.stringify(slides).replace(/data-image-id=\\?"([^"\\]+)/g, function (m, id) { ids[id] = 1; }); } catch (e) {}
+    Object.keys(ids).forEach(function (id) {
+      var url = table[id];
+      if (typeof url !== "string" || !url.length) return;
+      var fn = "img_" + id + "." + ext(url);
+      if (!exists(fn)) enqueue(abs(url), fn);
+    });
+  }
+  function start(tbl) {
+    table = tbl;
+    scan(document.body);
+    new MutationObserver(function (muts) {
+      muts.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.nodeType === 1) scan(n); }); });
+    }).observe(document.body, { childList: true, subtree: true });
+    if (NATIVE) prefetchAll();
+  }
+  var JSON_URL = NATIVE ? SITE + "images_ecolia.json" : "images_ecolia.json";
+  var KEY = "ecolia_images_json";
+  fetch(JSON_URL, NATIVE ? { cache: "no-cache" } : undefined)
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (table) { if (NATIVE) lsSet(KEY, JSON.stringify(table)); start(table); })
+    .catch(function (e) {
+      var saved = null;
+      if (NATIVE) { try { saved = JSON.parse(lsGet(KEY) || "null"); } catch (x) {} }
+      if (saved) start(saved);
+      else console.warn("ECOLIA : JSON des images indisponible.", e);
+    });
+})();
+</script>
+<!-- ECOLIA_IMAGE_LOADER_END -->
+
+
+
+<!-- ECOLIA_AUDIO_PLAYER_START -->
+<style>
+  #ecolia-audio-btn, #ecolia-dl-btn {
+    width: 30px; height: 30px; min-width: 30px; padding: 0; margin: 0 4px 0 0;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    cursor: pointer; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent; outline: none;
+  }
+  #ecolia-audio-btn { border: none; background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-dl-btn { border: 1.5px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb); }
+  #ecolia-dl-btn.ecolia-full { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-btn.ecolia-fixed { position: fixed; top: 8px; left: 8px; z-index: 2147483000; }
+  #ecolia-audio-btn:active, #ecolia-dl-btn:active { transform: scale(.92); }
+  #ecolia-audio-btn svg, #ecolia-dl-btn svg { width: 15px; height: 15px; fill: currentColor; pointer-events: none; }
+  #ecolia-audio-btn.ecolia-off, #ecolia-dl-btn.ecolia-off { display: none; }
+  #ecolia-audio-banner {
+    display: none; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0;
+    padding: 8px 14px; font-size: .82rem; line-height: 1.35;
+    background: var(--soft, #eef3fb); color: var(--p1, #123); border-bottom: 1px solid var(--bd, #c9d6ea);
+  }
+  #ecolia-audio-banner.on { display: flex; }
+  #ecolia-audio-banner .eab-txt { flex: 1 1 180px; }
+  #ecolia-audio-banner .eab-act { display: flex; gap: 6px; flex-wrap: wrap; }
+  #ecolia-audio-banner button {
+    border: 1px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb);
+    border-radius: 16px; padding: 5px 12px; font-size: .8rem; cursor: pointer;
+  }
+  #ecolia-audio-banner button.pri { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-banner .eab-bar { display: none; flex-basis: 100%; height: 4px; border-radius: 2px; overflow: hidden; background: var(--bd, #c9d6ea); }
+  #ecolia-audio-banner .eab-bar i { display: block; height: 100%; width: 0; background: var(--p2, #2563eb); transition: width .2s; }
+</style>
+<script>
+(function () {
+  var CFG = {"code":"PuericultureSante4","base":"https://ecolia-course.github.io/ecolia-media/audio_files/","available":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17],"count":17,"sizeMo":12,"sizes":{"1":858624,"2":766464,"3":807168,"4":618432,"5":552576,"6":710784,"7":740928,"8":708096,"9":691392,"10":789696,"11":763200,"12":700800,"13":685056,"14":832320,"15":769728,"16":624192,"17":116160},"fallback":{"1":[["fr","Sommaire, Puériculture et Santé. Présentation du cours. Puériculture et Santé, 4e Humanité (6e HP). Niveau: 4e Humanité ou Terminale, section Pédagogique. Objectif général: Doter l'élève-maître des connaissances et des compétences pratiques pour assurer la santé, l'hygiène et le bien-être du jeune enfant, et pour sensibiliser les familles et les communautés aux bonnes pratiques de puériculture. Objectifs spécifiques. Appliquer les gestes d'hygiène et de soin du nourrisson. Concevoir une alimentation adaptée à l'âge de l'enfant. Surveiller le développement et repérer les anomalies. Prévenir les maladies et les accidents domestiques. Réagir efficacement face à une urgence simple. Mener des actions de sensibilisation à la santé infantile. Organisation des chapitres. Chapitre I: Introduction à la puériculture et à la santé infantile. Chapitre II: Hygiène et soins du nourrisson. Chapitre III: Nutrition et alimentation. Chapitre IV: Surveillance du développement et signes d'alerte. Chapitre V: Prévention des maladies courantes. Chapitre VI: Prévention des accidents et premiers secours. Chapitre VII: Santé maternelle, infantile et sensibilisation communautaire. Prérequis: Psychologie de l'Enfant; notions de biologie; Pédagogie Préscolaire. Limites du cours. Ce cours ne forme pas des médecins. Il situe l'action de l'éducateur dans le cadre de la prévention, de l'hygiène et des soins de base. Les actes médicaux relèvent exclusivement des professionnels de santé."]],"2":[["fr","Leçon 1, Qu'est-ce que la puériculture? Situation de départ. Une jeune maman ne sait pas comment donner le bain à son nouveau-né ni préparer un biberon. Vers qui peut-elle se tourner? Quel rôle peut jouer l'éducateur de la petite enfance? Fondements théoriques. Définition. La puériculture est l'ensemble des soins et des pratiques visant à assurer la santé, l'hygiène et le bien-être du nourrisson et du jeune enfant. Elle englobe les soins corporels, l'alimentation, la prévention et la surveillance du développement. Importance. Les premières années sont déterminantes pour la santé future et le développement cérébral. Une puériculture de qualité réduit la mortalité infantile. Elle favorise un développement harmonieux. Rôle de l'éducateur. L'éducateur n'est pas un médecin, mais un acteur de prévention et de soins de base. Il: Applique les règles d'hygiène. Surveille les signes d'alerte. Accompagne les familles. Oriente vers les structures de santé lorsque nécessaire. Exemple concret. Dans une école maternelle de Matete, l'éducatrice remarque qu'un enfant a de la fièvre. Elle le met à l'écart, prévient les parents et les oriente vers le centre de santé. Elle n'administre pas de médicament. À retenir. La puériculture englobe les soins, la prévention et la surveillance. L'éducateur agit dans le cadre de ses compétences. Erreur fréquente: poser un diagnostic ou prescrire un médicament."]],"3":[["fr","Leçon 2, L'hygiène du nourrisson: le bain. Fondements théoriques. Importance du bain. Nettoie la peau, prévient les infections. Moment de relation privilégié avec l'adulte. Permet d'observer le corps de l'enfant (rougeurs, boutons, plaies). Les étapes. Préparer: serviette propre, savon doux, vêtements propres, eau à température contrôlée. Contrôler la température: 36-38 degrés Celsius (tester avec le coude). Laver: du haut vers le bas, en soutenant la tête du bébé. Rincer. Sécher: délicatement, en insistant sur les plis (cou, aisselles, aine). Habiller: rapidement pour éviter le refroidissement. Précautions. Ne jamais laisser un bébé seul dans l'eau, même quelques secondes. Éviter les produits agressifs. Soins particuliers du cordon ombilical chez le nouveau-né (propreté, séchage). Le bain du nourrisson: un moment de soin, de relation et d'observation. Exemple concret. Un bébé de 3 mois est baigné chaque jour à heure régulière, dans une petite bassine, avec de l'eau à 37 degrés Celsius. Après le bain, sa peau est séchée délicatement et il est habillé chaudement. Ce rituel sécurise le bébé. À retenir. La température de l'eau (36-38 degrés Celsius) est essentielle. Ne jamais laisser un bébé seul dans l'eau. Erreur fréquente: utiliser des produits agressifs ou de l'eau non propre."]],"4":[["fr","Leçon 3, Le change et les soins de la peau. Fondements théoriques. Le change. Fréquence: à chaque couche souillée, avant et après les repas, avant et après la sieste. Nettoyage à l'eau propre et au savon doux (ou lingettes adaptées). Séchage soigneux, en insistant sur les plis. Prévention de l'érythème fessier (rougeur): changer souvent, laisser respirer, crème protectrice si nécessaire. Hygiène des mains. Se laver les mains avant et après chaque change. Lavage à l'eau et au savon pendant au moins 20 secondes. Prévention des infections croisées. Soins de la peau. Éviter les produits parfumés ou agressifs. Protéger du soleil (chapeau, vêtements). Surveiller les rougeurs, boutons, plaies. Exemple concret. Une érythème fessier persistant peut signaler une infection (mycose) ou une intolérance. L'éducateur en parle aux parents, qui consultent un professionnel de santé. À retenir. Changer souvent et laver les mains sont essentiels. La peau du bébé est fragile: douceur et propreté. Erreur fréquente: utiliser des produits agressifs ou négliger le séchage des plis."]],"5":[["fr","Leçon 4, Hygiène bucco-dentaire et hygiène des mains. Fondements théoriques. Hygiène bucco-dentaire. Nettoyer les gencives du nourrisson avec une compresse humide. Dès les premières dents, brosser avec une brosse souple et un peu de dentifrice fluoré adapté. Éviter les biberons sucrés prolongés (caries du biberon). Consultations dentaires régulières. Hygiène des mains. Moment critique: avant les repas, après les toilettes, après le jeu, après le change. Lavage à l'eau et au savon, ou solution hydro-alcoolique. Apprendre aux enfants à se laver les mains. Prévention des maladies diarrhéiques et respiratoires. Exemple concret. Dans une école maternelle, l'enseignant a mis en place un rituel de lavage des mains avant la collation. Les enfants apprennent à se laver les mains correctement, en chantant une comptine. À retenir. L'hygiène bucco-dentaire commence dès les premières dents. Le lavage des mains est un geste barrière essentiel. Erreur fréquente: négliger l'apprentissage du lavage des mains chez le jeune enfant."]],"6":[["fr","Leçon 5, L'allaitement maternel. Fondements théoriques. Recommandation. L'OMS recommande l'allaitement maternel exclusif jusqu'à 6 mois, puis la poursuite de l'allaitement avec une alimentation complémentaire jusqu'à 2 ans ou plus. Avantages. Apport nutritionnel complet et adapté. Protection immunitaire (anticorps maternels). Prévention des infections (diarrhées, respiratoires). Lien affectif mère-enfant. Économique et écologique. Bonnes pratiques. Allaitement à la demande, jour et nuit. Position correcte (bien-être de la mère et du bébé). Alimentation et hydratation de la mère. Soutien de la famille et de la communauté. Contre-indications (rares). Certaines maladies maternelles (VIH non traité, certaines infections) ou traitements peuvent contre-indiquer l'allaitement. Dans ces cas, un professionnel de santé conseille une alternative adaptée. Exemple concret. Dans certaines communautés, des croyances poussent à donner de l'eau ou des décoctions au nouveau-né. Or, l'allaitement exclusif jusqu'à 6 mois est recommandé. L'éducateur peut sensibiliser les familles. À retenir. Allaitement maternel exclusif jusqu'à 6 mois. Il protège l'enfant et favorise le lien affectif. Erreur fréquente: donner de l'eau ou d'autres aliments avant 6 mois."]],"7":[["fr","Leçon 6, La préparation des biberons et la diversification. Fondements théoriques. Préparation des biberons. Hygiène: se laver les mains, stériliser biberons et tétines. Eau: propre, bouillie puis refroidie. Dosage: respecter scrupuleusement les proportions indiquées sur la boîte de lait. Température: tiède (tester sur le poignet). Position: semi-assise, jamais couché avec le biberon. La diversification alimentaire. Commence à 6 mois, en plus du lait. Introduction progressive: bouillies enrichies, purées de légumes, fruits, protéines. Respect des textures: liquide, donc purée, donc morceaux. Introduction des allergènes progressivement. Éviter le sucre et le sel ajoutés. La diversification alimentaire: des étapes progressives, adaptées à l'âge et aux capacités de l'enfant. Exemple concret. À 6 mois, on commence par une bouillie de maïs enrichie. À 8 mois, on introduit des purées de légumes et de fruits. À 12 mois, des morceaux fondants. À chaque étape, on surveille les réactions (allergies, digestion). À retenir. L'hygiène est essentielle dans la préparation des biberons. La diversification commence à 6 mois, progressivement. Erreur fréquente: donner des aliments inadaptés trop tôt (risque d'allergie, d'étouffement)."]],"8":[["fr","Leçon 7, L'équilibre nutritionnel et les carences. Fondements théoriques. Les besoins nutritionnels. Énergie: glucides (manioc, riz, maïs, banane). Croissance: protéines (poisson, haricots, arachides, œufs). Vitamines et minéraux: fruits et légumes colorés. Eau: régulièrement. Carences fréquentes en R D C. Anémie: manque de fer (fatigue, pâleur). Carence en vitamine A: troubles de la vision, infections. Carence en iode: troubles de la thyroïde, retard mental. Malnutrition aiguë: amaigrissement, fonte musculaire. Retard de croissance: petite taille pour l'âge. Rôle de l'éducateur. Repérer les signes de carence. Orienter vers les structures de santé. Sensibiliser les familles à une alimentation équilibrée, avec des produits locaux. Promouvoir l'allaitement maternel. Exemple concret. Une bouillie enrichie avec de la pâte d'arachide, du poisson séché en poudre et des feuilles vertes est un excellent complément nutritionnel, accessible avec des produits locaux. À retenir. Une alimentation équilibrée est la base de la santé. Les carences sont fréquentes et doivent être repérées. Erreur fréquente: se limiter à une alimentation monotone (uniquement manioc)."]],"9":[["fr","Leçon 8, Surveillance du développement: moteur et langagier. Fondements théoriques. Développement moteur. Tenir la tête: 3-4 mois. S'asseoir sans appui: 6-9 mois. Marcher: 12-18 mois. Courir, sauter, grimper: 2-3 ans. Motricité fine: découper, dessiner, boutonner (3-6 ans). Développement langagier. Babillage: 6-9 mois. Premiers mots: 12-18 mois. Phrases simples: 2-3 ans. Phrases complexes, vocabulaire étendu: 3-6 ans. Signes d'alerte. Absence de tenue de tête à 4 mois. Absence de marche à 18 mois. Absence de babillage à 9 mois. Absence de mots à 18 mois. Absence de phrases à 3 ans. Régression (perte d'acquis). Exemple concret. Un enfant de 20 mois qui ne marche pas encore, ou un enfant de 2 ans qui ne parle pas du tout, doivent être signalés aux parents et orientés pour évaluation. L'éducateur ne pose pas de diagnostic, mais alerte. À retenir. Chaque âge a des acquisitions attendues. Les signes d'alerte doivent être connus. Erreur fréquente: banaliser un retard important ou, à l'inverse, s'alarmer sans raison."]],"10":[["fr","Leçon 9, Développement cognitif et social, signes d'alerte. Fondements théoriques. Développement cognitif. Exploration, curiosité. Jeu symbolique (faire semblant). Attention, mémoire. Capacité à suivre des consignes simples. Développement social. Attachement sécurisant. Intérêt pour les autres enfants. Jeu parallèle puis coopératif. Apprentissage des règles et du partage. Autonomie progressive. Signes d'alerte cognitifs et sociaux. Enfant très passif, indifférent aux stimulations. Absence de contact visuel, absence de réaction aux bruits. Absence de jeu symbolique à 3 ans. Isolement persistant, absence d'intérêt pour les autres. Comportements répétitifs et stéréotypés. Perte d'acquis (régression). Rôle de l'éducateur. Observer chaque enfant. Noter les comportements inhabituels. En parler aux parents. Orienter vers les professionnels (médecin, psychologue, orthophoniste). Exemple concret. Un enfant de 3 ans qui ne parle pas, ne joue pas avec les autres et a des comportements répétitifs est orienté vers un spécialiste. Plus le repérage est précoce, plus la prise en charge est efficace. À retenir. Le développement cognitif et social se manifeste par la curiosité, le jeu et les relations. Les signes d'alerte doivent être repérés tôt. Erreur fréquente: attendre que l'enfant « grandisse » alors qu'un retard persiste."]],"11":[["fr","Leçon 10, Prévention du paludisme et des diarrhées. Fondements théoriques. Le paludisme. Transmission: par la piqûre d'un moustique anophèle femelle. Signes: fièvre, frissons, fatigue, maux de tête, vomissements. Prévention: moustiquaires imprégnées, assainissement (élimination des eaux stagnantes), répulsifs, vêtements longs le soir. Traitement: consulter rapidement un centre de santé. La moustiquaire imprégnée: un geste simple et efficace contre le paludisme. Les maladies diarrhéiques. Transmission: eau et aliments contaminés, mains sales. Signes: selles liquides fréquentes, déshydratation (soif, yeux creux, peau sèche). Prévention: eau potable (bouillie ou traitée), lavage des mains, hygiène alimentaire, allaitement maternel. Réhydratation: solution de réhydratation orale (SRO), consulter si persistance. Exemple concret. Dans une école maternelle, l'éducatrice sensibilise les familles à l'utilisation de la moustiquaire et au lavage des mains avant les repas. Ces gestes simples réduisent considérablement les maladies. À retenir. Le paludisme et les diarrhées sont des causes majeures de morbidité infantile. La prévention repose sur des gestes simples et accessibles. Erreur fréquente: sous-estimer l'importance du lavage des mains et de l'eau potable."]],"12":[["fr","Leçon 11, Autres maladies et vaccination. Fondements théoriques. Infections respiratoires. Transmission par les gouttelettes (toux, éternuements). Prévention: aération, hygiène des mains, éviter les lieux surpeuplés. Signes: toux, fièvre, difficultés respiratoires. Rougeole, tuberculose, poliomyélite. Prévention par la vaccination. Calendrier vaccinal: BCG, polio, DTC-HepB-Hib, rougeole, etc. L'éducateur sensibilise les familles à l'importance des vaccins. Parasitoses. Verminoses (ascaris, oxyures, ankylostomes). Transmission: mains sales, aliments contaminés, sol. Prévention: hygiène, chaussures, lavage des mains. Signes: démangeaisons, douleurs abdominales, fatigue. Exemple concret. Lors d'une journée de vaccination dans un quartier, l'école maternelle relaie l'information et encourage les parents à faire vacciner leurs enfants. La vaccination protège l'enfant et la communauté. À retenir. La vaccination est un pilier de la prévention. Les parasitoses se préviennent par l'hygiène. Erreur fréquente: sous-estimer le rôle de la vaccination dans la protection collective."]],"13":[["fr","Leçon 12, Prévention des accidents domestiques. Fondements théoriques. Les principaux risques à la maison. Brûlures: cuisine, fer à repasser, eau chaude. Chutes: escaliers, fenêtres, meubles. Noyades: bassines, puits, rivières. Intoxications: produits ménagers, médicaments, plantes toxiques. Étouffement: petits objets, aliments mal adaptés. Mesures de prévention. Éloigner les sources de chaleur (cuisine, fer). Ranger les produits toxiques hors de portée. Sécuriser les escaliers, fenêtres, balcons. Surveiller constamment les enfants près de l'eau. Écarter les petits objets de la portée des jeunes enfants. Utiliser des barrières et des protections adaptées. Exemple concret. Dans une maison à Kinshasa, les produits ménagers sont rangés dans un placard fermé en hauteur. Les casseroles sont placées sur les feux arrière de la cuisinière, manches tournés vers l'intérieur. Ces gestes simples préviennent des accidents graves. À retenir. Les accidents domestiques sont fréquents chez le jeune enfant. La prévention repose sur la sécurisation de l'environnement. Erreur fréquente: sous-estimer la rapidité d'un accident (noyade dans une bassine, ingestion d'un produit)."]],"14":[["fr","Leçon 13, Les premiers secours. Fondements théoriques. Les principes. Protéger: la victime, les témoins, soi-même. Alerter: appeler les secours, prévenir un adulte. Secourir: pratiquer les gestes adaptés à l'état de la victime. Gestes de base. Brûlure: refroidir à l'eau tempérée, ne pas percer les cloques, couvrir proprement, consulter. Chute: observer, rassurer, ne pas déplacer en cas de suspicion de fracture. Noyade: sortir de l'eau, vérifier la respiration, alerter. Intoxication: ne pas faire vomir, alerter, consulter. Étouffement: manœuvre de désobstruction si formé, alerter. Les gestes de premiers secours peuvent sauver des vies. Une formation pratique est indispensable. Ce qu'il ne faut pas faire. Appliquer des remèdes traditionnels dangereux (beurre sur une brûlure, huile, cendre). Faire boire une victime inconsciente. Déplacer une victime sans précaution. Donner des médicaments sans prescription. Exemple concret. Un enfant se brûle avec de l'eau chaude: on refroidit immédiatement la zone à l'eau tempérée pendant 10 à 15 minutes, sans percer les cloques. On alerte les parents et on consulte un professionnel de santé si nécessaire. À retenir. Protéger, alerter, secourir: trois principes simples et essentiels. Ne jamais improviser des gestes dangereux. Erreur fréquente: appliquer des remèdes traditionnels inadaptés sur une brûlure."]],"15":[["fr","Leçon 14, Santé maternelle, infantile et sensibilisation communautaire. Fondements théoriques. Suivi prénatal. Consultations régulières chez le professionnel de santé. Supplémentation en fer et acide folique. Vaccination maternelle. Préparation à l'accouchement. Vaccination infantile. Le calendrier vaccinal protège l'enfant contre des maladies graves. L'éducateur informe et sensibilise les familles. Planning familial. L'espacement des naissances protège la santé de la mère et de l'enfant. Il s'agit d'une décision libre et éclairée, soutenue par des conseils professionnels. Rôle de l'éducateur dans la communauté. Sensibiliser les familles aux bonnes pratiques d'hygiène, de nutrition, de prévention. Organiser des journées portes ouvertes sur la santé. Distribuer des affiches et des messages dans l'école et le quartier. Collaborer avec les centres de santé et les organisations locales. Exemple concret. Dans un quartier de Matete, l'école maternelle organise une journée sur la santé de l'enfant: ateliers lavage des mains, affiches sur le paludisme, information sur la vaccination, atelier sur la préparation de bouillie enrichie. Les parents participent activement. À retenir. La santé maternelle et infantile est un enjeu de santé publique. L'éducateur joue un rôle de relais dans la communauté. Erreur fréquente: sous-estimer le pouvoir de la sensibilisation."]],"16":[["fr","Leçon 15, Synthèse: prendre soin pour mieux éduquer. Synthèse générale. Les grands principes à retenir. Hygiène: bain, change, hygiène des mains et bucco-dentaire. Nutrition: allaitement maternel, diversification progressive, équilibre alimentaire. Surveillance du développement: repérer les signes d'alerte. Prévention: paludisme, diarrhées, maladies infectieuses, vaccination, accidents domestiques. Premiers secours: protéger, alerter, secourir. Sensibilisation communautaire: informer les familles et le quartier. Le rôle de l'éducateur. Acteur de prévention et de soins de base. Observateur attentif et bienveillant. Relais entre la famille, l'école et les structures de santé. Ne pose pas de diagnostic, ne prescrit pas de médicament. Respecte les compétences professionnelles de chacun. Pour aller plus loin. Se former aux gestes de premiers secours, suivre l'actualité sanitaire, collaborer avec les centres de santé locaux, échanger avec d'autres éducateurs: la puériculture est une pratique qui s'affine tout au long de la carrière."]],"17":[["fr","Évaluation finale, Puériculture et Santé. Évaluation finale. 20 questions à choix multiple. Une seule réponse est correcte par question. Choisis la réponse qui te semble juste, puis valide."]]}};
+  var CACHE = "ecolia-cours-v1";                       // même cache que l'application
+  var PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  var PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+  var DL = '<svg viewBox="0 0 24 24"><path d="M11 3h2v9.2l3.6-3.6L18 10l-6 6-6-6 1.4-1.4L11 12.2V3zM5 19h14v2H5z"/></svg>';
+  var OK = '<svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>';
+  // Réparation du quiz : certains cours stockent les choix sous "opts" (ou autre) au lieu de "options"
+  try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+      questions.forEach(function (q) {
+        if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+        if (q.text === undefined) q.text = q.question || q.q || q.enonce || q.titre || "";
+        if (typeof q.correct === "undefined") {
+          if (typeof q.answer !== "undefined") q.correct = q.answer;
+          else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+        }
+      });
+    }
+  } catch (e) {}
+  var synth = window.speechSynthesis || null;
+  var HAS_CACHE = !!(window.caches && window.caches.open);
+  var NATIVE = false;           // APK ECOLIA : pont Java "CoursInterface" (fichiers dans le dossier de l'application)
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  var LATER = "ecolia_audio_later_" + CFG.code;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+  function init() {
+    if (document.getElementById("ecolia-audio-btn")) return;
+
+    // ---------- éléments de l'interface ----------
+    var btn = document.createElement("button");
+    btn.id = "ecolia-audio-btn"; btn.type = "button"; btn.className = "ecolia-off";
+    btn.setAttribute("aria-label", "Écouter la leçon"); btn.innerHTML = PLAY;
+    var dlBtn = document.createElement("button");
+    dlBtn.id = "ecolia-dl-btn"; dlBtn.type = "button"; dlBtn.className = "ecolia-off";
+    dlBtn.innerHTML = DL;
+    var host = document.querySelector(".header-right");
+    if (host) { host.insertBefore(dlBtn, host.firstChild); host.insertBefore(btn, dlBtn); }   // dans la barre du haut : ne scrolle jamais
+    else { btn.className += " ecolia-fixed"; document.body.appendChild(btn); }
+
+    var banner = document.createElement("div");
+    banner.id = "ecolia-audio-banner";
+    banner.innerHTML = '<span class="eab-txt"></span><span class="eab-act"></span><div class="eab-bar"><i></i></div>';
+    var content = document.getElementById("content");
+    if (content && content.parentNode) content.parentNode.insertBefore(banner, content);
+    else document.body.insertBefore(banner, document.body.firstChild);
+    var txtEl = banner.querySelector(".eab-txt"), actEl = banner.querySelector(".eab-act");
+    var barEl = banner.querySelector(".eab-bar"), barI = barEl.firstChild;
+
+    var audio = new Audio();            // un seul élément Audio, réutilisé (exigé par les navigateurs mobiles)
+    audio.preload = "auto";
+    var st = { idx: -1, auto: false, advancing: false, mode: null, speaking: false, token: 0, chunks: [], ci: 0, blobUrl: null, playTok: 0 };
+    var dl = { state: "none", cached: 0, busy: false, cancel: false };   // none | partial | full
+    var bnMode = null, hideTimer = null;
+    if (synth && synth.getVoices) { try { synth.getVoices(); } catch (e) {} }
+
+    function cur() {
+      try { if (typeof currentSlide === "number") return currentSlide; } catch (e) {}
+      return 0;
+    }
+    function hasMp3(i) { return CFG.available.indexOf(i + 1) !== -1; }
+    function fb(i) { return CFG.fallback && CFG.fallback[String(i + 1)]; }
+    function hasAudio(i) { return hasMp3(i) || (!!synth && !!fb(i)); }
+    function urlN(n) {   // dans l'APK la page est sur https://app.local : une adresse relative doit pointer vers le site
+      var b = CFG.base;
+      if (NATIVE && !/^https?:/i.test(b)) b = "https://ecolia-course.github.io/" + b.replace(/^(\.\.\/|\.\/)+/, "");
+      return new URL(b + nameN(n), location.href).href;
+    }
+    function setIcon(playing) { btn.innerHTML = playing ? PAUSE : PLAY; }
+    function isPlaying() { return st.mode === "mp3" ? !audio.paused : (st.mode === "tts" && st.speaking); }
+    function mo() { return "≈ " + CFG.sizeMo + " Mo"; }
+    function nameN(n) { return "audio_" + CFG.code + "_" + n + ".mp3"; }
+
+    // ====================================================================
+    //  Stockage hors ligne : 2 moteurs, même interface
+    //    - APK : fichiers du dossier de l'application (CoursInterface), servis par https://app.local/cours/
+    //    - Web : Cache Storage du navigateur (même cache que l'application web)
+    // ====================================================================
+    function nativeStore() {
+      var okKey = "ecolia_audio_ok_" + CFG.code;
+      function readOk() { try { return JSON.parse(lsGet(okKey) || "[]"); } catch (e) { return []; } }
+      function writeOk(a) { lsSet(okKey, JSON.stringify(a)); }
+      function exists(n) { try { return !!CoursInterface.exists(nameN(n)); } catch (e) { return false; } }
+      function local(n) { return location.origin + "/cours/" + nameN(n); }
+      function verify(n) {                                   // fichier complet ? (taille exacte connue à la génération)
+        return fetch(local(n), { cache: "no-store" }).then(function (r) { return r.blob(); }).then(function (b) {
+          var exp = CFG.sizes && CFG.sizes[String(n)];
+          return (b.size > 2000 && (!exp || b.size === exp)) ? b : null;
+        }).catch(function () { return null; });
+      }
+      return {
+        list: function () {
+          var ok = readOk().filter(exists); writeOk(ok); return Promise.resolve(ok);
+        },
+        get: function (n) { return exists(n) ? verify(n) : Promise.resolve(null); },
+        put: function (n) {
+          return new Promise(function (res, rej) {
+            try { CoursInterface.download(urlN(n), nameN(n)); } catch (e) { return rej(e); }
+            var t0 = Date.now();
+            function next() { if (Date.now() - t0 > 120000) rej(new Error("délai dépassé")); else setTimeout(poll, 800); }
+            function poll() {
+              if (!exists(n)) return next();
+              verify(n).then(function (b) {
+                if (!b) return next();
+                var ok = readOk(); if (ok.indexOf(n) < 0) ok.push(n); writeOk(ok); res();
+              });
+            }
+            setTimeout(poll, 800);
+          });
+        },
+        del: function (n) {
+          try { CoursInterface.delete(nameN(n)); } catch (e) {}
+          writeOk(readOk().filter(function (x) { return x !== n; }));
+          return Promise.resolve();
+        }
+      };
+    }
+    function cacheStore() {
+      return {
+        list: function () {
+          return caches.open(CACHE).then(function (c) {
+            return Promise.all(CFG.available.map(function (n) {
+              return c.match(urlN(n)).then(function (r) {
+                if (!r) return 0;
+                if ((r.headers.get("content-type") || "").indexOf("audio") !== 0) { c.delete(urlN(n)); return 0; }   // ancien contenu invalide
+                return n;
+              });
+            }));
+          }).then(function (a) { return a.filter(Boolean); });
+        },
+        get: function (n) {
+          return caches.open(CACHE).then(function (c) { return c.match(urlN(n)); })
+            .then(function (r) { return r ? r.blob() : null; }).then(function (b) { return b && b.size > 2000 ? b : null; });
+        },
+        put: function (n) {
+          var u = urlN(n);
+          return fetch(u, { cache: "no-store" }).then(function (r) {
+            if (!r.ok || r.status !== 200) throw new Error("HTTP " + r.status);
+            return r.blob();
+          }).then(function (b) {
+            if (b.size < 2000 || (b.type && b.type.indexOf("audio") !== 0 && b.type.indexOf("octet") < 0)) throw new Error("fichier invalide");
+            return caches.open(CACHE).then(function (c) { return c.put(u, new Response(b, { headers: { "Content-Type": "audio/mpeg" } })); });
+          });
+        },
+        del: function (n) { return caches.open(CACHE).then(function (c) { return c.delete(urlN(n)); }); }
+      };
+    }
+    var store = NATIVE ? nativeStore() : (HAS_CACHE ? cacheStore() : null);
+
+    // ====================================================================
+    //  Bannière : invitation, confirmations, progression
+    // ====================================================================
+    function showBanner(mode, text, buttons, pct) {
+      clearTimeout(hideTimer);
+      bnMode = mode;
+      txtEl.textContent = text;
+      actEl.innerHTML = "";
+      (buttons || []).forEach(function (b) {
+        var e = document.createElement("button");
+        e.type = "button"; e.textContent = b.label; if (b.pri) e.className = "pri";
+        e.addEventListener("click", function (ev) { ev.stopPropagation(); b.fn(); });
+        actEl.appendChild(e);
+      });
+      if (typeof pct === "number") { barEl.style.display = "block"; barI.style.width = pct + "%"; }
+      else barEl.style.display = "none";
+      banner.classList.add("on");
+    }
+    function hideBanner() { clearTimeout(hideTimer); bnMode = null; banner.classList.remove("on"); }
+    function flash(text) { showBanner("info", text, []); hideTimer = setTimeout(hideBanner, 4000); }
+
+    function refreshUI() {
+      var show = !!store && CFG.available.length > 0;
+      dlBtn.classList.toggle("ecolia-off", !show);
+      dlBtn.classList.toggle("ecolia-full", dl.state === "full");
+      dlBtn.innerHTML = dl.state === "full" ? OK : DL;
+      dlBtn.setAttribute("aria-label", dl.state === "full" ? "Audios téléchargés : supprimer" : "Télécharger les audios");
+      dlBtn.title = dlBtn.getAttribute("aria-label");
+    }
+    function refreshCacheState(done) {
+      if (!store) { dl.state = "none"; refreshUI(); if (done) done(); return; }
+      store.list().then(function (ok) {
+        dl.cached = ok.length;
+        dl.state = dl.cached === 0 ? "none" : (dl.cached >= CFG.available.length ? "full" : "partial");
+      }).catch(function () { dl.state = "none"; }).then(function () { refreshUI(); if (done) done(); });
+    }
+
+    function askDownload(fromInvite) {
+      var left = CFG.available.length - dl.cached;
+      var txt = dl.state === "partial"
+        ? "Il reste " + left + " audio(s) à télécharger pour écouter ce cours sans internet."
+        : "🔊 Télécharger les audios de ce cours (" + mo() + ") pour les écouter sans internet ? Wi-Fi recommandé.";
+      showBanner(fromInvite ? "invite" : "confirm", txt, [
+        { label: fromInvite ? "Plus tard" : "Annuler", fn: function () { if (fromInvite) lsSet(LATER, "1"); hideBanner(); } },
+        { label: "Télécharger", pri: true, fn: startDownload }
+      ]);
+    }
+    function askDelete() {
+      showBanner("confirm", "Supprimer les audios téléchargés de ce cours (" + mo() + ") ? Vous pourrez toujours les écouter en ligne.", [
+        { label: "Annuler", fn: hideBanner },
+        { label: "Supprimer", pri: true, fn: doDelete }
+      ]);
+    }
+
+    function startDownload() {
+      if (dl.busy || !store) return;
+      dl.busy = true; dl.cancel = false;
+      var total = CFG.available.length, done = 0, quota = false, fails = 0, todo = [];
+      store.list().then(function (have) {
+        CFG.available.forEach(function (n) { if (have.indexOf(n) < 0) todo.push(n); });
+        done = total - todo.length;
+        function paint() {
+          var msg = "Téléchargement des audios : " + done + " / " + total;
+          if (bnMode === "progress") {                  // met à jour sans recréer les boutons (sinon un appui peut être perdu)
+            txtEl.textContent = msg; barI.style.width = Math.round(done / total * 100) + "%";
+          } else {
+            showBanner("progress", msg, [
+              { label: "Annuler", fn: function () { dl.cancel = true; } }
+            ], Math.round(done / total * 100));
+          }
+        }
+        paint();
+        function worker() {
+          if (dl.cancel || quota || !todo.length) return Promise.resolve();
+          var n = todo.shift();
+          return store.put(n).then(function () { done++; paint(); }).catch(function (e) {
+            if (e && (e.name === "QuotaExceededError" || /quota/i.test(String(e.message)))) quota = true;
+            fails++;
+          }).then(worker);
+        }
+        return Promise.all([worker(), worker()]);
+      }).catch(function () { fails++; }).then(function () {
+        dl.busy = false;
+        refreshCacheState(function () {
+          if (dl.state === "full") flash("✓ Audios téléchargés : le cours se lit maintenant sans internet.");
+          else if (dl.cancel) flash("Téléchargement interrompu (" + dl.cached + " / " + total + "). Vous pourrez reprendre plus tard.");
+          else showBanner("error", quota ? "Espace insuffisant sur l'appareil. Libérez de la place puis réessayez."
+            : "Certains audios n'ont pas pu être téléchargés (connexion ?).", [
+            { label: "Fermer", fn: hideBanner }, { label: "Réessayer", pri: true, fn: startDownload }
+          ]);
+        });
+      });
+    }
+    function doDelete() {
+      if (!store) return;
+      Promise.all(CFG.available.map(function (n) { return store.del(n); })).catch(function () {}).then(function () {
+        lsDel(LATER);
+        refreshCacheState(function () { flash("Audios supprimés de cet appareil."); });
+      });
+    }
+
+    dlBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (dl.busy) return;
+      if (dl.state === "full") askDelete(); else askDownload(false);
+    });
+
+    // ====================================================================
+    //  Voix intégrée au téléphone (hors ligne, sans limite)
+    // ====================================================================
+    function pickVoice(lang) {
+      var vs = [];
+      try { vs = synth.getVoices() || []; } catch (e) {}
+      var pre = lang === "en" ? "en" : "fr", best = null;
+      for (var k = 0; k < vs.length; k++) {
+        var v = vs[k];
+        if ((v.lang || "").toLowerCase().indexOf(pre) !== 0) continue;
+        if (!best || (v.localService && !best.localService)) best = v;
+      }
+      return best;
+    }
+    function hardSplit(text, max) {
+      var out = [];
+      while (text.length > max) {
+        var cut = text.lastIndexOf(" ", max);
+        if (cut < 40) cut = max;
+        out.push(text.slice(0, cut)); text = text.slice(cut).replace(/^\s+/, "");
+      }
+      if (text) out.push(text);
+      return out;
+    }
+    function buildChunks(segs) {                  // morceaux courts : évite l'arrêt des longs textes sur Chrome
+      var out = [];
+      segs.forEach(function (s) {
+        var cur2 = "", parts = s[1].match(/[^.!?;:]+[.!?;:]*\s*/g) || [s[1]];
+        parts.forEach(function (p) {
+          if (cur2 && (cur2 + p).length > 160) { out.push({ lang: s[0], text: cur2.trim() }); cur2 = p; }
+          else cur2 += p;
+        });
+        if (cur2.trim()) out.push({ lang: s[0], text: cur2.trim() });
+      });
+      var res = [];
+      out.forEach(function (c) { hardSplit(c.text, 190).forEach(function (t) { res.push({ lang: c.lang, text: t }); }); });
+      return res;
+    }
+    function speakFrom(tk) {
+      if (tk !== st.token) return;
+      if (st.ci >= st.chunks.length) {
+        st.speaking = false; st.mode = null; st.ci = 0; setIcon(false);
+        if (st.auto) goNext();
+        return;
+      }
+      var c = st.chunks[st.ci];
+      var u = new SpeechSynthesisUtterance(c.text);
+      u.lang = c.lang === "en" ? "en-US" : "fr-FR";
+      var v = pickVoice(c.lang);
+      if (v) { u.voice = v; u.lang = v.lang; }
+      u.rate = 0.95;
+      u.onend = function () { if (tk !== st.token) return; st.ci++; speakFrom(tk); };
+      u.onerror = function () { if (tk !== st.token) return; st.speaking = false; setIcon(false); st.auto = false; };
+      synth.speak(u);
+    }
+    function startTts(from) {
+      st.token++;
+      var tk = st.token;
+      st.mode = "tts"; st.speaking = true; st.ci = from || 0; setIcon(true);
+      var busy = false;
+      try { busy = synth.speaking || synth.pending; synth.cancel(); } catch (e) {}
+      if (busy) setTimeout(function () { speakFrom(tk); }, 120);   // laisse cancel() se terminer
+      else speakFrom(tk);                                          // sinon tout de suite (exigé par iOS)
+    }
+    function playVoice() {
+      if (!(synth && fb(st.idx))) { st.auto = false; return false; }
+      if (!st.chunks.length) st.chunks = buildChunks(fb(st.idx));
+      startTts(st.ci);
+      return true;
+    }
+
+    // ====================================================================
+    //  Lecture
+    // ====================================================================
+    function freeBlob() { if (st.blobUrl) { try { URL.revokeObjectURL(st.blobUrl); } catch (e) {} st.blobUrl = null; } }
+    function stopAll() {
+      st.playTok++;
+      try { audio.pause(); audio.currentTime = 0; } catch (e) {}
+      st.token++;
+      try { if (synth) synth.cancel(); } catch (e) {}
+      st.speaking = false; st.mode = null; st.chunks = []; st.ci = 0;
+      setIcon(false);
+    }
+    function pauseNow() {
+      if (st.mode === "mp3") audio.pause();
+      else if (st.mode === "tts") {
+        st.token++;
+        try { synth.cancel(); } catch (e) {}
+        st.speaking = false; setIcon(false);      // st.ci conservé : la reprise repart de la phrase en cours
+      }
+    }
+    function startAudio(src, tok) {
+      if (tok !== st.playTok) return;
+      if (audio.getAttribute("data-src") !== src) { audio.setAttribute("data-src", src); audio.src = src; }
+      var p = audio.play();
+      if (p && p.catch) p.catch(function (err) {
+        console.warn("ECOLIA audio :", err);
+        if (tok !== st.playTok) return;
+        if (!(err && err.name === "NotAllowedError") && playVoice()) return;   // lecture impossible : voix du téléphone
+        setIcon(false); st.auto = false;
+      });
+    }
+    function playCurrent() {
+      var i = st.idx;
+      if (hasMp3(i)) {
+        var tok = ++st.playTok, u = urlN(i + 1);
+        st.mode = "mp3";
+        if (!navigator.onLine && dl.state === "none") { st.mode = null; if (playVoice()) return; }   // hors ligne et non téléchargé
+        if (store && dl.state !== "none") {                     // téléchargé : lecture locale, sans réseau
+          store.get(i + 1)
+            .then(function (b) {
+              if (tok !== st.playTok) return;
+              if (b) { freeBlob(); st.blobUrl = URL.createObjectURL(new Blob([b], { type: "audio/mpeg" })); startAudio(st.blobUrl, tok); }
+              else startAudio(u, tok);
+            }).catch(function () { startAudio(u, tok); });
+        } else startAudio(u, tok);                              // sinon lecture en ligne (appel immédiat, exigé par iOS)
+      } else if (!playVoice()) {
+        st.auto = false;
+      }
+    }
+
+    function onSlideChange(i) {
+      var wasAdvancing = st.advancing;
+      st.advancing = false;
+      st.idx = i;
+      btn.classList.toggle("ecolia-off", !hasAudio(i));
+      stopAll();
+      audio.removeAttribute("data-src");
+      freeBlob();
+      if (bnMode === "invite" && i !== 0) hideBanner();       // l'invitation n'apparaît qu'à la première slide
+      if (wasAdvancing && st.auto) setTimeout(playCurrent, 500);   // enchaînement automatique
+      else st.auto = false;                                         // changement manuel : on coupe tout
+    }
+    function goNext() {
+      if (st.idx + 1 >= CFG.count) { st.auto = false; return; }
+      st.advancing = true;
+      if (typeof nextSlide === "function") nextSlide();
+      else { var nb = document.getElementById("nextBtn"); if (nb) nb.click(); }
+      setTimeout(function () { st.advancing = false; }, 4000);
+    }
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var i = cur();
+      if (i !== st.idx) onSlideChange(i);
+      if (isPlaying()) { st.auto = false; pauseNow(); }
+      else { st.auto = true; playCurrent(); }
+    });
+    audio.addEventListener("play", function () { setIcon(true); });
+    audio.addEventListener("pause", function () { if (st.mode === "mp3") setIcon(false); });
+    audio.addEventListener("error", function () {
+      if (st.mode === "mp3" && playVoice()) return;            // fichier introuvable / hors ligne : voix du téléphone
+      setIcon(false); st.auto = false;
+    });
+    audio.addEventListener("ended", function () { setIcon(false); if (st.auto) goNext(); });
+    window.addEventListener("pagehide", function () { stopAll(); freeBlob(); });
+
+    // ---------- démarrage ----------
+    refreshCacheState(function () {
+      if (store && CFG.available.length && dl.state !== "full" && navigator.onLine && cur() === 0 && !lsGet(LATER)) askDownload(true);
+    });
+    st.idx = -1;
+    setInterval(function () { var i = cur(); if (i !== st.idx) onSlideChange(i); }, 250);   // suit la slide affichée
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+<!-- ECOLIA_AUDIO_PLAYER_END -->
+</body>
+</html>

@@ -1,0 +1,1707 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="vert">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>ECOLIA — Foresterie4</title>
+<style>
+[data-theme="bleu"]   { --p1:#0d2b4f; --p2:#1565c0; --p3:#07172e; --p4:#12437a; --p5:#5b8fd0; --bg:#e8f0fb; --bg2:#cfdff5; --bd:#a9c3e8; --soft:#dde8f7; --btn:#2a67b0; }
+[data-theme="vert"]   { --p1:#14442e; --p2:#2e7d32; --p3:#0b2b1a; --p4:#1f5c3a; --p5:#4f9a6b; --bg:#e8f5ec; --bg2:#c8e6d2; --bd:#a5cdb2; --soft:#dcefe2; --btn:#2f7a4f; }
+[data-theme="violet"] { --p1:#2d1b4e; --p2:#6a1b9a; --p3:#1a0f2e; --p4:#4a148c; --p5:#9c6fd0; --bg:#f1e9fb; --bg2:#dccbf2; --bd:#c4a8e6; --soft:#e8ddf6; --btn:#7e3fb2; }
+[data-theme="rouge"]  { --p1:#4a1010; --p2:#b71c1c; --p3:#2b0a0a; --p4:#8e1b1b; --p5:#d9706a; --bg:#fbeaea; --bg2:#f3cdcb; --bd:#e8a9a5; --soft:#f8dede; --btn:#a62a2a; }
+[data-theme="orange"] { --p1:#4e2a0c; --p2:#ef6c00; --p3:#2e1604; --p4:#b34a00; --p5:#f0a15a; --bg:#fff1e0; --bg2:#fbdcb8; --bd:#f3c08a; --soft:#fdebd6; --btn:#c9650a; }
+[data-theme="teal"]   { --p1:#0b3a3a; --p2:#00796b; --p3:#062626; --p4:#00574b; --p5:#4db6ac; --bg:#e0f2f1; --bg2:#b2dfdb; --bd:#80cbc4; --soft:#d5ecea; --btn:#26897d; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:linear-gradient(160deg,var(--p1) 0%,var(--p2) 50%,var(--p3) 100%); display:flex; justify-content:center; align-items:center; padding:8px; }
+.container { width:100%; max-width:1400px; background:#fefdf8; border-radius:20px; overflow:hidden; display:flex; flex-direction:column; height:100%; max-height:100vh; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.progress-bar { height:4px; background:var(--bg2); flex-shrink:0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--p5),var(--p4)); width:0%; transition:width 0.3s; }
+.header { padding:10px 16px; background:var(--bg); border-bottom:1px solid var(--bd); display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+.header h1 { color:var(--p4); font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box { display:flex; background:white; border-radius:20px; padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.search-box input { border:none; padding:6px 10px; border-radius:20px; outline:none; width:130px; font-size:0.8rem; }
+.search-box button { background:none; border:none; cursor:pointer; padding:4px 8px; font-size:0.85rem; color:var(--p2); }
+.badge { background:var(--p5); color:white; padding:4px 10px; border-radius:20px; font-weight:bold; font-size:0.75rem; }
+.search-nav { display:none; gap:4px; background:var(--bg2); padding:2px 8px; border-radius:20px; align-items:center; font-size:0.75rem; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:0.9rem; color:var(--p4); padding:2px 4px; }
+.content { padding:28px 32px; flex:1; overflow-y:auto; background:#fff; scroll-behavior:smooth; line-height:1.85; }
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.slide-title { color:var(--p1); font-size:1.5rem; font-weight:700; padding-bottom:12px; margin-bottom:20px; border-bottom:2px solid var(--p5); }
+.slide-content { color:var(--p3); font-size:1rem; }
+.empty-state { display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-height:60vh; padding:40px 20px; gap:18px; }
+.empty-state .icon { width:72px; height:72px; border-radius:50%; background:var(--bg); border:2px solid var(--bd); display:flex; align-items:center; justify-content:center; color:var(--p2); font-size:2rem; font-weight:300; }
+.empty-state h2 { color:var(--p1); font-size:1.4rem; font-weight:700; margin:0; }
+.empty-state p { color:#666; font-size:0.95rem; max-width:520px; line-height:1.7; }
+.empty-state .tag { display:inline-block; padding:6px 14px; background:var(--bg); color:var(--p4); border:1px solid var(--bd); border-radius:20px; font-size:0.8rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; }
+.bloc { padding:18px 22px; border-radius:12px; margin:22px 0; line-height:1.85; }
+.bloc-label { font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; opacity:0.7; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:var(--bg); border-left:4px solid var(--p5); }
+.theorie .bloc-label { color:var(--p4); }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.sources { background:#f5f5f5; padding:12px 16px; border-radius:10px; margin-top:26px; font-size:0.82rem; color:#666; border-left:3px solid #999; line-height:1.6; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:var(--p1); }
+.quiz-container { padding:22px; background:var(--bg); border-radius:16px; }
+.quiz-question { background:white; border-radius:10px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.quiz-question p { font-weight:600; margin-bottom:10px; color:var(--p1); }
+.quiz-question label { display:block; padding:8px 10px; margin:4px 0; border-radius:6px; cursor:pointer; transition:background 0.2s; }
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit { background:var(--btn); color:white; border:none; padding:12px 24px; border-radius:30px; font-size:1rem; cursor:pointer; font-weight:600; margin-top:14px; }
+.quiz-result { margin-top:16px; font-weight:600; }
+.controls { padding:8px 16px; background:#fafafa; border-top:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0; }
+.nav-btn { background:white; color:var(--p4); border:1px solid #ccc; padding:8px 14px; border-radius:8px; font-size:0.82rem; cursor:pointer; font-weight:500; }
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:var(--soft); }
+.content::-webkit-scrollbar-thumb { background:var(--p5); border-radius:3px; }
+@media (max-width:600px) { body { padding:0; } .container { border-radius:0; max-height:100vh; } .content { padding:20px 18px; } .slide-title { font-size:1.25rem; } .search-box input { width:90px; } .header h1 { font-size:0.85rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="header">
+<h1 id="pageTitle">ECOLIA</h1>
+<div class="header-right">
+<div class="search-box">
+<input id="searchInput" placeholder="Rechercher" type="text"/>
+<button id="searchBtn">⌕</button>
+</div>
+<div class="search-nav" id="searchNav">
+<button id="prevResultBtn">‹</button>
+<span id="resultCounter">0/0</span>
+<button id="nextResultBtn">›</button>
+</div>
+<span class="badge" id="slideCounter">0/0</span>
+</div>
+</div>
+<div class="content" id="content"></div>
+<div class="controls">
+<button class="nav-btn" id="prevBtn">← Précédent</button>
+<span class="counter" id="counter">—</span>
+<button class="nav-btn" id="nextBtn">Suivant →</button>
+</div>
+</div>
+<script>
+const COURSE_TITLE = "Foresterie (Sylviculture, Inventaire et Exploitation Forestière)";
+const slides = [
+  {
+    title: "Sommaire — Foresterie",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Bienvenue</div>
+        <h3>La foresterie : connaître, exploiter et protéger la forêt</h3>
+        <p>La <strong>foresterie</strong> est la science et la pratique de la gestion des forêts, de leur création à leur exploitation, en passant par leur protection et leur renouvellement. La République Démocratique du Congo abrite le <strong>second massif forestier tropical du monde</strong>, après l'Amazonie : le bassin du Congo. Ce patrimoine immense est à la fois une richesse économique majeure et un enjeu écologique planétaire.</p>
+        <p>Ce cours s'adresse aux élèves de 4<sup>e</sup> Humanité de la section Agricole (Option Foresterie). Il vise à former un futur technicien A2 capable d'<strong>identifier les essences forestières</strong>, de <strong>produire des plants en pépinière</strong>, de <strong>réaliser un reboisement</strong>, de <strong>mener un inventaire forestier</strong>, de <strong>participer à l'exploitation raisonnée</strong> et de <strong>contribuer à la gestion durable</strong> des forêts congolaises.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Objectifs d'apprentissage</div>
+        <p>À la fin de ce cours, l'élève doit être capable de :</p>
+        <ol>
+          <li>Décrire les écosystèmes forestiers de la RDC et leur importance écologique et économique.</li>
+          <li>Identifier les principales essences forestières congolaises et leurs usages.</li>
+          <li>Créer et gérer une pépinière forestière.</li>
+          <li>Concevoir et réaliser un reboisement sur un terrain dégradé.</li>
+          <li>Réaliser un inventaire forestier simple (placettes, mesures, calcul des volumes).</li>
+          <li>Appliquer les techniques d'abattage directionnel, de débardage et de cubage.</li>
+          <li>Comprendre les principes de l'aménagement forestier durable.</li>
+          <li>Connaître les bases de la législation forestière congolaise.</li>
+        </ol>
+      </div>
+
+      <div class="bloc cas">
+        <div class="bloc-label">Grands chapitres du cours</div>
+        <ul>
+          <li><strong>Chapitre I</strong> — Introduction à la foresterie congolaise.</li>
+          <li><strong>Chapitre II</strong> — Dendrologie et identification des essences.</li>
+          <li><strong>Chapitre III</strong> — La pépinière forestière.</li>
+          <li><strong>Chapitre IV</strong> — La sylviculture et le reboisement.</li>
+          <li><strong>Chapitre V</strong> — L'inventaire forestier.</li>
+          <li><strong>Chapitre VI</strong> — L'exploitation forestière.</li>
+          <li><strong>Chapitre VII</strong> — La gestion durable et l'aménagement forestier.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Pourquoi la foresterie en RDC ?",
+    content: `
+      <div class="bloc cas">
+        <div class="bloc-label">Situation-problème</div>
+        <p>Un village de la Tshopo vit de l'abattage du wengé. Depuis vingt ans, les plus beaux arbres ont été coupés, la forêt recule, les sols s'érodent et les jeunes n'ont plus de bois de valeur à exploiter. Certains villageois disent : « La forêt est immense, elle ne s'épuisera jamais. » D'autres constatent que les arbres de valeur deviennent rares autour du village. Qui a raison ? Comment garantir aux générations futures un accès à la forêt et à ses produits ?</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le bassin du Congo, second massif tropical mondial</h3>
+        <p>La RDC possède environ 60 % des forêts du bassin du Congo et 10 % des forêts tropicales mondiales. Cette forêt est un <strong>poumon vert</strong> : elle stocke d'énormes quantités de carbone, régule le climat régional, protège les sols et abrite une biodiversité exceptionnelle (bonobos, okapis, gorilles, milliers d'espèces végétales).</p>
+        <p>Sur le plan économique, la forêt fournit :</p>
+        <ul>
+          <li>Du <strong>bois d'œuvre</strong> (wengé, iroko, sapelli, acajou) exporté et utilisé localement en menuiserie et ébénisterie.</li>
+          <li>Du <strong>bois-énergie</strong> (bois de chauffe, charbon de bois) consommé par la majorité des ménages congolais.</li>
+          <li>Des <strong>produits forestiers non ligneux</strong> : fruits, noix, chenilles, miel, plantes médicinales, raphia.</li>
+          <li>Des <strong>services écologiques</strong> : régulation de l'eau, protection contre l'érosion, séquestration du carbone.</li>
+        </ul>
+        <p>Sans gestion, cette richesse s'épuise : la déforestation avance (autour des grandes villes, le long des routes d'exploitation), les essences de valeur deviennent rares et les sols se dégradent.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Croire que « la forêt est immense, elle ne s'épuisera jamais » est une erreur. Les forêts proches des villes et des axes routiers sont déjà largement dégradées. La foresterie est la seule réponse rationnelle : connaître la ressource, la renouveler, l'exploiter prudemment.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Les écosystèmes forestiers congolais",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les grands types de formations forestières</h3>
+
+        <h4>1. La forêt équatoriale dense</h4>
+        <p>Forêt humide de la Cuvette Centrale (Kisangani, Mbandaka, Boende, Ikela, Basankusu). Haute de 30 à 50 m, à plusieurs étages de végétation, très riche en essences et en biodiversité. Elle bénéficie d'une pluviométrie abondante (1 500 – 2 000 mm/an) et de températures élevées constantes. C'est le domaine du wengé, de l'iroko, du sapelli, du tola, du limba.</p>
+
+        <h4>2. Les forêts de montagne</h4>
+        <p>Présentes dans l'Est du pays (Kivu, Ituri, Ruwenzori). Altitude élevée, températures plus fraîches, brumes fréquentes. Riches en espèces endémiques (gorille de montagne, okapi en Ituri). Elles protègent les sols de montagne contre l'érosion et régulent le régime des eaux.</p>
+
+        <h4>3. Les forêts claires et savanes boisées</h4>
+        <p>Plateaux du Kasaï, du Katanga, du Bas-Congo. Végétation plus ouverte, arbres moins hauts, présence de graminées. Elles sont soumises chaque année aux feux de brousse, qui influencent leur composition floristique.</p>
+
+        <h4>4. Les forêts-galeries et forêts ripicoles</h4>
+        <p>Formations linéaires le long des cours d'eau, en zone de savane. Elles jouent un rôle essentiel de corridor écologique et de protection des berges.</p>
+
+        <h4>5. Les mangroves</h4>
+        <p>Dans l'estuaire du fleuve Congo (Muanda). Forêts d'arbres adaptés au sel et aux marées. Elles protègent la côte, abritent des nurseries de poissons et de crevettes. Elles sont aujourd'hui très menacées.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>La RDC possède cinq grands types de formations forestières : forêt équatoriale dense, forêt de montagne, forêt claire et savane boisée, forêt-galerie, mangrove. Chacune a une écologie et une gestion spécifiques.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Le rôle écologique, économique et social de la forêt",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Trois grandes familles de rôles</h3>
+
+        <h4>Rôles écologiques</h4>
+        <ul>
+          <li><strong>Régulation du climat</strong> : les arbres absorbent le CO<sub>2</sub> atmosphérique et libèrent de l'oxygène. La forêt du bassin du Congo stocke plusieurs dizaines de milliards de tonnes de carbone.</li>
+          <li><strong>Cycle de l'eau</strong> : les forêts transpirent d'énormes quantités d'eau, alimentant les pluies et les rivières.</li>
+          <li><strong>Protection des sols</strong> : les racines retiennent la terre ; le couvert freine l'impact des pluies et limite l'érosion.</li>
+          <li><strong>Biodiversité</strong> : habitat de milliers d'espèces animales et végétales, dont beaucoup sont endémiques.</li>
+        </ul>
+
+        <h4>Rôles économiques</h4>
+        <ul>
+          <li><strong>Bois d'œuvre</strong> : exportation et usage local (menuiserie, ébénisterie, construction).</li>
+          <li><strong>Bois-énergie</strong> : première source d'énergie domestique en RDC.</li>
+          <li><strong>Produits forestiers non ligneux</strong> : chenilles, miel, noix, fruits, plantes médicinales, raphia, rotin.</li>
+          <li><strong>Emplois</strong> : exploitation forestière, transformation, transport, pépinières, reboisement.</li>
+        </ul>
+
+        <h4>Rôles sociaux et culturels</h4>
+        <ul>
+          <li>Subsistance des communautés forestières (chasse, cueillette, pharmacopée).</li>
+          <li>Valeurs culturelles et spirituelles (forêts sacrées, sites rituels).</li>
+          <li>Cadre de vie et identité des peuples autochtones (pygmées).</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>La forêt est multifonctionnelle : elle rend des services écologiques (climat, eau, sols, biodiversité), économiques (bois, produits non ligneux, emplois) et sociaux (subsistance, culture). Une gestion durable doit concilier ces trois dimensions.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — La dendrologie : identifier les essences",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Qu'est-ce que la dendrologie ?</h3>
+        <p>La <strong>dendrologie</strong> est la science qui étudie les arbres : leur identification, leur croissance, leurs caractéristiques botaniques et leurs usages. Pour le forestier, savoir identifier une essence est fondamental : de l'identification dépendent l'inventaire, l'exploitation, la valorisation et la gestion.</p>
+
+        <h4>Les critères d'identification sur pied</h4>
+        <ul>
+          <li><strong>Feuilles</strong> : forme, disposition, nervation, couleur, présence de poils.</li>
+          <li><strong>Écorce</strong> : couleur, épaisseur, texture (lisse, écailleuse, fissurée), odeur.</li>
+          <li><strong>Fruits et graines</strong> : forme, taille, couleur, mode de dissémination.</li>
+          <li><strong>Port de l'arbre</strong> : forme du houppier, hauteur, forme du fût.</li>
+          <li><strong>Exsudats</strong> : latex, résine, sève colorée.</li>
+          <li><strong>Odeur</strong> du bois fraîchement coupé.</li>
+          <li><strong>Habitat</strong> : sol, altitude, type de forêt.</li>
+        </ul>
+
+        <h4>L'herbier forestier</h4>
+        <p>L'<strong>herbier</strong> est une collection de spécimens séchés et pressés, étiquetés avec le nom scientifique, la date, le lieu et le nom du collecteur. C'est l'outil de référence du forestier pour vérifier une identification. Chaque technicien devrait entretenir un herbier personnel.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Confondre deux essences visuellement proches est une erreur fréquente. Par exemple, confondre l'iroko avec une essence voisine peut conduire à une exploitation inadaptée ou à une erreur d'inventaire lourde de conséquences commerciales. Le doute impose le recours à l'herbier ou à un botaniste.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — Les principales essences de la RDC",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les grandes essences commerciales congolaises</h3>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Essence</th>
+              <th>Nom scientifique</th>
+              <th>Caractéristiques</th>
+              <th>Usages</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Wengé</strong></td>
+              <td><em>Millettia laurentii</em></td>
+              <td>Bois très dur, brun foncé à noir, très durable, dense (0,8 – 0,9).</td>
+              <td>Ébénisterie, meubles de luxe, parquets, sculpture.</td>
+            </tr>
+            <tr>
+              <td><strong>Iroko</strong></td>
+              <td><em>Chlorophora excelsa</em></td>
+              <td>Bois jaune-brun devenant brun, très durable, résistant aux insectes.</td>
+              <td>Menuiserie extérieure, construction navale, ponts, portes.</td>
+            </tr>
+            <tr>
+              <td><strong>Sapelli</strong></td>
+              <td><em>Entandrophragma cylindricum</em></td>
+              <td>Bois rouge-brun, mi-dur, bonne ouvrabilité.</td>
+              <td>Menuiserie fine, ameublement, placages.</td>
+            </tr>
+            <tr>
+              <td><strong>Acajou d'Afrique</strong></td>
+              <td><em>Khaya spp.</em></td>
+              <td>Bois rouge-brun clair, très apprécié.</td>
+              <td>Ameublement, placages, menuiserie intérieure.</td>
+            </tr>
+            <tr>
+              <td><strong>Tola</strong></td>
+              <td><em>Gossweilerodendron balsamiferum</em></td>
+              <td>Bois jaune clair, tendre, léger.</td>
+              <td>Menuiserie intérieure, contreplaqué, caisses.</td>
+            </tr>
+            <tr>
+              <td><strong>Limba</strong></td>
+              <td><em>Terminalia superba</em></td>
+              <td>Bois clair, facile à travailler.</td>
+              <td>Menuiserie, ameublement courant, contreplaqué.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4>Essences de reboisement</h4>
+        <p>Pour la plantation et le reboisement, on utilise souvent des essences à croissance rapide : <strong>Acacia</strong> (fixation d'azote, bois-énergie), <strong>Eucalyptus</strong> (bois d'œuvre, poteaux, bois-énergie), <strong>Grevillea</strong> (agroforesterie), <strong>Cedrela</strong>, <strong>Gmelina</strong>. Des essences locales (wengé, iroko) sont aussi plantées, mais leur croissance est plus lente.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Le wengé, l'iroko, le sapelli, l'acajou, le tola et le limba sont les grandes essences commerciales de la RDC. Chacune a des caractéristiques et des usages précis. Pour le reboisement, on utilise souvent des essences à croissance rapide.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — La pépinière forestière",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Qu'est-ce qu'une pépinière forestière ?</h3>
+        <p>La <strong>pépinière forestière</strong> est un espace aménagé où l'on produit des jeunes plants forestiers, à partir de semences ou de boutures, jusqu'à ce qu'ils soient prêts à être mis en terre.</p>
+
+        <h4>Choix du site</h4>
+        <ul>
+          <li><strong>Proximité de l'eau</strong> : arrosage régulier indispensable.</li>
+          <li><strong>Sol fertile</strong> et bien drainé.</li>
+          <li><strong>Ombrage partiel</strong> : les jeunes plants sont sensibles au soleil direct.</li>
+          <li><strong>Accessibilité</strong> : proximité du village et de la parcelle de plantation.</li>
+          <li><strong>Protection</strong> contre les animaux (clôture).</li>
+          <li><strong>Terrain plat</strong> ou légèrement incliné.</li>
+        </ul>
+
+        <h4>Étapes de création</h4>
+        <ol>
+          <li><strong>Préparation des planches</strong> : nettoyage, labour, nivellement, désinfection.</li>
+          <li><strong>Semis</strong> : en lignes espacées, à faible profondeur, semences de qualité.</li>
+          <li><strong>Arrosage</strong> : régulier, ni trop ni trop peu.</li>
+          <li><strong>Repiquage</strong> : quand les plantules ont 3 à 5 feuilles, on les transfère en sachets ou en pots.</li>
+          <li><strong>Soins</strong> : désherbage, ombrage, protection phytosanitaire, apport d'engrais organique.</li>
+          <li><strong>Acclimatation</strong> : quelques semaines avant la plantation, on expose progressivement les plants au soleil direct.</li>
+        </ol>
+
+        <h4>Critères de qualité d'un plant</h4>
+        <ul>
+          <li>Tige droite et vigoureuse.</li>
+          <li>Système racinaire bien développé (non enroulé).</li>
+          <li>Feuillage sain, sans maladie ni insecte.</li>
+          <li>Hauteur adaptée (30 – 50 cm pour la plupart des essences).</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Utiliser des semences de mauvaise qualité, non adaptées au milieu, ou négliger l'ombrage et l'arrosage : le taux de germination est faible, les plants meurent après repiquage, et tout le travail de pépinière est perdu.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre IV — La sylviculture",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Qu'est-ce que la sylviculture ?</h3>
+        <p>La <strong>sylviculture</strong> est l'ensemble des techniques de culture et d'entretien des arbres forestiers : préparation du sol, plantation, dégagement, éclaircie, régénération. Elle vise à produire du bois de qualité tout en assurant le renouvellement de la forêt.</p>
+
+        <h4>Les grandes opérations sylvicoles</h4>
+        <ul>
+          <li><strong>Préparation du terrain</strong> : nettoyage, débroussaillage, labour ou sous-solage, piquetage.</li>
+          <li><strong>Plantation</strong> : mise en terre des plants, à la bonne profondeur et au bon espacement (2 × 2 m à 4 × 4 m selon l'essence et l'objectif).</li>
+          <li><strong>Dégagement</strong> : élimination des herbes et arbustes concurrents autour des jeunes plants.</li>
+          <li><strong>Éclaircie</strong> : coupe sélective d'arbres pour laisser plus d'espace et de lumière aux arbres d'avenir.</li>
+          <li><strong>Élagage</strong> : suppression des branches basses pour produire un fût droit et sans nœuds.</li>
+          <li><strong>Régénération</strong> : naturelle (semis, rejets) ou artificielle (plantation).</li>
+        </ul>
+
+        <h4>Espacement et densité</h4>
+        <p>Un espacement de 3 × 3 m donne environ 1 111 plants par hectare. Un espacement de 4 × 4 m donne 625 plants par hectare. Plus l'espacement est large, plus les arbres ont de place pour se développer, mais le peuplement met plus de temps à fermer.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>La sylviculture regroupe les techniques de culture des arbres : préparation du sol, plantation, dégagement, éclaircie, élagage, régénération. Elle vise à produire du bois de qualité tout en assurant le renouvellement.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre IV — Le reboisement",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le reboisement : restaurer le couvert forestier</h3>
+        <p>Le <strong>reboisement</strong> est le rétablissement d'un couvert forestier sur un terrain qui l'a perdu (déforestation, incendie, culture abandonnée, sol dégradé). Il diffère du <strong>boisement</strong>, qui crée une forêt sur un terrain qui n'en a jamais porté.</p>
+
+        <h4>Enjeux du reboisement en RDC</h4>
+        <ul>
+          <li>Restaurer les savanes dégradées du plateau des Bateke.</li>
+          <li>Stabiliser les sols menacés par l'érosion ravinante (Kananga, Kikwit).</li>
+          <li>Produire du bois-énergie pour les ménages.</li>
+          <li>Produire du bois d'œuvre et des produits forestiers.</li>
+          <li>Séquestrer du carbone et atténuer le changement climatique.</li>
+          <li>Protéger les bassins versants et les sources d'eau.</li>
+        </ul>
+
+        <h4>Étapes d'un reboisement réussi</h4>
+        <ol>
+          <li><strong>Choix des espèces</strong> : adaptées au sol, au climat, à l'objectif (bois-énergie, bois d'œuvre, restauration, agroforesterie).</li>
+          <li><strong>Préparation du terrain</strong> : nettoyage, labour localisé, piquetage.</li>
+          <li><strong>Plantation</strong> : en saison des pluies, tôt le matin ou en fin d'après-midi.</li>
+          <li><strong>Entretien</strong> : dégagement, arrosage si nécessaire, remplacement des plants morts.</li>
+          <li><strong>Protection</strong> : pare-feu, clôture, gardiennage.</li>
+        </ol>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Planter sans préparation du sol ni entretien est l'erreur la plus fréquente. Les plants meurent ou poussent mal, et le reboisement échoue. Un reboisement réussi exige un suivi sur au moins 3 à 5 ans.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre V — L'inventaire forestier",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Qu'est-ce qu'un inventaire forestier ?</h3>
+        <p>L'<strong>inventaire forestier</strong> est une opération qui consiste à mesurer et à quantifier la ressource forestière (nombre d'arbres, volume de bois, répartition par essence et par dimension) sur une surface donnée. Il permet de connaître la ressource avant d'exploiter, de planifier l'aménagement et de suivre l'évolution de la forêt.</p>
+
+        <h4>Les méthodes d'échantillonnage</h4>
+        <ul>
+          <li><strong>Inventaire par placettes</strong> : on délimite des surfaces circulaires ou carrées (par exemple 20 m de rayon, soit environ 1 257 m²) et on mesure tous les arbres à l'intérieur.</li>
+          <li><strong>Inventaire par transects</strong> : on échantillonne le long de lignes traversant la zone, ce qui est utile sur de grandes surfaces ou en terrain difficile.</li>
+          <li><strong>Inventaire systématique</strong> : placettes disposées selon un maillage régulier.</li>
+          <li><strong>Inventaire stratifié</strong> : la zone est divisée en strates homogènes (types de forêt, âge, densité), puis on échantillonne dans chaque strate.</li>
+        </ul>
+
+        <h4>Les mesures</h4>
+        <ul>
+          <li><strong>Diamètre à hauteur de poitrine (DHP)</strong> : mesuré à 1,30 m du sol avec un compas forestier ou un mètre-ruban (mesure de la circonférence puis division par π).</li>
+          <li><strong>Hauteur totale</strong> et <strong>hauteur du fût</strong> : mesurées avec un dendromètre, un clinomètre, ou estimées.</li>
+          <li><strong>Qualité du tronc</strong> : droiture, absence de défauts, branches basses.</li>
+          <li><strong>Essence</strong> : identifiée avec soin.</li>
+        </ul>
+
+        <h4>Calcul de la densité</h4>
+        <p>Densité (arbres/ha) = nombre d'arbres dans la placette ÷ surface de la placette (en ha).</p>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Exercice corrigé</div>
+        <p><strong>Énoncé :</strong> une placette circulaire de 20 m de rayon contient 15 arbres. Quelle est la densité à l'hectare ?</p>
+        <p><strong>Étape 1 — Surface de la placette :</strong> S = π × r² = 3,14 × 20² = 1 256 m² ≈ 0,1256 ha.</p>
+        <p><strong>Étape 2 — Densité :</strong> 15 / 0,1256 ≈ <strong>119 arbres/ha</strong>.</p>
+        <p><strong>Interprétation :</strong> cette densité est modérée. Pour une forêt dense tropicale, on observe souvent 300 à 600 arbres/ha (toutes dimensions confondues). Une densité de 119 arbres peut indiquer une forêt dégradée ou un peuplement de gros arbres.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Mesurer le diamètre à une hauteur incorrecte (par exemple 1 m au lieu de 1,30 m), ou confondre diamètre et circonférence, fausse tous les calculs de volume. La rigueur dans les mesures est la base de l'inventaire.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre V — Le calcul des volumes de bois",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Estimer le volume de bois sur pied</h3>
+        <p>À partir des mesures de diamètre et de hauteur, on estime le <strong>volume de bois</strong> d'un arbre. Le volume d'un cylindre de diamètre D et de hauteur H est :</p>
+        <p><strong>V = π × (D/2)² × H</strong></p>
+        <p>Mais un arbre n'est pas un cylindre parfait : son diamètre diminue avec la hauteur. On applique donc un <strong>coefficient de forme</strong> (souvent 0,5 à 0,7 selon les essences). La formule pratique devient :</p>
+        <p><strong>V ≈ π × (D/2)² × H × f</strong></p>
+        <p>où <strong>f</strong> est le coefficient de forme.</p>
+
+        <h4>Les tarifs de cubage</h4>
+        <p>Un <strong>tarif de cubage</strong> est une formule établie pour une essence ou un peuplement donné, qui donne directement le volume en fonction du diamètre (et parfois de la hauteur). Ces tarifs sont construits à partir de mesures sur un grand nombre d'arbres abattus. Ils évitent d'avoir à mesurer la hauteur de chaque arbre.</p>
+
+        <h4>Exemple pratique</h4>
+        <p>Un arbre de 60 cm de DHP et 20 m de hauteur totale, avec un coefficient de forme de 0,6 :</p>
+        <p>D = 0,6 m ; r = 0,3 m ; V = 3,14 × 0,3² × 20 × 0,6 ≈ 3,14 × 0,09 × 20 × 0,6 ≈ <strong>3,4 m³</strong>.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Le volume d'un arbre s'obtient à partir de son diamètre, de sa hauteur et d'un coefficient de forme. Les tarifs de cubage simplifient ce calcul. Une mesure rigoureuse est essentielle pour un inventaire fiable.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VI — L'abattage directionnel",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>L'abattage directionnel : maîtriser la chute</h3>
+        <p>L'<strong>abattage directionnel</strong> est une technique d'abattage maîtrisée qui permet d'orienter la chute de l'arbre dans une direction choisie, afin de :</p>
+        <ul>
+          <li>Protéger les arbres voisins (surtout les arbres d'avenir).</li>
+          <li>Éviter les accidents humains.</li>
+          <li>Endommager le moins possible le tronc abattu.</li>
+          <li>Faciliter le débardage en orientant la chute vers la zone de sortie.</li>
+        </ul>
+
+        <h4>Étapes de l'abattage directionnel</h4>
+        <ol>
+          <li><strong>Évaluation de l'arbre</strong> : observer l'inclinaison naturelle, le vent, les branches, la présence de lianes.</li>
+          <li><strong>Dégagement du pied</strong> : nettoyer les racines et la base du tronc.</li>
+          <li><strong>Choix de la direction de chute</strong> : dans une trouée, vers le chemin de débardage, en évitant les obstacles.</li>
+          <li><strong>Encoche d'abattage</strong> : entaille en coin (ouverture à 45 – 60°) du côté de la chute, à environ 30 cm du sol.</li>
+          <li><strong>Trait de scie</strong> : coup horizontal de l'autre côté, laissant un <strong>charnier</strong> (bande de bois non coupée) qui guide la chute.</li>
+          <li><strong>Coins et leviers</strong> : insérés dans le trait de scie pour contrôler la chute.</li>
+          <li><strong>Repli</strong> : s'éloigner rapidement dès que l'arbre commence à tomber, en suivant un chemin de retraite prévu.</li>
+        </ol>
+
+        <h4>Sécurité de base</h4>
+        <ul>
+          <li>Porter un casque, des gants, des chaussures de sécurité, une protection oculaire.</li>
+          <li>Ne jamais travailler seul à l'abattage.</li>
+          <li>Éloigner les curieux à une distance d'au moins deux fois la hauteur de l'arbre.</li>
+          <li>Entretenir la tronçonneuse (chaîne affûtée, niveau d'huile).</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Abattre sans direction maîtrisée est une erreur grave : l'arbre peut tomber sur des arbres d'avenir, blesser des personnes, endommager du matériel ou se fendre à l'abattage. Un abattage directionnel correct protège la forêt et les travailleurs.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VI — Le débardage et le tronçonnage",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le débardage</h3>
+        <p>Le <strong>débardage</strong> consiste à déplacer les grumes du lieu d'abattage vers le lieu de chargement (aire de dépôt, camion, scierie). C'est une opération délicate : un mauvais débardage compacte le sol, détruit la régénération et endommage les arbres restants.</p>
+
+        <h4>Techniques de débardage</h4>
+        <ul>
+          <li><strong>Débardage à faible impact</strong> : débardage soigné, limitant les dommages au sol et à la régénération. Utilise des engins légers, des tracés maîtrisés, évite le passage répété aux mêmes endroits.</li>
+          <li><strong>Débardage par câble</strong> : adapté aux zones escarpées.</li>
+          <li><strong>Débardage par tracteur ou débusqueur</strong> : pour les zones accessibles.</li>
+          <li><strong>Débardage animal</strong> (bœufs) : dans les petites exploitations artisanales.</li>
+        </ul>
+
+        <h3>Le tronçonnage</h3>
+        <p>Le <strong>tronçonnage</strong> consiste à découper les grumes en <strong>billons</strong> (ou billes) de longueurs commerciales (généralement 4 m, 6 m, 8 m). On respecte les normes du marché et on évite les défauts majeurs (nœuds excessifs, fentes, pourritures).</p>
+
+        <h4>Règles de tronçonnage</h4>
+        <ul>
+          <li>Choisir les longueurs adaptées au transport et à la commercialisation.</li>
+          <li>Éviter les zones de défauts (nœuds, fentes, branches).</li>
+          <li>Marquer les billes (numéro, essence, dimension).</li>
+          <li>Empiler les billes sur un sol drainé, à l'ombre si possible.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Le débardage à faible impact limite les dégâts au sol et à la forêt. Le tronçonnage découpe les grumes en billons commerciaux, en évitant les défauts. Le marquage des billes facilite la traçabilité et la commercialisation.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VI — Le cubage et le classement des bois",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le cubage</h3>
+        <p>Le <strong>cubage</strong> est la mesure du volume des billes et des grumes. Il se fait sur le terrain ou à l'aire de dépôt. Plusieurs formules sont utilisées, dont la plus courante :</p>
+        <p><strong>V = π × (D/2)² × L</strong> (pour une bille cylindrique de diamètre D et de longueur L)</p>
+        <p>On mesure généralement le diamètre aux deux extrémités (gros bout et petit bout) et l'on prend la moyenne. La longueur est mesurée avec un mètre-ruban.</p>
+
+        <h4>Le classement des bois</h4>
+        <p>Le <strong>classement</strong> consiste à trier les billes selon leur qualité. On distingue généralement :</p>
+        <ul>
+          <li><strong>Qualité A</strong> (premier choix) : billes droites, sans défaut, diamètre important, destinées à l'ébénisterie et aux placages.</li>
+          <li><strong>Qualité B</strong> (second choix) : petits défauts (quelques nœuds, légère courbure), destinées à la menuiserie fine.</li>
+          <li><strong>Qualité C</strong> : défauts importants, destinées à la construction, aux traverses, à la palette.</li>
+          <li><strong>Bois de rebut</strong> : pour le bois-énergie ou la trituration.</li>
+        </ul>
+
+        <h4>Critères de classement</h4>
+        <ul>
+          <li>Diamètre minimum selon l'usage.</li>
+          <li>Droiture (courbure maximale tolérée).</li>
+          <li>Absence de défauts : nœuds, fentes, pourritures, blessures, gélivures, roulures.</li>
+          <li>Longueur utilisable.</li>
+          <li>Densité et couleur de l'essence.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Le cubage mesure le volume des billes, le classement les trie par qualité (A, B, C, rebut). Une bonne classification augmente la valeur commerciale des bois et oriente vers l'usage approprié.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VII — L'aménagement forestier durable",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Qu'est-ce que l'aménagement forestier ?</h3>
+        <p>L'<strong>aménagement forestier</strong> est un plan qui définit les objectifs de gestion d'une forêt, organise l'espace, fixe les règles de prélèvement et les mesures de régénération. Il garantit que l'exploitation ne dépasse pas la capacité de renouvellement de la forêt.</p>
+
+        <h4>Éléments d'un plan d'aménagement</h4>
+        <ul>
+          <li><strong>Objectifs</strong> : production de bois, conservation de la biodiversité, protection des sols, usage communautaire.</li>
+          <li><strong>Zonage</strong> : séparation des zones d'exploitation, des zones de protection (bassins versants, forêts sacrées, zones de pente), des zones de régénération.</li>
+          <li><strong>Inventaire</strong> : évaluation de la ressource disponible.</li>
+          <li><strong>Rotation</strong> : durée entre deux passages d'exploitation sur la même zone (par exemple 25 à 40 ans en forêt tropicale).</li>
+          <li><strong>Règles de prélèvement</strong> : diamètre minimum d'abattage (DMA), nombre d'arbres par essence à prélever, arbres à protéger.</li>
+          <li><strong>Mesures de régénération</strong> : plantation, dégagement, protection.</li>
+          <li><strong>Suivi</strong> : indicateurs et fréquence des inventaires de contrôle.</li>
+        </ul>
+
+        <h4>Le diamètre minimum d'abattage (DMA)</h4>
+        <p>Le DMA est le diamètre en dessous duquel on ne coupe pas une essence donnée. Il garantit qu'un arbre a eu le temps de produire des graines et de contribuer à la régénération. Par exemple, pour le wengé, le DMA est souvent fixé à 60–70 cm.</p>
+
+        <h4>La certification forestière</h4>
+        <p>Des labels internationaux (<strong>FSC</strong>, <strong>PEFC</strong>) certifient qu'une forêt est gérée selon des critères de durabilité (respect de la biodiversité, droits des communautés, régénération).</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Exploiter sans plan d'aménagement est une erreur lourde : elle épuise la ressource, détruit les écosystèmes et prive les générations futures de leur patrimoine. L'aménagement est une exigence légale et une nécessité écologique.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VII — La législation forestière et la lutte contre l'exploitation illégale",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le Code forestier congolais</h3>
+        <p>En RDC, la gestion forestière est encadrée par le <strong>Code forestier</strong> (loi n° 011/2002). Il définit :</p>
+        <ul>
+          <li>Les <strong>domaines forestiers</strong> : forêts de l'État, forêts des communautés locales, forêts privées.</li>
+          <li>Les <strong>régimes d'exploitation</strong> : concessions forestières, autorisations de coupe, permis artisanaux.</li>
+          <li>Les <strong>obligations des exploitants</strong> : plan d'aménagement, inventaire, reboisement, respect des DMA, redevances forestières.</li>
+          <li>Les <strong>droits des communautés locales</strong> : usage coutumier, forêts communautaires.</li>
+          <li>Les <strong>sanctions</strong> en cas d'infraction.</li>
+        </ul>
+
+        <h3>L'exploitation illégale</h3>
+        <p>L'<strong>exploitation forestière illégale</strong> (bois coupé sans permis, hors des zones autorisées, en dessous du DMA, sans paiement des redevances) prive l'État de recettes, détruit la ressource et alimente des réseaux criminels. Elle est combattue par :</p>
+        <ul>
+          <li>La <strong>traçabilité</strong> des bois (marquage des grumes, documents de transport, registres).</li>
+          <li>Les <strong>contrôles</strong> des agents forestiers.</li>
+          <li>Les <strong>systèmes de vérification</strong> de la légalité (accords avec les pays importateurs).</li>
+          <li>La <strong>participation des communautés</strong> à la surveillance.</li>
+        </ul>
+
+        <h3>Le rôle du technicien forestier</h3>
+        <ul>
+          <li>Respecter et faire respecter la législation forestière.</li>
+          <li>Tenir des registres de coupe, de transport et de commercialisation.</li>
+          <li>Alerter les autorités en cas d'infraction.</li>
+          <li>Sensibiliser les communautés et les exploitants à la gestion durable.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Le Code forestier congolais encadre l'exploitation et la conservation. L'exploitation illégale détruit la forêt et prive l'État de recettes. La traçabilité et la participation communautaire sont des outils clés. Le technicien forestier est un acteur central de cette légalité.</p>
+      </div>
+    `
+  },
+  {
+    title: "Synthèse — Connaître, exploiter et protéger la forêt",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Synthèse générale</div>
+        <h3>Les compétences du technicien forestier</h3>
+        <ol>
+          <li><strong>Connaître les écosystèmes</strong> forestiers congolais et leur importance.</li>
+          <li><strong>Identifier les essences</strong> (dendrologie, herbier).</li>
+          <li><strong>Produire des plants</strong> en pépinière.</li>
+          <li><strong>Planter et entretenir</strong> une parcelle forestière.</li>
+          <li><strong>Réaliser un inventaire</strong> (placettes, mesures, calcul de volumes).</li>
+          <li><strong>Participer à l'exploitation</strong> : abattage directionnel, débardage à faible impact, cubage, classement.</li>
+          <li><strong>Contribuer à la gestion durable</strong> : plan d'aménagement, respect du Code forestier, traçabilité.</li>
+        </ol>
+
+        <h3>Tableau de synthèse</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Domaine</th>
+              <th>Objectif</th>
+              <th>Outil principal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Écosystèmes</td><td>Connaître la ressource</td><td>Typologie, cartographie</td></tr>
+            <tr><td>Dendrologie</td><td>Identifier les essences</td><td>Herbier, critères botaniques</td></tr>
+            <tr><td>Pépinière</td><td>Produire les plants</td><td>Semis, repiquage, ombrage</td></tr>
+            <tr><td>Sylviculture</td><td>Planter, entretenir</td><td>Préparation du sol, dégagement, éclaircie</td></tr>
+            <tr><td>Inventaire</td><td>Quantifier la ressource</td><td>Placettes, DHP, cubage</td></tr>
+            <tr><td>Exploitation</td><td>Récolter le bois</td><td>Abattage directionnel, débardage, classement</td></tr>
+            <tr><td>Aménagement</td><td>Gérer durablement</td><td>Plan d'aménagement, DMA, certification</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bloc cas">
+        <div class="bloc-label">Étude de cas (cas pédagogique)</div>
+        <p>« Un élève de 4<sup>e</sup> foresterie à Kisangani réalise un inventaire forestier dans une parcelle-école. Il identifie les essences, mesure les diamètres et les hauteurs, calcule le volume de bois sur pied et propose un plan de reboisement pour les zones dégradées. Il présente ses résultats à la classe. »</p>
+        <p><strong>Analyse :</strong> la démarche est complète : identification, mesures, calcul, proposition. Elle mobilise toutes les compétences du cours : dendrologie, inventaire, cubage, sylviculture, aménagement. C'est le type de travail attendu d'un technicien forestier de terrain.</p>
+      </div>
+
+      <div class="bloc sources">
+        <div class="bloc-label">Sources du cours</div>
+        <ul>
+          <li>Lobinayo, « Foresterie, option des humanités en RDC ».</li>
+          <li>Fiches pédagogiques officielles — Cours de Sylviculture, Édition 2025 (manuels-scolaires-rdc.com).</li>
+          <li>Fiches pédagogiques officielles — Cours d'Exploitation Forestière, Édition 2025 (manuels-scolaires-rdc.com).</li>
+          <li>Sciences-Africa, <em>Foresterie – Sylviculture et Aménagement</em>, 6<sup>e</sup> Année des Humanités (EXETAT).</li>
+          <li>COMIFAC, « République Démocratique du Congo » — éléments de foresterie classique.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Évaluation finale — Foresterie",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Consigne</div>
+        <p>Répondez aux questions ci-dessous en sélectionnant la bonne réponse parmi les quatre propositions. Le QCM couvre l'ensemble du cours. Cliquez ensuite sur « Valider mes réponses » pour obtenir votre score.</p>
+      </div>
+
+      <div class="quiz-container">
+        <div id="quizQuestions"></div>
+        <button id="submitQuiz" class="quiz-btn-submit">
+          Valider mes réponses
+        </button>
+        <div id="quizResult" class="quiz-result"></div>
+      </div>
+    `
+  }
+];
+const questions = [
+  {
+    text: "La foresterie est la science qui étudie :",
+    options: [
+      "Les cultures vivrières",
+      "Les forêts et leur gestion durable",
+      "Les animaux d'élevage",
+      "Les sols agricoles"
+    ],
+    correct: 1
+  },
+  {
+    text: "La RDC abrite :",
+    options: [
+      "Le premier massif forestier mondial",
+      "Le second massif forestier tropical mondial (bassin du Congo)",
+      "Un désert",
+      "Aucune formation forestière"
+    ],
+    correct: 1
+  },
+  {
+    text: "Parmi les formations suivantes, laquelle n'est pas un écosystème forestier congolais ?",
+    options: [
+      "La forêt équatoriale dense",
+      "La forêt de montagne",
+      "La mangrove",
+      "La toundra arctique"
+    ],
+    correct: 3
+  },
+  {
+    text: "La forêt équatoriale dense de la RDC est principalement localisée :",
+    options: [
+      "Dans la Cuvette Centrale",
+      "Sur le plateau des Bateke",
+      "Dans l'estuaire du fleuve Congo",
+      "Sur les hauts plateaux du Katanga"
+    ],
+    correct: 0
+  },
+  {
+    text: "La dendrologie est la science qui étudie :",
+    options: [
+      "Les arbres et leur identification",
+      "Les sols",
+      "Les animaux",
+      "Le climat"
+    ],
+    correct: 0
+  },
+  {
+    text: "Parmi ces essences, laquelle est très dure et destinée à l'ébénisterie de luxe ?",
+    options: ["Le limba", "Le tola", "Le wengé", "Le sapelli"],
+    correct: 2
+  },
+  {
+    text: "L'herbier forestier sert à :",
+    options: [
+      "Identifier les essences à partir de spécimens séchés",
+      "Mesurer le DHP",
+      "Calculer les volumes",
+      "Planter les arbres"
+    ],
+    correct: 0
+  },
+  {
+    text: "La pépinière forestière sert à :",
+    options: [
+      "Produire des jeunes plants forestiers",
+      "Exploiter le bois",
+      "Réaliser un inventaire",
+      "Débarder les grumes"
+    ],
+    correct: 0
+  },
+  {
+    text: "Parmi les critères suivants, lequel n'est pas un critère de qualité d'un plant de pépinière ?",
+    options: [
+      "Tige droite et vigoureuse",
+      "Racines bien développées, non enroulées",
+      "Feuillage sain",
+      "Tronc déjà exploitable en scierie"
+    ],
+    correct: 3
+  },
+  {
+    text: "La sylviculture regroupe :",
+    options: [
+      "Les techniques de culture et d'entretien des arbres forestiers",
+      "Uniquement la coupe des arbres",
+      "L'exploitation minière",
+      "La pêche"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le reboisement consiste à :",
+    options: [
+      "Rétablir un couvert forestier sur un terrain qui l'a perdu",
+      "Couper les arbres d'une forêt primaire",
+      "Labourer le sol",
+      "Irriguer les cultures"
+    ],
+    correct: 0
+  },
+  {
+    text: "Parmi les enjeux du reboisement en RDC, on peut citer :",
+    options: [
+      "La restauration des savanes du plateau des Bateke et la lutte contre l'érosion",
+      "La construction de routes nationales",
+      "La production pétrolière",
+      "L'exploitation minière"
+    ],
+    correct: 0
+  },
+  {
+    text: "Un inventaire forestier par placettes consiste à :",
+    options: [
+      "Mesurer tous les arbres dans des surfaces délimitées (circulaires ou carrées)",
+      "Compter les animaux",
+      "Mesurer la pluviométrie",
+      "Mesurer le pH du sol"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le DHP se mesure à :",
+    options: [
+      "1,30 m du sol",
+      "0,50 m du sol",
+      "2 m du sol",
+      "Au sommet de l'arbre"
+    ],
+    correct: 0
+  },
+  {
+    text: "Une placette de 1 000 m² contient 12 arbres. La densité à l'hectare est :",
+    options: ["12 arbres/ha", "120 arbres/ha", "1 200 arbres/ha", "1,2 arbre/ha"],
+    correct: 1
+  },
+  {
+    text: "Le coefficient de forme dans le calcul du volume d'un arbre sert à :",
+    options: [
+      "Corriger le fait que l'arbre n'est pas un cylindre parfait",
+      "Mesurer la hauteur",
+      "Mesurer le DHP",
+      "Choisir la tronçonneuse"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'abattage directionnel sert à :",
+    options: [
+      "Orienter la chute de l'arbre pour protéger les arbres voisins et les travailleurs",
+      "Couper plus vite",
+      "Abîmer les arbres voisins",
+      "Empêcher la régénération"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le débardage à faible impact consiste à :",
+    options: [
+      "Déplacer les grumes en limitant les dommages au sol et à la régénération",
+      "Transporter les grumes à tout prix",
+      "Abandonner les grumes en forêt",
+      "Brûler les grumes"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le cubage consiste à :",
+    options: [
+      "Mesurer le volume des billes et grumes",
+      "Mesurer le DHP",
+      "Identifier les essences",
+      "Planter les arbres"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le classement des bois A, B, C, rebut repose sur :",
+    options: [
+      "La qualité des billes (défauts, droiture, diamètre)",
+      "La couleur uniquement",
+      "Le prix de vente",
+      "La région d'origine"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'aménagement forestier est :",
+    options: [
+      "Un plan qui définit les objectifs de gestion et les règles de prélèvement",
+      "Une simple autorisation de coupe",
+      "Une marque de certification uniquement",
+      "Un document fiscal"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le diamètre minimum d'abattage (DMA) sert à :",
+    options: [
+      "Garantir qu'un arbre a eu le temps de produire des graines et de contribuer à la régénération",
+      "Limiter la production",
+      "Augmenter la production à court terme",
+      "Aucun rôle"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le Code forestier congolais (loi n° 011/2002) encadre :",
+    options: [
+      "La gestion, l'exploitation et la conservation des forêts",
+      "Uniquement l'agriculture",
+      "Uniquement la pêche",
+      "Uniquement l'élevage"
+    ],
+    correct: 0
+  },
+  {
+    text: "Parmi les moyens de lutte contre l'exploitation illégale, on peut citer :",
+    options: [
+      "La traçabilité des bois et les contrôles des agents forestiers",
+      "L'absence de contrôle",
+      "La suppression du Code forestier",
+      "L'encouragement du commerce informel"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'érosion ravinante à Kananga et Kikwit peut être combattue notamment par :",
+    options: [
+      "Le reboisement et la stabilisation des sols",
+      "L'exploitation minière",
+      "La déforestation",
+      "L'urbanisation"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'objectif principal de la foresterie en 4<sup>e</sup> Humanité est de rendre l'élève capable de :",
+    options: [
+      "Connaître, exploiter et protéger durablement la forêt",
+      "Étudier uniquement la littérature",
+      "Gérer un magasin de commerce",
+      "Construire des routes"
+    ],
+    correct: 0
+  }
+];
+
+try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+        questions.forEach(function (q) {
+            if (!q.text) q.text = q.question || q.q || q.enonce || q.titre || "";
+            if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+            if (typeof q.correct === "undefined") {
+                if (typeof q.answer !== "undefined") q.correct = q.answer;
+                else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+            }
+        });
+    }
+} catch (e) {}
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+const pageTitle = document.getElementById('pageTitle');
+pageTitle.textContent = "ECOLIA · " + COURSE_TITLE;
+document.title = "ECOLIA — " + COURSE_TITLE;
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim() || slides.length === 0) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp("(" + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ")", 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderEmptyState() {
+    contentDiv.innerHTML = '<div class="empty-state"><div class="icon">·</div><span class="tag">Bientôt disponible</span><h2>' + COURSE_TITLE + '</h2><p>Ce cours est en préparation. Le contenu sera ajouté prochainement.</p></div>';
+    slideCounterSpan.textContent = '0/0';
+    progressFill.style.width = '0%';
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    counterSpan.textContent = '—';
+}
+
+function renderQuiz() {
+    const qc = document.getElementById('quizQuestions');
+    if (!qc) return;
+    if (typeof questions === 'undefined' || questions.length === 0) {
+        qc.innerHTML = '<p style="color:#666;font-style:italic;">Quiz bientot disponible.</p>';
+        return;
+    }
+    let html = '';
+    questions.forEach((q, i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o, k) => {
+            html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>';
+        });
+        html += '</div>';
+    });
+    qc.innerHTML = html;
+    const submitBtn = document.getElementById('submitQuiz');
+    if (submitBtn) {
+        submitBtn.onclick = () => {
+            let score = 0;
+            questions.forEach((q, i) => {
+                const s = document.querySelector('input[name="q' + i + '"]:checked');
+                if (s && parseInt(s.value) === q.correct) score++;
+            });
+            const pct = Math.round(score/questions.length*100);
+            document.getElementById('quizResult').innerHTML =
+                '<div style="background:var(--bg2);padding:16px;border-radius:10px;margin-top:14px;">' +
+                '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong></div>';
+        };
+    }
+}
+
+function renderSlide(index, keepHighlight) {
+    if (keepHighlight === undefined) keepHighlight = true;
+    if (slides.length === 0) { renderEmptyState(); return; }
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    if (index === slides.length - 1) renderQuiz();
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    if (slides.length === 0) return;
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (slides.length && currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (slides.length && currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+<!-- ECOLIA_IMAGE_LOADER_START -->
+<script>
+(function () {
+  var SITE = "https://ecolia-course.github.io/";
+  var NATIVE = false;
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function abs(u) { return /^(https?:|data:|blob:)/i.test(u) ? u : (NATIVE ? SITE + u.replace(/^(\.\/|\/)+/, "") : u); }
+  function ext(u) { var m = String(u).split("?")[0].match(/\.(jpe?g|png|gif|webp|svg)$/i); return m ? m[1].toLowerCase() : "jpg"; }
+  function hide(img) { img.onerror = null; img.style.display = "none"; }
+  var table = null, queue = [], queued = {}, running = false;
+  function enqueue(full, fn) {
+    if (queued[fn]) return;
+    queued[fn] = 1; queue.push([full, fn]);
+    if (!running) { running = true; setTimeout(next, 2500); }
+  }
+  function next() {
+    if (!queue.length) { running = false; return; }
+    if (!navigator.onLine) { running = false; return; }
+    var q = queue.shift(), t0 = Date.now();
+    try { CoursInterface.download(q[0], q[1]); } catch (e) { return setTimeout(next, 500); }
+    (function wait() {
+      var ok = false;
+      try { ok = !!CoursInterface.exists(q[1]); } catch (e) {}
+      if (ok) setTimeout(next, 1500);
+      else if (Date.now() - t0 > 40000) next();
+      else setTimeout(wait, 700);
+    })();
+  }
+  function exists(fn) { try { return !!CoursInterface.exists(fn); } catch (e) { return false; } }
+  function show(img) {
+    if (!table || img.getAttribute("data-ecolia-done")) return;
+    var id = img.getAttribute("data-image-id");
+    var url = table[id];
+    if (typeof url !== "string" || !url.length) { console.warn("ECOLIA : image absente du JSON :", id); return; }
+    img.setAttribute("data-ecolia-done", "1");
+    if (!NATIVE) { img.onerror = function () { hide(img); }; img.setAttribute("src", url); return; }
+    var full = abs(url), fn = "img_" + id + "." + ext(url);
+    if (exists(fn)) {
+      img.onerror = function () {
+        try { CoursInterface["delete"](fn); } catch (e) {}
+        queued[fn] = 0;
+        img.onerror = function () { hide(img); };
+        img.setAttribute("src", full);
+      };
+      img.setAttribute("src", "https://app.local/cours/" + fn);
+    } else {
+      img.onerror = function () { hide(img); };
+      img.setAttribute("src", full);
+      enqueue(full, fn);
+    }
+  }
+  function scan(root) {
+    if (!root || !root.querySelectorAll) return;
+    if (root.matches && root.matches("img[data-image-id]")) show(root);
+    root.querySelectorAll("img[data-image-id]").forEach(show);
+  }
+  function prefetchAll() {
+    var ids = {};
+    try { JSON.stringify(slides).replace(/data-image-id=\\?"([^"\\]+)/g, function (m, id) { ids[id] = 1; }); } catch (e) {}
+    Object.keys(ids).forEach(function (id) {
+      var url = table[id];
+      if (typeof url !== "string" || !url.length) return;
+      var fn = "img_" + id + "." + ext(url);
+      if (!exists(fn)) enqueue(abs(url), fn);
+    });
+  }
+  function start(tbl) {
+    table = tbl;
+    scan(document.body);
+    new MutationObserver(function (muts) {
+      muts.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.nodeType === 1) scan(n); }); });
+    }).observe(document.body, { childList: true, subtree: true });
+    if (NATIVE) prefetchAll();
+  }
+  var JSON_URL = NATIVE ? SITE + "images_ecolia.json" : "images_ecolia.json";
+  var KEY = "ecolia_images_json";
+  fetch(JSON_URL, NATIVE ? { cache: "no-cache" } : undefined)
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (table) { if (NATIVE) lsSet(KEY, JSON.stringify(table)); start(table); })
+    .catch(function (e) {
+      var saved = null;
+      if (NATIVE) { try { saved = JSON.parse(lsGet(KEY) || "null"); } catch (x) {} }
+      if (saved) start(saved);
+      else console.warn("ECOLIA : JSON des images indisponible.", e);
+    });
+})();
+</script>
+<!-- ECOLIA_IMAGE_LOADER_END -->
+
+
+
+<!-- ECOLIA_AUDIO_PLAYER_START -->
+<style>
+  #ecolia-audio-btn, #ecolia-dl-btn {
+    width: 30px; height: 30px; min-width: 30px; padding: 0; margin: 0 4px 0 0;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    cursor: pointer; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent; outline: none;
+  }
+  #ecolia-audio-btn { border: none; background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-dl-btn { border: 1.5px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb); }
+  #ecolia-dl-btn.ecolia-full { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-btn.ecolia-fixed { position: fixed; top: 8px; left: 8px; z-index: 2147483000; }
+  #ecolia-audio-btn:active, #ecolia-dl-btn:active { transform: scale(.92); }
+  #ecolia-audio-btn svg, #ecolia-dl-btn svg { width: 15px; height: 15px; fill: currentColor; pointer-events: none; }
+  #ecolia-audio-btn.ecolia-off, #ecolia-dl-btn.ecolia-off { display: none; }
+  #ecolia-audio-banner {
+    display: none; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0;
+    padding: 8px 14px; font-size: .82rem; line-height: 1.35;
+    background: var(--soft, #eef3fb); color: var(--p1, #123); border-bottom: 1px solid var(--bd, #c9d6ea);
+  }
+  #ecolia-audio-banner.on { display: flex; }
+  #ecolia-audio-banner .eab-txt { flex: 1 1 180px; }
+  #ecolia-audio-banner .eab-act { display: flex; gap: 6px; flex-wrap: wrap; }
+  #ecolia-audio-banner button {
+    border: 1px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb);
+    border-radius: 16px; padding: 5px 12px; font-size: .8rem; cursor: pointer;
+  }
+  #ecolia-audio-banner button.pri { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-banner .eab-bar { display: none; flex-basis: 100%; height: 4px; border-radius: 2px; overflow: hidden; background: var(--bd, #c9d6ea); }
+  #ecolia-audio-banner .eab-bar i { display: block; height: 100%; width: 0; background: var(--p2, #2563eb); transition: width .2s; }
+</style>
+<script>
+(function () {
+  var CFG = {"code":"Foresterie4","base":"https://ecolia-course.github.io/ecolia-media/audio_files/","available":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"count":18,"sizeMo":18,"sizes":{"1":1080960,"2":1097280,"3":1052544,"4":924480,"5":887808,"6":1042560,"7":913536,"8":901824,"9":796224,"10":1443840,"11":999744,"12":979968,"13":874368,"14":883968,"15":1075968,"16":1021056,"17":1080192,"18":152064},"fallback":{"1":[["fr","Sommaire, Foresterie. Bienvenue. La foresterie: connaître, exploiter et protéger la forêt. La foresterie est la science et la pratique de la gestion des forêts, de leur création à leur exploitation, en passant par leur protection et leur renouvellement. La République Démocratique du Congo abrite le second massif forestier tropical du monde, après l'Amazonie: le bassin du Congo. Ce patrimoine immense est à la fois une richesse économique majeure et un enjeu écologique planétaire. Ce cours s'adresse aux élèves de 4e Humanité de la section Agricole (Option Foresterie). Il vise à former un futur technicien A2 capable d'identifier les essences forestières, de produire des plants en pépinière, de réaliser un reboisement, de mener un inventaire forestier, de participer à l'exploitation raisonnée et de contribuer à la gestion durable des forêts congolaises. Objectifs d'apprentissage. À la fin de ce cours, l'élève doit être capable de: Décrire les écosystèmes forestiers de la R D C et leur importance écologique et économique. Identifier les principales essences forestières congolaises et leurs usages. Créer et gérer une pépinière forestière. Concevoir et réaliser un reboisement sur un terrain dégradé. Réaliser un inventaire forestier simple (placettes, mesures, calcul des volumes). Appliquer les techniques d'abattage directionnel, de débardage et de cubage. Comprendre les principes de l'aménagement forestier durable. Connaître les bases de la législation forestière congolaise. Grands chapitres du cours. Chapitre I, Introduction à la foresterie congolaise. Chapitre II, Dendrologie et identification des essences. Chapitre III, La pépinière forestière. Chapitre IV, La sylviculture et le reboisement. Chapitre V, L'inventaire forestier. Chapitre VI, L'exploitation forestière. Chapitre VII, La gestion durable et l'aménagement forestier."]],"2":[["fr","Chapitre I, Pourquoi la foresterie en R D C? Situation-problème. Un village de la Tshopo vit de l'abattage du wengé. Depuis vingt ans, les plus beaux arbres ont été coupés, la forêt recule, les sols s'érodent et les jeunes n'ont plus de bois de valeur à exploiter. Certains villageois disent: « La forêt est immense, elle ne s'épuisera jamais. » D'autres constatent que les arbres de valeur deviennent rares autour du village. Qui a raison? Comment garantir aux générations futures un accès à la forêt et à ses produits? Fondements théoriques. Le bassin du Congo, second massif tropical mondial. La R D C possède environ 60 pour cent des forêts du bassin du Congo et 10 pour cent des forêts tropicales mondiales. Cette forêt est un poumon vert: elle stocke d'énormes quantités de carbone, régule le climat régional, protège les sols et abrite une biodiversité exceptionnelle (bonobos, okapis, gorilles, milliers d'espèces végétales). Sur le plan économique, la forêt fournit: Du bois d'œuvre (wengé, iroko, sapelli, acajou) exporté et utilisé localement en menuiserie et ébénisterie. Du bois-énergie (bois de chauffe, charbon de bois) consommé par la majorité des ménages congolais. Des produits forestiers non ligneux: fruits, noix, chenilles, miel, plantes médicinales, raphia. Des services écologiques: régulation de l'eau, protection contre l'érosion, séquestration du carbone. Sans gestion, cette richesse s'épuise: la déforestation avance (autour des grandes villes, le long des routes d'exploitation), les essences de valeur deviennent rares et les sols se dégradent. Erreur fréquente. Croire que « la forêt est immense, elle ne s'épuisera jamais » est une erreur. Les forêts proches des villes et des axes routiers sont déjà largement dégradées. La foresterie est la seule réponse rationnelle: connaître la ressource, la renouveler, l'exploiter prudemment."]],"3":[["fr","Chapitre I, Les écosystèmes forestiers congolais. Fondements théoriques. Les grands types de formations forestières. 1. La forêt équatoriale dense. Forêt humide de la Cuvette Centrale (Kisangani, Mbandaka, Boende, Ikela, Basankusu). Haute de 30 à 50 mètres, à plusieurs étages de végétation, très riche en essences et en biodiversité. Elle bénéficie d'une pluviométrie abondante (1 500 moins 2 000 millimètres ou an) et de températures élevées constantes. C'est le domaine du wengé, de l'iroko, du sapelli, du tola, du limba. 2. Les forêts de montagne. Présentes dans l'Est du pays (Kivu, Ituri, Ruwenzori). Altitude élevée, températures plus fraîches, brumes fréquentes. Riches en espèces endémiques (gorille de montagne, okapi en Ituri). Elles protègent les sols de montagne contre l'érosion et régulent le régime des eaux. 3. Les forêts claires et savanes boisées. Plateaux du Kasaï, du Katanga, du Bas-Congo. Végétation plus ouverte, arbres moins hauts, présence de graminées. Elles sont soumises chaque année aux feux de brousse, qui influencent leur composition floristique. 4. Les forêts-galeries et forêts ripicoles. Formations linéaires le long des cours d'eau, en zone de savane. Elles jouent un rôle essentiel de corridor écologique et de protection des berges. 5. Les mangroves. Dans l'estuaire du fleuve Congo (Muanda). Forêts d'arbres adaptés au sel et aux marées. Elles protègent la côte, abritent des nurseries de poissons et de crevettes. Elles sont aujourd'hui très menacées. À retenir. La R D C possède cinq grands types de formations forestières: forêt équatoriale dense, forêt de montagne, forêt claire et savane boisée, forêt-galerie, mangrove. Chacune a une écologie et une gestion spécifiques."]],"4":[["fr","Chapitre I, Le rôle écologique, économique et social de la forêt. Fondements théoriques. Trois grandes familles de rôles. Rôles écologiques. Régulation du climat: les arbres absorbent le C O2 atmosphérique et libèrent de l'oxygène. La forêt du bassin du Congo stocke plusieurs dizaines de milliards de tonnes de carbone. Cycle de l'eau: les forêts transpirent d'énormes quantités d'eau, alimentant les pluies et les rivières. Protection des sols: les racines retiennent la terre; le couvert freine l'impact des pluies et limite l'érosion. Biodiversité: habitat de milliers d'espèces animales et végétales, dont beaucoup sont endémiques. Rôles économiques. Bois d'œuvre: exportation et usage local (menuiserie, ébénisterie, construction). Bois-énergie: première source d'énergie domestique en R D C. Produits forestiers non ligneux: chenilles, miel, noix, fruits, plantes médicinales, raphia, rotin. Emplois: exploitation forestière, transformation, transport, pépinières, reboisement. Rôles sociaux et culturels. Subsistance des communautés forestières (chasse, cueillette, pharmacopée). Valeurs culturelles et spirituelles (forêts sacrées, sites rituels). Cadre de vie et identité des peuples autochtones (pygmées). À retenir. La forêt est multifonctionnelle: elle rend des services écologiques (climat, eau, sols, biodiversité), économiques (bois, produits non ligneux, emplois) et sociaux (subsistance, culture). Une gestion durable doit concilier ces trois dimensions."]],"5":[["fr","Chapitre II, La dendrologie: identifier les essences. Fondements théoriques. Qu'est-ce que la dendrologie? La dendrologie est la science qui étudie les arbres: leur identification, leur croissance, leurs caractéristiques botaniques et leurs usages. Pour le forestier, savoir identifier une essence est fondamental: de l'identification dépendent l'inventaire, l'exploitation, la valorisation et la gestion. Les critères d'identification sur pied. Feuilles: forme, disposition, nervation, couleur, présence de poils. Écorce: couleur, épaisseur, texture (lisse, écailleuse, fissurée), odeur. Fruits et graines: forme, taille, couleur, mode de dissémination. Port de l'arbre: forme du houppier, hauteur, forme du fût. Exsudats: latex, résine, sève colorée. Odeur du bois fraîchement coupé. Habitat: sol, altitude, type de forêt. L'herbier forestier. L'herbier est une collection de spécimens séchés et pressés, étiquetés avec le nom scientifique, la date, le lieu et le nom du collecteur. C'est l'outil de référence du forestier pour vérifier une identification. Chaque technicien devrait entretenir un herbier personnel. Erreur fréquente. Confondre deux essences visuellement proches est une erreur fréquente. Par exemple, confondre l'iroko avec une essence voisine peut conduire à une exploitation inadaptée ou à une erreur d'inventaire lourde de conséquences commerciales. Le doute impose le recours à l'herbier ou à un botaniste."]],"6":[["fr","Chapitre II, Les principales essences de la R D C. Fondements théoriques. Les grandes essences commerciales congolaises. Essence. Nom scientifique. Caractéristiques. Usages. Wengé. Millettia laurentii. Bois très dur, brun foncé à noir, très durable, dense (0,8 moins 0,9). Ébénisterie, meubles de luxe, parquets, sculpture. Iroko. Chlorophora excelsa. Bois jaune-brun devenant brun, très durable, résistant aux insectes. Menuiserie extérieure, construction navale, ponts, portes. Sapelli. Entandrophragma cylindricum. Bois rouge-brun, mi-dur, bonne ouvrabilité. Menuiserie fine, ameublement, placages. Acajou d'Afrique. Khaya spp. Bois rouge-brun clair, très apprécié. Ameublement, placages, menuiserie intérieure. Tola. Gossweilerodendron balsamiferum. Bois jaune clair, tendre, léger. Menuiserie intérieure, contreplaqué, caisses. Limba. Terminalia superba. Bois clair, facile à travailler. Menuiserie, ameublement courant, contreplaqué. Essences de reboisement. Pour la plantation et le reboisement, on utilise souvent des essences à croissance rapide: Acacia (fixation d'azote, bois-énergie), Eucalyptus (bois d'œuvre, poteaux, bois-énergie), Grevillea (agroforesterie), Cedrela, Gmelina. Des essences locales (wengé, iroko) sont aussi plantées, mais leur croissance est plus lente. À retenir. Le wengé, l'iroko, le sapelli, l'acajou, le tola et le limba sont les grandes essences commerciales de la R D C. Chacune a des caractéristiques et des usages précis. Pour le reboisement, on utilise souvent des essences à croissance rapide."]],"7":[["fr","Chapitre III, La pépinière forestière. Fondements théoriques. Qu'est-ce qu'une pépinière forestière? La pépinière forestière est un espace aménagé où l'on produit des jeunes plants forestiers, à partir de semences ou de boutures, jusqu'à ce qu'ils soient prêts à être mis en terre. Choix du site. Proximité de l'eau: arrosage régulier indispensable. Sol fertile et bien drainé. Ombrage partiel: les jeunes plants sont sensibles au soleil direct. Accessibilité: proximité du village et de la parcelle de plantation. Protection contre les animaux (clôture). Terrain plat ou légèrement incliné. Étapes de création. Préparation des planches: nettoyage, labour, nivellement, désinfection. Semis: en lignes espacées, à faible profondeur, semences de qualité. Arrosage: régulier, ni trop ni trop peu. Repiquage: quand les plantules ont 3 à 5 feuilles, on les transfère en sachets ou en pots. Soins: désherbage, ombrage, protection phytosanitaire, apport d'engrais organique. Acclimatation: quelques semaines avant la plantation, on expose progressivement les plants au soleil direct. Critères de qualité d'un plant. Tige droite et vigoureuse. Système racinaire bien développé (non enroulé). Feuillage sain, sans maladie ni insecte. Hauteur adaptée (30 moins 50 centimètres pour la plupart des essences). Erreur fréquente. Utiliser des semences de mauvaise qualité, non adaptées au milieu, ou négliger l'ombrage et l'arrosage: le taux de germination est faible, les plants meurent après repiquage, et tout le travail de pépinière est perdu."]],"8":[["fr","Chapitre IV, La sylviculture. Fondements théoriques. Qu'est-ce que la sylviculture? La sylviculture est l'ensemble des techniques de culture et d'entretien des arbres forestiers: préparation du sol, plantation, dégagement, éclaircie, régénération. Elle vise à produire du bois de qualité tout en assurant le renouvellement de la forêt. Les grandes opérations sylvicoles. Préparation du terrain: nettoyage, débroussaillage, labour ou sous-solage, piquetage. Plantation: mise en terre des plants, à la bonne profondeur et au bon espacement (2 multiplié par 2 mètres à 4 multiplié par 4 mètres selon l'essence et l'objectif). Dégagement: élimination des herbes et arbustes concurrents autour des jeunes plants. Éclaircie: coupe sélective d'arbres pour laisser plus d'espace et de lumière aux arbres d'avenir. Élagage: suppression des branches basses pour produire un fût droit et sans nœuds. Régénération: naturelle (semis, rejets) ou artificielle (plantation). Espacement et densité. Un espacement de 3 multiplié par 3 mètres donne environ 1 111 plants par hectare. Un espacement de 4 multiplié par 4 mètres donne 625 plants par hectare. Plus l'espacement est large, plus les arbres ont de place pour se développer, mais le peuplement met plus de temps à fermer. À retenir. La sylviculture regroupe les techniques de culture des arbres: préparation du sol, plantation, dégagement, éclaircie, élagage, régénération. Elle vise à produire du bois de qualité tout en assurant le renouvellement."]],"9":[["fr","Chapitre IV, Le reboisement. Fondements théoriques. Le reboisement: restaurer le couvert forestier. Le reboisement est le rétablissement d'un couvert forestier sur un terrain qui l'a perdu (déforestation, incendie, culture abandonnée, sol dégradé). Il diffère du boisement, qui crée une forêt sur un terrain qui n'en a jamais porté. Enjeux du reboisement en R D C. Restaurer les savanes dégradées du plateau des Bateke. Stabiliser les sols menacés par l'érosion ravinante (Kananga, Kikwit). Produire du bois-énergie pour les ménages. Produire du bois d'œuvre et des produits forestiers. Séquestrer du carbone et atténuer le changement climatique. Protéger les bassins versants et les sources d'eau. Étapes d'un reboisement réussi. Choix des espèces: adaptées au sol, au climat, à l'objectif (bois-énergie, bois d'œuvre, restauration, agroforesterie). Préparation du terrain: nettoyage, labour localisé, piquetage. Plantation: en saison des pluies, tôt le matin ou en fin d'après-midi. Entretien: dégagement, arrosage si nécessaire, remplacement des plants morts. Protection: pare-feu, clôture, gardiennage. Erreur fréquente. Planter sans préparation du sol ni entretien est l'erreur la plus fréquente. Les plants meurent ou poussent mal, et le reboisement échoue. Un reboisement réussi exige un suivi sur au moins 3 à 5 ans."]],"10":[["fr","Chapitre V, L'inventaire forestier. Fondements théoriques. Qu'est-ce qu'un inventaire forestier? L'inventaire forestier est une opération qui consiste à mesurer et à quantifier la ressource forestière (nombre d'arbres, volume de bois, répartition par essence et par dimension) sur une surface donnée. Il permet de connaître la ressource avant d'exploiter, de planifier l'aménagement et de suivre l'évolution de la forêt. Les méthodes d'échantillonnage. Inventaire par placettes: on délimite des surfaces circulaires ou carrées (par exemple 20 mètres de rayon, soit environ 1 257 mètres carrés) et on mesure tous les arbres à l'intérieur. Inventaire par transects: on échantillonne le long de lignes traversant la zone, ce qui est utile sur de grandes surfaces ou en terrain difficile. Inventaire systématique: placettes disposées selon un maillage régulier. Inventaire stratifié: la zone est divisée en strates homogènes (types de forêt, âge, densité), puis on échantillonne dans chaque strate. Les mesures. Diamètre à hauteur de poitrine (DHP): mesuré à 1,30 mètres du sol avec un compas forestier ou un mètre-ruban (mesure de la circonférence puis division par pi ). Hauteur totale et hauteur du fût: mesurées avec un dendromètre, un clinomètre, ou estimées. Qualité du tronc: droiture, absence de défauts, branches basses. Essence: identifiée avec soin. Calcul de la densité. Densité (arbres ou ha) égale nombre d'arbres dans la placette divisé par surface de la placette (en ha). Exercice corrigé. Énoncé: une placette circulaire de 20 mètres de rayon contient 15 arbres. Quelle est la densité à l'hectare? Étape 1, Surface de la placette: S égale pi multiplié par r au carré égale 3,14 multiplié par 20 au carré égale 1 256 mètres carrés environ égal à 0,1256 hectares. Étape 2, Densité: 15 sur 0,1256 environ égal à 119 arbres ou ha. Interprétation: cette densité est modérée. Pour une forêt dense tropicale, on observe souvent 300 à 600 arbres ou ha (toutes dimensions confondues). Une densité de 119 arbres peut indiquer une forêt dégradée ou un peuplement de gros arbres. Erreur fréquente. Mesurer le diamètre à une hauteur incorrecte (par exemple 1 mètres au lieu de 1,30 mètres), ou confondre diamètre et circonférence, fausse tous les calculs de volume. La rigueur dans les mesures est la base de l'inventaire."]],"11":[["fr","Chapitre V, Le calcul des volumes de bois. Fondements théoriques. Estimer le volume de bois sur pied. À partir des mesures de diamètre et de hauteur, on estime le volume de bois d'un arbre. Le volume d'un cylindre de diamètre D et de hauteur H est: V égale pi multiplié par (D/2) au carré multiplié par H. Mais un arbre n'est pas un cylindre parfait: son diamètre diminue avec la hauteur. On applique donc un coefficient de forme (souvent 0,5 à 0,7 selon les essences). La formule pratique devient: V environ égal à pi multiplié par (D/2) au carré multiplié par H multiplié par f. où f est le coefficient de forme. Les tarifs de cubage. Un tarif de cubage est une formule établie pour une essence ou un peuplement donné, qui donne directement le volume en fonction du diamètre (et parfois de la hauteur). Ces tarifs sont construits à partir de mesures sur un grand nombre d'arbres abattus. Ils évitent d'avoir à mesurer la hauteur de chaque arbre. Exemple pratique. Un arbre de 60 centimètres de DHP et 20 mètres de hauteur totale, avec un coefficient de forme de 0,6: D égale 0,6 mètres; r égale 0,3 mètres; V égale 3,14 multiplié par 0,3 au carré multiplié par 20 multiplié par 0,6 environ égal à 3,14 multiplié par 0,09 multiplié par 20 multiplié par 0,6 environ égal à 3,4 mètres cubes. À retenir. Le volume d'un arbre s'obtient à partir de son diamètre, de sa hauteur et d'un coefficient de forme. Les tarifs de cubage simplifient ce calcul. Une mesure rigoureuse est essentielle pour un inventaire fiable."]],"12":[["fr","Chapitre VI, L'abattage directionnel. Fondements théoriques. L'abattage directionnel: maîtriser la chute. L'abattage directionnel est une technique d'abattage maîtrisée qui permet d'orienter la chute de l'arbre dans une direction choisie, afin de: Protéger les arbres voisins (surtout les arbres d'avenir). Éviter les accidents humains. Endommager le moins possible le tronc abattu. Faciliter le débardage en orientant la chute vers la zone de sortie. Étapes de l'abattage directionnel. Évaluation de l'arbre: observer l'inclinaison naturelle, le vent, les branches, la présence de lianes. Dégagement du pied: nettoyer les racines et la base du tronc. Choix de la direction de chute: dans une trouée, vers le chemin de débardage, en évitant les obstacles. Encoche d'abattage: entaille en coin (ouverture à 45 moins 60 degrés) du côté de la chute, à environ 30 centimètres du sol. Trait de scie: coup horizontal de l'autre côté, laissant un charnier (bande de bois non coupée) qui guide la chute. Coins et leviers: insérés dans le trait de scie pour contrôler la chute. Repli: s'éloigner rapidement dès que l'arbre commence à tomber, en suivant un chemin de retraite prévu. Sécurité de base. Porter un casque, des gants, des chaussures de sécurité, une protection oculaire. Ne jamais travailler seul à l'abattage. Éloigner les curieux à une distance d'au moins deux fois la hauteur de l'arbre. Entretenir la tronçonneuse (chaîne affûtée, niveau d'huile). Erreur fréquente. Abattre sans direction maîtrisée est une erreur grave: l'arbre peut tomber sur des arbres d'avenir, blesser des personnes, endommager du matériel ou se fendre à l'abattage. Un abattage directionnel correct protège la forêt et les travailleurs."]],"13":[["fr","Chapitre VI, Le débardage et le tronçonnage. Fondements théoriques. Le débardage. Le débardage consiste à déplacer les grumes du lieu d'abattage vers le lieu de chargement (aire de dépôt, camion, scierie). C'est une opération délicate: un mauvais débardage compacte le sol, détruit la régénération et endommage les arbres restants. Techniques de débardage. Débardage à faible impact: débardage soigné, limitant les dommages au sol et à la régénération. Utilise des engins légers, des tracés maîtrisés, évite le passage répété aux mêmes endroits. Débardage par câble: adapté aux zones escarpées. Débardage par tracteur ou débusqueur: pour les zones accessibles. Débardage animal (bœufs): dans les petites exploitations artisanales. Le tronçonnage. Le tronçonnage consiste à découper les grumes en billons (ou billes) de longueurs commerciales (généralement 4 mètres, 6 mètres, 8 mètres). On respecte les normes du marché et on évite les défauts majeurs (nœuds excessifs, fentes, pourritures). Règles de tronçonnage. Choisir les longueurs adaptées au transport et à la commercialisation. Éviter les zones de défauts (nœuds, fentes, branches). Marquer les billes (numéro, essence, dimension). Empiler les billes sur un sol drainé, à l'ombre si possible. À retenir. Le débardage à faible impact limite les dégâts au sol et à la forêt. Le tronçonnage découpe les grumes en billons commerciaux, en évitant les défauts. Le marquage des billes facilite la traçabilité et la commercialisation."]],"14":[["fr","Chapitre VI, Le cubage et le classement des bois. Fondements théoriques. Le cubage. Le cubage est la mesure du volume des billes et des grumes. Il se fait sur le terrain ou à l'aire de dépôt. Plusieurs formules sont utilisées, dont la plus courante: V égale pi multiplié par (D/2) au carré multiplié par L (pour une bille cylindrique de diamètre D et de longueur L). On mesure généralement le diamètre aux deux extrémités (gros bout et petit bout) et l'on prend la moyenne. La longueur est mesurée avec un mètre-ruban. Le classement des bois. Le classement consiste à trier les billes selon leur qualité. On distingue généralement: Qualité A (premier choix): billes droites, sans défaut, diamètre important, destinées à l'ébénisterie et aux placages. Qualité B (second choix): petits défauts (quelques nœuds, légère courbure), destinées à la menuiserie fine. Qualité C: défauts importants, destinées à la construction, aux traverses, à la palette. Bois de rebut: pour le bois-énergie ou la trituration. Critères de classement. Diamètre minimum selon l'usage. Droiture (courbure maximale tolérée). Absence de défauts: nœuds, fentes, pourritures, blessures, gélivures, roulures. Longueur utilisable. Densité et couleur de l'essence. À retenir. Le cubage mesure le volume des billes, le classement les trie par qualité (A, B, C, rebut). Une bonne classification augmente la valeur commerciale des bois et oriente vers l'usage approprié."]],"15":[["fr","Chapitre VII, L'aménagement forestier durable. Fondements théoriques. Qu'est-ce que l'aménagement forestier? L'aménagement forestier est un plan qui définit les objectifs de gestion d'une forêt, organise l'espace, fixe les règles de prélèvement et les mesures de régénération. Il garantit que l'exploitation ne dépasse pas la capacité de renouvellement de la forêt. Éléments d'un plan d'aménagement. Objectifs: production de bois, conservation de la biodiversité, protection des sols, usage communautaire. Zonage: séparation des zones d'exploitation, des zones de protection (bassins versants, forêts sacrées, zones de pente), des zones de régénération. Inventaire: évaluation de la ressource disponible. Rotation: durée entre deux passages d'exploitation sur la même zone (par exemple 25 à 40 ans en forêt tropicale). Règles de prélèvement: diamètre minimum d'abattage (DMA), nombre d'arbres par essence à prélever, arbres à protéger. Mesures de régénération: plantation, dégagement, protection. Suivi: indicateurs et fréquence des inventaires de contrôle. Le diamètre minimum d'abattage (DMA). Le DMA est le diamètre en dessous duquel on ne coupe pas une essence donnée. Il garantit qu'un arbre a eu le temps de produire des graines et de contribuer à la régénération. Par exemple, pour le wengé, le DMA est souvent fixé à 60–70 centimètres. La certification forestière. Des labels internationaux (FSC, PEFC) certifient qu'une forêt est gérée selon des critères de durabilité (respect de la biodiversité, droits des communautés, régénération). Erreur fréquente. Exploiter sans plan d'aménagement est une erreur lourde: elle épuise la ressource, détruit les écosystèmes et prive les générations futures de leur patrimoine. L'aménagement est une exigence légale et une nécessité écologique."]],"16":[["fr","Chapitre VII, La législation forestière et la lutte contre l'exploitation illégale. Fondements théoriques. Le Code forestier congolais. En R D C, la gestion forestière est encadrée par le Code forestier (loi n° 011 sur 2002). Il définit: Les domaines forestiers: forêts de l'État, forêts des communautés locales, forêts privées. Les régimes d'exploitation: concessions forestières, autorisations de coupe, permis artisanaux. Les obligations des exploitants: plan d'aménagement, inventaire, reboisement, respect des DMA, redevances forestières. Les droits des communautés locales: usage coutumier, forêts communautaires. Les sanctions en cas d'infraction. L'exploitation illégale. L'exploitation forestière illégale (bois coupé sans permis, hors des zones autorisées, en dessous du DMA, sans paiement des redevances) prive l'État de recettes, détruit la ressource et alimente des réseaux criminels. Elle est combattue par: La traçabilité des bois (marquage des grumes, documents de transport, registres). Les contrôles des agents forestiers. Les systèmes de vérification de la légalité (accords avec les pays importateurs). La participation des communautés à la surveillance. Le rôle du technicien forestier. Respecter et faire respecter la législation forestière. Tenir des registres de coupe, de transport et de commercialisation. Alerter les autorités en cas d'infraction. Sensibiliser les communautés et les exploitants à la gestion durable. À retenir. Le Code forestier congolais encadre l'exploitation et la conservation. L'exploitation illégale détruit la forêt et prive l'État de recettes. La traçabilité et la participation communautaire sont des outils clés. Le technicien forestier est un acteur central de cette légalité."]],"17":[["fr","Synthèse, Connaître, exploiter et protéger la forêt. Synthèse générale. Les compétences du technicien forestier. Connaître les écosystèmes forestiers congolais et leur importance. Identifier les essences (dendrologie, herbier). Produire des plants en pépinière. Planter et entretenir une parcelle forestière. Réaliser un inventaire (placettes, mesures, calcul de volumes). Participer à l'exploitation: abattage directionnel, débardage à faible impact, cubage, classement. Contribuer à la gestion durable: plan d'aménagement, respect du Code forestier, traçabilité. Tableau de synthèse. Domaine. Objectif. Outil principal. Écosystèmes. Connaître la ressource. Typologie, cartographie. Dendrologie. Identifier les essences. Herbier, critères botaniques. Pépinière. Produire les plants. Semis, repiquage, ombrage. Sylviculture. Planter, entretenir. Préparation du sol, dégagement, éclaircie. Inventaire. Quantifier la ressource. Placettes, DHP, cubage. Exploitation. Récolter le bois. Abattage directionnel, débardage, classement. Aménagement. Gérer durablement. Plan d'aménagement, DMA, certification. Étude de cas (cas pédagogique). « Un élève de 4e foresterie à Kisangani réalise un inventaire forestier dans une parcelle-école. Il identifie les essences, mesure les diamètres et les hauteurs, calcule le volume de bois sur pied et propose un plan de reboisement pour les zones dégradées. Il présente ses résultats à la classe. ». Analyse: la démarche est complète: identification, mesures, calcul, proposition. Elle mobilise toutes les compétences du cours: dendrologie, inventaire, cubage, sylviculture, aménagement. C'est le type de travail attendu d'un technicien forestier de terrain."]],"18":[["fr","Évaluation finale, Foresterie. Consigne. Répondez aux questions ci-dessous en sélectionnant la bonne réponse parmi les quatre propositions. Le QCM couvre l'ensemble du cours. Cliquez ensuite sur « Valider mes réponses » pour obtenir votre score."]]}};
+  var CACHE = "ecolia-cours-v1";                       // même cache que l'application
+  var PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  var PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+  var DL = '<svg viewBox="0 0 24 24"><path d="M11 3h2v9.2l3.6-3.6L18 10l-6 6-6-6 1.4-1.4L11 12.2V3zM5 19h14v2H5z"/></svg>';
+  var OK = '<svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>';
+  // Réparation du quiz : certains cours stockent les choix sous "opts" (ou autre) au lieu de "options"
+  try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+      questions.forEach(function (q) {
+        if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+        if (q.text === undefined) q.text = q.question || q.q || q.enonce || q.titre || "";
+        if (typeof q.correct === "undefined") {
+          if (typeof q.answer !== "undefined") q.correct = q.answer;
+          else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+        }
+      });
+    }
+  } catch (e) {}
+  var synth = window.speechSynthesis || null;
+  var HAS_CACHE = !!(window.caches && window.caches.open);
+  var NATIVE = false;           // APK ECOLIA : pont Java "CoursInterface" (fichiers dans le dossier de l'application)
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  var LATER = "ecolia_audio_later_" + CFG.code;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+  function init() {
+    if (document.getElementById("ecolia-audio-btn")) return;
+
+    // ---------- éléments de l'interface ----------
+    var btn = document.createElement("button");
+    btn.id = "ecolia-audio-btn"; btn.type = "button"; btn.className = "ecolia-off";
+    btn.setAttribute("aria-label", "Écouter la leçon"); btn.innerHTML = PLAY;
+    var dlBtn = document.createElement("button");
+    dlBtn.id = "ecolia-dl-btn"; dlBtn.type = "button"; dlBtn.className = "ecolia-off";
+    dlBtn.innerHTML = DL;
+    var host = document.querySelector(".header-right");
+    if (host) { host.insertBefore(dlBtn, host.firstChild); host.insertBefore(btn, dlBtn); }   // dans la barre du haut : ne scrolle jamais
+    else { btn.className += " ecolia-fixed"; document.body.appendChild(btn); }
+
+    var banner = document.createElement("div");
+    banner.id = "ecolia-audio-banner";
+    banner.innerHTML = '<span class="eab-txt"></span><span class="eab-act"></span><div class="eab-bar"><i></i></div>';
+    var content = document.getElementById("content");
+    if (content && content.parentNode) content.parentNode.insertBefore(banner, content);
+    else document.body.insertBefore(banner, document.body.firstChild);
+    var txtEl = banner.querySelector(".eab-txt"), actEl = banner.querySelector(".eab-act");
+    var barEl = banner.querySelector(".eab-bar"), barI = barEl.firstChild;
+
+    var audio = new Audio();            // un seul élément Audio, réutilisé (exigé par les navigateurs mobiles)
+    audio.preload = "auto";
+    var st = { idx: -1, auto: false, advancing: false, mode: null, speaking: false, token: 0, chunks: [], ci: 0, blobUrl: null, playTok: 0 };
+    var dl = { state: "none", cached: 0, busy: false, cancel: false };   // none | partial | full
+    var bnMode = null, hideTimer = null;
+    if (synth && synth.getVoices) { try { synth.getVoices(); } catch (e) {} }
+
+    function cur() {
+      try { if (typeof currentSlide === "number") return currentSlide; } catch (e) {}
+      return 0;
+    }
+    function hasMp3(i) { return CFG.available.indexOf(i + 1) !== -1; }
+    function fb(i) { return CFG.fallback && CFG.fallback[String(i + 1)]; }
+    function hasAudio(i) { return hasMp3(i) || (!!synth && !!fb(i)); }
+    function urlN(n) {   // dans l'APK la page est sur https://app.local : une adresse relative doit pointer vers le site
+      var b = CFG.base;
+      if (NATIVE && !/^https?:/i.test(b)) b = "https://ecolia-course.github.io/" + b.replace(/^(\.\.\/|\.\/)+/, "");
+      return new URL(b + nameN(n), location.href).href;
+    }
+    function setIcon(playing) { btn.innerHTML = playing ? PAUSE : PLAY; }
+    function isPlaying() { return st.mode === "mp3" ? !audio.paused : (st.mode === "tts" && st.speaking); }
+    function mo() { return "≈ " + CFG.sizeMo + " Mo"; }
+    function nameN(n) { return "audio_" + CFG.code + "_" + n + ".mp3"; }
+
+    // ====================================================================
+    //  Stockage hors ligne : 2 moteurs, même interface
+    //    - APK : fichiers du dossier de l'application (CoursInterface), servis par https://app.local/cours/
+    //    - Web : Cache Storage du navigateur (même cache que l'application web)
+    // ====================================================================
+    function nativeStore() {
+      var okKey = "ecolia_audio_ok_" + CFG.code;
+      function readOk() { try { return JSON.parse(lsGet(okKey) || "[]"); } catch (e) { return []; } }
+      function writeOk(a) { lsSet(okKey, JSON.stringify(a)); }
+      function exists(n) { try { return !!CoursInterface.exists(nameN(n)); } catch (e) { return false; } }
+      function local(n) { return location.origin + "/cours/" + nameN(n); }
+      function verify(n) {                                   // fichier complet ? (taille exacte connue à la génération)
+        return fetch(local(n), { cache: "no-store" }).then(function (r) { return r.blob(); }).then(function (b) {
+          var exp = CFG.sizes && CFG.sizes[String(n)];
+          return (b.size > 2000 && (!exp || b.size === exp)) ? b : null;
+        }).catch(function () { return null; });
+      }
+      return {
+        list: function () {
+          var ok = readOk().filter(exists); writeOk(ok); return Promise.resolve(ok);
+        },
+        get: function (n) { return exists(n) ? verify(n) : Promise.resolve(null); },
+        put: function (n) {
+          return new Promise(function (res, rej) {
+            try { CoursInterface.download(urlN(n), nameN(n)); } catch (e) { return rej(e); }
+            var t0 = Date.now();
+            function next() { if (Date.now() - t0 > 120000) rej(new Error("délai dépassé")); else setTimeout(poll, 800); }
+            function poll() {
+              if (!exists(n)) return next();
+              verify(n).then(function (b) {
+                if (!b) return next();
+                var ok = readOk(); if (ok.indexOf(n) < 0) ok.push(n); writeOk(ok); res();
+              });
+            }
+            setTimeout(poll, 800);
+          });
+        },
+        del: function (n) {
+          try { CoursInterface.delete(nameN(n)); } catch (e) {}
+          writeOk(readOk().filter(function (x) { return x !== n; }));
+          return Promise.resolve();
+        }
+      };
+    }
+    function cacheStore() {
+      return {
+        list: function () {
+          return caches.open(CACHE).then(function (c) {
+            return Promise.all(CFG.available.map(function (n) {
+              return c.match(urlN(n)).then(function (r) {
+                if (!r) return 0;
+                if ((r.headers.get("content-type") || "").indexOf("audio") !== 0) { c.delete(urlN(n)); return 0; }   // ancien contenu invalide
+                return n;
+              });
+            }));
+          }).then(function (a) { return a.filter(Boolean); });
+        },
+        get: function (n) {
+          return caches.open(CACHE).then(function (c) { return c.match(urlN(n)); })
+            .then(function (r) { return r ? r.blob() : null; }).then(function (b) { return b && b.size > 2000 ? b : null; });
+        },
+        put: function (n) {
+          var u = urlN(n);
+          return fetch(u, { cache: "no-store" }).then(function (r) {
+            if (!r.ok || r.status !== 200) throw new Error("HTTP " + r.status);
+            return r.blob();
+          }).then(function (b) {
+            if (b.size < 2000 || (b.type && b.type.indexOf("audio") !== 0 && b.type.indexOf("octet") < 0)) throw new Error("fichier invalide");
+            return caches.open(CACHE).then(function (c) { return c.put(u, new Response(b, { headers: { "Content-Type": "audio/mpeg" } })); });
+          });
+        },
+        del: function (n) { return caches.open(CACHE).then(function (c) { return c.delete(urlN(n)); }); }
+      };
+    }
+    var store = NATIVE ? nativeStore() : (HAS_CACHE ? cacheStore() : null);
+
+    // ====================================================================
+    //  Bannière : invitation, confirmations, progression
+    // ====================================================================
+    function showBanner(mode, text, buttons, pct) {
+      clearTimeout(hideTimer);
+      bnMode = mode;
+      txtEl.textContent = text;
+      actEl.innerHTML = "";
+      (buttons || []).forEach(function (b) {
+        var e = document.createElement("button");
+        e.type = "button"; e.textContent = b.label; if (b.pri) e.className = "pri";
+        e.addEventListener("click", function (ev) { ev.stopPropagation(); b.fn(); });
+        actEl.appendChild(e);
+      });
+      if (typeof pct === "number") { barEl.style.display = "block"; barI.style.width = pct + "%"; }
+      else barEl.style.display = "none";
+      banner.classList.add("on");
+    }
+    function hideBanner() { clearTimeout(hideTimer); bnMode = null; banner.classList.remove("on"); }
+    function flash(text) { showBanner("info", text, []); hideTimer = setTimeout(hideBanner, 4000); }
+
+    function refreshUI() {
+      var show = !!store && CFG.available.length > 0;
+      dlBtn.classList.toggle("ecolia-off", !show);
+      dlBtn.classList.toggle("ecolia-full", dl.state === "full");
+      dlBtn.innerHTML = dl.state === "full" ? OK : DL;
+      dlBtn.setAttribute("aria-label", dl.state === "full" ? "Audios téléchargés : supprimer" : "Télécharger les audios");
+      dlBtn.title = dlBtn.getAttribute("aria-label");
+    }
+    function refreshCacheState(done) {
+      if (!store) { dl.state = "none"; refreshUI(); if (done) done(); return; }
+      store.list().then(function (ok) {
+        dl.cached = ok.length;
+        dl.state = dl.cached === 0 ? "none" : (dl.cached >= CFG.available.length ? "full" : "partial");
+      }).catch(function () { dl.state = "none"; }).then(function () { refreshUI(); if (done) done(); });
+    }
+
+    function askDownload(fromInvite) {
+      var left = CFG.available.length - dl.cached;
+      var txt = dl.state === "partial"
+        ? "Il reste " + left + " audio(s) à télécharger pour écouter ce cours sans internet."
+        : "🔊 Télécharger les audios de ce cours (" + mo() + ") pour les écouter sans internet ? Wi-Fi recommandé.";
+      showBanner(fromInvite ? "invite" : "confirm", txt, [
+        { label: fromInvite ? "Plus tard" : "Annuler", fn: function () { if (fromInvite) lsSet(LATER, "1"); hideBanner(); } },
+        { label: "Télécharger", pri: true, fn: startDownload }
+      ]);
+    }
+    function askDelete() {
+      showBanner("confirm", "Supprimer les audios téléchargés de ce cours (" + mo() + ") ? Vous pourrez toujours les écouter en ligne.", [
+        { label: "Annuler", fn: hideBanner },
+        { label: "Supprimer", pri: true, fn: doDelete }
+      ]);
+    }
+
+    function startDownload() {
+      if (dl.busy || !store) return;
+      dl.busy = true; dl.cancel = false;
+      var total = CFG.available.length, done = 0, quota = false, fails = 0, todo = [];
+      store.list().then(function (have) {
+        CFG.available.forEach(function (n) { if (have.indexOf(n) < 0) todo.push(n); });
+        done = total - todo.length;
+        function paint() {
+          var msg = "Téléchargement des audios : " + done + " / " + total;
+          if (bnMode === "progress") {                  // met à jour sans recréer les boutons (sinon un appui peut être perdu)
+            txtEl.textContent = msg; barI.style.width = Math.round(done / total * 100) + "%";
+          } else {
+            showBanner("progress", msg, [
+              { label: "Annuler", fn: function () { dl.cancel = true; } }
+            ], Math.round(done / total * 100));
+          }
+        }
+        paint();
+        function worker() {
+          if (dl.cancel || quota || !todo.length) return Promise.resolve();
+          var n = todo.shift();
+          return store.put(n).then(function () { done++; paint(); }).catch(function (e) {
+            if (e && (e.name === "QuotaExceededError" || /quota/i.test(String(e.message)))) quota = true;
+            fails++;
+          }).then(worker);
+        }
+        return Promise.all([worker(), worker()]);
+      }).catch(function () { fails++; }).then(function () {
+        dl.busy = false;
+        refreshCacheState(function () {
+          if (dl.state === "full") flash("✓ Audios téléchargés : le cours se lit maintenant sans internet.");
+          else if (dl.cancel) flash("Téléchargement interrompu (" + dl.cached + " / " + total + "). Vous pourrez reprendre plus tard.");
+          else showBanner("error", quota ? "Espace insuffisant sur l'appareil. Libérez de la place puis réessayez."
+            : "Certains audios n'ont pas pu être téléchargés (connexion ?).", [
+            { label: "Fermer", fn: hideBanner }, { label: "Réessayer", pri: true, fn: startDownload }
+          ]);
+        });
+      });
+    }
+    function doDelete() {
+      if (!store) return;
+      Promise.all(CFG.available.map(function (n) { return store.del(n); })).catch(function () {}).then(function () {
+        lsDel(LATER);
+        refreshCacheState(function () { flash("Audios supprimés de cet appareil."); });
+      });
+    }
+
+    dlBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (dl.busy) return;
+      if (dl.state === "full") askDelete(); else askDownload(false);
+    });
+
+    // ====================================================================
+    //  Voix intégrée au téléphone (hors ligne, sans limite)
+    // ====================================================================
+    function pickVoice(lang) {
+      var vs = [];
+      try { vs = synth.getVoices() || []; } catch (e) {}
+      var pre = lang === "en" ? "en" : "fr", best = null;
+      for (var k = 0; k < vs.length; k++) {
+        var v = vs[k];
+        if ((v.lang || "").toLowerCase().indexOf(pre) !== 0) continue;
+        if (!best || (v.localService && !best.localService)) best = v;
+      }
+      return best;
+    }
+    function hardSplit(text, max) {
+      var out = [];
+      while (text.length > max) {
+        var cut = text.lastIndexOf(" ", max);
+        if (cut < 40) cut = max;
+        out.push(text.slice(0, cut)); text = text.slice(cut).replace(/^\s+/, "");
+      }
+      if (text) out.push(text);
+      return out;
+    }
+    function buildChunks(segs) {                  // morceaux courts : évite l'arrêt des longs textes sur Chrome
+      var out = [];
+      segs.forEach(function (s) {
+        var cur2 = "", parts = s[1].match(/[^.!?;:]+[.!?;:]*\s*/g) || [s[1]];
+        parts.forEach(function (p) {
+          if (cur2 && (cur2 + p).length > 160) { out.push({ lang: s[0], text: cur2.trim() }); cur2 = p; }
+          else cur2 += p;
+        });
+        if (cur2.trim()) out.push({ lang: s[0], text: cur2.trim() });
+      });
+      var res = [];
+      out.forEach(function (c) { hardSplit(c.text, 190).forEach(function (t) { res.push({ lang: c.lang, text: t }); }); });
+      return res;
+    }
+    function speakFrom(tk) {
+      if (tk !== st.token) return;
+      if (st.ci >= st.chunks.length) {
+        st.speaking = false; st.mode = null; st.ci = 0; setIcon(false);
+        if (st.auto) goNext();
+        return;
+      }
+      var c = st.chunks[st.ci];
+      var u = new SpeechSynthesisUtterance(c.text);
+      u.lang = c.lang === "en" ? "en-US" : "fr-FR";
+      var v = pickVoice(c.lang);
+      if (v) { u.voice = v; u.lang = v.lang; }
+      u.rate = 0.95;
+      u.onend = function () { if (tk !== st.token) return; st.ci++; speakFrom(tk); };
+      u.onerror = function () { if (tk !== st.token) return; st.speaking = false; setIcon(false); st.auto = false; };
+      synth.speak(u);
+    }
+    function startTts(from) {
+      st.token++;
+      var tk = st.token;
+      st.mode = "tts"; st.speaking = true; st.ci = from || 0; setIcon(true);
+      var busy = false;
+      try { busy = synth.speaking || synth.pending; synth.cancel(); } catch (e) {}
+      if (busy) setTimeout(function () { speakFrom(tk); }, 120);   // laisse cancel() se terminer
+      else speakFrom(tk);                                          // sinon tout de suite (exigé par iOS)
+    }
+    function playVoice() {
+      if (!(synth && fb(st.idx))) { st.auto = false; return false; }
+      if (!st.chunks.length) st.chunks = buildChunks(fb(st.idx));
+      startTts(st.ci);
+      return true;
+    }
+
+    // ====================================================================
+    //  Lecture
+    // ====================================================================
+    function freeBlob() { if (st.blobUrl) { try { URL.revokeObjectURL(st.blobUrl); } catch (e) {} st.blobUrl = null; } }
+    function stopAll() {
+      st.playTok++;
+      try { audio.pause(); audio.currentTime = 0; } catch (e) {}
+      st.token++;
+      try { if (synth) synth.cancel(); } catch (e) {}
+      st.speaking = false; st.mode = null; st.chunks = []; st.ci = 0;
+      setIcon(false);
+    }
+    function pauseNow() {
+      if (st.mode === "mp3") audio.pause();
+      else if (st.mode === "tts") {
+        st.token++;
+        try { synth.cancel(); } catch (e) {}
+        st.speaking = false; setIcon(false);      // st.ci conservé : la reprise repart de la phrase en cours
+      }
+    }
+    function startAudio(src, tok) {
+      if (tok !== st.playTok) return;
+      if (audio.getAttribute("data-src") !== src) { audio.setAttribute("data-src", src); audio.src = src; }
+      var p = audio.play();
+      if (p && p.catch) p.catch(function (err) {
+        console.warn("ECOLIA audio :", err);
+        if (tok !== st.playTok) return;
+        if (!(err && err.name === "NotAllowedError") && playVoice()) return;   // lecture impossible : voix du téléphone
+        setIcon(false); st.auto = false;
+      });
+    }
+    function playCurrent() {
+      var i = st.idx;
+      if (hasMp3(i)) {
+        var tok = ++st.playTok, u = urlN(i + 1);
+        st.mode = "mp3";
+        if (!navigator.onLine && dl.state === "none") { st.mode = null; if (playVoice()) return; }   // hors ligne et non téléchargé
+        if (store && dl.state !== "none") {                     // téléchargé : lecture locale, sans réseau
+          store.get(i + 1)
+            .then(function (b) {
+              if (tok !== st.playTok) return;
+              if (b) { freeBlob(); st.blobUrl = URL.createObjectURL(new Blob([b], { type: "audio/mpeg" })); startAudio(st.blobUrl, tok); }
+              else startAudio(u, tok);
+            }).catch(function () { startAudio(u, tok); });
+        } else startAudio(u, tok);                              // sinon lecture en ligne (appel immédiat, exigé par iOS)
+      } else if (!playVoice()) {
+        st.auto = false;
+      }
+    }
+
+    function onSlideChange(i) {
+      var wasAdvancing = st.advancing;
+      st.advancing = false;
+      st.idx = i;
+      btn.classList.toggle("ecolia-off", !hasAudio(i));
+      stopAll();
+      audio.removeAttribute("data-src");
+      freeBlob();
+      if (bnMode === "invite" && i !== 0) hideBanner();       // l'invitation n'apparaît qu'à la première slide
+      if (wasAdvancing && st.auto) setTimeout(playCurrent, 500);   // enchaînement automatique
+      else st.auto = false;                                         // changement manuel : on coupe tout
+    }
+    function goNext() {
+      if (st.idx + 1 >= CFG.count) { st.auto = false; return; }
+      st.advancing = true;
+      if (typeof nextSlide === "function") nextSlide();
+      else { var nb = document.getElementById("nextBtn"); if (nb) nb.click(); }
+      setTimeout(function () { st.advancing = false; }, 4000);
+    }
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var i = cur();
+      if (i !== st.idx) onSlideChange(i);
+      if (isPlaying()) { st.auto = false; pauseNow(); }
+      else { st.auto = true; playCurrent(); }
+    });
+    audio.addEventListener("play", function () { setIcon(true); });
+    audio.addEventListener("pause", function () { if (st.mode === "mp3") setIcon(false); });
+    audio.addEventListener("error", function () {
+      if (st.mode === "mp3" && playVoice()) return;            // fichier introuvable / hors ligne : voix du téléphone
+      setIcon(false); st.auto = false;
+    });
+    audio.addEventListener("ended", function () { setIcon(false); if (st.auto) goNext(); });
+    window.addEventListener("pagehide", function () { stopAll(); freeBlob(); });
+
+    // ---------- démarrage ----------
+    refreshCacheState(function () {
+      if (store && CFG.available.length && dl.state !== "full" && navigator.onLine && cur() === 0 && !lsGet(LATER)) askDownload(true);
+    });
+    st.idx = -1;
+    setInterval(function () { var i = cur(); if (i !== st.idx) onSlideChange(i); }, 250);   // suit la slide affichée
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+<!-- ECOLIA_AUDIO_PLAYER_END -->
+</body>
+</html>
