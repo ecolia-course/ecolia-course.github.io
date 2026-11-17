@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="violet">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>ECOLIA — Chimie Pharmaceutique4</title>
+<style>
+[data-theme="bleu"]   { --p1:#0d2b4f; --p2:#1565c0; --p3:#07172e; --p4:#12437a; --p5:#5b8fd0; --bg:#e8f0fb; --bg2:#cfdff5; --bd:#a9c3e8; --soft:#dde8f7; --btn:#2a67b0; }
+[data-theme="vert"]   { --p1:#14442e; --p2:#2e7d32; --p3:#0b2b1a; --p4:#1f5c3a; --p5:#4f9a6b; --bg:#e8f5ec; --bg2:#c8e6d2; --bd:#a5cdb2; --soft:#dcefe2; --btn:#2f7a4f; }
+[data-theme="violet"] { --p1:#2d1b4e; --p2:#6a1b9a; --p3:#1a0f2e; --p4:#4a148c; --p5:#9c6fd0; --bg:#f1e9fb; --bg2:#dccbf2; --bd:#c4a8e6; --soft:#e8ddf6; --btn:#7e3fb2; }
+[data-theme="rouge"]  { --p1:#4a1010; --p2:#b71c1c; --p3:#2b0a0a; --p4:#8e1b1b; --p5:#d9706a; --bg:#fbeaea; --bg2:#f3cdcb; --bd:#e8a9a5; --soft:#f8dede; --btn:#a62a2a; }
+[data-theme="orange"] { --p1:#4e2a0c; --p2:#ef6c00; --p3:#2e1604; --p4:#b34a00; --p5:#f0a15a; --bg:#fff1e0; --bg2:#fbdcb8; --bd:#f3c08a; --soft:#fdebd6; --btn:#c9650a; }
+[data-theme="teal"]   { --p1:#0b3a3a; --p2:#00796b; --p3:#062626; --p4:#00574b; --p5:#4db6ac; --bg:#e0f2f1; --bg2:#b2dfdb; --bd:#80cbc4; --soft:#d5ecea; --btn:#26897d; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:linear-gradient(160deg,var(--p1) 0%,var(--p2) 50%,var(--p3) 100%); display:flex; justify-content:center; align-items:center; padding:8px; }
+.container { width:100%; max-width:1400px; background:#fefdf8; border-radius:20px; overflow:hidden; display:flex; flex-direction:column; height:100%; max-height:100vh; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.progress-bar { height:4px; background:var(--bg2); flex-shrink:0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--p5),var(--p4)); width:0%; transition:width 0.3s; }
+.header { padding:10px 16px; background:var(--bg); border-bottom:1px solid var(--bd); display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+.header h1 { color:var(--p4); font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box { display:flex; background:white; border-radius:20px; padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.search-box input { border:none; padding:6px 10px; border-radius:20px; outline:none; width:130px; font-size:0.8rem; }
+.search-box button { background:none; border:none; cursor:pointer; padding:4px 8px; font-size:0.85rem; color:var(--p2); }
+.badge { background:var(--p5); color:white; padding:4px 10px; border-radius:20px; font-weight:bold; font-size:0.75rem; }
+.search-nav { display:none; gap:4px; background:var(--bg2); padding:2px 8px; border-radius:20px; align-items:center; font-size:0.75rem; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:0.9rem; color:var(--p4); padding:2px 4px; }
+.content { padding:28px 32px; flex:1; overflow-y:auto; background:#fff; scroll-behavior:smooth; line-height:1.85; }
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.slide-title { color:var(--p1); font-size:1.5rem; font-weight:700; padding-bottom:12px; margin-bottom:20px; border-bottom:2px solid var(--p5); }
+.slide-content { color:var(--p3); font-size:1rem; }
+.empty-state { display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-height:60vh; padding:40px 20px; gap:18px; }
+.empty-state .icon { width:72px; height:72px; border-radius:50%; background:var(--bg); border:2px solid var(--bd); display:flex; align-items:center; justify-content:center; color:var(--p2); font-size:2rem; font-weight:300; }
+.empty-state h2 { color:var(--p1); font-size:1.4rem; font-weight:700; margin:0; }
+.empty-state p { color:#666; font-size:0.95rem; max-width:520px; line-height:1.7; }
+.empty-state .tag { display:inline-block; padding:6px 14px; background:var(--bg); color:var(--p4); border:1px solid var(--bd); border-radius:20px; font-size:0.8rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; }
+.bloc { padding:18px 22px; border-radius:12px; margin:22px 0; line-height:1.85; }
+.bloc-label { font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; opacity:0.7; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:var(--bg); border-left:4px solid var(--p5); }
+.theorie .bloc-label { color:var(--p4); }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.sources { background:#f5f5f5; padding:12px 16px; border-radius:10px; margin-top:26px; font-size:0.82rem; color:#666; border-left:3px solid #999; line-height:1.6; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:var(--p1); }
+.quiz-container { padding:22px; background:var(--bg); border-radius:16px; }
+.quiz-question { background:white; border-radius:10px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.quiz-question p { font-weight:600; margin-bottom:10px; color:var(--p1); }
+.quiz-question label { display:block; padding:8px 10px; margin:4px 0; border-radius:6px; cursor:pointer; transition:background 0.2s; }
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit { background:var(--btn); color:white; border:none; padding:12px 24px; border-radius:30px; font-size:1rem; cursor:pointer; font-weight:600; margin-top:14px; }
+.quiz-result { margin-top:16px; font-weight:600; }
+.controls { padding:8px 16px; background:#fafafa; border-top:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0; }
+.nav-btn { background:white; color:var(--p4); border:1px solid #ccc; padding:8px 14px; border-radius:8px; font-size:0.82rem; cursor:pointer; font-weight:500; }
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:var(--soft); }
+.content::-webkit-scrollbar-thumb { background:var(--p5); border-radius:3px; }
+@media (max-width:600px) { body { padding:0; } .container { border-radius:0; max-height:100vh; } .content { padding:20px 18px; } .slide-title { font-size:1.25rem; } .search-box input { width:90px; } .header h1 { font-size:0.85rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="header">
+<h1 id="pageTitle">ECOLIA</h1>
+<div class="header-right">
+<div class="search-box">
+<input id="searchInput" placeholder="Rechercher" type="text"/>
+<button id="searchBtn">⌕</button>
+</div>
+<div class="search-nav" id="searchNav">
+<button id="prevResultBtn">‹</button>
+<span id="resultCounter">0/0</span>
+<button id="nextResultBtn">›</button>
+</div>
+<span class="badge" id="slideCounter">0/0</span>
+</div>
+</div>
+<div class="content" id="content"></div>
+<div class="controls">
+<button class="nav-btn" id="prevBtn">← Précédent</button>
+<span class="counter" id="counter">—</span>
+<button class="nav-btn" id="nextBtn">Suivant →</button>
+</div>
+</div>
+<script>
+const COURSE_TITLE = "Chimie Pharmaceutique (Chimie du Médicament et des Substances Actives)";
+const slides = [
+  {
+    title: "Sommaire — Chimie Pharmaceutique (Chimie du Médicament et des Substances Actives)",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Présentation du cours</div>
+        <h3>Comprendre le médicament de l'intérieur</h3>
+        <p>Un médicament n'est pas un simple comprimé : c'est le résultat d'une longue chaîne de travail scientifique qui va de la molécule active à la forme pharmaceutique administrée au patient. La chimie pharmaceutique étudie cette chaîne : composition, origines des principes actifs, propriétés physico-chimiques, classes chimiques, formes galéniques, stabilité, conservation et contrôle de qualité. En République Démocratique du Congo, où les faux médicaments et les ruptures de stock sont fréquents, cette discipline est essentielle pour garantir la qualité et la sécurité des traitements.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Objectifs d'apprentissage</div>
+        <h3>À la fin de ce cours, vous serez capable de :</h3>
+        <ul>
+          <li>Définir la chimie pharmaceutique et la situer dans les sciences pharmaceutiques.</li>
+          <li>Identifier les composants d'un médicament : principe actif et excipients.</li>
+          <li>Distinguer les origines naturelles et synthétiques des principes actifs.</li>
+          <li>Expliquer les propriétés physico-chimiques et leur influence sur la formulation.</li>
+          <li>Reconnaître les grandes classes chimiques de médicaments.</li>
+          <li>Décrire les formes galéniques et leurs procédés de préparation.</li>
+          <li>Comprendre la stabilité, les interactions et les règles de conservation.</li>
+          <li>Appliquer les principes du contrôle de qualité et de la lutte contre la contrefaçon.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Plan du cours</div>
+        <h3>Huit chapitres progressifs</h3>
+        <ol>
+          <li>Introduction à la chimie pharmaceutique</li>
+          <li>Le médicament et ses composants</li>
+          <li>Origine des principes actifs</li>
+          <li>Propriétés physico-chimiques</li>
+          <li>Les grandes classes chimiques</li>
+          <li>Les formes galéniques et leur préparation</li>
+          <li>Stabilité, interactions et conservation</li>
+          <li>Contrôle de qualité et sécurité</li>
+        </ol>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 1 — Pourquoi la chimie pharmaceutique en RDC ?",
+    content: `
+      <div class="bloc cas">
+        <div class="bloc-label">Situation-problème</div>
+        <h3>Un lot de paracétamol suspect dans une officine de Kinshasa</h3>
+        <p>Un assistant en pharmacie reçoit un lot de comprimés de paracétamol. L'emballage lui semble différent de celui du fournisseur habituel. Il remarque que les comprimés ont une couleur anormale et une odeur suspecte. Que doit-il faire ? Refuser le lot ? Le signaler ? Vers qui se tourner ? Ses connaissances en chimie pharmaceutique lui permettent de poser les bonnes questions et de protéger les patients.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Importance en RDC</div>
+        <h3>Un enjeu de santé publique</h3>
+        <ul>
+          <li><strong>Lutte contre les faux médicaments</strong> : le marché informel et la contrefaçon sont des fléaux en RDC. La chimie pharmaceutique aide à identifier les produits falsifiés.</li>
+          <li><strong>Qualité des médicaments essentiels</strong> : garantir l'identité, la pureté et le dosage des médicaments qui circulent.</li>
+          <li><strong>Richesse en plantes médicinales</strong> : la RDC possède une biodiversité exceptionnelle (quinquina, moringa) dont les principes actifs peuvent être standardisés.</li>
+          <li><strong>Directives nationales</strong> : le PNLP recommande les CTA pour le paludisme simple et l'artésunate ou la quinine pour le paludisme grave.</li>
+          <li><strong>Ressources limitées</strong> : les laboratoires de contrôle sont peu nombreux ; l'assistant en pharmacie doit appliquer les contrôles de base.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>La chimie pharmaceutique n'est pas réservée au laboratoire : elle est aussi une <strong>compétence de terrain</strong>. Reconnaître une anomalie, refuser un lot suspect, alerter le pharmacien, c'est appliquer la chimie pharmaceutique au service des patients.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 1 — Définition et place dans les sciences pharmaceutiques",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Qu'est-ce que la chimie pharmaceutique ?</h3>
+        <p>La <strong>chimie pharmaceutique</strong> est la discipline scientifique qui se concentre sur la <strong>conception</strong>, le <strong>développement</strong>, la <strong>synthèse</strong> et l'<strong>analyse</strong> des composés chimiques destinés à être utilisés comme médicaments. Elle intègre des principes de chimie organique, de biochimie et de pharmacologie pour optimiser l'efficacité et la sécurité des traitements.</p>
+
+        <h4>Les disciplines voisines</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Discipline</th>
+              <th>Objet d'étude</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Chimie pharmaceutique</td><td>Structure, propriétés, synthèse et analyse des médicaments</td></tr>
+            <tr><td>Pharmacognosie</td><td>Drogues naturelles (plantes médicinales)</td></tr>
+            <tr><td>Galénique</td><td>Formes pharmaceutiques et leur fabrication</td></tr>
+            <tr><td>Pharmacologie</td><td>Effets des médicaments sur l'organisme</td></tr>
+            <tr><td>Toxicologie</td><td>Risques et effets indésirables</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Croire que la chimie pharmaceutique se limite à la synthèse. Elle englobe aussi l'<strong>analyse</strong>, la <strong>formulation</strong> et le <strong>contrôle de qualité</strong>. C'est une discipline-carrefour.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 2 — Le médicament et ses composants",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Une définition officielle</h3>
+        <p>Le <strong>médicament</strong> est toute substance ou composition présentée comme possédant des propriétés curatives ou préventives à l'égard des maladies humaines ou animales, ou pouvant être administrée en vue de restaurer, corriger ou modifier les fonctions organiques.</p>
+
+        <h4>Deux composants essentiels</h4>
+        <ul>
+          <li><strong>Le principe actif (PA)</strong> : molécule bioactive qui interagit avec le vivant et produit l'effet thérapeutique. C'est la substance responsable de la guérison ou de l'amélioration du symptôme.</li>
+          <li><strong>Les excipients</strong> : substances ajoutées au principe actif pour faciliter la fabrication, la conservation, l'administration ou l'absorption. Ils n'ont pas d'activité thérapeutique propre mais sont essentiels à la forme galénique.</li>
+        </ul>
+
+        <h4>Les principales classes d'excipients</h4>
+        <ul>
+          <li><strong>Liant</strong> : assure la cohésion du comprimé.</li>
+          <li><strong>Désintégrant</strong> : facilite la désagrégation du comprimé dans l'estomac.</li>
+          <li><strong>Lubrifiant</strong> : facilite la compression et évite l'adhérence.</li>
+          <li><strong>Colorant</strong> : améliore l'aspect et permet l'identification.</li>
+          <li><strong>Conservateur</strong> : empêche la dégradation microbienne.</li>
+          <li><strong>Édulcorant et arôme</strong> : améliorent le goût.</li>
+        </ul>
+      </div>
+
+      <figure>
+        <img data-image-id="chimiepharmaceutique4_img02" alt="Représentation d'un comprimé avec le principe actif central et les excipients (liant, désintégrant, lubrifiant)" />
+        <figcaption>Principe actif et excipients : la composition d'un comprimé.</figcaption>
+      </figure>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Croire qu'un médicament se résume à son principe actif. Les <strong>excipients</strong> jouent un rôle crucial dans l'efficacité, la stabilité et la tolérance. Un même principe actif peut avoir des effets différents selon la forme galénique utilisée.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 2 — La formulation et la pharmacopée",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">La formulation</div>
+        <h3>De la molécule au médicament</h3>
+        <p>La <strong>formulation</strong> est la combinaison du principe actif et des excipients, aboutissant à une forme galénique adaptée à la voie d'administration. Elle vise à :</p>
+        <ul>
+          <li>Assurer la stabilité du médicament.</li>
+          <li>Permettre une administration adaptée au patient (enfant, adulte, personne âgée).</li>
+          <li>Optimiser la biodisponibilité (quantité de principe actif qui atteint la circulation).</li>
+          <li>Masquer un goût désagréable ou protéger le principe actif de la dégradation gastrique.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">La pharmacopée</div>
+        <h3>Un recueil officiel de normes</h3>
+        <p>La <strong>pharmacopée</strong> est le recueil officiel des normes de qualité des médicaments. Elle définit pour chaque substance :</p>
+        <ul>
+          <li>Son <strong>identité</strong> (nom, formule chimique, aspect).</li>
+          <li>Sa <strong>pureté</strong> (absence de contaminants).</li>
+          <li>Son <strong>dosage</strong> (teneur en principe actif).</li>
+          <li>Les <strong>essais</strong> à réaliser (dissolution, stérilité, conservation).</li>
+        </ul>
+        <p>Les pharmacopées de référence sont la pharmacopée internationale (OMS), la pharmacopée européenne, la pharmacopée américaine (USP).</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>La pharmacopée est la <strong>référence normative</strong> pour tout médicament. Un produit conforme à la pharmacopée garantit sa qualité et sa sécurité. Un produit non conforme doit être refusé.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 3 — Origine des principes actifs",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Les sources naturelles</div>
+        <h3>La nature comme pharmacie</h3>
+        <ul>
+          <li><strong>Plantes médicinales</strong> : la RDC dispose d'une richesse exceptionnelle (quinquina, moringa, artémisia). La pharmacognosie étudie ces drogues.</li>
+          <li><strong>Animaux</strong> : hormones, extraits d'organes, venins.</li>
+          <li><strong>Minéraux</strong> : sels, oxydes, utilisés en thérapeutique (par exemple, le sulfate de fer contre l'anémie).</li>
+          <li><strong>Micro-organismes</strong> : la pénicilline est issue d'un champignon (<em>Penicillium</em>).</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les sources synthétiques</div>
+        <h3>La chimie au service du médicament</h3>
+        <ul>
+          <li><strong>Synthèse chimique</strong> : production en laboratoire de molécules identiques ou nouvelles, en grande quantité et à moindre coût.</li>
+          <li><strong>Hémisynthèse</strong> : modification chimique d'une molécule naturelle pour améliorer ses propriétés. Exemple : les dérivés semi-synthétiques de l'artémisinine (antipaludiques).</li>
+          <li><strong>Biotechnologie</strong> : production de médicaments par des organismes génétiquement modifiés (insuline, interférons, vaccins).</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Opposer systématiquement médicaments naturels et synthétiques. De nombreux médicaments essentiels sont issus de la nature ou en dérivent (aspirine, morphine, artémisinine). L'important n'est pas l'origine, mais la <strong>qualité</strong>, la <strong>sécurité</strong> et l'<strong>efficacité</strong>.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 3 — Les plantes médicinales en RDC",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Une richesse à valoriser</div>
+        <h3>La biodiversité congolaise</h3>
+        <p>La RDC abrite une biodiversité végétale exceptionnelle. De nombreuses plantes sont utilisées en médecine traditionnelle et ont fait l'objet d'études scientifiques.</p>
+
+        <h4>Exemples de plantes médicinales</h4>
+        <ul>
+          <li><strong>Quinquina</strong> (<em>Cinchona</em>) : source de quinine, antipaludique historique.</li>
+          <li><strong>Moringa</strong> (<em>Moringa oleifera</em>) : riche en vitamines et minéraux, utilisé en nutrition.</li>
+          <li><strong>Artemisia annua</strong> : source d'artémisinine, base des CTA (Combinaisons Thérapeutiques à base d'Artémisinine).</li>
+          <li><strong>Aloe vera</strong> : usage cicatrisant et dermatologique.</li>
+          <li><strong>Papayer</strong> (<em>Carica papaya</em>) : feuilles utilisées en décoction (usage traditionnel, à confirmer scientifiquement).</li>
+        </ul>
+
+        <h4>Défis</h4>
+        <ul>
+          <li>Standardisation des extraits (variabilité de la teneur en principes actifs).</li>
+          <li>Contrôle de qualité et sécurité (contaminants, métaux lourds).</li>
+          <li>Protection de la biodiversité et des savoirs traditionnels.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>La richesse en plantes médicinales de la RDC est un atout pour la production locale de médicaments, mais elle doit être encadrée par la <strong>chimie pharmaceutique</strong> pour garantir la qualité, la sécurité et l'efficacité des produits.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 4 — Les propriétés physico-chimiques",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">La solubilité</div>
+        <h3>Se dissoudre pour agir</h3>
+        <p>La <strong>solubilité</strong> est la capacité d'un principe actif à se dissoudre dans un solvant (eau, lipides). Elle conditionne :</p>
+        <ul>
+          <li>Le choix de la forme galénique (solution, suspension, comprimé).</li>
+          <li>La biodisponibilité (quantité de principe actif qui atteint la circulation sanguine).</li>
+          <li>La stabilité de la préparation.</li>
+        </ul>
+
+        <h4>La liposolubilité</h4>
+        <p>La <strong>liposolubilité</strong> est l'affinité d'un principe actif pour les lipides. Elle influence le passage des membranes cellulaires et la distribution dans l'organisme. Un principe actif très liposoluble traverse facilement les membranes ; un principe actif très hydrosoluble reste dans les compartiments aqueux.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">L'ionisation et le pKa</div>
+        <h3>Une question de charge</h3>
+        <p>Le <strong>pKa</strong> est le pH pour lequel une molécule est à moitié ionisée. En fonction du pH du milieu :</p>
+        <ul>
+          <li>Si pH &lt; pKa : la molécule est majoritairement <strong>ionisée</strong> (chargée, hydrosoluble).</li>
+          <li>Si pH &gt; pKa : la molécule est majoritairement <strong>non ionisée</strong> (liposoluble, capable de traverser les membranes).</li>
+        </ul>
+        <p>Le pKa détermine donc l'absorption, la distribution et l'élimination du médicament.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Négliger l'influence du pH sur l'ionisation et donc sur l'absorption d'un médicament. Par exemple, un médicament absorbé dans l'estomac (pH acide) aura un comportement différent selon son pKa.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 4 — Stabilité et polymorphisme",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">La stabilité</div>
+        <h3>Conserver ses propriétés dans le temps</h3>
+        <p>La <strong>stabilité</strong> est la capacité d'un principe actif à conserver ses propriétés dans le temps, sous l'influence de facteurs externes :</p>
+        <ul>
+          <li><strong>Température</strong> : au-delà d'un seuil, dégradation chimique.</li>
+          <li><strong>Humidité</strong> : hydrolyse, développement microbien.</li>
+          <li><strong>Lumière</strong> : photodégradation.</li>
+          <li><strong>Oxygène</strong> : oxydation.</li>
+          <li><strong>pH</strong> : hydrolyse acide ou basique.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Le polymorphisme</div>
+        <h3>Une même molécule, plusieurs formes</h3>
+        <p>Le <strong>polymorphisme</strong> est la capacité d'une substance à cristalliser sous différentes formes, avec des propriétés physiques (solubilité, point de fusion, densité) et une biodisponibilité différentes.</p>
+        <p>Ce phénomène a des conséquences pratiques : deux lots d'un même médicament peuvent avoir des effets différents si la forme cristalline n'est pas contrôlée. C'est pourquoi les procédés de fabrication et les contrôles de qualité sont si importants.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>La stabilité et le polymorphisme sont des notions clés pour la <strong>qualité</strong> et la <strong>sécurité</strong> des médicaments. Un produit instable ou mal cristallisé peut perdre son efficacité ou produire des effets indésirables.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 5 — Les grandes classes chimiques (1) : anti-infectieux",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Les antibiotiques</div>
+        <h3>Combattre les bactéries</h3>
+        <p>Les <strong>antibiotiques</strong> sont des substances qui tuent (bactéricides) ou inhibent (bactériostatiques) la croissance des bactéries. Les grandes familles sont :</p>
+        <ul>
+          <li><strong>Bêta-lactamines</strong> : pénicillines, céphalosporines. Ils inhibent la synthèse de la paroi bactérienne.</li>
+          <li><strong>Macrolides</strong> : érythromycine, azithromycine. Ils inhibent la synthèse des protéines.</li>
+          <li><strong>Aminosides</strong> : gentamicine, amikacine. Ils inhibent la synthèse des protéines.</li>
+          <li><strong>Fluoroquinolones</strong> : ciprofloxacine. Ils inhibent la réplication de l'ADN.</li>
+          <li><strong>Tétracyclines</strong> : doxycycline. Ils inhibent la synthèse des protéines.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les antipaludiques</div>
+        <h3>Une priorité en RDC</h3>
+        <p>Les <strong>antipaludiques</strong> sont essentiels en RDC, où le paludisme est la première endémie. Selon le Programme National de Lutte contre le Paludisme (PNLP) :</p>
+        <ul>
+          <li><strong>CTA</strong> (Combinaisons Thérapeutiques à base d'Artémisinine) : traitement de première ligne du paludisme simple (artéméther-luméfantrine, artésunate-amodiaquine).</li>
+          <li><strong>Artésunate injectable</strong> : traitement de première ligne du paludisme grave.</li>
+          <li><strong>Quinine</strong> : alternative pour le paludisme grave, ou chez la femme enceinte au 1<sup>er</sup> trimestre.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les antituberculeux</div>
+        <h3>Une combinaison thérapeutique</h3>
+        <p>Le traitement de la tuberculose repose sur une combinaison de plusieurs molécules pendant 6 mois :</p>
+        <ul>
+          <li><strong>Rifampicine</strong> : inhibe la synthèse de l'ARN.</li>
+          <li><strong>Isoniazide</strong> : inhibe la synthèse de la paroi.</li>
+          <li><strong>Pyrazinamide</strong> : active contre les bacilles dormants.</li>
+          <li><strong>Éthambutol</strong> : inhibe la synthèse de la paroi.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 5 — Les grandes classes chimiques (2)",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Les antalgiques et anti-inflammatoires</div>
+        <h3>Soulager la douleur</h3>
+        <ul>
+          <li><strong>Paracétamol</strong> : antalgique et antipyrétique. Attention à la toxicité hépatique à forte dose.</li>
+          <li><strong>AINS</strong> (anti-inflammatoires non stéroïdiens) : ibuprofène, aspirine. Effet antalgique, antipyrétique et anti-inflammatoire. Attention aux effets gastro-intestinaux.</li>
+          <li><strong>Opioïdes</strong> : morphine, codéine. Antalgiques puissants, pour douleurs intenses.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les médicaments cardiovasculaires</div>
+        <h3>Protéger le cœur et les vaisseaux</h3>
+        <ul>
+          <li><strong>Antihypertenseurs</strong> : diurétiques, inhibiteurs calciques, IEC (inhibiteurs de l'enzyme de conversion).</li>
+          <li><strong>Hypolipémiants</strong> : statines (atorvastatine, simvastatine) pour réduire le cholestérol.</li>
+          <li><strong>Anticoagulants</strong> : héparine, antivitamines K. Attention au risque hémorragique.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les médicaments du système nerveux</div>
+        <h3>Agir sur le cerveau et les nerfs</h3>
+        <ul>
+          <li><strong>Anxiolytiques</strong> : benzodiazépines, pour l'anxiété.</li>
+          <li><strong>Antidépresseurs</strong> : ISRS, tricycliques.</li>
+          <li><strong>Anticonvulsivants</strong> : phénobarbital, carbamazépine, valproate.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Confondre la <strong>classe chimique</strong> et la <strong>classe pharmacologique</strong>. Une même classe chimique peut avoir des usages thérapeutiques variés, et une même classe pharmacologique peut regrouper plusieurs classes chimiques.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 6 — Les formes galéniques",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Les formes orales</div>
+        <h3>Avalez, avalez…</h3>
+        <ul>
+          <li><strong>Comprimés</strong> : obtenus par compression d'une poudre. Peuvent être effervescents, à croquer, enrobés, à libération prolongée.</li>
+          <li><strong>Gélules</strong> : enveloppe de gélatine contenant la poudre. Masque le goût.</li>
+          <li><strong>Sirops et suspensions</strong> : formes liquides, adaptées à l'enfant.</li>
+          <li><strong>Poudres</strong> : à dissoudre ou à mélanger aux aliments.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les formes injectables</div>
+        <h3>Agir vite et directement</h3>
+        <ul>
+          <li><strong>Solutions injectables</strong> : stériles, prêtes à l'emploi.</li>
+          <li><strong>Suspensions injectables</strong> : nécessitent une agitation.</li>
+          <li><strong>Émulsions injectables</strong> : pour les substances lipophiles.</li>
+        </ul>
+        <p>La <strong>stérilisation</strong> est indispensable. Les injections peuvent être intraveineuses, intramusculaires, sous-cutanées, intradermiques.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les formes topiques, rectales et vaginales</div>
+        <h3>Agir localement</h3>
+        <ul>
+          <li><strong>Pommades</strong> : application cutanée, base grasse.</li>
+          <li><strong>Crèmes</strong> : application cutanée, base mixte eau/gras.</li>
+          <li><strong>Gels</strong> : application cutanée ou muqueuse.</li>
+          <li><strong>Lotions</strong> : application cutanée, base liquide.</li>
+          <li><strong>Suppositoires</strong> : voie rectale, fondent à la température corporelle.</li>
+          <li><strong>Ovules</strong> : voie vaginale.</li>
+          <li><strong>Collyres</strong> : voie oculaire, stériles.</li>
+        </ul>
+      </div>
+
+      <figure>
+        <img data-image-id="chimiepharmaceutique4_img03" alt="Illustration des différentes formes galéniques : comprimé, gélule, sirop, injectable, pommade, suppositoire" />
+        <figcaption>Les formes galéniques : de la molécule au médicament administrable.</figcaption>
+      </figure>
+    `
+  },
+  {
+    title: "Chapitre 6 — Procédés de fabrication et contrôles",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Les procédés de fabrication</div>
+        <h3>Du principe actif au produit fini</h3>
+        <ol>
+          <li><strong>Pesée</strong> des matières premières (précision cruciale).</li>
+          <li><strong>Mélange</strong> du principe actif et des excipients.</li>
+          <li><strong>Granulation</strong> (pour les comprimés) : agglomération des poudres.</li>
+          <li><strong>Compression</strong> (pour les comprimés).</li>
+          <li><strong>Remplissage</strong> (pour les gélules).</li>
+          <li><strong>Stérilisation</strong> (pour les formes injectables).</li>
+          <li><strong>Conditionnement</strong> (flacons, blisters, boîtes).</li>
+          <li><strong>Étiquetage</strong> (nom, dosage, lot, date de péremption).</li>
+        </ol>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les contrôles</div>
+        <h3>Garantir la qualité</h3>
+        <ul>
+          <li><strong>Contrôle de la masse</strong> : chaque comprimé doit avoir une masse conforme.</li>
+          <li><strong>Contrôle de la dureté</strong> : résistance à l'écrasement.</li>
+          <li><strong>Contrôle de la désagrégation</strong> : le comprimé doit se désagréger dans l'estomac.</li>
+          <li><strong>Dosage du principe actif</strong> : vérifier la teneur réelle.</li>
+          <li><strong>Test de stérilité</strong> : pour les formes injectables et les collyres.</li>
+          <li><strong>Contrôle de l'aspect</strong> : couleur, uniformité, absence de défauts.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Négliger les contrôles de qualité lors de la préparation. Une forme mal préparée peut être <strong>inefficace</strong> (sous-dosage) ou <strong>dangereuse</strong> (surdosage, contamination). La rigueur est indispensable.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 7 — Stabilité, interactions et conservation",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Les facteurs de dégradation</div>
+        <h3>Ce qui abîme un médicament</h3>
+        <ul>
+          <li><strong>Température</strong> : au-delà de 25 °C, certains médicaments se dégradent (insuline, vaccins).</li>
+          <li><strong>Humidité</strong> : favorise l'hydrolyse et la prolifération microbienne.</li>
+          <li><strong>Lumière</strong> : photodégradation (vitamines, certains antibiotiques).</li>
+          <li><strong>Oxygène</strong> : oxydation (vitamine C, certains huiles).</li>
+          <li><strong>pH</strong> : hydrolyse acide ou basique.</li>
+          <li><strong>Micro-organismes</strong> : contamination.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">La péremption</div>
+        <h3>Une date à respecter</h3>
+        <p>La <strong>date de péremption</strong> est la date limite d'utilisation d'un médicament. Au-delà, le médicament peut :</p>
+        <ul>
+          <li>Perdre son efficacité (dégradation du principe actif).</li>
+          <li>Devenir toxique (formation de produits de dégradation).</li>
+          <li>Être contaminé (développement microbien).</li>
+        </ul>
+        <p>Règle d'or : <strong>ne jamais utiliser un médicament périmé</strong>.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les interactions médicamenteuses</div>
+        <h3>Quand les médicaments se parlent</h3>
+        <ul>
+          <li><strong>Interactions chimiques</strong> : incompatibilité entre deux médicaments mélangés (précipitation, décoloration).</li>
+          <li><strong>Interactions pharmacocinétiques</strong> : modification de l'absorption, du métabolisme ou de l'élimination d'un médicament par un autre.</li>
+          <li><strong>Interactions pharmacodynamiques</strong> : additivité (deux sédatifs), antagonisme (un stimulant et un sédatif).</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les règles de conservation</div>
+        <h3>Un environnement adapté</h3>
+        <ul>
+          <li><strong>Chaîne du froid</strong> : vaccins, insuline, certains antibiotiques (2-8 °C).</li>
+          <li><strong>Protection de la lumière</strong> : flacons ambrés, boîtes opaques.</li>
+          <li><strong>Stockage à l'abri de l'humidité</strong> : endroits secs, pas de salle de bain.</li>
+          <li><strong>Rangement par ordre de péremption</strong> : premier entré, premier sorti (FEFO : First Expired, First Out).</li>
+          <li><strong>Hors de portée des enfants</strong>.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Stocker des médicaments dans un endroit chaud ou humide (cuisine, salle de bain, voiture). Leur stabilité et leur efficacité sont compromises. La conservation est une responsabilité professionnelle.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 8 — Le contrôle de qualité et la sécurité",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Le contrôle de qualité</div>
+        <h3>Garantir la conformité</h3>
+        <p>Le <strong>contrôle de qualité</strong> est l'ensemble des opérations qui garantissent qu'un médicament est conforme à sa spécification.</p>
+        <ul>
+          <li><strong>Contrôle des matières premières</strong> : identité, pureté, dosage, absence de contaminants.</li>
+          <li><strong>Contrôle des produits finis</strong> : aspect, masse, teneur, dissolution, stérilité, conservation.</li>
+          <li><strong>Contrôle des emballages</strong> : étanchéité, lisibilité de l'étiquetage.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les bonnes pratiques de fabrication (BPF)</div>
+        <h3>Un cadre normatif</h3>
+        <p>Les <strong>bonnes pratiques de fabrication</strong> sont des normes qui garantissent la qualité et la sécurité des médicaments tout au long de la chaîne :</p>
+        <ul>
+          <li>Locaux et équipements adaptés.</li>
+          <li>Personnel formé et qualifié.</li>
+          <li>Procédures écrites et respectées.</li>
+          <li>Traçabilité des lots.</li>
+          <li>Contrôles réguliers.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">La lutte contre la contrefaçon</div>
+        <h3>Un fléau à combattre</h3>
+        <p>La <strong>contrefaçon</strong> est la fabrication et la vente de médicaments falsifiés. C'est un fléau en RDC, favorisé par le marché informel et la faiblesse des contrôles.</p>
+
+        <h4>Comment reconnaître un médicament suspect ?</h4>
+        <ul>
+          <li>Emballage de qualité médiocre, fautes d'orthographe.</li>
+          <li>Absence de numéro de lot ou de date de péremption.</li>
+          <li>Aspect anormal du produit (couleur, odeur, texture).</li>
+          <li>Prix anormalement bas.</li>
+          <li>Absence d'autorisation de mise sur le marché (AMM).</li>
+        </ul>
+        <p>Règle : <strong>acheter uniquement dans des structures agréées</strong>.</p>
+      </div>
+
+      <figure>
+        <img data-image-id="chimiepharmaceutique4_img04" alt="Laboratoire de contrôle qualité pharmaceutique avec un technicien et des équipements d'analyse" />
+        <figcaption>Le contrôle de qualité des médicaments : un maillon essentiel de la sécurité.</figcaption>
+      </figure>
+    `
+  },
+  {
+    title: "Synthèse — De la molécule au médicament",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Synthèse générale</div>
+        <h3>Les points clés du cours de chimie pharmaceutique</h3>
+        <ol>
+          <li><strong>Définition</strong> : la chimie pharmaceutique étudie la conception, la synthèse, l'analyse et la formulation des médicaments.</li>
+          <li><strong>Composants</strong> : principe actif (effet thérapeutique) + excipients (fabrication, conservation, administration).</li>
+          <li><strong>Origines</strong> : naturelles (plantes, animaux, minéraux, micro-organismes) et synthétiques (synthèse, hémisynthèse, biotechnologie).</li>
+          <li><strong>Propriétés physico-chimiques</strong> : solubilité, liposolubilité, ionisation (pKa), stabilité, polymorphisme.</li>
+          <li><strong>Classes chimiques</strong> : anti-infectieux (antibiotiques, antipaludiques, antituberculeux), antalgiques, anti-inflammatoires, cardiovasculaires, neuropsychotropes.</li>
+          <li><strong>Formes galéniques</strong> : orales (comprimés, gélules, sirops), injectables, topiques (pommades, crèmes), rectales et vaginales (suppositoires, ovules).</li>
+          <li><strong>Fabrication</strong> : pesée, mélange, granulation, compression, stérilisation, conditionnement.</li>
+          <li><strong>Contrôles</strong> : masse, dureté, désagrégation, dosage, stérilité.</li>
+          <li><strong>Stabilité</strong> : facteurs de dégradation (température, humidité, lumière, oxygène, pH).</li>
+          <li><strong>Conservation</strong> : chaîne du froid, protection de la lumière, à l'abri de l'humidité, FEFO.</li>
+          <li><strong>Contrôle de qualité</strong> : matières premières, produits finis, emballages, BPF.</li>
+          <li><strong>Lutte contre la contrefaçon</strong> : achat dans des structures agréées, vigilance sur l'emballage et l'aspect.</li>
+        </ol>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Message final</div>
+        <h3>Un rôle de vigie</h3>
+        <p>L'assistant en pharmacie est un <strong>acteur de santé publique</strong>. Sa connaissance de la chimie pharmaceutique lui permet de reconnaître un produit suspect, de conseiller le patient, de garantir la qualité des médicaments et de lutter contre la contrefaçon. C'est une compétence professionnelle essentielle en RDC, où la sécurité des médicaments est un enjeu quotidien.</p>
+      </div>
+
+      <div class="sources">
+        <strong>Sources :</strong>
+        <ul>
+          <li>Lobinayo, « Assistance en pharmacie, option des humanités en RDC » — matières, volumes horaires estimés, débouchés.</li>
+          <li>Université de Kinshasa, programme PharmD — cours de chimie pharmaceutique.</li>
+          <li>Academia.edu, « La Chimie Pharmaceutique » (2025) — définition et domaines.</li>
+          <li>Manuels de chimie pharmaceutique et de pharmacie galénique.</li>
+          <li>OMS — bon usage des médicaments ; PNLP RDC — monographies des antipaludiques.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Évaluation finale — Chimie Pharmaceutique",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Consignes</div>
+        <p>Répondez aux questions suivantes en choisissant la seule bonne réponse parmi les quatre propositions. Chaque question est indépendante et porte sur les notions développées dans le cours. Prenez le temps de relire les chapitres en cas de doute.</p>
+      </div>
+      <div class="quiz-container">
+        <div id="quizQuestions"></div>
+        <button id="submitQuiz" class="quiz-btn-submit">
+          Valider mes réponses
+        </button>
+        <div id="quizResult" class="quiz-result"></div>
+      </div>
+    `
+  }
+];
+const questions = [
+  {
+    text: "La chimie pharmaceutique étudie :",
+    options: ["Uniquement les plantes", "Uniquement les maladies", "La conception, la synthèse et l'analyse des médicaments", "La chirurgie"],
+    correct: 2
+  },
+  {
+    text: "Le principe actif est :",
+    options: ["La substance responsable de l'effet thérapeutique", "Un excipient", "Un colorant", "Un conservateur"],
+    correct: 0
+  },
+  {
+    text: "Les excipients sont :",
+    options: ["Des substances sans activité thérapeutique propre", "Des principes actifs", "Des médicaments", "Des toxines"],
+    correct: 0
+  },
+  {
+    text: "La pharmacopée est :",
+    options: ["Un médicament", "Un excipient", "Un recueil officiel de normes de qualité", "Un laboratoire"],
+    correct: 2
+  },
+  {
+    text: "Une source naturelle de principe actif est :",
+    options: ["La synthèse chimique", "Les plantes médicinales", "La biotechnologie", "Le pétrole"],
+    correct: 1
+  },
+  {
+    text: "L'hémisynthèse consiste à :",
+    options: ["Extraire une plante", "Modifier chimiquement une molécule naturelle", "Synthétiser de novo", "Fermenter"],
+    correct: 1
+  },
+  {
+    text: "La solubilité d'un principe actif influence :",
+    options: ["Sa biodisponibilité", "Sa couleur", "Son prix", "Son emballage"],
+    correct: 0
+  },
+  {
+    text: "Le pKa d'un principe actif détermine :",
+    options: ["Sa couleur", "Son odeur", "Son état d'ionisation en fonction du pH", "Son goût"],
+    correct: 2
+  },
+  {
+    text: "Un comprimé est une forme galénique :",
+    options: ["Orale", "Injectable", "Cutanée", "Rectale"],
+    correct: 0
+  },
+  {
+    text: "Un sirop est une forme :",
+    options: ["Liquide orale", "Solide orale", "Injectable", "Topique"],
+    correct: 0
+  },
+  {
+    text: "La stérilisation est indispensable pour :",
+    options: ["Les formes injectables", "Les comprimés", "Les sirops", "Les pommades"],
+    correct: 0
+  },
+  {
+    text: "La chaîne du froid est nécessaire pour :",
+    options: ["Tous les médicaments", "Les vaccins et l'insuline", "Les comprimés", "Les sirops"],
+    correct: 1
+  },
+  {
+    text: "Un médicament périmé :",
+    options: ["Est toujours efficace", "Peut perdre son efficacité ou devenir toxique", "Est plus sûr", "Est recommandé"],
+    correct: 1
+  },
+  {
+    text: "La contrefaçon de médicaments est :",
+    options: ["Sans conséquence", "Un danger pour la santé", "Recommandée", "Légale"],
+    correct: 1
+  },
+  {
+    text: "Les CTA sont des médicaments :",
+    options: ["Antipaludiques", "Antibiotiques", "Antalgiques", "Antihypertenseurs"],
+    correct: 0
+  },
+  {
+    text: "Les directives nationales du PNLP recommandent les CTA pour :",
+    options: ["La tuberculose", "Le paludisme simple", "Le VIH", "La fièvre typhoïde"],
+    correct: 1
+  },
+  {
+    text: "Le contrôle de qualité des médicaments vise à :",
+    options: ["Augmenter leur prix", "Garantir identité, pureté et dosage", "Réduire leur efficacité", "Les colorer"],
+    correct: 1
+  },
+  {
+    text: "Les bonnes pratiques de fabrication (BPF) garantissent :",
+    options: ["La rapidité de production", "La qualité et la sécurité des médicaments", "Le faible coût", "La couleur"],
+    correct: 1
+  },
+  {
+    text: "Le polymorphisme d'un principe actif peut influencer :",
+    options: ["Sa biodisponibilité", "Son goût", "Son odeur", "Sa couleur"],
+    correct: 0
+  },
+  {
+    text: "Un excipient qui facilite la désagrégation du comprimé est un :",
+    options: ["Liant", "Désintégrant", "Lubrifiant", "Colorant"],
+    correct: 1
+  },
+  {
+    text: "L'assistant en pharmacie doit connaître la chimie pharmaceutique pour :",
+    options: ["Remplacer le pharmacien", "Comprendre les médicaments et garantir leur qualité", "Prescrire des médicaments", "Réaliser des chirurgies"],
+    correct: 1
+  },
+  {
+    text: "L'objectif principal de la chimie pharmaceutique en 4e Humanité ITM est de :",
+    options: ["Remplacer la pharmacologie", "Comprendre la composition et la formulation des médicaments", "Étudier la littérature", "Gérer les stocks"],
+    correct: 1
+  },
+  {
+    text: "La rifampicine, l'isoniazide, le pyrazinamide et l'éthambutol sont des :",
+    options: ["Antipaludiques", "Antituberculeux", "Antibiotiques à large spectre", "Antiviraux"],
+    correct: 1
+  },
+  {
+    text: "Quelle règle de rangement respecter dans une pharmacie ?",
+    options: ["FIFO (premier entré, premier sorti)", "FEFO (premier périmé, premier sorti)", "LIFO (dernier entré, premier sorti)", "Au hasard"],
+    correct: 1
+  }
+];
+
+try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+        questions.forEach(function (q) {
+            if (!q.text) q.text = q.question || q.q || q.enonce || q.titre || "";
+            if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+            if (typeof q.correct === "undefined") {
+                if (typeof q.answer !== "undefined") q.correct = q.answer;
+                else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+            }
+        });
+    }
+} catch (e) {}
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+const pageTitle = document.getElementById('pageTitle');
+pageTitle.textContent = "ECOLIA · " + COURSE_TITLE;
+document.title = "ECOLIA — " + COURSE_TITLE;
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim() || slides.length === 0) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp("(" + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ")", 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderEmptyState() {
+    contentDiv.innerHTML = '<div class="empty-state"><div class="icon">·</div><span class="tag">Bientôt disponible</span><h2>' + COURSE_TITLE + '</h2><p>Ce cours est en préparation. Le contenu sera ajouté prochainement.</p></div>';
+    slideCounterSpan.textContent = '0/0';
+    progressFill.style.width = '0%';
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    counterSpan.textContent = '—';
+}
+
+function renderQuiz() {
+    const qc = document.getElementById('quizQuestions');
+    if (!qc) return;
+    if (typeof questions === 'undefined' || questions.length === 0) {
+        qc.innerHTML = '<p style="color:#666;font-style:italic;">Quiz bientot disponible.</p>';
+        return;
+    }
+    let html = '';
+    questions.forEach((q, i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o, k) => {
+            html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>';
+        });
+        html += '</div>';
+    });
+    qc.innerHTML = html;
+    const submitBtn = document.getElementById('submitQuiz');
+    if (submitBtn) {
+        submitBtn.onclick = () => {
+            let score = 0;
+            questions.forEach((q, i) => {
+                const s = document.querySelector('input[name="q' + i + '"]:checked');
+                if (s && parseInt(s.value) === q.correct) score++;
+            });
+            const pct = Math.round(score/questions.length*100);
+            document.getElementById('quizResult').innerHTML =
+                '<div style="background:var(--bg2);padding:16px;border-radius:10px;margin-top:14px;">' +
+                '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong></div>';
+        };
+    }
+}
+
+function renderSlide(index, keepHighlight) {
+    if (keepHighlight === undefined) keepHighlight = true;
+    if (slides.length === 0) { renderEmptyState(); return; }
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    if (index === slides.length - 1) renderQuiz();
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    if (slides.length === 0) return;
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (slides.length && currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (slides.length && currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+<!-- ECOLIA_IMAGE_LOADER_START -->
+<script>
+(function () {
+  var SITE = "https://ecolia-course.github.io/";
+  var NATIVE = false;
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function abs(u) { return /^(https?:|data:|blob:)/i.test(u) ? u : (NATIVE ? SITE + u.replace(/^(\.\/|\/)+/, "") : u); }
+  function ext(u) { var m = String(u).split("?")[0].match(/\.(jpe?g|png|gif|webp|svg)$/i); return m ? m[1].toLowerCase() : "jpg"; }
+  function hide(img) { img.onerror = null; img.style.display = "none"; }
+  var table = null, queue = [], queued = {}, running = false;
+  function enqueue(full, fn) {
+    if (queued[fn]) return;
+    queued[fn] = 1; queue.push([full, fn]);
+    if (!running) { running = true; setTimeout(next, 2500); }
+  }
+  function next() {
+    if (!queue.length) { running = false; return; }
+    if (!navigator.onLine) { running = false; return; }
+    var q = queue.shift(), t0 = Date.now();
+    try { CoursInterface.download(q[0], q[1]); } catch (e) { return setTimeout(next, 500); }
+    (function wait() {
+      var ok = false;
+      try { ok = !!CoursInterface.exists(q[1]); } catch (e) {}
+      if (ok) setTimeout(next, 1500);
+      else if (Date.now() - t0 > 40000) next();
+      else setTimeout(wait, 700);
+    })();
+  }
+  function exists(fn) { try { return !!CoursInterface.exists(fn); } catch (e) { return false; } }
+  function show(img) {
+    if (!table || img.getAttribute("data-ecolia-done")) return;
+    var id = img.getAttribute("data-image-id");
+    var url = table[id];
+    if (typeof url !== "string" || !url.length) { console.warn("ECOLIA : image absente du JSON :", id); return; }
+    img.setAttribute("data-ecolia-done", "1");
+    if (!NATIVE) { img.onerror = function () { hide(img); }; img.setAttribute("src", url); return; }
+    var full = abs(url), fn = "img_" + id + "." + ext(url);
+    if (exists(fn)) {
+      img.onerror = function () {
+        try { CoursInterface["delete"](fn); } catch (e) {}
+        queued[fn] = 0;
+        img.onerror = function () { hide(img); };
+        img.setAttribute("src", full);
+      };
+      img.setAttribute("src", "https://app.local/cours/" + fn);
+    } else {
+      img.onerror = function () { hide(img); };
+      img.setAttribute("src", full);
+      enqueue(full, fn);
+    }
+  }
+  function scan(root) {
+    if (!root || !root.querySelectorAll) return;
+    if (root.matches && root.matches("img[data-image-id]")) show(root);
+    root.querySelectorAll("img[data-image-id]").forEach(show);
+  }
+  function prefetchAll() {
+    var ids = {};
+    try { JSON.stringify(slides).replace(/data-image-id=\\?"([^"\\]+)/g, function (m, id) { ids[id] = 1; }); } catch (e) {}
+    Object.keys(ids).forEach(function (id) {
+      var url = table[id];
+      if (typeof url !== "string" || !url.length) return;
+      var fn = "img_" + id + "." + ext(url);
+      if (!exists(fn)) enqueue(abs(url), fn);
+    });
+  }
+  function start(tbl) {
+    table = tbl;
+    scan(document.body);
+    new MutationObserver(function (muts) {
+      muts.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.nodeType === 1) scan(n); }); });
+    }).observe(document.body, { childList: true, subtree: true });
+    if (NATIVE) prefetchAll();
+  }
+  var JSON_URL = NATIVE ? SITE + "images_ecolia.json" : "images_ecolia.json";
+  var KEY = "ecolia_images_json";
+  fetch(JSON_URL, NATIVE ? { cache: "no-cache" } : undefined)
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (table) { if (NATIVE) lsSet(KEY, JSON.stringify(table)); start(table); })
+    .catch(function (e) {
+      var saved = null;
+      if (NATIVE) { try { saved = JSON.parse(lsGet(KEY) || "null"); } catch (x) {} }
+      if (saved) start(saved);
+      else console.warn("ECOLIA : JSON des images indisponible.", e);
+    });
+})();
+</script>
+<!-- ECOLIA_IMAGE_LOADER_END -->
+
+
+
+<!-- ECOLIA_AUDIO_PLAYER_START -->
+<style>
+  #ecolia-audio-btn, #ecolia-dl-btn {
+    width: 30px; height: 30px; min-width: 30px; padding: 0; margin: 0 4px 0 0;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    cursor: pointer; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent; outline: none;
+  }
+  #ecolia-audio-btn { border: none; background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-dl-btn { border: 1.5px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb); }
+  #ecolia-dl-btn.ecolia-full { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-btn.ecolia-fixed { position: fixed; top: 8px; left: 8px; z-index: 2147483000; }
+  #ecolia-audio-btn:active, #ecolia-dl-btn:active { transform: scale(.92); }
+  #ecolia-audio-btn svg, #ecolia-dl-btn svg { width: 15px; height: 15px; fill: currentColor; pointer-events: none; }
+  #ecolia-audio-btn.ecolia-off, #ecolia-dl-btn.ecolia-off { display: none; }
+  #ecolia-audio-banner {
+    display: none; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0;
+    padding: 8px 14px; font-size: .82rem; line-height: 1.35;
+    background: var(--soft, #eef3fb); color: var(--p1, #123); border-bottom: 1px solid var(--bd, #c9d6ea);
+  }
+  #ecolia-audio-banner.on { display: flex; }
+  #ecolia-audio-banner .eab-txt { flex: 1 1 180px; }
+  #ecolia-audio-banner .eab-act { display: flex; gap: 6px; flex-wrap: wrap; }
+  #ecolia-audio-banner button {
+    border: 1px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb);
+    border-radius: 16px; padding: 5px 12px; font-size: .8rem; cursor: pointer;
+  }
+  #ecolia-audio-banner button.pri { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-banner .eab-bar { display: none; flex-basis: 100%; height: 4px; border-radius: 2px; overflow: hidden; background: var(--bd, #c9d6ea); }
+  #ecolia-audio-banner .eab-bar i { display: block; height: 100%; width: 0; background: var(--p2, #2563eb); transition: width .2s; }
+</style>
+<script>
+(function () {
+  var CFG = {"code":"ChimiePharmaceutique4","base":"https://ecolia-course.github.io/ecolia-media/audio_files/","available":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17],"count":17,"sizeMo":14,"sizes":{"1":936960,"2":849984,"3":566784,"4":821376,"5":727488,"6":740544,"7":688896,"8":831552,"9":666048,"10":923904,"11":750912,"12":716544,"13":670080,"14":1145280,"15":848064,"16":1185792,"17":157824},"fallback":{"1":[["fr","Sommaire, Chimie Pharmaceutique (Chimie du Médicament et des Substances Actives). Présentation du cours. Comprendre le médicament de l'intérieur. Un médicament n'est pas un simple comprimé: c'est le résultat d'une longue chaîne de travail scientifique qui va de la molécule active à la forme pharmaceutique administrée au patient. La chimie pharmaceutique étudie cette chaîne: composition, origines des principes actifs, propriétés physico-chimiques, classes chimiques, formes galéniques, stabilité, conservation et contrôle de qualité. En République Démocratique du Congo, où les faux médicaments et les ruptures de stock sont fréquents, cette discipline est essentielle pour garantir la qualité et la sécurité des traitements. Objectifs d'apprentissage. À la fin de ce cours, vous serez capable de: Définir la chimie pharmaceutique et la situer dans les sciences pharmaceutiques. Identifier les composants d'un médicament: principe actif et excipients. Distinguer les origines naturelles et synthétiques des principes actifs. Expliquer les propriétés physico-chimiques et leur influence sur la formulation. Reconnaître les grandes classes chimiques de médicaments. Décrire les formes galéniques et leurs procédés de préparation. Comprendre la stabilité, les interactions et les règles de conservation. Appliquer les principes du contrôle de qualité et de la lutte contre la contrefaçon. Plan du cours. Huit chapitres progressifs. Introduction à la chimie pharmaceutique. Le médicament et ses composants. Origine des principes actifs. Propriétés physico-chimiques. Les grandes classes chimiques. Les formes galéniques et leur préparation. Stabilité, interactions et conservation. Contrôle de qualité et sécurité."]],"2":[["fr","Chapitre 1, Pourquoi la chimie pharmaceutique en R D C? Situation-problème. Un lot de paracétamol suspect dans une officine de Kinshasa. Un assistant en pharmacie reçoit un lot de comprimés de paracétamol. L'emballage lui semble différent de celui du fournisseur habituel. Il remarque que les comprimés ont une couleur anormale et une odeur suspecte. Que doit-il faire? Refuser le lot? Le signaler? Vers qui se tourner? Ses connaissances en chimie pharmaceutique lui permettent de poser les bonnes questions et de protéger les patients. Importance en R D C. Un enjeu de santé publique. Lutte contre les faux médicaments: le marché informel et la contrefaçon sont des fléaux en R D C. La chimie pharmaceutique aide à identifier les produits falsifiés. Qualité des médicaments essentiels: garantir l'identité, la pureté et le dosage des médicaments qui circulent. Richesse en plantes médicinales: la R D C possède une biodiversité exceptionnelle (quinquina, moringa) dont les principes actifs peuvent être standardisés. Directives nationales: le PNLP recommande les CTA pour le paludisme simple et l'artésunate ou la quinine pour le paludisme grave. Ressources limitées: les laboratoires de contrôle sont peu nombreux; l'assistant en pharmacie doit appliquer les contrôles de base. À retenir. La chimie pharmaceutique n'est pas réservée au laboratoire: elle est aussi une compétence de terrain. Reconnaître une anomalie, refuser un lot suspect, alerter le pharmacien, c'est appliquer la chimie pharmaceutique au service des patients."]],"3":[["fr","Chapitre 1, Définition et place dans les sciences pharmaceutiques. Fondements théoriques. Qu'est-ce que la chimie pharmaceutique? La chimie pharmaceutique est la discipline scientifique qui se concentre sur la conception, le développement, la synthèse et l'analyse des composés chimiques destinés à être utilisés comme médicaments. Elle intègre des principes de chimie organique, de biochimie et de pharmacologie pour optimiser l'efficacité et la sécurité des traitements. Les disciplines voisines. Discipline. Objet d'étude. Chimie pharmaceutique. Structure, propriétés, synthèse et analyse des médicaments. Pharmacognosie. Drogues naturelles (plantes médicinales). Galénique. Formes pharmaceutiques et leur fabrication. Pharmacologie. Effets des médicaments sur l'organisme. Toxicologie. Risques et effets indésirables. Erreur fréquente. Croire que la chimie pharmaceutique se limite à la synthèse. Elle englobe aussi l'analyse, la formulation et le contrôle de qualité. C'est une discipline-carrefour."]],"4":[["fr","Chapitre 2, Le médicament et ses composants. Fondements théoriques. Une définition officielle. Le médicament est toute substance ou composition présentée comme possédant des propriétés curatives ou préventives à l'égard des maladies humaines ou animales, ou pouvant être administrée en vue de restaurer, corriger ou modifier les fonctions organiques. Deux composants essentiels. Le principe actif (PA): molécule bioactive qui interagit avec le vivant et produit l'effet thérapeutique. C'est la substance responsable de la guérison ou de l'amélioration du symptôme. Les excipients: substances ajoutées au principe actif pour faciliter la fabrication, la conservation, l'administration ou l'absorption. Ils n'ont pas d'activité thérapeutique propre mais sont essentiels à la forme galénique. Les principales classes d'excipients. Liant: assure la cohésion du comprimé. Désintégrant: facilite la désagrégation du comprimé dans l'estomac. Lubrifiant: facilite la compression et évite l'adhérence. Colorant: améliore l'aspect et permet l'identification. Conservateur: empêche la dégradation microbienne. Édulcorant et arôme: améliorent le goût. Principe actif et excipients: la composition d'un comprimé. Erreur fréquente. Croire qu'un médicament se résume à son principe actif. Les excipients jouent un rôle crucial dans l'efficacité, la stabilité et la tolérance. Un même principe actif peut avoir des effets différents selon la forme galénique utilisée."]],"5":[["fr","Chapitre 2, La formulation et la pharmacopée. La formulation. De la molécule au médicament. La formulation est la combinaison du principe actif et des excipients, aboutissant à une forme galénique adaptée à la voie d'administration. Elle vise à: Assurer la stabilité du médicament. Permettre une administration adaptée au patient (enfant, adulte, personne âgée). Optimiser la biodisponibilité (quantité de principe actif qui atteint la circulation). Masquer un goût désagréable ou protéger le principe actif de la dégradation gastrique. La pharmacopée. Un recueil officiel de normes. La pharmacopée est le recueil officiel des normes de qualité des médicaments. Elle définit pour chaque substance: Son identité (nom, formule chimique, aspect). Sa pureté (absence de contaminants). Son dosage (teneur en principe actif). Les essais à réaliser (dissolution, stérilité, conservation). Les pharmacopées de référence sont la pharmacopée internationale (OMS), la pharmacopée européenne, la pharmacopée américaine (USP). À retenir. La pharmacopée est la référence normative pour tout médicament. Un produit conforme à la pharmacopée garantit sa qualité et sa sécurité. Un produit non conforme doit être refusé."]],"6":[["fr","Chapitre 3, Origine des principes actifs. Les sources naturelles. La nature comme pharmacie. Plantes médicinales: la R D C dispose d'une richesse exceptionnelle (quinquina, moringa, artémisia). La pharmacognosie étudie ces drogues. Animaux: hormones, extraits d'organes, venins. Minéraux: sels, oxydes, utilisés en thérapeutique (par exemple, le sulfate de fer contre l'anémie). Micro-organismes: la pénicilline est issue d'un champignon (Penicillium). Les sources synthétiques. La chimie au service du médicament. Synthèse chimique: production en laboratoire de molécules identiques ou nouvelles, en grande quantité et à moindre coût. Hémisynthèse: modification chimique d'une molécule naturelle pour améliorer ses propriétés. Exemple: les dérivés semi-synthétiques de l'artémisinine (antipaludiques). Biotechnologie: production de médicaments par des organismes génétiquement modifiés (insuline, interférons, vaccins). Erreur fréquente. Opposer systématiquement médicaments naturels et synthétiques. De nombreux médicaments essentiels sont issus de la nature ou en dérivent (aspirine, morphine, artémisinine). L'important n'est pas l'origine, mais la qualité, la sécurité et l'efficacité."]],"7":[["fr","Chapitre 3, Les plantes médicinales en R D C. Une richesse à valoriser. La biodiversité congolaise. La R D C abrite une biodiversité végétale exceptionnelle. De nombreuses plantes sont utilisées en médecine traditionnelle et ont fait l'objet d'études scientifiques. Exemples de plantes médicinales. Quinquina (Cinchona): source de quinine, antipaludique historique. Moringa (Moringa oleifera): riche en vitamines et minéraux, utilisé en nutrition. Artemisia annua: source d'artémisinine, base des CTA (Combinaisons Thérapeutiques à base d'Artémisinine). Aloe vera: usage cicatrisant et dermatologique. Papayer (Carica papaya): feuilles utilisées en décoction (usage traditionnel, à confirmer scientifiquement). Défis. Standardisation des extraits (variabilité de la teneur en principes actifs). Contrôle de qualité et sécurité (contaminants, métaux lourds). Protection de la biodiversité et des savoirs traditionnels. À retenir. La richesse en plantes médicinales de la R D C est un atout pour la production locale de médicaments, mais elle doit être encadrée par la chimie pharmaceutique pour garantir la qualité, la sécurité et l'efficacité des produits."]],"8":[["fr","Chapitre 4, Les propriétés physico-chimiques. La solubilité. Se dissoudre pour agir. La solubilité est la capacité d'un principe actif à se dissoudre dans un solvant (eau, lipides). Elle conditionne: Le choix de la forme galénique (solution, suspension, comprimé). La biodisponibilité (quantité de principe actif qui atteint la circulation sanguine). La stabilité de la préparation. La liposolubilité. La liposolubilité est l'affinité d'un principe actif pour les lipides. Elle influence le passage des membranes cellulaires et la distribution dans l'organisme. Un principe actif très liposoluble traverse facilement les membranes; un principe actif très hydrosoluble reste dans les compartiments aqueux. L'ionisation et le pKa. Une question de charge. Le pKa est le pH pour lequel une molécule est à moitié ionisée. En fonction du pH du milieu: Si pH inférieur à pKa: la molécule est majoritairement ionisée (chargée, hydrosoluble). Si pH supérieur à pKa: la molécule est majoritairement non ionisée (liposoluble, capable de traverser les membranes). Le pKa détermine donc l'absorption, la distribution et l'élimination du médicament. Erreur fréquente. Négliger l'influence du pH sur l'ionisation et donc sur l'absorption d'un médicament. Par exemple, un médicament absorbé dans l'estomac (pH acide) aura un comportement différent selon son pKa."]],"9":[["fr","Chapitre 4, Stabilité et polymorphisme. La stabilité. Conserver ses propriétés dans le temps. La stabilité est la capacité d'un principe actif à conserver ses propriétés dans le temps, sous l'influence de facteurs externes: Température: au-delà d'un seuil, dégradation chimique. Humidité: hydrolyse, développement microbien. Lumière: photodégradation. Oxygène: oxydation. pH: hydrolyse acide ou basique. Le polymorphisme. Une même molécule, plusieurs formes. Le polymorphisme est la capacité d'une substance à cristalliser sous différentes formes, avec des propriétés physiques (solubilité, point de fusion, densité) et une biodisponibilité différentes. Ce phénomène a des conséquences pratiques: deux lots d'un même médicament peuvent avoir des effets différents si la forme cristalline n'est pas contrôlée. C'est pourquoi les procédés de fabrication et les contrôles de qualité sont si importants. À retenir. La stabilité et le polymorphisme sont des notions clés pour la qualité et la sécurité des médicaments. Un produit instable ou mal cristallisé peut perdre son efficacité ou produire des effets indésirables."]],"10":[["fr","Chapitre 5, Les grandes classes chimiques (1): anti-infectieux. Les antibiotiques. Combattre les bactéries. Les antibiotiques sont des substances qui tuent (bactéricides) ou inhibent (bactériostatiques) la croissance des bactéries. Les grandes familles sont: Bêta-lactamines: pénicillines, céphalosporines. Ils inhibent la synthèse de la paroi bactérienne. Macrolides: érythromycine, azithromycine. Ils inhibent la synthèse des protéines. Aminosides: gentamicine, amikacine. Ils inhibent la synthèse des protéines. Fluoroquinolones: ciprofloxacine. Ils inhibent la réplication de l'ADN. Tétracyclines: doxycycline. Ils inhibent la synthèse des protéines. Les antipaludiques. Une priorité en R D C. Les antipaludiques sont essentiels en R D C, où le paludisme est la première endémie. Selon le Programme National de Lutte contre le Paludisme (PNLP): CTA (Combinaisons Thérapeutiques à base d'Artémisinine): traitement de première ligne du paludisme simple (artéméther-luméfantrine, artésunate-amodiaquine). Artésunate injectable: traitement de première ligne du paludisme grave. Quinine: alternative pour le paludisme grave, ou chez la femme enceinte au 1er trimestre. Les antituberculeux. Une combinaison thérapeutique. Le traitement de la tuberculose repose sur une combinaison de plusieurs molécules pendant 6 mois: Rifampicine: inhibe la synthèse de l'ARN. Isoniazide: inhibe la synthèse de la paroi. Pyrazinamide: active contre les bacilles dormants. Éthambutol: inhibe la synthèse de la paroi."]],"11":[["fr","Chapitre 5, Les grandes classes chimiques (2). Les antalgiques et anti-inflammatoires. Soulager la douleur. Paracétamol: antalgique et antipyrétique. Attention à la toxicité hépatique à forte dose. AINS (anti-inflammatoires non stéroïdiens): ibuprofène, aspirine. Effet antalgique, antipyrétique et anti-inflammatoire. Attention aux effets gastro-intestinaux. Opioïdes: morphine, codéine. Antalgiques puissants, pour douleurs intenses. Les médicaments cardiovasculaires. Protéger le cœur et les vaisseaux. Antihypertenseurs: diurétiques, inhibiteurs calciques, IEC (inhibiteurs de l'enzyme de conversion). Hypolipémiants: statines (atorvastatine, simvastatine) pour réduire le cholestérol. Anticoagulants: héparine, antivitamines K. Attention au risque hémorragique. Les médicaments du système nerveux. Agir sur le cerveau et les nerfs. Anxiolytiques: benzodiazépines, pour l'anxiété. Antidépresseurs: ISRS, tricycliques. Anticonvulsivants: phénobarbital, carbamazépine, valproate. Erreur fréquente. Confondre la classe chimique et la classe pharmacologique. Une même classe chimique peut avoir des usages thérapeutiques variés, et une même classe pharmacologique peut regrouper plusieurs classes chimiques."]],"12":[["fr","Chapitre 6, Les formes galéniques. Les formes orales. Avalez, avalez…. Comprimés: obtenus par compression d'une poudre. Peuvent être effervescents, à croquer, enrobés, à libération prolongée. Gélules: enveloppe de gélatine contenant la poudre. Masque le goût. Sirops et suspensions: formes liquides, adaptées à l'enfant. Poudres: à dissoudre ou à mélanger aux aliments. Les formes injectables. Agir vite et directement. Solutions injectables: stériles, prêtes à l'emploi. Suspensions injectables: nécessitent une agitation. Émulsions injectables: pour les substances lipophiles. La stérilisation est indispensable. Les injections peuvent être intraveineuses, intramusculaires, sous-cutanées, intradermiques. Les formes topiques, rectales et vaginales. Agir localement. Pommades: application cutanée, base grasse. Crèmes: application cutanée, base mixte eau ou gras. Gels: application cutanée ou muqueuse. Lotions: application cutanée, base liquide. Suppositoires: voie rectale, fondent à la température corporelle. Ovules: voie vaginale. Collyres: voie oculaire, stériles. Les formes galéniques: de la molécule au médicament administrable."]],"13":[["fr","Chapitre 6, Procédés de fabrication et contrôles. Les procédés de fabrication. Du principe actif au produit fini. Pesée des matières premières (précision cruciale). Mélange du principe actif et des excipients. Granulation (pour les comprimés): agglomération des poudres. Compression (pour les comprimés). Remplissage (pour les gélules). Stérilisation (pour les formes injectables). Conditionnement (flacons, blisters, boîtes). Étiquetage (nom, dosage, lot, date de péremption). Les contrôles. Garantir la qualité. Contrôle de la masse: chaque comprimé doit avoir une masse conforme. Contrôle de la dureté: résistance à l'écrasement. Contrôle de la désagrégation: le comprimé doit se désagréger dans l'estomac. Dosage du principe actif: vérifier la teneur réelle. Test de stérilité: pour les formes injectables et les collyres. Contrôle de l'aspect: couleur, uniformité, absence de défauts. Erreur fréquente. Négliger les contrôles de qualité lors de la préparation. Une forme mal préparée peut être inefficace (sous-dosage) ou dangereuse (surdosage, contamination). La rigueur est indispensable."]],"14":[["fr","Chapitre 7, Stabilité, interactions et conservation. Les facteurs de dégradation. Ce qui abîme un médicament. Température: au-delà de 25 degrés Celsius, certains médicaments se dégradent (insuline, vaccins). Humidité: favorise l'hydrolyse et la prolifération microbienne. Lumière: photodégradation (vitamines, certains antibiotiques). Oxygène: oxydation (vitamine C, certains huiles). pH: hydrolyse acide ou basique. Micro-organismes: contamination. La péremption. Une date à respecter. La date de péremption est la date limite d'utilisation d'un médicament. Au-delà, le médicament peut: Perdre son efficacité (dégradation du principe actif). Devenir toxique (formation de produits de dégradation). Être contaminé (développement microbien). Règle d'or: ne jamais utiliser un médicament périmé. Les interactions médicamenteuses. Quand les médicaments se parlent. Interactions chimiques: incompatibilité entre deux médicaments mélangés (précipitation, décoloration). Interactions pharmacocinétiques: modification de l'absorption, du métabolisme ou de l'élimination d'un médicament par un autre. Interactions pharmacodynamiques: additivité (deux sédatifs), antagonisme (un stimulant et un sédatif). Les règles de conservation. Un environnement adapté. Chaîne du froid: vaccins, insuline, certains antibiotiques (2-8 degrés Celsius). Protection de la lumière: flacons ambrés, boîtes opaques. Stockage à l'abri de l'humidité: endroits secs, pas de salle de bain. Rangement par ordre de péremption: premier entré, premier sorti (FEFO: First Expired, First Out). Hors de portée des enfants. Erreur fréquente. Stocker des médicaments dans un endroit chaud ou humide (cuisine, salle de bain, voiture). Leur stabilité et leur efficacité sont compromises. La conservation est une responsabilité professionnelle."]],"15":[["fr","Chapitre 8, Le contrôle de qualité et la sécurité. Le contrôle de qualité. Garantir la conformité. Le contrôle de qualité est l'ensemble des opérations qui garantissent qu'un médicament est conforme à sa spécification. Contrôle des matières premières: identité, pureté, dosage, absence de contaminants. Contrôle des produits finis: aspect, masse, teneur, dissolution, stérilité, conservation. Contrôle des emballages: étanchéité, lisibilité de l'étiquetage. Les bonnes pratiques de fabrication (BPF). Un cadre normatif. Les bonnes pratiques de fabrication sont des normes qui garantissent la qualité et la sécurité des médicaments tout au long de la chaîne: Locaux et équipements adaptés. Personnel formé et qualifié. Procédures écrites et respectées. Traçabilité des lots. Contrôles réguliers. La lutte contre la contrefaçon. Un fléau à combattre. La contrefaçon est la fabrication et la vente de médicaments falsifiés. C'est un fléau en R D C, favorisé par le marché informel et la faiblesse des contrôles. Comment reconnaître un médicament suspect? Emballage de qualité médiocre, fautes d'orthographe. Absence de numéro de lot ou de date de péremption. Aspect anormal du produit (couleur, odeur, texture). Prix anormalement bas. Absence d'autorisation de mise sur le marché (AMM). Règle: acheter uniquement dans des structures agréées. Le contrôle de qualité des médicaments: un maillon essentiel de la sécurité."]],"16":[["fr","Synthèse, De la molécule au médicament. Synthèse générale. Les points clés du cours de chimie pharmaceutique. Définition: la chimie pharmaceutique étudie la conception, la synthèse, l'analyse et la formulation des médicaments. Composants: principe actif (effet thérapeutique) plus excipients (fabrication, conservation, administration). Origines: naturelles (plantes, animaux, minéraux, micro-organismes) et synthétiques (synthèse, hémisynthèse, biotechnologie). Propriétés physico-chimiques: solubilité, liposolubilité, ionisation (pKa), stabilité, polymorphisme. Classes chimiques: anti-infectieux (antibiotiques, antipaludiques, antituberculeux), antalgiques, anti-inflammatoires, cardiovasculaires, neuropsychotropes. Formes galéniques: orales (comprimés, gélules, sirops), injectables, topiques (pommades, crèmes), rectales et vaginales (suppositoires, ovules). Fabrication: pesée, mélange, granulation, compression, stérilisation, conditionnement. Contrôles: masse, dureté, désagrégation, dosage, stérilité. Stabilité: facteurs de dégradation (température, humidité, lumière, oxygène, pH). Conservation: chaîne du froid, protection de la lumière, à l'abri de l'humidité, FEFO. Contrôle de qualité: matières premières, produits finis, emballages, BPF. Lutte contre la contrefaçon: achat dans des structures agréées, vigilance sur l'emballage et l'aspect. Message final. Un rôle de vigie. L'assistant en pharmacie est un acteur de santé publique. Sa connaissance de la chimie pharmaceutique lui permet de reconnaître un produit suspect, de conseiller le patient, de garantir la qualité des médicaments et de lutter contre la contrefaçon. C'est une compétence professionnelle essentielle en R D C, où la sécurité des médicaments est un enjeu quotidien."]],"17":[["fr","Évaluation finale, Chimie Pharmaceutique. Consignes. Répondez aux questions suivantes en choisissant la seule bonne réponse parmi les quatre propositions. Chaque question est indépendante et porte sur les notions développées dans le cours. Prenez le temps de relire les chapitres en cas de doute."]]}};
+  var CACHE = "ecolia-cours-v1";                       // même cache que l'application
+  var PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  var PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+  var DL = '<svg viewBox="0 0 24 24"><path d="M11 3h2v9.2l3.6-3.6L18 10l-6 6-6-6 1.4-1.4L11 12.2V3zM5 19h14v2H5z"/></svg>';
+  var OK = '<svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>';
+  // Réparation du quiz : certains cours stockent les choix sous "opts" (ou autre) au lieu de "options"
+  try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+      questions.forEach(function (q) {
+        if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+        if (q.text === undefined) q.text = q.question || q.q || q.enonce || q.titre || "";
+        if (typeof q.correct === "undefined") {
+          if (typeof q.answer !== "undefined") q.correct = q.answer;
+          else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+        }
+      });
+    }
+  } catch (e) {}
+  var synth = window.speechSynthesis || null;
+  var HAS_CACHE = !!(window.caches && window.caches.open);
+  var NATIVE = false;           // APK ECOLIA : pont Java "CoursInterface" (fichiers dans le dossier de l'application)
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  var LATER = "ecolia_audio_later_" + CFG.code;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+  function init() {
+    if (document.getElementById("ecolia-audio-btn")) return;
+
+    // ---------- éléments de l'interface ----------
+    var btn = document.createElement("button");
+    btn.id = "ecolia-audio-btn"; btn.type = "button"; btn.className = "ecolia-off";
+    btn.setAttribute("aria-label", "Écouter la leçon"); btn.innerHTML = PLAY;
+    var dlBtn = document.createElement("button");
+    dlBtn.id = "ecolia-dl-btn"; dlBtn.type = "button"; dlBtn.className = "ecolia-off";
+    dlBtn.innerHTML = DL;
+    var host = document.querySelector(".header-right");
+    if (host) { host.insertBefore(dlBtn, host.firstChild); host.insertBefore(btn, dlBtn); }   // dans la barre du haut : ne scrolle jamais
+    else { btn.className += " ecolia-fixed"; document.body.appendChild(btn); }
+
+    var banner = document.createElement("div");
+    banner.id = "ecolia-audio-banner";
+    banner.innerHTML = '<span class="eab-txt"></span><span class="eab-act"></span><div class="eab-bar"><i></i></div>';
+    var content = document.getElementById("content");
+    if (content && content.parentNode) content.parentNode.insertBefore(banner, content);
+    else document.body.insertBefore(banner, document.body.firstChild);
+    var txtEl = banner.querySelector(".eab-txt"), actEl = banner.querySelector(".eab-act");
+    var barEl = banner.querySelector(".eab-bar"), barI = barEl.firstChild;
+
+    var audio = new Audio();            // un seul élément Audio, réutilisé (exigé par les navigateurs mobiles)
+    audio.preload = "auto";
+    var st = { idx: -1, auto: false, advancing: false, mode: null, speaking: false, token: 0, chunks: [], ci: 0, blobUrl: null, playTok: 0 };
+    var dl = { state: "none", cached: 0, busy: false, cancel: false };   // none | partial | full
+    var bnMode = null, hideTimer = null;
+    if (synth && synth.getVoices) { try { synth.getVoices(); } catch (e) {} }
+
+    function cur() {
+      try { if (typeof currentSlide === "number") return currentSlide; } catch (e) {}
+      return 0;
+    }
+    function hasMp3(i) { return CFG.available.indexOf(i + 1) !== -1; }
+    function fb(i) { return CFG.fallback && CFG.fallback[String(i + 1)]; }
+    function hasAudio(i) { return hasMp3(i) || (!!synth && !!fb(i)); }
+    function urlN(n) {   // dans l'APK la page est sur https://app.local : une adresse relative doit pointer vers le site
+      var b = CFG.base;
+      if (NATIVE && !/^https?:/i.test(b)) b = "https://ecolia-course.github.io/" + b.replace(/^(\.\.\/|\.\/)+/, "");
+      return new URL(b + nameN(n), location.href).href;
+    }
+    function setIcon(playing) { btn.innerHTML = playing ? PAUSE : PLAY; }
+    function isPlaying() { return st.mode === "mp3" ? !audio.paused : (st.mode === "tts" && st.speaking); }
+    function mo() { return "≈ " + CFG.sizeMo + " Mo"; }
+    function nameN(n) { return "audio_" + CFG.code + "_" + n + ".mp3"; }
+
+    // ====================================================================
+    //  Stockage hors ligne : 2 moteurs, même interface
+    //    - APK : fichiers du dossier de l'application (CoursInterface), servis par https://app.local/cours/
+    //    - Web : Cache Storage du navigateur (même cache que l'application web)
+    // ====================================================================
+    function nativeStore() {
+      var okKey = "ecolia_audio_ok_" + CFG.code;
+      function readOk() { try { return JSON.parse(lsGet(okKey) || "[]"); } catch (e) { return []; } }
+      function writeOk(a) { lsSet(okKey, JSON.stringify(a)); }
+      function exists(n) { try { return !!CoursInterface.exists(nameN(n)); } catch (e) { return false; } }
+      function local(n) { return location.origin + "/cours/" + nameN(n); }
+      function verify(n) {                                   // fichier complet ? (taille exacte connue à la génération)
+        return fetch(local(n), { cache: "no-store" }).then(function (r) { return r.blob(); }).then(function (b) {
+          var exp = CFG.sizes && CFG.sizes[String(n)];
+          return (b.size > 2000 && (!exp || b.size === exp)) ? b : null;
+        }).catch(function () { return null; });
+      }
+      return {
+        list: function () {
+          var ok = readOk().filter(exists); writeOk(ok); return Promise.resolve(ok);
+        },
+        get: function (n) { return exists(n) ? verify(n) : Promise.resolve(null); },
+        put: function (n) {
+          return new Promise(function (res, rej) {
+            try { CoursInterface.download(urlN(n), nameN(n)); } catch (e) { return rej(e); }
+            var t0 = Date.now();
+            function next() { if (Date.now() - t0 > 120000) rej(new Error("délai dépassé")); else setTimeout(poll, 800); }
+            function poll() {
+              if (!exists(n)) return next();
+              verify(n).then(function (b) {
+                if (!b) return next();
+                var ok = readOk(); if (ok.indexOf(n) < 0) ok.push(n); writeOk(ok); res();
+              });
+            }
+            setTimeout(poll, 800);
+          });
+        },
+        del: function (n) {
+          try { CoursInterface.delete(nameN(n)); } catch (e) {}
+          writeOk(readOk().filter(function (x) { return x !== n; }));
+          return Promise.resolve();
+        }
+      };
+    }
+    function cacheStore() {
+      return {
+        list: function () {
+          return caches.open(CACHE).then(function (c) {
+            return Promise.all(CFG.available.map(function (n) {
+              return c.match(urlN(n)).then(function (r) {
+                if (!r) return 0;
+                if ((r.headers.get("content-type") || "").indexOf("audio") !== 0) { c.delete(urlN(n)); return 0; }   // ancien contenu invalide
+                return n;
+              });
+            }));
+          }).then(function (a) { return a.filter(Boolean); });
+        },
+        get: function (n) {
+          return caches.open(CACHE).then(function (c) { return c.match(urlN(n)); })
+            .then(function (r) { return r ? r.blob() : null; }).then(function (b) { return b && b.size > 2000 ? b : null; });
+        },
+        put: function (n) {
+          var u = urlN(n);
+          return fetch(u, { cache: "no-store" }).then(function (r) {
+            if (!r.ok || r.status !== 200) throw new Error("HTTP " + r.status);
+            return r.blob();
+          }).then(function (b) {
+            if (b.size < 2000 || (b.type && b.type.indexOf("audio") !== 0 && b.type.indexOf("octet") < 0)) throw new Error("fichier invalide");
+            return caches.open(CACHE).then(function (c) { return c.put(u, new Response(b, { headers: { "Content-Type": "audio/mpeg" } })); });
+          });
+        },
+        del: function (n) { return caches.open(CACHE).then(function (c) { return c.delete(urlN(n)); }); }
+      };
+    }
+    var store = NATIVE ? nativeStore() : (HAS_CACHE ? cacheStore() : null);
+
+    // ====================================================================
+    //  Bannière : invitation, confirmations, progression
+    // ====================================================================
+    function showBanner(mode, text, buttons, pct) {
+      clearTimeout(hideTimer);
+      bnMode = mode;
+      txtEl.textContent = text;
+      actEl.innerHTML = "";
+      (buttons || []).forEach(function (b) {
+        var e = document.createElement("button");
+        e.type = "button"; e.textContent = b.label; if (b.pri) e.className = "pri";
+        e.addEventListener("click", function (ev) { ev.stopPropagation(); b.fn(); });
+        actEl.appendChild(e);
+      });
+      if (typeof pct === "number") { barEl.style.display = "block"; barI.style.width = pct + "%"; }
+      else barEl.style.display = "none";
+      banner.classList.add("on");
+    }
+    function hideBanner() { clearTimeout(hideTimer); bnMode = null; banner.classList.remove("on"); }
+    function flash(text) { showBanner("info", text, []); hideTimer = setTimeout(hideBanner, 4000); }
+
+    function refreshUI() {
+      var show = !!store && CFG.available.length > 0;
+      dlBtn.classList.toggle("ecolia-off", !show);
+      dlBtn.classList.toggle("ecolia-full", dl.state === "full");
+      dlBtn.innerHTML = dl.state === "full" ? OK : DL;
+      dlBtn.setAttribute("aria-label", dl.state === "full" ? "Audios téléchargés : supprimer" : "Télécharger les audios");
+      dlBtn.title = dlBtn.getAttribute("aria-label");
+    }
+    function refreshCacheState(done) {
+      if (!store) { dl.state = "none"; refreshUI(); if (done) done(); return; }
+      store.list().then(function (ok) {
+        dl.cached = ok.length;
+        dl.state = dl.cached === 0 ? "none" : (dl.cached >= CFG.available.length ? "full" : "partial");
+      }).catch(function () { dl.state = "none"; }).then(function () { refreshUI(); if (done) done(); });
+    }
+
+    function askDownload(fromInvite) {
+      var left = CFG.available.length - dl.cached;
+      var txt = dl.state === "partial"
+        ? "Il reste " + left + " audio(s) à télécharger pour écouter ce cours sans internet."
+        : "🔊 Télécharger les audios de ce cours (" + mo() + ") pour les écouter sans internet ? Wi-Fi recommandé.";
+      showBanner(fromInvite ? "invite" : "confirm", txt, [
+        { label: fromInvite ? "Plus tard" : "Annuler", fn: function () { if (fromInvite) lsSet(LATER, "1"); hideBanner(); } },
+        { label: "Télécharger", pri: true, fn: startDownload }
+      ]);
+    }
+    function askDelete() {
+      showBanner("confirm", "Supprimer les audios téléchargés de ce cours (" + mo() + ") ? Vous pourrez toujours les écouter en ligne.", [
+        { label: "Annuler", fn: hideBanner },
+        { label: "Supprimer", pri: true, fn: doDelete }
+      ]);
+    }
+
+    function startDownload() {
+      if (dl.busy || !store) return;
+      dl.busy = true; dl.cancel = false;
+      var total = CFG.available.length, done = 0, quota = false, fails = 0, todo = [];
+      store.list().then(function (have) {
+        CFG.available.forEach(function (n) { if (have.indexOf(n) < 0) todo.push(n); });
+        done = total - todo.length;
+        function paint() {
+          var msg = "Téléchargement des audios : " + done + " / " + total;
+          if (bnMode === "progress") {                  // met à jour sans recréer les boutons (sinon un appui peut être perdu)
+            txtEl.textContent = msg; barI.style.width = Math.round(done / total * 100) + "%";
+          } else {
+            showBanner("progress", msg, [
+              { label: "Annuler", fn: function () { dl.cancel = true; } }
+            ], Math.round(done / total * 100));
+          }
+        }
+        paint();
+        function worker() {
+          if (dl.cancel || quota || !todo.length) return Promise.resolve();
+          var n = todo.shift();
+          return store.put(n).then(function () { done++; paint(); }).catch(function (e) {
+            if (e && (e.name === "QuotaExceededError" || /quota/i.test(String(e.message)))) quota = true;
+            fails++;
+          }).then(worker);
+        }
+        return Promise.all([worker(), worker()]);
+      }).catch(function () { fails++; }).then(function () {
+        dl.busy = false;
+        refreshCacheState(function () {
+          if (dl.state === "full") flash("✓ Audios téléchargés : le cours se lit maintenant sans internet.");
+          else if (dl.cancel) flash("Téléchargement interrompu (" + dl.cached + " / " + total + "). Vous pourrez reprendre plus tard.");
+          else showBanner("error", quota ? "Espace insuffisant sur l'appareil. Libérez de la place puis réessayez."
+            : "Certains audios n'ont pas pu être téléchargés (connexion ?).", [
+            { label: "Fermer", fn: hideBanner }, { label: "Réessayer", pri: true, fn: startDownload }
+          ]);
+        });
+      });
+    }
+    function doDelete() {
+      if (!store) return;
+      Promise.all(CFG.available.map(function (n) { return store.del(n); })).catch(function () {}).then(function () {
+        lsDel(LATER);
+        refreshCacheState(function () { flash("Audios supprimés de cet appareil."); });
+      });
+    }
+
+    dlBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (dl.busy) return;
+      if (dl.state === "full") askDelete(); else askDownload(false);
+    });
+
+    // ====================================================================
+    //  Voix intégrée au téléphone (hors ligne, sans limite)
+    // ====================================================================
+    function pickVoice(lang) {
+      var vs = [];
+      try { vs = synth.getVoices() || []; } catch (e) {}
+      var pre = lang === "en" ? "en" : "fr", best = null;
+      for (var k = 0; k < vs.length; k++) {
+        var v = vs[k];
+        if ((v.lang || "").toLowerCase().indexOf(pre) !== 0) continue;
+        if (!best || (v.localService && !best.localService)) best = v;
+      }
+      return best;
+    }
+    function hardSplit(text, max) {
+      var out = [];
+      while (text.length > max) {
+        var cut = text.lastIndexOf(" ", max);
+        if (cut < 40) cut = max;
+        out.push(text.slice(0, cut)); text = text.slice(cut).replace(/^\s+/, "");
+      }
+      if (text) out.push(text);
+      return out;
+    }
+    function buildChunks(segs) {                  // morceaux courts : évite l'arrêt des longs textes sur Chrome
+      var out = [];
+      segs.forEach(function (s) {
+        var cur2 = "", parts = s[1].match(/[^.!?;:]+[.!?;:]*\s*/g) || [s[1]];
+        parts.forEach(function (p) {
+          if (cur2 && (cur2 + p).length > 160) { out.push({ lang: s[0], text: cur2.trim() }); cur2 = p; }
+          else cur2 += p;
+        });
+        if (cur2.trim()) out.push({ lang: s[0], text: cur2.trim() });
+      });
+      var res = [];
+      out.forEach(function (c) { hardSplit(c.text, 190).forEach(function (t) { res.push({ lang: c.lang, text: t }); }); });
+      return res;
+    }
+    function speakFrom(tk) {
+      if (tk !== st.token) return;
+      if (st.ci >= st.chunks.length) {
+        st.speaking = false; st.mode = null; st.ci = 0; setIcon(false);
+        if (st.auto) goNext();
+        return;
+      }
+      var c = st.chunks[st.ci];
+      var u = new SpeechSynthesisUtterance(c.text);
+      u.lang = c.lang === "en" ? "en-US" : "fr-FR";
+      var v = pickVoice(c.lang);
+      if (v) { u.voice = v; u.lang = v.lang; }
+      u.rate = 0.95;
+      u.onend = function () { if (tk !== st.token) return; st.ci++; speakFrom(tk); };
+      u.onerror = function () { if (tk !== st.token) return; st.speaking = false; setIcon(false); st.auto = false; };
+      synth.speak(u);
+    }
+    function startTts(from) {
+      st.token++;
+      var tk = st.token;
+      st.mode = "tts"; st.speaking = true; st.ci = from || 0; setIcon(true);
+      var busy = false;
+      try { busy = synth.speaking || synth.pending; synth.cancel(); } catch (e) {}
+      if (busy) setTimeout(function () { speakFrom(tk); }, 120);   // laisse cancel() se terminer
+      else speakFrom(tk);                                          // sinon tout de suite (exigé par iOS)
+    }
+    function playVoice() {
+      if (!(synth && fb(st.idx))) { st.auto = false; return false; }
+      if (!st.chunks.length) st.chunks = buildChunks(fb(st.idx));
+      startTts(st.ci);
+      return true;
+    }
+
+    // ====================================================================
+    //  Lecture
+    // ====================================================================
+    function freeBlob() { if (st.blobUrl) { try { URL.revokeObjectURL(st.blobUrl); } catch (e) {} st.blobUrl = null; } }
+    function stopAll() {
+      st.playTok++;
+      try { audio.pause(); audio.currentTime = 0; } catch (e) {}
+      st.token++;
+      try { if (synth) synth.cancel(); } catch (e) {}
+      st.speaking = false; st.mode = null; st.chunks = []; st.ci = 0;
+      setIcon(false);
+    }
+    function pauseNow() {
+      if (st.mode === "mp3") audio.pause();
+      else if (st.mode === "tts") {
+        st.token++;
+        try { synth.cancel(); } catch (e) {}
+        st.speaking = false; setIcon(false);      // st.ci conservé : la reprise repart de la phrase en cours
+      }
+    }
+    function startAudio(src, tok) {
+      if (tok !== st.playTok) return;
+      if (audio.getAttribute("data-src") !== src) { audio.setAttribute("data-src", src); audio.src = src; }
+      var p = audio.play();
+      if (p && p.catch) p.catch(function (err) {
+        console.warn("ECOLIA audio :", err);
+        if (tok !== st.playTok) return;
+        if (!(err && err.name === "NotAllowedError") && playVoice()) return;   // lecture impossible : voix du téléphone
+        setIcon(false); st.auto = false;
+      });
+    }
+    function playCurrent() {
+      var i = st.idx;
+      if (hasMp3(i)) {
+        var tok = ++st.playTok, u = urlN(i + 1);
+        st.mode = "mp3";
+        if (!navigator.onLine && dl.state === "none") { st.mode = null; if (playVoice()) return; }   // hors ligne et non téléchargé
+        if (store && dl.state !== "none") {                     // téléchargé : lecture locale, sans réseau
+          store.get(i + 1)
+            .then(function (b) {
+              if (tok !== st.playTok) return;
+              if (b) { freeBlob(); st.blobUrl = URL.createObjectURL(new Blob([b], { type: "audio/mpeg" })); startAudio(st.blobUrl, tok); }
+              else startAudio(u, tok);
+            }).catch(function () { startAudio(u, tok); });
+        } else startAudio(u, tok);                              // sinon lecture en ligne (appel immédiat, exigé par iOS)
+      } else if (!playVoice()) {
+        st.auto = false;
+      }
+    }
+
+    function onSlideChange(i) {
+      var wasAdvancing = st.advancing;
+      st.advancing = false;
+      st.idx = i;
+      btn.classList.toggle("ecolia-off", !hasAudio(i));
+      stopAll();
+      audio.removeAttribute("data-src");
+      freeBlob();
+      if (bnMode === "invite" && i !== 0) hideBanner();       // l'invitation n'apparaît qu'à la première slide
+      if (wasAdvancing && st.auto) setTimeout(playCurrent, 500);   // enchaînement automatique
+      else st.auto = false;                                         // changement manuel : on coupe tout
+    }
+    function goNext() {
+      if (st.idx + 1 >= CFG.count) { st.auto = false; return; }
+      st.advancing = true;
+      if (typeof nextSlide === "function") nextSlide();
+      else { var nb = document.getElementById("nextBtn"); if (nb) nb.click(); }
+      setTimeout(function () { st.advancing = false; }, 4000);
+    }
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var i = cur();
+      if (i !== st.idx) onSlideChange(i);
+      if (isPlaying()) { st.auto = false; pauseNow(); }
+      else { st.auto = true; playCurrent(); }
+    });
+    audio.addEventListener("play", function () { setIcon(true); });
+    audio.addEventListener("pause", function () { if (st.mode === "mp3") setIcon(false); });
+    audio.addEventListener("error", function () {
+      if (st.mode === "mp3" && playVoice()) return;            // fichier introuvable / hors ligne : voix du téléphone
+      setIcon(false); st.auto = false;
+    });
+    audio.addEventListener("ended", function () { setIcon(false); if (st.auto) goNext(); });
+    window.addEventListener("pagehide", function () { stopAll(); freeBlob(); });
+
+    // ---------- démarrage ----------
+    refreshCacheState(function () {
+      if (store && CFG.available.length && dl.state !== "full" && navigator.onLine && cur() === 0 && !lsGet(LATER)) askDownload(true);
+    });
+    st.idx = -1;
+    setInterval(function () { var i = cur(); if (i !== st.idx) onSlideChange(i); }, 250);   // suit la slide affichée
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+<!-- ECOLIA_AUDIO_PLAYER_END -->
+</body>
+</html>

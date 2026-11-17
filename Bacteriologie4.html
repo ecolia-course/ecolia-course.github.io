@@ -1,0 +1,1602 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="vert">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>ECOLIA — Bacteriologie4</title>
+<style>
+[data-theme="bleu"]   { --p1:#0d2b4f; --p2:#1565c0; --p3:#07172e; --p4:#12437a; --p5:#5b8fd0; --bg:#e8f0fb; --bg2:#cfdff5; --bd:#a9c3e8; --soft:#dde8f7; --btn:#2a67b0; }
+[data-theme="vert"]   { --p1:#14442e; --p2:#2e7d32; --p3:#0b2b1a; --p4:#1f5c3a; --p5:#4f9a6b; --bg:#e8f5ec; --bg2:#c8e6d2; --bd:#a5cdb2; --soft:#dcefe2; --btn:#2f7a4f; }
+[data-theme="violet"] { --p1:#2d1b4e; --p2:#6a1b9a; --p3:#1a0f2e; --p4:#4a148c; --p5:#9c6fd0; --bg:#f1e9fb; --bg2:#dccbf2; --bd:#c4a8e6; --soft:#e8ddf6; --btn:#7e3fb2; }
+[data-theme="rouge"]  { --p1:#4a1010; --p2:#b71c1c; --p3:#2b0a0a; --p4:#8e1b1b; --p5:#d9706a; --bg:#fbeaea; --bg2:#f3cdcb; --bd:#e8a9a5; --soft:#f8dede; --btn:#a62a2a; }
+[data-theme="orange"] { --p1:#4e2a0c; --p2:#ef6c00; --p3:#2e1604; --p4:#b34a00; --p5:#f0a15a; --bg:#fff1e0; --bg2:#fbdcb8; --bd:#f3c08a; --soft:#fdebd6; --btn:#c9650a; }
+[data-theme="teal"]   { --p1:#0b3a3a; --p2:#00796b; --p3:#062626; --p4:#00574b; --p5:#4db6ac; --bg:#e0f2f1; --bg2:#b2dfdb; --bd:#80cbc4; --soft:#d5ecea; --btn:#26897d; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:linear-gradient(160deg,var(--p1) 0%,var(--p2) 50%,var(--p3) 100%); display:flex; justify-content:center; align-items:center; padding:8px; }
+.container { width:100%; max-width:1400px; background:#fefdf8; border-radius:20px; overflow:hidden; display:flex; flex-direction:column; height:100%; max-height:100vh; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.progress-bar { height:4px; background:var(--bg2); flex-shrink:0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--p5),var(--p4)); width:0%; transition:width 0.3s; }
+.header { padding:10px 16px; background:var(--bg); border-bottom:1px solid var(--bd); display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+.header h1 { color:var(--p4); font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box { display:flex; background:white; border-radius:20px; padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.search-box input { border:none; padding:6px 10px; border-radius:20px; outline:none; width:130px; font-size:0.8rem; }
+.search-box button { background:none; border:none; cursor:pointer; padding:4px 8px; font-size:0.85rem; color:var(--p2); }
+.badge { background:var(--p5); color:white; padding:4px 10px; border-radius:20px; font-weight:bold; font-size:0.75rem; }
+.search-nav { display:none; gap:4px; background:var(--bg2); padding:2px 8px; border-radius:20px; align-items:center; font-size:0.75rem; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:0.9rem; color:var(--p4); padding:2px 4px; }
+.content { padding:28px 32px; flex:1; overflow-y:auto; background:#fff; scroll-behavior:smooth; line-height:1.85; }
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.slide-title { color:var(--p1); font-size:1.5rem; font-weight:700; padding-bottom:12px; margin-bottom:20px; border-bottom:2px solid var(--p5); }
+.slide-content { color:var(--p3); font-size:1rem; }
+.empty-state { display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-height:60vh; padding:40px 20px; gap:18px; }
+.empty-state .icon { width:72px; height:72px; border-radius:50%; background:var(--bg); border:2px solid var(--bd); display:flex; align-items:center; justify-content:center; color:var(--p2); font-size:2rem; font-weight:300; }
+.empty-state h2 { color:var(--p1); font-size:1.4rem; font-weight:700; margin:0; }
+.empty-state p { color:#666; font-size:0.95rem; max-width:520px; line-height:1.7; }
+.empty-state .tag { display:inline-block; padding:6px 14px; background:var(--bg); color:var(--p4); border:1px solid var(--bd); border-radius:20px; font-size:0.8rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; }
+.bloc { padding:18px 22px; border-radius:12px; margin:22px 0; line-height:1.85; }
+.bloc-label { font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; opacity:0.7; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:var(--bg); border-left:4px solid var(--p5); }
+.theorie .bloc-label { color:var(--p4); }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.sources { background:#f5f5f5; padding:12px 16px; border-radius:10px; margin-top:26px; font-size:0.82rem; color:#666; border-left:3px solid #999; line-height:1.6; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:var(--p1); }
+.quiz-container { padding:22px; background:var(--bg); border-radius:16px; }
+.quiz-question { background:white; border-radius:10px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.quiz-question p { font-weight:600; margin-bottom:10px; color:var(--p1); }
+.quiz-question label { display:block; padding:8px 10px; margin:4px 0; border-radius:6px; cursor:pointer; transition:background 0.2s; }
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit { background:var(--btn); color:white; border:none; padding:12px 24px; border-radius:30px; font-size:1rem; cursor:pointer; font-weight:600; margin-top:14px; }
+.quiz-result { margin-top:16px; font-weight:600; }
+.controls { padding:8px 16px; background:#fafafa; border-top:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0; }
+.nav-btn { background:white; color:var(--p4); border:1px solid #ccc; padding:8px 14px; border-radius:8px; font-size:0.82rem; cursor:pointer; font-weight:500; }
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:var(--soft); }
+.content::-webkit-scrollbar-thumb { background:var(--p5); border-radius:3px; }
+@media (max-width:600px) { body { padding:0; } .container { border-radius:0; max-height:100vh; } .content { padding:20px 18px; } .slide-title { font-size:1.25rem; } .search-box input { width:90px; } .header h1 { font-size:0.85rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="header">
+<h1 id="pageTitle">ECOLIA</h1>
+<div class="header-right">
+<div class="search-box">
+<input id="searchInput" placeholder="Rechercher" type="text"/>
+<button id="searchBtn">⌕</button>
+</div>
+<div class="search-nav" id="searchNav">
+<button id="prevResultBtn">‹</button>
+<span id="resultCounter">0/0</span>
+<button id="nextResultBtn">›</button>
+</div>
+<span class="badge" id="slideCounter">0/0</span>
+</div>
+</div>
+<div class="content" id="content"></div>
+<div class="controls">
+<button class="nav-btn" id="prevBtn">← Précédent</button>
+<span class="counter" id="counter">—</span>
+<button class="nav-btn" id="nextBtn">Suivant →</button>
+</div>
+</div>
+<script>
+const COURSE_TITLE = "Bactériologie (Bactériologie Médicale et Diagnostic de Laboratoire)";
+const slides = [
+  {
+    title: "Sommaire — Bactériologie (Bactériologie Médicale et Diagnostic de Laboratoire)",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Présentation du cours</div>
+        <h3>Comprendre les bactéries pour mieux les combattre</h3>
+        <p>Les bactéries sont partout : dans l'air, l'eau, le sol, et même dans notre corps. La plupart sont inoffensives ou utiles, mais certaines provoquent des maladies graves : choléra, fièvre typhoïde, méningites, tuberculose, peste. En République Démocratique du Congo, ces maladies sont responsables d'épidémies récurrentes et d'une mortalité importante. Ce cours vous apprendra à connaître la structure des bactéries, à réaliser les techniques de laboratoire de base (coloration de Gram, culture, antibiogramme), à identifier les principales bactéries pathogènes et à participer à la surveillance et à la prévention.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Objectifs d'apprentissage</div>
+        <h3>À la fin de ce cours, vous serez capable de :</h3>
+        <ul>
+          <li>Définir les concepts de base de la bactériologie et situer les bactéries dans le vivant.</li>
+          <li>Décrire la structure et la physiologie des bactéries.</li>
+          <li>Réaliser et interpréter une coloration de Gram.</li>
+          <li>Réaliser une culture, un isolement et un antibiogramme.</li>
+          <li>Identifier les principales bactéries pathogènes (cocci, bacilles, mycobactéries, spirochètes).</li>
+          <li>Relier les bactéries aux maladies prioritaires en RDC.</li>
+          <li>Comprendre la résistance antimicrobienne et les mesures de prévention.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Plan du cours</div>
+        <h3>Neuf chapitres progressifs</h3>
+        <ol>
+          <li>Introduction à la bactériologie</li>
+          <li>Structure et physiologie bactériennes</li>
+          <li>La coloration de Gram</li>
+          <li>Culture et identification</li>
+          <li>Antibiogramme et résistance antimicrobienne</li>
+          <li>Les cocci pathogènes</li>
+          <li>Les bacilles pathogènes</li>
+          <li>Mycobactéries et spirochètes</li>
+          <li>Maladies bactériennes prioritaires en RDC et prévention</li>
+        </ol>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 1 — Pourquoi la bactériologie en RDC ?",
+    content: `
+      <div class="bloc cas">
+        <div class="bloc-label">Situation-problème</div>
+        <h3>Une épidémie de choléra dans un camp de déplacés</h3>
+        <p>Dans un camp de déplacés du Nord-Kivu, plusieurs dizaines de personnes présentent une diarrhée aqueuse profuse, appelée « diarrhée riziforme ». Le personnel soignant doit identifier rapidement l'agent causal, organiser la prise en charge et prévenir la propagation. C'est ici que la bactériologie intervient : identification de <em>Vibrio cholerae</em>, confirmation par l'INRB, mise en place des mesures d'hygiène et de réhydratation.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Importance en RDC</div>
+        <h3>Des maladies bactériennes toujours présentes</h3>
+        <ul>
+          <li><strong>Choléra</strong> : épidémies récurrentes à Uvira, au Katanga et au Maniema.</li>
+          <li><strong>Fièvre typhoïde</strong> : foyers documentés à Bwamanda, Kwango et Kwilu.</li>
+          <li><strong>Méningites</strong> : urgences médicales (Katanga, Maniema).</li>
+          <li><strong>Tuberculose</strong> : problème majeur de santé publique, avec des cas MDR/XDR surveillés par l'INRB.</li>
+          <li><strong>Peste</strong> : surveillance active dans les zones endémiques.</li>
+          <li><strong>Infections nosocomiales</strong> : fréquentes dans les hôpitaux congolais.</li>
+        </ul>
+        <p>La résistance aux antibiotiques complique la prise en charge : SARM, entérobactéries productrices de bêta-lactamases à spectre étendu (BLSE), tuberculose MDR/XDR.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Rôle du technicien</div>
+        <p>Le technicien de laboratoire est au cœur de la chaîne du diagnostic : il prélève, cultive, colore, identifie, teste la sensibilité aux antibiotiques et alerte. Sa rigueur permet de sauver des vies et de limiter la propagation des épidémies.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 1 — Définitions et place dans le vivant",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Qu'est-ce qu'une bactérie ?</h3>
+        <p>La <strong>bactériologie</strong> est la science qui étudie les bactéries : leur structure, leur physiologie, leur génétique, leur rôle dans les maladies et leur interaction avec l'hôte.</p>
+        <p>Les bactéries sont des <strong>procaryotes</strong> : elles ne possèdent pas de noyau et leur matériel génétique est libre dans le cytoplasme. Elles appartiennent au règne des Monères et sont ubiquitaires (sol, eau, air, organismes vivants).</p>
+
+        <h4>Les grandes catégories de micro-organismes</h4>
+        <table>
+          <thead>
+            <tr><th>Catégorie</th><th>Structure</th><th>Exemple</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Bactéries</td><td>Procaryotes (sans noyau)</td><td><em>E. coli</em>, <em>Vibrio cholerae</em></td></tr>
+            <tr><td>Virus</td><td>Acaryotes (sans cellule)</td><td>VIH, SARS-CoV-2</td></tr>
+            <tr><td>Parasites</td><td>Eucaryotes</td><td><em>Plasmodium</em>, <em>Entamoeba</em></td></tr>
+            <tr><td>Champignons</td><td>Eucaryotes</td><td><em>Candida</em>, <em>Aspergillus</em></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Historique</div>
+        <h3>Une science fondatrice</h3>
+        <ul>
+          <li><strong>Antoni van Leeuwenhoek</strong> (XVII<sup>e</sup> s.) : premier à observer les bactéries au microscope.</li>
+          <li><strong>Louis Pasteur</strong> (XIX<sup>e</sup> s.) : démontre le rôle des micro-organismes dans les fermentations et les maladies ; invente la pasteurisation et les vaccins.</li>
+          <li><strong>Robert Koch</strong> (XIX<sup>e</sup> s.) : identifie les agents de la tuberculose, du choléra et de l'anthrax ; énonce les postulats de Koch.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Croire que toutes les bactéries sont pathogènes. En réalité, la grande majorité est <strong>commensale</strong> (flore intestinale, cutanée) ou utile (fermentations, production de vitamines, dépollution). Seule une minorité est pathogène.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 2 — La structure bactérienne",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Une cellule simple mais redoutablement efficace</h3>
+        <p>La bactérie est une cellule simple, mais sa structure lui permet de survivre, de se multiplier et de résister aux défenses de l'hôte.</p>
+
+        <h4>Les composants essentiels</h4>
+        <ul>
+          <li><strong>La paroi bactérienne</strong> : structure rigide qui maintient la forme et protège la bactérie. Sa composition distingue les Gram+ et les Gram-.</li>
+          <li><strong>La membrane cytoplasmique</strong> : barrière sélective, siège de la respiration et du transport.</li>
+          <li><strong>Le cytoplasme</strong> : contient les ribosomes et le matériel génétique.</li>
+          <li><strong>Le chromosome bactérien</strong> : ADN circulaire unique.</li>
+          <li><strong>Les plasmides</strong> : petits ADN circulaires, porteurs de gènes de résistance ou de virulence.</li>
+        </ul>
+
+        <h4>Structures facultatives</h4>
+        <ul>
+          <li><strong>Les flagelles</strong> : appendices locomoteurs (mobilité) ; antigènes H.</li>
+          <li><strong>Les pili (fimbriae)</strong> : adhésion aux cellules hôtes, transfert génétique (pili sexuels).</li>
+          <li><strong>La capsule</strong> : couche protectrice antiphagocytaire, facteur de virulence.</li>
+          <li><strong>Les spores</strong> : formes de résistance très résistantes à la chaleur et aux désinfectants (<em>Clostridium</em>, <em>Bacillus</em>).</li>
+        </ul>
+      </div>
+
+      <figure>
+        <img data-image-id="bacteriologie4_img01" alt="Schéma de la structure d'une bactérie : paroi, membrane cytoplasmique, flagelles, pili, capsule et ADN circulaire" />
+        <figcaption>La structure bactérienne : paroi, membrane, flagelles, pili, capsule, ADN.</figcaption>
+      </figure>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Différences Gram+ / Gram-</div>
+        <h3>Une paroi, deux architectures</h3>
+        <ul>
+          <li><strong>Gram-positives</strong> : paroi épaisse de peptidoglycane, pas de membrane externe.</li>
+          <li><strong>Gram-négatives</strong> : paroi fine de peptidoglycane, plus une <strong>membrane externe</strong> contenant du lipopolysaccharide (LPS = endotoxine).</li>
+        </ul>
+        <p>Cette différence structurale explique le comportement des bactéries lors de la coloration de Gram et l'action différenciée de certains antibiotiques.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 2 — Matériel génétique et spores",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Le matériel génétique</div>
+        <h3>Un ADN organisé et mobile</h3>
+        <p>Le matériel génétique d'une bactérie comprend :</p>
+        <ul>
+          <li><strong>Le chromosome</strong> : ADN circulaire unique, porteur de l'essentiel de l'information génétique.</li>
+          <li><strong>Les plasmides</strong> : petits ADN circulaires extrachromosomiques. Ils peuvent porter des gènes de <strong>résistance aux antibiotiques</strong>, de <strong>toxines</strong> ou de <strong>virulence</strong>. Ils peuvent être transmis entre bactéries (conjugaison), ce qui favorise la diffusion de la résistance.</li>
+        </ul>
+
+        <h4>Les mécanismes de transfert génétique</h4>
+        <ul>
+          <li><strong>Conjugaison</strong> : transfert de plasmide via un pilus sexuel.</li>
+          <li><strong>Transformation</strong> : capture d'ADN libre du milieu.</li>
+          <li><strong>Transduction</strong> : transfert via un bactériophage.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les spores</div>
+        <h3>Des formes de survie extrême</h3>
+        <p>Certaines bactéries (notamment <em>Clostridium</em> et <em>Bacillus</em>) produisent des <strong>spores</strong> lorsque les conditions deviennent défavorables. Les spores sont :</p>
+        <ul>
+          <li>Très résistantes à la chaleur (pasteurisation insuffisante, ébullition prolongée nécessaire).</li>
+          <li>Résistantes aux désinfectants usuels.</li>
+          <li>Capables de survivre des années dans l'environnement.</li>
+        </ul>
+        <p>Exemples : <em>Clostridium tetani</em> (tétanos), <em>Clostridium botulinum</em> (botulisme), <em>Bacillus anthracis</em> (anthrax).</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Négliger la stérilisation par simple ébullition. Les spores résistent à l'ébullition simple ; il faut l'autoclave (121 °C, 15 min) pour les détruire. C'est un point crucial en stérilisation hospitalière.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 2 — Croissance bactérienne",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">La courbe de croissance</div>
+        <h3>Quatre phases à connaître</h3>
+        <p>En culture, une population bactérienne suit une courbe de croissance caractéristique en quatre phases :</p>
+        <ol>
+          <li><strong>Phase de latence</strong> : les bactéries s'adaptent au milieu, sans multiplication nette.</li>
+          <li><strong>Phase exponentielle</strong> : multiplication rapide, à taux constant. C'est la phase la plus sensible aux antibiotiques.</li>
+          <li><strong>Phase stationnaire</strong> : le nombre de bactéries se stabilise, carence de nutriments et accumulation de déchets.</li>
+          <li><strong>Phase de déclin</strong> : les bactéries meurent plus vite qu'elles ne se divisent.</li>
+        </ol>
+
+        <h4>Facteurs de croissance</h4>
+        <ul>
+          <li><strong>Température</strong> : chaque bactérie a une température optimale (psychrophile, mésophile, thermophile).</li>
+          <li><strong>pH</strong> : la plupart préfèrent un pH proche de la neutralité.</li>
+          <li><strong>Oxygène</strong> : aérobies, anaérobies, aéro-anaérobies.</li>
+          <li><strong>Nutriments</strong> : sources de carbone, azote, sels minéraux.</li>
+          <li><strong>Eau</strong> : indispensable à la vie bactérienne.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Application pratique</div>
+        <p>La connaissance de la courbe de croissance guide l'interprétation des cultures et l'utilisation des antibiotiques (plus efficaces en phase exponentielle). Elle explique aussi la nécessité de respecter les durées d'incubation lors de l'identification.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 3 — La coloration de Gram : principe et réalisation",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Une coloration différentielle</h3>
+        <p>La <strong>coloration de Gram</strong> est une coloration différentielle inventée par Hans Christian Gram en 1884. Elle distingue les bactéries selon la <strong>structure de leur paroi</strong> :</p>
+        <ul>
+          <li><strong>Gram-positives</strong> : paroi épaisse de peptidoglycane, qui retient le violet de cristal.</li>
+          <li><strong>Gram-négatives</strong> : paroi fine + membrane externe, qui se décolore et prend la couleur du contre-colorant (fuchsine ou safranine).</li>
+        </ul>
+
+        <h4>Les étapes de la coloration</h4>
+        <ol>
+          <li><strong>Préparation du frottis</strong> et fixation (sécher, passer rapidement sur la flamme).</li>
+          <li><strong>Violet de cristal</strong> : 1 minute (coloration primaire).</li>
+          <li><strong>Lugol</strong> (iode) : 1 minute (mordant, fixe le colorant).</li>
+          <li><strong>Alcool</strong> : 10-30 secondes (décoloration).</li>
+          <li><strong>Fuchsine ou safranine</strong> : 30 secondes (contre-coloration).</li>
+          <li><strong>Rinçage, séchage, observation</strong> au microscope à immersion (objectif ×100).</li>
+        </ol>
+      </div>
+
+      <figure>
+        <img data-image-id="bacteriologie4_img02" alt="Étapes de la coloration de Gram montrant les bactéries Gram-positives en violet et Gram-négatives en rose" />
+        <figcaption>La coloration de Gram : Gram-positives (violet) et Gram-négatives (rose).</figcaption>
+      </figure>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Une décoloration trop prolongée à l'alcool transforme les Gram-positives en Gram-négatives (faux résultats). Le temps de décoloration doit être strictement respecté (10 à 30 secondes selon l'épaisseur du frottis).</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 3 — Interprétation de la coloration de Gram",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Lire le résultat</div>
+        <h3>Couleur, forme et arrangement</h3>
+        <p>L'observation microscopique après coloration de Gram donne trois informations essentielles :</p>
+
+        <h4>1. La couleur (Gram)</h4>
+        <ul>
+          <li><strong>Violet</strong> : Gram-positive.</li>
+          <li><strong>Rose/rouge</strong> : Gram-négative.</li>
+        </ul>
+
+        <h4>2. La forme</h4>
+        <ul>
+          <li><strong>Coques (cocci)</strong> : sphériques.</li>
+          <li><strong>Bacilles</strong> : en forme de bâtonnets.</li>
+          <li><strong>Spirales</strong> : incurvées, spiralées, en virgule.</li>
+        </ul>
+
+        <h4>3. L'arrangement</h4>
+        <ul>
+          <li><strong>Amas</strong> (staphylocoques) : grappes de raisin.</li>
+          <li><strong>Chaînettes</strong> (streptocoques) : chapelets.</li>
+          <li><strong>Diplocoques</strong> (pneumocoques, méningocoques) : paires.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Orientation diagnostique</div>
+        <h3>Des indices précieux</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Observation</th>
+              <th>Orientation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Cocci Gram+ en amas</td><td><em>Staphylococcus</em></td></tr>
+            <tr><td>Cocci Gram+ en chaînettes</td><td><em>Streptococcus</em></td></tr>
+            <tr><td>Cocci Gram- en diplocoques</td><td><em>Neisseria</em> (méningocoque, gonocoque)</td></tr>
+            <tr><td>Bacilles Gram-</td><td>Entérobactéries (<em>E. coli</em>, <em>Salmonella</em>, <em>Shigella</em>)</td></tr>
+            <tr><td>Bacilles Gram- incurvés</td><td><em>Vibrio cholerae</em></td></tr>
+            <tr><td>Bacilles Gram+ sporulés</td><td><em>Clostridium</em>, <em>Bacillus</em></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>La coloration de Gram oriente rapidement le diagnostic et le choix d'antibiotique. C'est un examen simple, peu coûteux, réalisable en première ligne. Il ne remplace pas la culture, mais il la guide.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 4 — Les milieux de culture et l'isolement",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Cultiver pour identifier</h3>
+        <p>La <strong>culture bactérienne</strong> consiste à faire se multiplier les bactéries sur un milieu nutritif, pour les isoler et les identifier.</p>
+
+        <h4>Les types de milieux</h4>
+        <ul>
+          <li><strong>Milieux enrichis</strong> : favorisent la croissance des bactéries exigeantes (gélose au sang, gélose chocolat).</li>
+          <li><strong>Milieux sélectifs</strong> : inhibent certaines bactéries pour favoriser d'autres (gélose MacConkey pour les Gram-, milieu TCBS pour <em>Vibrio</em>).</li>
+          <li><strong>Milieux différentiels</strong> : permettent de distinguer les colonies par leur aspect (gélose Hektoen pour <em>Salmonella</em>/<em>Shigella</em>).</li>
+          <li><strong>Milieux spécifiques</strong> : pour une bactérie particulière (milieu de Löwenstein-Jensen pour les mycobactéries).</li>
+        </ul>
+
+        <h4>L'isolement par la technique des stries</h4>
+        <p>La technique des stries consiste à étaler l'échantillon sur la gélose en quadrants successifs, en stérilisant l'anse entre chaque quadrant. On obtient ainsi des <strong>colonies isolées</strong>, indispensables pour l'identification.</p>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Application clinique</div>
+        <h3>Une coproculture sur gélose Hektoen</h3>
+        <p>Une coproculture est réalisée sur gélose Hektoen. Après 24 h d'incubation, on observe des colonies incolores (lactose négatif). L'identification biochimique confirme <em>Salmonella</em>. Ce résultat oriente le diagnostic vers une fièvre typhoïde ou une salmonellose, et permet d'adapter l'antibiothérapie.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Utiliser un milieu inadapté à la bactérie recherchée. Par exemple, rechercher <em>Vibrio cholerae</em> sur un milieu non spécifique peut donner un faux négatif. Le choix du milieu doit toujours être guidé par l'hypothèse clinique.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 4 — Identification biochimique et sérologique",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">L'identification biochimique</div>
+        <h3>Des tests pour caractériser la bactérie</h3>
+        <p>Après isolement, on identifie la bactérie par une série de tests biochimiques :</p>
+        <ul>
+          <li><strong>Oxydase</strong> : met en évidence le cytochrome oxydase (<em>Pseudomonas</em> positif, entérobactéries négatives).</li>
+          <li><strong>Catalase</strong> : met en évidence la catalase (staphylocoques positifs, streptocoques négatifs).</li>
+          <li><strong>Fermentation des sucres</strong> : lactose, glucose, saccharose.</li>
+          <li><strong>Uréase</strong> : <em>Proteus</em> positif.</li>
+          <li><strong>Indole</strong> : <em>E. coli</em> positif.</li>
+          <li><strong>H₂S</strong> : <em>Salmonella</em> positive.</li>
+        </ul>
+
+        <h4>L'identification sérologique</h4>
+        <p>Le <strong>sérotypage</strong> utilise des anticorps spécifiques pour identifier les antigènes de surface :</p>
+        <ul>
+          <li><strong>Antigènes O</strong> (paroi, somatiques).</li>
+          <li><strong>Antigènes H</strong> (flagellaires).</li>
+          <li><strong>Antigènes K</strong> (capsulaires).</li>
+        </ul>
+        <p>Le sérotypage est essentiel pour <em>Salmonella</em> (distinction des sérotypes), <em>E. coli</em> pathogènes et <em>Neisseria meningitidis</em>.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>L'identification repose sur trois piliers : la <strong>morphologie des colonies</strong>, la <strong>coloration de Gram</strong>, et les <strong>tests biochimiques et sérologiques</strong>. C'est la combinaison de ces données qui permet de nommer la bactérie avec certitude.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 5 — L'antibiogramme",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Tester la sensibilité aux antibiotiques</h3>
+        <p>L'<strong>antibiogramme</strong> est un examen de laboratoire qui teste la sensibilité d'une bactérie à différents antibiotiques. Il guide le médecin dans le choix du traitement.</p>
+
+        <h4>Principe de la méthode de diffusion en gélose</h4>
+        <ol>
+          <li>Préparer un inoculum standardisé de la bactérie.</li>
+          <li>Ensemencer une gélose Mueller-Hinton en nappe.</li>
+          <li>Déposer des disques d'antibiotiques à la surface.</li>
+          <li>Incuber 18-24 h à 37 °C.</li>
+          <li>Mesurer les <strong>diamètres d'inhibition</strong> autour de chaque disque.</li>
+          <li>Comparer aux valeurs critiques (S, I, R).</li>
+        </ol>
+
+        <h4>Les catégories cliniques</h4>
+        <ul>
+          <li><strong>Sensible (S)</strong> : la bactérie est inhibée par l'antibiotique à dose thérapeutique.</li>
+          <li><strong>Intermédiaire (I)</strong> : efficacité incertaine ; augmenter la dose ou choisir un autre antibiotique.</li>
+          <li><strong>Résistant (R)</strong> : la bactérie n'est pas inhibée ; l'antibiotique sera inefficace.</li>
+        </ul>
+
+        <h4>La CMI</h4>
+        <p>La <strong>CMI</strong> (concentration minimale inhibitrice) est la plus faible concentration d'antibiotique qui inhibe la croissance visible de la bactérie. Elle est déterminée par dilution ou par des systèmes automatisés.</p>
+      </div>
+
+      <figure>
+        <img data-image-id="bacteriologie4_img03" alt="Boîte de Petri avec des disques d'antibiotiques et des zones d'inhibition autour de chaque disque" />
+        <figcaption>L'antibiogramme par diffusion en gélose.</figcaption>
+      </figure>
+    `
+  },
+  {
+    title: "Chapitre 5 — La résistance antimicrobienne",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Un défi mondial et congolais</h3>
+        <p>La <strong>résistance antimicrobienne</strong> est la capacité d'une bactérie à survivre en présence d'un antibiotique qui devrait normalement la tuer. C'est un problème majeur de santé publique, aggravé par l'usage abusif des antibiotiques, l'automédication et le manque d'antibiogrammes.</p>
+
+        <h4>Mécanismes de résistance</h4>
+        <ul>
+          <li><strong>Production d'enzymes</strong> : bêta-lactamases, carbapénémases, qui détruisent l'antibiotique.</li>
+          <li><strong>Modification de la cible</strong> : la cible de l'antibiotique change de structure.</li>
+          <li><strong>Efflux</strong> : la bactérie rejette l'antibiotique hors de sa cellule.</li>
+          <li><strong>Imperméabilité</strong> : la bactérie empêche l'antibiotique d'entrer.</li>
+        </ul>
+
+        <h4>Exemples majeurs</h4>
+        <ul>
+          <li><strong>SARM</strong> : <em>Staphylococcus aureus</em> résistant à la méticilline.</li>
+          <li><strong>BLSE</strong> : entérobactéries productrices de bêta-lactamases à spectre étendu.</li>
+          <li><strong>TB MDR/XDR</strong> : tuberculose multirésistante ou ultrarésistante.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Surveillance et prévention</div>
+        <h3>Agir ensemble</h3>
+        <ul>
+          <li><strong>Surveillance</strong> : l'OMS (programme GLASS) et l'INRB coordonnent la surveillance de la résistance.</li>
+          <li><strong>Bon usage des antibiotiques</strong> : comités hospitaliers, prescription raisonnée, antibiogramme avant traitement.</li>
+          <li><strong>Hygiène</strong> : prévention des infections nosocomiales (lavage des mains, stérilisation).</li>
+          <li><strong>Vaccination</strong> : réduire l'incidence des infections bactériennes évitables.</li>
+          <li><strong>Éducation</strong> : informer le public contre l'automédication.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Prescrire un antibiotique sans antibiogramme quand celui-ci est disponible. Cette pratique favorise l'émergence de bactéries résistantes et expose à des échecs thérapeutiques.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 6 — Les cocci pathogènes",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Les staphylocoques</div>
+        <h3>Staphylococcus aureus</h3>
+        <p><em><strong>Staphylococcus aureus</strong></em> est un coccus Gram+ en amas, coagulase positif, catalase positif. C'est un germe commensal de la peau et des muqueuses, mais aussi un redoutable pathogène.</p>
+        <ul>
+          <li><strong>Infections cutanées</strong> : abcès, furoncles, panaris.</li>
+          <li><strong>Infections profondes</strong> : bactériémie, endocardite, ostéomyélite.</li>
+          <li><strong>Intoxications alimentaires</strong> : toxi-infection par les entérotoxines.</li>
+          <li><strong>SARM</strong> : souches résistantes à la méticilline, problème majeur en milieu hospitalier.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les streptocoques</div>
+        <h3>Streptococcus et Enterococcus</h3>
+        <ul>
+          <li><em><strong>Streptococcus pyogenes</strong></em> (groupe A) : angine, scarlatine, érysipèle, rhumatisme articulaire aigu (RAA), glomérulonéphrite post-streptococcique.</li>
+          <li><em><strong>Streptococcus pneumoniae</strong></em> : pneumonie, méningite, otite, sinusite.</li>
+          <li><em><strong>Streptococcus agalactiae</strong></em> (groupe B) : infections néonatales, méningites du nouveau-né.</li>
+          <li><em><strong>Enterococcus faecalis</strong></em> : infections urinaires, endocardites, résistance à la vancomycine (ERV).</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les méningocoques et gonocoques</div>
+        <h3>Neisseria</h3>
+        <ul>
+          <li><em><strong>Neisseria meningitidis</strong></em> : méningites, purpura fulminans. Épidémies en RDC (Katanga, Maniema). Diagnostic par ponction lombaire et culture/PCR. Vaccination disponible.</li>
+          <li><em><strong>Neisseria gonorrhoeae</strong></em> : infections sexuellement transmissibles, urétrite, cervicite, salpingite. Diagnostic par examen direct et culture.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Traiter une angine à streptocoque sans test de diagnostic rapide (TDR). L'usage abusif d'antibiotiques favorise la résistance. Le TDR permet de confirmer le diagnostic et d'éviter les traitements inutiles.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 7 — Les bacilles pathogènes",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Les entérobactéries</div>
+        <h3>Une grande famille</h3>
+        <ul>
+          <li><em><strong>E. coli</strong></em> : infections urinaires (première cause), diarrhées (souches pathogènes), infections néonatales.</li>
+          <li><em><strong>Salmonella</strong></em> : <em>Salmonella Typhi</em> (fièvre typhoïde), <em>Salmonella</em> non typhiques (gastro-entérites).</li>
+          <li><em><strong>Shigella</strong></em> : dysenterie bacillaire, diarrhée sanglante.</li>
+          <li><em><strong>Klebsiella</strong></em> : infections nosocomiales, pneumonies, infections urinaires.</li>
+          <li><em><strong>Proteus</strong></em> : infections urinaires (calculs), uréase positive.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Vibrio cholerae</div>
+        <h3>L'agent du choléra</h3>
+        <p><em><strong>Vibrio cholerae</strong></em> est un bacille Gram- incurvé, mobile, oxydase positif. Il produit une <strong>entérotoxine</strong> qui provoque une diarrhée aqueuse profuse (« eau de riz »). L'infection peut tuer en quelques heures par déshydratation.</p>
+        <p>Diagnostic : examen direct, coloration de Gram (bacilles incurvés), culture sur gélose TCBS (colonies jaunes). L'INRB confirme les cas lors des épidémies.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Pseudomonas et Haemophilus</div>
+        <h3>Deux pathogènes importants</h3>
+        <ul>
+          <li><em><strong>Pseudomonas aeruginosa</strong></em> : bacille Gram-, oxydase positif, responsable d'infections nosocomiales, de brûlures, d'infections urinaires et respiratoires. Résistance multiple.</li>
+          <li><em><strong>Haemophilus influenzae</strong></em> : coccobacille Gram-, responsable de méningites et de pneumonies, surtout chez l'enfant. La vaccination (Hib) a considérablement réduit son incidence.</li>
+        </ul>
+      </div>
+
+      <figure>
+        <img data-image-id="bacteriologie4_img04" alt="Colonies jaunes de Vibrio cholerae sur gélose TCBS" />
+        <figcaption><em>Vibrio cholerae</em> sur gélose TCBS : colonies jaunes caractéristiques.</figcaption>
+      </figure>
+    `
+  },
+  {
+    title: "Chapitre 8 — Les mycobactéries et les spirochètes",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Mycobacterium tuberculosis</div>
+        <h3>L'agent de la tuberculose</h3>
+        <p><em><strong>Mycobacterium tuberculosis</strong></em> est un bacille acido-alcoolo-résistant (BAAR), à croissance lente, à paroi riche en lipides. Il est responsable de la tuberculose, qui touche principalement les poumons.</p>
+
+        <h4>Diagnostic</h4>
+        <ul>
+          <li><strong>Bacilloscopie</strong> après coloration de Ziehl-Neelsen : recherche de BAAR dans les crachats.</li>
+          <li><strong>GeneXpert</strong> : test moléculaire (PCR) qui détecte l'ADN du bacille et les mutations de résistance à la rifampicine.</li>
+          <li><strong>Culture</strong> sur milieu de Löwenstein-Jensen (lent, 4 à 8 semaines).</li>
+        </ul>
+
+        <h4>Résistance</h4>
+        <p>La tuberculose <strong>MDR</strong> (multirésistante) est résistante au moins à l'isoniazide et à la rifampicine. La tuberculose <strong>XDR</strong> (ultrarésistante) est résistante à davantage de médicaments. La surveillance est assurée par l'INRB.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les spirochètes</div>
+        <h3>Treponema et Borrelia</h3>
+        <ul>
+          <li><em><strong>Treponema pallidum</strong></em> : agent de la syphilis. Diagnostic par sérologie (TPHA, VDRL) et parfois microscopie à fond noir.</li>
+          <li><em><strong>Borrelia</strong></em> : agent de la fièvre récurrente (borréliose), transmise par les poux ou les tiques.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Négliger la confirmation microbiologique de la tuberculose. Le diagnostic clinique seul ne suffit pas : il faut une confirmation bactériologique (bacilloscopie, GeneXpert ou culture) avant de débuter le traitement, sauf urgence particulière.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 9 — Les maladies bactériennes prioritaires en RDC",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Le choléra</div>
+        <h3>Une urgence de santé publique</h3>
+        <p>Maladie diarrhéique aiguë due à <em>Vibrio cholerae</em>, le choléra provoque une déshydratation rapide et peut tuer en quelques heures. Les épidémies sont récurrentes en RDC (Uvira, Katanga, Maniema).</p>
+        <ul>
+          <li><strong>Traitement</strong> : réhydratation orale ou intraveineuse massive, antibiotiques (doxycycline, azithromycine).</li>
+          <li><strong>Prévention</strong> : eau potable, hygiène des mains, assainissement, désinfection.</li>
+          <li><strong>Surveillance</strong> : notification immédiate, confirmation par l'INRB.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Autres maladies prioritaires</div>
+        <h3>Typhoïde, shigellose, méningites, tuberculose, peste</h3>
+        <ul>
+          <li><strong>Fièvre typhoïde</strong> : <em>Salmonella Typhi</em> ; hémoculture, coproculture ; antibiotiques ; hygiène et vaccination.</li>
+          <li><strong>Shigellose</strong> : <em>Shigella</em> ; diarrhée sanglante ; coproculture ; antibiotiques adaptés ; hygiène.</li>
+          <li><strong>Méningites</strong> : urgence médicale ; ponction lombaire ; culture et PCR ; antibiotiques.</li>
+          <li><strong>Tuberculose</strong> : bacilloscopie, GeneXpert ; traitement long (6 mois) ; observance ; BCG.</li>
+          <li><strong>Peste</strong> : surveillance par l'INRB ; traitement antibiotique précoce ; lutte contre rongeurs et puces.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Attendre la confirmation microbiologique pour déclarer une épidémie. La notification précoce, dès les premiers cas suspects, permet de déclencher la riposte et de sauver des vies.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 9 — Prévention et surveillance",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Prévention</div>
+        <h3>Cinq piliers</h3>
+        <ul>
+          <li><strong>Hygiène des mains</strong> : lavage au savon, friction hydro-alcoolique.</li>
+          <li><strong>Eau potable</strong> : traitement (ébullition, chloration, filtration), protection des sources.</li>
+          <li><strong>Assainissement</strong> : latrines, évacuation des eaux usées, gestion des déchets.</li>
+          <li><strong>Vaccination</strong> : BCG (tuberculose), vaccin anti-méningococcique, vaccin anti-Hib, vaccin anti-typhoïdique.</li>
+          <li><strong>Usage rationnel des antibiotiques</strong> : antibiogramme, comités de bon usage, éducation du public.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Surveillance</div>
+        <h3>Un dispositif national</h3>
+        <p>En RDC, la surveillance des maladies bactériennes est coordonnée par :</p>
+        <ul>
+          <li>L'<strong>INRB</strong> (Institut National de Recherche Biomédicale) : confirmation, surveillance des épidémies, résistance antimicrobienne.</li>
+          <li>Le <strong>Ministère de la Santé</strong> et ses programmes spécialisés (PNLP, PNLT, Programme tuberculose).</li>
+          <li>Les <strong>laboratoires provinciaux et hospitaliers</strong>, qui remontent les données.</li>
+          <li>L'<strong>OMS</strong>, via le programme GLASS, qui coordonne la surveillance mondiale de la résistance.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Rôle du technicien</div>
+        <p>Le technicien de laboratoire est un acteur clé de la surveillance : il identifie les bactéries, réalise les antibiogrammes, alerte en cas de résistance inhabituelle et participe à la notification. Sa rigueur contribue à la santé publique.</p>
+      </div>
+    `
+  },
+  {
+    title: "Synthèse — Identifier, traiter, prévenir",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Synthèse générale</div>
+        <h3>Les points clés du cours de bactériologie</h3>
+        <ol>
+          <li><strong>Définition</strong> : la bactériologie étudie les bactéries (procaryotes), leur structure, leur physiologie et leur rôle pathogène.</li>
+          <li><strong>Structure</strong> : paroi (Gram+ épaisse, Gram- fine + membrane externe), membrane, flagelles, pili, capsule, ADN, plasmides, spores.</li>
+          <li><strong>Coloration de Gram</strong> : étapes (violet, lugol, alcool, fuchsine) ; Gram+ violets, Gram- roses.</li>
+          <li><strong>Culture</strong> : milieux enrichis, sélectifs, différentiels, spécifiques ; isolement par stries.</li>
+          <li><strong>Identification</strong> : biochimie (oxydase, catalase, fermentation, uréase, indole), sérologie (O, H, K).</li>
+          <li><strong>Antibiogramme</strong> : diffusion en gélose, diamètres d'inhibition, S/I/R, CMI.</li>
+          <li><strong>Résistance</strong> : bêta-lactamases, modification de cible, efflux, imperméabilité ; SARM, BLSE, TB MDR/XDR.</li>
+          <li><strong>Cocci</strong> : staphylocoques (S. aureus, SARM), streptocoques (S. pyogenes, S. pneumoniae), Neisseria (méningocoque, gonocoque).</li>
+          <li><strong>Bacilles</strong> : entérobactéries (E. coli, Salmonella, Shigella, Klebsiella), Vibrio cholerae, Pseudomonas, Haemophilus.</li>
+          <li><strong>Mycobactéries</strong> : M. tuberculosis (BAAR, GeneXpert, MDR/XDR).</li>
+          <li><strong>Spirochètes</strong> : Treponema pallidum (syphilis), Borrelia.</li>
+          <li><strong>Maladies prioritaires</strong> : choléra, typhoïde, shigellose, méningites, tuberculose, peste.</li>
+          <li><strong>Prévention</strong> : hygiène, eau potable, assainissement, vaccination, usage rationnel des antibiotiques.</li>
+          <li><strong>Surveillance</strong> : INRB, ministère, OMS/GLASS.</li>
+        </ol>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Message final</div>
+        <h3>Un métier de rigueur et de santé publique</h3>
+        <p>La bactériologie est un maillon essentiel de la chaîne du soin. Un diagnostic bactériologique précis, un antibiogramme bien interprété et une alerte rapide sauvent des vies et limitent les épidémies. Le technicien de laboratoire forme, avec l'infirmier et le médecin, une équipe au service de la santé publique en RDC.</p>
+      </div>
+
+      <div class="sources">
+        <strong>Sources :</strong>
+        <ul>
+          <li>Manuels Scolaires RDC, <em>Fiches pédagogiques — Cours de Bactériologie et Laboratoire</em>, Édition 2025.</li>
+          <li>PNLP / MESU, <em>Descriptif des unités d'enseignement de la lutte antipaludique dans les ITM</em>, 2023 — UE « Microbiologie et Parasitologie ».</li>
+          <li>INRB, <em>Département de Microbiologie</em> — missions de surveillance.</li>
+          <li>Africa-Press (2025) — épreuve de bactériologie au jury national des ITM.</li>
+          <li>OMS (2017), <em>Directives pour la surveillance de la résistance aux antimicrobiens</em>.</li>
+          <li>Sciences-Africa, <em>Bactériologie et Laboratoire (4<sup>e</sup> année des Humanités)</em>.</li>
+          <li>Manuels de bactériologie médicale (Tortora, Murray).</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Évaluation finale — Bactériologie",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Consignes</div>
+        <p>Répondez aux questions suivantes en choisissant la seule bonne réponse parmi les quatre propositions. Chaque question est indépendante et porte sur les notions développées dans le cours. Prenez le temps de relire les chapitres en cas de doute.</p>
+      </div>
+      <div class="quiz-container">
+        <div id="quizQuestions"></div>
+        <button id="submitQuiz" class="quiz-btn-submit">
+          Valider mes réponses
+        </button>
+        <div id="quizResult" class="quiz-result"></div>
+      </div>
+    `
+  }
+];
+const questions = [
+  {
+    text: "La bactériologie étudie :",
+    options: ["Les bactéries", "Les virus", "Les parasites", "Les champignons"],
+    correct: 0
+  },
+  {
+    text: "Les bactéries sont des :",
+    options: ["Eucaryotes", "Procaryotes", "Virus", "Champignons"],
+    correct: 1
+  },
+  {
+    text: "La paroi des bactéries Gram-positives est :",
+    options: ["Fine", "Épaisse de peptidoglycane", "Absente", "Constituée de cellulose"],
+    correct: 1
+  },
+  {
+    text: "La coloration de Gram distingue :",
+    options: ["Les bactéries Gram+ et Gram-", "Les virus et les bactéries", "Les parasites", "Les champignons"],
+    correct: 0
+  },
+  {
+    text: "Les bactéries Gram-positives apparaissent :",
+    options: ["Violettes", "Roses", "Incolores", "Noires"],
+    correct: 0
+  },
+  {
+    text: "Les bactéries Gram-négatives apparaissent :",
+    options: ["Violettes", "Roses", "Incolores", "Noires"],
+    correct: 1
+  },
+  {
+    text: "La gélose MacConkey est un milieu :",
+    options: ["Pour les Gram+", "Sélectif pour les Gram-", "Pour les virus", "Pour les champignons"],
+    correct: 1
+  },
+  {
+    text: "L'antibiogramme teste :",
+    options: ["La pathogénicité", "La sensibilité aux antibiotiques", "La mobilité", "La capsule"],
+    correct: 1
+  },
+  {
+    text: "La résistance antimicrobienne est favorisée par :",
+    options: ["L'hygiène", "L'usage abusif d'antibiotiques", "La vaccination", "Le repos"],
+    correct: 1
+  },
+  {
+    text: "Le SARM est :",
+    options: ["Un staphylocoque résistant à la méticilline", "Un virus", "Un parasite", "Un champignon"],
+    correct: 0
+  },
+  {
+    text: "Le choléra est causé par :",
+    options: ["Salmonella Typhi", "Shigella", "Vibrio cholerae", "E. coli"],
+    correct: 2
+  },
+  {
+    text: "La fièvre typhoïde est causée par :",
+    options: ["Vibrio cholerae", "Salmonella Typhi", "Shigella", "Mycobacterium tuberculosis"],
+    correct: 1
+  },
+  {
+    text: "La shigellose se manifeste typiquement par :",
+    options: ["Une toux", "Une diarrhée sanglante", "Une méningite", "Une peste"],
+    correct: 1
+  },
+  {
+    text: "La tuberculose est causée par :",
+    options: ["Vibrio cholerae", "Mycobacterium tuberculosis", "Salmonella", "Shigella"],
+    correct: 1
+  },
+  {
+    text: "Le diagnostic de la tuberculose utilise principalement :",
+    options: ["L'échographie", "La bacilloscopie et le GeneXpert", "La radiographie uniquement", "La prise de sang"],
+    correct: 1
+  },
+  {
+    text: "Les méningocoques sont des :",
+    options: ["Bacilles Gram+", "Cocci Gram-", "Virus", "Parasites"],
+    correct: 1
+  },
+  {
+    text: "Le principal réservoir de Vibrio cholerae est :",
+    options: ["L'air", "L'eau et les aliments contaminés", "Les animaux", "Le sol"],
+    correct: 1
+  },
+  {
+    text: "La surveillance des maladies bactériennes en RDC est assurée par :",
+    options: ["L'UNICEF", "L'INRB", "La FAO", "L'OMS uniquement"],
+    correct: 1
+  },
+  {
+    text: "La prévention des maladies bactériennes repose principalement sur :",
+    options: ["Les antibiotiques", "L'hygiène et l'eau potable", "L'isolement", "La chirurgie"],
+    correct: 1
+  },
+  {
+    text: "Les plasmides bactériens peuvent porter :",
+    options: ["Uniquement l'ADN chromosomique", "Des gènes de résistance", "Des gènes de virulence", "Rien"],
+    correct: 1
+  },
+  {
+    text: "La coloration de Ziehl-Neelsen est utilisée pour :",
+    options: ["Les mycobactéries", "Les staphylocoques", "Les virus", "Les champignons"],
+    correct: 0
+  },
+  {
+    text: "L'objectif principal de la bactériologie en 4e Humanité ITM est de :",
+    options: ["Remplacer le médecin", "Comprendre et diagnostiquer les infections bactériennes", "Réaliser des chirurgies", "Prescrire des antibiotiques"],
+    correct: 1
+  }
+];
+
+try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+        questions.forEach(function (q) {
+            if (!q.text) q.text = q.question || q.q || q.enonce || q.titre || "";
+            if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+            if (typeof q.correct === "undefined") {
+                if (typeof q.answer !== "undefined") q.correct = q.answer;
+                else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+            }
+        });
+    }
+} catch (e) {}
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+const pageTitle = document.getElementById('pageTitle');
+pageTitle.textContent = "ECOLIA · " + COURSE_TITLE;
+document.title = "ECOLIA — " + COURSE_TITLE;
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim() || slides.length === 0) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp("(" + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ")", 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderEmptyState() {
+    contentDiv.innerHTML = '<div class="empty-state"><div class="icon">·</div><span class="tag">Bientôt disponible</span><h2>' + COURSE_TITLE + '</h2><p>Ce cours est en préparation. Le contenu sera ajouté prochainement.</p></div>';
+    slideCounterSpan.textContent = '0/0';
+    progressFill.style.width = '0%';
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    counterSpan.textContent = '—';
+}
+
+function renderQuiz() {
+    const qc = document.getElementById('quizQuestions');
+    if (!qc) return;
+    if (typeof questions === 'undefined' || questions.length === 0) {
+        qc.innerHTML = '<p style="color:#666;font-style:italic;">Quiz bientot disponible.</p>';
+        return;
+    }
+    let html = '';
+    questions.forEach((q, i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o, k) => {
+            html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>';
+        });
+        html += '</div>';
+    });
+    qc.innerHTML = html;
+    const submitBtn = document.getElementById('submitQuiz');
+    if (submitBtn) {
+        submitBtn.onclick = () => {
+            let score = 0;
+            questions.forEach((q, i) => {
+                const s = document.querySelector('input[name="q' + i + '"]:checked');
+                if (s && parseInt(s.value) === q.correct) score++;
+            });
+            const pct = Math.round(score/questions.length*100);
+            document.getElementById('quizResult').innerHTML =
+                '<div style="background:var(--bg2);padding:16px;border-radius:10px;margin-top:14px;">' +
+                '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong></div>';
+        };
+    }
+}
+
+function renderSlide(index, keepHighlight) {
+    if (keepHighlight === undefined) keepHighlight = true;
+    if (slides.length === 0) { renderEmptyState(); return; }
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    if (index === slides.length - 1) renderQuiz();
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    if (slides.length === 0) return;
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (slides.length && currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (slides.length && currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+<!-- ECOLIA_IMAGE_LOADER_START -->
+<script>
+(function () {
+  var SITE = "https://ecolia-course.github.io/";
+  var NATIVE = false;
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function abs(u) { return /^(https?:|data:|blob:)/i.test(u) ? u : (NATIVE ? SITE + u.replace(/^(\.\/|\/)+/, "") : u); }
+  function ext(u) { var m = String(u).split("?")[0].match(/\.(jpe?g|png|gif|webp|svg)$/i); return m ? m[1].toLowerCase() : "jpg"; }
+  function hide(img) { img.onerror = null; img.style.display = "none"; }
+  var table = null, queue = [], queued = {}, running = false;
+  function enqueue(full, fn) {
+    if (queued[fn]) return;
+    queued[fn] = 1; queue.push([full, fn]);
+    if (!running) { running = true; setTimeout(next, 2500); }
+  }
+  function next() {
+    if (!queue.length) { running = false; return; }
+    if (!navigator.onLine) { running = false; return; }
+    var q = queue.shift(), t0 = Date.now();
+    try { CoursInterface.download(q[0], q[1]); } catch (e) { return setTimeout(next, 500); }
+    (function wait() {
+      var ok = false;
+      try { ok = !!CoursInterface.exists(q[1]); } catch (e) {}
+      if (ok) setTimeout(next, 1500);
+      else if (Date.now() - t0 > 40000) next();
+      else setTimeout(wait, 700);
+    })();
+  }
+  function exists(fn) { try { return !!CoursInterface.exists(fn); } catch (e) { return false; } }
+  function show(img) {
+    if (!table || img.getAttribute("data-ecolia-done")) return;
+    var id = img.getAttribute("data-image-id");
+    var url = table[id];
+    if (typeof url !== "string" || !url.length) { console.warn("ECOLIA : image absente du JSON :", id); return; }
+    img.setAttribute("data-ecolia-done", "1");
+    if (!NATIVE) { img.onerror = function () { hide(img); }; img.setAttribute("src", url); return; }
+    var full = abs(url), fn = "img_" + id + "." + ext(url);
+    if (exists(fn)) {
+      img.onerror = function () {
+        try { CoursInterface["delete"](fn); } catch (e) {}
+        queued[fn] = 0;
+        img.onerror = function () { hide(img); };
+        img.setAttribute("src", full);
+      };
+      img.setAttribute("src", "https://app.local/cours/" + fn);
+    } else {
+      img.onerror = function () { hide(img); };
+      img.setAttribute("src", full);
+      enqueue(full, fn);
+    }
+  }
+  function scan(root) {
+    if (!root || !root.querySelectorAll) return;
+    if (root.matches && root.matches("img[data-image-id]")) show(root);
+    root.querySelectorAll("img[data-image-id]").forEach(show);
+  }
+  function prefetchAll() {
+    var ids = {};
+    try { JSON.stringify(slides).replace(/data-image-id=\\?"([^"\\]+)/g, function (m, id) { ids[id] = 1; }); } catch (e) {}
+    Object.keys(ids).forEach(function (id) {
+      var url = table[id];
+      if (typeof url !== "string" || !url.length) return;
+      var fn = "img_" + id + "." + ext(url);
+      if (!exists(fn)) enqueue(abs(url), fn);
+    });
+  }
+  function start(tbl) {
+    table = tbl;
+    scan(document.body);
+    new MutationObserver(function (muts) {
+      muts.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.nodeType === 1) scan(n); }); });
+    }).observe(document.body, { childList: true, subtree: true });
+    if (NATIVE) prefetchAll();
+  }
+  var JSON_URL = NATIVE ? SITE + "images_ecolia.json" : "images_ecolia.json";
+  var KEY = "ecolia_images_json";
+  fetch(JSON_URL, NATIVE ? { cache: "no-cache" } : undefined)
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (table) { if (NATIVE) lsSet(KEY, JSON.stringify(table)); start(table); })
+    .catch(function (e) {
+      var saved = null;
+      if (NATIVE) { try { saved = JSON.parse(lsGet(KEY) || "null"); } catch (x) {} }
+      if (saved) start(saved);
+      else console.warn("ECOLIA : JSON des images indisponible.", e);
+    });
+})();
+</script>
+<!-- ECOLIA_IMAGE_LOADER_END -->
+
+
+
+
+
+<!-- ECOLIA_AUDIO_PLAYER_START -->
+<style>
+  #ecolia-audio-btn, #ecolia-dl-btn {
+    width: 30px; height: 30px; min-width: 30px; padding: 0; margin: 0 4px 0 0;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    cursor: pointer; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent; outline: none;
+  }
+  #ecolia-audio-btn { border: none; background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-dl-btn { border: 1.5px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb); }
+  #ecolia-dl-btn.ecolia-full { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-btn.ecolia-fixed { position: fixed; top: 8px; left: 8px; z-index: 2147483000; }
+  #ecolia-audio-btn:active, #ecolia-dl-btn:active { transform: scale(.92); }
+  #ecolia-audio-btn svg, #ecolia-dl-btn svg { width: 15px; height: 15px; fill: currentColor; pointer-events: none; }
+  #ecolia-audio-btn.ecolia-off, #ecolia-dl-btn.ecolia-off { display: none; }
+  #ecolia-audio-banner {
+    display: none; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0;
+    padding: 8px 14px; font-size: .82rem; line-height: 1.35;
+    background: var(--soft, #eef3fb); color: var(--p1, #123); border-bottom: 1px solid var(--bd, #c9d6ea);
+  }
+  #ecolia-audio-banner.on { display: flex; }
+  #ecolia-audio-banner .eab-txt { flex: 1 1 180px; }
+  #ecolia-audio-banner .eab-act { display: flex; gap: 6px; flex-wrap: wrap; }
+  #ecolia-audio-banner button {
+    border: 1px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb);
+    border-radius: 16px; padding: 5px 12px; font-size: .8rem; cursor: pointer;
+  }
+  #ecolia-audio-banner button.pri { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-banner .eab-bar { display: none; flex-basis: 100%; height: 4px; border-radius: 2px; overflow: hidden; background: var(--bd, #c9d6ea); }
+  #ecolia-audio-banner .eab-bar i { display: block; height: 100%; width: 0; background: var(--p2, #2563eb); transition: width .2s; }
+</style>
+<script>
+(function () {
+  var CFG = {"code":"Bacteriologie4","base":"https://ecolia-course.github.io/ecolia-media/audio_files/","available":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"count":19,"sizeMo":16,"sizes":{"1":956928,"2":863424,"3":872832,"4":958464,"5":847872,"6":683712,"7":761856,"8":756288,"9":908544,"10":710784,"11":668160,"12":923328,"13":1032384,"14":859584,"15":864192,"16":862080,"17":777600,"18":1364544,"19":153600},"fallback":{"1":[["fr","Sommaire, Bactériologie (Bactériologie Médicale et Diagnostic de Laboratoire). Présentation du cours. Comprendre les bactéries pour mieux les combattre. Les bactéries sont partout: dans l'air, l'eau, le sol, et même dans notre corps. La plupart sont inoffensives ou utiles, mais certaines provoquent des maladies graves: choléra, fièvre typhoïde, méningites, tuberculose, peste. En République Démocratique du Congo, ces maladies sont responsables d'épidémies récurrentes et d'une mortalité importante. Ce cours vous apprendra à connaître la structure des bactéries, à réaliser les techniques de laboratoire de base (coloration de Gram, culture, antibiogramme), à identifier les principales bactéries pathogènes et à participer à la surveillance et à la prévention. Objectifs d'apprentissage. À la fin de ce cours, vous serez capable de: Définir les concepts de base de la bactériologie et situer les bactéries dans le vivant. Décrire la structure et la physiologie des bactéries. Réaliser et interpréter une coloration de Gram. Réaliser une culture, un isolement et un antibiogramme. Identifier les principales bactéries pathogènes (cocci, bacilles, mycobactéries, spirochètes). Relier les bactéries aux maladies prioritaires en R D C. Comprendre la résistance antimicrobienne et les mesures de prévention. Plan du cours. Neuf chapitres progressifs. Introduction à la bactériologie. Structure et physiologie bactériennes. La coloration de Gram. Culture et identification. Antibiogramme et résistance antimicrobienne. Les cocci pathogènes. Les bacilles pathogènes. Mycobactéries et spirochètes. Maladies bactériennes prioritaires en R D C et prévention."]],"2":[["fr","Chapitre 1, Pourquoi la bactériologie en R D C? Situation-problème. Une épidémie de choléra dans un camp de déplacés. Dans un camp de déplacés du Nord-Kivu, plusieurs dizaines de personnes présentent une diarrhée aqueuse profuse, appelée « diarrhée riziforme ». Le personnel soignant doit identifier rapidement l'agent causal, organiser la prise en charge et prévenir la propagation. C'est ici que la bactériologie intervient: identification de Vibrio cholerae, confirmation par l'INRB, mise en place des mesures d'hygiène et de réhydratation. Importance en R D C. Des maladies bactériennes toujours présentes. Choléra: épidémies récurrentes à Uvira, au Katanga et au Maniema. Fièvre typhoïde: foyers documentés à Bwamanda, Kwango et Kwilu. Méningites: urgences médicales (Katanga, Maniema). Tuberculose: problème majeur de santé publique, avec des cas MDR ou XDR surveillés par l'INRB. Peste: surveillance active dans les zones endémiques. Infections nosocomiales: fréquentes dans les hôpitaux congolais. La résistance aux antibiotiques complique la prise en charge: SARM, entérobactéries productrices de bêta-lactamases à spectre étendu (BLSE), tuberculose MDR ou XDR. Rôle du technicien. Le technicien de laboratoire est au cœur de la chaîne du diagnostic: il prélève, cultive, colore, identifie, teste la sensibilité aux antibiotiques et alerte. Sa rigueur permet de sauver des vies et de limiter la propagation des épidémies."]],"3":[["fr","Chapitre 1, Définitions et place dans le vivant. Fondements théoriques. Qu'est-ce qu'une bactérie? La bactériologie est la science qui étudie les bactéries: leur structure, leur physiologie, leur génétique, leur rôle dans les maladies et leur interaction avec l'hôte. Les bactéries sont des procaryotes: elles ne possèdent pas de noyau et leur matériel génétique est libre dans le cytoplasme. Elles appartiennent au règne des Monères et sont ubiquitaires (sol, eau, air, organismes vivants). Les grandes catégories de micro-organismes. Catégorie. Structure. Exemple. Bactéries. Procaryotes (sans noyau). E. coli, Vibrio cholerae. Virus. Acaryotes (sans cellule). VIH, SARS-CoV-2. Parasites. Eucaryotes. Plasmodium, Entamoeba. Champignons. Eucaryotes. Candida, Aspergillus. Historique. Une science fondatrice. Antoni van Leeuwenhoek (XVIIe s.): premier à observer les bactéries au microscope. Louis Pasteur (XIXe s.): démontre le rôle des micro-organismes dans les fermentations et les maladies; invente la pasteurisation et les vaccins. Robert Koch (XIXe s.): identifie les agents de la tuberculose, du choléra et de l'anthrax; énonce les postulats de Koch. Erreur fréquente. Croire que toutes les bactéries sont pathogènes. En réalité, la grande majorité est commensale (flore intestinale, cutanée) ou utile (fermentations, production de vitamines, dépollution). Seule une minorité est pathogène."]],"4":[["fr","Chapitre 2, La structure bactérienne. Fondements théoriques. Une cellule simple mais redoutablement efficace. La bactérie est une cellule simple, mais sa structure lui permet de survivre, de se multiplier et de résister aux défenses de l'hôte. Les composants essentiels. La paroi bactérienne: structure rigide qui maintient la forme et protège la bactérie. Sa composition distingue les Gram plus et les Gram-. La membrane cytoplasmique: barrière sélective, siège de la respiration et du transport. Le cytoplasme: contient les ribosomes et le matériel génétique. Le chromosome bactérien: ADN circulaire unique. Les plasmides: petits ADN circulaires, porteurs de gènes de résistance ou de virulence. Structures facultatives. Les flagelles: appendices locomoteurs (mobilité); antigènes H. Les pili (fimbriae): adhésion aux cellules hôtes, transfert génétique (pili sexuels). La capsule: couche protectrice antiphagocytaire, facteur de virulence. Les spores: formes de résistance très résistantes à la chaleur et aux désinfectants (Clostridium, Bacillus). La structure bactérienne: paroi, membrane, flagelles, pili, capsule, ADN. Différences Gram plus ou Gram-. Une paroi, deux architectures. Gram-positives: paroi épaisse de peptidoglycane, pas de membrane externe. Gram-négatives: paroi fine de peptidoglycane, plus une membrane externe contenant du lipopolysaccharide (LPS égale endotoxine). Cette différence structurale explique le comportement des bactéries lors de la coloration de Gram et l'action différenciée de certains antibiotiques."]],"5":[["fr","Chapitre 2, Matériel génétique et spores. Le matériel génétique. Un ADN organisé et mobile. Le matériel génétique d'une bactérie comprend: Le chromosome: ADN circulaire unique, porteur de l'essentiel de l'information génétique. Les plasmides: petits ADN circulaires extrachromosomiques. Ils peuvent porter des gènes de résistance aux antibiotiques, de toxines ou de virulence. Ils peuvent être transmis entre bactéries (conjugaison), ce qui favorise la diffusion de la résistance. Les mécanismes de transfert génétique. Conjugaison: transfert de plasmide via un pilus sexuel. Transformation: capture d'ADN libre du milieu. Transduction: transfert via un bactériophage. Les spores. Des formes de survie extrême. Certaines bactéries (notamment Clostridium et Bacillus) produisent des spores lorsque les conditions deviennent défavorables. Les spores sont: Très résistantes à la chaleur (pasteurisation insuffisante, ébullition prolongée nécessaire). Résistantes aux désinfectants usuels. Capables de survivre des années dans l'environnement. Exemples: Clostridium tetani (tétanos), Clostridium botulinum (botulisme), Bacillus anthracis (anthrax). Erreur fréquente. Négliger la stérilisation par simple ébullition. Les spores résistent à l'ébullition simple; il faut l'autoclave (121 degrés Celsius, 15 minutes) pour les détruire. C'est un point crucial en stérilisation hospitalière."]],"6":[["fr","Chapitre 2, Croissance bactérienne. La courbe de croissance. Quatre phases à connaître. En culture, une population bactérienne suit une courbe de croissance caractéristique en quatre phases: Phase de latence: les bactéries s'adaptent au milieu, sans multiplication nette. Phase exponentielle: multiplication rapide, à taux constant. C'est la phase la plus sensible aux antibiotiques. Phase stationnaire: le nombre de bactéries se stabilise, carence de nutriments et accumulation de déchets. Phase de déclin: les bactéries meurent plus vite qu'elles ne se divisent. Facteurs de croissance. Température: chaque bactérie a une température optimale (psychrophile, mésophile, thermophile). pH: la plupart préfèrent un pH proche de la neutralité. Oxygène: aérobies, anaérobies, aéro-anaérobies. Nutriments: sources de carbone, azote, sels minéraux. Eau: indispensable à la vie bactérienne. Application pratique. La connaissance de la courbe de croissance guide l'interprétation des cultures et l'utilisation des antibiotiques (plus efficaces en phase exponentielle). Elle explique aussi la nécessité de respecter les durées d'incubation lors de l'identification."]],"7":[["fr","Chapitre 3, La coloration de Gram: principe et réalisation. Fondements théoriques. Une coloration différentielle. La coloration de Gram est une coloration différentielle inventée par Hans Christian Gram en 1884. Elle distingue les bactéries selon la structure de leur paroi: Gram-positives: paroi épaisse de peptidoglycane, qui retient le violet de cristal. Gram-négatives: paroi fine plus membrane externe, qui se décolore et prend la couleur du contre-colorant (fuchsine ou safranine). Les étapes de la coloration. Préparation du frottis et fixation (sécher, passer rapidement sur la flamme). Violet de cristal: 1 minute (coloration primaire). Lugol (iode): 1 minute (mordant, fixe le colorant). Alcool: 10-30 secondes (décoloration). Fuchsine ou safranine: 30 secondes (contre-coloration). Rinçage, séchage, observation au microscope à immersion (objectif multiplié par 100). La coloration de Gram: Gram-positives (violet) et Gram-négatives (rose). Erreur fréquente. Une décoloration trop prolongée à l'alcool transforme les Gram-positives en Gram-négatives (faux résultats). Le temps de décoloration doit être strictement respecté (10 à 30 secondes selon l'épaisseur du frottis)."]],"8":[["fr","Chapitre 3, Interprétation de la coloration de Gram. Lire le résultat. Couleur, forme et arrangement. L'observation microscopique après coloration de Gram donne trois informations essentielles: 1. La couleur (Gram). Violet: Gram-positive. Rose ou rouge: Gram-négative. 2. La forme. Coques (cocci): sphériques. Bacilles: en forme de bâtonnets. Spirales: incurvées, spiralées, en virgule. 3. L'arrangement. Amas (staphylocoques): grappes de raisin. Chaînettes (streptocoques): chapelets. Diplocoques (pneumocoques, méningocoques): paires. Orientation diagnostique. Des indices précieux. Observation. Orientation. Cocci Gram plus en amas. Staphylococcus. Cocci Gram plus en chaînettes. Streptococcus. Cocci Gram- en diplocoques. Neisseria (méningocoque, gonocoque). Bacilles Gram-. Entérobactéries (E. coli, Salmonella, Shigella). Bacilles Gram- incurvés. Vibrio cholerae. Bacilles Gram plus sporulés. Clostridium, Bacillus. À retenir. La coloration de Gram oriente rapidement le diagnostic et le choix d'antibiotique. C'est un examen simple, peu coûteux, réalisable en première ligne. Il ne remplace pas la culture, mais il la guide."]],"9":[["fr","Chapitre 4, Les milieux de culture et l'isolement. Fondements théoriques. Cultiver pour identifier. La culture bactérienne consiste à faire se multiplier les bactéries sur un milieu nutritif, pour les isoler et les identifier. Les types de milieux. Milieux enrichis: favorisent la croissance des bactéries exigeantes (gélose au sang, gélose chocolat). Milieux sélectifs: inhibent certaines bactéries pour favoriser d'autres (gélose MacConkey pour les Gram-, milieu TCBS pour Vibrio). Milieux différentiels: permettent de distinguer les colonies par leur aspect (gélose Hektoen pour Salmonella ou Shigella). Milieux spécifiques: pour une bactérie particulière (milieu de Löwenstein-Jensen pour les mycobactéries). L'isolement par la technique des stries. La technique des stries consiste à étaler l'échantillon sur la gélose en quadrants successifs, en stérilisant l'anse entre chaque quadrant. On obtient ainsi des colonies isolées, indispensables pour l'identification. Application clinique. Une coproculture sur gélose Hektoen. Une coproculture est réalisée sur gélose Hektoen. Après 24 heures d'incubation, on observe des colonies incolores (lactose négatif). L'identification biochimique confirme Salmonella. Ce résultat oriente le diagnostic vers une fièvre typhoïde ou une salmonellose, et permet d'adapter l'antibiothérapie. Erreur fréquente. Utiliser un milieu inadapté à la bactérie recherchée. Par exemple, rechercher Vibrio cholerae sur un milieu non spécifique peut donner un faux négatif. Le choix du milieu doit toujours être guidé par l'hypothèse clinique."]],"10":[["fr","Chapitre 4, Identification biochimique et sérologique. L'identification biochimique. Des tests pour caractériser la bactérie. Après isolement, on identifie la bactérie par une série de tests biochimiques: Oxydase: met en évidence le cytochrome oxydase (Pseudomonas positif, entérobactéries négatives). Catalase: met en évidence la catalase (staphylocoques positifs, streptocoques négatifs). Fermentation des sucres: lactose, glucose, saccharose. Uréase: Proteus positif. Indole: E. coli positif. H2 S: Salmonella positive. L'identification sérologique. Le sérotypage utilise des anticorps spécifiques pour identifier les antigènes de surface: Antigènes O (paroi, somatiques). Antigènes H (flagellaires). Antigènes K (capsulaires). Le sérotypage est essentiel pour Salmonella (distinction des sérotypes), E. coli pathogènes et Neisseria meningitidis. À retenir. L'identification repose sur trois piliers: la morphologie des colonies, la coloration de Gram, et les tests biochimiques et sérologiques. C'est la combinaison de ces données qui permet de nommer la bactérie avec certitude."]],"11":[["fr","Chapitre 5, L'antibiogramme. Fondements théoriques. Tester la sensibilité aux antibiotiques. L'antibiogramme est un examen de laboratoire qui teste la sensibilité d'une bactérie à différents antibiotiques. Il guide le médecin dans le choix du traitement. Principe de la méthode de diffusion en gélose. Préparer un inoculum standardisé de la bactérie. Ensemencer une gélose Mueller-Hinton en nappe. Déposer des disques d'antibiotiques à la surface. Incuber 18-24 heures à 37 degrés Celsius. Mesurer les diamètres d'inhibition autour de chaque disque. Comparer aux valeurs critiques (S, I, R). Les catégories cliniques. Sensible (S): la bactérie est inhibée par l'antibiotique à dose thérapeutique. Intermédiaire (I): efficacité incertaine; augmenter la dose ou choisir un autre antibiotique. Résistant (R): la bactérie n'est pas inhibée; l'antibiotique sera inefficace. La CMI. La CMI (concentration minimale inhibitrice) est la plus faible concentration d'antibiotique qui inhibe la croissance visible de la bactérie. Elle est déterminée par dilution ou par des systèmes automatisés. L'antibiogramme par diffusion en gélose."]],"12":[["fr","Chapitre 5, La résistance antimicrobienne. Fondements théoriques. Un défi mondial et congolais. La résistance antimicrobienne est la capacité d'une bactérie à survivre en présence d'un antibiotique qui devrait normalement la tuer. C'est un problème majeur de santé publique, aggravé par l'usage abusif des antibiotiques, l'automédication et le manque d'antibiogrammes. Mécanismes de résistance. Production d'enzymes: bêta-lactamases, carbapénémases, qui détruisent l'antibiotique. Modification de la cible: la cible de l'antibiotique change de structure. Efflux: la bactérie rejette l'antibiotique hors de sa cellule. Imperméabilité: la bactérie empêche l'antibiotique d'entrer. Exemples majeurs. SARM: Staphylococcus aureus résistant à la méticilline. BLSE: entérobactéries productrices de bêta-lactamases à spectre étendu. TB MDR ou XDR: tuberculose multirésistante ou ultrarésistante. Surveillance et prévention. Agir ensemble. Surveillance: l'OMS (programme GLASS) et l'INRB coordonnent la surveillance de la résistance. Bon usage des antibiotiques: comités hospitaliers, prescription raisonnée, antibiogramme avant traitement. Hygiène: prévention des infections nosocomiales (lavage des mains, stérilisation). Vaccination: réduire l'incidence des infections bactériennes évitables. Éducation: informer le public contre l'automédication. Erreur fréquente. Prescrire un antibiotique sans antibiogramme quand celui-ci est disponible. Cette pratique favorise l'émergence de bactéries résistantes et expose à des échecs thérapeutiques."]],"13":[["fr","Chapitre 6, Les cocci pathogènes. Les staphylocoques. Staphylococcus aureus. Staphylococcus aureus est un coccus Gram plus en amas, coagulase positif, catalase positif. C'est un germe commensal de la peau et des muqueuses, mais aussi un redoutable pathogène. Infections cutanées: abcès, furoncles, panaris. Infections profondes: bactériémie, endocardite, ostéomyélite. Intoxications alimentaires: toxi-infection par les entérotoxines. SARM: souches résistantes à la méticilline, problème majeur en milieu hospitalier. Les streptocoques. Streptococcus et Enterococcus. Streptococcus pyogenes (groupe A): angine, scarlatine, érysipèle, rhumatisme articulaire aigu (RAA), glomérulonéphrite post-streptococcique. Streptococcus pneumoniae: pneumonie, méningite, otite, sinusite. Streptococcus agalactiae (groupe B): infections néonatales, méningites du nouveau-né. Enterococcus faecalis: infections urinaires, endocardites, résistance à la vancomycine (ERV). Les méningocoques et gonocoques. Neisseria. Neisseria meningitidis: méningites, purpura fulminans. Épidémies en R D C (Katanga, Maniema). Diagnostic par ponction lombaire et culture ou PCR. Vaccination disponible. Neisseria gonorrhoeae: infections sexuellement transmissibles, urétrite, cervicite, salpingite. Diagnostic par examen direct et culture. Erreur fréquente. Traiter une angine à streptocoque sans test de diagnostic rapide (TDR). L'usage abusif d'antibiotiques favorise la résistance. Le TDR permet de confirmer le diagnostic et d'éviter les traitements inutiles."]],"14":[["fr","Chapitre 7, Les bacilles pathogènes. Les entérobactéries. Une grande famille. E. coli: infections urinaires (première cause), diarrhées (souches pathogènes), infections néonatales. Salmonella: Salmonella Typhi (fièvre typhoïde), Salmonella non typhiques (gastro-entérites). Shigella: dysenterie bacillaire, diarrhée sanglante. Klebsiella: infections nosocomiales, pneumonies, infections urinaires. Proteus: infections urinaires (calculs), uréase positive. Vibrio cholerae. L'agent du choléra. Vibrio cholerae est un bacille Gram- incurvé, mobile, oxydase positif. Il produit une entérotoxine qui provoque une diarrhée aqueuse profuse (« eau de riz »). L'infection peut tuer en quelques heures par déshydratation. Diagnostic: examen direct, coloration de Gram (bacilles incurvés), culture sur gélose TCBS (colonies jaunes). L'INRB confirme les cas lors des épidémies. Pseudomonas et Haemophilus. Deux pathogènes importants. Pseudomonas aeruginosa: bacille Gram-, oxydase positif, responsable d'infections nosocomiales, de brûlures, d'infections urinaires et respiratoires. Résistance multiple. Haemophilus influenzae: coccobacille Gram-, responsable de méningites et de pneumonies, surtout chez l'enfant. La vaccination (Hib) a considérablement réduit son incidence. Vibrio cholerae sur gélose TCBS: colonies jaunes caractéristiques."]],"15":[["fr","Chapitre 8, Les mycobactéries et les spirochètes. Mycobacterium tuberculosis. L'agent de la tuberculose. Mycobacterium tuberculosis est un bacille acido-alcoolo-résistant (BAAR), à croissance lente, à paroi riche en lipides. Il est responsable de la tuberculose, qui touche principalement les poumons. Diagnostic. Bacilloscopie après coloration de Ziehl-Neelsen: recherche de BAAR dans les crachats. GeneXpert: test moléculaire (PCR) qui détecte l'ADN du bacille et les mutations de résistance à la rifampicine. Culture sur milieu de Löwenstein-Jensen (lent, 4 à 8 semaines). Résistance. La tuberculose MDR (multirésistante) est résistante au moins à l'isoniazide et à la rifampicine. La tuberculose XDR (ultrarésistante) est résistante à davantage de médicaments. La surveillance est assurée par l'INRB. Les spirochètes. Treponema et Borrelia. Treponema pallidum: agent de la syphilis. Diagnostic par sérologie (TPHA, VDRL) et parfois microscopie à fond noir. Borrelia: agent de la fièvre récurrente (borréliose), transmise par les poux ou les tiques. Erreur fréquente. Négliger la confirmation microbiologique de la tuberculose. Le diagnostic clinique seul ne suffit pas: il faut une confirmation bactériologique (bacilloscopie, GeneXpert ou culture) avant de débuter le traitement, sauf urgence particulière."]],"16":[["fr","Chapitre 9, Les maladies bactériennes prioritaires en R D C. Le choléra. Une urgence de santé publique. Maladie diarrhéique aiguë due à Vibrio cholerae, le choléra provoque une déshydratation rapide et peut tuer en quelques heures. Les épidémies sont récurrentes en R D C (Uvira, Katanga, Maniema). Traitement: réhydratation orale ou intraveineuse massive, antibiotiques (doxycycline, azithromycine). Prévention: eau potable, hygiène des mains, assainissement, désinfection. Surveillance: notification immédiate, confirmation par l'INRB. Autres maladies prioritaires. Typhoïde, shigellose, méningites, tuberculose, peste. Fièvre typhoïde: Salmonella Typhi; hémoculture, coproculture; antibiotiques; hygiène et vaccination. Shigellose: Shigella; diarrhée sanglante; coproculture; antibiotiques adaptés; hygiène. Méningites: urgence médicale; ponction lombaire; culture et PCR; antibiotiques. Tuberculose: bacilloscopie, GeneXpert; traitement long (6 mois); observance; BCG. Peste: surveillance par l'INRB; traitement antibiotique précoce; lutte contre rongeurs et puces. Erreur fréquente. Attendre la confirmation microbiologique pour déclarer une épidémie. La notification précoce, dès les premiers cas suspects, permet de déclencher la riposte et de sauver des vies."]],"17":[["fr","Chapitre 9, Prévention et surveillance. Prévention. Cinq piliers. Hygiène des mains: lavage au savon, friction hydro-alcoolique. Eau potable: traitement (ébullition, chloration, filtration), protection des sources. Assainissement: latrines, évacuation des eaux usées, gestion des déchets. Vaccination: BCG (tuberculose), vaccin anti-méningococcique, vaccin anti-Hib, vaccin anti-typhoïdique. Usage rationnel des antibiotiques: antibiogramme, comités de bon usage, éducation du public. Surveillance. Un dispositif national. En R D C, la surveillance des maladies bactériennes est coordonnée par: L'INRB (Institut National de Recherche Biomédicale): confirmation, surveillance des épidémies, résistance antimicrobienne. Le Ministère de la Santé et ses programmes spécialisés (PNLP, PNLT, Programme tuberculose). Les laboratoires provinciaux et hospitaliers, qui remontent les données. L'OMS, via le programme GLASS, qui coordonne la surveillance mondiale de la résistance. Rôle du technicien. Le technicien de laboratoire est un acteur clé de la surveillance: il identifie les bactéries, réalise les antibiogrammes, alerte en cas de résistance inhabituelle et participe à la notification. Sa rigueur contribue à la santé publique."]],"18":[["fr","Synthèse, Identifier, traiter, prévenir. Synthèse générale. Les points clés du cours de bactériologie. Définition: la bactériologie étudie les bactéries (procaryotes), leur structure, leur physiologie et leur rôle pathogène. Structure: paroi (Gram plus épaisse, Gram- fine plus membrane externe), membrane, flagelles, pili, capsule, ADN, plasmides, spores. Coloration de Gram: étapes (violet, lugol, alcool, fuchsine); Gram plus violets, Gram- roses. Culture: milieux enrichis, sélectifs, différentiels, spécifiques; isolement par stries. Identification: biochimie (oxydase, catalase, fermentation, uréase, indole), sérologie (O, H, K). Antibiogramme: diffusion en gélose, diamètres d'inhibition, S ou I ou R, CMI. Résistance: bêta-lactamases, modification de cible, efflux, imperméabilité; SARM, BLSE, TB MDR ou XDR. Cocci: staphylocoques (S. aureus, SARM), streptocoques (S. pyogenes, S. pneumoniae), Neisseria (méningocoque, gonocoque). Bacilles: entérobactéries (E. coli, Salmonella, Shigella, Klebsiella), Vibrio cholerae, Pseudomonas, Haemophilus. Mycobactéries: M. tuberculosis (BAAR, GeneXpert, MDR ou XDR). Spirochètes: Treponema pallidum (syphilis), Borrelia. Maladies prioritaires: choléra, typhoïde, shigellose, méningites, tuberculose, peste. Prévention: hygiène, eau potable, assainissement, vaccination, usage rationnel des antibiotiques. Surveillance: INRB, ministère, OMS ou GLASS. Message final. Un métier de rigueur et de santé publique. La bactériologie est un maillon essentiel de la chaîne du soin. Un diagnostic bactériologique précis, un antibiogramme bien interprété et une alerte rapide sauvent des vies et limitent les épidémies. Le technicien de laboratoire forme, avec l'infirmier et le médecin, une équipe au service de la santé publique en R D C."]],"19":[["fr","Évaluation finale, Bactériologie. Consignes. Répondez aux questions suivantes en choisissant la seule bonne réponse parmi les quatre propositions. Chaque question est indépendante et porte sur les notions développées dans le cours. Prenez le temps de relire les chapitres en cas de doute."]]}};
+  var CACHE = "ecolia-cours-v1";                       // même cache que l'application
+  var PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  var PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+  var DL = '<svg viewBox="0 0 24 24"><path d="M11 3h2v9.2l3.6-3.6L18 10l-6 6-6-6 1.4-1.4L11 12.2V3zM5 19h14v2H5z"/></svg>';
+  var OK = '<svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>';
+  // Réparation du quiz : certains cours stockent les choix sous "opts" (ou autre) au lieu de "options"
+  try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+      questions.forEach(function (q) {
+        if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+        if (q.text === undefined) q.text = q.question || q.q || q.enonce || q.titre || "";
+        if (typeof q.correct === "undefined") {
+          if (typeof q.answer !== "undefined") q.correct = q.answer;
+          else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+        }
+      });
+    }
+  } catch (e) {}
+  var synth = window.speechSynthesis || null;
+  var HAS_CACHE = !!(window.caches && window.caches.open);
+  var NATIVE = false;           // APK ECOLIA : pont Java "CoursInterface" (fichiers dans le dossier de l'application)
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  var LATER = "ecolia_audio_later_" + CFG.code;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+  function init() {
+    if (document.getElementById("ecolia-audio-btn")) return;
+
+    // ---------- éléments de l'interface ----------
+    var btn = document.createElement("button");
+    btn.id = "ecolia-audio-btn"; btn.type = "button"; btn.className = "ecolia-off";
+    btn.setAttribute("aria-label", "Écouter la leçon"); btn.innerHTML = PLAY;
+    var dlBtn = document.createElement("button");
+    dlBtn.id = "ecolia-dl-btn"; dlBtn.type = "button"; dlBtn.className = "ecolia-off";
+    dlBtn.innerHTML = DL;
+    var host = document.querySelector(".header-right");
+    if (host) { host.insertBefore(dlBtn, host.firstChild); host.insertBefore(btn, dlBtn); }   // dans la barre du haut : ne scrolle jamais
+    else { btn.className += " ecolia-fixed"; document.body.appendChild(btn); }
+
+    var banner = document.createElement("div");
+    banner.id = "ecolia-audio-banner";
+    banner.innerHTML = '<span class="eab-txt"></span><span class="eab-act"></span><div class="eab-bar"><i></i></div>';
+    var content = document.getElementById("content");
+    if (content && content.parentNode) content.parentNode.insertBefore(banner, content);
+    else document.body.insertBefore(banner, document.body.firstChild);
+    var txtEl = banner.querySelector(".eab-txt"), actEl = banner.querySelector(".eab-act");
+    var barEl = banner.querySelector(".eab-bar"), barI = barEl.firstChild;
+
+    var audio = new Audio();            // un seul élément Audio, réutilisé (exigé par les navigateurs mobiles)
+    audio.preload = "auto";
+    var st = { idx: -1, auto: false, advancing: false, mode: null, speaking: false, token: 0, chunks: [], ci: 0, blobUrl: null, playTok: 0 };
+    var dl = { state: "none", cached: 0, busy: false, cancel: false };   // none | partial | full
+    var bnMode = null, hideTimer = null;
+    if (synth && synth.getVoices) { try { synth.getVoices(); } catch (e) {} }
+
+    function cur() {
+      try { if (typeof currentSlide === "number") return currentSlide; } catch (e) {}
+      return 0;
+    }
+    function hasMp3(i) { return CFG.available.indexOf(i + 1) !== -1; }
+    function fb(i) { return CFG.fallback && CFG.fallback[String(i + 1)]; }
+    function hasAudio(i) { return hasMp3(i) || (!!synth && !!fb(i)); }
+    function urlN(n) {   // dans l'APK la page est sur https://app.local : une adresse relative doit pointer vers le site
+      var b = CFG.base;
+      if (NATIVE && !/^https?:/i.test(b)) b = "https://ecolia-course.github.io/" + b.replace(/^(\.\.\/|\.\/)+/, "");
+      return new URL(b + nameN(n), location.href).href;
+    }
+    function setIcon(playing) { btn.innerHTML = playing ? PAUSE : PLAY; }
+    function isPlaying() { return st.mode === "mp3" ? !audio.paused : (st.mode === "tts" && st.speaking); }
+    function mo() { return "≈ " + CFG.sizeMo + " Mo"; }
+    function nameN(n) { return "audio_" + CFG.code + "_" + n + ".mp3"; }
+
+    // ====================================================================
+    //  Stockage hors ligne : 2 moteurs, même interface
+    //    - APK : fichiers du dossier de l'application (CoursInterface), servis par https://app.local/cours/
+    //    - Web : Cache Storage du navigateur (même cache que l'application web)
+    // ====================================================================
+    function nativeStore() {
+      var okKey = "ecolia_audio_ok_" + CFG.code;
+      function readOk() { try { return JSON.parse(lsGet(okKey) || "[]"); } catch (e) { return []; } }
+      function writeOk(a) { lsSet(okKey, JSON.stringify(a)); }
+      function exists(n) { try { return !!CoursInterface.exists(nameN(n)); } catch (e) { return false; } }
+      function local(n) { return location.origin + "/cours/" + nameN(n); }
+      function verify(n) {                                   // fichier complet ? (taille exacte connue à la génération)
+        return fetch(local(n), { cache: "no-store" }).then(function (r) { return r.blob(); }).then(function (b) {
+          var exp = CFG.sizes && CFG.sizes[String(n)];
+          return (b.size > 2000 && (!exp || b.size === exp)) ? b : null;
+        }).catch(function () { return null; });
+      }
+      return {
+        list: function () {
+          var ok = readOk().filter(exists); writeOk(ok); return Promise.resolve(ok);
+        },
+        get: function (n) { return exists(n) ? verify(n) : Promise.resolve(null); },
+        put: function (n) {
+          return new Promise(function (res, rej) {
+            try { CoursInterface.download(urlN(n), nameN(n)); } catch (e) { return rej(e); }
+            var t0 = Date.now();
+            function next() { if (Date.now() - t0 > 120000) rej(new Error("délai dépassé")); else setTimeout(poll, 800); }
+            function poll() {
+              if (!exists(n)) return next();
+              verify(n).then(function (b) {
+                if (!b) return next();
+                var ok = readOk(); if (ok.indexOf(n) < 0) ok.push(n); writeOk(ok); res();
+              });
+            }
+            setTimeout(poll, 800);
+          });
+        },
+        del: function (n) {
+          try { CoursInterface.delete(nameN(n)); } catch (e) {}
+          writeOk(readOk().filter(function (x) { return x !== n; }));
+          return Promise.resolve();
+        }
+      };
+    }
+    function cacheStore() {
+      return {
+        list: function () {
+          return caches.open(CACHE).then(function (c) {
+            return Promise.all(CFG.available.map(function (n) {
+              return c.match(urlN(n)).then(function (r) {
+                if (!r) return 0;
+                if ((r.headers.get("content-type") || "").indexOf("audio") !== 0) { c.delete(urlN(n)); return 0; }   // ancien contenu invalide
+                return n;
+              });
+            }));
+          }).then(function (a) { return a.filter(Boolean); });
+        },
+        get: function (n) {
+          return caches.open(CACHE).then(function (c) { return c.match(urlN(n)); })
+            .then(function (r) { return r ? r.blob() : null; }).then(function (b) { return b && b.size > 2000 ? b : null; });
+        },
+        put: function (n) {
+          var u = urlN(n);
+          return fetch(u, { cache: "no-store" }).then(function (r) {
+            if (!r.ok || r.status !== 200) throw new Error("HTTP " + r.status);
+            return r.blob();
+          }).then(function (b) {
+            if (b.size < 2000 || (b.type && b.type.indexOf("audio") !== 0 && b.type.indexOf("octet") < 0)) throw new Error("fichier invalide");
+            return caches.open(CACHE).then(function (c) { return c.put(u, new Response(b, { headers: { "Content-Type": "audio/mpeg" } })); });
+          });
+        },
+        del: function (n) { return caches.open(CACHE).then(function (c) { return c.delete(urlN(n)); }); }
+      };
+    }
+    var store = NATIVE ? nativeStore() : (HAS_CACHE ? cacheStore() : null);
+
+    // ====================================================================
+    //  Bannière : invitation, confirmations, progression
+    // ====================================================================
+    function showBanner(mode, text, buttons, pct) {
+      clearTimeout(hideTimer);
+      bnMode = mode;
+      txtEl.textContent = text;
+      actEl.innerHTML = "";
+      (buttons || []).forEach(function (b) {
+        var e = document.createElement("button");
+        e.type = "button"; e.textContent = b.label; if (b.pri) e.className = "pri";
+        e.addEventListener("click", function (ev) { ev.stopPropagation(); b.fn(); });
+        actEl.appendChild(e);
+      });
+      if (typeof pct === "number") { barEl.style.display = "block"; barI.style.width = pct + "%"; }
+      else barEl.style.display = "none";
+      banner.classList.add("on");
+    }
+    function hideBanner() { clearTimeout(hideTimer); bnMode = null; banner.classList.remove("on"); }
+    function flash(text) { showBanner("info", text, []); hideTimer = setTimeout(hideBanner, 4000); }
+
+    function refreshUI() {
+      var show = !!store && CFG.available.length > 0;
+      dlBtn.classList.toggle("ecolia-off", !show);
+      dlBtn.classList.toggle("ecolia-full", dl.state === "full");
+      dlBtn.innerHTML = dl.state === "full" ? OK : DL;
+      dlBtn.setAttribute("aria-label", dl.state === "full" ? "Audios téléchargés : supprimer" : "Télécharger les audios");
+      dlBtn.title = dlBtn.getAttribute("aria-label");
+    }
+    function refreshCacheState(done) {
+      if (!store) { dl.state = "none"; refreshUI(); if (done) done(); return; }
+      store.list().then(function (ok) {
+        dl.cached = ok.length;
+        dl.state = dl.cached === 0 ? "none" : (dl.cached >= CFG.available.length ? "full" : "partial");
+      }).catch(function () { dl.state = "none"; }).then(function () { refreshUI(); if (done) done(); });
+    }
+
+    function askDownload(fromInvite) {
+      var left = CFG.available.length - dl.cached;
+      var txt = dl.state === "partial"
+        ? "Il reste " + left + " audio(s) à télécharger pour écouter ce cours sans internet."
+        : "🔊 Télécharger les audios de ce cours (" + mo() + ") pour les écouter sans internet ? Wi-Fi recommandé.";
+      showBanner(fromInvite ? "invite" : "confirm", txt, [
+        { label: fromInvite ? "Plus tard" : "Annuler", fn: function () { if (fromInvite) lsSet(LATER, "1"); hideBanner(); } },
+        { label: "Télécharger", pri: true, fn: startDownload }
+      ]);
+    }
+    function askDelete() {
+      showBanner("confirm", "Supprimer les audios téléchargés de ce cours (" + mo() + ") ? Vous pourrez toujours les écouter en ligne.", [
+        { label: "Annuler", fn: hideBanner },
+        { label: "Supprimer", pri: true, fn: doDelete }
+      ]);
+    }
+
+    function startDownload() {
+      if (dl.busy || !store) return;
+      dl.busy = true; dl.cancel = false;
+      var total = CFG.available.length, done = 0, quota = false, fails = 0, todo = [];
+      store.list().then(function (have) {
+        CFG.available.forEach(function (n) { if (have.indexOf(n) < 0) todo.push(n); });
+        done = total - todo.length;
+        function paint() {
+          var msg = "Téléchargement des audios : " + done + " / " + total;
+          if (bnMode === "progress") {                  // met à jour sans recréer les boutons (sinon un appui peut être perdu)
+            txtEl.textContent = msg; barI.style.width = Math.round(done / total * 100) + "%";
+          } else {
+            showBanner("progress", msg, [
+              { label: "Annuler", fn: function () { dl.cancel = true; } }
+            ], Math.round(done / total * 100));
+          }
+        }
+        paint();
+        function worker() {
+          if (dl.cancel || quota || !todo.length) return Promise.resolve();
+          var n = todo.shift();
+          return store.put(n).then(function () { done++; paint(); }).catch(function (e) {
+            if (e && (e.name === "QuotaExceededError" || /quota/i.test(String(e.message)))) quota = true;
+            fails++;
+          }).then(worker);
+        }
+        return Promise.all([worker(), worker()]);
+      }).catch(function () { fails++; }).then(function () {
+        dl.busy = false;
+        refreshCacheState(function () {
+          if (dl.state === "full") flash("✓ Audios téléchargés : le cours se lit maintenant sans internet.");
+          else if (dl.cancel) flash("Téléchargement interrompu (" + dl.cached + " / " + total + "). Vous pourrez reprendre plus tard.");
+          else showBanner("error", quota ? "Espace insuffisant sur l'appareil. Libérez de la place puis réessayez."
+            : "Certains audios n'ont pas pu être téléchargés (connexion ?).", [
+            { label: "Fermer", fn: hideBanner }, { label: "Réessayer", pri: true, fn: startDownload }
+          ]);
+        });
+      });
+    }
+    function doDelete() {
+      if (!store) return;
+      Promise.all(CFG.available.map(function (n) { return store.del(n); })).catch(function () {}).then(function () {
+        lsDel(LATER);
+        refreshCacheState(function () { flash("Audios supprimés de cet appareil."); });
+      });
+    }
+
+    dlBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (dl.busy) return;
+      if (dl.state === "full") askDelete(); else askDownload(false);
+    });
+
+    // ====================================================================
+    //  Voix intégrée au téléphone (hors ligne, sans limite)
+    // ====================================================================
+    function pickVoice(lang) {
+      var vs = [];
+      try { vs = synth.getVoices() || []; } catch (e) {}
+      var pre = lang === "en" ? "en" : "fr", best = null;
+      for (var k = 0; k < vs.length; k++) {
+        var v = vs[k];
+        if ((v.lang || "").toLowerCase().indexOf(pre) !== 0) continue;
+        if (!best || (v.localService && !best.localService)) best = v;
+      }
+      return best;
+    }
+    function hardSplit(text, max) {
+      var out = [];
+      while (text.length > max) {
+        var cut = text.lastIndexOf(" ", max);
+        if (cut < 40) cut = max;
+        out.push(text.slice(0, cut)); text = text.slice(cut).replace(/^\s+/, "");
+      }
+      if (text) out.push(text);
+      return out;
+    }
+    function buildChunks(segs) {                  // morceaux courts : évite l'arrêt des longs textes sur Chrome
+      var out = [];
+      segs.forEach(function (s) {
+        var cur2 = "", parts = s[1].match(/[^.!?;:]+[.!?;:]*\s*/g) || [s[1]];
+        parts.forEach(function (p) {
+          if (cur2 && (cur2 + p).length > 160) { out.push({ lang: s[0], text: cur2.trim() }); cur2 = p; }
+          else cur2 += p;
+        });
+        if (cur2.trim()) out.push({ lang: s[0], text: cur2.trim() });
+      });
+      var res = [];
+      out.forEach(function (c) { hardSplit(c.text, 190).forEach(function (t) { res.push({ lang: c.lang, text: t }); }); });
+      return res;
+    }
+    function speakFrom(tk) {
+      if (tk !== st.token) return;
+      if (st.ci >= st.chunks.length) {
+        st.speaking = false; st.mode = null; st.ci = 0; setIcon(false);
+        if (st.auto) goNext();
+        return;
+      }
+      var c = st.chunks[st.ci];
+      var u = new SpeechSynthesisUtterance(c.text);
+      u.lang = c.lang === "en" ? "en-US" : "fr-FR";
+      var v = pickVoice(c.lang);
+      if (v) { u.voice = v; u.lang = v.lang; }
+      u.rate = 0.95;
+      u.onend = function () { if (tk !== st.token) return; st.ci++; speakFrom(tk); };
+      u.onerror = function () { if (tk !== st.token) return; st.speaking = false; setIcon(false); st.auto = false; };
+      synth.speak(u);
+    }
+    function startTts(from) {
+      st.token++;
+      var tk = st.token;
+      st.mode = "tts"; st.speaking = true; st.ci = from || 0; setIcon(true);
+      var busy = false;
+      try { busy = synth.speaking || synth.pending; synth.cancel(); } catch (e) {}
+      if (busy) setTimeout(function () { speakFrom(tk); }, 120);   // laisse cancel() se terminer
+      else speakFrom(tk);                                          // sinon tout de suite (exigé par iOS)
+    }
+    function playVoice() {
+      if (!(synth && fb(st.idx))) { st.auto = false; return false; }
+      if (!st.chunks.length) st.chunks = buildChunks(fb(st.idx));
+      startTts(st.ci);
+      return true;
+    }
+
+    // ====================================================================
+    //  Lecture
+    // ====================================================================
+    function freeBlob() { if (st.blobUrl) { try { URL.revokeObjectURL(st.blobUrl); } catch (e) {} st.blobUrl = null; } }
+    function stopAll() {
+      st.playTok++;
+      try { audio.pause(); audio.currentTime = 0; } catch (e) {}
+      st.token++;
+      try { if (synth) synth.cancel(); } catch (e) {}
+      st.speaking = false; st.mode = null; st.chunks = []; st.ci = 0;
+      setIcon(false);
+    }
+    function pauseNow() {
+      if (st.mode === "mp3") audio.pause();
+      else if (st.mode === "tts") {
+        st.token++;
+        try { synth.cancel(); } catch (e) {}
+        st.speaking = false; setIcon(false);      // st.ci conservé : la reprise repart de la phrase en cours
+      }
+    }
+    function startAudio(src, tok) {
+      if (tok !== st.playTok) return;
+      if (audio.getAttribute("data-src") !== src) { audio.setAttribute("data-src", src); audio.src = src; }
+      var p = audio.play();
+      if (p && p.catch) p.catch(function (err) {
+        console.warn("ECOLIA audio :", err);
+        if (tok !== st.playTok) return;
+        if (!(err && err.name === "NotAllowedError") && playVoice()) return;   // lecture impossible : voix du téléphone
+        setIcon(false); st.auto = false;
+      });
+    }
+    function playCurrent() {
+      var i = st.idx;
+      if (hasMp3(i)) {
+        var tok = ++st.playTok, u = urlN(i + 1);
+        st.mode = "mp3";
+        if (!navigator.onLine && dl.state === "none") { st.mode = null; if (playVoice()) return; }   // hors ligne et non téléchargé
+        if (store && dl.state !== "none") {                     // téléchargé : lecture locale, sans réseau
+          store.get(i + 1)
+            .then(function (b) {
+              if (tok !== st.playTok) return;
+              if (b) { freeBlob(); st.blobUrl = URL.createObjectURL(new Blob([b], { type: "audio/mpeg" })); startAudio(st.blobUrl, tok); }
+              else startAudio(u, tok);
+            }).catch(function () { startAudio(u, tok); });
+        } else startAudio(u, tok);                              // sinon lecture en ligne (appel immédiat, exigé par iOS)
+      } else if (!playVoice()) {
+        st.auto = false;
+      }
+    }
+
+    function onSlideChange(i) {
+      var wasAdvancing = st.advancing;
+      st.advancing = false;
+      st.idx = i;
+      btn.classList.toggle("ecolia-off", !hasAudio(i));
+      stopAll();
+      audio.removeAttribute("data-src");
+      freeBlob();
+      if (bnMode === "invite" && i !== 0) hideBanner();       // l'invitation n'apparaît qu'à la première slide
+      if (wasAdvancing && st.auto) setTimeout(playCurrent, 500);   // enchaînement automatique
+      else st.auto = false;                                         // changement manuel : on coupe tout
+    }
+    function goNext() {
+      if (st.idx + 1 >= CFG.count) { st.auto = false; return; }
+      st.advancing = true;
+      if (typeof nextSlide === "function") nextSlide();
+      else { var nb = document.getElementById("nextBtn"); if (nb) nb.click(); }
+      setTimeout(function () { st.advancing = false; }, 4000);
+    }
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var i = cur();
+      if (i !== st.idx) onSlideChange(i);
+      if (isPlaying()) { st.auto = false; pauseNow(); }
+      else { st.auto = true; playCurrent(); }
+    });
+    audio.addEventListener("play", function () { setIcon(true); });
+    audio.addEventListener("pause", function () { if (st.mode === "mp3") setIcon(false); });
+    audio.addEventListener("error", function () {
+      if (st.mode === "mp3" && playVoice()) return;            // fichier introuvable / hors ligne : voix du téléphone
+      setIcon(false); st.auto = false;
+    });
+    audio.addEventListener("ended", function () { setIcon(false); if (st.auto) goNext(); });
+    window.addEventListener("pagehide", function () { stopAll(); freeBlob(); });
+
+    // ---------- démarrage ----------
+    refreshCacheState(function () {
+      if (store && CFG.available.length && dl.state !== "full" && navigator.onLine && cur() === 0 && !lsGet(LATER)) askDownload(true);
+    });
+    st.idx = -1;
+    setInterval(function () { var i = cur(); if (i !== st.idx) onSlideChange(i); }, 250);   // suit la slide affichée
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+<!-- ECOLIA_AUDIO_PLAYER_END -->
+</body>
+</html>

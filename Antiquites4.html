@@ -1,0 +1,1722 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="rouge">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>ECOLIA — Antiquites4</title>
+<style>
+[data-theme="bleu"]   { --p1:#0d2b4f; --p2:#1565c0; --p3:#07172e; --p4:#12437a; --p5:#5b8fd0; --bg:#e8f0fb; --bg2:#cfdff5; --bd:#a9c3e8; --soft:#dde8f7; --btn:#2a67b0; }
+[data-theme="vert"]   { --p1:#14442e; --p2:#2e7d32; --p3:#0b2b1a; --p4:#1f5c3a; --p5:#4f9a6b; --bg:#e8f5ec; --bg2:#c8e6d2; --bd:#a5cdb2; --soft:#dcefe2; --btn:#2f7a4f; }
+[data-theme="violet"] { --p1:#2d1b4e; --p2:#6a1b9a; --p3:#1a0f2e; --p4:#4a148c; --p5:#9c6fd0; --bg:#f1e9fb; --bg2:#dccbf2; --bd:#c4a8e6; --soft:#e8ddf6; --btn:#7e3fb2; }
+[data-theme="rouge"]  { --p1:#4a1010; --p2:#b71c1c; --p3:#2b0a0a; --p4:#8e1b1b; --p5:#d9706a; --bg:#fbeaea; --bg2:#f3cdcb; --bd:#e8a9a5; --soft:#f8dede; --btn:#a62a2a; }
+[data-theme="orange"] { --p1:#4e2a0c; --p2:#ef6c00; --p3:#2e1604; --p4:#b34a00; --p5:#f0a15a; --bg:#fff1e0; --bg2:#fbdcb8; --bd:#f3c08a; --soft:#fdebd6; --btn:#c9650a; }
+[data-theme="teal"]   { --p1:#0b3a3a; --p2:#00796b; --p3:#062626; --p4:#00574b; --p5:#4db6ac; --bg:#e0f2f1; --bg2:#b2dfdb; --bd:#80cbc4; --soft:#d5ecea; --btn:#26897d; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:linear-gradient(160deg,var(--p1) 0%,var(--p2) 50%,var(--p3) 100%); display:flex; justify-content:center; align-items:center; padding:8px; }
+.container { width:100%; max-width:1400px; background:#fefdf8; border-radius:20px; overflow:hidden; display:flex; flex-direction:column; height:100%; max-height:100vh; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.progress-bar { height:4px; background:var(--bg2); flex-shrink:0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--p5),var(--p4)); width:0%; transition:width 0.3s; }
+.header { padding:10px 16px; background:var(--bg); border-bottom:1px solid var(--bd); display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+.header h1 { color:var(--p4); font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box { display:flex; background:white; border-radius:20px; padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.search-box input { border:none; padding:6px 10px; border-radius:20px; outline:none; width:130px; font-size:0.8rem; }
+.search-box button { background:none; border:none; cursor:pointer; padding:4px 8px; font-size:0.85rem; color:var(--p2); }
+.badge { background:var(--p5); color:white; padding:4px 10px; border-radius:20px; font-weight:bold; font-size:0.75rem; }
+.search-nav { display:none; gap:4px; background:var(--bg2); padding:2px 8px; border-radius:20px; align-items:center; font-size:0.75rem; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:0.9rem; color:var(--p4); padding:2px 4px; }
+.content { padding:28px 32px; flex:1; overflow-y:auto; background:#fff; scroll-behavior:smooth; line-height:1.85; }
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.slide-title { color:var(--p1); font-size:1.5rem; font-weight:700; padding-bottom:12px; margin-bottom:20px; border-bottom:2px solid var(--p5); }
+.slide-content { color:var(--p3); font-size:1rem; }
+.empty-state { display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-height:60vh; padding:40px 20px; gap:18px; }
+.empty-state .icon { width:72px; height:72px; border-radius:50%; background:var(--bg); border:2px solid var(--bd); display:flex; align-items:center; justify-content:center; color:var(--p2); font-size:2rem; font-weight:300; }
+.empty-state h2 { color:var(--p1); font-size:1.4rem; font-weight:700; margin:0; }
+.empty-state p { color:#666; font-size:0.95rem; max-width:520px; line-height:1.7; }
+.empty-state .tag { display:inline-block; padding:6px 14px; background:var(--bg); color:var(--p4); border:1px solid var(--bd); border-radius:20px; font-size:0.8rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; }
+.bloc { padding:18px 22px; border-radius:12px; margin:22px 0; line-height:1.85; }
+.bloc-label { font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; opacity:0.7; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:var(--bg); border-left:4px solid var(--p5); }
+.theorie .bloc-label { color:var(--p4); }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.sources { background:#f5f5f5; padding:12px 16px; border-radius:10px; margin-top:26px; font-size:0.82rem; color:#666; border-left:3px solid #999; line-height:1.6; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:var(--p1); }
+.quiz-container { padding:22px; background:var(--bg); border-radius:16px; }
+.quiz-question { background:white; border-radius:10px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.quiz-question p { font-weight:600; margin-bottom:10px; color:var(--p1); }
+.quiz-question label { display:block; padding:8px 10px; margin:4px 0; border-radius:6px; cursor:pointer; transition:background 0.2s; }
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit { background:var(--btn); color:white; border:none; padding:12px 24px; border-radius:30px; font-size:1rem; cursor:pointer; font-weight:600; margin-top:14px; }
+.quiz-result { margin-top:16px; font-weight:600; }
+.controls { padding:8px 16px; background:#fafafa; border-top:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0; }
+.nav-btn { background:white; color:var(--p4); border:1px solid #ccc; padding:8px 14px; border-radius:8px; font-size:0.82rem; cursor:pointer; font-weight:500; }
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:var(--soft); }
+.content::-webkit-scrollbar-thumb { background:var(--p5); border-radius:3px; }
+@media (max-width:600px) { body { padding:0; } .container { border-radius:0; max-height:100vh; } .content { padding:20px 18px; } .slide-title { font-size:1.25rem; } .search-box input { width:90px; } .header h1 { font-size:0.85rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="header">
+<h1 id="pageTitle">ECOLIA</h1>
+<div class="header-right">
+<div class="search-box">
+<input id="searchInput" placeholder="Rechercher" type="text"/>
+<button id="searchBtn">⌕</button>
+</div>
+<div class="search-nav" id="searchNav">
+<button id="prevResultBtn">‹</button>
+<span id="resultCounter">0/0</span>
+<button id="nextResultBtn">›</button>
+</div>
+<span class="badge" id="slideCounter">0/0</span>
+</div>
+</div>
+<div class="content" id="content"></div>
+<div class="controls">
+<button class="nav-btn" id="prevBtn">← Précédent</button>
+<span class="counter" id="counter">—</span>
+<button class="nav-btn" id="nextBtn">Suivant →</button>
+</div>
+</div>
+<script>
+const COURSE_TITLE = "Antiquités (Civilisation gréco-romaine)";
+const slides = [
+  {
+    title: "Sommaire — Antiquités gréco-romaines",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Présentation du cours</div>
+        <h3>Bienvenue dans le monde gréco-romain</h3>
+        <p>Ce cours de 4<sup>e</sup> année des Humanités Littéraires vous invite à découvrir la <strong>civilisation gréco-romaine</strong> dans son ensemble : son cadre géographique et historique, ses institutions politiques, sa religion, sa vie quotidienne, ses arts et son héritage. Il ne remplace pas les cours de Latin, de Grec ou d'Histoire : il les <strong>éclaire et les synthétise</strong>, en donnant une vision cohérente de ce monde qui a façonné une grande partie de la culture occidentale, et dont les traces sont encore visibles aujourd'hui — y compris en RDC, dans le droit, la langue et les institutions.</p>
+        <p>À la fin du cours, vous saurez situer les civilisations grecque et romaine dans le temps et l'espace, décrire leurs institutions, expliquer leurs croyances, analyser des documents et identifier leur héritage dans le monde contemporain.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Objectifs d'apprentissage</div>
+        <ul>
+          <li>Situer les civilisations grecque et romaine dans le temps et l'espace.</li>
+          <li>Décrire les institutions politiques et sociales (cité grecque, Rome).</li>
+          <li>Expliquer les croyances et les pratiques religieuses.</li>
+          <li>Analyser des documents (textes, images, vestiges) relatifs à la civilisation.</li>
+          <li>Identifier l'héritage gréco-romain dans le monde contemporain, y compris en RDC.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Plan du cours</div>
+        <ol>
+          <li>Chapitre I — Cadre géographique et chronologique</li>
+          <li>Chapitre II — La cité grecque et la démocratie athénienne</li>
+          <li>Chapitre III — Rome : de la République à l'Empire</li>
+          <li>Chapitre IV — Religion et mythologie</li>
+          <li>Chapitre V — Vie quotidienne et culture matérielle</li>
+          <li>Chapitre VI — Arts, lettres et sciences</li>
+          <li>Chapitre VII — Héritage gréco-romain et actualité congolaise</li>
+        </ol>
+      </div>
+
+      <div class="sources">
+        <div class="bloc-label">Sources du cours</div>
+        <p>Programme national de Latin I – Cycle long (EPSP, RDC, 2007) ; Programme de l'option Latin-Grec ; Sciences-Africa, <em>Antiquité Classique et Héritage Gréco-Romain</em> (HIS2231) ; <em>Histoire4.html</em> (plan Ecolia) ; Lobinayo, « Latin-Grec, option des humanités en RDC ».</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Pourquoi étudier les Antiquités classiques ?",
+    content: `
+      <div class="bloc cas">
+        <div class="bloc-label">Situation-problème</div>
+        <h3>Un débat au lycée de Kinshasa</h3>
+        <p>Dans un lycée de Kinshasa, un débat oppose deux élèves. L'un affirme : « La démocratie est née à Athènes, nous devons tout imiter. » L'autre réplique : « Mais à Athènes, les femmes et les esclaves ne votaient pas ! » Pour trancher, il faut connaître les institutions athéniennes, leur fonctionnement réel et leurs limites. C'est l'objet de ce cours.</p>
+        <p>Étudier les Antiquités classiques, ce n'est pas admirer sans réserve ni rejeter en bloc : c'est <strong>comprendre</strong>, pour mieux saisir ce que nous avons hérité, ce que nous avons transformé et ce que nous avons rejeté.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Trois raisons d'étudier les Antiquités</h3>
+        <ol>
+          <li><strong>Raison culturelle</strong> : la littérature, la philosophie, l'art et la science occidentaux trouvent leurs racines en Grèce et à Rome. Pour comprendre un texte latin, une pièce de Racine, un tableau de David, il faut connaître la mythologie et les institutions antiques.</li>
+          <li><strong>Raison institutionnelle</strong> : les notions de citoyenneté, de démocratie, de république, de sénat viennent du monde grec et romain. Comprendre leur naissance éclaire les débats politiques contemporains.</li>
+          <li><strong>Raison juridique</strong> : le droit romain a inspiré le droit civil congolais (propriété, contrats, responsabilité). Pour un futur juriste, c'est une base indispensable.</li>
+        </ol>
+        <p>Ce cours articule trois disciplines : le <strong>Latin</strong> (langue et civilisation romaines), le <strong>Grec</strong> (langue et civilisation grecques) et l'<strong>Histoire</strong>. Il en propose une synthèse ordonnée.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Antiquités = civilisation gréco-romaine.</li>
+          <li>Articulation avec Latin, Grec et Histoire.</li>
+          <li>Trois raisons : culturelle, institutionnelle, juridique.</li>
+          <li>Comprendre sans idéaliser.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Le cadre méditerranéen",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Une civilisation de la mer</h3>
+        <p>La civilisation gréco-romaine est née autour de la <strong>mer Méditerranée</strong> (du latin <em>medius</em>, « au milieu », et <em>terra</em>, « terre » — la mer « au milieu des terres »). Cette mer a joué un rôle central :</p>
+        <ul>
+          <li><strong>Commerce</strong> : les échanges par bateau relient la Grèce, l'Égypte, l'Asie Mineure, Carthage, Rome.</li>
+          <li><strong>Colonisation</strong> : les Grecs établissent des colonies tout autour de la Méditerranée (Marseille, Naples, Byzance).</li>
+          <li><strong>Diffusion culturelle</strong> : les idées, les mythes, les techniques circulent avec les marchandises.</li>
+          <li><strong>Unification romaine</strong> : à partir du II<sup>e</sup> siècle av. J.-C., Rome fait de la Méditerranée un <em>mare nostrum</em> (« notre mer »).</li>
+        </ul>
+        <h4>La Grèce</h4>
+        <p>Péninsule montagneuse, îles nombreuses, côtes découpées. La mer y joue un rôle vital : la Grèce n'a jamais formé un État unifié avant Alexandre, mais un ensemble de <strong>cités (poleis)</strong> autonomes, souvent rivales, parfois alliées.</p>
+        <h4>Rome</h4>
+        <p>Ville fondée sur le Tibre, dans le Latium (Italie centrale). De cité modeste, elle devient en quelques siècles maîtresse de toute la Méditerranée et d'un immense empire.</p>
+      </div>
+
+      <figure>
+        <img data-image-id="antiquites4_img01" alt="Carte du monde méditerranéen antique montrant la Grèce, Rome, les principales cités et les colonies.">
+        <figcaption>La Méditerranée grecque et romaine.</figcaption>
+      </figure>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Méditerranée = centre géographique de la civilisation.</li>
+          <li>Grèce : cités (poleis) dispersées.</li>
+          <li>Rome : cité du Latium qui devient maîtresse de la Méditerranée.</li>
+          <li>La mer relie plus qu'elle ne sépare.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Chronologie grecque",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Cinq grandes périodes</h3>
+        <table>
+          <thead>
+            <tr><th>Période</th><th>Dates</th><th>Caractéristiques</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Civilisation minoenne</strong></td><td>≈ 2700 – 1400 av. J.-C.</td><td>Crète, palais de Cnossos, civilisation maritime.</td></tr>
+            <tr><td><strong>Civilisation mycénienne</strong></td><td>≈ 1600 – 1100 av. J.-C.</td><td>Citadelles de Mycènes, Tirynthe ; guerre de Troie légendaire.</td></tr>
+            <tr><td><strong>Époque archaïque</strong></td><td>≈ 800 – 500 av. J.-C.</td><td>Cités, colonisation, alphabet, Homère, Hésiode.</td></tr>
+            <tr><td><strong>Époque classique</strong></td><td>Ve – IV<sup>e</sup> s. av. J.-C.</td><td>Athènes, Sparte, guerres médiques, Périclès, tragédie, philosophie, Parthénon.</td></tr>
+            <tr><td><strong>Époque hellénistique</strong></td><td>323 – 31 av. J.-C.</td><td>Conquêtes d'Alexandre, royaumes hellénistiques (Égypte des Ptolémées, Syrie des Séleucides), diffusion de la culture grecque en Orient.</td></tr>
+          </tbody>
+        </table>
+        <p>La mort d'Alexandre le Grand en <strong>323 av. J.-C.</strong> sépare l'époque classique de l'époque hellénistique. Rome conquiert ensuite ces royaumes hellénistiques et absorbe leur culture.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Confondre <strong>époque classique</strong> et <strong>époque hellénistique</strong>. L'époque classique, c'est Athènes et Sparte, la démocratie, la tragédie. L'époque hellénistique, c'est l'expansion de la culture grecque vers l'Orient après Alexandre : c'est déjà une autre époque, même si elle est grecque.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Minoens → Mycéniens → Archaïque → Classique → Hellénistique.</li>
+          <li>323 av. J.-C. : mort d'Alexandre = charnière.</li>
+          <li>L'hellénisme diffuse la culture grecque.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Chronologie romaine",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Quatre grandes périodes</h3>
+        <table>
+          <thead>
+            <tr><th>Période</th><th>Dates</th><th>Caractéristiques</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Royauté</strong></td><td>753 – 509 av. J.-C.</td><td>Fondation légendaire de Rome par Romulus ; sept rois (Romulus, Numa, Servius Tullius, Tarquin…).</td></tr>
+            <tr><td><strong>République</strong></td><td>509 – 27 av. J.-C.</td><td>Consuls, Sénat, comices ; conquêtes en Italie, puis en Méditerranée ; guerres puniques contre Carthage.</td></tr>
+            <tr><td><strong>Empire (Principat)</strong></td><td>27 av. J.-C. – 476 apr. J.-C.</td><td>Auguste instaure le Principat ; "paix romaine" ; extension maximale sous Trajan ; crise du III<sup>e</sup> siècle.</td></tr>
+            <tr><td><strong>Empire tardif et christianisation</strong></td><td>IV<sup>e</sup> – V<sup>e</sup> s.</td><td>Édit de Milan (313), de Thessalonique (380) ; division de l'Empire (395) ; chute de Rome d'Occident (476).</td></tr>
+          </tbody>
+        </table>
+        <p>La date traditionnelle de la fondation de Rome est <strong>753 av. J.-C.</strong> ; la chute du dernier roi étrusque, <strong>509 av. J.-C.</strong>, marque le début de la République ; l'assassinat de César en <strong>44 av. J.-C.</strong> précède de peu l'avènement d'Auguste (27 av. J.-C.).</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Croire que Rome a « toujours été un empire ». Pendant près de cinq siècles, Rome a été une <strong>République</strong> (509 – 27 av. J.-C.), avec des institutions républicaines. L'Empire, à proprement parler, ne commence qu'avec Auguste.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>753 av. J.-C. : fondation légendaire.</li>
+          <li>509-27 : République.</li>
+          <li>27 av. J.-C. : début de l'Empire (Auguste).</li>
+          <li>476 apr. J.-C. : chute de Rome d'Occident.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — La cité grecque (polis)",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Qu'est-ce qu'une cité ?</h3>
+        <p>La <strong>cité grecque</strong> (<em>polis</em>) n'est pas seulement une ville : c'est une <strong>communauté de citoyens</strong> partageant un territoire, des institutions et un culte. Trois éléments la définissent :</p>
+        <ul>
+          <li><strong>Un territoire</strong> : la ville, les campagnes autour, les sanctuaires.</li>
+          <li><strong>Des institutions</strong> : assemblée, conseil, magistrats, tribunaux.</li>
+          <li><strong>Une religion civique</strong> : chaque cité a ses dieux protecteurs et ses fêtes.</li>
+        </ul>
+        <p>La Grèce n'est jamais unifiée politiquement avant Alexandre : elle compte des centaines de cités autonomes, parfois alliées (ligues), souvent rivales (Athènes contre Sparte).</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">La citoyenneté athénienne</div>
+        <p>À Athènes, à l'époque classique, le <strong>citoyen</strong> est un homme :</p>
+        <ul>
+          <li>libre (pas esclave) ;</li>
+          <li>né de père citoyen et (à partir de 451 av. J.-C.) de mère athénienne ;</li>
+          <li>inscrit dans un dème (circonscription locale).</li>
+        </ul>
+        <p>En sont exclus : les <strong>femmes</strong>, les <strong>esclaves</strong> et les <strong>météques</strong> (étrangers résidents). Sur environ 300 000 habitants, seuls 30 000 à 40 000 sont citoyens : environ 10 à 15 % de la population.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Civitas (cité) = territoire + institutions + religion civique.</li>
+          <li>Citoyen = homme libre, né de parents athéniens.</li>
+          <li>Exclus : femmes, esclaves, métèques.</li>
+          <li>La démocratie athénienne est directe mais partielle.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — Les institutions athéniennes",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Trois grandes institutions</h3>
+        <table>
+          <thead>
+            <tr><th>Institution</th><th>Rôle</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Ecclésia</strong> (assemblée)</td><td>Réunit tous les citoyens sur la Pnyx. Elle vote les lois, décide la guerre et la paix, vote l'ostracisme, élit les magistrats. C'est le cœur de la démocratie directe.</td></tr>
+            <tr><td><strong>Boulè</strong> (conseil des Cinq-Cents)</td><td>Prépare les lois et les ordres du jour de l'Ecclésia. Ses membres sont tirés au sort parmi les citoyens, à raison de 50 par tribu, pour un an.</td></tr>
+            <tr><td><strong>Héliée</strong> (tribunal populaire)</td><td>Juge les procès civils et criminels. 6 000 jurés tirés au sort. C'est la justice rendue par le peuple.</td></tr>
+          </tbody>
+        </table>
+        <p>À côté de ces trois institutions, des <strong>magistrats</strong> (stratèges, archontes) sont élus ou tirés au sort pour administrer la cité. Les <strong>stratèges</strong>, chefs militaires, sont élus (comme Périclès, réélu plus de trente fois).</p>
+      </div>
+
+      <figure>
+        <img data-image-id="antiquites4_img02" alt="Plan simplifié de l'Athènes antique montrant l'Acropole, l'Agora et la colline de la Pnyx où se réunissait l'Ecclésia.">
+        <figcaption>Les lieux de la démocratie athénienne.</figcaption>
+      </figure>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Un exemple : l'ostracisme</div>
+        <p>Chaque année, l'Ecclésia pouvait voter l'<strong>ostracisme</strong> : les citoyens écrivaient sur un tesson de poterie (<em>ostrakon</em>) le nom d'un homme politique qu'ils jugeaient dangereux pour la cité. Si un nom obtenait plus de 6 000 voix, son porteur était <strong>exilé pour 10 ans</strong>, sans perdre ses biens. C'était un garde-fou contre les ambitions personnelles.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Ecclésia : vote des lois, guerre, ostracisme.</li>
+          <li>Boulè : prépare les décisions, 500 tirés au sort.</li>
+          <li>Héliée : tribunal populaire, 6 000 jurés.</li>
+          <li>Ostracisme : exil de 10 ans par vote populaire.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — Limites de la démocratie athénienne",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Une démocratie directe mais partielle</h3>
+        <p>La démocratie athénienne est souvent citée comme la première démocratie de l'histoire. Elle mérite ce titre, mais il faut en connaître les limites :</p>
+        <ul>
+          <li><strong>Exclusion des femmes</strong> : elles n'ont aucun droit politique, restent sous tutelle d'un homme (père, époux, fils).</li>
+          <li><strong>Esclavage</strong> : l'économie athénienne repose largement sur le travail des esclaves (mines du Laurion, domesticité, artisanat). L'esclave est un bien, pas une personne de droit.</li>
+          <li><strong>Exclusion des métèques</strong> : les étrangers résidents, souvent artisans ou commerçants, paient des taxes mais ne votent pas.</li>
+          <li><strong>Démagogie</strong> : l'assemblée peut être séduite par des orateurs habiles ; certaines décisions sont prises sous le coup de l'émotion (condamnation de Socrate en 399 av. J.-C.).</li>
+          <li><strong>Taille limitée</strong> : la cité ne compte qu'une minorité de citoyens ; la démocratie directe ne fonctionne que dans un cadre restreint.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Comparaison avec les démocraties modernes</div>
+        <p>Les démocraties modernes sont <strong>représentatives</strong> (on élit des députés), alors que la démocratie athénienne était <strong>directe</strong> (les citoyens votaient eux-mêmes les lois). Elles reposent sur le <strong>suffrage universel</strong> (hommes et femmes, sans distinction d'origine), alors qu'Athènes excluait la majorité de la population.</p>
+        <p>Comparer, ce n'est pas condamner : c'est mesurer le chemin parcouru et les combats encore à mener.</p>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Idéaliser la démocratie athénienne en oubliant ses exclusions. Dire « la démocratie est née à Athènes » est vrai, mais incomplet : c'était une démocratie <strong>pour une minorité</strong>. Ne pas le préciser, c'est travestir l'histoire.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Démocratie directe mais minoritaire.</li>
+          <li>Exclusions : femmes, esclaves, métèques.</li>
+          <li>Risque de démagogie.</li>
+          <li>Comparer avec les démocraties modernes pour comprendre l'évolution.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — La République romaine",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Trois pouvoirs, un équilibre</h3>
+        <p>La <strong>République romaine</strong> (509 – 27 av. J.-C.) repose sur un équilibre entre trois pouvoirs :</p>
+        <ul>
+          <li><strong>Les consuls</strong> (2, élus pour un an) : pouvoir exécutif, commandement de l'armée. Ils se contrôlent mutuellement (droit de veto).</li>
+          <li><strong>Le Sénat</strong> : assemblée aristocratique (anciens magistrats), il contrôle les finances, la politique étrangère, la religion. Son pouvoir est consultatif en théorie, dominant en pratique.</li>
+          <li><strong>Les comices</strong> (assemblées populaires) : votent les lois et élisent les magistrats.</li>
+        </ul>
+        <p>À côté, les <strong>tribuns de la plèbe</strong> (élus par les plébéiens) protègent les intérêts populaires et disposent du droit de veto contre les décisions des magistrats.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Un équilibre instable</div>
+        <p>La République est le théâtre de conflits sociaux entre <strong>patriciens</strong> (aristocratie) et <strong>plébéiens</strong> (peuple), qui obtiennent progressivement des droits (tribunat, accès aux magistratures). Les conquêtes (Italie, Carthage, Grèce, Gaule, Égypte) enrichissent Rome mais déstabilisent ses institutions : les généraux deviennent tout-puissants.</p>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Application RDC</div>
+        <p>Le mot « république » vient du latin <em>res publica</em>, « la chose publique » : ce qui appartient à tous. Ce terme est aujourd'hui dans le nom officiel de la RDC (« République Démocratique du Congo »). Le Sénat congolais, comme son homologue romain, est une chambre haute, avec un rôle de contrôle et de représentation des provinces.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Consuls : exécutif, un an, deux.</li>
+          <li>Sénat : aristocratique, puissant.</li>
+          <li>Comices : vote des lois.</li>
+          <li>Tribuns de la plèbe : défense populaire, veto.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — La crise de la République et l'Empire",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>De la crise à l'Empire</h3>
+        <p>Au I<sup>er</sup> siècle av. J.-C., la République entre en crise :</p>
+        <ul>
+          <li><strong>Réformes agraires</strong> contestées (Tiberius et Caius Gracchus, assassinés).</li>
+          <li><strong>Guerres civiles</strong> : Marius contre Sylla, César contre Pompée, Octave contre Antoine.</li>
+          <li><strong>Montée en puissance des généraux</strong> : les armées deviennent fidèles à leur chef plutôt qu'à l'État.</li>
+          <li><strong>Assassinat de César</strong> en 44 av. J.-C. : les conjurés espèrent sauver la République, mais c'est la guerre civile qui s'ensuit.</li>
+        </ul>
+        <p><strong>Octave</strong>, héritier de César, élimine ses rivaux (victoire d'Actium en 31 av. J.-C.) et reçoit du Sénat en 27 av. J.-C. le titre d'<strong>Auguste</strong> : c'est le début du <strong>Principat</strong>, la première forme de l'Empire. Auguste conserve en apparence les institutions républicaines mais concentre tous les pouvoirs réels.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">L'Empire</div>
+        <ul>
+          <li><strong>Administration</strong> : provinces gouvernées par des légats, impôts, cadastre, routes.</li>
+          <li><strong>"Paix romaine"</strong> : <em>pax romana</em>, période de relative stabilité intérieure sous les Antonins (II<sup>e</sup> siècle apr. J.-C.).</li>
+          <li><strong>Extension maximale</strong> : sous Trajan (98-117 apr. J.-C.).</li>
+          <li><strong>Division</strong> : en 395, l'Empire est partagé entre Orient (capitale Constantinople) et Occident (capitale Ravenne).</li>
+          <li><strong>Chute de Rome d'Occident</strong> : 476 apr. J.-C. (déposition de Romulus Augustule par Odoacre). L'Empire d'Orient (byzantin) survit jusqu'en 1453.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Crise de la République : guerres civiles, généraux puissants.</li>
+          <li>44 av. J.-C. : assassinat de César.</li>
+          <li>27 av. J.-C. : Auguste = début de l'Empire.</li>
+          <li>395 : division ; 476 : chute de Rome d'Occident.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre IV — Le panthéon gréco-romain",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les mêmes dieux, deux noms</h3>
+        <p>Les Romains ont adopté les dieux grecs en leur donnant des noms latins. Voici les principales correspondances :</p>
+        <table>
+          <thead>
+            <tr><th>Dieu grec</th><th>Dieu romain</th><th>Domaine</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Zeus</td><td>Jupiter</td><td>Roi des dieux, ciel, foudre</td></tr>
+            <tr><td>Héra</td><td>Junon</td><td>Reine des dieux, mariage</td></tr>
+            <tr><td>Athéna</td><td>Minerve</td><td>Sagesse, guerre, artisanat</td></tr>
+            <tr><td>Arès</td><td>Mars</td><td>Guerre</td></tr>
+            <tr><td>Poséidon</td><td>Neptune</td><td>Mer</td></tr>
+            <tr><td>Aphrodite</td><td>Vénus</td><td>Amour, beauté</td></tr>
+            <tr><td>Apollon</td><td>Apollon</td><td>Lumière, arts, prophétie</td></tr>
+            <tr><td>Artémis</td><td>Diane</td><td>Chasse, lune</td></tr>
+            <tr><td>Hadès</td><td>Pluton</td><td>Enfers</td></tr>
+            <tr><td>Déméter</td><td>Cérès</td><td>Agriculture</td></tr>
+            <tr><td>Dionysos</td><td>Bacchus</td><td>Vin, fête, théâtre</td></tr>
+            <tr><td>Héphaïstos</td><td>Vulcain</td><td>Feu, forge</td></tr>
+          </tbody>
+        </table>
+        <p>Les dieux ont une généalogie complexe (mythes de création, luttes entre Titans et Olympiens) et des fonctions variées. La mythologie explique le monde et sert de réservoir d'images pour les poètes, les artistes et les orateurs.</p>
+      </div>
+
+      <figure>
+        <img data-image-id="antiquites4_img03" alt="Arbre généalogique simplifié des dieux gréco-romains montrant Zeus/Jupiter et les divinités principales.">
+        <figcaption>Le panthéon gréco-romain.</figcaption>
+      </figure>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>12 Olympiens principaux.</li>
+          <li>Correspondance grec/romain : Zeus=Jupiter, Athéna=Minerve, etc.</li>
+          <li>Mythologie = explication du monde et réservoir culturel.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre IV — Religions et christianisme",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Du culte civique au christianisme</h3>
+        <p>La religion gréco-romaine est d'abord une <strong>religion civique</strong> : chaque cité, chaque famille a ses dieux protecteurs. Participer au culte est un <strong>devoir de citoyen</strong>. Les grandes fêtes (Panathénées à Athènes, Jeux olympiques, Jeux romains) sont à la fois religieuses et civiques.</p>
+        <p>À côté de cette religion officielle, des <strong>mystères</strong> (cultes secrets à Déméter, à Dionysos, à Mithra) promettent une forme de salut personnel. Ils séduisent de nombreux fidèles.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Le christianisme</div>
+        <ul>
+          <li><strong>Naissance</strong> en Judée, au I<sup>er</sup> siècle apr. J.-C., autour de Jésus de Nazareth.</li>
+          <li><strong>Diffusion</strong> dans l'Empire par les apôtres, puis par les communautés chrétiennes (Antioche, Rome, Alexandrie).</li>
+          <li><strong>Persécutions</strong> : les chrétiens refusent de sacrifier aux dieux de l'Empire et sont persécutés (Néron en 64, Dèce, Dioclétien).</li>
+          <li><strong>Édit de Milan (313)</strong> : Constantin accorde la liberté de culte aux chrétiens.</li>
+          <li><strong>Édit de Thessalonique (380)</strong> : Théodose fait du christianisme la <strong>religion officielle</strong> de l'Empire.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Croire que le christianisme s'est imposé immédiatement. Il a connu près de <strong>trois siècles</strong> de persécutions, de minorité et de débats doctrinaux avant de devenir religion officielle. Sa diffusion est lente, mais profonde : elle transforme les mentalités, les institutions et l'art de l'Empire.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Religion civique + mystères.</li>
+          <li>Christianisme né en Judée, diffusé dans l'Empire.</li>
+          <li>313 : édit de Milan (liberté de culte).</li>
+          <li>380 : édit de Thessalonique (religion officielle).</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre V — La vie quotidienne",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Famille et éducation</h3>
+        <ul>
+          <li><strong>À Rome</strong>, le <em>pater familias</em> exerce une autorité absolue sur la famille (épouse, enfants, esclaves). Il peut reconnaître ou refuser un nouveau-né.</li>
+          <li><strong>Éducation</strong> : les garçons des élites vont à l'école du <em>litterator</em> (lecture, écriture, calcul), puis chez le <em>grammaticus</em> (lettres) et le <em>rhetor</em> (éloquence). Les filles reçoivent une éducation familiale, souvent soignée dans les milieux cultivés.</li>
+          <li><strong>À Athènes</strong> : école, gymnase (éducation physique et intellectuelle), éphébie (service militaire et civique) pour les futurs citoyens.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Habitat, nourriture, banquets</div>
+        <ul>
+          <li><strong>Habitat grec</strong> : maison organisée autour d'une cour ; l'<em>andron</em> (salle des hommes) et le <em>gynécée</em> (salle des femmes) séparent les espaces.</li>
+          <li><strong>Habitat romain</strong> : la <em>domus</em> (maison aristocratique) avec atrium ; l'<em>insula</em> (immeuble de rapport) pour les classes populaires.</li>
+          <li><strong>Alimentation</strong> : pain, huile d'olive, vin, légumes, poisson ; viande plus rare.</li>
+          <li><strong>Banquets</strong> : le <em>symposion</em> grec et le <em>convivium</em> romain mêlent repas, boisson, discussion philosophique, parfois divertissements.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">L'esclavage</div>
+        <p>L'esclavage est au cœur de l'économie antique : mines, agriculture, artisanat, domesticité. L'esclave est juridiquement un bien ; il peut être affranchi par son maître et devenir <strong>affranchi</strong>, sans accéder toutefois à la pleine citoyenneté.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Pater familias à Rome ; éphébie à Athènes.</li>
+          <li>Domus / insula ; andron / gynécée.</li>
+          <li>Symposion et convivium.</li>
+          <li>Esclavage massif, affranchissement possible.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre V — Jeux et spectacles",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Des spectacles religieux et civiques</h3>
+        <p>Dans le monde gréco-romain, les spectacles ne sont pas seulement des divertissements : ils sont liés à la religion, à la politique et à l'identité civique.</p>
+        <ul>
+          <li><strong>Les Jeux olympiques</strong> : à Olympie, tous les quatre ans, en l'honneur de Zeus. Concours athlétiques (course, lutte, pentathlon) et religieux. Les vainqueurs reçoivent une couronne d'olivier.</li>
+          <li><strong>Les jeux panhelléniques</strong> : Olympie, Delphes (jeux pythiques en l'honneur d'Apollon), Isthme, Némée.</li>
+          <li><strong>Le théâtre</strong> : à Athènes, lors des grandes Dionysies, on représentait tragédies et comédies en l'honneur de Dionysos.</li>
+          <li><strong>Les jeux romains</strong> : courses de chars au Circus Maximus, combats de gladiateurs dans les amphithéâtres (Colisée), chasses et spectacles dans les arènes.</li>
+        </ul>
+      </div>
+
+      <figure>
+        <img data-image-id="antiquites4_img04" alt="Vue extérieure du Colisée à Rome, amphithéâtre antique où se déroulaient les jeux romains.">
+        <figcaption>Le Colisée, lieu des jeux romains.</figcaption>
+      </figure>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Un rôle politique</div>
+        <p>À Rome, les jeux sont offerts par les magistrats et l'empereur au peuple. Ils servent à <strong>maintenir la paix sociale</strong> (<em>panem et circenses</em>, « du pain et des jeux »), à célébrer la puissance de l'Empire et à divertir les foules. Les combats de gladiateurs, violents, sont aussi un rituel de courage et de mort.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Jeux olympiques à Olympie (Zeus).</li>
+          <li>Théâtre lors des Dionysies (Dionysos).</li>
+          <li>Jeux romains : Circus, amphithéâtre.</li>
+          <li>Rôle politique : pain et jeux.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VI — Arts, lettres et philosophie",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le théâtre</h3>
+        <ul>
+          <li><strong>Tragédie grecque</strong> : Eschyle (les <em>Perses</em>), Sophocle (<em>Œdipe roi</em>, <em>Antigone</em>), Euripide (<em>Médée</em>). Les héros affrontent un destin qui les dépasse.</li>
+          <li><strong>Comédie grecque</strong> : Aristophane (<em>Les Nuées</em>, <em>Lysistrata</em>), satire politique et sociale.</li>
+          <li><strong>Théâtre latin</strong> : Plaute et Térence (comédies), Sénèque (tragédies).</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Architecture</div>
+        <ul>
+          <li><strong>Ordres grecs</strong> : dorique (simple, sévère), ionique (volutes), corinthien (feuilles d'acanthe).</li>
+          <li><strong>Parthénon</strong> (Athènes, V<sup>e</sup> s. av. J.-C.) : temple d'Athéna sur l'Acropole, chef-d'œuvre de l'ordre dorique.</li>
+          <li><strong>Colisée</strong> (Rome, I<sup>er</sup> s. apr. J.-C.) : amphithéâtre de 50 000 places.</li>
+          <li><strong>Aqueducs, thermes, arcs de triomphe</strong> : prouesses techniques romaines (béton, voûte, coupole).</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Philosophie</div>
+        <ul>
+          <li><strong>Socrate</strong> (470-399 av. J.-C.) : philosopher par le dialogue, questionner sans cesse.</li>
+          <li><strong>Platon</strong> : théorie des Idées, <em>République</em>, <em>Apologie de Socrate</em>.</li>
+          <li><strong>Aristote</strong> : logique, éthique, politique, <em>Poétique</em> ; précepteur d'Alexandre.</li>
+          <li><strong>Écoles hellénistiques</strong> : stoïcisme (Sénèque, Marc Aurèle), épicurisme (Épicure, Lucrèce).</li>
+          <li><strong>Cicéron</strong> : orateur, homme politique, philosophe romain.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Sciences</div>
+        <ul>
+          <li><strong>Mathématiques</strong> : Euclide (<em>Éléments</em>), Pythagore, Archimède.</li>
+          <li><strong>Astronomie</strong> : Ptolémée (système géocentrique), Eratosthène (mesure de la Terre).</li>
+          <li><strong>Médecine</strong> : Hippocrate (serment), Galien.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Tragédie / comédie ; Eschyle, Sophocle, Euripide, Aristophane.</li>
+          <li>Ordres architecturaux ; Parthénon, Colisée, aqueducs.</li>
+          <li>Socrate, Platon, Aristote, stoïcisme, épicurisme.</li>
+          <li>Euclide, Ptolémée, Hippocrate, Galien.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VII — L'héritage gréco-romain",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Un héritage multiple</h3>
+        <p>L'héritage gréco-romain est partout dans nos sociétés contemporaines :</p>
+        <ul>
+          <li><strong>Droit</strong> : le droit romain (propriété, contrats, responsabilité) a inspiré le droit civil de nombreux pays, dont la RDC (via le droit belge).</li>
+          <li><strong>Langues</strong> : le latin est à l'origine du français, de l'italien, de l'espagnol, du portugais, du roumain ; le grec a fourni un vocabulaire scientifique et philosophique (démocratie, philosophie, biologie…).</li>
+          <li><strong>Institutions</strong> : notions de citoyenneté, de république, de sénat, de démocratie.</li>
+          <li><strong>Éducation</strong> : l'idéal grec de la <em>paideia</em> (formation complète de l'homme) a inspiré les « humanités » et l'enseignement classique.</li>
+          <li><strong>Arts</strong> : la Renaissance, le classicisme, le néoclassicisme se réclament de l'Antiquité.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Héritage et RDC</div>
+        <ul>
+          <li><strong>Droit civil congolais</strong> : le Code civil congolais, hérité du Code Napoléon (lui-même inspiré du droit romain), traite de la propriété, des contrats, de la responsabilité.</li>
+          <li><strong>Langue française</strong> : le français, langue officielle de la RDC, est une langue d'origine latine ; son vocabulaire juridique, politique et scientifique est rempli de mots grecs et latins.</li>
+          <li><strong>Institutions</strong> : le Sénat, la notion de République, la citoyenneté, le vote.</li>
+          <li><strong>Éducation</strong> : l'idéal des « humanités » (formation générale, littéraire et philosophique) vient de la <em>paideia</em> grecque.</li>
+        </ul>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Cas pédagogique</div>
+        <p>Un débat au lycée de Kinshasa sur la participation des jeunes à la vie publique s'appuie sur la comparaison entre l'Ecclésia athénienne et les mécanismes de participation citoyenne prévus par la Constitution congolaise. Les élèves identifient :</p>
+        <ul>
+          <li><strong>Ressemblances</strong> : débat public, vote, souveraineté du peuple.</li>
+          <li><strong>Différences</strong> : représentation (démocratie indirecte), droits des femmes, majorité électorale, partis politiques.</li>
+        </ul>
+        <p>Cette comparaison nourrit une réflexion critique sur la démocratie et la citoyenneté aujourd'hui.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Droit, langues, institutions, éducation, arts.</li>
+          <li>En RDC : droit civil, langue française, Sénat, humanités.</li>
+          <li>L'héritage se discute, ne s'idolâtre pas.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Synthèse générale du cours",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Ce qu'il faut retenir</div>
+        <h3>Les idées maîtresses</h3>
+        <ol>
+          <li><strong>Cadre</strong> : la Méditerranée, la Grèce des cités, Rome.</li>
+          <li><strong>Chronologie grecque</strong> : Minoens, Mycéniens, archaïque, classique, hellénistique.</li>
+          <li><strong>Chronologie romaine</strong> : Royauté (753-509), République (509-27), Empire (27 av. J.-C. – 476 apr. J.-C.).</li>
+          <li><strong>Cité grecque</strong> : communauté de citoyens ; démocratie directe mais partielle (exclusions).</li>
+          <li><strong>Rome</strong> : consuls, Sénat, comices, tribuns ; équilibre puis crise ; Empire avec Auguste.</li>
+          <li><strong>Religion</strong> : panthéon gréco-romain ; cultes civiques ; christianisme (313, 380).</li>
+          <li><strong>Vie quotidienne</strong> : pater familias, éducation, habitat, banquets, jeux, esclavage.</li>
+          <li><strong>Arts et lettres</strong> : théâtre, architecture, philosophie, sciences.</li>
+          <li><strong>Héritage</strong> : droit, langues, institutions, éducation — y compris en RDC.</li>
+        </ol>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Repères chronologiques essentiels</div>
+        <table>
+          <thead>
+            <tr><th>Date</th><th>Événement</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>753 av. J.-C.</td><td>Fondation légendaire de Rome</td></tr>
+            <tr><td>509 av. J.-C.</td><td>Fin de la Royauté, début de la République romaine</td></tr>
+            <tr><td>Ve s. av. J.-C.</td><td>Apogée de la démocratie athénienne (Périclès)</td></tr>
+            <tr><td>323 av. J.-C.</td><td>Mort d'Alexandre le Grand</td></tr>
+            <tr><td>44 av. J.-C.</td><td>Assassinat de Jules César</td></tr>
+            <tr><td>27 av. J.-C.</td><td>Auguste : début de l'Empire romain</td></tr>
+            <tr><td>313 apr. J.-C.</td><td>Édit de Milan (liberté de culte)</td></tr>
+            <tr><td>380 apr. J.-C.</td><td>Édit de Thessalonique (christianisme officiel)</td></tr>
+            <tr><td>395 apr. J.-C.</td><td>Division de l'Empire</td></tr>
+            <tr><td>476 apr. J.-C.</td><td>Chute de Rome d'Occident</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les erreurs à ne plus commettre</div>
+        <ul>
+          <li>Confondre époque classique et hellénistique.</li>
+          <li>Croire que Rome a toujours été un empire.</li>
+          <li>Idéaliser la démocratie athénienne sans ses exclusions.</li>
+          <li>Croire que le christianisme s'est imposé immédiatement.</li>
+          <li>Réduire l'héritage gréco-romain au seul art.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Évaluation finale — Antiquités gréco-romaines",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Consigne</div>
+        <p>Répondez aux 22 questions ci-dessous. Chaque question a une seule bonne réponse. Cliquez sur « Valider mes réponses » pour obtenir votre score. Bonne chance !</p>
+      </div>
+
+      <div class="quiz-container">
+        <div id="quizQuestions"></div>
+        <button id="submitQuiz" class="quiz-btn-submit">
+          Valider mes réponses
+        </button>
+        <div id="quizResult" class="quiz-result"></div>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Conseil</div>
+        <p>En cas d'erreur, relisez la diapositive correspondante. Les questions couvrent la chronologie, les institutions, la religion, la vie quotidienne, les arts et l'héritage.</p>
+      </div>
+    `
+  }
+];
+const questions = [
+  {
+    text: "Quelle mer a été le centre de la civilisation gréco-romaine ?",
+    options: [
+      "La mer Noire",
+      "La mer Rouge",
+      "La mer Méditerranée",
+      "L'océan Atlantique"
+    ],
+    correct: 2
+  },
+  {
+    text: "La démocratie athénienne s'épanouit principalement au :",
+    options: [
+      "Ve siècle av. J.-C.",
+      "Ier siècle av. J.-C.",
+      "IVe siècle apr. J.-C.",
+      "XVe siècle"
+    ],
+    correct: 0
+  },
+  {
+    text: "Quelle institution athénienne votait les lois ?",
+    options: [
+      "La Boulè",
+      "L'Héliée",
+      "L'Aréopage",
+      "L'Ecclésia"
+    ],
+    correct: 3
+  },
+  {
+    text: "Qui était exclu de la citoyenneté athénienne ?",
+    options: [
+      "Les hommes libres nés de parents athéniens",
+      "Les femmes, les esclaves et les métèques",
+      "Les soldats",
+      "Les artisans"
+    ],
+    correct: 1
+  },
+  {
+    text: "La République romaine a duré de :",
+    options: [
+      "753 à 509 av. J.-C.",
+      "509 à 27 av. J.-C.",
+      "27 av. J.-C. à 476 apr. J.-C.",
+      "476 à 1453 apr. J.-C."
+    ],
+    correct: 1
+  },
+  {
+    text: "Quel était le rôle principal des consuls à Rome ?",
+    options: [
+      "Voter les lois",
+      "Rendre la justice",
+      "Exercer le pouvoir exécutif et commander l'armée",
+      "Gérer les finances"
+    ],
+    correct: 2
+  },
+  {
+    text: "L'édit de Thessalonique (380 apr. J.-C.) a fait du christianisme :",
+    options: [
+      "Une religion persécutée",
+      "Une secte interdite",
+      "La religion officielle de l'Empire",
+      "La religion des seuls esclaves"
+    ],
+    correct: 2
+  },
+  {
+    text: "Zeus correspond à quel dieu romain ?",
+    options: [
+      "Mars",
+      "Neptune",
+      "Apollon",
+      "Jupiter"
+    ],
+    correct: 3
+  },
+  {
+    text: "Le symposion grec était :",
+    options: [
+      "Une assemblée politique",
+      "Un banquet philosophique et convivial",
+      "Un tribunal",
+      "Un concours sportif"
+    ],
+    correct: 1
+  },
+  {
+    text: "Les Jeux olympiques se déroulaient à :",
+    options: [
+      "Athènes",
+      "Olympie",
+      "Delphes",
+      "Sparte"
+    ],
+    correct: 1
+  },
+  {
+    text: "Le Colisée est un amphithéâtre situé à :",
+    options: [
+      "Athènes",
+      "Carthage",
+      "Alexandrie",
+      "Rome"
+    ],
+    correct: 3
+  },
+  {
+    text: "Quel philosophe grec a été le maître de Platon ?",
+    options: [
+      "Aristote",
+      "Socrate",
+      "Épicure",
+      "Zénon"
+    ],
+    correct: 1
+  },
+  {
+    text: "Le droit romain est à l'origine du droit :",
+    options: [
+      "Coutumier africain",
+      "Islamique",
+      "Civil congolais (via le droit belge)",
+      "Anglo-saxon"
+    ],
+    correct: 2
+  },
+  {
+    text: "La paideia grecque désigne :",
+    options: [
+      "Un impôt",
+      "L'idéal de formation et de culture de l'homme",
+      "Un temple",
+      "Une fête religieuse"
+    ],
+    correct: 1
+  },
+  {
+    text: "Quel dirigeant romain est considéré comme le fondateur de l'Empire ?",
+    options: [
+      "Jules César",
+      "Néron",
+      "Trajan",
+      "Auguste"
+    ],
+    correct: 3
+  },
+  {
+    text: "La chute de l'Empire romain d'Occident date de :",
+    options: [
+      "395 apr. J.-C.",
+      "476 apr. J.-C.",
+      "509 av. J.-C.",
+      "1453 apr. J.-C."
+    ],
+    correct: 1
+  },
+  {
+    text: "Quel poète grec est l'auteur de l'Iliade et de l'Odyssée ?",
+    options: [
+      "Hésiode",
+      "Sophocle",
+      "Homère",
+      "Virgile"
+    ],
+    correct: 2
+  },
+  {
+    text: "Les métèques à Athènes étaient :",
+    options: [
+      "Des citoyens",
+      "Des étrangers résidents",
+      "Des esclaves",
+      "Des magistrats"
+    ],
+    correct: 1
+  },
+  {
+    text: "L'insula romaine désignait :",
+    options: [
+      "Une maison individuelle",
+      "Un immeuble de rapport",
+      "Un temple",
+      "Une place publique"
+    ],
+    correct: 1
+  },
+  {
+    text: "Quel événement marque le début de l'époque hellénistique ?",
+    options: [
+      "La fondation de Rome",
+      "La mort d'Alexandre le Grand (323 av. J.-C.)",
+      "L'assassinat de César",
+      "L'édit de Milan"
+    ],
+    correct: 1
+  },
+  {
+    text: "Quel est l'apport principal de l'héritage gréco-romain à la RDC ?",
+    options: [
+      "Le droit civil, la langue française et des notions institutionnelles",
+      "Les mines et l'agriculture",
+      "Les religions traditionnelles",
+      "La monnaie unique"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'étude des Antiquités classiques aide principalement à :",
+    options: [
+      "Apprendre les langues modernes",
+      "Comprendre les racines de la culture, du droit et des institutions occidentales",
+      "Remplacer l'histoire nationale",
+      "Étudier les sciences exactes"
+    ],
+    correct: 1
+  }
+];
+
+try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+        questions.forEach(function (q) {
+            if (!q.text) q.text = q.question || q.q || q.enonce || q.titre || "";
+            if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+            if (typeof q.correct === "undefined") {
+                if (typeof q.answer !== "undefined") q.correct = q.answer;
+                else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+            }
+        });
+    }
+} catch (e) {}
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+const pageTitle = document.getElementById('pageTitle');
+pageTitle.textContent = "ECOLIA · " + COURSE_TITLE;
+document.title = "ECOLIA — " + COURSE_TITLE;
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim() || slides.length === 0) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp("(" + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ")", 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderEmptyState() {
+    contentDiv.innerHTML = '<div class="empty-state"><div class="icon">·</div><span class="tag">Bientôt disponible</span><h2>' + COURSE_TITLE + '</h2><p>Ce cours est en préparation. Le contenu sera ajouté prochainement.</p></div>';
+    slideCounterSpan.textContent = '0/0';
+    progressFill.style.width = '0%';
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    counterSpan.textContent = '—';
+}
+
+function renderQuiz() {
+    const qc = document.getElementById('quizQuestions');
+    if (!qc) return;
+    if (typeof questions === 'undefined' || questions.length === 0) {
+        qc.innerHTML = '<p style="color:#666;font-style:italic;">Quiz bientot disponible.</p>';
+        return;
+    }
+    let html = '';
+    questions.forEach((q, i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o, k) => {
+            html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>';
+        });
+        html += '</div>';
+    });
+    qc.innerHTML = html;
+    const submitBtn = document.getElementById('submitQuiz');
+    if (submitBtn) {
+        submitBtn.onclick = () => {
+            let score = 0;
+            questions.forEach((q, i) => {
+                const s = document.querySelector('input[name="q' + i + '"]:checked');
+                if (s && parseInt(s.value) === q.correct) score++;
+            });
+            const pct = Math.round(score/questions.length*100);
+            document.getElementById('quizResult').innerHTML =
+                '<div style="background:var(--bg2);padding:16px;border-radius:10px;margin-top:14px;">' +
+                '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong></div>';
+        };
+    }
+}
+
+function renderSlide(index, keepHighlight) {
+    if (keepHighlight === undefined) keepHighlight = true;
+    if (slides.length === 0) { renderEmptyState(); return; }
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    if (index === slides.length - 1) renderQuiz();
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    if (slides.length === 0) return;
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (slides.length && currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (slides.length && currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+<!-- ECOLIA_IMAGE_LOADER_START -->
+<script>
+(function () {
+  var SITE = "https://ecolia-course.github.io/";
+  var NATIVE = false;
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function abs(u) { return /^(https?:|data:|blob:)/i.test(u) ? u : (NATIVE ? SITE + u.replace(/^(\.\/|\/)+/, "") : u); }
+  function ext(u) { var m = String(u).split("?")[0].match(/\.(jpe?g|png|gif|webp|svg)$/i); return m ? m[1].toLowerCase() : "jpg"; }
+  function hide(img) { img.onerror = null; img.style.display = "none"; }
+  var table = null, queue = [], queued = {}, running = false;
+  function enqueue(full, fn) {
+    if (queued[fn]) return;
+    queued[fn] = 1; queue.push([full, fn]);
+    if (!running) { running = true; setTimeout(next, 2500); }
+  }
+  function next() {
+    if (!queue.length) { running = false; return; }
+    if (!navigator.onLine) { running = false; return; }
+    var q = queue.shift(), t0 = Date.now();
+    try { CoursInterface.download(q[0], q[1]); } catch (e) { return setTimeout(next, 500); }
+    (function wait() {
+      var ok = false;
+      try { ok = !!CoursInterface.exists(q[1]); } catch (e) {}
+      if (ok) setTimeout(next, 1500);
+      else if (Date.now() - t0 > 40000) next();
+      else setTimeout(wait, 700);
+    })();
+  }
+  function exists(fn) { try { return !!CoursInterface.exists(fn); } catch (e) { return false; } }
+  function show(img) {
+    if (!table || img.getAttribute("data-ecolia-done")) return;
+    var id = img.getAttribute("data-image-id");
+    var url = table[id];
+    if (typeof url !== "string" || !url.length) { console.warn("ECOLIA : image absente du JSON :", id); return; }
+    img.setAttribute("data-ecolia-done", "1");
+    if (!NATIVE) { img.onerror = function () { hide(img); }; img.setAttribute("src", url); return; }
+    var full = abs(url), fn = "img_" + id + "." + ext(url);
+    if (exists(fn)) {
+      img.onerror = function () {
+        try { CoursInterface["delete"](fn); } catch (e) {}
+        queued[fn] = 0;
+        img.onerror = function () { hide(img); };
+        img.setAttribute("src", full);
+      };
+      img.setAttribute("src", "https://app.local/cours/" + fn);
+    } else {
+      img.onerror = function () { hide(img); };
+      img.setAttribute("src", full);
+      enqueue(full, fn);
+    }
+  }
+  function scan(root) {
+    if (!root || !root.querySelectorAll) return;
+    if (root.matches && root.matches("img[data-image-id]")) show(root);
+    root.querySelectorAll("img[data-image-id]").forEach(show);
+  }
+  function prefetchAll() {
+    var ids = {};
+    try { JSON.stringify(slides).replace(/data-image-id=\\?"([^"\\]+)/g, function (m, id) { ids[id] = 1; }); } catch (e) {}
+    Object.keys(ids).forEach(function (id) {
+      var url = table[id];
+      if (typeof url !== "string" || !url.length) return;
+      var fn = "img_" + id + "." + ext(url);
+      if (!exists(fn)) enqueue(abs(url), fn);
+    });
+  }
+  function start(tbl) {
+    table = tbl;
+    scan(document.body);
+    new MutationObserver(function (muts) {
+      muts.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.nodeType === 1) scan(n); }); });
+    }).observe(document.body, { childList: true, subtree: true });
+    if (NATIVE) prefetchAll();
+  }
+  var JSON_URL = NATIVE ? SITE + "images_ecolia.json" : "images_ecolia.json";
+  var KEY = "ecolia_images_json";
+  fetch(JSON_URL, NATIVE ? { cache: "no-cache" } : undefined)
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (table) { if (NATIVE) lsSet(KEY, JSON.stringify(table)); start(table); })
+    .catch(function (e) {
+      var saved = null;
+      if (NATIVE) { try { saved = JSON.parse(lsGet(KEY) || "null"); } catch (x) {} }
+      if (saved) start(saved);
+      else console.warn("ECOLIA : JSON des images indisponible.", e);
+    });
+})();
+</script>
+<!-- ECOLIA_IMAGE_LOADER_END -->
+
+
+
+<!-- ECOLIA_AUDIO_PLAYER_START -->
+<style>
+  #ecolia-audio-btn, #ecolia-dl-btn {
+    width: 30px; height: 30px; min-width: 30px; padding: 0; margin: 0 4px 0 0;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    cursor: pointer; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent; outline: none;
+  }
+  #ecolia-audio-btn { border: none; background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-dl-btn { border: 1.5px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb); }
+  #ecolia-dl-btn.ecolia-full { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-btn.ecolia-fixed { position: fixed; top: 8px; left: 8px; z-index: 2147483000; }
+  #ecolia-audio-btn:active, #ecolia-dl-btn:active { transform: scale(.92); }
+  #ecolia-audio-btn svg, #ecolia-dl-btn svg { width: 15px; height: 15px; fill: currentColor; pointer-events: none; }
+  #ecolia-audio-btn.ecolia-off, #ecolia-dl-btn.ecolia-off { display: none; }
+  #ecolia-audio-banner {
+    display: none; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0;
+    padding: 8px 14px; font-size: .82rem; line-height: 1.35;
+    background: var(--soft, #eef3fb); color: var(--p1, #123); border-bottom: 1px solid var(--bd, #c9d6ea);
+  }
+  #ecolia-audio-banner.on { display: flex; }
+  #ecolia-audio-banner .eab-txt { flex: 1 1 180px; }
+  #ecolia-audio-banner .eab-act { display: flex; gap: 6px; flex-wrap: wrap; }
+  #ecolia-audio-banner button {
+    border: 1px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb);
+    border-radius: 16px; padding: 5px 12px; font-size: .8rem; cursor: pointer;
+  }
+  #ecolia-audio-banner button.pri { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-banner .eab-bar { display: none; flex-basis: 100%; height: 4px; border-radius: 2px; overflow: hidden; background: var(--bd, #c9d6ea); }
+  #ecolia-audio-banner .eab-bar i { display: block; height: 100%; width: 0; background: var(--p2, #2563eb); transition: width .2s; }
+</style>
+<script>
+(function () {
+  var CFG = {"code":"Antiquites4","base":"https://ecolia-course.github.io/ecolia-media/audio_files/","available":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"count":18,"sizeMo":17,"sizes":{"1":953664,"2":989952,"3":836352,"4":922368,"5":1010880,"6":801408,"7":868224,"8":1050432,"9":965184,"10":1053888,"11":759744,"12":941760,"13":961536,"14":767232,"15":1128768,"16":1275264,"17":1199040,"18":241152},"fallback":{"1":[["fr","Sommaire, Antiquités gréco-romaines. Présentation du cours. Bienvenue dans le monde gréco-romain. Ce cours de 4e année des Humanités Littéraires vous invite à découvrir la civilisation gréco-romaine dans son ensemble: son cadre géographique et historique, ses institutions politiques, sa religion, sa vie quotidienne, ses arts et son héritage. Il ne remplace pas les cours de Latin, de Grec ou d'Histoire: il les éclaire et les synthétise, en donnant une vision cohérente de ce monde qui a façonné une grande partie de la culture occidentale, et dont les traces sont encore visibles aujourd'hui, y compris en R D C, dans le droit, la langue et les institutions. À la fin du cours, vous saurez situer les civilisations grecque et romaine dans le temps et l'espace, décrire leurs institutions, expliquer leurs croyances, analyser des documents et identifier leur héritage dans le monde contemporain. Objectifs d'apprentissage. Situer les civilisations grecque et romaine dans le temps et l'espace. Décrire les institutions politiques et sociales (cité grecque, Rome). Expliquer les croyances et les pratiques religieuses. Analyser des documents (textes, images, vestiges) relatifs à la civilisation. Identifier l'héritage gréco-romain dans le monde contemporain, y compris en R D C. Plan du cours. Chapitre I, Cadre géographique et chronologique. Chapitre II, La cité grecque et la démocratie athénienne. Chapitre III, Rome: de la République à l'Empire. Chapitre IV, Religion et mythologie. Chapitre V, Vie quotidienne et culture matérielle. Chapitre VI, Arts, lettres et sciences. Chapitre VII, Héritage gréco-romain et actualité congolaise."]],"2":[["fr","Chapitre I, Pourquoi étudier les Antiquités classiques? Situation-problème. Un débat au lycée de Kinshasa. Dans un lycée de Kinshasa, un débat oppose deux élèves. L'un affirme: « La démocratie est née à Athènes, nous devons tout imiter. » L'autre réplique: « Mais à Athènes, les femmes et les esclaves ne votaient pas! » Pour trancher, il faut connaître les institutions athéniennes, leur fonctionnement réel et leurs limites. C'est l'objet de ce cours. Étudier les Antiquités classiques, ce n'est pas admirer sans réserve ni rejeter en bloc: c'est comprendre, pour mieux saisir ce que nous avons hérité, ce que nous avons transformé et ce que nous avons rejeté. Fondements théoriques. Trois raisons d'étudier les Antiquités. Raison culturelle: la littérature, la philosophie, l'art et la science occidentaux trouvent leurs racines en Grèce et à Rome. Pour comprendre un texte latin, une pièce de Racine, un tableau de David, il faut connaître la mythologie et les institutions antiques. Raison institutionnelle: les notions de citoyenneté, de démocratie, de république, de sénat viennent du monde grec et romain. Comprendre leur naissance éclaire les débats politiques contemporains. Raison juridique: le droit romain a inspiré le droit civil congolais (propriété, contrats, responsabilité). Pour un futur juriste, c'est une base indispensable. Ce cours articule trois disciplines: le Latin (langue et civilisation romaines), le Grec (langue et civilisation grecques) et l'Histoire. Il en propose une synthèse ordonnée. Points clés. Antiquités égale civilisation gréco-romaine. Articulation avec Latin, Grec et Histoire. Trois raisons: culturelle, institutionnelle, juridique. Comprendre sans idéaliser."]],"3":[["fr","Chapitre I, Le cadre méditerranéen. Fondements théoriques. Une civilisation de la mer. La civilisation gréco-romaine est née autour de la mer Méditerranée (du latin medius, « au milieu », et terra, « terre », la mer « au milieu des terres »). Cette mer a joué un rôle central: Commerce: les échanges par bateau relient la Grèce, l'Égypte, l'Asie Mineure, Carthage, Rome. Colonisation: les Grecs établissent des colonies tout autour de la Méditerranée (Marseille, Naples, Byzance). Diffusion culturelle: les idées, les mythes, les techniques circulent avec les marchandises. Unification romaine: à partir du IIe siècle av. J.-C., Rome fait de la Méditerranée un mare nostrum (« notre mer »). La Grèce. Péninsule montagneuse, îles nombreuses, côtes découpées. La mer y joue un rôle vital: la Grèce n'a jamais formé un État unifié avant Alexandre, mais un ensemble de cités (poleis) autonomes, souvent rivales, parfois alliées. Rome. Ville fondée sur le Tibre, dans le Latium (Italie centrale). De cité modeste, elle devient en quelques siècles maîtresse de toute la Méditerranée et d'un immense empire. La Méditerranée grecque et romaine. Points clés. Méditerranée égale centre géographique de la civilisation. Grèce: cités (poleis) dispersées. Rome: cité du Latium qui devient maîtresse de la Méditerranée. La mer relie plus qu'elle ne sépare."]],"4":[["fr","Chapitre I, Chronologie grecque. Fondements théoriques. Cinq grandes périodes. Période. Dates. Caractéristiques. Civilisation minoenne. environ égal à 2700 moins 1400 av. J.-C. Crète, palais de Cnossos, civilisation maritime. Civilisation mycénienne. environ égal à 1600 moins 1100 av. J.-C. Citadelles de Mycènes, Tirynthe; guerre de Troie légendaire. Époque archaïque. environ égal à 800 moins 500 av. J.-C. Cités, colonisation, alphabet, Homère, Hésiode. Époque classique. Ve, IVe s. av. J.-C. Athènes, Sparte, guerres médiques, Périclès, tragédie, philosophie, Parthénon. Époque hellénistique. 323 moins 31 av. J.-C. Conquêtes d'Alexandre, royaumes hellénistiques (Égypte des Ptolémées, Syrie des Séleucides), diffusion de la culture grecque en Orient. La mort d'Alexandre le Grand en 323 av. J.-C. sépare l'époque classique de l'époque hellénistique. Rome conquiert ensuite ces royaumes hellénistiques et absorbe leur culture. Erreur fréquente. Confondre époque classique et époque hellénistique. L'époque classique, c'est Athènes et Sparte, la démocratie, la tragédie. L'époque hellénistique, c'est l'expansion de la culture grecque vers l'Orient après Alexandre: c'est déjà une autre époque, même si elle est grecque. Points clés. Minoens, donc Mycéniens, donc Archaïque, donc Classique, donc Hellénistique. 323 av. J.-C.: mort d'Alexandre égale charnière. L'hellénisme diffuse la culture grecque."]],"5":[["fr","Chapitre I, Chronologie romaine. Fondements théoriques. Quatre grandes périodes. Période. Dates. Caractéristiques. Royauté. 753 moins 509 av. J.-C. Fondation légendaire de Rome par Romulus; sept rois (Romulus, Numa, Servius Tullius, Tarquin…). République. 509 moins 27 av. J.-C. Consuls, Sénat, comices; conquêtes en Italie, puis en Méditerranée; guerres puniques contre Carthage. Empire (Principat). 27 av. J.-C., 476 apr. J.-C. Auguste instaure le Principat; \"paix romaine\"; extension maximale sous Trajan; crise du IIIe siècle. Empire tardif et christianisation. IVe, Ve s. Édit de Milan (313), de Thessalonique (380); division de l'Empire (395); chute de Rome d'Occident (476). La date traditionnelle de la fondation de Rome est 753 av. J.-C.; la chute du dernier roi étrusque, 509 av. J.-C., marque le début de la République; l'assassinat de César en 44 av. J.-C. précède de peu l'avènement d'Auguste (27 av. J.-C.). Erreur fréquente. Croire que Rome a « toujours été un empire ». Pendant près de cinq siècles, Rome a été une République (509 moins 27 av. J.-C.), avec des institutions républicaines. L'Empire, à proprement parler, ne commence qu'avec Auguste. Points clés. 753 av. J.-C.: fondation légendaire. 509-27: République. 27 av. J.-C.: début de l'Empire (Auguste). 476 apr. J.-C.: chute de Rome d'Occident."]],"6":[["fr","Chapitre II, La cité grecque (polis). Fondements théoriques. Qu'est-ce qu'une cité? La cité grecque (polis) n'est pas seulement une ville: c'est une communauté de citoyens partageant un territoire, des institutions et un culte. Trois éléments la définissent: Un territoire: la ville, les campagnes autour, les sanctuaires. Des institutions: assemblée, conseil, magistrats, tribunaux. Une religion civique: chaque cité a ses dieux protecteurs et ses fêtes. La Grèce n'est jamais unifiée politiquement avant Alexandre: elle compte des centaines de cités autonomes, parfois alliées (ligues), souvent rivales (Athènes contre Sparte). La citoyenneté athénienne. À Athènes, à l'époque classique, le citoyen est un homme: libre (pas esclave); né de père citoyen et (à partir de 451 av. J.-C.) de mère athénienne; inscrit dans un dème (circonscription locale). En sont exclus: les femmes, les esclaves et les météques (étrangers résidents). Sur environ 300 000 habitants, seuls 30 000 à 40 000 sont citoyens: environ 10 à 15 pour cent de la population. Points clés. Civitas (cité) égale territoire plus institutions plus religion civique. Citoyen égale homme libre, né de parents athéniens. Exclus: femmes, esclaves, métèques. La démocratie athénienne est directe mais partielle."]],"7":[["fr","Chapitre II, Les institutions athéniennes. Fondements théoriques. Trois grandes institutions. Institution. Rôle. Ecclésia (assemblée). Réunit tous les citoyens sur la Pnyx. Elle vote les lois, décide la guerre et la paix, vote l'ostracisme, élit les magistrats. C'est le cœur de la démocratie directe. Boulè (conseil des Cinq-Cents). Prépare les lois et les ordres du jour de l'Ecclésia. Ses membres sont tirés au sort parmi les citoyens, à raison de 50 par tribu, pour un an. Héliée (tribunal populaire). Juge les procès civils et criminels. 6 000 jurés tirés au sort. C'est la justice rendue par le peuple. À côté de ces trois institutions, des magistrats (stratèges, archontes) sont élus ou tirés au sort pour administrer la cité. Les stratèges, chefs militaires, sont élus (comme Périclès, réélu plus de trente fois). Les lieux de la démocratie athénienne. Un exemple: l'ostracisme. Chaque année, l'Ecclésia pouvait voter l'ostracisme: les citoyens écrivaient sur un tesson de poterie (ostrakon) le nom d'un homme politique qu'ils jugeaient dangereux pour la cité. Si un nom obtenait plus de 6 000 voix, son porteur était exilé pour 10 ans, sans perdre ses biens. C'était un garde-fou contre les ambitions personnelles. Points clés. Ecclésia: vote des lois, guerre, ostracisme. Boulè: prépare les décisions, 500 tirés au sort. Héliée: tribunal populaire, 6 000 jurés. Ostracisme: exil de 10 ans par vote populaire."]],"8":[["fr","Chapitre II, Limites de la démocratie athénienne. Fondements théoriques. Une démocratie directe mais partielle. La démocratie athénienne est souvent citée comme la première démocratie de l'histoire. Elle mérite ce titre, mais il faut en connaître les limites: Exclusion des femmes: elles n'ont aucun droit politique, restent sous tutelle d'un homme (père, époux, fils). Esclavage: l'économie athénienne repose largement sur le travail des esclaves (mines du Laurion, domesticité, artisanat). L'esclave est un bien, pas une personne de droit. Exclusion des métèques: les étrangers résidents, souvent artisans ou commerçants, paient des taxes mais ne votent pas. Démagogie: l'assemblée peut être séduite par des orateurs habiles; certaines décisions sont prises sous le coup de l'émotion (condamnation de Socrate en 399 av. J.-C.). Taille limitée: la cité ne compte qu'une minorité de citoyens; la démocratie directe ne fonctionne que dans un cadre restreint. Comparaison avec les démocraties modernes. Les démocraties modernes sont représentatives (on élit des députés), alors que la démocratie athénienne était directe (les citoyens votaient eux-mêmes les lois). Elles reposent sur le suffrage universel (hommes et femmes, sans distinction d'origine), alors qu'Athènes excluait la majorité de la population. Comparer, ce n'est pas condamner: c'est mesurer le chemin parcouru et les combats encore à mener. Erreur fréquente. Idéaliser la démocratie athénienne en oubliant ses exclusions. Dire « la démocratie est née à Athènes » est vrai, mais incomplet: c'était une démocratie pour une minorité. Ne pas le préciser, c'est travestir l'histoire. Points clés. Démocratie directe mais minoritaire. Exclusions: femmes, esclaves, métèques. Risque de démagogie. Comparer avec les démocraties modernes pour comprendre l'évolution."]],"9":[["fr","Chapitre III, La République romaine. Fondements théoriques. Trois pouvoirs, un équilibre. La République romaine (509 moins 27 av. J.-C.) repose sur un équilibre entre trois pouvoirs: Les consuls (2, élus pour un an): pouvoir exécutif, commandement de l'armée. Ils se contrôlent mutuellement (droit de veto). Le Sénat: assemblée aristocratique (anciens magistrats), il contrôle les finances, la politique étrangère, la religion. Son pouvoir est consultatif en théorie, dominant en pratique. Les comices (assemblées populaires): votent les lois et élisent les magistrats. À côté, les tribuns de la plèbe (élus par les plébéiens) protègent les intérêts populaires et disposent du droit de veto contre les décisions des magistrats. Un équilibre instable. La République est le théâtre de conflits sociaux entre patriciens (aristocratie) et plébéiens (peuple), qui obtiennent progressivement des droits (tribunat, accès aux magistratures). Les conquêtes (Italie, Carthage, Grèce, Gaule, Égypte) enrichissent Rome mais déstabilisent ses institutions: les généraux deviennent tout-puissants. Application R D C. Le mot « république » vient du latin res publica, « la chose publique »: ce qui appartient à tous. Ce terme est aujourd'hui dans le nom officiel de la R D C (« République Démocratique du Congo »). Le Sénat congolais, comme son homologue romain, est une chambre haute, avec un rôle de contrôle et de représentation des provinces. Points clés. Consuls: exécutif, un an, deux. Sénat: aristocratique, puissant. Comices: vote des lois. Tribuns de la plèbe: défense populaire, veto."]],"10":[["fr","Chapitre III, La crise de la République et l'Empire. Fondements théoriques. De la crise à l'Empire. Au Ier siècle av. J.-C., la République entre en crise: Réformes agraires contestées (Tiberius et Caius Gracchus, assassinés). Guerres civiles: Marius contre Sylla, César contre Pompée, Octave contre Antoine. Montée en puissance des généraux: les armées deviennent fidèles à leur chef plutôt qu'à l'État. Assassinat de César en 44 av. J.-C.: les conjurés espèrent sauver la République, mais c'est la guerre civile qui s'ensuit. Octave, héritier de César, élimine ses rivaux (victoire d'Actium en 31 av. J.-C.) et reçoit du Sénat en 27 av. J.-C. le titre d'Auguste: c'est le début du Principat, la première forme de l'Empire. Auguste conserve en apparence les institutions républicaines mais concentre tous les pouvoirs réels. L'Empire. Administration: provinces gouvernées par des légats, impôts, cadastre, routes. \"Paix romaine\": pax romana, période de relative stabilité intérieure sous les Antonins (IIe siècle apr. J.-C.). Extension maximale: sous Trajan (98-117 apr. J.-C.). Division: en 395, l'Empire est partagé entre Orient (capitale Constantinople) et Occident (capitale Ravenne). Chute de Rome d'Occident: 476 apr. J.-C. (déposition de Romulus Augustule par Odoacre). L'Empire d'Orient (byzantin) survit jusqu'en 1453. Points clés. Crise de la République: guerres civiles, généraux puissants. 44 av. J.-C.: assassinat de César. 27 av. J.-C.: Auguste égale début de l'Empire. 395: division; 476: chute de Rome d'Occident."]],"11":[["fr","Chapitre IV, Le panthéon gréco-romain. Fondements théoriques. Les mêmes dieux, deux noms. Les Romains ont adopté les dieux grecs en leur donnant des noms latins. Voici les principales correspondances: Dieu grec. Dieu romain. Domaine. Zeus. Jupiter. Roi des dieux, ciel, foudre. Héra. Junon. Reine des dieux, mariage. Athéna. Minerve. Sagesse, guerre, artisanat. Arès. Mars. Guerre. Poséidon. Neptune. Mer. Aphrodite. Vénus. Amour, beauté. Apollon. Apollon. Lumière, arts, prophétie. Artémis. Diane. Chasse, lune. Hadès. Pluton. Enfers. Déméter. Cérès. Agriculture. Dionysos. Bacchus. Vin, fête, théâtre. Héphaïstos. Vulcain. Feu, forge. Les dieux ont une généalogie complexe (mythes de création, luttes entre Titans et Olympiens) et des fonctions variées. La mythologie explique le monde et sert de réservoir d'images pour les poètes, les artistes et les orateurs. Le panthéon gréco-romain. Points clés. 12 Olympiens principaux. Correspondance grec ou romain: Zeus égale Jupiter, Athéna égale Minerve, etc. Mythologie égale explication du monde et réservoir culturel."]],"12":[["fr","Chapitre IV, Religions et christianisme. Fondements théoriques. Du culte civique au christianisme. La religion gréco-romaine est d'abord une religion civique: chaque cité, chaque famille a ses dieux protecteurs. Participer au culte est un devoir de citoyen. Les grandes fêtes (Panathénées à Athènes, Jeux olympiques, Jeux romains) sont à la fois religieuses et civiques. À côté de cette religion officielle, des mystères (cultes secrets à Déméter, à Dionysos, à Mithra) promettent une forme de salut personnel. Ils séduisent de nombreux fidèles. Le christianisme. Naissance en Judée, au Ier siècle apr. J.-C., autour de Jésus de Nazareth. Diffusion dans l'Empire par les apôtres, puis par les communautés chrétiennes (Antioche, Rome, Alexandrie). Persécutions: les chrétiens refusent de sacrifier aux dieux de l'Empire et sont persécutés (Néron en 64, Dèce, Dioclétien). Édit de Milan (313): Constantin accorde la liberté de culte aux chrétiens. Édit de Thessalonique (380): Théodose fait du christianisme la religion officielle de l'Empire. Erreur fréquente. Croire que le christianisme s'est imposé immédiatement. Il a connu près de trois siècles de persécutions, de minorité et de débats doctrinaux avant de devenir religion officielle. Sa diffusion est lente, mais profonde: elle transforme les mentalités, les institutions et l'art de l'Empire. Points clés. Religion civique plus mystères. Christianisme né en Judée, diffusé dans l'Empire. 313: édit de Milan (liberté de culte). 380: édit de Thessalonique (religion officielle)."]],"13":[["fr","Chapitre V, La vie quotidienne. Fondements théoriques. Famille et éducation. À Rome, le pater familias exerce une autorité absolue sur la famille (épouse, enfants, esclaves). Il peut reconnaître ou refuser un nouveau-né. Éducation: les garçons des élites vont à l'école du litterator (lecture, écriture, calcul), puis chez le grammaticus (lettres) et le rhetor (éloquence). Les filles reçoivent une éducation familiale, souvent soignée dans les milieux cultivés. À Athènes: école, gymnase (éducation physique et intellectuelle), éphébie (service militaire et civique) pour les futurs citoyens. Habitat, nourriture, banquets. Habitat grec: maison organisée autour d'une cour; l'andron (salle des hommes) et le gynécée (salle des femmes) séparent les espaces. Habitat romain: la domus (maison aristocratique) avec atrium; l'insula (immeuble de rapport) pour les classes populaires. Alimentation: pain, huile d'olive, vin, légumes, poisson; viande plus rare. Banquets: le symposion grec et le convivium romain mêlent repas, boisson, discussion philosophique, parfois divertissements. L'esclavage. L'esclavage est au cœur de l'économie antique: mines, agriculture, artisanat, domesticité. L'esclave est juridiquement un bien; il peut être affranchi par son maître et devenir affranchi, sans accéder toutefois à la pleine citoyenneté. Points clés. Pater familias à Rome; éphébie à Athènes. Domus ou insula; andron ou gynécée. Symposion et convivium. Esclavage massif, affranchissement possible."]],"14":[["fr","Chapitre V, Jeux et spectacles. Fondements théoriques. Des spectacles religieux et civiques. Dans le monde gréco-romain, les spectacles ne sont pas seulement des divertissements: ils sont liés à la religion, à la politique et à l'identité civique. Les Jeux olympiques: à Olympie, tous les quatre ans, en l'honneur de Zeus. Concours athlétiques (course, lutte, pentathlon) et religieux. Les vainqueurs reçoivent une couronne d'olivier. Les jeux panhelléniques: Olympie, Delphes (jeux pythiques en l'honneur d'Apollon), Isthme, Némée. Le théâtre: à Athènes, lors des grandes Dionysies, on représentait tragédies et comédies en l'honneur de Dionysos. Les jeux romains: courses de chars au Circus Maximus, combats de gladiateurs dans les amphithéâtres (Colisée), chasses et spectacles dans les arènes. Le Colisée, lieu des jeux romains. Un rôle politique. À Rome, les jeux sont offerts par les magistrats et l'empereur au peuple. Ils servent à maintenir la paix sociale (panem et circenses, « du pain et des jeux »), à célébrer la puissance de l'Empire et à divertir les foules. Les combats de gladiateurs, violents, sont aussi un rituel de courage et de mort. Points clés. Jeux olympiques à Olympie (Zeus). Théâtre lors des Dionysies (Dionysos). Jeux romains: Circus, amphithéâtre. Rôle politique: pain et jeux."]],"15":[["fr","Chapitre VI, Arts, lettres et philosophie. Fondements théoriques. Le théâtre. Tragédie grecque: Eschyle (les Perses), Sophocle (Œdipe roi, Antigone), Euripide (Médée). Les héros affrontent un destin qui les dépasse. Comédie grecque: Aristophane (Les Nuées, Lysistrata), satire politique et sociale. Théâtre latin: Plaute et Térence (comédies), Sénèque (tragédies). Architecture. Ordres grecs: dorique (simple, sévère), ionique (volutes), corinthien (feuilles d'acanthe). Parthénon (Athènes, Ve s. av. J.-C.): temple d'Athéna sur l'Acropole, chef-d'œuvre de l'ordre dorique. Colisée (Rome, Ier s. apr. J.-C.): amphithéâtre de 50 000 places. Aqueducs, thermes, arcs de triomphe: prouesses techniques romaines (béton, voûte, coupole). Philosophie. Socrate (470-399 av. J.-C.): philosopher par le dialogue, questionner sans cesse. Platon: théorie des Idées, République, Apologie de Socrate. Aristote: logique, éthique, politique, Poétique; précepteur d'Alexandre. Écoles hellénistiques: stoïcisme (Sénèque, Marc Aurèle), épicurisme (Épicure, Lucrèce). Cicéron: orateur, homme politique, philosophe romain. Sciences. Mathématiques: Euclide (Éléments), Pythagore, Archimède. Astronomie: Ptolémée (système géocentrique), Eratosthène (mesure de la Terre). Médecine: Hippocrate (serment), Galien. Points clés. Tragédie ou comédie; Eschyle, Sophocle, Euripide, Aristophane. Ordres architecturaux; Parthénon, Colisée, aqueducs. Socrate, Platon, Aristote, stoïcisme, épicurisme. Euclide, Ptolémée, Hippocrate, Galien."]],"16":[["fr","Chapitre VII, L'héritage gréco-romain. Fondements théoriques. Un héritage multiple. L'héritage gréco-romain est partout dans nos sociétés contemporaines: Droit: le droit romain (propriété, contrats, responsabilité) a inspiré le droit civil de nombreux pays, dont la R D C (via le droit belge). Langues: le latin est à l'origine du français, de l'italien, de l'espagnol, du portugais, du roumain; le grec a fourni un vocabulaire scientifique et philosophique (démocratie, philosophie, biologie…). Institutions: notions de citoyenneté, de république, de sénat, de démocratie. Éducation: l'idéal grec de la paideia (formation complète de l'homme) a inspiré les « humanités » et l'enseignement classique. Arts: la Renaissance, le classicisme, le néoclassicisme se réclament de l'Antiquité. Héritage et R D C. Droit civil congolais: le Code civil congolais, hérité du Code Napoléon (lui-même inspiré du droit romain), traite de la propriété, des contrats, de la responsabilité. Langue française: le français, langue officielle de la R D C, est une langue d'origine latine; son vocabulaire juridique, politique et scientifique est rempli de mots grecs et latins. Institutions: le Sénat, la notion de République, la citoyenneté, le vote. Éducation: l'idéal des « humanités » (formation générale, littéraire et philosophique) vient de la paideia grecque. Cas pédagogique. Un débat au lycée de Kinshasa sur la participation des jeunes à la vie publique s'appuie sur la comparaison entre l'Ecclésia athénienne et les mécanismes de participation citoyenne prévus par la Constitution congolaise. Les élèves identifient: Ressemblances: débat public, vote, souveraineté du peuple. Différences: représentation (démocratie indirecte), droits des femmes, majorité électorale, partis politiques. Cette comparaison nourrit une réflexion critique sur la démocratie et la citoyenneté aujourd'hui. Points clés. Droit, langues, institutions, éducation, arts. En R D C: droit civil, langue française, Sénat, humanités. L'héritage se discute, ne s'idolâtre pas."]],"17":[["fr","Synthèse générale du cours. Ce qu'il faut retenir. Les idées maîtresses. Cadre: la Méditerranée, la Grèce des cités, Rome. Chronologie grecque: Minoens, Mycéniens, archaïque, classique, hellénistique. Chronologie romaine: Royauté (753-509), République (509-27), Empire (27 av. J.-C., 476 apr. J.-C.). Cité grecque: communauté de citoyens; démocratie directe mais partielle (exclusions). Rome: consuls, Sénat, comices, tribuns; équilibre puis crise; Empire avec Auguste. Religion: panthéon gréco-romain; cultes civiques; christianisme (313, 380). Vie quotidienne: pater familias, éducation, habitat, banquets, jeux, esclavage. Arts et lettres: théâtre, architecture, philosophie, sciences. Héritage: droit, langues, institutions, éducation, y compris en R D C. Repères chronologiques essentiels. Date. Événement. 753 av. J.-C. Fondation légendaire de Rome. 509 av. J.-C. Fin de la Royauté, début de la République romaine. Ve s. av. J.-C. Apogée de la démocratie athénienne (Périclès). 323 av. J.-C. Mort d'Alexandre le Grand. 44 av. J.-C. Assassinat de Jules César. 27 av. J.-C. Auguste: début de l'Empire romain. 313 apr. J.-C. Édit de Milan (liberté de culte). 380 apr. J.-C. Édit de Thessalonique (christianisme officiel). 395 apr. J.-C. Division de l'Empire. 476 apr. J.-C. Chute de Rome d'Occident. Les erreurs à ne plus commettre. Confondre époque classique et hellénistique. Croire que Rome a toujours été un empire. Idéaliser la démocratie athénienne sans ses exclusions. Croire que le christianisme s'est imposé immédiatement. Réduire l'héritage gréco-romain au seul art."]],"18":[["fr","Évaluation finale, Antiquités gréco-romaines. Consigne. Répondez aux 22 questions ci-dessous. Chaque question a une seule bonne réponse. Cliquez sur « Valider mes réponses » pour obtenir votre score. Bonne chance! Conseil. En cas d'erreur, relisez la diapositive correspondante. Les questions couvrent la chronologie, les institutions, la religion, la vie quotidienne, les arts et l'héritage."]]}};
+  var CACHE = "ecolia-cours-v1";                       // même cache que l'application
+  var PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  var PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+  var DL = '<svg viewBox="0 0 24 24"><path d="M11 3h2v9.2l3.6-3.6L18 10l-6 6-6-6 1.4-1.4L11 12.2V3zM5 19h14v2H5z"/></svg>';
+  var OK = '<svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>';
+  // Réparation du quiz : certains cours stockent les choix sous "opts" (ou autre) au lieu de "options"
+  try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+      questions.forEach(function (q) {
+        if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+        if (q.text === undefined) q.text = q.question || q.q || q.enonce || q.titre || "";
+        if (typeof q.correct === "undefined") {
+          if (typeof q.answer !== "undefined") q.correct = q.answer;
+          else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+        }
+      });
+    }
+  } catch (e) {}
+  var synth = window.speechSynthesis || null;
+  var HAS_CACHE = !!(window.caches && window.caches.open);
+  var NATIVE = false;           // APK ECOLIA : pont Java "CoursInterface" (fichiers dans le dossier de l'application)
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  var LATER = "ecolia_audio_later_" + CFG.code;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+  function init() {
+    if (document.getElementById("ecolia-audio-btn")) return;
+
+    // ---------- éléments de l'interface ----------
+    var btn = document.createElement("button");
+    btn.id = "ecolia-audio-btn"; btn.type = "button"; btn.className = "ecolia-off";
+    btn.setAttribute("aria-label", "Écouter la leçon"); btn.innerHTML = PLAY;
+    var dlBtn = document.createElement("button");
+    dlBtn.id = "ecolia-dl-btn"; dlBtn.type = "button"; dlBtn.className = "ecolia-off";
+    dlBtn.innerHTML = DL;
+    var host = document.querySelector(".header-right");
+    if (host) { host.insertBefore(dlBtn, host.firstChild); host.insertBefore(btn, dlBtn); }   // dans la barre du haut : ne scrolle jamais
+    else { btn.className += " ecolia-fixed"; document.body.appendChild(btn); }
+
+    var banner = document.createElement("div");
+    banner.id = "ecolia-audio-banner";
+    banner.innerHTML = '<span class="eab-txt"></span><span class="eab-act"></span><div class="eab-bar"><i></i></div>';
+    var content = document.getElementById("content");
+    if (content && content.parentNode) content.parentNode.insertBefore(banner, content);
+    else document.body.insertBefore(banner, document.body.firstChild);
+    var txtEl = banner.querySelector(".eab-txt"), actEl = banner.querySelector(".eab-act");
+    var barEl = banner.querySelector(".eab-bar"), barI = barEl.firstChild;
+
+    var audio = new Audio();            // un seul élément Audio, réutilisé (exigé par les navigateurs mobiles)
+    audio.preload = "auto";
+    var st = { idx: -1, auto: false, advancing: false, mode: null, speaking: false, token: 0, chunks: [], ci: 0, blobUrl: null, playTok: 0 };
+    var dl = { state: "none", cached: 0, busy: false, cancel: false };   // none | partial | full
+    var bnMode = null, hideTimer = null;
+    if (synth && synth.getVoices) { try { synth.getVoices(); } catch (e) {} }
+
+    function cur() {
+      try { if (typeof currentSlide === "number") return currentSlide; } catch (e) {}
+      return 0;
+    }
+    function hasMp3(i) { return CFG.available.indexOf(i + 1) !== -1; }
+    function fb(i) { return CFG.fallback && CFG.fallback[String(i + 1)]; }
+    function hasAudio(i) { return hasMp3(i) || (!!synth && !!fb(i)); }
+    function urlN(n) {   // dans l'APK la page est sur https://app.local : une adresse relative doit pointer vers le site
+      var b = CFG.base;
+      if (NATIVE && !/^https?:/i.test(b)) b = "https://ecolia-course.github.io/" + b.replace(/^(\.\.\/|\.\/)+/, "");
+      return new URL(b + nameN(n), location.href).href;
+    }
+    function setIcon(playing) { btn.innerHTML = playing ? PAUSE : PLAY; }
+    function isPlaying() { return st.mode === "mp3" ? !audio.paused : (st.mode === "tts" && st.speaking); }
+    function mo() { return "≈ " + CFG.sizeMo + " Mo"; }
+    function nameN(n) { return "audio_" + CFG.code + "_" + n + ".mp3"; }
+
+    // ====================================================================
+    //  Stockage hors ligne : 2 moteurs, même interface
+    //    - APK : fichiers du dossier de l'application (CoursInterface), servis par https://app.local/cours/
+    //    - Web : Cache Storage du navigateur (même cache que l'application web)
+    // ====================================================================
+    function nativeStore() {
+      var okKey = "ecolia_audio_ok_" + CFG.code;
+      function readOk() { try { return JSON.parse(lsGet(okKey) || "[]"); } catch (e) { return []; } }
+      function writeOk(a) { lsSet(okKey, JSON.stringify(a)); }
+      function exists(n) { try { return !!CoursInterface.exists(nameN(n)); } catch (e) { return false; } }
+      function local(n) { return location.origin + "/cours/" + nameN(n); }
+      function verify(n) {                                   // fichier complet ? (taille exacte connue à la génération)
+        return fetch(local(n), { cache: "no-store" }).then(function (r) { return r.blob(); }).then(function (b) {
+          var exp = CFG.sizes && CFG.sizes[String(n)];
+          return (b.size > 2000 && (!exp || b.size === exp)) ? b : null;
+        }).catch(function () { return null; });
+      }
+      return {
+        list: function () {
+          var ok = readOk().filter(exists); writeOk(ok); return Promise.resolve(ok);
+        },
+        get: function (n) { return exists(n) ? verify(n) : Promise.resolve(null); },
+        put: function (n) {
+          return new Promise(function (res, rej) {
+            try { CoursInterface.download(urlN(n), nameN(n)); } catch (e) { return rej(e); }
+            var t0 = Date.now();
+            function next() { if (Date.now() - t0 > 120000) rej(new Error("délai dépassé")); else setTimeout(poll, 800); }
+            function poll() {
+              if (!exists(n)) return next();
+              verify(n).then(function (b) {
+                if (!b) return next();
+                var ok = readOk(); if (ok.indexOf(n) < 0) ok.push(n); writeOk(ok); res();
+              });
+            }
+            setTimeout(poll, 800);
+          });
+        },
+        del: function (n) {
+          try { CoursInterface.delete(nameN(n)); } catch (e) {}
+          writeOk(readOk().filter(function (x) { return x !== n; }));
+          return Promise.resolve();
+        }
+      };
+    }
+    function cacheStore() {
+      return {
+        list: function () {
+          return caches.open(CACHE).then(function (c) {
+            return Promise.all(CFG.available.map(function (n) {
+              return c.match(urlN(n)).then(function (r) {
+                if (!r) return 0;
+                if ((r.headers.get("content-type") || "").indexOf("audio") !== 0) { c.delete(urlN(n)); return 0; }   // ancien contenu invalide
+                return n;
+              });
+            }));
+          }).then(function (a) { return a.filter(Boolean); });
+        },
+        get: function (n) {
+          return caches.open(CACHE).then(function (c) { return c.match(urlN(n)); })
+            .then(function (r) { return r ? r.blob() : null; }).then(function (b) { return b && b.size > 2000 ? b : null; });
+        },
+        put: function (n) {
+          var u = urlN(n);
+          return fetch(u, { cache: "no-store" }).then(function (r) {
+            if (!r.ok || r.status !== 200) throw new Error("HTTP " + r.status);
+            return r.blob();
+          }).then(function (b) {
+            if (b.size < 2000 || (b.type && b.type.indexOf("audio") !== 0 && b.type.indexOf("octet") < 0)) throw new Error("fichier invalide");
+            return caches.open(CACHE).then(function (c) { return c.put(u, new Response(b, { headers: { "Content-Type": "audio/mpeg" } })); });
+          });
+        },
+        del: function (n) { return caches.open(CACHE).then(function (c) { return c.delete(urlN(n)); }); }
+      };
+    }
+    var store = NATIVE ? nativeStore() : (HAS_CACHE ? cacheStore() : null);
+
+    // ====================================================================
+    //  Bannière : invitation, confirmations, progression
+    // ====================================================================
+    function showBanner(mode, text, buttons, pct) {
+      clearTimeout(hideTimer);
+      bnMode = mode;
+      txtEl.textContent = text;
+      actEl.innerHTML = "";
+      (buttons || []).forEach(function (b) {
+        var e = document.createElement("button");
+        e.type = "button"; e.textContent = b.label; if (b.pri) e.className = "pri";
+        e.addEventListener("click", function (ev) { ev.stopPropagation(); b.fn(); });
+        actEl.appendChild(e);
+      });
+      if (typeof pct === "number") { barEl.style.display = "block"; barI.style.width = pct + "%"; }
+      else barEl.style.display = "none";
+      banner.classList.add("on");
+    }
+    function hideBanner() { clearTimeout(hideTimer); bnMode = null; banner.classList.remove("on"); }
+    function flash(text) { showBanner("info", text, []); hideTimer = setTimeout(hideBanner, 4000); }
+
+    function refreshUI() {
+      var show = !!store && CFG.available.length > 0;
+      dlBtn.classList.toggle("ecolia-off", !show);
+      dlBtn.classList.toggle("ecolia-full", dl.state === "full");
+      dlBtn.innerHTML = dl.state === "full" ? OK : DL;
+      dlBtn.setAttribute("aria-label", dl.state === "full" ? "Audios téléchargés : supprimer" : "Télécharger les audios");
+      dlBtn.title = dlBtn.getAttribute("aria-label");
+    }
+    function refreshCacheState(done) {
+      if (!store) { dl.state = "none"; refreshUI(); if (done) done(); return; }
+      store.list().then(function (ok) {
+        dl.cached = ok.length;
+        dl.state = dl.cached === 0 ? "none" : (dl.cached >= CFG.available.length ? "full" : "partial");
+      }).catch(function () { dl.state = "none"; }).then(function () { refreshUI(); if (done) done(); });
+    }
+
+    function askDownload(fromInvite) {
+      var left = CFG.available.length - dl.cached;
+      var txt = dl.state === "partial"
+        ? "Il reste " + left + " audio(s) à télécharger pour écouter ce cours sans internet."
+        : "🔊 Télécharger les audios de ce cours (" + mo() + ") pour les écouter sans internet ? Wi-Fi recommandé.";
+      showBanner(fromInvite ? "invite" : "confirm", txt, [
+        { label: fromInvite ? "Plus tard" : "Annuler", fn: function () { if (fromInvite) lsSet(LATER, "1"); hideBanner(); } },
+        { label: "Télécharger", pri: true, fn: startDownload }
+      ]);
+    }
+    function askDelete() {
+      showBanner("confirm", "Supprimer les audios téléchargés de ce cours (" + mo() + ") ? Vous pourrez toujours les écouter en ligne.", [
+        { label: "Annuler", fn: hideBanner },
+        { label: "Supprimer", pri: true, fn: doDelete }
+      ]);
+    }
+
+    function startDownload() {
+      if (dl.busy || !store) return;
+      dl.busy = true; dl.cancel = false;
+      var total = CFG.available.length, done = 0, quota = false, fails = 0, todo = [];
+      store.list().then(function (have) {
+        CFG.available.forEach(function (n) { if (have.indexOf(n) < 0) todo.push(n); });
+        done = total - todo.length;
+        function paint() {
+          var msg = "Téléchargement des audios : " + done + " / " + total;
+          if (bnMode === "progress") {                  // met à jour sans recréer les boutons (sinon un appui peut être perdu)
+            txtEl.textContent = msg; barI.style.width = Math.round(done / total * 100) + "%";
+          } else {
+            showBanner("progress", msg, [
+              { label: "Annuler", fn: function () { dl.cancel = true; } }
+            ], Math.round(done / total * 100));
+          }
+        }
+        paint();
+        function worker() {
+          if (dl.cancel || quota || !todo.length) return Promise.resolve();
+          var n = todo.shift();
+          return store.put(n).then(function () { done++; paint(); }).catch(function (e) {
+            if (e && (e.name === "QuotaExceededError" || /quota/i.test(String(e.message)))) quota = true;
+            fails++;
+          }).then(worker);
+        }
+        return Promise.all([worker(), worker()]);
+      }).catch(function () { fails++; }).then(function () {
+        dl.busy = false;
+        refreshCacheState(function () {
+          if (dl.state === "full") flash("✓ Audios téléchargés : le cours se lit maintenant sans internet.");
+          else if (dl.cancel) flash("Téléchargement interrompu (" + dl.cached + " / " + total + "). Vous pourrez reprendre plus tard.");
+          else showBanner("error", quota ? "Espace insuffisant sur l'appareil. Libérez de la place puis réessayez."
+            : "Certains audios n'ont pas pu être téléchargés (connexion ?).", [
+            { label: "Fermer", fn: hideBanner }, { label: "Réessayer", pri: true, fn: startDownload }
+          ]);
+        });
+      });
+    }
+    function doDelete() {
+      if (!store) return;
+      Promise.all(CFG.available.map(function (n) { return store.del(n); })).catch(function () {}).then(function () {
+        lsDel(LATER);
+        refreshCacheState(function () { flash("Audios supprimés de cet appareil."); });
+      });
+    }
+
+    dlBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (dl.busy) return;
+      if (dl.state === "full") askDelete(); else askDownload(false);
+    });
+
+    // ====================================================================
+    //  Voix intégrée au téléphone (hors ligne, sans limite)
+    // ====================================================================
+    function pickVoice(lang) {
+      var vs = [];
+      try { vs = synth.getVoices() || []; } catch (e) {}
+      var pre = lang === "en" ? "en" : "fr", best = null;
+      for (var k = 0; k < vs.length; k++) {
+        var v = vs[k];
+        if ((v.lang || "").toLowerCase().indexOf(pre) !== 0) continue;
+        if (!best || (v.localService && !best.localService)) best = v;
+      }
+      return best;
+    }
+    function hardSplit(text, max) {
+      var out = [];
+      while (text.length > max) {
+        var cut = text.lastIndexOf(" ", max);
+        if (cut < 40) cut = max;
+        out.push(text.slice(0, cut)); text = text.slice(cut).replace(/^\s+/, "");
+      }
+      if (text) out.push(text);
+      return out;
+    }
+    function buildChunks(segs) {                  // morceaux courts : évite l'arrêt des longs textes sur Chrome
+      var out = [];
+      segs.forEach(function (s) {
+        var cur2 = "", parts = s[1].match(/[^.!?;:]+[.!?;:]*\s*/g) || [s[1]];
+        parts.forEach(function (p) {
+          if (cur2 && (cur2 + p).length > 160) { out.push({ lang: s[0], text: cur2.trim() }); cur2 = p; }
+          else cur2 += p;
+        });
+        if (cur2.trim()) out.push({ lang: s[0], text: cur2.trim() });
+      });
+      var res = [];
+      out.forEach(function (c) { hardSplit(c.text, 190).forEach(function (t) { res.push({ lang: c.lang, text: t }); }); });
+      return res;
+    }
+    function speakFrom(tk) {
+      if (tk !== st.token) return;
+      if (st.ci >= st.chunks.length) {
+        st.speaking = false; st.mode = null; st.ci = 0; setIcon(false);
+        if (st.auto) goNext();
+        return;
+      }
+      var c = st.chunks[st.ci];
+      var u = new SpeechSynthesisUtterance(c.text);
+      u.lang = c.lang === "en" ? "en-US" : "fr-FR";
+      var v = pickVoice(c.lang);
+      if (v) { u.voice = v; u.lang = v.lang; }
+      u.rate = 0.95;
+      u.onend = function () { if (tk !== st.token) return; st.ci++; speakFrom(tk); };
+      u.onerror = function () { if (tk !== st.token) return; st.speaking = false; setIcon(false); st.auto = false; };
+      synth.speak(u);
+    }
+    function startTts(from) {
+      st.token++;
+      var tk = st.token;
+      st.mode = "tts"; st.speaking = true; st.ci = from || 0; setIcon(true);
+      var busy = false;
+      try { busy = synth.speaking || synth.pending; synth.cancel(); } catch (e) {}
+      if (busy) setTimeout(function () { speakFrom(tk); }, 120);   // laisse cancel() se terminer
+      else speakFrom(tk);                                          // sinon tout de suite (exigé par iOS)
+    }
+    function playVoice() {
+      if (!(synth && fb(st.idx))) { st.auto = false; return false; }
+      if (!st.chunks.length) st.chunks = buildChunks(fb(st.idx));
+      startTts(st.ci);
+      return true;
+    }
+
+    // ====================================================================
+    //  Lecture
+    // ====================================================================
+    function freeBlob() { if (st.blobUrl) { try { URL.revokeObjectURL(st.blobUrl); } catch (e) {} st.blobUrl = null; } }
+    function stopAll() {
+      st.playTok++;
+      try { audio.pause(); audio.currentTime = 0; } catch (e) {}
+      st.token++;
+      try { if (synth) synth.cancel(); } catch (e) {}
+      st.speaking = false; st.mode = null; st.chunks = []; st.ci = 0;
+      setIcon(false);
+    }
+    function pauseNow() {
+      if (st.mode === "mp3") audio.pause();
+      else if (st.mode === "tts") {
+        st.token++;
+        try { synth.cancel(); } catch (e) {}
+        st.speaking = false; setIcon(false);      // st.ci conservé : la reprise repart de la phrase en cours
+      }
+    }
+    function startAudio(src, tok) {
+      if (tok !== st.playTok) return;
+      if (audio.getAttribute("data-src") !== src) { audio.setAttribute("data-src", src); audio.src = src; }
+      var p = audio.play();
+      if (p && p.catch) p.catch(function (err) {
+        console.warn("ECOLIA audio :", err);
+        if (tok !== st.playTok) return;
+        if (!(err && err.name === "NotAllowedError") && playVoice()) return;   // lecture impossible : voix du téléphone
+        setIcon(false); st.auto = false;
+      });
+    }
+    function playCurrent() {
+      var i = st.idx;
+      if (hasMp3(i)) {
+        var tok = ++st.playTok, u = urlN(i + 1);
+        st.mode = "mp3";
+        if (!navigator.onLine && dl.state === "none") { st.mode = null; if (playVoice()) return; }   // hors ligne et non téléchargé
+        if (store && dl.state !== "none") {                     // téléchargé : lecture locale, sans réseau
+          store.get(i + 1)
+            .then(function (b) {
+              if (tok !== st.playTok) return;
+              if (b) { freeBlob(); st.blobUrl = URL.createObjectURL(new Blob([b], { type: "audio/mpeg" })); startAudio(st.blobUrl, tok); }
+              else startAudio(u, tok);
+            }).catch(function () { startAudio(u, tok); });
+        } else startAudio(u, tok);                              // sinon lecture en ligne (appel immédiat, exigé par iOS)
+      } else if (!playVoice()) {
+        st.auto = false;
+      }
+    }
+
+    function onSlideChange(i) {
+      var wasAdvancing = st.advancing;
+      st.advancing = false;
+      st.idx = i;
+      btn.classList.toggle("ecolia-off", !hasAudio(i));
+      stopAll();
+      audio.removeAttribute("data-src");
+      freeBlob();
+      if (bnMode === "invite" && i !== 0) hideBanner();       // l'invitation n'apparaît qu'à la première slide
+      if (wasAdvancing && st.auto) setTimeout(playCurrent, 500);   // enchaînement automatique
+      else st.auto = false;                                         // changement manuel : on coupe tout
+    }
+    function goNext() {
+      if (st.idx + 1 >= CFG.count) { st.auto = false; return; }
+      st.advancing = true;
+      if (typeof nextSlide === "function") nextSlide();
+      else { var nb = document.getElementById("nextBtn"); if (nb) nb.click(); }
+      setTimeout(function () { st.advancing = false; }, 4000);
+    }
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var i = cur();
+      if (i !== st.idx) onSlideChange(i);
+      if (isPlaying()) { st.auto = false; pauseNow(); }
+      else { st.auto = true; playCurrent(); }
+    });
+    audio.addEventListener("play", function () { setIcon(true); });
+    audio.addEventListener("pause", function () { if (st.mode === "mp3") setIcon(false); });
+    audio.addEventListener("error", function () {
+      if (st.mode === "mp3" && playVoice()) return;            // fichier introuvable / hors ligne : voix du téléphone
+      setIcon(false); st.auto = false;
+    });
+    audio.addEventListener("ended", function () { setIcon(false); if (st.auto) goNext(); });
+    window.addEventListener("pagehide", function () { stopAll(); freeBlob(); });
+
+    // ---------- démarrage ----------
+    refreshCacheState(function () {
+      if (store && CFG.available.length && dl.state !== "full" && navigator.onLine && cur() === 0 && !lsGet(LATER)) askDownload(true);
+    });
+    st.idx = -1;
+    setInterval(function () { var i = cur(); if (i !== st.idx) onSlideChange(i); }, 250);   // suit la slide affichée
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+<!-- ECOLIA_AUDIO_PLAYER_END -->
+</body>
+</html>

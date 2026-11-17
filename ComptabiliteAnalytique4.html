@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="teal">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>ECOLIA — Comptabilite Analytique4</title>
+<style>
+[data-theme="bleu"]   { --p1:#0d2b4f; --p2:#1565c0; --p3:#07172e; --p4:#12437a; --p5:#5b8fd0; --bg:#e8f0fb; --bg2:#cfdff5; --bd:#a9c3e8; --soft:#dde8f7; --btn:#2a67b0; }
+[data-theme="vert"]   { --p1:#14442e; --p2:#2e7d32; --p3:#0b2b1a; --p4:#1f5c3a; --p5:#4f9a6b; --bg:#e8f5ec; --bg2:#c8e6d2; --bd:#a5cdb2; --soft:#dcefe2; --btn:#2f7a4f; }
+[data-theme="violet"] { --p1:#2d1b4e; --p2:#6a1b9a; --p3:#1a0f2e; --p4:#4a148c; --p5:#9c6fd0; --bg:#f1e9fb; --bg2:#dccbf2; --bd:#c4a8e6; --soft:#e8ddf6; --btn:#7e3fb2; }
+[data-theme="rouge"]  { --p1:#4a1010; --p2:#b71c1c; --p3:#2b0a0a; --p4:#8e1b1b; --p5:#d9706a; --bg:#fbeaea; --bg2:#f3cdcb; --bd:#e8a9a5; --soft:#f8dede; --btn:#a62a2a; }
+[data-theme="orange"] { --p1:#4e2a0c; --p2:#ef6c00; --p3:#2e1604; --p4:#b34a00; --p5:#f0a15a; --bg:#fff1e0; --bg2:#fbdcb8; --bd:#f3c08a; --soft:#fdebd6; --btn:#c9650a; }
+[data-theme="teal"]   { --p1:#0b3a3a; --p2:#00796b; --p3:#062626; --p4:#00574b; --p5:#4db6ac; --bg:#e0f2f1; --bg2:#b2dfdb; --bd:#80cbc4; --soft:#d5ecea; --btn:#26897d; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:linear-gradient(160deg,var(--p1) 0%,var(--p2) 50%,var(--p3) 100%); display:flex; justify-content:center; align-items:center; padding:8px; }
+.container { width:100%; max-width:1400px; background:#fefdf8; border-radius:20px; overflow:hidden; display:flex; flex-direction:column; height:100%; max-height:100vh; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.progress-bar { height:4px; background:var(--bg2); flex-shrink:0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--p5),var(--p4)); width:0%; transition:width 0.3s; }
+.header { padding:10px 16px; background:var(--bg); border-bottom:1px solid var(--bd); display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+.header h1 { color:var(--p4); font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box { display:flex; background:white; border-radius:20px; padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.search-box input { border:none; padding:6px 10px; border-radius:20px; outline:none; width:130px; font-size:0.8rem; }
+.search-box button { background:none; border:none; cursor:pointer; padding:4px 8px; font-size:0.85rem; color:var(--p2); }
+.badge { background:var(--p5); color:white; padding:4px 10px; border-radius:20px; font-weight:bold; font-size:0.75rem; }
+.search-nav { display:none; gap:4px; background:var(--bg2); padding:2px 8px; border-radius:20px; align-items:center; font-size:0.75rem; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:0.9rem; color:var(--p4); padding:2px 4px; }
+.content { padding:28px 32px; flex:1; overflow-y:auto; background:#fff; scroll-behavior:smooth; line-height:1.85; }
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.slide-title { color:var(--p1); font-size:1.5rem; font-weight:700; padding-bottom:12px; margin-bottom:20px; border-bottom:2px solid var(--p5); }
+.slide-content { color:var(--p3); font-size:1rem; }
+.empty-state { display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-height:60vh; padding:40px 20px; gap:18px; }
+.empty-state .icon { width:72px; height:72px; border-radius:50%; background:var(--bg); border:2px solid var(--bd); display:flex; align-items:center; justify-content:center; color:var(--p2); font-size:2rem; font-weight:300; }
+.empty-state h2 { color:var(--p1); font-size:1.4rem; font-weight:700; margin:0; }
+.empty-state p { color:#666; font-size:0.95rem; max-width:520px; line-height:1.7; }
+.empty-state .tag { display:inline-block; padding:6px 14px; background:var(--bg); color:var(--p4); border:1px solid var(--bd); border-radius:20px; font-size:0.8rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; }
+.bloc { padding:18px 22px; border-radius:12px; margin:22px 0; line-height:1.85; }
+.bloc-label { font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; opacity:0.7; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:var(--bg); border-left:4px solid var(--p5); }
+.theorie .bloc-label { color:var(--p4); }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.sources { background:#f5f5f5; padding:12px 16px; border-radius:10px; margin-top:26px; font-size:0.82rem; color:#666; border-left:3px solid #999; line-height:1.6; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:var(--p1); }
+.quiz-container { padding:22px; background:var(--bg); border-radius:16px; }
+.quiz-question { background:white; border-radius:10px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.quiz-question p { font-weight:600; margin-bottom:10px; color:var(--p1); }
+.quiz-question label { display:block; padding:8px 10px; margin:4px 0; border-radius:6px; cursor:pointer; transition:background 0.2s; }
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit { background:var(--btn); color:white; border:none; padding:12px 24px; border-radius:30px; font-size:1rem; cursor:pointer; font-weight:600; margin-top:14px; }
+.quiz-result { margin-top:16px; font-weight:600; }
+.controls { padding:8px 16px; background:#fafafa; border-top:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0; }
+.nav-btn { background:white; color:var(--p4); border:1px solid #ccc; padding:8px 14px; border-radius:8px; font-size:0.82rem; cursor:pointer; font-weight:500; }
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:var(--soft); }
+.content::-webkit-scrollbar-thumb { background:var(--p5); border-radius:3px; }
+@media (max-width:600px) { body { padding:0; } .container { border-radius:0; max-height:100vh; } .content { padding:20px 18px; } .slide-title { font-size:1.25rem; } .search-box input { width:90px; } .header h1 { font-size:0.85rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="header">
+<h1 id="pageTitle">ECOLIA</h1>
+<div class="header-right">
+<div class="search-box">
+<input id="searchInput" placeholder="Rechercher" type="text"/>
+<button id="searchBtn">⌕</button>
+</div>
+<div class="search-nav" id="searchNav">
+<button id="prevResultBtn">‹</button>
+<span id="resultCounter">0/0</span>
+<button id="nextResultBtn">›</button>
+</div>
+<span class="badge" id="slideCounter">0/0</span>
+</div>
+</div>
+<div class="content" id="content"></div>
+<div class="controls">
+<button class="nav-btn" id="prevBtn">← Précédent</button>
+<span class="counter" id="counter">—</span>
+<button class="nav-btn" id="nextBtn">Suivant →</button>
+</div>
+</div>
+<script>
+const COURSE_TITLE = "Comptabilité Analytique d'Exploitation (CAE)";
+const slides = [
+{
+    title: "Sommaire — Comptabilité Analytique d'Exploitation",
+    content: `
+        <div class="bloc resume">
+            <div class="bloc-label">Présentation du cours</div>
+            <h3>Comptabilité Analytique d'Exploitation — 4e Humanité</h3>
+            <p><strong>Niveau :</strong> 4e Humanité / Terminale, section Commerciale et Gestion.</p>
+            <p><strong>Statut :</strong> Matière officielle de la section Commerciale et Gestion, avec manuel congolais dédié et cadre SYSCOHADA.</p>
+            <p><strong>Objectif général :</strong> Rendre l'élève capable de calculer et d'analyser les coûts d'une entreprise, en utilisant les méthodes de la comptabilité analytique d'exploitation, afin de contribuer à la gestion et à la prise de décision.</p>
+        </div>
+        <div class="bloc theorie">
+            <div class="bloc-label">Objectifs spécifiques</div>
+            <ol>
+                <li>Définir la comptabilité analytique et la distinguer de la comptabilité générale.</li>
+                <li>Classer les charges selon différents critères.</li>
+                <li>Répartir les charges indirectes dans des sections homogènes.</li>
+                <li>Calculer les coûts d'achat, de production et de revient.</li>
+                <li>Valoriser les stocks et tenir un compte d'inventaire permanent.</li>
+                <li>Calculer et interpréter les résultats analytiques.</li>
+            </ol>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Organisation des chapitres</div>
+            <ul>
+                <li><strong>Chapitre I :</strong> Introduction à la comptabilité analytique.</li>
+                <li><strong>Chapitre II :</strong> L'analyse des charges.</li>
+                <li><strong>Chapitre III :</strong> Le traitement des charges indirectes : sections homogènes.</li>
+                <li><strong>Chapitre IV :</strong> La valorisation des stocks.</li>
+                <li><strong>Chapitre V :</strong> Le calcul des coûts et des résultats.</li>
+                <li><strong>Chapitre VI :</strong> Applications et synthèse.</li>
+            </ul>
+            <p><strong>Prérequis :</strong> Comptabilité Générale ; mathématiques de base ; notions de gestion.</p>
+        </div>
+        <div class="sources">
+            <p><strong>Sources :</strong> Manuel « Comptabilité Analytique 4ème Année des Humanités » (sciences-africa.com) ; Manuel « CAE Final — Comptabilité Analytique d'Exploitation » (experts MEPST) ; SYSCOHADA révisé (mention de la comptabilité analytique de gestion).</p>
+        </div>
+    `
+},
+{
+    title: "Leçon 1 — Pourquoi la comptabilité analytique ?",
+    content: `
+        <div class="bloc cas">
+            <div class="bloc-label">Situation de départ</div>
+            <p>Une entreprise fabrique trois produits différents. Elle connaît son résultat global grâce à la comptabilité générale, mais elle ne sait pas quel produit est rentable et lequel lui coûte de l'argent. Comment le savoir ?</p>
+        </div>
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Définition</h3>
+            <p>La comptabilité analytique (ou comptabilité de gestion) est une technique de traitement de l'information comptable destinée à un <strong>usage interne</strong>. Elle vise à calculer les coûts aux différents stades du processus d'exploitation, à expliquer les résultats par produit, fonction ou activité, et à fournir des bases d'évaluation pour certains éléments du bilan.</p>
+            <h3>Objectifs</h3>
+            <ul>
+                <li>Connaître les coûts (achat, production, revient).</li>
+                <li>Analyser la formation du résultat.</li>
+                <li>Éclairer les décisions (prix, rentabilité, choix de production).</li>
+                <li>Évaluer les stocks et certains actifs.</li>
+            </ul>
+            <h3>Recommandation du SYSCOHADA</h3>
+            <p>Le SYSCOHADA recommande vivement le développement de la comptabilité analytique de gestion, sans la rendre obligatoire.</p>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Une entreprise qui produit du savon, de l'huile et du savon liquide peut utiliser la comptabilité analytique pour savoir lequel de ces produits dégage le plus de marge et lequel doit être abandonné ou amélioré.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>La comptabilité analytique est un outil de gestion interne.</li>
+                <li>Elle complète la comptabilité générale.</li>
+                <li>Erreur fréquente : croire qu'elle est obligatoire ; elle est vivement recommandée.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 2 — Comptabilité générale vs comptabilité analytique",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Tableau comparatif</h3>
+            <table>
+                <thead><tr><th>Critère</th><th>Comptabilité générale</th><th>Comptabilité analytique</th></tr></thead>
+                <tbody>
+                    <tr><td>Destinataires</td><td>Tiers, État, actionnaires</td><td>Usage interne, dirigeants</td></tr>
+                    <tr><td>Obligation</td><td>Obligatoire</td><td>Recommandée</td></tr>
+                    <tr><td>Objet</td><td>Vision globale du résultat</td><td>Détail par produit, activité</td></tr>
+                    <tr><td>Flexibilité</td><td>Normée (SYSCOHADA)</td><td>Adaptée aux besoins de l'entreprise</td></tr>
+                    <tr><td>Périodicité</td><td>Annuelle</td><td>Selon les besoins</td></tr>
+                </tbody>
+            </table>
+            <h3>Complémentarité</h3>
+            <p>La comptabilité analytique s'appuie sur les données de la comptabilité générale. Elle les décompose et les réorganise pour éclairer la gestion.</p>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>La comptabilité générale enregistre un total de charges de 5 000 000 FC pour l'entreprise. La comptabilité analytique répartit ces charges entre les trois produits fabriqués, pour savoir combien coûte chaque produit.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>La comptabilité générale est obligatoire et globale.</li>
+                <li>La comptabilité analytique est interne et détaillée.</li>
+                <li>Erreur fréquente : opposer les deux ; elles sont complémentaires.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 3 — Les charges : classifications",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>1. Charges incorporables et non incorporables</h3>
+            <ul>
+                <li><strong>Incorporables :</strong> charges normales d'exploitation, intégrées aux calculs de coûts.</li>
+                <li><strong>Non incorporables :</strong> charges exceptionnelles ou hors conditions normales (amendes, charges somptuaires). Elles sont exclues des coûts pour ne pas les fausser.</li>
+            </ul>
+            <h3>2. Charges directes et indirectes</h3>
+            <ul>
+                <li><strong>Directes :</strong> affectées sans calcul intermédiaire à un coût (matière première d'un produit).</li>
+                <li><strong>Indirectes :</strong> concernent plusieurs coûts et nécessitent une répartition (loyer, salaire du directeur).</li>
+            </ul>
+            <h3>3. Charges variables et fixes</h3>
+            <ul>
+                <li><strong>Variables :</strong> évoluent avec le volume d'activité (matières premières, énergie des machines).</li>
+                <li><strong>Fixes :</strong> restent stables quel que soit le niveau d'activité (amortissement, salaire du gardien).</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple corrigé</div>
+            <p>Classer :</p>
+            <ul>
+                <li>Matière première → directe et variable.</li>
+                <li>Loyer de l'usine → indirecte et fixe.</li>
+                <li>Salaire du directeur commercial → indirecte et fixe.</li>
+                <li>Électricité des machines → indirecte et variable.</li>
+                <li>Amende fiscale → non incorporable.</li>
+            </ul>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Trois classifications complémentaires.</li>
+                <li>Directe/indirecte est la distinction fondamentale.</li>
+                <li>Erreur fréquente : confondre directe et variable (une charge directe peut être fixe).</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 4 — Les sections homogènes",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Définition</h3>
+            <p>Une section (ou centre d'analyse) est une division comptable de l'entreprise où sont regroupées les charges indirectes qui présentent des caractéristiques communes et peuvent être mesurées par une même <strong>unité d'œuvre</strong>.</p>
+            <h3>Sections principales et auxiliaires</h3>
+            <ul>
+                <li><strong>Principales :</strong> bénéficient directement aux produits (atelier de production, service de distribution).</li>
+                <li><strong>Auxiliaires :</strong> fournissent des prestations aux autres sections (entretien, administration) et doivent être réparties entre les sections principales.</li>
+            </ul>
+            <h3>L'unité d'œuvre</h3>
+            <p>Unité de mesure de l'activité d'une section : heure de main-d'œuvre, heure-machine, kg de matière, nombre de pièces.</p>
+            <p><strong>Coût de l'unité d'œuvre = total des charges de la section / nombre d'unités d'œuvre</strong></p>
+            <figure>
+                <img data-image-id="comptaanalytique4_img02" alt="Schéma de répartition des charges indirectes dans les sections">
+                <figcaption>Répartir les charges indirectes dans les sections : une étape clé du calcul des coûts.</figcaption>
+            </figure>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple corrigé</div>
+            <p>Une section « Atelier » a 500 000 FC de charges indirectes et 2 500 heures de main-d'œuvre.</p>
+            <p><strong>Coût de l'unité d'œuvre :</strong> 500 000 / 2 500 = 200 FC par heure.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Une section homogène regroupe des charges mesurables par une même unité d'œuvre.</li>
+                <li>Principales et auxiliaires ont des rôles différents.</li>
+                <li>Erreur fréquente : utiliser une unité d'œuvre inadaptée à l'activité.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 5 — Le tableau de répartition",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Les étapes</h3>
+            <ol>
+                <li><strong>Répartition primaire :</strong> répartir les charges indirectes entre toutes les sections (principales et auxiliaires).</li>
+                <li><strong>Répartition secondaire :</strong> répartir les charges des sections auxiliaires entre les sections principales.</li>
+                <li><strong>Calcul du coût de l'unité d'œuvre</strong> de chaque section principale.</li>
+            </ol>
+            <h3>Exemple corrigé</h3>
+            <p>Charges indirectes : 1 000 000 FC.</p>
+            <ul>
+                <li>Atelier A : 600 000 FC.</li>
+                <li>Atelier B : 300 000 FC.</li>
+                <li>Entretien : 100 000 FC.</li>
+            </ul>
+            <p>L'Entretien est réparti à 60 % vers A et 40 % vers B.</p>
+            <p><strong>Après répartition secondaire :</strong> A = 600 000 + 60 000 = 660 000 FC ; B = 300 000 + 40 000 = 340 000 FC.</p>
+            <p>Si A a 1 000 heures-machine, le coût de l'unité d'œuvre = 660 FC/heure.</p>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exercice guidé</div>
+            <p>Sections : A (400 000 FC), B (300 000 FC), Entretien (100 000 FC). L'Entretien est réparti 70 % vers A et 30 % vers B.</p>
+            <p><strong>Calcul :</strong> A = 400 000 + 70 000 = 470 000 FC ; B = 300 000 + 30 000 = 330 000 FC.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Le tableau de répartition a deux étapes : primaire et secondaire.</li>
+                <li>Les sections auxiliaires sont réparties entre les principales.</li>
+                <li>Erreur fréquente : oublier la répartition secondaire.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 6 — La valorisation des stocks : CUMP, FIFO, LIFO",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Objectif</h3>
+            <p>Connaître la valeur des stocks à tout moment et déterminer le coût des sorties (matières consommées, produits vendus).</p>
+            <h3>Les méthodes</h3>
+            <ul>
+                <li><strong>CUMP (Coût Unitaire Moyen Pondéré) :</strong> calculé après chaque entrée ou à la fin de la période. Il lisse les variations de prix.</li>
+                <li><strong>FIFO (First In, First Out) :</strong> les premiers entrés sont les premiers sortis. Adapté aux produits périssables.</li>
+                <li><strong>LIFO (Last In, First Out) :</strong> les derniers entrés sont les premiers sortis.</li>
+            </ul>
+            <h3>Exemple corrigé (CUMP)</h3>
+            <p>Stock initial : 100 kg à 500 FC. Entrée : 200 kg à 800 FC.</p>
+            <p><strong>CUMP après entrée :</strong> (100×500 + 200×800) / 300 = (50 000 + 160 000) / 300 = <strong>700 FC/kg</strong>.</p>
+            <p>Une sortie de 50 kg est valorisée à 700 FC/kg = 35 000 FC.</p>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exercice guidé</div>
+            <p>Stock initial : 200 unités à 1 000 FC. Entrée : 300 unités à 1 500 FC. CUMP après entrée ?</p>
+            <p><strong>Calcul :</strong> (200×1 000 + 300×1 500) / 500 = (200 000 + 450 000) / 500 = <strong>1 300 FC/unité</strong>.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>CUMP, FIFO et LIFO sont les principales méthodes.</li>
+                <li>Le SYSCOHADA exige la permanence des méthodes.</li>
+                <li>Erreur fréquente : changer de méthode sans justification.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 7 — Le compte d'inventaire permanent",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Définition</h3>
+            <p>Le compte d'inventaire permanent est un compte de stock tenu en <strong>quantité et en valeur</strong>. Il enregistre les entrées (achats, production) et les sorties (consommation, vente), et permet de connaître le stock final.</p>
+            <h3>Structure</h3>
+            <table>
+                <thead><tr><th>Débit (entrées)</th><th>Crédit (sorties)</th></tr></thead>
+                <tbody>
+                    <tr><td>Stock initial</td><td>Consommations</td></tr>
+                    <tr><td>Achats / production</td><td>Ventes</td></tr>
+                    <tr><td>Total des entrées</td><td>Stock final (solde)</td></tr>
+                </tbody>
+            </table>
+            <h3>Utilité</h3>
+            <ul>
+                <li>Connaître le stock à tout moment.</li>
+                <li>Valoriser les sorties au fur et à mesure.</li>
+                <li>Éviter les ruptures de stock.</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple corrigé</div>
+            <p>Stock initial : 200 unités à 1 000 FC = 200 000 FC. Entrées : 300 unités à 1 500 FC = 450 000 FC. Sorties : 400 unités au CUMP de 1 300 FC = 520 000 FC.</p>
+            <p><strong>Stock final :</strong> 100 unités × 1 300 FC = 130 000 FC. Vérification : 650 000 − 520 000 = 130 000 FC.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Le compte d'inventaire permanent suit les stocks en quantité et en valeur.</li>
+                <li>Il permet de valoriser les sorties en temps réel.</li>
+                <li>Erreur fréquente : oublier de mettre à jour le compte après chaque mouvement.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 8 — Le coût d'achat",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Définition</h3>
+            <p>Le coût d'achat est le coût des marchandises ou matières achetées. Il comprend le prix d'achat et les frais accessoires.</p>
+            <h3>Formule</h3>
+            <p><strong>Coût d'achat = Prix d'achat + Frais accessoires</strong></p>
+            <p>Les frais accessoires comprennent : transport, douane, assurance, frais de réception, commissions.</p>
+            <h3>Exemple corrigé</h3>
+            <p>1 000 kg de matière à 2 000 FC/kg (frais de transport : 100 000 FC).</p>
+            <p><strong>Coût d'achat :</strong> 1 000 × 2 000 + 100 000 = <strong>2 100 000 FC</strong>.</p>
+            <p><strong>Coût unitaire :</strong> 2 100 000 / 1 000 = 2 100 FC/kg.</p>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exercice guidé</div>
+            <p>Achat de 500 kg à 1 200 FC/kg (transport 50 000 FC). Coût d'achat total ?</p>
+            <p><strong>Calcul :</strong> 500 × 1 200 + 50 000 = 600 000 + 50 000 = <strong>650 000 FC</strong>.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Coût d'achat = prix d'achat + frais accessoires.</li>
+                <li>Les frais accessoires sont répartis sur les quantités.</li>
+                <li>Erreur fréquente : oublier d'intégrer les frais accessoires dans le coût d'achat.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 9 — Le coût de production",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Définition</h3>
+            <p>Le coût de production est le coût des produits fabriqués. Il comprend le coût des matières consommées, la main-d'œuvre directe et les charges indirectes de production.</p>
+            <h3>Formule</h3>
+            <p><strong>Coût de production = Matières consommées + MOD + Charges indirectes de production</strong></p>
+            <h3>Exemple corrigé</h3>
+            <p>Matières consommées : 1 680 000 FC. Main-d'œuvre directe (MOD) : 300 000 FC. Charges indirectes de production : 200 000 FC.</p>
+            <p><strong>Coût de production :</strong> 1 680 000 + 300 000 + 200 000 = <strong>2 180 000 FC</strong>.</p>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exercice guidé</div>
+            <p>Matières consommées : 520 000 FC. MOD : 200 000 FC. Charges indirectes : 150 000 FC.</p>
+            <p><strong>Calcul :</strong> 520 000 + 200 000 + 150 000 = <strong>870 000 FC</strong>.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Le coût de production intègre matières, main-d'œuvre directe et charges indirectes de production.</li>
+                <li>Il ne comprend pas les charges de distribution.</li>
+                <li>Erreur fréquente : oublier les charges indirectes de production.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 10 — Le coût de revient",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Définition</h3>
+            <p>Le coût de revient est le coût complet d'un produit vendu. Il comprend le coût de production et les charges de distribution.</p>
+            <h3>Formule</h3>
+            <p><strong>Coût de revient = Coût de production + Charges de distribution</strong></p>
+            <p>Les charges de distribution comprennent : transport vers les clients, publicité, salaires des commerciaux, frais de conditionnement.</p>
+            <h3>Exemple corrigé</h3>
+            <p>Coût de production : 8 000 FC. Charges de distribution : 1 500 FC.</p>
+            <p><strong>Coût de revient :</strong> 8 000 + 1 500 = <strong>9 500 FC</strong>.</p>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exercice guidé</div>
+            <p>Coût de production : 2 180 000 FC. Charges de distribution : 150 000 FC.</p>
+            <p><strong>Calcul :</strong> 2 180 000 + 150 000 = <strong>2 330 000 FC</strong>.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Le coût de revient est le coût complet d'un produit.</li>
+                <li>Il sert de base au calcul du résultat analytique.</li>
+                <li>Erreur fréquente : oublier les charges de distribution.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 11 — Le résultat analytique",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Définition</h3>
+            <p>Le résultat analytique est la différence entre le chiffre d'affaires et le coût de revient :</p>
+            <p><strong>Résultat = Chiffre d'affaires − Coût de revient</strong></p>
+            <ul>
+                <li>Résultat positif : marge bénéficiaire sur le produit.</li>
+                <li>Résultat négatif : perte sur le produit.</li>
+            </ul>
+            <h3>Utilité</h3>
+            <ul>
+                <li>Connaître la rentabilité par produit.</li>
+                <li>Identifier les produits à développer ou abandonner.</li>
+                <li>Fixer les prix de vente.</li>
+                <li>Orienter les décisions commerciales.</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple corrigé</div>
+            <p>Chiffre d'affaires : 12 000 FC. Coût de revient : 9 500 FC.</p>
+            <p><strong>Résultat analytique :</strong> 12 000 − 9 500 = <strong>2 500 FC</strong> (bénéfice).</p>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exercice guidé</div>
+            <p>Chiffre d'affaires : 5 000 000 FC. Coût de revient : 2 330 000 FC.</p>
+            <p><strong>Calcul :</strong> 5 000 000 − 2 330 000 = <strong>2 670 000 FC</strong> (bénéfice).</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Résultat = CA − coût de revient.</li>
+                <li>Il permet de mesurer la rentabilité par produit.</li>
+                <li>Erreur fréquente : confondre marge commerciale (CA − coût d'achat) et résultat analytique (CA − coût de revient complet).</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 12 — Cas complet : calcul des coûts",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Données</div>
+            <p>Une entreprise fabrique un produit unique.</p>
+            <ul>
+                <li>Achat de 1 000 kg de matière à 2 000 FC/kg (frais de transport : 100 000 FC).</li>
+                <li>Consommation de 800 kg en production.</li>
+                <li>Main-d'œuvre directe : 300 000 FC.</li>
+                <li>Charges indirectes de production : 200 000 FC.</li>
+                <li>Produits finis vendus : 5 000 000 FC.</li>
+                <li>Charges de distribution : 150 000 FC.</li>
+            </ul>
+        </div>
+        <div class="bloc theorie">
+            <div class="bloc-label">Corrigé</div>
+            <h3>Coût d'achat</h3>
+            <p>1 000 × 2 000 + 100 000 = <strong>2 100 000 FC</strong>.</p>
+            <p>Coût unitaire : 2 100 FC/kg.</p>
+            <h3>Matières consommées</h3>
+            <p>800 × 2 100 = <strong>1 680 000 FC</strong>.</p>
+            <h3>Coût de production</h3>
+            <p>1 680 000 + 300 000 + 200 000 = <strong>2 180 000 FC</strong>.</p>
+            <h3>Coût de revient</h3>
+            <p>2 180 000 + 150 000 = <strong>2 330 000 FC</strong>.</p>
+            <h3>Résultat analytique</h3>
+            <p>5 000 000 − 2 330 000 = <strong>2 670 000 FC</strong> (bénéfice).</p>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Interprétation</div>
+            <p>L'entreprise dégage une marge importante sur ce produit. La comptabilité analytique permet de vérifier la rentabilité et d'identifier les postes de coûts à optimiser (notamment le transport et les charges de distribution).</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>Le calcul des coûts suit une chaîne : achat → production → revient → résultat.</li>
+                <li>Chaque étape doit être justifiée.</li>
+                <li>Erreur fréquente : sauter une étape ou oublier un poste de charges.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 13 — La comptabilité analytique en RDC",
+    content: `
+        <div class="bloc theorie">
+            <div class="bloc-label">Fondements théoriques</div>
+            <h3>Application aux PME congolaises</h3>
+            <ul>
+                <li><strong>Boulangeries, ateliers de couture, unités de transformation alimentaire :</strong> calcul du coût de production par unité.</li>
+                <li><strong>Coopératives agricoles :</strong> calcul du coût de production par sac de maïs, de riz ou de manioc.</li>
+                <li><strong>Commerce :</strong> calcul du coût de revient par article vendu.</li>
+            </ul>
+            <h3>Cas : coopérative agricole du Kasaï</h3>
+            <p>Une coopérative produit du maïs. Elle achète des semences, paie la main-d'œuvre et supporte le transport vers le marché. La comptabilité analytique lui permet de calculer le coût par sac et de négocier ses prix.</p>
+            <h3>Cadre SYSCOHADA</h3>
+            <p>Le SYSCOHADA recommande la comptabilité analytique pour améliorer la gestion. Les entreprises congolaises qui l'appliquent disposent d'un avantage concurrentiel.</p>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Exemple concret</div>
+            <p>Une unité de transformation de manioc à Bandundu calcule le coût de revient d'un sac de farine : matières premières (manioc), main-d'œuvre, énergie, transport vers les revendeurs. Elle identifie que le transport coûte trop cher et propose de regrouper les livraisons.</p>
+        </div>
+        <div class="bloc resume">
+            <div class="bloc-label">À retenir</div>
+            <ul>
+                <li>La comptabilité analytique est un outil de compétitivité pour les PME congolaises.</li>
+                <li>Elle aide à fixer les prix, identifier les pertes, prendre des décisions.</li>
+                <li>Erreur fréquente : croire qu'elle est réservée aux grandes entreprises.</li>
+            </ul>
+        </div>
+    `
+},
+{
+    title: "Leçon 14 — Synthèse : de la charge au résultat",
+    content: `
+        <div class="bloc resume">
+            <div class="bloc-label">Synthèse générale</div>
+            <h3>Le parcours analytique complet</h3>
+            <ol>
+                <li><strong>Charges :</strong> identifier, classer (directes/indirectes, variables/fixes, incorporables/non incorporables).</li>
+                <li><strong>Sections homogènes :</strong> répartir les charges indirectes, calculer les unités d'œuvre.</li>
+                <li><strong>Stocks :</strong> valoriser selon CUMP/FIFO/LIFO.</li>
+                <li><strong>Coûts successifs :</strong> coût d'achat → coût de production → coût de revient.</li>
+                <li><strong>Résultat analytique :</strong> CA − coût de revient.</li>
+                <li><strong>Interprétation :</strong> décisions de gestion.</li>
+            </ol>
+        </div>
+        <div class="bloc theorie">
+            <div class="bloc-label">Le rôle de la comptabilité analytique</div>
+            <ul>
+                <li>Langage interne de la gestion.</li>
+                <li>Outil de décision (prix, rentabilité, allocation des ressources).</li>
+                <li>Complément indispensable à la comptabilité générale.</li>
+                <li>Recommandée par le SYSCOHADA.</li>
+            </ul>
+        </div>
+        <div class="bloc exemple">
+            <div class="bloc-label">Pour aller plus loin</div>
+            <p>S'entraîner sur des cas concrets, découvrir les méthodes avancées (ABC, coûts cibles), échanger avec des comptables et des gestionnaires. La pratique régulière est la clé.</p>
+        </div>
+    `
+},
+{
+    title: "Évaluation finale — Comptabilité Analytique",
+    content: `
+        <div class="bloc resume">
+            <div class="bloc-label">Évaluation finale</div>
+            <p>22 questions à choix multiple. Une seule réponse est correcte par question. Choisis la réponse qui te semble juste, puis valide.</p>
+        </div>
+        <div class="quiz-container">
+            <div id="quizQuestions"></div>
+            <button id="submitQuiz" class="quiz-btn-submit">Valider mes réponses</button>
+            <div id="quizResult" class="quiz-result"></div>
+        </div>
+    `
+}
+];
+const questions = [
+    { text: "La comptabilité analytique est destinée :", options: ["Aux tiers", "À un usage interne de gestion", "À l'administration fiscale", "Aux actionnaires uniquement"], correct: 1 },
+    { text: "La comptabilité générale produit une vision :", options: ["Détaillée par produit", "Globale du résultat", "Analytique des coûts", "Prévisionnelle"], correct: 1 },
+    { text: "Une charge directe est :", options: ["Une charge qui concerne plusieurs produits", "Une charge affectable sans calcul intermédiaire à un coût", "Une charge fixe", "Une charge non incorporable"], correct: 1 },
+    { text: "Une charge indirecte est :", options: ["Une charge qui peut être affectée directement", "Une charge qui nécessite une répartition", "Une charge variable", "Une charge exceptionnelle"], correct: 1 },
+    { text: "Une charge variable :", options: ["Reste stable quel que soit le volume d'activité", "Évolue proportionnellement au volume d'activité", "Est toujours directe", "Est toujours indirecte"], correct: 1 },
+    { text: "Une section homogène est :", options: ["Un service administratif", "Une division où sont regroupées des charges indirectes mesurables par une même unité d'œuvre", "Un produit", "Un stock"], correct: 1 },
+    { text: "Une section auxiliaire :", options: ["Bénéficie directement aux produits", "Fournit des prestations aux autres sections", "Est une section de production", "N'a pas de charges"], correct: 1 },
+    { text: "L'unité d'œuvre mesure :", options: ["Le chiffre d'affaires", "L'activité d'une section", "Le bénéfice", "La TVA"], correct: 1 },
+    { text: "Le CUMP est :", options: ["Le coût unitaire moyen pondéré", "Le coût ultime de production", "Le coût des matières premières", "Une méthode de répartition"], correct: 0 },
+    { text: "Le coût d'achat comprend :", options: ["Uniquement le prix d'achat", "Le prix d'achat et les frais accessoires", "Le coût de production", "Les charges de distribution"], correct: 1 },
+    { text: "Le coût de production comprend :", options: ["Matières consommées + MOD + charges indirectes de production", "Prix d'achat uniquement", "Charges de distribution", "Le résultat"], correct: 0 },
+    { text: "Le coût de revient comprend :", options: ["Le coût de production uniquement", "Le coût de production + charges de distribution", "Le chiffre d'affaires", "La marge"], correct: 1 },
+    { text: "Le résultat analytique est égal à :", options: ["Chiffre d'affaires − coût de revient", "Coût de production − charges", "Charges − produits", "Actif − passif"], correct: 0 },
+    { text: "Une charge non incorporable est :", options: ["Une charge normale d'exploitation", "Une charge exclue des calculs de coûts", "Une charge variable", "Une charge directe"], correct: 1 },
+    { text: "La méthode FIFO signifie :", options: ["First In, First Out", "Fast In, Fast Out", "Final In, Final Out", "Fixed In, Fixed Out"], correct: 0 },
+    { text: "Le compte d'inventaire permanent enregistre :", options: ["Uniquement les entrées", "Uniquement les sorties", "Les entrées et les sorties en quantité et en valeur", "Le résultat"], correct: 2 },
+    { text: "La répartition secondaire consiste à :", options: ["Répartir les charges des sections auxiliaires vers les sections principales", "Calculer le résultat", "Valoriser les stocks", "Établir la balance"], correct: 0 },
+    { text: "Le SYSCOHADA recommande la comptabilité analytique :", options: ["Comme obligation légale", "Comme pratique vivement recommandée", "Comme interdiction", "Uniquement pour les grandes entreprises"], correct: 1 },
+    { text: "La comptabilité analytique permet de calculer :", options: ["Le bilan", "Les coûts par produit ou activité", "La TVA", "Les salaires"], correct: 1 },
+    { text: "Un exemple de charge indirecte de production est :", options: ["La matière première", "Le loyer de l'usine", "La main-d'œuvre directe", "Le prix d'achat"], correct: 1 },
+    { text: "Le résultat analytique permet de :", options: ["Connaître la rentabilité par produit", "Établir le bilan", "Calculer la TVA", "Gérer les stocks uniquement"], correct: 0 },
+    { text: "L'objectif principal de la comptabilité analytique en 4e Humanité Commerciale est de :", options: ["Remplacer la comptabilité générale", "Apprendre à calculer et analyser les coûts pour la gestion", "Préparer l'Examen d'État uniquement", "Tenir la caisse"], correct: 1 }
+];
+
+try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+        questions.forEach(function (q) {
+            if (!q.text) q.text = q.question || q.q || q.enonce || q.titre || "";
+            if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+            if (typeof q.correct === "undefined") {
+                if (typeof q.answer !== "undefined") q.correct = q.answer;
+                else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+            }
+        });
+    }
+} catch (e) {}
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+const pageTitle = document.getElementById('pageTitle');
+pageTitle.textContent = "ECOLIA · " + COURSE_TITLE;
+document.title = "ECOLIA — " + COURSE_TITLE;
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim() || slides.length === 0) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp("(" + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ")", 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderEmptyState() {
+    contentDiv.innerHTML = '<div class="empty-state"><div class="icon">·</div><span class="tag">Bientôt disponible</span><h2>' + COURSE_TITLE + '</h2><p>Ce cours est en préparation. Le contenu sera ajouté prochainement.</p></div>';
+    slideCounterSpan.textContent = '0/0';
+    progressFill.style.width = '0%';
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    counterSpan.textContent = '—';
+}
+
+function renderQuiz() {
+    const qc = document.getElementById('quizQuestions');
+    if (!qc) return;
+    if (typeof questions === 'undefined' || questions.length === 0) {
+        qc.innerHTML = '<p style="color:#666;font-style:italic;">Quiz bientot disponible.</p>';
+        return;
+    }
+    let html = '';
+    questions.forEach((q, i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o, k) => {
+            html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>';
+        });
+        html += '</div>';
+    });
+    qc.innerHTML = html;
+    const submitBtn = document.getElementById('submitQuiz');
+    if (submitBtn) {
+        submitBtn.onclick = () => {
+            let score = 0;
+            questions.forEach((q, i) => {
+                const s = document.querySelector('input[name="q' + i + '"]:checked');
+                if (s && parseInt(s.value) === q.correct) score++;
+            });
+            const pct = Math.round(score/questions.length*100);
+            document.getElementById('quizResult').innerHTML =
+                '<div style="background:var(--bg2);padding:16px;border-radius:10px;margin-top:14px;">' +
+                '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong></div>';
+        };
+    }
+}
+
+function renderSlide(index, keepHighlight) {
+    if (keepHighlight === undefined) keepHighlight = true;
+    if (slides.length === 0) { renderEmptyState(); return; }
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    if (index === slides.length - 1) renderQuiz();
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    if (slides.length === 0) return;
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (slides.length && currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (slides.length && currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+<!-- ECOLIA_IMAGE_LOADER_START -->
+<script>
+(function () {
+  var SITE = "https://ecolia-course.github.io/";
+  var NATIVE = false;
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function abs(u) { return /^(https?:|data:|blob:)/i.test(u) ? u : (NATIVE ? SITE + u.replace(/^(\.\/|\/)+/, "") : u); }
+  function ext(u) { var m = String(u).split("?")[0].match(/\.(jpe?g|png|gif|webp|svg)$/i); return m ? m[1].toLowerCase() : "jpg"; }
+  function hide(img) { img.onerror = null; img.style.display = "none"; }
+  var table = null, queue = [], queued = {}, running = false;
+  function enqueue(full, fn) {
+    if (queued[fn]) return;
+    queued[fn] = 1; queue.push([full, fn]);
+    if (!running) { running = true; setTimeout(next, 2500); }
+  }
+  function next() {
+    if (!queue.length) { running = false; return; }
+    if (!navigator.onLine) { running = false; return; }
+    var q = queue.shift(), t0 = Date.now();
+    try { CoursInterface.download(q[0], q[1]); } catch (e) { return setTimeout(next, 500); }
+    (function wait() {
+      var ok = false;
+      try { ok = !!CoursInterface.exists(q[1]); } catch (e) {}
+      if (ok) setTimeout(next, 1500);
+      else if (Date.now() - t0 > 40000) next();
+      else setTimeout(wait, 700);
+    })();
+  }
+  function exists(fn) { try { return !!CoursInterface.exists(fn); } catch (e) { return false; } }
+  function show(img) {
+    if (!table || img.getAttribute("data-ecolia-done")) return;
+    var id = img.getAttribute("data-image-id");
+    var url = table[id];
+    if (typeof url !== "string" || !url.length) { console.warn("ECOLIA : image absente du JSON :", id); return; }
+    img.setAttribute("data-ecolia-done", "1");
+    if (!NATIVE) { img.onerror = function () { hide(img); }; img.setAttribute("src", url); return; }
+    var full = abs(url), fn = "img_" + id + "." + ext(url);
+    if (exists(fn)) {
+      img.onerror = function () {
+        try { CoursInterface["delete"](fn); } catch (e) {}
+        queued[fn] = 0;
+        img.onerror = function () { hide(img); };
+        img.setAttribute("src", full);
+      };
+      img.setAttribute("src", "https://app.local/cours/" + fn);
+    } else {
+      img.onerror = function () { hide(img); };
+      img.setAttribute("src", full);
+      enqueue(full, fn);
+    }
+  }
+  function scan(root) {
+    if (!root || !root.querySelectorAll) return;
+    if (root.matches && root.matches("img[data-image-id]")) show(root);
+    root.querySelectorAll("img[data-image-id]").forEach(show);
+  }
+  function prefetchAll() {
+    var ids = {};
+    try { JSON.stringify(slides).replace(/data-image-id=\\?"([^"\\]+)/g, function (m, id) { ids[id] = 1; }); } catch (e) {}
+    Object.keys(ids).forEach(function (id) {
+      var url = table[id];
+      if (typeof url !== "string" || !url.length) return;
+      var fn = "img_" + id + "." + ext(url);
+      if (!exists(fn)) enqueue(abs(url), fn);
+    });
+  }
+  function start(tbl) {
+    table = tbl;
+    scan(document.body);
+    new MutationObserver(function (muts) {
+      muts.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.nodeType === 1) scan(n); }); });
+    }).observe(document.body, { childList: true, subtree: true });
+    if (NATIVE) prefetchAll();
+  }
+  var JSON_URL = NATIVE ? SITE + "images_ecolia.json" : "images_ecolia.json";
+  var KEY = "ecolia_images_json";
+  fetch(JSON_URL, NATIVE ? { cache: "no-cache" } : undefined)
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (table) { if (NATIVE) lsSet(KEY, JSON.stringify(table)); start(table); })
+    .catch(function (e) {
+      var saved = null;
+      if (NATIVE) { try { saved = JSON.parse(lsGet(KEY) || "null"); } catch (x) {} }
+      if (saved) start(saved);
+      else console.warn("ECOLIA : JSON des images indisponible.", e);
+    });
+})();
+</script>
+<!-- ECOLIA_IMAGE_LOADER_END -->
+
+
+
+<!-- ECOLIA_AUDIO_PLAYER_START -->
+<style>
+  #ecolia-audio-btn, #ecolia-dl-btn {
+    width: 30px; height: 30px; min-width: 30px; padding: 0; margin: 0 4px 0 0;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    cursor: pointer; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent; outline: none;
+  }
+  #ecolia-audio-btn { border: none; background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-dl-btn { border: 1.5px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb); }
+  #ecolia-dl-btn.ecolia-full { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-btn.ecolia-fixed { position: fixed; top: 8px; left: 8px; z-index: 2147483000; }
+  #ecolia-audio-btn:active, #ecolia-dl-btn:active { transform: scale(.92); }
+  #ecolia-audio-btn svg, #ecolia-dl-btn svg { width: 15px; height: 15px; fill: currentColor; pointer-events: none; }
+  #ecolia-audio-btn.ecolia-off, #ecolia-dl-btn.ecolia-off { display: none; }
+  #ecolia-audio-banner {
+    display: none; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0;
+    padding: 8px 14px; font-size: .82rem; line-height: 1.35;
+    background: var(--soft, #eef3fb); color: var(--p1, #123); border-bottom: 1px solid var(--bd, #c9d6ea);
+  }
+  #ecolia-audio-banner.on { display: flex; }
+  #ecolia-audio-banner .eab-txt { flex: 1 1 180px; }
+  #ecolia-audio-banner .eab-act { display: flex; gap: 6px; flex-wrap: wrap; }
+  #ecolia-audio-banner button {
+    border: 1px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb);
+    border-radius: 16px; padding: 5px 12px; font-size: .8rem; cursor: pointer;
+  }
+  #ecolia-audio-banner button.pri { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-banner .eab-bar { display: none; flex-basis: 100%; height: 4px; border-radius: 2px; overflow: hidden; background: var(--bd, #c9d6ea); }
+  #ecolia-audio-banner .eab-bar i { display: block; height: 100%; width: 0; background: var(--p2, #2563eb); transition: width .2s; }
+</style>
+<script>
+(function () {
+  var CFG = {"code":"ComptabiliteAnalytique4","base":"https://ecolia-course.github.io/ecolia-media/audio_files/","available":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],"count":16,"sizeMo":12,"sizes":{"1":771840,"2":807744,"3":645504,"4":743424,"5":756864,"6":1004352,"7":927552,"8":840192,"9":705024,"10":758400,"11":633408,"12":760704,"13":1036224,"14":765504,"15":557760,"16":117888},"fallback":{"1":[["fr","Sommaire, Comptabilité Analytique d'Exploitation. Présentation du cours. Comptabilité Analytique d'Exploitation, 4e Humanité. Niveau: 4e Humanité ou Terminale, section Commerciale et Gestion. Statut: Matière officielle de la section Commerciale et Gestion, avec manuel congolais dédié et cadre SYSCOHADA. Objectif général: Rendre l'élève capable de calculer et d'analyser les coûts d'une entreprise, en utilisant les méthodes de la comptabilité analytique d'exploitation, afin de contribuer à la gestion et à la prise de décision. Objectifs spécifiques. Définir la comptabilité analytique et la distinguer de la comptabilité générale. Classer les charges selon différents critères. Répartir les charges indirectes dans des sections homogènes. Calculer les coûts d'achat, de production et de revient. Valoriser les stocks et tenir un compte d'inventaire permanent. Calculer et interpréter les résultats analytiques. Organisation des chapitres. Chapitre I: Introduction à la comptabilité analytique. Chapitre II: L'analyse des charges. Chapitre III: Le traitement des charges indirectes: sections homogènes. Chapitre IV: La valorisation des stocks. Chapitre V: Le calcul des coûts et des résultats. Chapitre VI: Applications et synthèse. Prérequis: Comptabilité Générale; mathématiques de base; notions de gestion."]],"2":[["fr","Leçon 1, Pourquoi la comptabilité analytique? Situation de départ. Une entreprise fabrique trois produits différents. Elle connaît son résultat global grâce à la comptabilité générale, mais elle ne sait pas quel produit est rentable et lequel lui coûte de l'argent. Comment le savoir? Fondements théoriques. Définition. La comptabilité analytique (ou comptabilité de gestion) est une technique de traitement de l'information comptable destinée à un usage interne. Elle vise à calculer les coûts aux différents stades du processus d'exploitation, à expliquer les résultats par produit, fonction ou activité, et à fournir des bases d'évaluation pour certains éléments du bilan. Objectifs. Connaître les coûts (achat, production, revient). Analyser la formation du résultat. Éclairer les décisions (prix, rentabilité, choix de production). Évaluer les stocks et certains actifs. Recommandation du SYSCOHADA. Le SYSCOHADA recommande vivement le développement de la comptabilité analytique de gestion, sans la rendre obligatoire. Exemple concret. Une entreprise qui produit du savon, de l'huile et du savon liquide peut utiliser la comptabilité analytique pour savoir lequel de ces produits dégage le plus de marge et lequel doit être abandonné ou amélioré. À retenir. La comptabilité analytique est un outil de gestion interne. Elle complète la comptabilité générale. Erreur fréquente: croire qu'elle est obligatoire; elle est vivement recommandée."]],"3":[["fr","Leçon 2, Comptabilité générale vs comptabilité analytique. Fondements théoriques. Tableau comparatif. Critère. Comptabilité générale. Comptabilité analytique. Destinataires. Tiers, État, actionnaires. Usage interne, dirigeants. Obligation. Obligatoire. Recommandée. Objet. Vision globale du résultat. Détail par produit, activité. Flexibilité. Normée (SYSCOHADA). Adaptée aux besoins de l'entreprise. Périodicité. Annuelle. Selon les besoins. Complémentarité. La comptabilité analytique s'appuie sur les données de la comptabilité générale. Elle les décompose et les réorganise pour éclairer la gestion. Exemple concret. La comptabilité générale enregistre un total de charges de 5 000 000 FC pour l'entreprise. La comptabilité analytique répartit ces charges entre les trois produits fabriqués, pour savoir combien coûte chaque produit. À retenir. La comptabilité générale est obligatoire et globale. La comptabilité analytique est interne et détaillée. Erreur fréquente: opposer les deux; elles sont complémentaires."]],"4":[["fr","Leçon 3, Les charges: classifications. Fondements théoriques. 1. Charges incorporables et non incorporables. Incorporables: charges normales d'exploitation, intégrées aux calculs de coûts. Non incorporables: charges exceptionnelles ou hors conditions normales (amendes, charges somptuaires). Elles sont exclues des coûts pour ne pas les fausser. 2. Charges directes et indirectes. Directes: affectées sans calcul intermédiaire à un coût (matière première d'un produit). Indirectes: concernent plusieurs coûts et nécessitent une répartition (loyer, salaire du directeur). 3. Charges variables et fixes. Variables: évoluent avec le volume d'activité (matières premières, énergie des machines). Fixes: restent stables quel que soit le niveau d'activité (amortissement, salaire du gardien). Exemple corrigé. Classer: Matière première, donc directe et variable. Loyer de l'usine, donc indirecte et fixe. Salaire du directeur commercial, donc indirecte et fixe. Électricité des machines, donc indirecte et variable. Amende fiscale, donc non incorporable. À retenir. Trois classifications complémentaires. Directe ou indirecte est la distinction fondamentale. Erreur fréquente: confondre directe et variable (une charge directe peut être fixe)."]],"5":[["fr","Leçon 4, Les sections homogènes. Fondements théoriques. Définition. Une section (ou centre d'analyse) est une division comptable de l'entreprise où sont regroupées les charges indirectes qui présentent des caractéristiques communes et peuvent être mesurées par une même unité d'œuvre. Sections principales et auxiliaires. Principales: bénéficient directement aux produits (atelier de production, service de distribution). Auxiliaires: fournissent des prestations aux autres sections (entretien, administration) et doivent être réparties entre les sections principales. L'unité d'œuvre. Unité de mesure de l'activité d'une section: heure de main-d'œuvre, heure-machine, kg de matière, nombre de pièces. Coût de l'unité d'œuvre égale total des charges de la section ou nombre d'unités d'œuvre. Répartir les charges indirectes dans les sections: une étape clé du calcul des coûts. Exemple corrigé. Une section « Atelier » a 500 000 FC de charges indirectes et 2 500 heures de main-d'œuvre. Coût de l'unité d'œuvre: 500 000 sur 2 500 égale 200 FC par heure. À retenir. Une section homogène regroupe des charges mesurables par une même unité d'œuvre. Principales et auxiliaires ont des rôles différents. Erreur fréquente: utiliser une unité d'œuvre inadaptée à l'activité."]],"6":[["fr","Leçon 5, Le tableau de répartition. Fondements théoriques. Les étapes. Répartition primaire: répartir les charges indirectes entre toutes les sections (principales et auxiliaires). Répartition secondaire: répartir les charges des sections auxiliaires entre les sections principales. Calcul du coût de l'unité d'œuvre de chaque section principale. Exemple corrigé. Charges indirectes: 1 000 000 FC. Atelier A: 600 000 FC. Atelier B: 300 000 FC. Entretien: 100 000 FC. L'Entretien est réparti à 60 pour cent vers A et 40 pour cent vers B. Après répartition secondaire: A égale 600 000 plus 60 000 égale 660 000 FC; B égale 300 000 plus 40 000 égale 340 000 FC. Si A a 1 000 heures-machine, le coût de l'unité d'œuvre égale 660 FC ou heure. Exercice guidé. Sections: A (400 000 FC), B (300 000 FC), Entretien (100 000 FC). L'Entretien est réparti 70 pour cent vers A et 30 pour cent vers B. Calcul: A égale 400 000 plus 70 000 égale 470 000 FC; B égale 300 000 plus 30 000 égale 330 000 FC. À retenir. Le tableau de répartition a deux étapes: primaire et secondaire. Les sections auxiliaires sont réparties entre les principales. Erreur fréquente: oublier la répartition secondaire."]],"7":[["fr","Leçon 6, La valorisation des stocks: CUMP, FIFO, LIFO. Fondements théoriques. Objectif. Connaître la valeur des stocks à tout moment et déterminer le coût des sorties (matières consommées, produits vendus). Les méthodes. CUMP (Coût Unitaire Moyen Pondéré): calculé après chaque entrée ou à la fin de la période. Il lisse les variations de prix. FIFO (First In, First Out): les premiers entrés sont les premiers sortis. Adapté aux produits périssables. LIFO (Last In, First Out): les derniers entrés sont les premiers sortis. Exemple corrigé (CUMP). Stock initial: 100 kilogrammes à 500 FC. Entrée: 200 kilogrammes à 800 FC. CUMP après entrée: (100 multiplié par 500 plus 200 multiplié par 800) ou 300 égale (50 000 plus 160 000) ou 300 égale 700 FC ou kg. Une sortie de 50 kilogrammes est valorisée à 700 FC ou kg égale 35 000 FC. Exercice guidé. Stock initial: 200 unités à 1 000 FC. Entrée: 300 unités à 1 500 FC. CUMP après entrée? Calcul: (200 multiplié par 1 000 plus 300 multiplié par 1 500) ou 500 égale (200 000 plus 450 000) ou 500 égale 1 300 FC ou unité. À retenir. CUMP, FIFO et LIFO sont les principales méthodes. Le SYSCOHADA exige la permanence des méthodes. Erreur fréquente: changer de méthode sans justification."]],"8":[["fr","Leçon 7, Le compte d'inventaire permanent. Fondements théoriques. Définition. Le compte d'inventaire permanent est un compte de stock tenu en quantité et en valeur. Il enregistre les entrées (achats, production) et les sorties (consommation, vente), et permet de connaître le stock final. Structure. Débit (entrées). Crédit (sorties). Stock initial. Consommations. Achats ou production. Ventes. Total des entrées. Stock final (solde). Utilité. Connaître le stock à tout moment. Valoriser les sorties au fur et à mesure. Éviter les ruptures de stock. Exemple corrigé. Stock initial: 200 unités à 1 000 FC égale 200 000 FC. Entrées: 300 unités à 1 500 FC égale 450 000 FC. Sorties: 400 unités au CUMP de 1 300 FC égale 520 000 FC. Stock final: 100 unités multiplié par 1 300 FC égale 130 000 FC. Vérification: 650 000 moins 520 000 égale 130 000 FC. À retenir. Le compte d'inventaire permanent suit les stocks en quantité et en valeur. Il permet de valoriser les sorties en temps réel. Erreur fréquente: oublier de mettre à jour le compte après chaque mouvement."]],"9":[["fr","Leçon 8, Le coût d'achat. Fondements théoriques. Définition. Le coût d'achat est le coût des marchandises ou matières achetées. Il comprend le prix d'achat et les frais accessoires. Formule. Coût d'achat égale Prix d'achat plus Frais accessoires. Les frais accessoires comprennent: transport, douane, assurance, frais de réception, commissions. Exemple corrigé. 1 000 kilogrammes de matière à 2 000 FC ou kg (frais de transport: 100 000 FC). Coût d'achat: 1 000 multiplié par 2 000 plus 100 000 égale 2 100 000 FC. Coût unitaire: 2 100 000 sur 1 000 égale 2 100 FC ou kg. Exercice guidé. Achat de 500 kilogrammes à 1 200 FC ou kg (transport 50 000 FC). Coût d'achat total? Calcul: 500 multiplié par 1 200 plus 50 000 égale 600 000 plus 50 000 égale 650 000 FC. À retenir. Coût d'achat égale prix d'achat plus frais accessoires. Les frais accessoires sont répartis sur les quantités. Erreur fréquente: oublier d'intégrer les frais accessoires dans le coût d'achat."]],"10":[["fr","Leçon 9, Le coût de production. Fondements théoriques. Définition. Le coût de production est le coût des produits fabriqués. Il comprend le coût des matières consommées, la main-d'œuvre directe et les charges indirectes de production. Formule. Coût de production égale Matières consommées plus MOD plus Charges indirectes de production. Exemple corrigé. Matières consommées: 1 680 000 FC. Main-d'œuvre directe (MOD): 300 000 FC. Charges indirectes de production: 200 000 FC. Coût de production: 1 680 000 plus 300 000 plus 200 000 égale 2 180 000 FC. Exercice guidé. Matières consommées: 520 000 FC. MOD: 200 000 FC. Charges indirectes: 150 000 FC. Calcul: 520 000 plus 200 000 plus 150 000 égale 870 000 FC. À retenir. Le coût de production intègre matières, main-d'œuvre directe et charges indirectes de production. Il ne comprend pas les charges de distribution. Erreur fréquente: oublier les charges indirectes de production."]],"11":[["fr","Leçon 10, Le coût de revient. Fondements théoriques. Définition. Le coût de revient est le coût complet d'un produit vendu. Il comprend le coût de production et les charges de distribution. Formule. Coût de revient égale Coût de production plus Charges de distribution. Les charges de distribution comprennent: transport vers les clients, publicité, salaires des commerciaux, frais de conditionnement. Exemple corrigé. Coût de production: 8 000 FC. Charges de distribution: 1 500 FC. Coût de revient: 8 000 plus 1 500 égale 9 500 FC. Exercice guidé. Coût de production: 2 180 000 FC. Charges de distribution: 150 000 FC. Calcul: 2 180 000 plus 150 000 égale 2 330 000 FC. À retenir. Le coût de revient est le coût complet d'un produit. Il sert de base au calcul du résultat analytique. Erreur fréquente: oublier les charges de distribution."]],"12":[["fr","Leçon 11, Le résultat analytique. Fondements théoriques. Définition. Le résultat analytique est la différence entre le chiffre d'affaires et le coût de revient: Résultat égale Chiffre d'affaires moins Coût de revient. Résultat positif: marge bénéficiaire sur le produit. Résultat négatif: perte sur le produit. Utilité. Connaître la rentabilité par produit. Identifier les produits à développer ou abandonner. Fixer les prix de vente. Orienter les décisions commerciales. Exemple corrigé. Chiffre d'affaires: 12 000 FC. Coût de revient: 9 500 FC. Résultat analytique: 12 000 moins 9 500 égale 2 500 FC (bénéfice). Exercice guidé. Chiffre d'affaires: 5 000 000 FC. Coût de revient: 2 330 000 FC. Calcul: 5 000 000 moins 2 330 000 égale 2 670 000 FC (bénéfice). À retenir. Résultat égale CA moins coût de revient. Il permet de mesurer la rentabilité par produit. Erreur fréquente: confondre marge commerciale (CA moins coût d'achat) et résultat analytique (CA moins coût de revient complet)."]],"13":[["fr","Leçon 12, Cas complet: calcul des coûts. Données. Une entreprise fabrique un produit unique. Achat de 1 000 kilogrammes de matière à 2 000 FC ou kg (frais de transport: 100 000 FC). Consommation de 800 kilogrammes en production. Main-d'œuvre directe: 300 000 FC. Charges indirectes de production: 200 000 FC. Produits finis vendus: 5 000 000 FC. Charges de distribution: 150 000 FC. Corrigé. Coût d'achat. 1 000 multiplié par 2 000 plus 100 000 égale 2 100 000 FC. Coût unitaire: 2 100 FC ou kg. Matières consommées. 800 multiplié par 2 100 égale 1 680 000 FC. Coût de production. 1 680 000 plus 300 000 plus 200 000 égale 2 180 000 FC. Coût de revient. 2 180 000 plus 150 000 égale 2 330 000 FC. Résultat analytique. 5 000 000 moins 2 330 000 égale 2 670 000 FC (bénéfice). Interprétation. L'entreprise dégage une marge importante sur ce produit. La comptabilité analytique permet de vérifier la rentabilité et d'identifier les postes de coûts à optimiser (notamment le transport et les charges de distribution). À retenir. Le calcul des coûts suit une chaîne: achat, donc production, donc revient, donc résultat. Chaque étape doit être justifiée. Erreur fréquente: sauter une étape ou oublier un poste de charges."]],"14":[["fr","Leçon 13, La comptabilité analytique en R D C. Fondements théoriques. Application aux PME congolaises. Boulangeries, ateliers de couture, unités de transformation alimentaire: calcul du coût de production par unité. Coopératives agricoles: calcul du coût de production par sac de maïs, de riz ou de manioc. Commerce: calcul du coût de revient par article vendu. Cas: coopérative agricole du Kasaï. Une coopérative produit du maïs. Elle achète des semences, paie la main-d'œuvre et supporte le transport vers le marché. La comptabilité analytique lui permet de calculer le coût par sac et de négocier ses prix. Cadre SYSCOHADA. Le SYSCOHADA recommande la comptabilité analytique pour améliorer la gestion. Les entreprises congolaises qui l'appliquent disposent d'un avantage concurrentiel. Exemple concret. Une unité de transformation de manioc à Bandundu calcule le coût de revient d'un sac de farine: matières premières (manioc), main-d'œuvre, énergie, transport vers les revendeurs. Elle identifie que le transport coûte trop cher et propose de regrouper les livraisons. À retenir. La comptabilité analytique est un outil de compétitivité pour les PME congolaises. Elle aide à fixer les prix, identifier les pertes, prendre des décisions. Erreur fréquente: croire qu'elle est réservée aux grandes entreprises."]],"15":[["fr","Leçon 14, Synthèse: de la charge au résultat. Synthèse générale. Le parcours analytique complet. Charges: identifier, classer (directes ou indirectes, variables ou fixes, incorporables ou non incorporables). Sections homogènes: répartir les charges indirectes, calculer les unités d'œuvre. Stocks: valoriser selon CUMP ou FIFO ou LIFO. Coûts successifs: coût d'achat, donc coût de production, donc coût de revient. Résultat analytique: CA moins coût de revient. Interprétation: décisions de gestion. Le rôle de la comptabilité analytique. Langage interne de la gestion. Outil de décision (prix, rentabilité, allocation des ressources). Complément indispensable à la comptabilité générale. Recommandée par le SYSCOHADA. Pour aller plus loin. S'entraîner sur des cas concrets, découvrir les méthodes avancées (ABC, coûts cibles), échanger avec des comptables et des gestionnaires. La pratique régulière est la clé."]],"16":[["fr","Évaluation finale, Comptabilité Analytique. Évaluation finale. 22 questions à choix multiple. Une seule réponse est correcte par question. Choisis la réponse qui te semble juste, puis valide."]]}};
+  var CACHE = "ecolia-cours-v1";                       // même cache que l'application
+  var PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  var PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+  var DL = '<svg viewBox="0 0 24 24"><path d="M11 3h2v9.2l3.6-3.6L18 10l-6 6-6-6 1.4-1.4L11 12.2V3zM5 19h14v2H5z"/></svg>';
+  var OK = '<svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>';
+  // Réparation du quiz : certains cours stockent les choix sous "opts" (ou autre) au lieu de "options"
+  try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+      questions.forEach(function (q) {
+        if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+        if (q.text === undefined) q.text = q.question || q.q || q.enonce || q.titre || "";
+        if (typeof q.correct === "undefined") {
+          if (typeof q.answer !== "undefined") q.correct = q.answer;
+          else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+        }
+      });
+    }
+  } catch (e) {}
+  var synth = window.speechSynthesis || null;
+  var HAS_CACHE = !!(window.caches && window.caches.open);
+  var NATIVE = false;           // APK ECOLIA : pont Java "CoursInterface" (fichiers dans le dossier de l'application)
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  var LATER = "ecolia_audio_later_" + CFG.code;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+  function init() {
+    if (document.getElementById("ecolia-audio-btn")) return;
+
+    // ---------- éléments de l'interface ----------
+    var btn = document.createElement("button");
+    btn.id = "ecolia-audio-btn"; btn.type = "button"; btn.className = "ecolia-off";
+    btn.setAttribute("aria-label", "Écouter la leçon"); btn.innerHTML = PLAY;
+    var dlBtn = document.createElement("button");
+    dlBtn.id = "ecolia-dl-btn"; dlBtn.type = "button"; dlBtn.className = "ecolia-off";
+    dlBtn.innerHTML = DL;
+    var host = document.querySelector(".header-right");
+    if (host) { host.insertBefore(dlBtn, host.firstChild); host.insertBefore(btn, dlBtn); }   // dans la barre du haut : ne scrolle jamais
+    else { btn.className += " ecolia-fixed"; document.body.appendChild(btn); }
+
+    var banner = document.createElement("div");
+    banner.id = "ecolia-audio-banner";
+    banner.innerHTML = '<span class="eab-txt"></span><span class="eab-act"></span><div class="eab-bar"><i></i></div>';
+    var content = document.getElementById("content");
+    if (content && content.parentNode) content.parentNode.insertBefore(banner, content);
+    else document.body.insertBefore(banner, document.body.firstChild);
+    var txtEl = banner.querySelector(".eab-txt"), actEl = banner.querySelector(".eab-act");
+    var barEl = banner.querySelector(".eab-bar"), barI = barEl.firstChild;
+
+    var audio = new Audio();            // un seul élément Audio, réutilisé (exigé par les navigateurs mobiles)
+    audio.preload = "auto";
+    var st = { idx: -1, auto: false, advancing: false, mode: null, speaking: false, token: 0, chunks: [], ci: 0, blobUrl: null, playTok: 0 };
+    var dl = { state: "none", cached: 0, busy: false, cancel: false };   // none | partial | full
+    var bnMode = null, hideTimer = null;
+    if (synth && synth.getVoices) { try { synth.getVoices(); } catch (e) {} }
+
+    function cur() {
+      try { if (typeof currentSlide === "number") return currentSlide; } catch (e) {}
+      return 0;
+    }
+    function hasMp3(i) { return CFG.available.indexOf(i + 1) !== -1; }
+    function fb(i) { return CFG.fallback && CFG.fallback[String(i + 1)]; }
+    function hasAudio(i) { return hasMp3(i) || (!!synth && !!fb(i)); }
+    function urlN(n) {   // dans l'APK la page est sur https://app.local : une adresse relative doit pointer vers le site
+      var b = CFG.base;
+      if (NATIVE && !/^https?:/i.test(b)) b = "https://ecolia-course.github.io/" + b.replace(/^(\.\.\/|\.\/)+/, "");
+      return new URL(b + nameN(n), location.href).href;
+    }
+    function setIcon(playing) { btn.innerHTML = playing ? PAUSE : PLAY; }
+    function isPlaying() { return st.mode === "mp3" ? !audio.paused : (st.mode === "tts" && st.speaking); }
+    function mo() { return "≈ " + CFG.sizeMo + " Mo"; }
+    function nameN(n) { return "audio_" + CFG.code + "_" + n + ".mp3"; }
+
+    // ====================================================================
+    //  Stockage hors ligne : 2 moteurs, même interface
+    //    - APK : fichiers du dossier de l'application (CoursInterface), servis par https://app.local/cours/
+    //    - Web : Cache Storage du navigateur (même cache que l'application web)
+    // ====================================================================
+    function nativeStore() {
+      var okKey = "ecolia_audio_ok_" + CFG.code;
+      function readOk() { try { return JSON.parse(lsGet(okKey) || "[]"); } catch (e) { return []; } }
+      function writeOk(a) { lsSet(okKey, JSON.stringify(a)); }
+      function exists(n) { try { return !!CoursInterface.exists(nameN(n)); } catch (e) { return false; } }
+      function local(n) { return location.origin + "/cours/" + nameN(n); }
+      function verify(n) {                                   // fichier complet ? (taille exacte connue à la génération)
+        return fetch(local(n), { cache: "no-store" }).then(function (r) { return r.blob(); }).then(function (b) {
+          var exp = CFG.sizes && CFG.sizes[String(n)];
+          return (b.size > 2000 && (!exp || b.size === exp)) ? b : null;
+        }).catch(function () { return null; });
+      }
+      return {
+        list: function () {
+          var ok = readOk().filter(exists); writeOk(ok); return Promise.resolve(ok);
+        },
+        get: function (n) { return exists(n) ? verify(n) : Promise.resolve(null); },
+        put: function (n) {
+          return new Promise(function (res, rej) {
+            try { CoursInterface.download(urlN(n), nameN(n)); } catch (e) { return rej(e); }
+            var t0 = Date.now();
+            function next() { if (Date.now() - t0 > 120000) rej(new Error("délai dépassé")); else setTimeout(poll, 800); }
+            function poll() {
+              if (!exists(n)) return next();
+              verify(n).then(function (b) {
+                if (!b) return next();
+                var ok = readOk(); if (ok.indexOf(n) < 0) ok.push(n); writeOk(ok); res();
+              });
+            }
+            setTimeout(poll, 800);
+          });
+        },
+        del: function (n) {
+          try { CoursInterface.delete(nameN(n)); } catch (e) {}
+          writeOk(readOk().filter(function (x) { return x !== n; }));
+          return Promise.resolve();
+        }
+      };
+    }
+    function cacheStore() {
+      return {
+        list: function () {
+          return caches.open(CACHE).then(function (c) {
+            return Promise.all(CFG.available.map(function (n) {
+              return c.match(urlN(n)).then(function (r) {
+                if (!r) return 0;
+                if ((r.headers.get("content-type") || "").indexOf("audio") !== 0) { c.delete(urlN(n)); return 0; }   // ancien contenu invalide
+                return n;
+              });
+            }));
+          }).then(function (a) { return a.filter(Boolean); });
+        },
+        get: function (n) {
+          return caches.open(CACHE).then(function (c) { return c.match(urlN(n)); })
+            .then(function (r) { return r ? r.blob() : null; }).then(function (b) { return b && b.size > 2000 ? b : null; });
+        },
+        put: function (n) {
+          var u = urlN(n);
+          return fetch(u, { cache: "no-store" }).then(function (r) {
+            if (!r.ok || r.status !== 200) throw new Error("HTTP " + r.status);
+            return r.blob();
+          }).then(function (b) {
+            if (b.size < 2000 || (b.type && b.type.indexOf("audio") !== 0 && b.type.indexOf("octet") < 0)) throw new Error("fichier invalide");
+            return caches.open(CACHE).then(function (c) { return c.put(u, new Response(b, { headers: { "Content-Type": "audio/mpeg" } })); });
+          });
+        },
+        del: function (n) { return caches.open(CACHE).then(function (c) { return c.delete(urlN(n)); }); }
+      };
+    }
+    var store = NATIVE ? nativeStore() : (HAS_CACHE ? cacheStore() : null);
+
+    // ====================================================================
+    //  Bannière : invitation, confirmations, progression
+    // ====================================================================
+    function showBanner(mode, text, buttons, pct) {
+      clearTimeout(hideTimer);
+      bnMode = mode;
+      txtEl.textContent = text;
+      actEl.innerHTML = "";
+      (buttons || []).forEach(function (b) {
+        var e = document.createElement("button");
+        e.type = "button"; e.textContent = b.label; if (b.pri) e.className = "pri";
+        e.addEventListener("click", function (ev) { ev.stopPropagation(); b.fn(); });
+        actEl.appendChild(e);
+      });
+      if (typeof pct === "number") { barEl.style.display = "block"; barI.style.width = pct + "%"; }
+      else barEl.style.display = "none";
+      banner.classList.add("on");
+    }
+    function hideBanner() { clearTimeout(hideTimer); bnMode = null; banner.classList.remove("on"); }
+    function flash(text) { showBanner("info", text, []); hideTimer = setTimeout(hideBanner, 4000); }
+
+    function refreshUI() {
+      var show = !!store && CFG.available.length > 0;
+      dlBtn.classList.toggle("ecolia-off", !show);
+      dlBtn.classList.toggle("ecolia-full", dl.state === "full");
+      dlBtn.innerHTML = dl.state === "full" ? OK : DL;
+      dlBtn.setAttribute("aria-label", dl.state === "full" ? "Audios téléchargés : supprimer" : "Télécharger les audios");
+      dlBtn.title = dlBtn.getAttribute("aria-label");
+    }
+    function refreshCacheState(done) {
+      if (!store) { dl.state = "none"; refreshUI(); if (done) done(); return; }
+      store.list().then(function (ok) {
+        dl.cached = ok.length;
+        dl.state = dl.cached === 0 ? "none" : (dl.cached >= CFG.available.length ? "full" : "partial");
+      }).catch(function () { dl.state = "none"; }).then(function () { refreshUI(); if (done) done(); });
+    }
+
+    function askDownload(fromInvite) {
+      var left = CFG.available.length - dl.cached;
+      var txt = dl.state === "partial"
+        ? "Il reste " + left + " audio(s) à télécharger pour écouter ce cours sans internet."
+        : "🔊 Télécharger les audios de ce cours (" + mo() + ") pour les écouter sans internet ? Wi-Fi recommandé.";
+      showBanner(fromInvite ? "invite" : "confirm", txt, [
+        { label: fromInvite ? "Plus tard" : "Annuler", fn: function () { if (fromInvite) lsSet(LATER, "1"); hideBanner(); } },
+        { label: "Télécharger", pri: true, fn: startDownload }
+      ]);
+    }
+    function askDelete() {
+      showBanner("confirm", "Supprimer les audios téléchargés de ce cours (" + mo() + ") ? Vous pourrez toujours les écouter en ligne.", [
+        { label: "Annuler", fn: hideBanner },
+        { label: "Supprimer", pri: true, fn: doDelete }
+      ]);
+    }
+
+    function startDownload() {
+      if (dl.busy || !store) return;
+      dl.busy = true; dl.cancel = false;
+      var total = CFG.available.length, done = 0, quota = false, fails = 0, todo = [];
+      store.list().then(function (have) {
+        CFG.available.forEach(function (n) { if (have.indexOf(n) < 0) todo.push(n); });
+        done = total - todo.length;
+        function paint() {
+          var msg = "Téléchargement des audios : " + done + " / " + total;
+          if (bnMode === "progress") {                  // met à jour sans recréer les boutons (sinon un appui peut être perdu)
+            txtEl.textContent = msg; barI.style.width = Math.round(done / total * 100) + "%";
+          } else {
+            showBanner("progress", msg, [
+              { label: "Annuler", fn: function () { dl.cancel = true; } }
+            ], Math.round(done / total * 100));
+          }
+        }
+        paint();
+        function worker() {
+          if (dl.cancel || quota || !todo.length) return Promise.resolve();
+          var n = todo.shift();
+          return store.put(n).then(function () { done++; paint(); }).catch(function (e) {
+            if (e && (e.name === "QuotaExceededError" || /quota/i.test(String(e.message)))) quota = true;
+            fails++;
+          }).then(worker);
+        }
+        return Promise.all([worker(), worker()]);
+      }).catch(function () { fails++; }).then(function () {
+        dl.busy = false;
+        refreshCacheState(function () {
+          if (dl.state === "full") flash("✓ Audios téléchargés : le cours se lit maintenant sans internet.");
+          else if (dl.cancel) flash("Téléchargement interrompu (" + dl.cached + " / " + total + "). Vous pourrez reprendre plus tard.");
+          else showBanner("error", quota ? "Espace insuffisant sur l'appareil. Libérez de la place puis réessayez."
+            : "Certains audios n'ont pas pu être téléchargés (connexion ?).", [
+            { label: "Fermer", fn: hideBanner }, { label: "Réessayer", pri: true, fn: startDownload }
+          ]);
+        });
+      });
+    }
+    function doDelete() {
+      if (!store) return;
+      Promise.all(CFG.available.map(function (n) { return store.del(n); })).catch(function () {}).then(function () {
+        lsDel(LATER);
+        refreshCacheState(function () { flash("Audios supprimés de cet appareil."); });
+      });
+    }
+
+    dlBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (dl.busy) return;
+      if (dl.state === "full") askDelete(); else askDownload(false);
+    });
+
+    // ====================================================================
+    //  Voix intégrée au téléphone (hors ligne, sans limite)
+    // ====================================================================
+    function pickVoice(lang) {
+      var vs = [];
+      try { vs = synth.getVoices() || []; } catch (e) {}
+      var pre = lang === "en" ? "en" : "fr", best = null;
+      for (var k = 0; k < vs.length; k++) {
+        var v = vs[k];
+        if ((v.lang || "").toLowerCase().indexOf(pre) !== 0) continue;
+        if (!best || (v.localService && !best.localService)) best = v;
+      }
+      return best;
+    }
+    function hardSplit(text, max) {
+      var out = [];
+      while (text.length > max) {
+        var cut = text.lastIndexOf(" ", max);
+        if (cut < 40) cut = max;
+        out.push(text.slice(0, cut)); text = text.slice(cut).replace(/^\s+/, "");
+      }
+      if (text) out.push(text);
+      return out;
+    }
+    function buildChunks(segs) {                  // morceaux courts : évite l'arrêt des longs textes sur Chrome
+      var out = [];
+      segs.forEach(function (s) {
+        var cur2 = "", parts = s[1].match(/[^.!?;:]+[.!?;:]*\s*/g) || [s[1]];
+        parts.forEach(function (p) {
+          if (cur2 && (cur2 + p).length > 160) { out.push({ lang: s[0], text: cur2.trim() }); cur2 = p; }
+          else cur2 += p;
+        });
+        if (cur2.trim()) out.push({ lang: s[0], text: cur2.trim() });
+      });
+      var res = [];
+      out.forEach(function (c) { hardSplit(c.text, 190).forEach(function (t) { res.push({ lang: c.lang, text: t }); }); });
+      return res;
+    }
+    function speakFrom(tk) {
+      if (tk !== st.token) return;
+      if (st.ci >= st.chunks.length) {
+        st.speaking = false; st.mode = null; st.ci = 0; setIcon(false);
+        if (st.auto) goNext();
+        return;
+      }
+      var c = st.chunks[st.ci];
+      var u = new SpeechSynthesisUtterance(c.text);
+      u.lang = c.lang === "en" ? "en-US" : "fr-FR";
+      var v = pickVoice(c.lang);
+      if (v) { u.voice = v; u.lang = v.lang; }
+      u.rate = 0.95;
+      u.onend = function () { if (tk !== st.token) return; st.ci++; speakFrom(tk); };
+      u.onerror = function () { if (tk !== st.token) return; st.speaking = false; setIcon(false); st.auto = false; };
+      synth.speak(u);
+    }
+    function startTts(from) {
+      st.token++;
+      var tk = st.token;
+      st.mode = "tts"; st.speaking = true; st.ci = from || 0; setIcon(true);
+      var busy = false;
+      try { busy = synth.speaking || synth.pending; synth.cancel(); } catch (e) {}
+      if (busy) setTimeout(function () { speakFrom(tk); }, 120);   // laisse cancel() se terminer
+      else speakFrom(tk);                                          // sinon tout de suite (exigé par iOS)
+    }
+    function playVoice() {
+      if (!(synth && fb(st.idx))) { st.auto = false; return false; }
+      if (!st.chunks.length) st.chunks = buildChunks(fb(st.idx));
+      startTts(st.ci);
+      return true;
+    }
+
+    // ====================================================================
+    //  Lecture
+    // ====================================================================
+    function freeBlob() { if (st.blobUrl) { try { URL.revokeObjectURL(st.blobUrl); } catch (e) {} st.blobUrl = null; } }
+    function stopAll() {
+      st.playTok++;
+      try { audio.pause(); audio.currentTime = 0; } catch (e) {}
+      st.token++;
+      try { if (synth) synth.cancel(); } catch (e) {}
+      st.speaking = false; st.mode = null; st.chunks = []; st.ci = 0;
+      setIcon(false);
+    }
+    function pauseNow() {
+      if (st.mode === "mp3") audio.pause();
+      else if (st.mode === "tts") {
+        st.token++;
+        try { synth.cancel(); } catch (e) {}
+        st.speaking = false; setIcon(false);      // st.ci conservé : la reprise repart de la phrase en cours
+      }
+    }
+    function startAudio(src, tok) {
+      if (tok !== st.playTok) return;
+      if (audio.getAttribute("data-src") !== src) { audio.setAttribute("data-src", src); audio.src = src; }
+      var p = audio.play();
+      if (p && p.catch) p.catch(function (err) {
+        console.warn("ECOLIA audio :", err);
+        if (tok !== st.playTok) return;
+        if (!(err && err.name === "NotAllowedError") && playVoice()) return;   // lecture impossible : voix du téléphone
+        setIcon(false); st.auto = false;
+      });
+    }
+    function playCurrent() {
+      var i = st.idx;
+      if (hasMp3(i)) {
+        var tok = ++st.playTok, u = urlN(i + 1);
+        st.mode = "mp3";
+        if (!navigator.onLine && dl.state === "none") { st.mode = null; if (playVoice()) return; }   // hors ligne et non téléchargé
+        if (store && dl.state !== "none") {                     // téléchargé : lecture locale, sans réseau
+          store.get(i + 1)
+            .then(function (b) {
+              if (tok !== st.playTok) return;
+              if (b) { freeBlob(); st.blobUrl = URL.createObjectURL(new Blob([b], { type: "audio/mpeg" })); startAudio(st.blobUrl, tok); }
+              else startAudio(u, tok);
+            }).catch(function () { startAudio(u, tok); });
+        } else startAudio(u, tok);                              // sinon lecture en ligne (appel immédiat, exigé par iOS)
+      } else if (!playVoice()) {
+        st.auto = false;
+      }
+    }
+
+    function onSlideChange(i) {
+      var wasAdvancing = st.advancing;
+      st.advancing = false;
+      st.idx = i;
+      btn.classList.toggle("ecolia-off", !hasAudio(i));
+      stopAll();
+      audio.removeAttribute("data-src");
+      freeBlob();
+      if (bnMode === "invite" && i !== 0) hideBanner();       // l'invitation n'apparaît qu'à la première slide
+      if (wasAdvancing && st.auto) setTimeout(playCurrent, 500);   // enchaînement automatique
+      else st.auto = false;                                         // changement manuel : on coupe tout
+    }
+    function goNext() {
+      if (st.idx + 1 >= CFG.count) { st.auto = false; return; }
+      st.advancing = true;
+      if (typeof nextSlide === "function") nextSlide();
+      else { var nb = document.getElementById("nextBtn"); if (nb) nb.click(); }
+      setTimeout(function () { st.advancing = false; }, 4000);
+    }
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var i = cur();
+      if (i !== st.idx) onSlideChange(i);
+      if (isPlaying()) { st.auto = false; pauseNow(); }
+      else { st.auto = true; playCurrent(); }
+    });
+    audio.addEventListener("play", function () { setIcon(true); });
+    audio.addEventListener("pause", function () { if (st.mode === "mp3") setIcon(false); });
+    audio.addEventListener("error", function () {
+      if (st.mode === "mp3" && playVoice()) return;            // fichier introuvable / hors ligne : voix du téléphone
+      setIcon(false); st.auto = false;
+    });
+    audio.addEventListener("ended", function () { setIcon(false); if (st.auto) goNext(); });
+    window.addEventListener("pagehide", function () { stopAll(); freeBlob(); });
+
+    // ---------- démarrage ----------
+    refreshCacheState(function () {
+      if (store && CFG.available.length && dl.state !== "full" && navigator.onLine && cur() === 0 && !lsGet(LATER)) askDownload(true);
+    });
+    st.idx = -1;
+    setInterval(function () { var i = cur(); if (i !== st.idx) onSlideChange(i); }, 250);   // suit la slide affichée
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+<!-- ECOLIA_AUDIO_PLAYER_END -->
+</body>
+</html>

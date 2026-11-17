@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="orange">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>ECOLIA — Archivage4</title>
+<style>
+[data-theme="bleu"]   { --p1:#0d2b4f; --p2:#1565c0; --p3:#07172e; --p4:#12437a; --p5:#5b8fd0; --bg:#e8f0fb; --bg2:#cfdff5; --bd:#a9c3e8; --soft:#dde8f7; --btn:#2a67b0; }
+[data-theme="vert"]   { --p1:#14442e; --p2:#2e7d32; --p3:#0b2b1a; --p4:#1f5c3a; --p5:#4f9a6b; --bg:#e8f5ec; --bg2:#c8e6d2; --bd:#a5cdb2; --soft:#dcefe2; --btn:#2f7a4f; }
+[data-theme="violet"] { --p1:#2d1b4e; --p2:#6a1b9a; --p3:#1a0f2e; --p4:#4a148c; --p5:#9c6fd0; --bg:#f1e9fb; --bg2:#dccbf2; --bd:#c4a8e6; --soft:#e8ddf6; --btn:#7e3fb2; }
+[data-theme="rouge"]  { --p1:#4a1010; --p2:#b71c1c; --p3:#2b0a0a; --p4:#8e1b1b; --p5:#d9706a; --bg:#fbeaea; --bg2:#f3cdcb; --bd:#e8a9a5; --soft:#f8dede; --btn:#a62a2a; }
+[data-theme="orange"] { --p1:#4e2a0c; --p2:#ef6c00; --p3:#2e1604; --p4:#b34a00; --p5:#f0a15a; --bg:#fff1e0; --bg2:#fbdcb8; --bd:#f3c08a; --soft:#fdebd6; --btn:#c9650a; }
+[data-theme="teal"]   { --p1:#0b3a3a; --p2:#00796b; --p3:#062626; --p4:#00574b; --p5:#4db6ac; --bg:#e0f2f1; --bg2:#b2dfdb; --bd:#80cbc4; --soft:#d5ecea; --btn:#26897d; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:linear-gradient(160deg,var(--p1) 0%,var(--p2) 50%,var(--p3) 100%); display:flex; justify-content:center; align-items:center; padding:8px; }
+.container { width:100%; max-width:1400px; background:#fefdf8; border-radius:20px; overflow:hidden; display:flex; flex-direction:column; height:100%; max-height:100vh; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.progress-bar { height:4px; background:var(--bg2); flex-shrink:0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--p5),var(--p4)); width:0%; transition:width 0.3s; }
+.header { padding:10px 16px; background:var(--bg); border-bottom:1px solid var(--bd); display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+.header h1 { color:var(--p4); font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box { display:flex; background:white; border-radius:20px; padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.search-box input { border:none; padding:6px 10px; border-radius:20px; outline:none; width:130px; font-size:0.8rem; }
+.search-box button { background:none; border:none; cursor:pointer; padding:4px 8px; font-size:0.85rem; color:var(--p2); }
+.badge { background:var(--p5); color:white; padding:4px 10px; border-radius:20px; font-weight:bold; font-size:0.75rem; }
+.search-nav { display:none; gap:4px; background:var(--bg2); padding:2px 8px; border-radius:20px; align-items:center; font-size:0.75rem; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:0.9rem; color:var(--p4); padding:2px 4px; }
+.content { padding:28px 32px; flex:1; overflow-y:auto; background:#fff; scroll-behavior:smooth; line-height:1.85; }
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.slide-title { color:var(--p1); font-size:1.5rem; font-weight:700; padding-bottom:12px; margin-bottom:20px; border-bottom:2px solid var(--p5); }
+.slide-content { color:var(--p3); font-size:1rem; }
+.empty-state { display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-height:60vh; padding:40px 20px; gap:18px; }
+.empty-state .icon { width:72px; height:72px; border-radius:50%; background:var(--bg); border:2px solid var(--bd); display:flex; align-items:center; justify-content:center; color:var(--p2); font-size:2rem; font-weight:300; }
+.empty-state h2 { color:var(--p1); font-size:1.4rem; font-weight:700; margin:0; }
+.empty-state p { color:#666; font-size:0.95rem; max-width:520px; line-height:1.7; }
+.empty-state .tag { display:inline-block; padding:6px 14px; background:var(--bg); color:var(--p4); border:1px solid var(--bd); border-radius:20px; font-size:0.8rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; }
+.bloc { padding:18px 22px; border-radius:12px; margin:22px 0; line-height:1.85; }
+.bloc-label { font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; opacity:0.7; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:var(--bg); border-left:4px solid var(--p5); }
+.theorie .bloc-label { color:var(--p4); }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.sources { background:#f5f5f5; padding:12px 16px; border-radius:10px; margin-top:26px; font-size:0.82rem; color:#666; border-left:3px solid #999; line-height:1.6; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:var(--p1); }
+.quiz-container { padding:22px; background:var(--bg); border-radius:16px; }
+.quiz-question { background:white; border-radius:10px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.quiz-question p { font-weight:600; margin-bottom:10px; color:var(--p1); }
+.quiz-question label { display:block; padding:8px 10px; margin:4px 0; border-radius:6px; cursor:pointer; transition:background 0.2s; }
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit { background:var(--btn); color:white; border:none; padding:12px 24px; border-radius:30px; font-size:1rem; cursor:pointer; font-weight:600; margin-top:14px; }
+.quiz-result { margin-top:16px; font-weight:600; }
+.controls { padding:8px 16px; background:#fafafa; border-top:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0; }
+.nav-btn { background:white; color:var(--p4); border:1px solid #ccc; padding:8px 14px; border-radius:8px; font-size:0.82rem; cursor:pointer; font-weight:500; }
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:var(--soft); }
+.content::-webkit-scrollbar-thumb { background:var(--p5); border-radius:3px; }
+@media (max-width:600px) { body { padding:0; } .container { border-radius:0; max-height:100vh; } .content { padding:20px 18px; } .slide-title { font-size:1.25rem; } .search-box input { width:90px; } .header h1 { font-size:0.85rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="header">
+<h1 id="pageTitle">ECOLIA</h1>
+<div class="header-right">
+<div class="search-box">
+<input id="searchInput" placeholder="Rechercher" type="text"/>
+<button id="searchBtn">⌕</button>
+</div>
+<div class="search-nav" id="searchNav">
+<button id="prevResultBtn">‹</button>
+<span id="resultCounter">0/0</span>
+<button id="nextResultBtn">›</button>
+</div>
+<span class="badge" id="slideCounter">0/0</span>
+</div>
+</div>
+<div class="content" id="content"></div>
+<div class="controls">
+<button class="nav-btn" id="prevBtn">← Précédent</button>
+<span class="counter" id="counter">—</span>
+<button class="nav-btn" id="nextBtn">Suivant →</button>
+</div>
+</div>
+<script>
+const COURSE_TITLE = "Archivage (Gestion des Archives et des Documents)";
+const slides = [
+  {
+    title: "Sommaire — Archivage",
+    content: `
+      <div class="bloc resume">
+        <h3>Bienvenue dans le cours d'Archivage</h3>
+        <p>Ce cours d'<strong>Archivage</strong> s'adresse aux élèves de la 4<sup>e</sup> année des Humanités, option Secrétariat-Administration, et reste utile aux options Commerciale et Gestion. Il vous apprendra à classer, conserver et retrouver les documents de manière efficace et sécurisée, en respectant les durées de conservation et les règles de confidentialité.</p>
+        <h4>Objectifs du cours</h4>
+        <ul>
+          <li>Définir l'archivage et ses objectifs.</li>
+          <li>Distinguer les types d'archives (courantes, intermédiaires, définitives).</li>
+          <li>Appliquer les méthodes de classement.</li>
+          <li>Choisir les supports d'archivage adaptés.</li>
+          <li>Déterminer les durées de conservation.</li>
+          <li>Organiser un local d'archives et garantir la sécurité.</li>
+          <li>Gérer la confidentialité des archives.</li>
+        </ul>
+        <h4>Les grands chapitres du cours</h4>
+        <ol>
+          <li>Introduction à l'archivage.</li>
+          <li>Les types d'archives.</li>
+          <li>Les méthodes de classement.</li>
+          <li>Les supports d'archivage.</li>
+          <li>La conservation et la sécurité.</li>
+          <li>Les durées de conservation et le sort final.</li>
+          <li>La confidentialité et la protection des données.</li>
+        </ol>
+        <p><strong>Compétences visées :</strong> à la fin de ce cours, vous serez capable d'organiser un système d'archivage efficace, de classer et conserver les documents, et de retrouver rapidement l'information. Ce cours complète l'Organisation des Bureaux (qui gère les flux quotidiens) et la Rédaction Administrative (qui produit les documents).</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 1 — Pourquoi l'archivage ?",
+    content: `
+      <div class="bloc cas">
+        <div class="bloc-label">Situation-problème</div>
+        <h3>Un document introuvable</h3>
+        <p>Dans une entreprise de Kinshasa, un contrôleur fiscal demande les factures de l'année dernière. Le secrétaire cherche dans les armoires, les tiroirs, les cartons empilés dans le couloir : rien. Impossible de mettre la main sur les factures demandées. Résultat : l'entreprise est mise en défaut, elle risque une amende pour défaut de présentation des pièces.</p>
+        <p><strong>Question de départ :</strong> Comment éviter qu'un document important devienne introuvable au moment où il est nécessaire ?</p>
+        <p>L'<strong>archivage</strong> répond à ce besoin : il organise la conservation et la recherche des documents, garantit leur disponibilité et leur valeur probante, et protège l'organisation en cas de contrôle ou de litige.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 1 — Définition et objectifs de l'archivage",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Conserver, organiser, retrouver</h3>
+        <p>L'<strong>archivage</strong> est l'ensemble des opérations visant à <strong>classer, conserver et rendre accessible</strong> les documents produits ou reçus par une organisation, dans le respect des règles légales et des besoins de gestion.</p>
+        <h4>Les objectifs</h4>
+        <ul>
+          <li><strong>Conserver la mémoire de l'organisation :</strong> garder la trace des décisions, des contrats, des opérations.</li>
+          <li><strong>Respecter les obligations légales :</strong> conservation des pièces comptables, des dossiers du personnel, des documents fiscaux.</li>
+          <li><strong>Faciliter les contrôles et les audits :</strong> fournir rapidement les documents demandés.</li>
+          <li><strong>Protéger les droits des personnes :</strong> conserver les preuves en cas de litige.</li>
+          <li><strong>Permettre la recherche d'information :</strong> retrouver rapidement un document.</li>
+        </ul>
+        <p><strong>Erreur fréquente :</strong> croire que l'archivage consiste simplement à stocker des papiers. C'est une activité organisée, avec des règles et des méthodes.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 2 — Les types d'archives",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Trois âges, trois usages</h3>
+        <figure>
+          <img src="archivage4_img01" alt="Schéma du cycle de vie des archives : archives courantes, intermédiaires, définitives." />
+          <figcaption>Le cycle de vie des archives</figcaption>
+        </figure>
+        <p>On distingue trois types d'archives selon leur fréquence d'utilisation et leur durée de conservation :</p>
+        <ul>
+          <li><strong>Archives courantes :</strong> documents utilisés régulièrement dans le service producteur, conservés à proximité immédiate du poste de travail. <em>Exemple :</em> les dossiers clients actifs dans une banque.</li>
+          <li><strong>Archives intermédiaires :</strong> documents qui ne sont plus utilisés couramment mais qui doivent être conservés pour une durée déterminée (obligations légales, litiges potentiels). Ils sont stockés dans un local dédié, accessibles sur demande.</li>
+          <li><strong>Archives définitives (historiques) :</strong> documents qui présentent un intérêt historique, scientifique ou patrimonial et qui sont conservés indéfiniment.</li>
+        </ul>
+        <p><strong>Erreur fréquente :</strong> conserver tous les documents indéfiniment, ce qui sature l'espace et rend la recherche difficile. Il faut appliquer les durées de conservation.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 3 — Les méthodes de classement",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Choisir la bonne méthode</h3>
+        <p>Le classement organise les documents selon un ordre logique. Les principales méthodes sont :</p>
+        <ul>
+          <li><strong>Alphabétique :</strong> par nom (clients, fournisseurs, employés). Simple, intuitif, adapté aux dossiers nominatifs.</li>
+          <li><strong>Numérique :</strong> par numéro de dossier, de facture ou de commande. Précis, adapté aux séries importantes.</li>
+          <li><strong>Chronologique :</strong> par date. Adapté aux documents qui suivent un ordre temporel.</li>
+          <li><strong>Thématique :</strong> par sujet ou par projet. Adapté aux dossiers documentaires.</li>
+          <li><strong>Géographique :</strong> par lieu. Adapté aux organisations multi-sites.</li>
+        </ul>
+        <p>Le choix de la méthode dépend de la nature des documents et des besoins de recherche. Il est possible de combiner plusieurs méthodes (par exemple : alphabétique puis chronologique).</p>
+        <p><strong>Erreur fréquente :</strong> mélanger les méthodes sans règle claire. Cela crée de la confusion et fait perdre du temps.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 4 — Les supports d'archivage : papier et numérique",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Deux supports complémentaires</h3>
+        <p>Le choix du support dépend du type de document, de la durée de conservation et des moyens disponibles.</p>
+        <h4>Le support papier</h4>
+        <ul>
+          <li><strong>Avantages :</strong> robuste, lisible sans équipement, valeur juridique reconnue.</li>
+          <li><strong>Inconvénients :</strong> encombrant, vulnérable au feu et à l'humidité, recherche lente.</li>
+        </ul>
+        <h4>Le support numérique</h4>
+        <ul>
+          <li><strong>Avantages :</strong> gain de place, recherche rapide, partage facile.</li>
+          <li><strong>Inconvénients :</strong> dépendance à l'électricité et aux logiciels, risque de perte de données, obsolescence des formats.</li>
+        </ul>
+        <p><strong>La numérisation</strong> consiste à transformer des documents papier en fichiers numériques. Elle permet de concilier conservation physique et accès rapide.</p>
+        <p><strong>Erreur fréquente :</strong> croire que le numérique dispense de toute sauvegarde. Un fichier non sauvegardé peut être perdu à jamais.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 4 — La microforme et la numérisation",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Conserver à long terme</h3>
+        <p><strong>La microforme.</strong> Support de conservation à long terme (microfilm, microfiche), peu encombrant, mais nécessite un lecteur spécifique. Elle est utilisée pour les archives historiques et les documents très anciens.</p>
+        <p><strong>La numérisation.</strong> Transformation de documents papier en fichiers numériques. Elle suit plusieurs étapes :</p>
+        <ol>
+          <li><strong>Préparation :</strong> retirer les agrafes, classer les documents.</li>
+          <li><strong>Numérisation :</strong> scanner les pages et enregistrer les fichiers.</li>
+          <li><strong>Indexation :</strong> nommer et classer les fichiers numériques.</li>
+          <li><strong>Sauvegarde :</strong> copier les fichiers sur un support de sauvegarde (serveur, cloud, disque dur externe).</li>
+        </ol>
+        <p><strong>Erreur fréquente :</strong> numériser sans indexer. Sans nom clair et sans classement, les fichiers numériques deviennent aussi difficiles à retrouver que des papiers en désordre.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 5 — Les conditions de conservation",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Protéger les documents</h3>
+        <figure>
+          <img src="archivage4_img02" alt="Local d'archives avec étagères, boîtes d'archives et armoires fermées." />
+          <figcaption>Un local d'archives bien organisé</figcaption>
+        </figure>
+        <p>Pour garantir la conservation des documents, il faut respecter certaines conditions :</p>
+        <ul>
+          <li><strong>Le local :</strong> dédié, sec, aéré, à l'abri de la lumière directe du soleil.</li>
+          <li><strong>La température :</strong> stable, autour de 18-20 °C.</li>
+          <li><strong>L'humidité :</strong> contrôlée, entre 45 % et 55 %.</li>
+          <li><strong>Les étagères et armoires :</strong> solides, surélevées pour éviter l'humidité du sol, fermées à clé.</li>
+          <li><strong>La protection contre les insectes et les rongeurs :</strong> pièges, produits adaptés, contrôle régulier.</li>
+        </ul>
+        <p><strong>Erreur fréquente :</strong> stocker des archives dans un local humide ou exposé au soleil. Les documents papier se dégradent et les supports numériques peuvent être endommagés.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 5 — La sécurité des archives",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Prévenir les risques</h3>
+        <p>Les archives sont exposées à plusieurs risques : vol, incendie, dégâts des eaux, intrusion numérique. Des mesures de sécurité sont indispensables :</p>
+        <ul>
+          <li><strong>Contrôle des accès :</strong> seules les personnes autorisées peuvent entrer dans le local.</li>
+          <li><strong>Protection contre l'incendie :</strong> extincteurs, détecteurs de fumée, matériaux ignifuges.</li>
+          <li><strong>Protection contre le vol :</strong> armoires fermées à clé, registre des consultations, surveillance.</li>
+          <li><strong>Sauvegarde numérique :</strong> sauvegardes régulières sur supports externes ou cloud, mots de passe forts, antivirus.</li>
+          <li><strong>Plan de reprise :</strong> prévoir comment restaurer les archives en cas de sinistre.</li>
+        </ul>
+        <p><strong>Erreur fréquente :</strong> négliger la sauvegarde numérique. Un disque dur peut tomber en panne, un fichier peut être perdu. La sauvegarde régulière est la meilleure assurance.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 6 — Les durées de conservation",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Combien de temps conserver ?</h3>
+        <figure>
+          <img src="archivage4_img03" alt="Tableau de gestion des archives avec durées de conservation et sort final pour chaque catégorie de documents." />
+          <figcaption>Le tableau de gestion des archives</figcaption>
+        </figure>
+        <p>Les durées de conservation dépendent de la nature des documents et des obligations légales. Quelques repères :</p>
+        <table>
+          <thead>
+            <tr><th>Type de document</th><th>Durée indicative</th><th>Référence</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Pièces comptables (factures, journaux)</td><td>10 ans</td><td>Obligation OHADA</td></tr>
+            <tr><td>Documents fiscaux</td><td>4 ans (délai de reprise)</td><td>Législation fiscale</td></tr>
+            <tr><td>Dossiers du personnel</td><td>Durée de la relation + 5 ans</td><td>Code du Travail</td></tr>
+            <tr><td>Contrats</td><td>Durée du contrat + 5 ans</td><td>Droit civil</td></tr>
+          </tbody>
+        </table>
+        <p>Le <strong>tableau de gestion</strong> est le document qui fixe, pour chaque catégorie de documents, la durée de conservation et le sort final (élimination, versement aux archives définitives).</p>
+        <p><strong>Erreur fréquente :</strong> éliminer des documents sans vérifier les obligations légales. Cela peut entraîner des sanctions ou des pertes de preuve.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 6 — L'élimination et le versement",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le sort final des documents</h3>
+        <p>À l'issue de la durée de conservation, les documents peuvent être :</p>
+        <ul>
+          <li><strong>Éliminés :</strong> détruits lorsque leur conservation n'est plus nécessaire. L'élimination doit suivre une procédure : bordereau d'élimination, contrôle par l'archiviste, destruction sécurisée (broyage, incinération).</li>
+          <li><strong>Versés aux archives définitives :</strong> transférés dans un service d'archives historiques pour une conservation permanente.</li>
+          <li><strong>Conservés :</strong> si un litige ou une enquête est en cours, la conservation peut être prolongée.</li>
+        </ul>
+        <p><strong>Erreur fréquente :</strong> détruire des documents sans procédure. Une destruction non contrôlée peut faire disparaître des preuves essentielles.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 7 — La confidentialité et la protection des données",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Protéger les informations sensibles</h3>
+        <p>Certains documents contiennent des informations sensibles : dossiers du personnel, documents médicaux, données financières, secrets industriels. Leur accès doit être strictement contrôlé.</p>
+        <h4>Les mesures de protection</h4>
+        <ul>
+          <li><strong>Accès restreint :</strong> seules les personnes autorisées peuvent consulter certains documents. Mise en place de niveaux d'habilitation.</li>
+          <li><strong>Protection des données personnelles :</strong> respect de la vie privée, consentement des personnes, droit d'accès et de rectification.</li>
+          <li><strong>Sécurité numérique :</strong> mots de passe, chiffrement, sauvegardes, protection contre les virus et les intrusions.</li>
+          <li><strong>Formation du personnel :</strong> sensibilisation aux règles de confidentialité.</li>
+        </ul>
+        <p><strong>Erreur fréquente :</strong> laisser des documents confidentiels accessibles à tous. Une fuite de données peut avoir des conséquences graves (juridiques, financières, réputationnelles).</p>
+      </div>
+    `
+  },
+  {
+    title: "Méthode — Organiser l'archivage d'une école",
+    content: `
+      <div class="bloc exemple">
+        <div class="bloc-label">Méthode</div>
+        <h3>Un cas pratique complet</h3>
+        <p><strong>Situation.</strong> Une école de Goma doit archiver les dossiers de ses élèves et les documents administratifs. Le secrétaire doit organiser un système d'archivage efficace.</p>
+        <h4>Étape 1 — Recenser les documents</h4>
+        <p>Identifier les catégories : dossiers d'élèves, bulletins, certificats, courriers administratifs, factures, registres des procès-verbaux.</p>
+        <h4>Étape 2 — Classer par type d'archives</h4>
+        <ul>
+          <li><strong>Archives courantes :</strong> dossiers d'élèves de l'année en cours, classés alphabétiquement dans une armoire fermée à clé.</li>
+          <li><strong>Archives intermédiaires :</strong> copies des bulletins et des certificats, classées chronologiquement dans des boîtes.</li>
+          <li><strong>Archives définitives :</strong> registres des procès-verbaux, conservés indéfiniment.</li>
+        </ul>
+        <h4>Étape 3 — Fixer les durées de conservation</h4>
+        <p>Dossiers d'élèves : 10 ans après la sortie. Bulletins : 30 ans. Procès-verbaux : conservation permanente.</p>
+        <h4>Étape 4 — Prévoir la numérisation</h4>
+        <p>Scanner les documents les plus consultés (bulletins, certificats) et les sauvegarder sur un disque externe.</p>
+        <h4>Étape 5 — Établir le tableau de gestion</h4>
+        <p>Consigner par écrit les durées et le sort final de chaque catégorie. Afficher le tableau dans le local d'archives.</p>
+        <h4>Étape 6 — Sécuriser le local</h4>
+        <p>Installer une armoire fermée à clé, un extincteur, un détecteur de fumée. Contrôler l'accès.</p>
+        <p><strong>Erreur à éviter :</strong> vouloir tout numériser sans organisation. La numérisation doit s'accompagner d'une indexation rigoureuse.</p>
+      </div>
+    `
+  },
+  {
+    title: "Synthèse — Archiver pour durer",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Synthèse</div>
+        <h3>Ce qu'il faut retenir</h3>
+        <p>L'archivage est une fonction essentielle de l'organisation : il conserve la mémoire, protège les droits et garantit la disponibilité de l'information.</p>
+        <ul>
+          <li><strong>Types d'archives :</strong> courantes (usage fréquent), intermédiaires (conservation temporaire), définitives (mémoire historique).</li>
+          <li><strong>Classement :</strong> alphabétique, numérique, chronologique, thématique, géographique.</li>
+          <li><strong>Supports :</strong> papier (robuste, encombrant), numérique (rapide, mais dépendant des sauvegardes), microforme (conservation longue), numérisation (compromis).</li>
+          <li><strong>Conservation :</strong> local sec, température stable, protection contre le vol et l'incendie.</li>
+          <li><strong>Durées :</strong> pièces comptables 10 ans (OHADA), documents fiscaux 4 ans, dossiers du personnel durée de la relation + 5 ans.</li>
+          <li><strong>Confidentialité :</strong> accès restreint, protection des données personnelles, sécurité numérique.</li>
+        </ul>
+        <p>Dans le contexte congolais, où les contrôles fiscaux et les litiges sont fréquents, un archivage rigoureux est un atout majeur pour la crédibilité et la survie des organisations.</p>
+      </div>
+    `
+  },
+  {
+    title: "Évaluation finale — Archivage",
+    content: `
+      <p>Répondez aux questions suivantes pour vérifier votre compréhension du cours. Une seule réponse est correcte par question.</p>
+      <div class="quiz-container">
+        <div id="quizQuestions"></div>
+        <button id="submitQuiz" class="quiz-btn-submit">
+          Valider mes réponses
+        </button>
+        <div id="quizResult" class="quiz-result"></div>
+      </div>
+    `
+  }
+];
+const questions = [
+  {
+    text: "L'archivage consiste à :",
+    options: [
+      "Jeter les documents",
+      "Classer, conserver et retrouver les documents",
+      "Vendre les documents",
+      "Modifier les documents"
+    ],
+    correct: 1
+  },
+  {
+    text: "Les archives courantes sont :",
+    options: [
+      "Des documents anciens",
+      "Des documents utilisés régulièrement",
+      "Des documents détruits",
+      "Des documents secrets"
+    ],
+    correct: 1
+  },
+  {
+    text: "Les archives définitives sont conservées :",
+    options: [
+      "Temporairement",
+      "Indéfiniment",
+      "Un mois",
+      "Une semaine"
+    ],
+    correct: 1
+  },
+  {
+    text: "Le classement alphabétique se fait par :",
+    options: ["Date", "Nom", "Numéro", "Lieu"],
+    correct: 1
+  },
+  {
+    text: "Le classement chronologique se fait par :",
+    options: ["Date", "Nom", "Thème", "Numéro"],
+    correct: 0
+  },
+  {
+    text: "Le support papier présente l'inconvénient d'être :",
+    options: [
+      "Peu encombrant",
+      "Vulnérable au feu et à l'humidité",
+      "Facile à sauvegarder",
+      "Numérique"
+    ],
+    correct: 1
+  },
+  {
+    text: "La numérisation consiste à :",
+    options: [
+      "Détruire les documents papier",
+      "Transformer les documents papier en fichiers numériques",
+      "Imprimer les fichiers",
+      "Classer les dossiers"
+    ],
+    correct: 1
+  },
+  {
+    text: "La température idéale pour un local d'archives est d'environ :",
+    options: ["5 °C", "18-20 °C", "40 °C", "0 °C"],
+    correct: 1
+  },
+  {
+    text: "Le tableau de gestion des archives sert à :",
+    options: [
+      "Fixer les durées de conservation et le sort final",
+      "Calculer la TVA",
+      "Rédiger les factures",
+      "Gérer les stocks"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'élimination des archives consiste à :",
+    options: [
+      "Détruire les documents dont la conservation n'est plus nécessaire",
+      "Conserver tous les documents",
+      "Vendre les documents",
+      "Numériser les documents"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le versement consiste à :",
+    options: [
+      "Transférer les archives intermédiaires vers les archives définitives",
+      "Détruire les documents",
+      "Vendre les documents",
+      "Numériser les documents"
+    ],
+    correct: 0
+  },
+  {
+    text: "La confidentialité des archives concerne :",
+    options: [
+      "Tous les documents",
+      "Les documents sensibles",
+      "Uniquement les factures",
+      "Uniquement les courriers"
+    ],
+    correct: 1
+  },
+  {
+    text: "Une sauvegarde régulière des fichiers numériques permet de :",
+    options: [
+      "Perdre les données",
+      "Éviter la perte de données",
+      "Ralentir l'ordinateur",
+      "Supprimer les fichiers"
+    ],
+    correct: 1
+  },
+  {
+    text: "Les pièces comptables doivent être conservées pendant :",
+    options: [
+      "1 an",
+      "10 ans (obligation OHADA)",
+      "50 ans",
+      "1 mois"
+    ],
+    correct: 1
+  },
+  {
+    text: "Un local d'archives doit être :",
+    options: [
+      "Humide et exposé au soleil",
+      "Sec, aéré et à l'abri de la lumière directe",
+      "Ouvert à tous",
+      "Sans étagères"
+    ],
+    correct: 1
+  },
+  {
+    text: "Le classement thématique se fait par :",
+    options: ["Sujet", "Date", "Nom", "Numéro"],
+    correct: 0
+  },
+  {
+    text: "L'archivage numérique présente l'avantage de :",
+    options: [
+      "Prendre beaucoup de place",
+      "Permettre une recherche rapide",
+      "Être vulnérable au feu",
+      "Nécessiter un local immense"
+    ],
+    correct: 1
+  },
+  {
+    text: "La protection des données personnelles exige :",
+    options: [
+      "De diffuser les données à tous",
+      "De respecter la vie privée et le consentement",
+      "De vendre les données",
+      "D'ignorer les droits des personnes"
+    ],
+    correct: 1
+  },
+  {
+    text: "Le bordereau d'élimination sert à :",
+    options: [
+      "Tracer les documents détruits",
+      "Classer les documents",
+      "Archiver les factures",
+      "Numériser les documents"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'objectif principal de l'archivage en 4e Humanité est de :",
+    options: [
+      "Remplacer l'organisation des bureaux",
+      "Conserver et retrouver efficacement les documents",
+      "Étudier la littérature",
+      "Gérer les stocks"
+    ],
+    correct: 1
+  }
+];
+
+try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+        questions.forEach(function (q) {
+            if (!q.text) q.text = q.question || q.q || q.enonce || q.titre || "";
+            if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+            if (typeof q.correct === "undefined") {
+                if (typeof q.answer !== "undefined") q.correct = q.answer;
+                else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+            }
+        });
+    }
+} catch (e) {}
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+const pageTitle = document.getElementById('pageTitle');
+pageTitle.textContent = "ECOLIA · " + COURSE_TITLE;
+document.title = "ECOLIA — " + COURSE_TITLE;
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim() || slides.length === 0) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp("(" + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ")", 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderEmptyState() {
+    contentDiv.innerHTML = '<div class="empty-state"><div class="icon">·</div><span class="tag">Bientôt disponible</span><h2>' + COURSE_TITLE + '</h2><p>Ce cours est en préparation. Le contenu sera ajouté prochainement.</p></div>';
+    slideCounterSpan.textContent = '0/0';
+    progressFill.style.width = '0%';
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    counterSpan.textContent = '—';
+}
+
+function renderQuiz() {
+    const qc = document.getElementById('quizQuestions');
+    if (!qc) return;
+    if (typeof questions === 'undefined' || questions.length === 0) {
+        qc.innerHTML = '<p style="color:#666;font-style:italic;">Quiz bientot disponible.</p>';
+        return;
+    }
+    let html = '';
+    questions.forEach((q, i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o, k) => {
+            html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>';
+        });
+        html += '</div>';
+    });
+    qc.innerHTML = html;
+    const submitBtn = document.getElementById('submitQuiz');
+    if (submitBtn) {
+        submitBtn.onclick = () => {
+            let score = 0;
+            questions.forEach((q, i) => {
+                const s = document.querySelector('input[name="q' + i + '"]:checked');
+                if (s && parseInt(s.value) === q.correct) score++;
+            });
+            const pct = Math.round(score/questions.length*100);
+            document.getElementById('quizResult').innerHTML =
+                '<div style="background:var(--bg2);padding:16px;border-radius:10px;margin-top:14px;">' +
+                '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong></div>';
+        };
+    }
+}
+
+function renderSlide(index, keepHighlight) {
+    if (keepHighlight === undefined) keepHighlight = true;
+    if (slides.length === 0) { renderEmptyState(); return; }
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    if (index === slides.length - 1) renderQuiz();
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    if (slides.length === 0) return;
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (slides.length && currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (slides.length && currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+<!-- ECOLIA_IMAGE_LOADER_START -->
+<script>
+(function () {
+  var SITE = "https://ecolia-course.github.io/";
+  var NATIVE = false;
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function abs(u) { return /^(https?:|data:|blob:)/i.test(u) ? u : (NATIVE ? SITE + u.replace(/^(\.\/|\/)+/, "") : u); }
+  function ext(u) { var m = String(u).split("?")[0].match(/\.(jpe?g|png|gif|webp|svg)$/i); return m ? m[1].toLowerCase() : "jpg"; }
+  function hide(img) { img.onerror = null; img.style.display = "none"; }
+  var table = null, queue = [], queued = {}, running = false;
+  function enqueue(full, fn) {
+    if (queued[fn]) return;
+    queued[fn] = 1; queue.push([full, fn]);
+    if (!running) { running = true; setTimeout(next, 2500); }
+  }
+  function next() {
+    if (!queue.length) { running = false; return; }
+    if (!navigator.onLine) { running = false; return; }
+    var q = queue.shift(), t0 = Date.now();
+    try { CoursInterface.download(q[0], q[1]); } catch (e) { return setTimeout(next, 500); }
+    (function wait() {
+      var ok = false;
+      try { ok = !!CoursInterface.exists(q[1]); } catch (e) {}
+      if (ok) setTimeout(next, 1500);
+      else if (Date.now() - t0 > 40000) next();
+      else setTimeout(wait, 700);
+    })();
+  }
+  function exists(fn) { try { return !!CoursInterface.exists(fn); } catch (e) { return false; } }
+  function show(img) {
+    if (!table || img.getAttribute("data-ecolia-done")) return;
+    var id = img.getAttribute("data-image-id");
+    var url = table[id];
+    if (typeof url !== "string" || !url.length) { console.warn("ECOLIA : image absente du JSON :", id); return; }
+    img.setAttribute("data-ecolia-done", "1");
+    if (!NATIVE) { img.onerror = function () { hide(img); }; img.setAttribute("src", url); return; }
+    var full = abs(url), fn = "img_" + id + "." + ext(url);
+    if (exists(fn)) {
+      img.onerror = function () {
+        try { CoursInterface["delete"](fn); } catch (e) {}
+        queued[fn] = 0;
+        img.onerror = function () { hide(img); };
+        img.setAttribute("src", full);
+      };
+      img.setAttribute("src", "https://app.local/cours/" + fn);
+    } else {
+      img.onerror = function () { hide(img); };
+      img.setAttribute("src", full);
+      enqueue(full, fn);
+    }
+  }
+  function scan(root) {
+    if (!root || !root.querySelectorAll) return;
+    if (root.matches && root.matches("img[data-image-id]")) show(root);
+    root.querySelectorAll("img[data-image-id]").forEach(show);
+  }
+  function prefetchAll() {
+    var ids = {};
+    try { JSON.stringify(slides).replace(/data-image-id=\\?"([^"\\]+)/g, function (m, id) { ids[id] = 1; }); } catch (e) {}
+    Object.keys(ids).forEach(function (id) {
+      var url = table[id];
+      if (typeof url !== "string" || !url.length) return;
+      var fn = "img_" + id + "." + ext(url);
+      if (!exists(fn)) enqueue(abs(url), fn);
+    });
+  }
+  function start(tbl) {
+    table = tbl;
+    scan(document.body);
+    new MutationObserver(function (muts) {
+      muts.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.nodeType === 1) scan(n); }); });
+    }).observe(document.body, { childList: true, subtree: true });
+    if (NATIVE) prefetchAll();
+  }
+  var JSON_URL = NATIVE ? SITE + "images_ecolia.json" : "images_ecolia.json";
+  var KEY = "ecolia_images_json";
+  fetch(JSON_URL, NATIVE ? { cache: "no-cache" } : undefined)
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (table) { if (NATIVE) lsSet(KEY, JSON.stringify(table)); start(table); })
+    .catch(function (e) {
+      var saved = null;
+      if (NATIVE) { try { saved = JSON.parse(lsGet(KEY) || "null"); } catch (x) {} }
+      if (saved) start(saved);
+      else console.warn("ECOLIA : JSON des images indisponible.", e);
+    });
+})();
+</script>
+<!-- ECOLIA_IMAGE_LOADER_END -->
+
+
+
+
+
+<!-- ECOLIA_AUDIO_PLAYER_START -->
+<style>
+  #ecolia-audio-btn, #ecolia-dl-btn {
+    width: 30px; height: 30px; min-width: 30px; padding: 0; margin: 0 4px 0 0;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    cursor: pointer; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent; outline: none;
+  }
+  #ecolia-audio-btn { border: none; background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-dl-btn { border: 1.5px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb); }
+  #ecolia-dl-btn.ecolia-full { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-btn.ecolia-fixed { position: fixed; top: 8px; left: 8px; z-index: 2147483000; }
+  #ecolia-audio-btn:active, #ecolia-dl-btn:active { transform: scale(.92); }
+  #ecolia-audio-btn svg, #ecolia-dl-btn svg { width: 15px; height: 15px; fill: currentColor; pointer-events: none; }
+  #ecolia-audio-btn.ecolia-off, #ecolia-dl-btn.ecolia-off { display: none; }
+  #ecolia-audio-banner {
+    display: none; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0;
+    padding: 8px 14px; font-size: .82rem; line-height: 1.35;
+    background: var(--soft, #eef3fb); color: var(--p1, #123); border-bottom: 1px solid var(--bd, #c9d6ea);
+  }
+  #ecolia-audio-banner.on { display: flex; }
+  #ecolia-audio-banner .eab-txt { flex: 1 1 180px; }
+  #ecolia-audio-banner .eab-act { display: flex; gap: 6px; flex-wrap: wrap; }
+  #ecolia-audio-banner button {
+    border: 1px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb);
+    border-radius: 16px; padding: 5px 12px; font-size: .8rem; cursor: pointer;
+  }
+  #ecolia-audio-banner button.pri { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-banner .eab-bar { display: none; flex-basis: 100%; height: 4px; border-radius: 2px; overflow: hidden; background: var(--bd, #c9d6ea); }
+  #ecolia-audio-banner .eab-bar i { display: block; height: 100%; width: 0; background: var(--p2, #2563eb); transition: width .2s; }
+</style>
+<script>
+(function () {
+  var CFG = {"code":"Archivage4","base":"https://ecolia-course.github.io/ecolia-media/audio_files/","available":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],"count":15,"sizeMo":8,"sizes":{"1":744000,"2":418752,"3":513792,"4":530496,"5":528960,"6":498240,"7":498816,"8":475776,"9":502848,"10":508416,"11":411264,"12":538560,"13":861120,"14":648768,"15":82752},"fallback":{"1":[["fr","Sommaire, Archivage. Bienvenue dans le cours d'Archivage. Ce cours d'Archivage s'adresse aux élèves de la 4e année des Humanités, option Secrétariat-Administration, et reste utile aux options Commerciale et Gestion. Il vous apprendra à classer, conserver et retrouver les documents de manière efficace et sécurisée, en respectant les durées de conservation et les règles de confidentialité. Objectifs du cours. Définir l'archivage et ses objectifs. Distinguer les types d'archives (courantes, intermédiaires, définitives). Appliquer les méthodes de classement. Choisir les supports d'archivage adaptés. Déterminer les durées de conservation. Organiser un local d'archives et garantir la sécurité. Gérer la confidentialité des archives. Les grands chapitres du cours. Introduction à l'archivage. Les types d'archives. Les méthodes de classement. Les supports d'archivage. La conservation et la sécurité. Les durées de conservation et le sort final. La confidentialité et la protection des données. Compétences visées: à la fin de ce cours, vous serez capable d'organiser un système d'archivage efficace, de classer et conserver les documents, et de retrouver rapidement l'information. Ce cours complète l'Organisation des Bureaux (qui gère les flux quotidiens) et la Rédaction Administrative (qui produit les documents)."]],"2":[["fr","Chapitre 1, Pourquoi l'archivage? Situation-problème. Un document introuvable. Dans une entreprise de Kinshasa, un contrôleur fiscal demande les factures de l'année dernière. Le secrétaire cherche dans les armoires, les tiroirs, les cartons empilés dans le couloir: rien. Impossible de mettre la main sur les factures demandées. Résultat: l'entreprise est mise en défaut, elle risque une amende pour défaut de présentation des pièces. Question de départ: Comment éviter qu'un document important devienne introuvable au moment où il est nécessaire? L'archivage répond à ce besoin: il organise la conservation et la recherche des documents, garantit leur disponibilité et leur valeur probante, et protège l'organisation en cas de contrôle ou de litige."]],"3":[["fr","Chapitre 1, Définition et objectifs de l'archivage. Fondements théoriques. Conserver, organiser, retrouver. L'archivage est l'ensemble des opérations visant à classer, conserver et rendre accessible les documents produits ou reçus par une organisation, dans le respect des règles légales et des besoins de gestion. Les objectifs. Conserver la mémoire de l'organisation: garder la trace des décisions, des contrats, des opérations. Respecter les obligations légales: conservation des pièces comptables, des dossiers du personnel, des documents fiscaux. Faciliter les contrôles et les audits: fournir rapidement les documents demandés. Protéger les droits des personnes: conserver les preuves en cas de litige. Permettre la recherche d'information: retrouver rapidement un document. Erreur fréquente: croire que l'archivage consiste simplement à stocker des papiers. C'est une activité organisée, avec des règles et des méthodes."]],"4":[["fr","Chapitre 2, Les types d'archives. Fondements théoriques. Trois âges, trois usages. Le cycle de vie des archives. On distingue trois types d'archives selon leur fréquence d'utilisation et leur durée de conservation: Archives courantes: documents utilisés régulièrement dans le service producteur, conservés à proximité immédiate du poste de travail. Exemple: les dossiers clients actifs dans une banque. Archives intermédiaires: documents qui ne sont plus utilisés couramment mais qui doivent être conservés pour une durée déterminée (obligations légales, litiges potentiels). Ils sont stockés dans un local dédié, accessibles sur demande. Archives définitives (historiques): documents qui présentent un intérêt historique, scientifique ou patrimonial et qui sont conservés indéfiniment. Erreur fréquente: conserver tous les documents indéfiniment, ce qui sature l'espace et rend la recherche difficile. Il faut appliquer les durées de conservation."]],"5":[["fr","Chapitre 3, Les méthodes de classement. Fondements théoriques. Choisir la bonne méthode. Le classement organise les documents selon un ordre logique. Les principales méthodes sont: Alphabétique: par nom (clients, fournisseurs, employés). Simple, intuitif, adapté aux dossiers nominatifs. Numérique: par numéro de dossier, de facture ou de commande. Précis, adapté aux séries importantes. Chronologique: par date. Adapté aux documents qui suivent un ordre temporel. Thématique: par sujet ou par projet. Adapté aux dossiers documentaires. Géographique: par lieu. Adapté aux organisations multi-sites. Le choix de la méthode dépend de la nature des documents et des besoins de recherche. Il est possible de combiner plusieurs méthodes (par exemple: alphabétique puis chronologique). Erreur fréquente: mélanger les méthodes sans règle claire. Cela crée de la confusion et fait perdre du temps."]],"6":[["fr","Chapitre 4, Les supports d'archivage: papier et numérique. Fondements théoriques. Deux supports complémentaires. Le choix du support dépend du type de document, de la durée de conservation et des moyens disponibles. Le support papier. Avantages: robuste, lisible sans équipement, valeur juridique reconnue. Inconvénients: encombrant, vulnérable au feu et à l'humidité, recherche lente. Le support numérique. Avantages: gain de place, recherche rapide, partage facile. Inconvénients: dépendance à l'électricité et aux logiciels, risque de perte de données, obsolescence des formats. La numérisation consiste à transformer des documents papier en fichiers numériques. Elle permet de concilier conservation physique et accès rapide. Erreur fréquente: croire que le numérique dispense de toute sauvegarde. Un fichier non sauvegardé peut être perdu à jamais."]],"7":[["fr","Chapitre 4, La microforme et la numérisation. Fondements théoriques. Conserver à long terme. La microforme. Support de conservation à long terme (microfilm, microfiche), peu encombrant, mais nécessite un lecteur spécifique. Elle est utilisée pour les archives historiques et les documents très anciens. La numérisation. Transformation de documents papier en fichiers numériques. Elle suit plusieurs étapes: Préparation: retirer les agrafes, classer les documents. Numérisation: scanner les pages et enregistrer les fichiers. Indexation: nommer et classer les fichiers numériques. Sauvegarde: copier les fichiers sur un support de sauvegarde (serveur, cloud, disque dur externe). Erreur fréquente: numériser sans indexer. Sans nom clair et sans classement, les fichiers numériques deviennent aussi difficiles à retrouver que des papiers en désordre."]],"8":[["fr","Chapitre 5, Les conditions de conservation. Fondements théoriques. Protéger les documents. Un local d'archives bien organisé. Pour garantir la conservation des documents, il faut respecter certaines conditions: Le local: dédié, sec, aéré, à l'abri de la lumière directe du soleil. La température: stable, autour de 18-20 degrés Celsius. L'humidité: contrôlée, entre 45 pour cent et 55 pour cent. Les étagères et armoires: solides, surélevées pour éviter l'humidité du sol, fermées à clé. La protection contre les insectes et les rongeurs: pièges, produits adaptés, contrôle régulier. Erreur fréquente: stocker des archives dans un local humide ou exposé au soleil. Les documents papier se dégradent et les supports numériques peuvent être endommagés."]],"9":[["fr","Chapitre 5, La sécurité des archives. Fondements théoriques. Prévenir les risques. Les archives sont exposées à plusieurs risques: vol, incendie, dégâts des eaux, intrusion numérique. Des mesures de sécurité sont indispensables: Contrôle des accès: seules les personnes autorisées peuvent entrer dans le local. Protection contre l'incendie: extincteurs, détecteurs de fumée, matériaux ignifuges. Protection contre le vol: armoires fermées à clé, registre des consultations, surveillance. Sauvegarde numérique: sauvegardes régulières sur supports externes ou cloud, mots de passe forts, antivirus. Plan de reprise: prévoir comment restaurer les archives en cas de sinistre. Erreur fréquente: négliger la sauvegarde numérique. Un disque dur peut tomber en panne, un fichier peut être perdu. La sauvegarde régulière est la meilleure assurance."]],"10":[["fr","Chapitre 6, Les durées de conservation. Fondements théoriques. Combien de temps conserver? Le tableau de gestion des archives. Les durées de conservation dépendent de la nature des documents et des obligations légales. Quelques repères: Type de document. Durée indicative. Référence. Pièces comptables (factures, journaux). 10 ans. Obligation OHADA. Documents fiscaux. 4 ans (délai de reprise). Législation fiscale. Dossiers du personnel. Durée de la relation plus 5 ans. Code du Travail. Contrats. Durée du contrat plus 5 ans. Droit civil. Le tableau de gestion est le document qui fixe, pour chaque catégorie de documents, la durée de conservation et le sort final (élimination, versement aux archives définitives). Erreur fréquente: éliminer des documents sans vérifier les obligations légales. Cela peut entraîner des sanctions ou des pertes de preuve."]],"11":[["fr","Chapitre 6, L'élimination et le versement. Fondements théoriques. Le sort final des documents. À l'issue de la durée de conservation, les documents peuvent être: Éliminés: détruits lorsque leur conservation n'est plus nécessaire. L'élimination doit suivre une procédure: bordereau d'élimination, contrôle par l'archiviste, destruction sécurisée (broyage, incinération). Versés aux archives définitives: transférés dans un service d'archives historiques pour une conservation permanente. Conservés: si un litige ou une enquête est en cours, la conservation peut être prolongée. Erreur fréquente: détruire des documents sans procédure. Une destruction non contrôlée peut faire disparaître des preuves essentielles."]],"12":[["fr","Chapitre 7, La confidentialité et la protection des données. Fondements théoriques. Protéger les informations sensibles. Certains documents contiennent des informations sensibles: dossiers du personnel, documents médicaux, données financières, secrets industriels. Leur accès doit être strictement contrôlé. Les mesures de protection. Accès restreint: seules les personnes autorisées peuvent consulter certains documents. Mise en place de niveaux d'habilitation. Protection des données personnelles: respect de la vie privée, consentement des personnes, droit d'accès et de rectification. Sécurité numérique: mots de passe, chiffrement, sauvegardes, protection contre les virus et les intrusions. Formation du personnel: sensibilisation aux règles de confidentialité. Erreur fréquente: laisser des documents confidentiels accessibles à tous. Une fuite de données peut avoir des conséquences graves (juridiques, financières, réputationnelles)."]],"13":[["fr","Méthode, Organiser l'archivage d'une école. Méthode. Un cas pratique complet. Situation. Une école de Goma doit archiver les dossiers de ses élèves et les documents administratifs. Le secrétaire doit organiser un système d'archivage efficace. Étape 1, Recenser les documents. Identifier les catégories: dossiers d'élèves, bulletins, certificats, courriers administratifs, factures, registres des procès-verbaux. Étape 2, Classer par type d'archives. Archives courantes: dossiers d'élèves de l'année en cours, classés alphabétiquement dans une armoire fermée à clé. Archives intermédiaires: copies des bulletins et des certificats, classées chronologiquement dans des boîtes. Archives définitives: registres des procès-verbaux, conservés indéfiniment. Étape 3, Fixer les durées de conservation. Dossiers d'élèves: 10 ans après la sortie. Bulletins: 30 ans. Procès-verbaux: conservation permanente. Étape 4, Prévoir la numérisation. Scanner les documents les plus consultés (bulletins, certificats) et les sauvegarder sur un disque externe. Étape 5, Établir le tableau de gestion. Consigner par écrit les durées et le sort final de chaque catégorie. Afficher le tableau dans le local d'archives. Étape 6, Sécuriser le local. Installer une armoire fermée à clé, un extincteur, un détecteur de fumée. Contrôler l'accès. Erreur à éviter: vouloir tout numériser sans organisation. La numérisation doit s'accompagner d'une indexation rigoureuse."]],"14":[["fr","Synthèse, Archiver pour durer. Synthèse. Ce qu'il faut retenir. L'archivage est une fonction essentielle de l'organisation: il conserve la mémoire, protège les droits et garantit la disponibilité de l'information. Types d'archives: courantes (usage fréquent), intermédiaires (conservation temporaire), définitives (mémoire historique). Classement: alphabétique, numérique, chronologique, thématique, géographique. Supports: papier (robuste, encombrant), numérique (rapide, mais dépendant des sauvegardes), microforme (conservation longue), numérisation (compromis). Conservation: local sec, température stable, protection contre le vol et l'incendie. Durées: pièces comptables 10 ans (OHADA), documents fiscaux 4 ans, dossiers du personnel durée de la relation plus 5 ans. Confidentialité: accès restreint, protection des données personnelles, sécurité numérique. Dans le contexte congolais, où les contrôles fiscaux et les litiges sont fréquents, un archivage rigoureux est un atout majeur pour la crédibilité et la survie des organisations."]],"15":[["fr","Évaluation finale, Archivage. Répondez aux questions suivantes pour vérifier votre compréhension du cours. Une seule réponse est correcte par question."]]}};
+  var CACHE = "ecolia-cours-v1";                       // même cache que l'application
+  var PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  var PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+  var DL = '<svg viewBox="0 0 24 24"><path d="M11 3h2v9.2l3.6-3.6L18 10l-6 6-6-6 1.4-1.4L11 12.2V3zM5 19h14v2H5z"/></svg>';
+  var OK = '<svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>';
+  // Réparation du quiz : certains cours stockent les choix sous "opts" (ou autre) au lieu de "options"
+  try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+      questions.forEach(function (q) {
+        if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+        if (q.text === undefined) q.text = q.question || q.q || q.enonce || q.titre || "";
+        if (typeof q.correct === "undefined") {
+          if (typeof q.answer !== "undefined") q.correct = q.answer;
+          else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+        }
+      });
+    }
+  } catch (e) {}
+  var synth = window.speechSynthesis || null;
+  var HAS_CACHE = !!(window.caches && window.caches.open);
+  var NATIVE = false;           // APK ECOLIA : pont Java "CoursInterface" (fichiers dans le dossier de l'application)
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  var LATER = "ecolia_audio_later_" + CFG.code;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+  function init() {
+    if (document.getElementById("ecolia-audio-btn")) return;
+
+    // ---------- éléments de l'interface ----------
+    var btn = document.createElement("button");
+    btn.id = "ecolia-audio-btn"; btn.type = "button"; btn.className = "ecolia-off";
+    btn.setAttribute("aria-label", "Écouter la leçon"); btn.innerHTML = PLAY;
+    var dlBtn = document.createElement("button");
+    dlBtn.id = "ecolia-dl-btn"; dlBtn.type = "button"; dlBtn.className = "ecolia-off";
+    dlBtn.innerHTML = DL;
+    var host = document.querySelector(".header-right");
+    if (host) { host.insertBefore(dlBtn, host.firstChild); host.insertBefore(btn, dlBtn); }   // dans la barre du haut : ne scrolle jamais
+    else { btn.className += " ecolia-fixed"; document.body.appendChild(btn); }
+
+    var banner = document.createElement("div");
+    banner.id = "ecolia-audio-banner";
+    banner.innerHTML = '<span class="eab-txt"></span><span class="eab-act"></span><div class="eab-bar"><i></i></div>';
+    var content = document.getElementById("content");
+    if (content && content.parentNode) content.parentNode.insertBefore(banner, content);
+    else document.body.insertBefore(banner, document.body.firstChild);
+    var txtEl = banner.querySelector(".eab-txt"), actEl = banner.querySelector(".eab-act");
+    var barEl = banner.querySelector(".eab-bar"), barI = barEl.firstChild;
+
+    var audio = new Audio();            // un seul élément Audio, réutilisé (exigé par les navigateurs mobiles)
+    audio.preload = "auto";
+    var st = { idx: -1, auto: false, advancing: false, mode: null, speaking: false, token: 0, chunks: [], ci: 0, blobUrl: null, playTok: 0 };
+    var dl = { state: "none", cached: 0, busy: false, cancel: false };   // none | partial | full
+    var bnMode = null, hideTimer = null;
+    if (synth && synth.getVoices) { try { synth.getVoices(); } catch (e) {} }
+
+    function cur() {
+      try { if (typeof currentSlide === "number") return currentSlide; } catch (e) {}
+      return 0;
+    }
+    function hasMp3(i) { return CFG.available.indexOf(i + 1) !== -1; }
+    function fb(i) { return CFG.fallback && CFG.fallback[String(i + 1)]; }
+    function hasAudio(i) { return hasMp3(i) || (!!synth && !!fb(i)); }
+    function urlN(n) {   // dans l'APK la page est sur https://app.local : une adresse relative doit pointer vers le site
+      var b = CFG.base;
+      if (NATIVE && !/^https?:/i.test(b)) b = "https://ecolia-course.github.io/" + b.replace(/^(\.\.\/|\.\/)+/, "");
+      return new URL(b + nameN(n), location.href).href;
+    }
+    function setIcon(playing) { btn.innerHTML = playing ? PAUSE : PLAY; }
+    function isPlaying() { return st.mode === "mp3" ? !audio.paused : (st.mode === "tts" && st.speaking); }
+    function mo() { return "≈ " + CFG.sizeMo + " Mo"; }
+    function nameN(n) { return "audio_" + CFG.code + "_" + n + ".mp3"; }
+
+    // ====================================================================
+    //  Stockage hors ligne : 2 moteurs, même interface
+    //    - APK : fichiers du dossier de l'application (CoursInterface), servis par https://app.local/cours/
+    //    - Web : Cache Storage du navigateur (même cache que l'application web)
+    // ====================================================================
+    function nativeStore() {
+      var okKey = "ecolia_audio_ok_" + CFG.code;
+      function readOk() { try { return JSON.parse(lsGet(okKey) || "[]"); } catch (e) { return []; } }
+      function writeOk(a) { lsSet(okKey, JSON.stringify(a)); }
+      function exists(n) { try { return !!CoursInterface.exists(nameN(n)); } catch (e) { return false; } }
+      function local(n) { return location.origin + "/cours/" + nameN(n); }
+      function verify(n) {                                   // fichier complet ? (taille exacte connue à la génération)
+        return fetch(local(n), { cache: "no-store" }).then(function (r) { return r.blob(); }).then(function (b) {
+          var exp = CFG.sizes && CFG.sizes[String(n)];
+          return (b.size > 2000 && (!exp || b.size === exp)) ? b : null;
+        }).catch(function () { return null; });
+      }
+      return {
+        list: function () {
+          var ok = readOk().filter(exists); writeOk(ok); return Promise.resolve(ok);
+        },
+        get: function (n) { return exists(n) ? verify(n) : Promise.resolve(null); },
+        put: function (n) {
+          return new Promise(function (res, rej) {
+            try { CoursInterface.download(urlN(n), nameN(n)); } catch (e) { return rej(e); }
+            var t0 = Date.now();
+            function next() { if (Date.now() - t0 > 120000) rej(new Error("délai dépassé")); else setTimeout(poll, 800); }
+            function poll() {
+              if (!exists(n)) return next();
+              verify(n).then(function (b) {
+                if (!b) return next();
+                var ok = readOk(); if (ok.indexOf(n) < 0) ok.push(n); writeOk(ok); res();
+              });
+            }
+            setTimeout(poll, 800);
+          });
+        },
+        del: function (n) {
+          try { CoursInterface.delete(nameN(n)); } catch (e) {}
+          writeOk(readOk().filter(function (x) { return x !== n; }));
+          return Promise.resolve();
+        }
+      };
+    }
+    function cacheStore() {
+      return {
+        list: function () {
+          return caches.open(CACHE).then(function (c) {
+            return Promise.all(CFG.available.map(function (n) {
+              return c.match(urlN(n)).then(function (r) {
+                if (!r) return 0;
+                if ((r.headers.get("content-type") || "").indexOf("audio") !== 0) { c.delete(urlN(n)); return 0; }   // ancien contenu invalide
+                return n;
+              });
+            }));
+          }).then(function (a) { return a.filter(Boolean); });
+        },
+        get: function (n) {
+          return caches.open(CACHE).then(function (c) { return c.match(urlN(n)); })
+            .then(function (r) { return r ? r.blob() : null; }).then(function (b) { return b && b.size > 2000 ? b : null; });
+        },
+        put: function (n) {
+          var u = urlN(n);
+          return fetch(u, { cache: "no-store" }).then(function (r) {
+            if (!r.ok || r.status !== 200) throw new Error("HTTP " + r.status);
+            return r.blob();
+          }).then(function (b) {
+            if (b.size < 2000 || (b.type && b.type.indexOf("audio") !== 0 && b.type.indexOf("octet") < 0)) throw new Error("fichier invalide");
+            return caches.open(CACHE).then(function (c) { return c.put(u, new Response(b, { headers: { "Content-Type": "audio/mpeg" } })); });
+          });
+        },
+        del: function (n) { return caches.open(CACHE).then(function (c) { return c.delete(urlN(n)); }); }
+      };
+    }
+    var store = NATIVE ? nativeStore() : (HAS_CACHE ? cacheStore() : null);
+
+    // ====================================================================
+    //  Bannière : invitation, confirmations, progression
+    // ====================================================================
+    function showBanner(mode, text, buttons, pct) {
+      clearTimeout(hideTimer);
+      bnMode = mode;
+      txtEl.textContent = text;
+      actEl.innerHTML = "";
+      (buttons || []).forEach(function (b) {
+        var e = document.createElement("button");
+        e.type = "button"; e.textContent = b.label; if (b.pri) e.className = "pri";
+        e.addEventListener("click", function (ev) { ev.stopPropagation(); b.fn(); });
+        actEl.appendChild(e);
+      });
+      if (typeof pct === "number") { barEl.style.display = "block"; barI.style.width = pct + "%"; }
+      else barEl.style.display = "none";
+      banner.classList.add("on");
+    }
+    function hideBanner() { clearTimeout(hideTimer); bnMode = null; banner.classList.remove("on"); }
+    function flash(text) { showBanner("info", text, []); hideTimer = setTimeout(hideBanner, 4000); }
+
+    function refreshUI() {
+      var show = !!store && CFG.available.length > 0;
+      dlBtn.classList.toggle("ecolia-off", !show);
+      dlBtn.classList.toggle("ecolia-full", dl.state === "full");
+      dlBtn.innerHTML = dl.state === "full" ? OK : DL;
+      dlBtn.setAttribute("aria-label", dl.state === "full" ? "Audios téléchargés : supprimer" : "Télécharger les audios");
+      dlBtn.title = dlBtn.getAttribute("aria-label");
+    }
+    function refreshCacheState(done) {
+      if (!store) { dl.state = "none"; refreshUI(); if (done) done(); return; }
+      store.list().then(function (ok) {
+        dl.cached = ok.length;
+        dl.state = dl.cached === 0 ? "none" : (dl.cached >= CFG.available.length ? "full" : "partial");
+      }).catch(function () { dl.state = "none"; }).then(function () { refreshUI(); if (done) done(); });
+    }
+
+    function askDownload(fromInvite) {
+      var left = CFG.available.length - dl.cached;
+      var txt = dl.state === "partial"
+        ? "Il reste " + left + " audio(s) à télécharger pour écouter ce cours sans internet."
+        : "🔊 Télécharger les audios de ce cours (" + mo() + ") pour les écouter sans internet ? Wi-Fi recommandé.";
+      showBanner(fromInvite ? "invite" : "confirm", txt, [
+        { label: fromInvite ? "Plus tard" : "Annuler", fn: function () { if (fromInvite) lsSet(LATER, "1"); hideBanner(); } },
+        { label: "Télécharger", pri: true, fn: startDownload }
+      ]);
+    }
+    function askDelete() {
+      showBanner("confirm", "Supprimer les audios téléchargés de ce cours (" + mo() + ") ? Vous pourrez toujours les écouter en ligne.", [
+        { label: "Annuler", fn: hideBanner },
+        { label: "Supprimer", pri: true, fn: doDelete }
+      ]);
+    }
+
+    function startDownload() {
+      if (dl.busy || !store) return;
+      dl.busy = true; dl.cancel = false;
+      var total = CFG.available.length, done = 0, quota = false, fails = 0, todo = [];
+      store.list().then(function (have) {
+        CFG.available.forEach(function (n) { if (have.indexOf(n) < 0) todo.push(n); });
+        done = total - todo.length;
+        function paint() {
+          var msg = "Téléchargement des audios : " + done + " / " + total;
+          if (bnMode === "progress") {                  // met à jour sans recréer les boutons (sinon un appui peut être perdu)
+            txtEl.textContent = msg; barI.style.width = Math.round(done / total * 100) + "%";
+          } else {
+            showBanner("progress", msg, [
+              { label: "Annuler", fn: function () { dl.cancel = true; } }
+            ], Math.round(done / total * 100));
+          }
+        }
+        paint();
+        function worker() {
+          if (dl.cancel || quota || !todo.length) return Promise.resolve();
+          var n = todo.shift();
+          return store.put(n).then(function () { done++; paint(); }).catch(function (e) {
+            if (e && (e.name === "QuotaExceededError" || /quota/i.test(String(e.message)))) quota = true;
+            fails++;
+          }).then(worker);
+        }
+        return Promise.all([worker(), worker()]);
+      }).catch(function () { fails++; }).then(function () {
+        dl.busy = false;
+        refreshCacheState(function () {
+          if (dl.state === "full") flash("✓ Audios téléchargés : le cours se lit maintenant sans internet.");
+          else if (dl.cancel) flash("Téléchargement interrompu (" + dl.cached + " / " + total + "). Vous pourrez reprendre plus tard.");
+          else showBanner("error", quota ? "Espace insuffisant sur l'appareil. Libérez de la place puis réessayez."
+            : "Certains audios n'ont pas pu être téléchargés (connexion ?).", [
+            { label: "Fermer", fn: hideBanner }, { label: "Réessayer", pri: true, fn: startDownload }
+          ]);
+        });
+      });
+    }
+    function doDelete() {
+      if (!store) return;
+      Promise.all(CFG.available.map(function (n) { return store.del(n); })).catch(function () {}).then(function () {
+        lsDel(LATER);
+        refreshCacheState(function () { flash("Audios supprimés de cet appareil."); });
+      });
+    }
+
+    dlBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (dl.busy) return;
+      if (dl.state === "full") askDelete(); else askDownload(false);
+    });
+
+    // ====================================================================
+    //  Voix intégrée au téléphone (hors ligne, sans limite)
+    // ====================================================================
+    function pickVoice(lang) {
+      var vs = [];
+      try { vs = synth.getVoices() || []; } catch (e) {}
+      var pre = lang === "en" ? "en" : "fr", best = null;
+      for (var k = 0; k < vs.length; k++) {
+        var v = vs[k];
+        if ((v.lang || "").toLowerCase().indexOf(pre) !== 0) continue;
+        if (!best || (v.localService && !best.localService)) best = v;
+      }
+      return best;
+    }
+    function hardSplit(text, max) {
+      var out = [];
+      while (text.length > max) {
+        var cut = text.lastIndexOf(" ", max);
+        if (cut < 40) cut = max;
+        out.push(text.slice(0, cut)); text = text.slice(cut).replace(/^\s+/, "");
+      }
+      if (text) out.push(text);
+      return out;
+    }
+    function buildChunks(segs) {                  // morceaux courts : évite l'arrêt des longs textes sur Chrome
+      var out = [];
+      segs.forEach(function (s) {
+        var cur2 = "", parts = s[1].match(/[^.!?;:]+[.!?;:]*\s*/g) || [s[1]];
+        parts.forEach(function (p) {
+          if (cur2 && (cur2 + p).length > 160) { out.push({ lang: s[0], text: cur2.trim() }); cur2 = p; }
+          else cur2 += p;
+        });
+        if (cur2.trim()) out.push({ lang: s[0], text: cur2.trim() });
+      });
+      var res = [];
+      out.forEach(function (c) { hardSplit(c.text, 190).forEach(function (t) { res.push({ lang: c.lang, text: t }); }); });
+      return res;
+    }
+    function speakFrom(tk) {
+      if (tk !== st.token) return;
+      if (st.ci >= st.chunks.length) {
+        st.speaking = false; st.mode = null; st.ci = 0; setIcon(false);
+        if (st.auto) goNext();
+        return;
+      }
+      var c = st.chunks[st.ci];
+      var u = new SpeechSynthesisUtterance(c.text);
+      u.lang = c.lang === "en" ? "en-US" : "fr-FR";
+      var v = pickVoice(c.lang);
+      if (v) { u.voice = v; u.lang = v.lang; }
+      u.rate = 0.95;
+      u.onend = function () { if (tk !== st.token) return; st.ci++; speakFrom(tk); };
+      u.onerror = function () { if (tk !== st.token) return; st.speaking = false; setIcon(false); st.auto = false; };
+      synth.speak(u);
+    }
+    function startTts(from) {
+      st.token++;
+      var tk = st.token;
+      st.mode = "tts"; st.speaking = true; st.ci = from || 0; setIcon(true);
+      var busy = false;
+      try { busy = synth.speaking || synth.pending; synth.cancel(); } catch (e) {}
+      if (busy) setTimeout(function () { speakFrom(tk); }, 120);   // laisse cancel() se terminer
+      else speakFrom(tk);                                          // sinon tout de suite (exigé par iOS)
+    }
+    function playVoice() {
+      if (!(synth && fb(st.idx))) { st.auto = false; return false; }
+      if (!st.chunks.length) st.chunks = buildChunks(fb(st.idx));
+      startTts(st.ci);
+      return true;
+    }
+
+    // ====================================================================
+    //  Lecture
+    // ====================================================================
+    function freeBlob() { if (st.blobUrl) { try { URL.revokeObjectURL(st.blobUrl); } catch (e) {} st.blobUrl = null; } }
+    function stopAll() {
+      st.playTok++;
+      try { audio.pause(); audio.currentTime = 0; } catch (e) {}
+      st.token++;
+      try { if (synth) synth.cancel(); } catch (e) {}
+      st.speaking = false; st.mode = null; st.chunks = []; st.ci = 0;
+      setIcon(false);
+    }
+    function pauseNow() {
+      if (st.mode === "mp3") audio.pause();
+      else if (st.mode === "tts") {
+        st.token++;
+        try { synth.cancel(); } catch (e) {}
+        st.speaking = false; setIcon(false);      // st.ci conservé : la reprise repart de la phrase en cours
+      }
+    }
+    function startAudio(src, tok) {
+      if (tok !== st.playTok) return;
+      if (audio.getAttribute("data-src") !== src) { audio.setAttribute("data-src", src); audio.src = src; }
+      var p = audio.play();
+      if (p && p.catch) p.catch(function (err) {
+        console.warn("ECOLIA audio :", err);
+        if (tok !== st.playTok) return;
+        if (!(err && err.name === "NotAllowedError") && playVoice()) return;   // lecture impossible : voix du téléphone
+        setIcon(false); st.auto = false;
+      });
+    }
+    function playCurrent() {
+      var i = st.idx;
+      if (hasMp3(i)) {
+        var tok = ++st.playTok, u = urlN(i + 1);
+        st.mode = "mp3";
+        if (!navigator.onLine && dl.state === "none") { st.mode = null; if (playVoice()) return; }   // hors ligne et non téléchargé
+        if (store && dl.state !== "none") {                     // téléchargé : lecture locale, sans réseau
+          store.get(i + 1)
+            .then(function (b) {
+              if (tok !== st.playTok) return;
+              if (b) { freeBlob(); st.blobUrl = URL.createObjectURL(new Blob([b], { type: "audio/mpeg" })); startAudio(st.blobUrl, tok); }
+              else startAudio(u, tok);
+            }).catch(function () { startAudio(u, tok); });
+        } else startAudio(u, tok);                              // sinon lecture en ligne (appel immédiat, exigé par iOS)
+      } else if (!playVoice()) {
+        st.auto = false;
+      }
+    }
+
+    function onSlideChange(i) {
+      var wasAdvancing = st.advancing;
+      st.advancing = false;
+      st.idx = i;
+      btn.classList.toggle("ecolia-off", !hasAudio(i));
+      stopAll();
+      audio.removeAttribute("data-src");
+      freeBlob();
+      if (bnMode === "invite" && i !== 0) hideBanner();       // l'invitation n'apparaît qu'à la première slide
+      if (wasAdvancing && st.auto) setTimeout(playCurrent, 500);   // enchaînement automatique
+      else st.auto = false;                                         // changement manuel : on coupe tout
+    }
+    function goNext() {
+      if (st.idx + 1 >= CFG.count) { st.auto = false; return; }
+      st.advancing = true;
+      if (typeof nextSlide === "function") nextSlide();
+      else { var nb = document.getElementById("nextBtn"); if (nb) nb.click(); }
+      setTimeout(function () { st.advancing = false; }, 4000);
+    }
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var i = cur();
+      if (i !== st.idx) onSlideChange(i);
+      if (isPlaying()) { st.auto = false; pauseNow(); }
+      else { st.auto = true; playCurrent(); }
+    });
+    audio.addEventListener("play", function () { setIcon(true); });
+    audio.addEventListener("pause", function () { if (st.mode === "mp3") setIcon(false); });
+    audio.addEventListener("error", function () {
+      if (st.mode === "mp3" && playVoice()) return;            // fichier introuvable / hors ligne : voix du téléphone
+      setIcon(false); st.auto = false;
+    });
+    audio.addEventListener("ended", function () { setIcon(false); if (st.auto) goNext(); });
+    window.addEventListener("pagehide", function () { stopAll(); freeBlob(); });
+
+    // ---------- démarrage ----------
+    refreshCacheState(function () {
+      if (store && CFG.available.length && dl.state !== "full" && navigator.onLine && cur() === 0 && !lsGet(LATER)) askDownload(true);
+    });
+    st.idx = -1;
+    setInterval(function () { var i = cur(); if (i !== st.idx) onSlideChange(i); }, 250);   // suit la slide affichée
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+<!-- ECOLIA_AUDIO_PLAYER_END -->
+</body>
+</html>

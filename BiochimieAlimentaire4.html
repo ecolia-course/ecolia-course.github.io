@@ -1,0 +1,1868 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="rouge">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>ECOLIA — Biochimie Alimentaire4</title>
+<style>
+[data-theme="bleu"]   { --p1:#0d2b4f; --p2:#1565c0; --p3:#07172e; --p4:#12437a; --p5:#5b8fd0; --bg:#e8f0fb; --bg2:#cfdff5; --bd:#a9c3e8; --soft:#dde8f7; --btn:#2a67b0; }
+[data-theme="vert"]   { --p1:#14442e; --p2:#2e7d32; --p3:#0b2b1a; --p4:#1f5c3a; --p5:#4f9a6b; --bg:#e8f5ec; --bg2:#c8e6d2; --bd:#a5cdb2; --soft:#dcefe2; --btn:#2f7a4f; }
+[data-theme="violet"] { --p1:#2d1b4e; --p2:#6a1b9a; --p3:#1a0f2e; --p4:#4a148c; --p5:#9c6fd0; --bg:#f1e9fb; --bg2:#dccbf2; --bd:#c4a8e6; --soft:#e8ddf6; --btn:#7e3fb2; }
+[data-theme="rouge"]  { --p1:#4a1010; --p2:#b71c1c; --p3:#2b0a0a; --p4:#8e1b1b; --p5:#d9706a; --bg:#fbeaea; --bg2:#f3cdcb; --bd:#e8a9a5; --soft:#f8dede; --btn:#a62a2a; }
+[data-theme="orange"] { --p1:#4e2a0c; --p2:#ef6c00; --p3:#2e1604; --p4:#b34a00; --p5:#f0a15a; --bg:#fff1e0; --bg2:#fbdcb8; --bd:#f3c08a; --soft:#fdebd6; --btn:#c9650a; }
+[data-theme="teal"]   { --p1:#0b3a3a; --p2:#00796b; --p3:#062626; --p4:#00574b; --p5:#4db6ac; --bg:#e0f2f1; --bg2:#b2dfdb; --bd:#80cbc4; --soft:#d5ecea; --btn:#26897d; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:linear-gradient(160deg,var(--p1) 0%,var(--p2) 50%,var(--p3) 100%); display:flex; justify-content:center; align-items:center; padding:8px; }
+.container { width:100%; max-width:1400px; background:#fefdf8; border-radius:20px; overflow:hidden; display:flex; flex-direction:column; height:100%; max-height:100vh; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.progress-bar { height:4px; background:var(--bg2); flex-shrink:0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--p5),var(--p4)); width:0%; transition:width 0.3s; }
+.header { padding:10px 16px; background:var(--bg); border-bottom:1px solid var(--bd); display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+.header h1 { color:var(--p4); font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box { display:flex; background:white; border-radius:20px; padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.search-box input { border:none; padding:6px 10px; border-radius:20px; outline:none; width:130px; font-size:0.8rem; }
+.search-box button { background:none; border:none; cursor:pointer; padding:4px 8px; font-size:0.85rem; color:var(--p2); }
+.badge { background:var(--p5); color:white; padding:4px 10px; border-radius:20px; font-weight:bold; font-size:0.75rem; }
+.search-nav { display:none; gap:4px; background:var(--bg2); padding:2px 8px; border-radius:20px; align-items:center; font-size:0.75rem; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:0.9rem; color:var(--p4); padding:2px 4px; }
+.content { padding:28px 32px; flex:1; overflow-y:auto; background:#fff; scroll-behavior:smooth; line-height:1.85; }
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.slide-title { color:var(--p1); font-size:1.5rem; font-weight:700; padding-bottom:12px; margin-bottom:20px; border-bottom:2px solid var(--p5); }
+.slide-content { color:var(--p3); font-size:1rem; }
+.empty-state { display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-height:60vh; padding:40px 20px; gap:18px; }
+.empty-state .icon { width:72px; height:72px; border-radius:50%; background:var(--bg); border:2px solid var(--bd); display:flex; align-items:center; justify-content:center; color:var(--p2); font-size:2rem; font-weight:300; }
+.empty-state h2 { color:var(--p1); font-size:1.4rem; font-weight:700; margin:0; }
+.empty-state p { color:#666; font-size:0.95rem; max-width:520px; line-height:1.7; }
+.empty-state .tag { display:inline-block; padding:6px 14px; background:var(--bg); color:var(--p4); border:1px solid var(--bd); border-radius:20px; font-size:0.8rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; }
+.bloc { padding:18px 22px; border-radius:12px; margin:22px 0; line-height:1.85; }
+.bloc-label { font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; opacity:0.7; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:var(--bg); border-left:4px solid var(--p5); }
+.theorie .bloc-label { color:var(--p4); }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.sources { background:#f5f5f5; padding:12px 16px; border-radius:10px; margin-top:26px; font-size:0.82rem; color:#666; border-left:3px solid #999; line-height:1.6; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:var(--p1); }
+.quiz-container { padding:22px; background:var(--bg); border-radius:16px; }
+.quiz-question { background:white; border-radius:10px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.quiz-question p { font-weight:600; margin-bottom:10px; color:var(--p1); }
+.quiz-question label { display:block; padding:8px 10px; margin:4px 0; border-radius:6px; cursor:pointer; transition:background 0.2s; }
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit { background:var(--btn); color:white; border:none; padding:12px 24px; border-radius:30px; font-size:1rem; cursor:pointer; font-weight:600; margin-top:14px; }
+.quiz-result { margin-top:16px; font-weight:600; }
+.controls { padding:8px 16px; background:#fafafa; border-top:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0; }
+.nav-btn { background:white; color:var(--p4); border:1px solid #ccc; padding:8px 14px; border-radius:8px; font-size:0.82rem; cursor:pointer; font-weight:500; }
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:var(--soft); }
+.content::-webkit-scrollbar-thumb { background:var(--p5); border-radius:3px; }
+@media (max-width:600px) { body { padding:0; } .container { border-radius:0; max-height:100vh; } .content { padding:20px 18px; } .slide-title { font-size:1.25rem; } .search-box input { width:90px; } .header h1 { font-size:0.85rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="header">
+<h1 id="pageTitle">ECOLIA</h1>
+<div class="header-right">
+<div class="search-box">
+<input id="searchInput" placeholder="Rechercher" type="text"/>
+<button id="searchBtn">⌕</button>
+</div>
+<div class="search-nav" id="searchNav">
+<button id="prevResultBtn">‹</button>
+<span id="resultCounter">0/0</span>
+<button id="nextResultBtn">›</button>
+</div>
+<span class="badge" id="slideCounter">0/0</span>
+</div>
+</div>
+<div class="content" id="content"></div>
+<div class="controls">
+<button class="nav-btn" id="prevBtn">← Précédent</button>
+<span class="counter" id="counter">—</span>
+<button class="nav-btn" id="nextBtn">Suivant →</button>
+</div>
+</div>
+<script>
+const COURSE_TITLE = "Biochimie Alimentaire";
+const slides = [
+  {
+    title: "Sommaire — Biochimie Alimentaire",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Bienvenue</div>
+        <h3>La biochimie alimentaire : comprendre les aliments pour mieux les transformer et les conserver</h3>
+        <p>La <strong>biochimie alimentaire</strong> est la science qui étudie la composition chimique des aliments, les réactions chimiques et biochimiques qui s'y produisent, et leurs conséquences sur la qualité nutritionnelle, organoleptique et sanitaire. Comprendre ces mécanismes permet de <strong>maîtriser les transformations</strong> (cuisson, fermentation), de <strong>prévenir les altérations</strong> et de <strong>conserver les qualités</strong> des aliments.</p>
+        <p>Ce cours s'adresse aux élèves de 4<sup>e</sup> Humanité des filières Nutrition et Industries Agroalimentaires. Il prépare le futur technicien à comprendre les mécanismes biochimiques en jeu dans la production, la transformation et la conservation des aliments, dans le contexte congolais où les pertes post-récolte restent considérables.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Objectifs d'apprentissage</div>
+        <p>À la fin de ce cours, l'élève doit être capable de :</p>
+        <ol>
+          <li>Identifier les constituants des aliments (glucides, lipides, protéines, eau, minéraux, vitamines).</li>
+          <li>Expliquer les transformations biochimiques fondamentales (gélatinisation, caramélisation, coagulation, réaction de Maillard, rancissement).</li>
+          <li>Comprendre le rôle de l'eau et de l'activité de l'eau (Aw) dans la conservation.</li>
+          <li>Identifier le rôle des enzymes et des micro-organismes dans les aliments.</li>
+          <li>Maîtriser les principes des principales techniques de conservation.</li>
+          <li>Appliquer les règles d'hygiène et de sécurité alimentaire.</li>
+          <li>Évaluer la qualité organoleptique et nutritionnelle des aliments.</li>
+        </ol>
+      </div>
+
+      <div class="bloc cas">
+        <div class="bloc-label">Grands chapitres du cours</div>
+        <ul>
+          <li><strong>Chapitre I</strong> — Introduction à la biochimie alimentaire.</li>
+          <li><strong>Chapitre II</strong> — Les glucides.</li>
+          <li><strong>Chapitre III</strong> — Les lipides.</li>
+          <li><strong>Chapitre IV</strong> — Les protéines.</li>
+          <li><strong>Chapitre V</strong> — L'eau, les minéraux et les vitamines.</li>
+          <li><strong>Chapitre VI</strong> — Les enzymes et les micro-organismes.</li>
+          <li><strong>Chapitre VII</strong> — Les techniques de conservation.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Pourquoi la biochimie alimentaire ?",
+    content: `
+      <div class="bloc cas">
+        <div class="bloc-label">Situation-problème</div>
+        <p>Dans un village du Kwilu, une coopérative de femmes transforme le manioc en chikwangue et en cossettes. Depuis quelques mois, une partie de la production moisit rapidement et doit être jetée. Les femmes ne comprennent pas pourquoi, alors qu'elles suivent la même recette depuis des années. Elles constatent aussi que le poisson fumé perd son goût après quelques semaines. Que se passe-t-il sur le plan biochimique ? Comment corriger le procédé ?</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Une science appliquée à la vie quotidienne</h3>
+        <p>La biochimie alimentaire est la science qui étudie la composition chimique des aliments, les réactions chimiques et biochimiques qui s'y produisent, et leurs conséquences sur la qualité nutritionnelle, organoleptique et sanitaire.</p>
+        <p>Elle permet de comprendre et de maîtriser :</p>
+        <ul>
+          <li><strong>Les transformations culinaires</strong> : cuisson, épaississement des sauces, prise du fromage, brunissement du pain.</li>
+          <li><strong>Les transformations artisanales</strong> : fermentation du manioc, fumaison du poisson, extraction de l'huile de palme.</li>
+          <li><strong>Les altérations</strong> : moisissures, rancissement, putréfaction, perte de vitamines.</li>
+          <li><strong>Les techniques de conservation</strong> : séchage, froid, chaleur, salaison, fermentation.</li>
+        </ul>
+        <p>Dans un pays à climat chaud et humide comme la RDC, ces connaissances sont décisives : les pertes post-récolte peuvent atteindre 30 à 40 % de la production. Comprendre la biochimie permet de les réduire et d'améliorer la sécurité alimentaire.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Croire que la biochimie alimentaire se limite à la nutrition est une erreur. Elle englobe aussi les <strong>transformations</strong> (cuisson, fermentation) et la <strong>conservation</strong> (séchage, froid, salaison). C'est une science appliquée, utile à toute personne qui produit, transforme ou conserve des aliments.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Les constituants des aliments",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les six grandes familles de constituants</h3>
+        <p>Tout aliment est composé d'un mélange, en proportions variables, de six grandes familles de constituants :</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Famille</th>
+              <th>Rôle principal</th>
+              <th>Exemples d'aliments riches</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Glucides</strong></td>
+              <td>Énergie (sucres, amidon)</td>
+              <td>Manioc, riz, maïs, banane, fruits</td>
+            </tr>
+            <tr>
+              <td><strong>Lipides</strong></td>
+              <td>Énergie, acides gras essentiels, vitamines liposolubles</td>
+              <td>Huile de palme, arachide, beurre, poissons gras</td>
+            </tr>
+            <tr>
+              <td><strong>Protéines</strong></td>
+              <td>Construction, entretien, enzymes, immunité</td>
+              <td>Viande, poisson, œufs, lait, légumineuses</td>
+            </tr>
+            <tr>
+              <td><strong>Eau</strong></td>
+              <td>Solvant, transport, régulation</td>
+              <td>Tous les aliments, surtout les fruits et légumes</td>
+            </tr>
+            <tr>
+              <td><strong>Minéraux</strong></td>
+              <td>Structure osseuse, transport d'oxygène, équilibre hydrique</td>
+              <td>Lait, légumes verts, sel, poissons</td>
+            </tr>
+            <tr>
+              <td><strong>Vitamines</strong></td>
+              <td>Régulation du métabolisme</td>
+              <td>Fruits, légumes, huiles, foie</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4>Composition variable selon les aliments</h4>
+        <p>Un aliment n'est jamais composé d'un seul constituant. Par exemple :</p>
+        <ul>
+          <li>Le <strong>manioc frais</strong> contient environ 60 à 70 % d'eau, 25 à 30 % d'amidon, et très peu de protéines.</li>
+          <li>Le <strong>poisson</strong> contient 70 à 80 % d'eau, 15 à 20 % de protéines et 1 à 10 % de lipides.</li>
+          <li>L'<strong>huile de palme</strong> contient presque 100 % de lipides.</li>
+        </ul>
+        <p>Connaître ces proportions permet de prévoir le comportement d'un aliment lors de la transformation et de la conservation.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Les six familles de constituants des aliments sont les glucides, les lipides, les protéines, l'eau, les minéraux et les vitamines. Leurs proportions varient selon l'aliment et déterminent son comportement à la transformation et à la conservation.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — Les glucides : classification et sources",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Qu'est-ce qu'un glucide ?</h3>
+        <p>Les <strong>glucides</strong> (appelés aussi hydrates de carbone ou sucres) sont des molécules composées de carbone, d'hydrogène et d'oxygène. Ils constituent la principale source d'énergie de l'alimentation humaine, surtout dans les pays tropicaux où les céréales et les tubercules dominent.</p>
+
+        <h4>Classification</h4>
+        <p>On distingue deux grandes familles :</p>
+        <ul>
+          <li><strong>Les oses</strong> (sucres simples, non hydrolysables) : glucose, fructose, galactose. Ce sont les briques de base.</li>
+          <li><strong>Les osides</strong> (sucres complexes, hydrolysables en oses) :
+            <ul>
+              <li><strong>Diholosides</strong> : saccharose (sucre de table), lactose (sucre du lait), maltose.</li>
+              <li><strong>Polyholosides</strong> : amidon (réserve des végétaux), glycogène (réserve animale), cellulose (paroi végétale), hémicelluloses, pectines.</li>
+            </ul>
+          </li>
+        </ul>
+
+        <h4>Sources principales</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Aliment</th>
+              <th>Type de glucide dominant</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Manioc, pomme de terre, riz, maïs</td><td>Amidon</td></tr>
+            <tr><td>Canne à sucre, betterave</td><td>Saccharose</td></tr>
+            <tr><td>Lait</td><td>Lactose</td></tr>
+            <tr><td>Fruits</td><td>Glucose, fructose, saccharose</td></tr>
+            <tr><td>Légumes verts, son de blé</td><td>Cellulose (fibres)</td></tr>
+          </tbody>
+        </table>
+
+        <h4>Rôles</h4>
+        <ul>
+          <li><strong>Énergétique</strong> : les glucides fournissent environ 4 kcal/g.</li>
+          <li><strong>Structurel</strong> : la cellulose forme la paroi des végétaux (fibres alimentaires).</li>
+          <li><strong>Réserve</strong> : l'amidon (plantes) et le glycogène (animaux) stockent l'énergie.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Les glucides se divisent en oses (sucres simples) et osides (sucres complexes). L'amidon est la forme de réserve des plantes. Le manioc, le riz, le maïs sont les principales sources en RDC. Les glucides fournissent 4 kcal/g.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — La gélatinisation et la caramélisation",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Deux transformations majeures des glucides</h3>
+
+        <h4>1. La gélatinisation de l'amidon</h4>
+        <p>L'<strong>amidon</strong> est organisé en grains microscopiques dans les cellules végétales. À froid, il est insoluble dans l'eau. Mais chauffé en présence d'eau (vers 60 – 80 °C), il se produit la <strong>gélatinisation</strong> : les grains d'amidon absorbent l'eau, gonflent, éclatent et libèrent leurs molécules. Le liquide s'épaissit et se transforme en gel.</p>
+        <p><strong>Exemples concrets :</strong></p>
+        <ul>
+          <li>La bouillie de manioc (fufu, chikwangue) épaissit par gélatinisation de son amidon.</li>
+          <li>Une sauce liée à la farine épaissit en chauffant.</li>
+          <li>Le riz cuit gonfle et devient tendre.</li>
+        </ul>
+        <p><strong>Facteurs qui influencent la gélatinisation :</strong></p>
+        <ul>
+          <li><strong>Température</strong> : plus elle est élevée, plus la gélatinisation est rapide.</li>
+          <li><strong>Présence d'eau</strong> : sans eau, pas de gélatinisation.</li>
+          <li><strong>Agitation</strong> : favorise la rupture des grains.</li>
+          <li><strong>Sucre et acides</strong> : le sucre et les acides ralentissent la gélatinisation.</li>
+        </ul>
+
+        <h4>2. La caramélisation</h4>
+        <p>La <strong>caramélisation</strong> est la dégradation des sucres sous l'effet d'une chaleur intense (au-delà de 160 °C pour le saccharose), sans intervention d'acides aminés. Elle produit des composés bruns et des arômes caractéristiques (caramel, notes grillées).</p>
+        <p><strong>Exemples concrets :</strong></p>
+        <ul>
+          <li>Le sucre qui brunit et se transforme en caramel au fond d'une casserole.</li>
+          <li>La croûte dorée des beignets.</li>
+          <li>Le colorant caramel utilisé dans les boissons.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Confondre <strong>gélatinisation</strong> (transformation de l'amidon dans l'eau chaude, qui épaissit) et <strong>caramélisation</strong> (transformation du sucre par la chaleur sèche, qui brunit) est une erreur fréquente. Ce sont deux réactions totalement distinctes : l'une concerne l'amidon, l'autre le sucre ; l'une a besoin d'eau, l'autre non.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — Les lipides : classification et sources",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Qu'est-ce qu'un lipide ?</h3>
+        <p>Les <strong>lipides</strong> (ou matières grasses) sont des molécules insolubles dans l'eau et solubles dans les solvants organiques. Ils sont une source concentrée d'énergie (environ 9 kcal/g) et fournissent des acides gras essentiels et des vitamines liposolubles (A, D, E, K).</p>
+
+        <h4>Classification</h4>
+        <ul>
+          <li><strong>Acides gras</strong> : les briques de base.
+            <ul>
+              <li><strong>Saturés</strong> : pas de double liaison (beurre, graisse de bœuf, huile de coco). Souvent solides à température ambiante.</li>
+              <li><strong>Mono-insaturés</strong> : une double liaison (huile d'olive, avocat).</li>
+              <li><strong>Poly-insaturés</strong> : plusieurs doubles liaisons (huile de tournesol, poissons gras). Indispensables (oméga-3, oméga-6).</li>
+            </ul>
+          </li>
+          <li><strong>Triglycérides</strong> : trois acides gras attachés à un glycérol. Ce sont les lipides les plus abondants dans les aliments et le corps humain.</li>
+          <li><strong>Phospholipides</strong> : lipides membranaires.</li>
+          <li><strong>Stérols</strong> : dont le cholestérol, présent dans les membranes animales.</li>
+        </ul>
+
+        <h4>Sources principales</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Source</th>
+              <th>Type de lipides</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Huile de palme</td><td>Riche en acides saturés (palmitique) et mono-insaturés</td></tr>
+            <tr><td>Huile d'arachide</td><td>Riche en acides mono-insaturés et poly-insaturés</td></tr>
+            <tr><td>Poissons gras (capitaine, thon)</td><td>Riche en oméga-3</td></tr>
+            <tr><td>Beurre, lait entier</td><td>Riche en acides saturés</td></tr>
+            <tr><td>Avocat, noix</td><td>Riche en acides insaturés</td></tr>
+          </tbody>
+        </table>
+
+        <h4>Rôles</h4>
+        <ul>
+          <li><strong>Énergétique</strong> : 9 kcal/g.</li>
+          <li><strong>Structurel</strong> : membranes cellulaires (phospholipides).</li>
+          <li><strong>Transport des vitamines liposolubles</strong> (A, D, E, K).</li>
+          <li><strong>Isolation thermique</strong> et protection des organes.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Croire que tous les lipides sont mauvais pour la santé est une erreur. Les acides gras insaturés (oméga-3, oméga-6) sont <strong>essentiels</strong> : le corps ne peut pas les fabriquer. Ce sont les excès de graisses saturées et les graisses oxydées qui posent problème.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — L'oxydation et le rancissement",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le rancissement</h3>
+        <p>Le <strong>rancissement</strong> est l'altération des lipides sous l'effet de l'oxygène de l'air (oxydation) et parfois des enzymes (lipases). Il se traduit par :</p>
+        <ul>
+          <li>Une odeur et un goût désagréables (rance).</li>
+          <li>Une couleur qui jaunit ou brunit.</li>
+          <li>Une perte de valeur nutritionnelle (destruction des acides gras essentiels et des vitamines liposolubles).</li>
+          <li>La formation de composés potentiellement toxiques (radicaux libres, aldéhydes).</li>
+        </ul>
+
+        <h4>Mécanisme simplifié</h4>
+        <p>L'oxygène attaque les doubles liaisons des acides gras insaturés. Il se forme des <strong>hydroperoxydes</strong>, qui se décomposent en molécules plus petites et volatiles (aldéhydes, cétones) : ce sont elles qui donnent l'odeur rance.</p>
+
+        <h4>Facteurs qui accélèrent le rancissement</h4>
+        <ul>
+          <li><strong>Lumière</strong> : accélère fortement l'oxydation.</li>
+          <li><strong>Chaleur</strong> : accélère les réactions chimiques.</li>
+          <li><strong>Oxygène de l'air</strong> : plus il y a de contact avec l'air, plus l'oxydation est rapide.</li>
+          <li><strong>Métaux (fer, cuivre)</strong> : catalysent l'oxydation.</li>
+          <li><strong>Présence d'eau</strong> et d'enzymes.</li>
+        </ul>
+
+        <h4>Prévention</h4>
+        <ul>
+          <li>Conserver les huiles à l'abri de la lumière, dans des récipients fermés.</li>
+          <li>Éviter les températures élevées.</li>
+          <li>Consommer rapidement les huiles après ouverture.</li>
+          <li>Ajouter des <strong>antioxydants</strong> naturels (vitamine E, extraits de romarin).</li>
+          <li>Éviter les récipients métalliques réactifs.</li>
+        </ul>
+
+        <h4>L'hydrolyse</h4>
+        <p>En plus de l'oxydation, les lipides peuvent subir une <strong>hydrolyse</strong> : les triglycérides se coupent en acides gras libres et en glycérol, sous l'effet de la chaleur, de l'humidité ou des lipases. C'est ce qui se passe quand une huile de friture est réutilisée trop souvent : elle devient acide et mousse.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Le rancissement est une altération des lipides par oxydation. Il se manifeste par une odeur et un goût désagréables et une perte de qualité nutritionnelle. Lumière, chaleur, oxygène et métaux l'accélèrent. L'huile se conserve à l'abri de la lumière et de la chaleur.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre IV — Les protéines : structure et propriétés",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Qu'est-ce qu'une protéine ?</h3>
+        <p>Les <strong>protéines</strong> sont de longues chaînes d'<strong>acides aminés</strong> reliés par des liaisons peptidiques. Elles sont composées de carbone, d'hydrogène, d'oxygène et d'azote (parfois de soufre). Elles fournissent environ 4 kcal/g mais leur rôle principal n'est pas énergétique : elles sont les briques de construction de l'organisme et les acteurs de presque toutes les fonctions biologiques.</p>
+
+        <h4>Les acides aminés</h4>
+        <p>Il existe 20 acides aminés protéinogènes. Certains sont dits <strong>essentiels</strong> (le corps ne peut pas les fabriquer et doit les trouver dans l'alimentation), d'autres <strong>non essentiels</strong>. Un aliment est dit <strong>complet</strong> en protéines s'il apporte tous les acides aminés essentiels en quantités suffisantes. Les protéines animales (viande, poisson, œuf, lait) sont généralement complètes, tandis que les protéines végétales sont souvent déficitaires en un ou plusieurs acides aminés (on parle d'acide aminé limitant).</p>
+
+        <h4>Les quatre niveaux de structure</h4>
+        <ul>
+          <li><strong>Structure primaire</strong> : la séquence d'acides aminés.</li>
+          <li><strong>Structure secondaire</strong> : enroulements locaux (hélices, feuillets).</li>
+          <li><strong>Structure tertiaire</strong> : repliement tridimensionnel global.</li>
+          <li><strong>Structure quaternaire</strong> : assemblage de plusieurs chaînes (comme l'hémoglobine).</li>
+        </ul>
+
+        <h4>Propriétés fonctionnelles</h4>
+        <ul>
+          <li><strong>Structural</strong> : collagène, kératine, actine, myosine.</li>
+          <li><strong>Enzymatique</strong> : toutes les enzymes sont des protéines.</li>
+          <li><strong>Immunitaire</strong> : anticorps.</li>
+          <li><strong>Transport</strong> : hémoglobine (oxygène), lipoprotéines (lipides).</li>
+          <li><strong>Hormonale</strong> : insuline, glucagon.</li>
+        </ul>
+
+        <h4>Sources</h4>
+        <p>Viandes, poissons, œufs, laitages, légumineuses (haricot, soja, arachide), céréales (maïs, riz, blé).</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Les protéines sont des chaînes d'acides aminés, dont certains sont essentiels. Elles ont des rôles structurels, enzymatiques, immunitaires, de transport et hormonaux. Les protéines animales sont généralement complètes ; les protéines végétales doivent être combinées (céréales + légumineuses).</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre IV — La coagulation et la réaction de Maillard",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Trois transformations majeures des protéines</h3>
+
+        <h4>1. La dénaturation</h4>
+        <p>La <strong>dénaturation</strong> est la modification de la structure spatiale d'une protéine (structures secondaire, tertiaire, quaternaire), sans rupture des liaisons peptidiques. Elle est provoquée par :</p>
+        <ul>
+          <li><strong>La chaleur</strong> : au-delà de 60 – 70 °C, la plupart des protéines se dénaturent.</li>
+          <li><strong>Les acides et les bases</strong> : variation du pH.</li>
+          <li><strong>Les agents chimiques</strong> : alcool, urée, sels.</li>
+          <li><strong>L'agitation mécanique</strong> : battage, agitation intense.</li>
+        </ul>
+        <p>La dénaturation entraîne souvent la perte de la fonction biologique (une enzyme dénaturée ne catalyse plus), mais elle peut être utile en cuisine : c'est elle qui permet la coagulation.</p>
+
+        <h4>2. La coagulation</h4>
+        <p>La <strong>coagulation</strong> est le passage d'une protéine de l'état liquide à l'état solide (ou gel), généralement après dénaturation. Elle est provoquée par :</p>
+        <ul>
+          <li><strong>La chaleur</strong> : le blanc d'œuf liquide devient solide à la cuisson.</li>
+          <li><strong>L'acidification</strong> : le lait caillé par le citron ou le vinaigre.</li>
+          <li><strong>Les enzymes</strong> : la présure coagule le lait pour faire du fromage.</li>
+          <li><strong>Les sels</strong> : le sel coagule certaines protéines.</li>
+        </ul>
+        <p>Exemples : cuisson des œufs, prise du fromage, caillage du lait, cuisson du poisson (la chair devient ferme).</p>
+
+        <h4>3. La réaction de Maillard</h4>
+        <p>La <strong>réaction de Maillard</strong> est une réaction chimique entre un sucre réducteur (glucose, fructose) et un acide aminé (ou une protéine), sous l'effet de la chaleur. Elle produit :</p>
+        <ul>
+          <li>Une <strong>couleur brune</strong> (croûte dorée du pain, viande grillée, café torréfié).</li>
+          <li>Des <strong>arômes</strong> caractéristiques (odeur de pain cuit, de viande grillée).</li>
+          <li>Parfois des composés indésirables (acrylamide) si la réaction est poussée trop loin.</li>
+        </ul>
+        <p>La réaction de Maillard a lieu à des températures modérées (140 – 165 °C). Au-delà, on parle plutôt de pyrolyse (carbonisation).</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Confondre <strong>dénaturation</strong>, <strong>coagulation</strong> et <strong>réaction de Maillard</strong>. La dénaturation est la modification de structure (par la chaleur, le pH). La coagulation est la prise en masse (liquide → solide). La réaction de Maillard est le brunissement entre sucres et protéines. Ce sont trois phénomènes distincts, souvent liés dans la cuisine.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre V — L'eau et l'activité de l'eau (Aw)",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>L'eau dans les aliments</h3>
+        <p>L'eau représente 60 à 70 % du corps humain et une part variable des aliments (de 5 % dans les biscottes secs à 95 % dans les légumes frais). Elle remplit plusieurs fonctions : solvant, transport des nutriments, milieu des réactions biochimiques, régulation de la température.</p>
+
+        <h4>L'activité de l'eau (Aw)</h4>
+        <p>L'<strong>activité de l'eau</strong> (notée Aw, de l'anglais <em>water activity</em>) est un indicateur de l'eau <strong>disponible</strong> pour les réactions chimiques et les micro-organismes. Elle varie de 0 (aucune eau disponible) à 1 (eau pure).</p>
+        <p><strong>Attention :</strong> ne pas confondre Aw et teneur en eau. Un aliment peut contenir beaucoup d'eau mais avoir une Aw faible si cette eau est liée (par exemple dans le sucre, le sel).</p>
+
+        <h4>Valeurs indicatives</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Aw</th>
+              <th>Exemples d'aliments</th>
+              <th>Conservation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>&gt; 0,95</td><td>Viande fraîche, lait, poisson frais, fruits frais</td><td>Très altérable, réfrigération obligatoire</td></tr>
+            <tr><td>0,85 – 0,95</td><td>Fromages, charcuteries</td><td>Réfrigéré, durée moyenne</td></tr>
+            <tr><td>0,60 – 0,85</td><td>Confitures, farines, produits fumés</td><td>Bonne conservation</td></tr>
+            <tr><td>&lt; 0,60</td><td>Biscuits, lait en poudre, produits séchés</td><td>Très bonne conservation</td></tr>
+          </tbody>
+        </table>
+
+        <h4>Conséquences pratiques</h4>
+        <p>Plus l'Aw est basse, plus l'aliment se conserve. C'est pourquoi les techniques de conservation visent souvent à réduire l'Aw : séchage, salaison, ajout de sucre.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>L'activité de l'eau (Aw) mesure l'eau disponible pour les réactions et les micro-organismes. Plus l'Aw est basse, plus l'aliment se conserve. Séchage, salaison et sucrage réduisent l'Aw. Ne pas confondre Aw et teneur totale en eau.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre V — Les minéraux et les vitamines",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les minéraux</h3>
+        <p>Les <strong>minéraux</strong> sont des éléments chimiques indispensables au fonctionnement de l'organisme. On distingue :</p>
+        <ul>
+          <li><strong>Macro-minéraux</strong> (besoins importants) : calcium, phosphore, potassium, sodium, magnésium, chlore.</li>
+          <li><strong>Oligo-éléments</strong> (besoins faibles) : fer, zinc, cuivre, iode, sélénium, manganèse.</li>
+        </ul>
+        <p><strong>Rôles principaux :</strong></p>
+        <ul>
+          <li><strong>Calcium et phosphore</strong> : os et dents.</li>
+          <li><strong>Fer</strong> : transport de l'oxygène (hémoglobine).</li>
+          <li><strong>Potassium et sodium</strong> : équilibre hydrique et transmission nerveuse.</li>
+          <li><strong>Iode</strong> : hormones thyroïdiennes.</li>
+          <li><strong>Zinc</strong> : immunité, cicatrisation.</li>
+        </ul>
+        <p>Les minéraux ne sont pas détruits par la cuisson, mais peuvent être perdus dans l'eau de cuisson (il faut donc limiter le trempage et réutiliser l'eau de cuisson des légumes).</p>
+
+        <h3>Les vitamines</h3>
+        <p>Les <strong>vitamines</strong> sont des molécules organiques indispensables en très petites quantités. On distingue :</p>
+        <ul>
+          <li><strong>Vitamines liposolubles</strong> : A, D, E, K. Elles se dissolvent dans les graisses et peuvent être stockées dans le foie et les tissus gras.</li>
+          <li><strong>Vitamines hydrosolubles</strong> : C et groupe B. Elles se dissolvent dans l'eau et ne sont pas stockées (sauf la B12) : il faut donc en consommer chaque jour.</li>
+        </ul>
+
+        <h4>Sensibilité des vitamines</h4>
+        <ul>
+          <li><strong>Chaleur</strong> : la vitamine C et une partie du groupe B sont détruites par la cuisson prolongée.</li>
+          <li><strong>Lumière</strong> : la riboflavine (B2) et la vitamine A sont sensibles.</li>
+          <li><strong>Oxygène</strong> : la vitamine C s'oxyde rapidement à l'air.</li>
+          <li><strong>Eau de cuisson</strong> : les vitamines hydrosolubles passent dans l'eau (d'où l'intérêt de cuire à la vapeur ou de réutiliser l'eau).</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Négliger la sensibilité des vitamines à la cuisson est une erreur. Une cuisson prolongée à grande eau détruit une grande partie de la vitamine C et du groupe B. Pour préserver les vitamines : cuire à la vapeur, limiter le trempage, éviter les cuissons trop longues, consommer rapidement les aliments frais.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VI — Les enzymes dans les aliments",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Qu'est-ce qu'une enzyme ?</h3>
+        <p>Une <strong>enzyme</strong> est une protéine qui accélère (catalyse) une réaction biochimique sans être consommée par la réaction. Les enzymes sont présentes dans tous les êtres vivants, donc dans tous les aliments d'origine animale ou végétale.</p>
+
+        <h4>Rôles des enzymes dans les aliments</h4>
+        <p>Dans les aliments, les enzymes peuvent avoir des effets <strong>bénéfiques</strong> ou <strong>nuisibles</strong> :</p>
+
+        <h4>Effets bénéfiques</h4>
+        <ul>
+          <li><strong>Attendrissement de la viande</strong> : les protéases (comme la papaïne de la papaye) décomposent les protéines et attendrissent la viande.</li>
+          <li><strong>Fermentation</strong> : les enzymes des levures (saccharase, maltase) permettent la fermentation du pain et de la bière.</li>
+          <li><strong>Fromagerie</strong> : la présure (chymosine) coagule le lait pour faire du fromage.</li>
+          <li><strong>Brassage</strong> : les amylases transforment l'amidon du malt en sucres fermentescibles.</li>
+        </ul>
+
+        <h4>Effets nuisibles</h4>
+        <ul>
+          <li><strong>Brunissement enzymatique</strong> : quand on coupe une pomme, une banane ou un avocat, une enzyme (polyphénol oxydase) transforme les composés phénoliques en pigments bruns en présence d'oxygène. C'est une altération visuelle mais pas dangereuse.</li>
+          <li><strong>Ramollissement excessif</strong> : dans certains fruits trop mûrs, les pectinases détruisent la paroi cellulaire et ramollissent le fruit.</li>
+          <li><strong>Rancissement enzymatique</strong> : les lipases libèrent les acides gras et favorisent le rancissement.</li>
+        </ul>
+
+        <h4>Inhibition des enzymes</h4>
+        <ul>
+          <li><strong>Chaleur</strong> : la cuisson (blanchiment, ébullition) dénature les enzymes et les inactive.</li>
+          <li><strong>Froid</strong> : ralentit leur activité sans les détruire.</li>
+          <li><strong>pH extrêmes</strong> : acides ou bases fortes dénaturent les enzymes.</li>
+          <li><strong>Antioxydants</strong> (acide citrique, acide ascorbique) : inhibent le brunissement enzymatique.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Les enzymes sont des protéines catalytiques présentes dans les aliments. Elles peuvent être bénéfiques (attendrissement, fermentation) ou nuisibles (brunissement, rancissement). La chaleur les inactive : le blanchiment prévient le brunissement enzymatique.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VI — Les micro-organismes : fermentations et altérations",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les trois grands types de micro-organismes</h3>
+
+        <h4>1. Les bactéries</h4>
+        <p>Êtres unicellulaires, de taille microscopique. Certaines sont utiles, d'autres pathogènes ou responsables d'altérations.</p>
+        <ul>
+          <li><strong>Utiles</strong> : bactéries lactiques (<em>Lactobacillus</em>) pour le yaourt, le fromage, la fermentation du manioc, la choucroute.</li>
+          <li><strong>Nuibles</strong> : bactéries de putréfaction (viande avariée), <em>Salmonella</em>, <em>Clostridium botulinum</em> (toxines mortelles).</li>
+        </ul>
+
+        <h4>2. Les levures</h4>
+        <p>Champignons unicellulaires. Elles réalisent la <strong>fermentation alcoolique</strong> : elles transforment les sucres en alcool et en gaz carbonique. Utilisées pour :</p>
+        <ul>
+          <li>La panification (le CO<sub>2</sub> fait lever la pâte).</li>
+          <li>La fabrication de la bière et du vin.</li>
+          <li>Certaines fermentations traditionnelles africaines.</li>
+        </ul>
+
+        <h4>3. Les moisissures</h4>
+        <p>Champignons filamenteux. Certaines sont utiles, d'autres toxiques.</p>
+        <ul>
+          <li><strong>Utiles</strong> : <em>Penicillium</em> pour l'affinage de certains fromages, <em>Aspergillus</em> pour la sauce soja.</li>
+          <li><strong>Nuibles</strong> : moisissures alimentaires (pain, fruits), <em>Aspergillus flavus</em> qui produit des <strong>aflatoxines</strong> (toxiques et cancérigènes), très dangereuses sur l'arachide et le maïs mal stockés.</li>
+        </ul>
+
+        <h4>Conditions de développement</h4>
+        <p>Les micro-organismes se développent quand les conditions sont favorables :</p>
+        <ul>
+          <li><strong>Eau disponible (Aw élevée)</strong>.</li>
+          <li><strong>Température</strong> : la plupart prolifèrent entre 20 et 45 °C ; le froid ralentit, la chaleur au-delà de 65 °C tue.</li>
+          <li><strong>pH</strong> : la plupart préfèrent un pH proche de la neutralité ; les acidifications (vinaigre, fermentation) les inhibent.</li>
+          <li><strong>Nutriments</strong> disponibles.</li>
+          <li><strong>Oxygène</strong> : certains en ont besoin (aérobies), d'autres non (anaérobies).</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Croire que tous les micro-organismes sont nuisibles est une erreur. Certains sont <strong>essentiels</strong> : sans eux, pas de pain, pas de yaourt, pas de fromage, pas de chikwangue. Le tout est de maîtriser les conditions pour favoriser les bons et empêcher les mauvais.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VII — Les techniques de conservation : déshydratation et froid",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>1. La déshydratation (séchage)</h3>
+        <p>La <strong>déshydratation</strong> consiste à éliminer l'eau d'un aliment pour faire baisser son activité de l'eau (Aw). Les micro-organismes ne peuvent plus se développer et les réactions chimiques ralentissent.</p>
+        <p><strong>Techniques :</strong></p>
+        <ul>
+          <li><strong>Séchage solaire</strong> : exposition au soleil (poisson, manioc, fruits). Économique, adapté au climat tropical.</li>
+          <li><strong>Séchage à l'air chaud</strong> : four ou séchoir mécanique (farines, pâtes).</li>
+          <li><strong>Lyophilisation</strong> : congélation puis sublimation de la glace (café instantané, aliments pour bébé).</li>
+          <li><strong>Concentration</strong> : évaporation partielle de l'eau (lait concentré, tomate concentrée).</li>
+        </ul>
+        <p><strong>Exemples congolais :</strong> séchage du poisson (makayabu), séchage des cossettes de manioc, séchage des feuilles de manioc (pondu).</p>
+        <p><strong>Précautions :</strong> un séchage incomplet laisse une Aw suffisante pour les moisissures ; il faut sécher jusqu'à ce que l'aliment soit croustillant ou cassant.</p>
+
+        <h3>2. Le froid</h3>
+        <p>Le froid ralentit ou arrête l'activité des micro-organismes et des enzymes. On distingue :</p>
+        <ul>
+          <li><strong>Réfrigération</strong> (0 – 4 °C) : ralentit les micro-organismes sans les tuer. Durée de conservation limitée (quelques jours à quelques semaines).</li>
+          <li><strong>Congélation</strong> (-18 °C ou moins) : stoppe la multiplication microbienne et ralentit fortement les enzymes. Conservation de plusieurs mois.</li>
+          <li><strong>Surgélation</strong> : congélation très rapide (industrie).</li>
+        </ul>
+        <p><strong>Règle d'or :</strong> respecter la <strong>chaîne du froid</strong> sans rupture. Une rupture (panne, transport à température ambiante) permet aux micro-organismes de reprendre leur croissance et peut rendre l'aliment dangereux, même si on le recongèle.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Négliger la chaîne du froid est une erreur grave. Un aliment décongelé puis recongelé peut avoir vu ses micro-organismes se multiplier et devenir dangereux. La congélation ne tue pas les micro-organismes : elle les met en sommeil.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VII — Chaleur, salaison, fumaison et fermentation",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>3. La chaleur</h3>
+        <ul>
+          <li><strong>Pasteurisation</strong> (60 – 90 °C) : détruit les micro-organismes pathogènes et une partie des altérants. Conservation de courte durée (quelques jours à quelques semaines), à compléter par le froid. Exemple : lait pasteurisé.</li>
+          <li><strong>Stérilisation</strong> (&gt; 100 °C, souvent 115 – 121 °C en autoclave) : détruit tous les micro-organismes et leurs spores. Conservation longue durée à température ambiante. Exemple : conserves de légumes, lait UHT.</li>
+          <li><strong>Ébullition</strong> (100 °C) : suffit pour rendre l'eau potable et cuire de nombreux aliments, mais n'équivaut pas à une stérilisation (certaines spores résistent).</li>
+        </ul>
+
+        <h3>4. La salaison</h3>
+        <p>La <strong>salaison</strong> consiste à ajouter du sel (chlorure de sodium) à un aliment. Le sel :</p>
+        <ul>
+          <li>Réduit l'activité de l'eau (Aw) : les micro-organismes ne peuvent plus se multiplier.</li>
+          <li>Inhibe directement certaines bactéries (par pression osmotique).</li>
+          <li>Contribue au goût et à la texture.</li>
+        </ul>
+        <p><strong>Exemples :</strong> poisson salé et séché, viande salée, fromages salés.</p>
+        <p><strong>Précaution :</strong> un dosage insuffisant ne protège pas ; un dosage excessif est mauvais pour la santé (hypertension, maladies cardiovasculaires).</p>
+
+        <h3>5. La fumaison</h3>
+        <p>La <strong>fumaison</strong> expose l'aliment à la fumée de bois. Elle agit par :</p>
+        <ul>
+          <li><strong>Déshydratation partielle</strong> : la chaleur du foyer et la circulation d'air sèchent l'aliment.</li>
+          <li><strong>Action antimicrobienne</strong> : certains composés de la fumée (phénols, acides) inhibent les micro-organismes.</li>
+          <li><strong>Action antioxydante</strong> : les phénols ralentissent le rancissement des lipides.</li>
+          <li><strong>Arômes caractéristiques</strong>.</li>
+        </ul>
+        <p>La fumaison est souvent combinée au séchage ou à la salaison.</p>
+
+        <h3>6. La fermentation</h3>
+        <p>La <strong>fermentation</strong> est la transformation des aliments par des micro-organismes contrôlés. Les micro-organismes produisent des acides (lactique, acétique) ou de l'alcool qui inhibent les micro-organismes indésirables et modifient le goût et la texture.</p>
+        <ul>
+          <li><strong>Fermentation lactique</strong> : yaourt, fromage, choucroute, fermentation du manioc (chikwangue, cossettes), attiéké.</li>
+          <li><strong>Fermentation alcoolique</strong> : pain, bière, vin.</li>
+          <li><strong>Fermentation acétique</strong> : vinaigre.</li>
+        </ul>
+        <p><strong>Exemples congolais :</strong> fermentation du manioc pour la chikwangue, du maïs pour la pâte, du sorgho pour la bière traditionnelle (kasiksi).</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>La chaleur (pasteurisation, stérilisation), la salaison (baisse d'Aw), la fumaison (action antimicrobienne + séchage) et la fermentation (acidification) sont des techniques complémentaires. Souvent, les méthodes se combinent pour une meilleure conservation.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VII — Hygiène et sécurité alimentaire",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les cinq règles d'or de l'hygiène alimentaire</h3>
+        <p>La biochimie alimentaire ne protège pas seulement la qualité, elle protège aussi la santé. Les maladies d'origine alimentaire (toxi-infections) sont fréquentes et parfois mortelles. Voici les règles de base :</p>
+
+        <h4>1. La propreté</h4>
+        <ul>
+          <li>Se laver les mains avant de manipuler les aliments.</li>
+          <li>Laver les ustensiles et les surfaces.</li>
+          <li>Protéger les aliments des insectes et des rongeurs.</li>
+        </ul>
+
+        <h4>2. La séparation du cru et du cuit</h4>
+        <ul>
+          <li>Utiliser des planches et des couteaux différents.</li>
+          <li>Conserver les viandes crues séparément des aliments cuits.</li>
+        </ul>
+
+        <h4>3. La cuisson suffisante</h4>
+        <ul>
+          <li>Cuire à cœur : la température interne doit atteindre 70 °C ou plus.</li>
+          <li>Porter les restes à ébullition avant de les consommer.</li>
+        </ul>
+
+        <h4>4. La conservation au froid</h4>
+        <ul>
+          <li>Réfrigérer rapidement les aliments préparés.</li>
+          <li>Ne pas laisser les aliments à température ambiante plus de 2 heures.</li>
+        </ul>
+
+        <h4>5. L'eau et les matières premières sûres</h4>
+        <ul>
+          <li>Utiliser de l'eau potable pour la cuisine et le lavage.</li>
+          <li>Choisir des matières premières fraîches, non moisies, non avariées.</li>
+          <li>Éviter les arachides et maïs moisis (risque d'aflatoxines).</li>
+        </ul>
+
+        <h4>Les aflatoxines : un danger congolais</h4>
+        <p>Les <strong>aflatoxines</strong> sont des toxines produites par certaines moisissures (<em>Aspergillus flavus</em>) qui se développent sur l'arachide et le maïs mal stockés (chaleur, humidité). Ce sont des substances <strong>cancérigènes</strong> (notamment pour le foie). Il faut :</p>
+        <ul>
+          <li>Bien sécher les arachides et le maïs avant stockage.</li>
+          <li>Stocker dans un endroit sec et ventilé.</li>
+          <li>Éliminer les graines moisies ou décolorées.</li>
+          <li>Ne jamais consommer une pâte d'arachide rance ou moisie.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Les cinq règles d'hygiène (propreté, séparation cru/cuit, cuisson suffisante, froid, eau sûre) préviennent les toxi-infections alimentaires. Les aflatoxines des arachides et maïs moisis sont cancérigènes : séchage, stockage sec et élimination des graines moisies sont indispensables.</p>
+      </div>
+    `
+  },
+  {
+    title: "Synthèse — Comprendre pour mieux conserver",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Synthèse générale</div>
+        <h3>Les trois axes de la biochimie alimentaire</h3>
+
+        <h4>1. La composition</h4>
+        <p>Glucides, lipides, protéines, eau, minéraux et vitamines composent tout aliment. Connaître leurs proportions, c'est prévoir le comportement de l'aliment à la transformation et à la conservation.</p>
+
+        <h4>2. Les transformations</h4>
+        <p>Gélatinisation, caramélisation, dénaturation, coagulation, réaction de Maillard, oxydation, fermentation, brunissement enzymatique : ces réactions modifient la couleur, la texture, le goût et parfois la valeur nutritionnelle des aliments.</p>
+
+        <h4>3. La conservation</h4>
+        <p>Déshydratation, froid, chaleur, salaison, fumaison, fermentation, additifs : toutes ces techniques visent à empêcher ou ralentir la prolifération microbienne et les réactions d'altération.</p>
+
+        <h3>Tableau récapitulatif</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Technique</th>
+              <th>Principe biochimique</th>
+              <th>Exemples</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Séchage</td><td>Réduction d'Aw</td><td>Poisson séché, cossettes de manioc</td></tr>
+            <tr><td>Réfrigération</td><td>Ralentissement microbien</td><td>Viande, lait, légumes</td></tr>
+            <tr><td>Congélation</td><td>Arrêt microbien</td><td>Poisson, viande, plats cuisinés</td></tr>
+            <tr><td>Pasteurisation</td><td>Destruction des pathogènes</td><td>Lait, jus</td></tr>
+            <tr><td>Stérilisation</td><td>Destruction totale</td><td>Conserves</td></tr>
+            <tr><td>Salaison</td><td>Réduction d'Aw + inhibition</td><td>Poisson salé, viande salée</td></tr>
+            <tr><td>Fumaison</td><td>Séchage + antimicrobiens</td><td>Poisson fumé, viande fumée</td></tr>
+            <tr><td>Fermentation</td><td>Acidification</td><td>Yaourt, chikwangue, pain</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bloc cas">
+        <div class="bloc-label">Étude de cas (cas pédagogique)</div>
+        <p>« Un élève de 4<sup>e</sup> biochimie alimentaire à Kinshasa analyse la conservation du poisson. Il compare le séchage traditionnel, la fumaison et la congélation. Il mesure l'activité de l'eau (Aw) de chaque produit, explique les mécanismes biochimiques en jeu et propose la méthode la plus adaptée au contexte local. »</p>
+        <p><strong>Analyse :</strong> la comparaison est pertinente. Le séchage solaire est le plus économique mais dépend du climat. La fumaison combine séchage et action antimicrobienne. La congélation offre la meilleure conservation mais nécessite une chaîne du froid continue, coûteuse et fragile en milieu rural. Le choix dépend du contexte : marché local, électricité disponible, transport.</p>
+      </div>
+
+      <div class="bloc sources">
+        <div class="bloc-label">Sources du cours</div>
+        <ul>
+          <li>Lobinayo, « Nutrition, option des humanités en RDC » — matières Chimie alimentaire et Technologie et conservation des aliments.</li>
+          <li>Lobinayo, « Industries agricoles, option des humanités en RDC » — Chimie des aliments, Technologie agroalimentaire, Conservation et contrôle de qualité.</li>
+          <li>Programme éducatif officiel SPTIC — Techniques de conservation des aliments.</li>
+          <li>Sciences-Africa, <em>Nutrition</em>, 4<sup>e</sup> Année des Humanités.</li>
+          <li>Alais &amp; Linden, <em>Biochimie alimentaire</em>.</li>
+          <li>FAO — documents sur la conservation des aliments.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Évaluation finale — Biochimie Alimentaire",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Consigne</div>
+        <p>Répondez aux questions ci-dessous en sélectionnant la bonne réponse parmi les quatre propositions. Le QCM couvre l'ensemble du cours. Cliquez ensuite sur « Valider mes réponses » pour obtenir votre score.</p>
+      </div>
+
+      <div class="quiz-container">
+        <div id="quizQuestions"></div>
+        <button id="submitQuiz" class="quiz-btn-submit">
+          Valider mes réponses
+        </button>
+        <div id="quizResult" class="quiz-result"></div>
+      </div>
+    `
+  }
+];
+const questions = [
+  {
+    text: "La biochimie alimentaire étudie :",
+    options: [
+      "La composition, les transformations et les altérations des aliments",
+      "Uniquement les cultures agricoles",
+      "Les sols",
+      "Le climat"
+    ],
+    correct: 0
+  },
+  {
+    text: "Parmi les six familles de constituants des aliments, laquelle fournit de l'énergie en raison de 4 kcal/g ?",
+    options: ["Les glucides et les protéines", "Les lipides", "L'eau", "Les minéraux"],
+    correct: 0
+  },
+  {
+    text: "Les glucides se divisent en :",
+    options: [
+      "Oses (sucres simples) et osides (sucres complexes)",
+      "Acides gras saturés et insaturés",
+      "Acides aminés essentiels et non essentiels",
+      "Vitamines liposolubles et hydrosolubles"
+    ],
+    correct: 0
+  },
+  {
+    text: "La gélatinisation concerne :",
+    options: [
+      "L'amidon chauffé en présence d'eau",
+      "Le sucre chauffé à sec",
+      "Les protéines coagulées",
+      "Les lipides oxydés"
+    ],
+    correct: 0
+  },
+  {
+    text: "La caramélisation concerne :",
+    options: [
+      "La dégradation des sucres sous l'effet d'une chaleur intense et sèche",
+      "La gélatinisation de l'amidon",
+      "La dénaturation des protéines",
+      "Le rancissement des lipides"
+    ],
+    correct: 0
+  },
+  {
+    text: "Parmi les aliments suivants, lequel est riche en amidon ?",
+    options: ["Le manioc", "L'huile de palme", "La viande de bœuf", "Le lait"],
+    correct: 0
+  },
+  {
+    text: "Les lipides sont des molécules :",
+    options: [
+      "Insolubles dans l'eau et solubles dans les solvants organiques",
+      "Solubles dans l'eau uniquement",
+      "Composées d'acides aminés",
+      "Toujours solides à température ambiante"
+    ],
+    correct: 0
+  },
+  {
+    text: "Les acides gras oméga-3 et oméga-6 sont dits essentiels parce que :",
+    options: [
+      "L'organisme ne peut pas les fabriquer et doit les trouver dans l'alimentation",
+      "Ils sont mauvais pour la santé",
+      "Ils n'existent pas dans les aliments",
+      "Ils sont toxiques à haute dose"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le rancissement des lipides est dû principalement à :",
+    options: [
+      "L'oxydation par l'oxygène de l'air",
+      "La coagulation des protéines",
+      "La gélatinisation de l'amidon",
+      "La fermentation lactique"
+    ],
+    correct: 0
+  },
+  {
+    text: "Parmi les facteurs suivants, lequel accélère le rancissement d'une huile ?",
+    options: [
+      "L'exposition à la lumière et à la chaleur",
+      "Le stockage à l'abri de la lumière",
+      "Le stockage au froid",
+      "L'ajout d'antioxydants"
+    ],
+    correct: 0
+  },
+  {
+    text: "Les protéines sont des chaînes :",
+    options: [
+      "D'acides aminés reliés par des liaisons peptidiques",
+      "D'acides gras",
+      "De glucides simples",
+      "De vitamines"
+    ],
+    correct: 0
+  },
+  {
+    text: "La dénaturation d'une protéine est :",
+    options: [
+      "La modification de sa structure spatiale sans rupture des liaisons peptidiques",
+      "La destruction complète de sa séquence d'acides aminés",
+      "La gélatinisation de l'amidon",
+      "Une oxydation des lipides"
+    ],
+    correct: 0
+  },
+  {
+    text: "La coagulation d'une protéine est :",
+    options: [
+      "Le passage de l'état liquide à l'état solide (ou gel)",
+      "La destruction totale de la protéine",
+      "Une réaction entre sucres et lipides",
+      "Un phénomène de gélatinisation"
+    ],
+    correct: 0
+  },
+  {
+    text: "La réaction de Maillard se produit entre :",
+    options: [
+      "Un sucre réducteur et un acide aminé (ou une protéine), sous l'effet de la chaleur",
+      "Deux lipides oxydés",
+      "Deux protéines dénaturées",
+      "L'eau et l'amidon"
+    ],
+    correct: 0
+  },
+  {
+    text: "La réaction de Maillard est responsable :",
+    options: [
+      "Du brunissement et du développement d'arômes (pain, viande grillée)",
+      "Du rancissement des huiles",
+      "De la gélatinisation de l'amidon",
+      "De la coagulation des protéines"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'activité de l'eau (Aw) mesure :",
+    options: [
+      "L'eau disponible pour les réactions chimiques et les micro-organismes",
+      "La teneur totale en eau de l'aliment",
+      "La quantité de sel dans l'aliment",
+      "Le pH de l'aliment"
+    ],
+    correct: 0
+  },
+  {
+    text: "Parmi les aliments suivants, lequel a l'Aw la plus basse ?",
+    options: ["Un biscuit sec", "Un poisson frais", "Un légume frais", "Du lait"],
+    correct: 0
+  },
+  {
+    text: "Les vitamines liposolubles sont :",
+    options: ["A, D, E, K", "C et groupe B", "Toutes hydrosolubles", "Aucune des réponses"],
+    correct: 0
+  },
+  {
+    text: "Parmi les facteurs suivants, lequel détruit le plus la vitamine C lors de la cuisson ?",
+    options: [
+      "Une cuisson prolongée à grande eau",
+      "Une cuisson à la vapeur",
+      "Une cuisson rapide",
+      "Un ajout de sel"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le brunissement d'une pomme coupée à l'air est dû à :",
+    options: [
+      "Une enzyme (polyphénol oxydase) agissant en présence d'oxygène",
+      "Une réaction de Maillard",
+      "Une gélatinisation",
+      "Une fermentation alcoolique"
+    ],
+    correct: 0
+  },
+  {
+    text: "Les levures sont utilisées principalement pour :",
+    options: [
+      "La fermentation alcoolique (pain, bière, vin)",
+      "La putréfaction des aliments",
+      "Le rancissement des huiles",
+      "La gélatinisation de l'amidon"
+    ],
+    correct: 0
+  },
+  {
+    text: "Une des conditions qui favorisent le développement des micro-organismes est :",
+    options: [
+      "Une Aw élevée et une température entre 20 et 45 °C",
+      "Un pH très acide et une Aw basse",
+      "Une température de congélation",
+      "Une atmosphère stérile"
+    ],
+    correct: 0
+  },
+  {
+    text: "La pasteurisation :",
+    options: [
+      "Détruit les micro-organismes pathogènes mais pas toutes les spores",
+      "Détruit absolument tous les micro-organismes et leurs spores",
+      "Congèle l'aliment",
+      "Ajoute du sel à l'aliment"
+    ],
+    correct: 0
+  },
+  {
+    text: "La stérilisation :",
+    options: [
+      "Détruit tous les micro-organismes et leurs spores à haute température",
+      "Ralentit seulement les micro-organismes",
+      "Se fait à 4 °C",
+      "Consiste à ajouter du sucre"
+    ],
+    correct: 0
+  },
+  {
+    text: "La salaison agit principalement en :",
+    options: [
+      "Réduisant l'activité de l'eau (Aw) et inhibant les micro-organismes",
+      "Augmentant l'activité de l'eau",
+      "Ajoutant des vitamines",
+      "Congelant l'aliment"
+    ],
+    correct: 0
+  },
+  {
+    text: "La fumaison agit par :",
+    options: [
+      "Séchage partiel et action antimicrobienne des composés de la fumée",
+      "Uniquement l'ajout de sel",
+      "Refroidissement rapide",
+      "Fermentation lactique"
+    ],
+    correct: 0
+  },
+  {
+    text: "La fermentation lactique est utilisée pour produire :",
+    options: [
+      "Yaourt, fromage, chikwangue, choucroute",
+      "Pain, bière, vin",
+      "Rancissement des huiles",
+      "Aflatoxines"
+    ],
+    correct: 0
+  },
+  {
+    text: "Les aflatoxines sont :",
+    options: [
+      "Des toxines cancérigènes produites par des moisissures sur arachide et maïs mal stockés",
+      "Des vitamines présentes dans le manioc",
+      "Des enzymes utiles à la digestion",
+      "Des acides gras essentiels"
+    ],
+    correct: 0
+  },
+  {
+    text: "Parmi les règles suivantes, laquelle n'est pas une règle d'hygiène alimentaire ?",
+    options: [
+      "Laisser les aliments cuits à température ambiante plusieurs heures",
+      "Se laver les mains avant de manipuler les aliments",
+      "Séparer le cru du cuit",
+      "Utiliser de l'eau potable pour la cuisine"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'objectif principal de la biochimie alimentaire en 4<sup>e</sup> Humanité est de :",
+    options: [
+      "Comprendre la composition, les transformations et la conservation des aliments",
+      "Étudier uniquement la littérature",
+      "Gérer un magasin de commerce",
+      "Construire des routes"
+    ],
+    correct: 0
+  }
+];
+
+try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+        questions.forEach(function (q) {
+            if (!q.text) q.text = q.question || q.q || q.enonce || q.titre || "";
+            if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+            if (typeof q.correct === "undefined") {
+                if (typeof q.answer !== "undefined") q.correct = q.answer;
+                else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+            }
+        });
+    }
+} catch (e) {}
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+const pageTitle = document.getElementById('pageTitle');
+pageTitle.textContent = "ECOLIA · " + COURSE_TITLE;
+document.title = "ECOLIA — " + COURSE_TITLE;
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim() || slides.length === 0) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp("(" + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ")", 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderEmptyState() {
+    contentDiv.innerHTML = '<div class="empty-state"><div class="icon">·</div><span class="tag">Bientôt disponible</span><h2>' + COURSE_TITLE + '</h2><p>Ce cours est en préparation. Le contenu sera ajouté prochainement.</p></div>';
+    slideCounterSpan.textContent = '0/0';
+    progressFill.style.width = '0%';
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    counterSpan.textContent = '—';
+}
+
+function renderQuiz() {
+    const qc = document.getElementById('quizQuestions');
+    if (!qc) return;
+    if (typeof questions === 'undefined' || questions.length === 0) {
+        qc.innerHTML = '<p style="color:#666;font-style:italic;">Quiz bientot disponible.</p>';
+        return;
+    }
+    let html = '';
+    questions.forEach((q, i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o, k) => {
+            html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>';
+        });
+        html += '</div>';
+    });
+    qc.innerHTML = html;
+    const submitBtn = document.getElementById('submitQuiz');
+    if (submitBtn) {
+        submitBtn.onclick = () => {
+            let score = 0;
+            questions.forEach((q, i) => {
+                const s = document.querySelector('input[name="q' + i + '"]:checked');
+                if (s && parseInt(s.value) === q.correct) score++;
+            });
+            const pct = Math.round(score/questions.length*100);
+            document.getElementById('quizResult').innerHTML =
+                '<div style="background:var(--bg2);padding:16px;border-radius:10px;margin-top:14px;">' +
+                '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong></div>';
+        };
+    }
+}
+
+function renderSlide(index, keepHighlight) {
+    if (keepHighlight === undefined) keepHighlight = true;
+    if (slides.length === 0) { renderEmptyState(); return; }
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    if (index === slides.length - 1) renderQuiz();
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    if (slides.length === 0) return;
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (slides.length && currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (slides.length && currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+<!-- ECOLIA_IMAGE_LOADER_START -->
+<script>
+(function () {
+  var SITE = "https://ecolia-course.github.io/";
+  var NATIVE = false;
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function abs(u) { return /^(https?:|data:|blob:)/i.test(u) ? u : (NATIVE ? SITE + u.replace(/^(\.\/|\/)+/, "") : u); }
+  function ext(u) { var m = String(u).split("?")[0].match(/\.(jpe?g|png|gif|webp|svg)$/i); return m ? m[1].toLowerCase() : "jpg"; }
+  function hide(img) { img.onerror = null; img.style.display = "none"; }
+  var table = null, queue = [], queued = {}, running = false;
+  function enqueue(full, fn) {
+    if (queued[fn]) return;
+    queued[fn] = 1; queue.push([full, fn]);
+    if (!running) { running = true; setTimeout(next, 2500); }
+  }
+  function next() {
+    if (!queue.length) { running = false; return; }
+    if (!navigator.onLine) { running = false; return; }
+    var q = queue.shift(), t0 = Date.now();
+    try { CoursInterface.download(q[0], q[1]); } catch (e) { return setTimeout(next, 500); }
+    (function wait() {
+      var ok = false;
+      try { ok = !!CoursInterface.exists(q[1]); } catch (e) {}
+      if (ok) setTimeout(next, 1500);
+      else if (Date.now() - t0 > 40000) next();
+      else setTimeout(wait, 700);
+    })();
+  }
+  function exists(fn) { try { return !!CoursInterface.exists(fn); } catch (e) { return false; } }
+  function show(img) {
+    if (!table || img.getAttribute("data-ecolia-done")) return;
+    var id = img.getAttribute("data-image-id");
+    var url = table[id];
+    if (typeof url !== "string" || !url.length) { console.warn("ECOLIA : image absente du JSON :", id); return; }
+    img.setAttribute("data-ecolia-done", "1");
+    if (!NATIVE) { img.onerror = function () { hide(img); }; img.setAttribute("src", url); return; }
+    var full = abs(url), fn = "img_" + id + "." + ext(url);
+    if (exists(fn)) {
+      img.onerror = function () {
+        try { CoursInterface["delete"](fn); } catch (e) {}
+        queued[fn] = 0;
+        img.onerror = function () { hide(img); };
+        img.setAttribute("src", full);
+      };
+      img.setAttribute("src", "https://app.local/cours/" + fn);
+    } else {
+      img.onerror = function () { hide(img); };
+      img.setAttribute("src", full);
+      enqueue(full, fn);
+    }
+  }
+  function scan(root) {
+    if (!root || !root.querySelectorAll) return;
+    if (root.matches && root.matches("img[data-image-id]")) show(root);
+    root.querySelectorAll("img[data-image-id]").forEach(show);
+  }
+  function prefetchAll() {
+    var ids = {};
+    try { JSON.stringify(slides).replace(/data-image-id=\\?"([^"\\]+)/g, function (m, id) { ids[id] = 1; }); } catch (e) {}
+    Object.keys(ids).forEach(function (id) {
+      var url = table[id];
+      if (typeof url !== "string" || !url.length) return;
+      var fn = "img_" + id + "." + ext(url);
+      if (!exists(fn)) enqueue(abs(url), fn);
+    });
+  }
+  function start(tbl) {
+    table = tbl;
+    scan(document.body);
+    new MutationObserver(function (muts) {
+      muts.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.nodeType === 1) scan(n); }); });
+    }).observe(document.body, { childList: true, subtree: true });
+    if (NATIVE) prefetchAll();
+  }
+  var JSON_URL = NATIVE ? SITE + "images_ecolia.json" : "images_ecolia.json";
+  var KEY = "ecolia_images_json";
+  fetch(JSON_URL, NATIVE ? { cache: "no-cache" } : undefined)
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (table) { if (NATIVE) lsSet(KEY, JSON.stringify(table)); start(table); })
+    .catch(function (e) {
+      var saved = null;
+      if (NATIVE) { try { saved = JSON.parse(lsGet(KEY) || "null"); } catch (x) {} }
+      if (saved) start(saved);
+      else console.warn("ECOLIA : JSON des images indisponible.", e);
+    });
+})();
+</script>
+<!-- ECOLIA_IMAGE_LOADER_END -->
+
+
+
+
+
+<!-- ECOLIA_AUDIO_PLAYER_START -->
+<style>
+  #ecolia-audio-btn, #ecolia-dl-btn {
+    width: 30px; height: 30px; min-width: 30px; padding: 0; margin: 0 4px 0 0;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    cursor: pointer; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent; outline: none;
+  }
+  #ecolia-audio-btn { border: none; background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-dl-btn { border: 1.5px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb); }
+  #ecolia-dl-btn.ecolia-full { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-btn.ecolia-fixed { position: fixed; top: 8px; left: 8px; z-index: 2147483000; }
+  #ecolia-audio-btn:active, #ecolia-dl-btn:active { transform: scale(.92); }
+  #ecolia-audio-btn svg, #ecolia-dl-btn svg { width: 15px; height: 15px; fill: currentColor; pointer-events: none; }
+  #ecolia-audio-btn.ecolia-off, #ecolia-dl-btn.ecolia-off { display: none; }
+  #ecolia-audio-banner {
+    display: none; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0;
+    padding: 8px 14px; font-size: .82rem; line-height: 1.35;
+    background: var(--soft, #eef3fb); color: var(--p1, #123); border-bottom: 1px solid var(--bd, #c9d6ea);
+  }
+  #ecolia-audio-banner.on { display: flex; }
+  #ecolia-audio-banner .eab-txt { flex: 1 1 180px; }
+  #ecolia-audio-banner .eab-act { display: flex; gap: 6px; flex-wrap: wrap; }
+  #ecolia-audio-banner button {
+    border: 1px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb);
+    border-radius: 16px; padding: 5px 12px; font-size: .8rem; cursor: pointer;
+  }
+  #ecolia-audio-banner button.pri { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-banner .eab-bar { display: none; flex-basis: 100%; height: 4px; border-radius: 2px; overflow: hidden; background: var(--bd, #c9d6ea); }
+  #ecolia-audio-banner .eab-bar i { display: block; height: 100%; width: 0; background: var(--p2, #2563eb); transition: width .2s; }
+</style>
+<script>
+(function () {
+  var CFG = {"code":"BiochimieAlimentaire4","base":"https://ecolia-course.github.io/ecolia-media/audio_files/","available":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"count":18,"sizeMo":20,"sizes":{"1":1050048,"2":1020672,"3":994944,"4":986688,"5":1035648,"6":1108032,"7":1099392,"8":1184832,"9":1351488,"10":1075776,"11":1107072,"12":1086912,"13":1156992,"14":1144704,"15":1557696,"16":1115136,"17":1309248,"18":158976},"fallback":{"1":[["fr","Sommaire, Biochimie Alimentaire. Bienvenue. La biochimie alimentaire: comprendre les aliments pour mieux les transformer et les conserver. La biochimie alimentaire est la science qui étudie la composition chimique des aliments, les réactions chimiques et biochimiques qui s'y produisent, et leurs conséquences sur la qualité nutritionnelle, organoleptique et sanitaire. Comprendre ces mécanismes permet de maîtriser les transformations (cuisson, fermentation), de prévenir les altérations et de conserver les qualités des aliments. Ce cours s'adresse aux élèves de 4e Humanité des filières Nutrition et Industries Agroalimentaires. Il prépare le futur technicien à comprendre les mécanismes biochimiques en jeu dans la production, la transformation et la conservation des aliments, dans le contexte congolais où les pertes post-récolte restent considérables. Objectifs d'apprentissage. À la fin de ce cours, l'élève doit être capable de: Identifier les constituants des aliments (glucides, lipides, protéines, eau, minéraux, vitamines). Expliquer les transformations biochimiques fondamentales (gélatinisation, caramélisation, coagulation, réaction de Maillard, rancissement). Comprendre le rôle de l'eau et de l'activité de l'eau (Aw) dans la conservation. Identifier le rôle des enzymes et des micro-organismes dans les aliments. Maîtriser les principes des principales techniques de conservation. Appliquer les règles d'hygiène et de sécurité alimentaire. Évaluer la qualité organoleptique et nutritionnelle des aliments. Grands chapitres du cours. Chapitre I, Introduction à la biochimie alimentaire. Chapitre II, Les glucides. Chapitre III, Les lipides. Chapitre IV, Les protéines. Chapitre V, L'eau, les minéraux et les vitamines. Chapitre VI, Les enzymes et les micro-organismes. Chapitre VII, Les techniques de conservation."]],"2":[["fr","Chapitre I, Pourquoi la biochimie alimentaire? Situation-problème. Dans un village du Kwilu, une coopérative de femmes transforme le manioc en chikwangue et en cossettes. Depuis quelques mois, une partie de la production moisit rapidement et doit être jetée. Les femmes ne comprennent pas pourquoi, alors qu'elles suivent la même recette depuis des années. Elles constatent aussi que le poisson fumé perd son goût après quelques semaines. Que se passe-t-il sur le plan biochimique? Comment corriger le procédé? Fondements théoriques. Une science appliquée à la vie quotidienne. La biochimie alimentaire est la science qui étudie la composition chimique des aliments, les réactions chimiques et biochimiques qui s'y produisent, et leurs conséquences sur la qualité nutritionnelle, organoleptique et sanitaire. Elle permet de comprendre et de maîtriser: Les transformations culinaires: cuisson, épaississement des sauces, prise du fromage, brunissement du pain. Les transformations artisanales: fermentation du manioc, fumaison du poisson, extraction de l'huile de palme. Les altérations: moisissures, rancissement, putréfaction, perte de vitamines. Les techniques de conservation: séchage, froid, chaleur, salaison, fermentation. Dans un pays à climat chaud et humide comme la R D C, ces connaissances sont décisives: les pertes post-récolte peuvent atteindre 30 à 40 pour cent de la production. Comprendre la biochimie permet de les réduire et d'améliorer la sécurité alimentaire. Erreur fréquente. Croire que la biochimie alimentaire se limite à la nutrition est une erreur. Elle englobe aussi les transformations (cuisson, fermentation) et la conservation (séchage, froid, salaison). C'est une science appliquée, utile à toute personne qui produit, transforme ou conserve des aliments."]],"3":[["fr","Chapitre I, Les constituants des aliments. Fondements théoriques. Les six grandes familles de constituants. Tout aliment est composé d'un mélange, en proportions variables, de six grandes familles de constituants: Famille. Rôle principal. Exemples d'aliments riches. Glucides. Énergie (sucres, amidon). Manioc, riz, maïs, banane, fruits. Lipides. Énergie, acides gras essentiels, vitamines liposolubles. Huile de palme, arachide, beurre, poissons gras. Protéines. Construction, entretien, enzymes, immunité. Viande, poisson, œufs, lait, légumineuses. Eau. Solvant, transport, régulation. Tous les aliments, surtout les fruits et légumes. Minéraux. Structure osseuse, transport d'oxygène, équilibre hydrique. Lait, légumes verts, sel, poissons. Vitamines. Régulation du métabolisme. Fruits, légumes, huiles, foie. Composition variable selon les aliments. Un aliment n'est jamais composé d'un seul constituant. Par exemple: Le manioc frais contient environ 60 à 70 pour cent d'eau, 25 à 30 pour cent d'amidon, et très peu de protéines. Le poisson contient 70 à 80 pour cent d'eau, 15 à 20 pour cent de protéines et 1 à 10 pour cent de lipides. L'huile de palme contient presque 100 pour cent de lipides. Connaître ces proportions permet de prévoir le comportement d'un aliment lors de la transformation et de la conservation. À retenir. Les six familles de constituants des aliments sont les glucides, les lipides, les protéines, l'eau, les minéraux et les vitamines. Leurs proportions varient selon l'aliment et déterminent son comportement à la transformation et à la conservation."]],"4":[["fr","Chapitre II, Les glucides: classification et sources. Fondements théoriques. Qu'est-ce qu'un glucide? Les glucides (appelés aussi hydrates de carbone ou sucres) sont des molécules composées de carbone, d'hydrogène et d'oxygène. Ils constituent la principale source d'énergie de l'alimentation humaine, surtout dans les pays tropicaux où les céréales et les tubercules dominent. Classification. On distingue deux grandes familles: Les oses (sucres simples, non hydrolysables): glucose, fructose, galactose. Ce sont les briques de base. Les osides (sucres complexes, hydrolysables en oses): Diholosides: saccharose (sucre de table), lactose (sucre du lait), maltose. Polyholosides: amidon (réserve des végétaux), glycogène (réserve animale), cellulose (paroi végétale), hémicelluloses, pectines. Sources principales. Aliment. Type de glucide dominant. Manioc, pomme de terre, riz, maïs. Amidon. Canne à sucre, betterave. Saccharose. Lait. Lactose. Fruits. Glucose, fructose, saccharose. Légumes verts, son de blé. Cellulose (fibres). Rôles. Énergétique: les glucides fournissent environ 4 kcal ou g. Structurel: la cellulose forme la paroi des végétaux (fibres alimentaires). Réserve: l'amidon (plantes) et le glycogène (animaux) stockent l'énergie. À retenir. Les glucides se divisent en oses (sucres simples) et osides (sucres complexes). L'amidon est la forme de réserve des plantes. Le manioc, le riz, le maïs sont les principales sources en R D C. Les glucides fournissent 4 kcal ou g."]],"5":[["fr","Chapitre II, La gélatinisation et la caramélisation. Fondements théoriques. Deux transformations majeures des glucides. 1. La gélatinisation de l'amidon. L'amidon est organisé en grains microscopiques dans les cellules végétales. À froid, il est insoluble dans l'eau. Mais chauffé en présence d'eau (vers 60 moins 80 degrés Celsius), il se produit la gélatinisation: les grains d'amidon absorbent l'eau, gonflent, éclatent et libèrent leurs molécules. Le liquide s'épaissit et se transforme en gel. Exemples concrets: La bouillie de manioc (fufu, chikwangue) épaissit par gélatinisation de son amidon. Une sauce liée à la farine épaissit en chauffant. Le riz cuit gonfle et devient tendre. Facteurs qui influencent la gélatinisation: Température: plus elle est élevée, plus la gélatinisation est rapide. Présence d'eau: sans eau, pas de gélatinisation. Agitation: favorise la rupture des grains. Sucre et acides: le sucre et les acides ralentissent la gélatinisation. 2. La caramélisation. La caramélisation est la dégradation des sucres sous l'effet d'une chaleur intense (au-delà de 160 degrés Celsius pour le saccharose), sans intervention d'acides aminés. Elle produit des composés bruns et des arômes caractéristiques (caramel, notes grillées). Exemples concrets: Le sucre qui brunit et se transforme en caramel au fond d'une casserole. La croûte dorée des beignets. Le colorant caramel utilisé dans les boissons. Erreur fréquente. Confondre gélatinisation (transformation de l'amidon dans l'eau chaude, qui épaissit) et caramélisation (transformation du sucre par la chaleur sèche, qui brunit) est une erreur fréquente. Ce sont deux réactions totalement distinctes: l'une concerne l'amidon, l'autre le sucre; l'une a besoin d'eau, l'autre non."]],"6":[["fr","Chapitre III, Les lipides: classification et sources. Fondements théoriques. Qu'est-ce qu'un lipide? Les lipides (ou matières grasses) sont des molécules insolubles dans l'eau et solubles dans les solvants organiques. Ils sont une source concentrée d'énergie (environ 9 kcal ou g) et fournissent des acides gras essentiels et des vitamines liposolubles (A, D, E, K). Classification. Acides gras: les briques de base. Saturés: pas de double liaison (beurre, graisse de bœuf, huile de coco). Souvent solides à température ambiante. Mono-insaturés: une double liaison (huile d'olive, avocat). Poly-insaturés: plusieurs doubles liaisons (huile de tournesol, poissons gras). Indispensables (oméga-3, oméga-6). Triglycérides: trois acides gras attachés à un glycérol. Ce sont les lipides les plus abondants dans les aliments et le corps humain. Phospholipides: lipides membranaires. Stérols: dont le cholestérol, présent dans les membranes animales. Sources principales. Source. Type de lipides. Huile de palme. Riche en acides saturés (palmitique) et mono-insaturés. Huile d'arachide. Riche en acides mono-insaturés et poly-insaturés. Poissons gras (capitaine, thon). Riche en oméga-3. Beurre, lait entier. Riche en acides saturés. Avocat, noix. Riche en acides insaturés. Rôles. Énergétique: 9 kcal ou g. Structurel: membranes cellulaires (phospholipides). Transport des vitamines liposolubles (A, D, E, K). Isolation thermique et protection des organes. Erreur fréquente. Croire que tous les lipides sont mauvais pour la santé est une erreur. Les acides gras insaturés (oméga-3, oméga-6) sont essentiels: le corps ne peut pas les fabriquer. Ce sont les excès de graisses saturées et les graisses oxydées qui posent problème."]],"7":[["fr","Chapitre III, L'oxydation et le rancissement. Fondements théoriques. Le rancissement. Le rancissement est l'altération des lipides sous l'effet de l'oxygène de l'air (oxydation) et parfois des enzymes (lipases). Il se traduit par: Une odeur et un goût désagréables (rance). Une couleur qui jaunit ou brunit. Une perte de valeur nutritionnelle (destruction des acides gras essentiels et des vitamines liposolubles). La formation de composés potentiellement toxiques (radicaux libres, aldéhydes). Mécanisme simplifié. L'oxygène attaque les doubles liaisons des acides gras insaturés. Il se forme des hydroperoxydes, qui se décomposent en molécules plus petites et volatiles (aldéhydes, cétones): ce sont elles qui donnent l'odeur rance. Facteurs qui accélèrent le rancissement. Lumière: accélère fortement l'oxydation. Chaleur: accélère les réactions chimiques. Oxygène de l'air: plus il y a de contact avec l'air, plus l'oxydation est rapide. Métaux (fer, cuivre): catalysent l'oxydation. Présence d'eau et d'enzymes. Prévention. Conserver les huiles à l'abri de la lumière, dans des récipients fermés. Éviter les températures élevées. Consommer rapidement les huiles après ouverture. Ajouter des antioxydants naturels (vitamine E, extraits de romarin). Éviter les récipients métalliques réactifs. L'hydrolyse. En plus de l'oxydation, les lipides peuvent subir une hydrolyse: les triglycérides se coupent en acides gras libres et en glycérol, sous l'effet de la chaleur, de l'humidité ou des lipases. C'est ce qui se passe quand une huile de friture est réutilisée trop souvent: elle devient acide et mousse. À retenir. Le rancissement est une altération des lipides par oxydation. Il se manifeste par une odeur et un goût désagréables et une perte de qualité nutritionnelle. Lumière, chaleur, oxygène et métaux l'accélèrent. L'huile se conserve à l'abri de la lumière et de la chaleur."]],"8":[["fr","Chapitre IV, Les protéines: structure et propriétés. Fondements théoriques. Qu'est-ce qu'une protéine? Les protéines sont de longues chaînes d'acides aminés reliés par des liaisons peptidiques. Elles sont composées de carbone, d'hydrogène, d'oxygène et d'azote (parfois de soufre). Elles fournissent environ 4 kcal ou g mais leur rôle principal n'est pas énergétique: elles sont les briques de construction de l'organisme et les acteurs de presque toutes les fonctions biologiques. Les acides aminés. Il existe 20 acides aminés protéinogènes. Certains sont dits essentiels (le corps ne peut pas les fabriquer et doit les trouver dans l'alimentation), d'autres non essentiels. Un aliment est dit complet en protéines s'il apporte tous les acides aminés essentiels en quantités suffisantes. Les protéines animales (viande, poisson, œuf, lait) sont généralement complètes, tandis que les protéines végétales sont souvent déficitaires en un ou plusieurs acides aminés (on parle d'acide aminé limitant). Les quatre niveaux de structure. Structure primaire: la séquence d'acides aminés. Structure secondaire: enroulements locaux (hélices, feuillets). Structure tertiaire: repliement tridimensionnel global. Structure quaternaire: assemblage de plusieurs chaînes (comme l'hémoglobine). Propriétés fonctionnelles. Structural: collagène, kératine, actine, myosine. Enzymatique: toutes les enzymes sont des protéines. Immunitaire: anticorps. Transport: hémoglobine (oxygène), lipoprotéines (lipides). Hormonale: insuline, glucagon. Sources. Viandes, poissons, œufs, laitages, légumineuses (haricot, soja, arachide), céréales (maïs, riz, blé). À retenir. Les protéines sont des chaînes d'acides aminés, dont certains sont essentiels. Elles ont des rôles structurels, enzymatiques, immunitaires, de transport et hormonaux. Les protéines animales sont généralement complètes; les protéines végétales doivent être combinées (céréales plus légumineuses)."]],"9":[["fr","Chapitre IV, La coagulation et la réaction de Maillard. Fondements théoriques. Trois transformations majeures des protéines. 1. La dénaturation. La dénaturation est la modification de la structure spatiale d'une protéine (structures secondaire, tertiaire, quaternaire), sans rupture des liaisons peptidiques. Elle est provoquée par: La chaleur: au-delà de 60 moins 70 degrés Celsius, la plupart des protéines se dénaturent. Les acides et les bases: variation du pH. Les agents chimiques: alcool, urée, sels. L'agitation mécanique: battage, agitation intense. La dénaturation entraîne souvent la perte de la fonction biologique (une enzyme dénaturée ne catalyse plus), mais elle peut être utile en cuisine: c'est elle qui permet la coagulation. 2. La coagulation. La coagulation est le passage d'une protéine de l'état liquide à l'état solide (ou gel), généralement après dénaturation. Elle est provoquée par: La chaleur: le blanc d'œuf liquide devient solide à la cuisson. L'acidification: le lait caillé par le citron ou le vinaigre. Les enzymes: la présure coagule le lait pour faire du fromage. Les sels: le sel coagule certaines protéines. Exemples: cuisson des œufs, prise du fromage, caillage du lait, cuisson du poisson (la chair devient ferme). 3. La réaction de Maillard. La réaction de Maillard est une réaction chimique entre un sucre réducteur (glucose, fructose) et un acide aminé (ou une protéine), sous l'effet de la chaleur. Elle produit: Une couleur brune (croûte dorée du pain, viande grillée, café torréfié). Des arômes caractéristiques (odeur de pain cuit, de viande grillée). Parfois des composés indésirables (acrylamide) si la réaction est poussée trop loin. La réaction de Maillard a lieu à des températures modérées (140 moins 165 degrés Celsius). Au-delà, on parle plutôt de pyrolyse (carbonisation). Erreur fréquente. Confondre dénaturation, coagulation et réaction de Maillard. La dénaturation est la modification de structure (par la chaleur, le pH). La coagulation est la prise en masse (liquide, donc solide). La réaction de Maillard est le brunissement entre sucres et protéines. Ce sont trois phénomènes distincts, souvent liés dans la cuisine."]],"10":[["fr","Chapitre V, L'eau et l'activité de l'eau (Aw). Fondements théoriques. L'eau dans les aliments. L'eau représente 60 à 70 pour cent du corps humain et une part variable des aliments (de 5 pour cent dans les biscottes secs à 95 pour cent dans les légumes frais). Elle remplit plusieurs fonctions: solvant, transport des nutriments, milieu des réactions biochimiques, régulation de la température. L'activité de l'eau (Aw). L'activité de l'eau (notée Aw, de l'anglais water activity) est un indicateur de l'eau disponible pour les réactions chimiques et les micro-organismes. Elle varie de 0 (aucune eau disponible) à 1 (eau pure). Attention: ne pas confondre Aw et teneur en eau. Un aliment peut contenir beaucoup d'eau mais avoir une Aw faible si cette eau est liée (par exemple dans le sucre, le sel). Valeurs indicatives. Aw. Exemples d'aliments. Conservation. supérieur à 0,95. Viande fraîche, lait, poisson frais, fruits frais. Très altérable, réfrigération obligatoire. 0,85 moins 0,95. Fromages, charcuteries. Réfrigéré, durée moyenne. 0,60 moins 0,85. Confitures, farines, produits fumés. Bonne conservation. inférieur à 0,60. Biscuits, lait en poudre, produits séchés. Très bonne conservation. Conséquences pratiques. Plus l'Aw est basse, plus l'aliment se conserve. C'est pourquoi les techniques de conservation visent souvent à réduire l'Aw: séchage, salaison, ajout de sucre. À retenir. L'activité de l'eau (Aw) mesure l'eau disponible pour les réactions et les micro-organismes. Plus l'Aw est basse, plus l'aliment se conserve. Séchage, salaison et sucrage réduisent l'Aw. Ne pas confondre Aw et teneur totale en eau."]],"11":[["fr","Chapitre V, Les minéraux et les vitamines. Fondements théoriques. Les minéraux. Les minéraux sont des éléments chimiques indispensables au fonctionnement de l'organisme. On distingue: Macro-minéraux (besoins importants): calcium, phosphore, potassium, sodium, magnésium, chlore. Oligo-éléments (besoins faibles): fer, zinc, cuivre, iode, sélénium, manganèse. Rôles principaux: Calcium et phosphore: os et dents. Fer: transport de l'oxygène (hémoglobine). Potassium et sodium: équilibre hydrique et transmission nerveuse. Iode: hormones thyroïdiennes. Zinc: immunité, cicatrisation. Les minéraux ne sont pas détruits par la cuisson, mais peuvent être perdus dans l'eau de cuisson (il faut donc limiter le trempage et réutiliser l'eau de cuisson des légumes). Les vitamines. Les vitamines sont des molécules organiques indispensables en très petites quantités. On distingue: Vitamines liposolubles: A, D, E, K. Elles se dissolvent dans les graisses et peuvent être stockées dans le foie et les tissus gras. Vitamines hydrosolubles: C et groupe B. Elles se dissolvent dans l'eau et ne sont pas stockées (sauf la B12): il faut donc en consommer chaque jour. Sensibilité des vitamines. Chaleur: la vitamine C et une partie du groupe B sont détruites par la cuisson prolongée. Lumière: la riboflavine (B2) et la vitamine A sont sensibles. Oxygène: la vitamine C s'oxyde rapidement à l'air. Eau de cuisson: les vitamines hydrosolubles passent dans l'eau (d'où l'intérêt de cuire à la vapeur ou de réutiliser l'eau). Erreur fréquente. Négliger la sensibilité des vitamines à la cuisson est une erreur. Une cuisson prolongée à grande eau détruit une grande partie de la vitamine C et du groupe B. Pour préserver les vitamines: cuire à la vapeur, limiter le trempage, éviter les cuissons trop longues, consommer rapidement les aliments frais."]],"12":[["fr","Chapitre VI, Les enzymes dans les aliments. Fondements théoriques. Qu'est-ce qu'une enzyme? Une enzyme est une protéine qui accélère (catalyse) une réaction biochimique sans être consommée par la réaction. Les enzymes sont présentes dans tous les êtres vivants, donc dans tous les aliments d'origine animale ou végétale. Rôles des enzymes dans les aliments. Dans les aliments, les enzymes peuvent avoir des effets bénéfiques ou nuisibles: Effets bénéfiques. Attendrissement de la viande: les protéases (comme la papaïne de la papaye) décomposent les protéines et attendrissent la viande. Fermentation: les enzymes des levures (saccharase, maltase) permettent la fermentation du pain et de la bière. Fromagerie: la présure (chymosine) coagule le lait pour faire du fromage. Brassage: les amylases transforment l'amidon du malt en sucres fermentescibles. Effets nuisibles. Brunissement enzymatique: quand on coupe une pomme, une banane ou un avocat, une enzyme (polyphénol oxydase) transforme les composés phénoliques en pigments bruns en présence d'oxygène. C'est une altération visuelle mais pas dangereuse. Ramollissement excessif: dans certains fruits trop mûrs, les pectinases détruisent la paroi cellulaire et ramollissent le fruit. Rancissement enzymatique: les lipases libèrent les acides gras et favorisent le rancissement. Inhibition des enzymes. Chaleur: la cuisson (blanchiment, ébullition) dénature les enzymes et les inactive. Froid: ralentit leur activité sans les détruire. pH extrêmes: acides ou bases fortes dénaturent les enzymes. Antioxydants (acide citrique, acide ascorbique): inhibent le brunissement enzymatique. À retenir. Les enzymes sont des protéines catalytiques présentes dans les aliments. Elles peuvent être bénéfiques (attendrissement, fermentation) ou nuisibles (brunissement, rancissement). La chaleur les inactive: le blanchiment prévient le brunissement enzymatique."]],"13":[["fr","Chapitre VI, Les micro-organismes: fermentations et altérations. Fondements théoriques. Les trois grands types de micro-organismes. 1. Les bactéries. Êtres unicellulaires, de taille microscopique. Certaines sont utiles, d'autres pathogènes ou responsables d'altérations. Utiles: bactéries lactiques (Lactobacillus) pour le yaourt, le fromage, la fermentation du manioc, la choucroute. Nuibles: bactéries de putréfaction (viande avariée), Salmonella, Clostridium botulinum (toxines mortelles). 2. Les levures. Champignons unicellulaires. Elles réalisent la fermentation alcoolique: elles transforment les sucres en alcool et en gaz carbonique. Utilisées pour: La panification (le C O2 fait lever la pâte). La fabrication de la bière et du vin. Certaines fermentations traditionnelles africaines. 3. Les moisissures. Champignons filamenteux. Certaines sont utiles, d'autres toxiques. Utiles: Penicillium pour l'affinage de certains fromages, Aspergillus pour la sauce soja. Nuibles: moisissures alimentaires (pain, fruits), Aspergillus flavus qui produit des aflatoxines (toxiques et cancérigènes), très dangereuses sur l'arachide et le maïs mal stockés. Conditions de développement. Les micro-organismes se développent quand les conditions sont favorables: Eau disponible (Aw élevée). Température: la plupart prolifèrent entre 20 et 45 degrés Celsius; le froid ralentit, la chaleur au-delà de 65 degrés Celsius tue. pH: la plupart préfèrent un pH proche de la neutralité; les acidifications (vinaigre, fermentation) les inhibent. Nutriments disponibles. Oxygène: certains en ont besoin (aérobies), d'autres non (anaérobies). Erreur fréquente. Croire que tous les micro-organismes sont nuisibles est une erreur. Certains sont essentiels: sans eux, pas de pain, pas de yaourt, pas de fromage, pas de chikwangue. Le tout est de maîtriser les conditions pour favoriser les bons et empêcher les mauvais."]],"14":[["fr","Chapitre VII, Les techniques de conservation: déshydratation et froid. Fondements théoriques. 1. La déshydratation (séchage). La déshydratation consiste à éliminer l'eau d'un aliment pour faire baisser son activité de l'eau (Aw). Les micro-organismes ne peuvent plus se développer et les réactions chimiques ralentissent. Techniques: Séchage solaire: exposition au soleil (poisson, manioc, fruits). Économique, adapté au climat tropical. Séchage à l'air chaud: four ou séchoir mécanique (farines, pâtes). Lyophilisation: congélation puis sublimation de la glace (café instantané, aliments pour bébé). Concentration: évaporation partielle de l'eau (lait concentré, tomate concentrée). Exemples congolais: séchage du poisson (makayabu), séchage des cossettes de manioc, séchage des feuilles de manioc (pondu). Précautions: un séchage incomplet laisse une Aw suffisante pour les moisissures; il faut sécher jusqu'à ce que l'aliment soit croustillant ou cassant. 2. Le froid. Le froid ralentit ou arrête l'activité des micro-organismes et des enzymes. On distingue: Réfrigération (0 moins 4 degrés Celsius): ralentit les micro-organismes sans les tuer. Durée de conservation limitée (quelques jours à quelques semaines). Congélation ( moins 18 degrés Celsius ou moins): stoppe la multiplication microbienne et ralentit fortement les enzymes. Conservation de plusieurs mois. Surgélation: congélation très rapide (industrie). Règle d'or: respecter la chaîne du froid sans rupture. Une rupture (panne, transport à température ambiante) permet aux micro-organismes de reprendre leur croissance et peut rendre l'aliment dangereux, même si on le recongèle. Erreur fréquente. Négliger la chaîne du froid est une erreur grave. Un aliment décongelé puis recongelé peut avoir vu ses micro-organismes se multiplier et devenir dangereux. La congélation ne tue pas les micro-organismes: elle les met en sommeil."]],"15":[["fr","Chapitre VII, Chaleur, salaison, fumaison et fermentation. Fondements théoriques. 3. La chaleur. Pasteurisation (60 moins 90 degrés Celsius): détruit les micro-organismes pathogènes et une partie des altérants. Conservation de courte durée (quelques jours à quelques semaines), à compléter par le froid. Exemple: lait pasteurisé. Stérilisation ( supérieur à 100 degrés Celsius, souvent 115 moins 121 degrés Celsius en autoclave): détruit tous les micro-organismes et leurs spores. Conservation longue durée à température ambiante. Exemple: conserves de légumes, lait UHT. Ébullition (100 degrés Celsius): suffit pour rendre l'eau potable et cuire de nombreux aliments, mais n'équivaut pas à une stérilisation (certaines spores résistent). 4. La salaison. La salaison consiste à ajouter du sel (chlorure de sodium) à un aliment. Le sel: Réduit l'activité de l'eau (Aw): les micro-organismes ne peuvent plus se multiplier. Inhibe directement certaines bactéries (par pression osmotique). Contribue au goût et à la texture. Exemples: poisson salé et séché, viande salée, fromages salés. Précaution: un dosage insuffisant ne protège pas; un dosage excessif est mauvais pour la santé (hypertension, maladies cardiovasculaires). 5. La fumaison. La fumaison expose l'aliment à la fumée de bois. Elle agit par: Déshydratation partielle: la chaleur du foyer et la circulation d'air sèchent l'aliment. Action antimicrobienne: certains composés de la fumée (phénols, acides) inhibent les micro-organismes. Action antioxydante: les phénols ralentissent le rancissement des lipides. Arômes caractéristiques. La fumaison est souvent combinée au séchage ou à la salaison. 6. La fermentation. La fermentation est la transformation des aliments par des micro-organismes contrôlés. Les micro-organismes produisent des acides (lactique, acétique) ou de l'alcool qui inhibent les micro-organismes indésirables et modifient le goût et la texture. Fermentation lactique: yaourt, fromage, choucroute, fermentation du manioc (chikwangue, cossettes), attiéké. Fermentation alcoolique: pain, bière, vin. Fermentation acétique: vinaigre. Exemples congolais: fermentation du manioc pour la chikwangue, du maïs pour la pâte, du sorgho pour la bière traditionnelle (kasiksi). À retenir. La chaleur (pasteurisation, stérilisation), la salaison (baisse d'Aw), la fumaison (action antimicrobienne plus séchage) et la fermentation (acidification) sont des techniques complémentaires. Souvent, les méthodes se combinent pour une meilleure conservation."]],"16":[["fr","Chapitre VII, Hygiène et sécurité alimentaire. Fondements théoriques. Les cinq règles d'or de l'hygiène alimentaire. La biochimie alimentaire ne protège pas seulement la qualité, elle protège aussi la santé. Les maladies d'origine alimentaire (toxi-infections) sont fréquentes et parfois mortelles. Voici les règles de base: 1. La propreté. Se laver les mains avant de manipuler les aliments. Laver les ustensiles et les surfaces. Protéger les aliments des insectes et des rongeurs. 2. La séparation du cru et du cuit. Utiliser des planches et des couteaux différents. Conserver les viandes crues séparément des aliments cuits. 3. La cuisson suffisante. Cuire à cœur: la température interne doit atteindre 70 degrés Celsius ou plus. Porter les restes à ébullition avant de les consommer. 4. La conservation au froid. Réfrigérer rapidement les aliments préparés. Ne pas laisser les aliments à température ambiante plus de 2 heures. 5. L'eau et les matières premières sûres. Utiliser de l'eau potable pour la cuisine et le lavage. Choisir des matières premières fraîches, non moisies, non avariées. Éviter les arachides et maïs moisis (risque d'aflatoxines). Les aflatoxines: un danger congolais. Les aflatoxines sont des toxines produites par certaines moisissures (Aspergillus flavus) qui se développent sur l'arachide et le maïs mal stockés (chaleur, humidité). Ce sont des substances cancérigènes (notamment pour le foie). Il faut: Bien sécher les arachides et le maïs avant stockage. Stocker dans un endroit sec et ventilé. Éliminer les graines moisies ou décolorées. Ne jamais consommer une pâte d'arachide rance ou moisie. À retenir. Les cinq règles d'hygiène (propreté, séparation cru ou cuit, cuisson suffisante, froid, eau sûre) préviennent les toxi-infections alimentaires. Les aflatoxines des arachides et maïs moisis sont cancérigènes: séchage, stockage sec et élimination des graines moisies sont indispensables."]],"17":[["fr","Synthèse, Comprendre pour mieux conserver. Synthèse générale. Les trois axes de la biochimie alimentaire. 1. La composition. Glucides, lipides, protéines, eau, minéraux et vitamines composent tout aliment. Connaître leurs proportions, c'est prévoir le comportement de l'aliment à la transformation et à la conservation. 2. Les transformations. Gélatinisation, caramélisation, dénaturation, coagulation, réaction de Maillard, oxydation, fermentation, brunissement enzymatique: ces réactions modifient la couleur, la texture, le goût et parfois la valeur nutritionnelle des aliments. 3. La conservation. Déshydratation, froid, chaleur, salaison, fumaison, fermentation, additifs: toutes ces techniques visent à empêcher ou ralentir la prolifération microbienne et les réactions d'altération. Tableau récapitulatif. Technique. Principe biochimique. Exemples. Séchage. Réduction d'Aw. Poisson séché, cossettes de manioc. Réfrigération. Ralentissement microbien. Viande, lait, légumes. Congélation. Arrêt microbien. Poisson, viande, plats cuisinés. Pasteurisation. Destruction des pathogènes. Lait, jus. Stérilisation. Destruction totale. Conserves. Salaison. Réduction d'Aw plus inhibition. Poisson salé, viande salée. Fumaison. Séchage plus antimicrobiens. Poisson fumé, viande fumée. Fermentation. Acidification. Yaourt, chikwangue, pain. Étude de cas (cas pédagogique). « Un élève de 4e biochimie alimentaire à Kinshasa analyse la conservation du poisson. Il compare le séchage traditionnel, la fumaison et la congélation. Il mesure l'activité de l'eau (Aw) de chaque produit, explique les mécanismes biochimiques en jeu et propose la méthode la plus adaptée au contexte local. ». Analyse: la comparaison est pertinente. Le séchage solaire est le plus économique mais dépend du climat. La fumaison combine séchage et action antimicrobienne. La congélation offre la meilleure conservation mais nécessite une chaîne du froid continue, coûteuse et fragile en milieu rural. Le choix dépend du contexte: marché local, électricité disponible, transport."]],"18":[["fr","Évaluation finale, Biochimie Alimentaire. Consigne. Répondez aux questions ci-dessous en sélectionnant la bonne réponse parmi les quatre propositions. Le QCM couvre l'ensemble du cours. Cliquez ensuite sur « Valider mes réponses » pour obtenir votre score."]]}};
+  var CACHE = "ecolia-cours-v1";                       // même cache que l'application
+  var PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  var PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+  var DL = '<svg viewBox="0 0 24 24"><path d="M11 3h2v9.2l3.6-3.6L18 10l-6 6-6-6 1.4-1.4L11 12.2V3zM5 19h14v2H5z"/></svg>';
+  var OK = '<svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>';
+  // Réparation du quiz : certains cours stockent les choix sous "opts" (ou autre) au lieu de "options"
+  try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+      questions.forEach(function (q) {
+        if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+        if (q.text === undefined) q.text = q.question || q.q || q.enonce || q.titre || "";
+        if (typeof q.correct === "undefined") {
+          if (typeof q.answer !== "undefined") q.correct = q.answer;
+          else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+        }
+      });
+    }
+  } catch (e) {}
+  var synth = window.speechSynthesis || null;
+  var HAS_CACHE = !!(window.caches && window.caches.open);
+  var NATIVE = false;           // APK ECOLIA : pont Java "CoursInterface" (fichiers dans le dossier de l'application)
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  var LATER = "ecolia_audio_later_" + CFG.code;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+  function init() {
+    if (document.getElementById("ecolia-audio-btn")) return;
+
+    // ---------- éléments de l'interface ----------
+    var btn = document.createElement("button");
+    btn.id = "ecolia-audio-btn"; btn.type = "button"; btn.className = "ecolia-off";
+    btn.setAttribute("aria-label", "Écouter la leçon"); btn.innerHTML = PLAY;
+    var dlBtn = document.createElement("button");
+    dlBtn.id = "ecolia-dl-btn"; dlBtn.type = "button"; dlBtn.className = "ecolia-off";
+    dlBtn.innerHTML = DL;
+    var host = document.querySelector(".header-right");
+    if (host) { host.insertBefore(dlBtn, host.firstChild); host.insertBefore(btn, dlBtn); }   // dans la barre du haut : ne scrolle jamais
+    else { btn.className += " ecolia-fixed"; document.body.appendChild(btn); }
+
+    var banner = document.createElement("div");
+    banner.id = "ecolia-audio-banner";
+    banner.innerHTML = '<span class="eab-txt"></span><span class="eab-act"></span><div class="eab-bar"><i></i></div>';
+    var content = document.getElementById("content");
+    if (content && content.parentNode) content.parentNode.insertBefore(banner, content);
+    else document.body.insertBefore(banner, document.body.firstChild);
+    var txtEl = banner.querySelector(".eab-txt"), actEl = banner.querySelector(".eab-act");
+    var barEl = banner.querySelector(".eab-bar"), barI = barEl.firstChild;
+
+    var audio = new Audio();            // un seul élément Audio, réutilisé (exigé par les navigateurs mobiles)
+    audio.preload = "auto";
+    var st = { idx: -1, auto: false, advancing: false, mode: null, speaking: false, token: 0, chunks: [], ci: 0, blobUrl: null, playTok: 0 };
+    var dl = { state: "none", cached: 0, busy: false, cancel: false };   // none | partial | full
+    var bnMode = null, hideTimer = null;
+    if (synth && synth.getVoices) { try { synth.getVoices(); } catch (e) {} }
+
+    function cur() {
+      try { if (typeof currentSlide === "number") return currentSlide; } catch (e) {}
+      return 0;
+    }
+    function hasMp3(i) { return CFG.available.indexOf(i + 1) !== -1; }
+    function fb(i) { return CFG.fallback && CFG.fallback[String(i + 1)]; }
+    function hasAudio(i) { return hasMp3(i) || (!!synth && !!fb(i)); }
+    function urlN(n) {   // dans l'APK la page est sur https://app.local : une adresse relative doit pointer vers le site
+      var b = CFG.base;
+      if (NATIVE && !/^https?:/i.test(b)) b = "https://ecolia-course.github.io/" + b.replace(/^(\.\.\/|\.\/)+/, "");
+      return new URL(b + nameN(n), location.href).href;
+    }
+    function setIcon(playing) { btn.innerHTML = playing ? PAUSE : PLAY; }
+    function isPlaying() { return st.mode === "mp3" ? !audio.paused : (st.mode === "tts" && st.speaking); }
+    function mo() { return "≈ " + CFG.sizeMo + " Mo"; }
+    function nameN(n) { return "audio_" + CFG.code + "_" + n + ".mp3"; }
+
+    // ====================================================================
+    //  Stockage hors ligne : 2 moteurs, même interface
+    //    - APK : fichiers du dossier de l'application (CoursInterface), servis par https://app.local/cours/
+    //    - Web : Cache Storage du navigateur (même cache que l'application web)
+    // ====================================================================
+    function nativeStore() {
+      var okKey = "ecolia_audio_ok_" + CFG.code;
+      function readOk() { try { return JSON.parse(lsGet(okKey) || "[]"); } catch (e) { return []; } }
+      function writeOk(a) { lsSet(okKey, JSON.stringify(a)); }
+      function exists(n) { try { return !!CoursInterface.exists(nameN(n)); } catch (e) { return false; } }
+      function local(n) { return location.origin + "/cours/" + nameN(n); }
+      function verify(n) {                                   // fichier complet ? (taille exacte connue à la génération)
+        return fetch(local(n), { cache: "no-store" }).then(function (r) { return r.blob(); }).then(function (b) {
+          var exp = CFG.sizes && CFG.sizes[String(n)];
+          return (b.size > 2000 && (!exp || b.size === exp)) ? b : null;
+        }).catch(function () { return null; });
+      }
+      return {
+        list: function () {
+          var ok = readOk().filter(exists); writeOk(ok); return Promise.resolve(ok);
+        },
+        get: function (n) { return exists(n) ? verify(n) : Promise.resolve(null); },
+        put: function (n) {
+          return new Promise(function (res, rej) {
+            try { CoursInterface.download(urlN(n), nameN(n)); } catch (e) { return rej(e); }
+            var t0 = Date.now();
+            function next() { if (Date.now() - t0 > 120000) rej(new Error("délai dépassé")); else setTimeout(poll, 800); }
+            function poll() {
+              if (!exists(n)) return next();
+              verify(n).then(function (b) {
+                if (!b) return next();
+                var ok = readOk(); if (ok.indexOf(n) < 0) ok.push(n); writeOk(ok); res();
+              });
+            }
+            setTimeout(poll, 800);
+          });
+        },
+        del: function (n) {
+          try { CoursInterface.delete(nameN(n)); } catch (e) {}
+          writeOk(readOk().filter(function (x) { return x !== n; }));
+          return Promise.resolve();
+        }
+      };
+    }
+    function cacheStore() {
+      return {
+        list: function () {
+          return caches.open(CACHE).then(function (c) {
+            return Promise.all(CFG.available.map(function (n) {
+              return c.match(urlN(n)).then(function (r) {
+                if (!r) return 0;
+                if ((r.headers.get("content-type") || "").indexOf("audio") !== 0) { c.delete(urlN(n)); return 0; }   // ancien contenu invalide
+                return n;
+              });
+            }));
+          }).then(function (a) { return a.filter(Boolean); });
+        },
+        get: function (n) {
+          return caches.open(CACHE).then(function (c) { return c.match(urlN(n)); })
+            .then(function (r) { return r ? r.blob() : null; }).then(function (b) { return b && b.size > 2000 ? b : null; });
+        },
+        put: function (n) {
+          var u = urlN(n);
+          return fetch(u, { cache: "no-store" }).then(function (r) {
+            if (!r.ok || r.status !== 200) throw new Error("HTTP " + r.status);
+            return r.blob();
+          }).then(function (b) {
+            if (b.size < 2000 || (b.type && b.type.indexOf("audio") !== 0 && b.type.indexOf("octet") < 0)) throw new Error("fichier invalide");
+            return caches.open(CACHE).then(function (c) { return c.put(u, new Response(b, { headers: { "Content-Type": "audio/mpeg" } })); });
+          });
+        },
+        del: function (n) { return caches.open(CACHE).then(function (c) { return c.delete(urlN(n)); }); }
+      };
+    }
+    var store = NATIVE ? nativeStore() : (HAS_CACHE ? cacheStore() : null);
+
+    // ====================================================================
+    //  Bannière : invitation, confirmations, progression
+    // ====================================================================
+    function showBanner(mode, text, buttons, pct) {
+      clearTimeout(hideTimer);
+      bnMode = mode;
+      txtEl.textContent = text;
+      actEl.innerHTML = "";
+      (buttons || []).forEach(function (b) {
+        var e = document.createElement("button");
+        e.type = "button"; e.textContent = b.label; if (b.pri) e.className = "pri";
+        e.addEventListener("click", function (ev) { ev.stopPropagation(); b.fn(); });
+        actEl.appendChild(e);
+      });
+      if (typeof pct === "number") { barEl.style.display = "block"; barI.style.width = pct + "%"; }
+      else barEl.style.display = "none";
+      banner.classList.add("on");
+    }
+    function hideBanner() { clearTimeout(hideTimer); bnMode = null; banner.classList.remove("on"); }
+    function flash(text) { showBanner("info", text, []); hideTimer = setTimeout(hideBanner, 4000); }
+
+    function refreshUI() {
+      var show = !!store && CFG.available.length > 0;
+      dlBtn.classList.toggle("ecolia-off", !show);
+      dlBtn.classList.toggle("ecolia-full", dl.state === "full");
+      dlBtn.innerHTML = dl.state === "full" ? OK : DL;
+      dlBtn.setAttribute("aria-label", dl.state === "full" ? "Audios téléchargés : supprimer" : "Télécharger les audios");
+      dlBtn.title = dlBtn.getAttribute("aria-label");
+    }
+    function refreshCacheState(done) {
+      if (!store) { dl.state = "none"; refreshUI(); if (done) done(); return; }
+      store.list().then(function (ok) {
+        dl.cached = ok.length;
+        dl.state = dl.cached === 0 ? "none" : (dl.cached >= CFG.available.length ? "full" : "partial");
+      }).catch(function () { dl.state = "none"; }).then(function () { refreshUI(); if (done) done(); });
+    }
+
+    function askDownload(fromInvite) {
+      var left = CFG.available.length - dl.cached;
+      var txt = dl.state === "partial"
+        ? "Il reste " + left + " audio(s) à télécharger pour écouter ce cours sans internet."
+        : "🔊 Télécharger les audios de ce cours (" + mo() + ") pour les écouter sans internet ? Wi-Fi recommandé.";
+      showBanner(fromInvite ? "invite" : "confirm", txt, [
+        { label: fromInvite ? "Plus tard" : "Annuler", fn: function () { if (fromInvite) lsSet(LATER, "1"); hideBanner(); } },
+        { label: "Télécharger", pri: true, fn: startDownload }
+      ]);
+    }
+    function askDelete() {
+      showBanner("confirm", "Supprimer les audios téléchargés de ce cours (" + mo() + ") ? Vous pourrez toujours les écouter en ligne.", [
+        { label: "Annuler", fn: hideBanner },
+        { label: "Supprimer", pri: true, fn: doDelete }
+      ]);
+    }
+
+    function startDownload() {
+      if (dl.busy || !store) return;
+      dl.busy = true; dl.cancel = false;
+      var total = CFG.available.length, done = 0, quota = false, fails = 0, todo = [];
+      store.list().then(function (have) {
+        CFG.available.forEach(function (n) { if (have.indexOf(n) < 0) todo.push(n); });
+        done = total - todo.length;
+        function paint() {
+          var msg = "Téléchargement des audios : " + done + " / " + total;
+          if (bnMode === "progress") {                  // met à jour sans recréer les boutons (sinon un appui peut être perdu)
+            txtEl.textContent = msg; barI.style.width = Math.round(done / total * 100) + "%";
+          } else {
+            showBanner("progress", msg, [
+              { label: "Annuler", fn: function () { dl.cancel = true; } }
+            ], Math.round(done / total * 100));
+          }
+        }
+        paint();
+        function worker() {
+          if (dl.cancel || quota || !todo.length) return Promise.resolve();
+          var n = todo.shift();
+          return store.put(n).then(function () { done++; paint(); }).catch(function (e) {
+            if (e && (e.name === "QuotaExceededError" || /quota/i.test(String(e.message)))) quota = true;
+            fails++;
+          }).then(worker);
+        }
+        return Promise.all([worker(), worker()]);
+      }).catch(function () { fails++; }).then(function () {
+        dl.busy = false;
+        refreshCacheState(function () {
+          if (dl.state === "full") flash("✓ Audios téléchargés : le cours se lit maintenant sans internet.");
+          else if (dl.cancel) flash("Téléchargement interrompu (" + dl.cached + " / " + total + "). Vous pourrez reprendre plus tard.");
+          else showBanner("error", quota ? "Espace insuffisant sur l'appareil. Libérez de la place puis réessayez."
+            : "Certains audios n'ont pas pu être téléchargés (connexion ?).", [
+            { label: "Fermer", fn: hideBanner }, { label: "Réessayer", pri: true, fn: startDownload }
+          ]);
+        });
+      });
+    }
+    function doDelete() {
+      if (!store) return;
+      Promise.all(CFG.available.map(function (n) { return store.del(n); })).catch(function () {}).then(function () {
+        lsDel(LATER);
+        refreshCacheState(function () { flash("Audios supprimés de cet appareil."); });
+      });
+    }
+
+    dlBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (dl.busy) return;
+      if (dl.state === "full") askDelete(); else askDownload(false);
+    });
+
+    // ====================================================================
+    //  Voix intégrée au téléphone (hors ligne, sans limite)
+    // ====================================================================
+    function pickVoice(lang) {
+      var vs = [];
+      try { vs = synth.getVoices() || []; } catch (e) {}
+      var pre = lang === "en" ? "en" : "fr", best = null;
+      for (var k = 0; k < vs.length; k++) {
+        var v = vs[k];
+        if ((v.lang || "").toLowerCase().indexOf(pre) !== 0) continue;
+        if (!best || (v.localService && !best.localService)) best = v;
+      }
+      return best;
+    }
+    function hardSplit(text, max) {
+      var out = [];
+      while (text.length > max) {
+        var cut = text.lastIndexOf(" ", max);
+        if (cut < 40) cut = max;
+        out.push(text.slice(0, cut)); text = text.slice(cut).replace(/^\s+/, "");
+      }
+      if (text) out.push(text);
+      return out;
+    }
+    function buildChunks(segs) {                  // morceaux courts : évite l'arrêt des longs textes sur Chrome
+      var out = [];
+      segs.forEach(function (s) {
+        var cur2 = "", parts = s[1].match(/[^.!?;:]+[.!?;:]*\s*/g) || [s[1]];
+        parts.forEach(function (p) {
+          if (cur2 && (cur2 + p).length > 160) { out.push({ lang: s[0], text: cur2.trim() }); cur2 = p; }
+          else cur2 += p;
+        });
+        if (cur2.trim()) out.push({ lang: s[0], text: cur2.trim() });
+      });
+      var res = [];
+      out.forEach(function (c) { hardSplit(c.text, 190).forEach(function (t) { res.push({ lang: c.lang, text: t }); }); });
+      return res;
+    }
+    function speakFrom(tk) {
+      if (tk !== st.token) return;
+      if (st.ci >= st.chunks.length) {
+        st.speaking = false; st.mode = null; st.ci = 0; setIcon(false);
+        if (st.auto) goNext();
+        return;
+      }
+      var c = st.chunks[st.ci];
+      var u = new SpeechSynthesisUtterance(c.text);
+      u.lang = c.lang === "en" ? "en-US" : "fr-FR";
+      var v = pickVoice(c.lang);
+      if (v) { u.voice = v; u.lang = v.lang; }
+      u.rate = 0.95;
+      u.onend = function () { if (tk !== st.token) return; st.ci++; speakFrom(tk); };
+      u.onerror = function () { if (tk !== st.token) return; st.speaking = false; setIcon(false); st.auto = false; };
+      synth.speak(u);
+    }
+    function startTts(from) {
+      st.token++;
+      var tk = st.token;
+      st.mode = "tts"; st.speaking = true; st.ci = from || 0; setIcon(true);
+      var busy = false;
+      try { busy = synth.speaking || synth.pending; synth.cancel(); } catch (e) {}
+      if (busy) setTimeout(function () { speakFrom(tk); }, 120);   // laisse cancel() se terminer
+      else speakFrom(tk);                                          // sinon tout de suite (exigé par iOS)
+    }
+    function playVoice() {
+      if (!(synth && fb(st.idx))) { st.auto = false; return false; }
+      if (!st.chunks.length) st.chunks = buildChunks(fb(st.idx));
+      startTts(st.ci);
+      return true;
+    }
+
+    // ====================================================================
+    //  Lecture
+    // ====================================================================
+    function freeBlob() { if (st.blobUrl) { try { URL.revokeObjectURL(st.blobUrl); } catch (e) {} st.blobUrl = null; } }
+    function stopAll() {
+      st.playTok++;
+      try { audio.pause(); audio.currentTime = 0; } catch (e) {}
+      st.token++;
+      try { if (synth) synth.cancel(); } catch (e) {}
+      st.speaking = false; st.mode = null; st.chunks = []; st.ci = 0;
+      setIcon(false);
+    }
+    function pauseNow() {
+      if (st.mode === "mp3") audio.pause();
+      else if (st.mode === "tts") {
+        st.token++;
+        try { synth.cancel(); } catch (e) {}
+        st.speaking = false; setIcon(false);      // st.ci conservé : la reprise repart de la phrase en cours
+      }
+    }
+    function startAudio(src, tok) {
+      if (tok !== st.playTok) return;
+      if (audio.getAttribute("data-src") !== src) { audio.setAttribute("data-src", src); audio.src = src; }
+      var p = audio.play();
+      if (p && p.catch) p.catch(function (err) {
+        console.warn("ECOLIA audio :", err);
+        if (tok !== st.playTok) return;
+        if (!(err && err.name === "NotAllowedError") && playVoice()) return;   // lecture impossible : voix du téléphone
+        setIcon(false); st.auto = false;
+      });
+    }
+    function playCurrent() {
+      var i = st.idx;
+      if (hasMp3(i)) {
+        var tok = ++st.playTok, u = urlN(i + 1);
+        st.mode = "mp3";
+        if (!navigator.onLine && dl.state === "none") { st.mode = null; if (playVoice()) return; }   // hors ligne et non téléchargé
+        if (store && dl.state !== "none") {                     // téléchargé : lecture locale, sans réseau
+          store.get(i + 1)
+            .then(function (b) {
+              if (tok !== st.playTok) return;
+              if (b) { freeBlob(); st.blobUrl = URL.createObjectURL(new Blob([b], { type: "audio/mpeg" })); startAudio(st.blobUrl, tok); }
+              else startAudio(u, tok);
+            }).catch(function () { startAudio(u, tok); });
+        } else startAudio(u, tok);                              // sinon lecture en ligne (appel immédiat, exigé par iOS)
+      } else if (!playVoice()) {
+        st.auto = false;
+      }
+    }
+
+    function onSlideChange(i) {
+      var wasAdvancing = st.advancing;
+      st.advancing = false;
+      st.idx = i;
+      btn.classList.toggle("ecolia-off", !hasAudio(i));
+      stopAll();
+      audio.removeAttribute("data-src");
+      freeBlob();
+      if (bnMode === "invite" && i !== 0) hideBanner();       // l'invitation n'apparaît qu'à la première slide
+      if (wasAdvancing && st.auto) setTimeout(playCurrent, 500);   // enchaînement automatique
+      else st.auto = false;                                         // changement manuel : on coupe tout
+    }
+    function goNext() {
+      if (st.idx + 1 >= CFG.count) { st.auto = false; return; }
+      st.advancing = true;
+      if (typeof nextSlide === "function") nextSlide();
+      else { var nb = document.getElementById("nextBtn"); if (nb) nb.click(); }
+      setTimeout(function () { st.advancing = false; }, 4000);
+    }
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var i = cur();
+      if (i !== st.idx) onSlideChange(i);
+      if (isPlaying()) { st.auto = false; pauseNow(); }
+      else { st.auto = true; playCurrent(); }
+    });
+    audio.addEventListener("play", function () { setIcon(true); });
+    audio.addEventListener("pause", function () { if (st.mode === "mp3") setIcon(false); });
+    audio.addEventListener("error", function () {
+      if (st.mode === "mp3" && playVoice()) return;            // fichier introuvable / hors ligne : voix du téléphone
+      setIcon(false); st.auto = false;
+    });
+    audio.addEventListener("ended", function () { setIcon(false); if (st.auto) goNext(); });
+    window.addEventListener("pagehide", function () { stopAll(); freeBlob(); });
+
+    // ---------- démarrage ----------
+    refreshCacheState(function () {
+      if (store && CFG.available.length && dl.state !== "full" && navigator.onLine && cur() === 0 && !lsGet(LATER)) askDownload(true);
+    });
+    st.idx = -1;
+    setInterval(function () { var i = cur(); if (i !== st.idx) onSlideChange(i); }, 250);   // suit la slide affichée
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+<!-- ECOLIA_AUDIO_PLAYER_END -->
+</body>
+</html>

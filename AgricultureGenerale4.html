@@ -1,0 +1,1579 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="violet">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>ECOLIA — Agriculture Generale4</title>
+<style>
+[data-theme="bleu"]   { --p1:#0d2b4f; --p2:#1565c0; --p3:#07172e; --p4:#12437a; --p5:#5b8fd0; --bg:#e8f0fb; --bg2:#cfdff5; --bd:#a9c3e8; --soft:#dde8f7; --btn:#2a67b0; }
+[data-theme="vert"]   { --p1:#14442e; --p2:#2e7d32; --p3:#0b2b1a; --p4:#1f5c3a; --p5:#4f9a6b; --bg:#e8f5ec; --bg2:#c8e6d2; --bd:#a5cdb2; --soft:#dcefe2; --btn:#2f7a4f; }
+[data-theme="violet"] { --p1:#2d1b4e; --p2:#6a1b9a; --p3:#1a0f2e; --p4:#4a148c; --p5:#9c6fd0; --bg:#f1e9fb; --bg2:#dccbf2; --bd:#c4a8e6; --soft:#e8ddf6; --btn:#7e3fb2; }
+[data-theme="rouge"]  { --p1:#4a1010; --p2:#b71c1c; --p3:#2b0a0a; --p4:#8e1b1b; --p5:#d9706a; --bg:#fbeaea; --bg2:#f3cdcb; --bd:#e8a9a5; --soft:#f8dede; --btn:#a62a2a; }
+[data-theme="orange"] { --p1:#4e2a0c; --p2:#ef6c00; --p3:#2e1604; --p4:#b34a00; --p5:#f0a15a; --bg:#fff1e0; --bg2:#fbdcb8; --bd:#f3c08a; --soft:#fdebd6; --btn:#c9650a; }
+[data-theme="teal"]   { --p1:#0b3a3a; --p2:#00796b; --p3:#062626; --p4:#00574b; --p5:#4db6ac; --bg:#e0f2f1; --bg2:#b2dfdb; --bd:#80cbc4; --soft:#d5ecea; --btn:#26897d; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:linear-gradient(160deg,var(--p1) 0%,var(--p2) 50%,var(--p3) 100%); display:flex; justify-content:center; align-items:center; padding:8px; }
+.container { width:100%; max-width:1400px; background:#fefdf8; border-radius:20px; overflow:hidden; display:flex; flex-direction:column; height:100%; max-height:100vh; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.progress-bar { height:4px; background:var(--bg2); flex-shrink:0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--p5),var(--p4)); width:0%; transition:width 0.3s; }
+.header { padding:10px 16px; background:var(--bg); border-bottom:1px solid var(--bd); display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+.header h1 { color:var(--p4); font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box { display:flex; background:white; border-radius:20px; padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.search-box input { border:none; padding:6px 10px; border-radius:20px; outline:none; width:130px; font-size:0.8rem; }
+.search-box button { background:none; border:none; cursor:pointer; padding:4px 8px; font-size:0.85rem; color:var(--p2); }
+.badge { background:var(--p5); color:white; padding:4px 10px; border-radius:20px; font-weight:bold; font-size:0.75rem; }
+.search-nav { display:none; gap:4px; background:var(--bg2); padding:2px 8px; border-radius:20px; align-items:center; font-size:0.75rem; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:0.9rem; color:var(--p4); padding:2px 4px; }
+.content { padding:28px 32px; flex:1; overflow-y:auto; background:#fff; scroll-behavior:smooth; line-height:1.85; }
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.slide-title { color:var(--p1); font-size:1.5rem; font-weight:700; padding-bottom:12px; margin-bottom:20px; border-bottom:2px solid var(--p5); }
+.slide-content { color:var(--p3); font-size:1rem; }
+.empty-state { display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-height:60vh; padding:40px 20px; gap:18px; }
+.empty-state .icon { width:72px; height:72px; border-radius:50%; background:var(--bg); border:2px solid var(--bd); display:flex; align-items:center; justify-content:center; color:var(--p2); font-size:2rem; font-weight:300; }
+.empty-state h2 { color:var(--p1); font-size:1.4rem; font-weight:700; margin:0; }
+.empty-state p { color:#666; font-size:0.95rem; max-width:520px; line-height:1.7; }
+.empty-state .tag { display:inline-block; padding:6px 14px; background:var(--bg); color:var(--p4); border:1px solid var(--bd); border-radius:20px; font-size:0.8rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; }
+.bloc { padding:18px 22px; border-radius:12px; margin:22px 0; line-height:1.85; }
+.bloc-label { font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; opacity:0.7; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:var(--bg); border-left:4px solid var(--p5); }
+.theorie .bloc-label { color:var(--p4); }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.sources { background:#f5f5f5; padding:12px 16px; border-radius:10px; margin-top:26px; font-size:0.82rem; color:#666; border-left:3px solid #999; line-height:1.6; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:var(--p1); }
+.quiz-container { padding:22px; background:var(--bg); border-radius:16px; }
+.quiz-question { background:white; border-radius:10px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.quiz-question p { font-weight:600; margin-bottom:10px; color:var(--p1); }
+.quiz-question label { display:block; padding:8px 10px; margin:4px 0; border-radius:6px; cursor:pointer; transition:background 0.2s; }
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit { background:var(--btn); color:white; border:none; padding:12px 24px; border-radius:30px; font-size:1rem; cursor:pointer; font-weight:600; margin-top:14px; }
+.quiz-result { margin-top:16px; font-weight:600; }
+.controls { padding:8px 16px; background:#fafafa; border-top:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0; }
+.nav-btn { background:white; color:var(--p4); border:1px solid #ccc; padding:8px 14px; border-radius:8px; font-size:0.82rem; cursor:pointer; font-weight:500; }
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:var(--soft); }
+.content::-webkit-scrollbar-thumb { background:var(--p5); border-radius:3px; }
+@media (max-width:600px) { body { padding:0; } .container { border-radius:0; max-height:100vh; } .content { padding:20px 18px; } .slide-title { font-size:1.25rem; } .search-box input { width:90px; } .header h1 { font-size:0.85rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="header">
+<h1 id="pageTitle">ECOLIA</h1>
+<div class="header-right">
+<div class="search-box">
+<input id="searchInput" placeholder="Rechercher" type="text"/>
+<button id="searchBtn">⌕</button>
+</div>
+<div class="search-nav" id="searchNav">
+<button id="prevResultBtn">‹</button>
+<span id="resultCounter">0/0</span>
+<button id="nextResultBtn">›</button>
+</div>
+<span class="badge" id="slideCounter">0/0</span>
+</div>
+</div>
+<div class="content" id="content"></div>
+<div class="controls">
+<button class="nav-btn" id="prevBtn">← Précédent</button>
+<span class="counter" id="counter">—</span>
+<button class="nav-btn" id="nextBtn">Suivant →</button>
+</div>
+</div>
+<script>
+const COURSE_TITLE = "Agriculture Générale (Cultures Industrielles et de Rente)";
+const slides = [
+  {
+    title: "Sommaire — Agriculture Générale",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Présentation du cours</div>
+        <h3>Agriculture Générale — 4e Humanité</h3>
+        <p>Ce cours te forme à conduire une exploitation de cultures industrielles et pérennes, depuis la création de la pépinière jusqu'à la post-récolte, en appliquant des techniques agronomiques modernes, durables et adaptées au contexte congolais.</p>
+        <h4>Objectifs d'apprentissage</h4>
+        <ul>
+          <li>Distinguer les types de cultures et leur importance économique.</li>
+          <li>Créer et gérer une pépinière.</li>
+          <li>Établir une plantation (site, sol, piquetage, mise en terre).</li>
+          <li>Maîtriser la taille et le greffage.</li>
+          <li>Planifier la fertilisation et la protection phytosanitaire.</li>
+          <li>Conduire la récolte et la post-récolte.</li>
+          <li>Élaborer un plan technique et financier pour une plantation.</li>
+        </ul>
+        <h4>Grands chapitres</h4>
+        <ol>
+          <li>Introduction aux cultures industrielles et de rente</li>
+          <li>La pépinière</li>
+          <li>L'établissement d'une plantation</li>
+          <li>La taille et le greffage</li>
+          <li>La fertilisation et la protection phytosanitaire</li>
+          <li>La récolte et la post-récolte</li>
+          <li>La gestion technico-économique d'une plantation</li>
+        </ol>
+        <p><strong>Profil de sortie visé :</strong> Technicien A2 en agriculture générale, capable de gérer une exploitation agricole, une pépinière et des cultures pérennes.</p>
+      </div>
+    `
+  },
+  {
+    title: "Pourquoi l'agriculture générale ?",
+    content: `
+      <div class="bloc cas">
+        <div class="bloc-label">Situation de départ</div>
+        <h3>Un jeune technicien face à un terrain inexploité</h3>
+        <p>À Kisangani, un jeune technicien A2 en agriculture générale reçoit un terrain de deux hectares. Il veut y créer une plantation de caféiers robusta, mais il ne sait pas par où commencer : comment produire les plants ? Quelles distances de plantation ? Quand tailler ? Comment fertiliser ? Comment récolter et transformer pour obtenir un produit marchand ?</p>
+        <p><strong>Question de départ :</strong> quelles connaissances et quelles techniques un technicien doit-il maîtriser pour transformer un terrain nu en plantation productive et rentable ?</p>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Vision et finalités du cours</h3>
+        <p>L'<strong>agriculture générale</strong> de 4e année forme un technicien capable de maîtriser les <strong>itinéraires techniques complets</strong> pour l'établissement et l'entretien des principales cultures industrielles et fruitières.</p>
+        <h4>Un levier de développement pour la RDC</h4>
+        <p>La RDC dispose d'environ 80 millions d'hectares de terres arables, dont seulement 10 % sont cultivés. Les cultures industrielles et de rente représentent un potentiel majeur pour diversifier l'économie, créer des revenus en milieu rural et réduire la dépendance aux importations.</p>
+        <h4>Débouchés</h4>
+        <ul>
+          <li>Chef d'exploitation agricole</li>
+          <li>Pépiniériste, technicien de plantation</li>
+          <li>Agent de vulgarisation, entrepreneur agricole</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Cultures vivrières, de rente et industrielles",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Trois catégories à distinguer</h3>
+        <ul>
+          <li><strong>Cultures vivrières :</strong> destinées à l'autoconsommation familiale (manioc, maïs, riz, banane plantain, haricot).</li>
+          <li><strong>Cultures de rente :</strong> destinées à la vente, sans transformation obligatoire (café, cacao, coton brut).</li>
+          <li><strong>Cultures industrielles :</strong> destinées à la transformation (canne à sucre, palmier à huile, hévéa, sisal).</li>
+        </ul>
+        <h3>Pourquoi cette distinction ?</h3>
+        <p>Elle oriente les choix techniques, les investissements, la commercialisation et la gestion des risques. Une culture de rente demande un marché ; une culture industrielle exige un transformateur.</p>
+      </div>
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p><strong>Erreur fréquente :</strong> confondre cultures de rente et cultures industrielles. Une culture de rente peut être vendue sans transformation ; une culture industrielle est destinée à la transformation.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Classification des cultures industrielles",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Classification selon l'usage</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Catégorie</th>
+              <th>Exemples</th>
+              <th>Produit principal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Stimulantes</td>
+              <td>Café, cacao, thé</td>
+              <td>Boissons</td>
+            </tr>
+            <tr>
+              <td>Oléifères</td>
+              <td>Palmier à huile, arachide, soja</td>
+              <td>Huiles</td>
+            </tr>
+            <tr>
+              <td>À fibres</td>
+              <td>Coton, sisal, jute</td>
+              <td>Fibres textiles</td>
+            </tr>
+            <tr>
+              <td>Saccharifères</td>
+              <td>Canne à sucre</td>
+              <td>Sucre</td>
+            </tr>
+            <tr>
+              <td>Fruitières</td>
+              <td>Ananas, bananier, agrumes</td>
+              <td>Fruits</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>Cette classification facilite la planification et la gestion des filières.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Importance économique en RDC",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Un potentiel immense, sous-exploité</h3>
+        <p>Les cultures industrielles et de rente sont un levier de <strong>diversification économique</strong>, de <strong>création de revenus ruraux</strong> et de <strong>réduction de la dépendance aux importations</strong>.</p>
+        <h3>Filières emblématiques</h3>
+        <ul>
+          <li><strong>Cacaoculture</strong> en relance dans la province de l'Équateur.</li>
+          <li><strong>Ananas</strong> en développement dans le Kongo Central.</li>
+          <li><strong>Canne à sucre</strong> cultivée à Kwilu-Ngongo.</li>
+          <li><strong>Palmier à huile</strong> au Kwilu et au Maniema.</li>
+          <li><strong>Café</strong> au Kivu (robusta et arabica).</li>
+          <li><strong>Hévéa</strong> au Maniema et dans l'ex-Province Orientale.</li>
+        </ul>
+      </div>
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>La RDC dispose d'un potentiel agricole majeur, mais les défis (intrants, financement, infrastructures, marchés) limitent encore son exploitation.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — La pépinière : définition et rôle",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Qu'est-ce qu'une pépinière ?</h3>
+        <figure>
+          <img data-image-id="agriculturegenerale4_img01" alt="Jeunes plants en sachets dans une pépinière ombragée." />
+          <figcaption>La pépinière : le point de départ de toute plantation.</figcaption>
+        </figure>
+        <p>La <strong>pépinière</strong> est un espace aménagé où l'on produit des jeunes plants à partir de semences ou de boutures, avant leur transplantation en pleine terre.</p>
+        <h3>Rôles</h3>
+        <ul>
+          <li>Sélectionner et préparer les semences.</li>
+          <li>Assurer une germination régulière.</li>
+          <li>Protéger les jeunes plants des aléas (animaux, sécheresse).</li>
+          <li>Produire des plants vigoureux et homogènes.</li>
+          <li>Permettre l'acclimatation progressive avant la plantation définitive.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — Choix du site et étapes de la pépinière",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Choix du site</h3>
+        <ul>
+          <li>Proximité d'une source d'eau.</li>
+          <li>Sol fertile et bien drainé.</li>
+          <li>Ombrage partiel (ombrière naturelle ou artificielle).</li>
+          <li>Accessibilité pour le suivi.</li>
+          <li>Protection contre les animaux.</li>
+        </ul>
+        <h3>Les étapes</h3>
+        <ol>
+          <li><strong>Préparation du sol et des planches.</strong></li>
+          <li><strong>Semis</strong> en lignes ou en poquets, ou mise en sachets.</li>
+          <li><strong>Arrosage régulier</strong> (matin et soir).</li>
+          <li><strong>Repiquage</strong> des plants trop serrés.</li>
+          <li><strong>Soins</strong> : désherbage, fertilisation légère, protection phytosanitaire.</li>
+          <li><strong>Acclimatation progressive</strong> avant la mise en terre.</li>
+        </ol>
+      </div>
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p><strong>Erreur fréquente :</strong> utiliser des semences non sélectionnées ou de mauvaise qualité. Le taux de germination et la vigueur des plants sont médiocres.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — Matériel et exemple de pépinière de cacaoyers",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Matériel nécessaire</h3>
+        <ul>
+          <li>Semences sélectionnées.</li>
+          <li>Outils manuels (houe, arrosoir, machette, transplantoir).</li>
+          <li>Ombrière (feuilles de palmier, filets).</li>
+          <li>Substrat (terre, compost, sable).</li>
+          <li>Sachets ou pots pour plants individuels.</li>
+        </ul>
+      </div>
+      <div class="bloc exemple">
+        <div class="bloc-label">Exemple corrigé</div>
+        <h4>Une pépinière de cacaoyers à Mbandaka</h4>
+        <ol>
+          <li>Préparation d'un substrat : 2/3 terre, 1/3 compost.</li>
+          <li>Remplissage de sachets.</li>
+          <li>Semis des fèves à 2 cm de profondeur.</li>
+          <li>Arrosage quotidien.</li>
+          <li>Mise sous ombrière pendant 3 mois.</li>
+          <li>Acclimatation progressive à la lumière.</li>
+          <li>Transplantation au champ à 3 m × 3 m après 4 à 6 mois.</li>
+        </ol>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — Choix du site et préparation du sol",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Choix du site</h3>
+        <ul>
+          <li><strong>Topographie :</strong> pente faible (moins de 15 %).</li>
+          <li><strong>Sol :</strong> fertile, profond, bien drainé.</li>
+          <li><strong>Climat :</strong> adapté à la culture choisie.</li>
+          <li><strong>Accessibilité :</strong> proximité des routes et des marchés.</li>
+          <li><strong>Main-d'œuvre :</strong> disponibilité locale.</li>
+        </ul>
+        <h3>Préparation du sol</h3>
+        <ol>
+          <li><strong>Défrichement :</strong> élimination des herbes et arbustes.</li>
+          <li><strong>Labour :</strong> ameublissement du sol.</li>
+          <li><strong>Hersage :</strong> nivellement de la surface.</li>
+          <li><strong>Nivellement :</strong> éviter les flaques d'eau.</li>
+          <li><strong>Conservation des matières organiques</strong> (compost, résidus).</li>
+        </ol>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — Le piquetage et la densité de plantation",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le piquetage</h3>
+        <figure>
+          <img data-image-id="agriculturegenerale4_img02" alt="Parcelle avec piquets et jeunes plants alignés." />
+          <figcaption>Le piquetage : organiser l'espace de plantation.</figcaption>
+        </figure>
+        <p>Le <strong>piquetage</strong> consiste à matérialiser les emplacements des plants en respectant les distances recommandées. Ces distances dépendent de la culture :</p>
+        <ul>
+          <li><strong>Cacaoyer :</strong> 3 m × 3 m.</li>
+          <li><strong>Caféier robusta :</strong> 3 m × 2 m ou 3 m × 3 m.</li>
+          <li><strong>Palmier à huile :</strong> 9 m × 9 m.</li>
+          <li><strong>Hévéa :</strong> 6 m × 3 m.</li>
+          <li><strong>Ananas :</strong> 40 cm × 40 cm.</li>
+        </ul>
+        <h3>Calcul de la densité</h3>
+        <p><strong>Densité = 10 000 m² / (distance rang × distance plant)</strong></p>
+        <p><strong>Exemple :</strong> pour un cacaoyer planté à 3 m × 3 m, la surface d'un plant = 9 m², densité = 10 000 / 9 ≈ 1 111 plants/ha.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — La mise en terre",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Étapes de la mise en terre</h3>
+        <ol>
+          <li>Creuser un trou d'environ 40 × 40 × 40 cm.</li>
+          <li>Séparer la terre de surface (fertile) et la terre profonde.</li>
+          <li>Mélanger la terre de surface avec du compost ou du fumier.</li>
+          <li>Placer le jeune plant en veillant à ne pas abîmer les racines.</li>
+          <li>Compléter le trou avec le mélange terre-compost.</li>
+          <li>Tasser légèrement autour du pied.</li>
+          <li>Arroser copieusement.</li>
+          <li>Pailler (couvrir le sol autour du plant) pour conserver l'humidité.</li>
+        </ol>
+      </div>
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p><strong>Erreur fréquente :</strong> négliger le piquetage ou planter à des densités inadaptées. La concurrence entre plants réduit les rendements et favorise les maladies.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre IV — La taille",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les trois types de taille</h3>
+        <ul>
+          <li><strong>Taille de formation :</strong> donne à l'arbre une structure équilibrée, dès les premières années (choix du tronc, des branches charpentières).</li>
+          <li><strong>Taille d'entretien :</strong> élimine les branches mortes, malades ou concurrentes ; favorise l'aération et la lumière.</li>
+          <li><strong>Taille de rajeunissement :</strong> relance la production d'arbres âgés en réduisant la couronne et en stimulant de nouvelles pousses.</li>
+        </ul>
+        <h3>Le matériel</h3>
+        <ul>
+          <li>Sécateur, ébrancheur, scie à main.</li>
+          <li>Produit cicatrisant pour les grosses plaies.</li>
+          <li>Désinfectant (alcool) pour les lames.</li>
+        </ul>
+      </div>
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p><strong>Erreur fréquente :</strong> tailler sans désinfecter les outils. Cela propage les maladies d'un arbre à l'autre.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre IV — Le greffage",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Principe</h3>
+        <figure>
+          <img data-image-id="agriculturegenerale4_img03" alt="Greffon soudé sur un porte-greffe." />
+          <figcaption>Le greffage : multiplier et améliorer les plants.</figcaption>
+        </figure>
+        <p>Le <strong>greffage</strong> est une technique de multiplication végétative qui consiste à souder un <strong>greffon</strong> (partie aérienne) sur un <strong>porte-greffe</strong> (partie racinaire).</p>
+        <h3>Avantages</h3>
+        <ul>
+          <li>Précocité de la production.</li>
+          <li>Résistance aux maladies du sol (grâce au porte-greffe).</li>
+          <li>Uniformité des fruits (clones).</li>
+          <li>Adaptation à des sols ou climats difficiles.</li>
+        </ul>
+        <h3>Exemples</h3>
+        <p>Greffage de l'hévéa, des agrumes, du manguier, du cacaoyer.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre V — La fertilisation : besoins et fumure organique",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les besoins nutritifs</h3>
+        <ul>
+          <li><strong>Macro-éléments :</strong> azote (N), phosphore (P), potassium (K), calcium (Ca), magnésium (Mg).</li>
+          <li><strong>Oligo-éléments :</strong> fer, zinc, bore, manganèse, cuivre.</li>
+        </ul>
+        <h3>La fumure organique</h3>
+        <ul>
+          <li><strong>Compost :</strong> déchets végétaux décomposés, riche en matière organique.</li>
+          <li><strong>Fumier :</strong> déjections animales, à épandre après compostage.</li>
+          <li><strong>Engrais verts :</strong> plantes (légumineuses) enfouies dans le sol.</li>
+        </ul>
+        <p>La fumure organique améliore la structure du sol, la rétention d'eau et fournit des nutriments progressivement.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre V — La fumure minérale et la protection phytosanitaire",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>La fumure minérale</h3>
+        <p>Engrais chimiques (NPK, urée, chlorure de potassium) : action rapide mais risques de lessivage, d'acidification et de déséquilibre. À utiliser en complément de la fumure organique et selon les besoins réels de la culture.</p>
+        <h3>La protection phytosanitaire</h3>
+        <ul>
+          <li><strong>Ravageurs :</strong> insectes (foreurs, chenilles), rongeurs, oiseaux.</li>
+          <li><strong>Maladies :</strong> champignons (mildiou, pourriture brune), virus, bactéries.</li>
+          <li><strong>Méthodes :</strong> lutte biologique (prédateurs naturels), lutte chimique raisonnée (pesticides aux doses prescrites), pratiques culturales (rotation, association, élimination des plants malades).</li>
+        </ul>
+      </div>
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p><strong>Erreur fréquente :</strong> abuser des pesticides sans respecter les doses ni les délais de carence. Cela nuit à la santé et à l'environnement.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VI — La récolte",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Reconnaître la maturité</h3>
+        <ul>
+          <li><strong>Couleur :</strong> les fruits changent de couleur en mûrissant (vert → jaune, rouge ou brun).</li>
+          <li><strong>Taille et consistance :</strong> les fruits grossissent et deviennent fermes.</li>
+          <li><strong>Délai après floraison :</strong> chaque culture a sa durée (ex. : 5 à 6 mois pour le cacao après fécondation).</li>
+        </ul>
+        <h3>Techniques de récolte</h3>
+        <ul>
+          <li>Récolte manuelle (sécateur, machette) pour éviter d'abîmer la plante.</li>
+          <li>Récolte sélective (ne cueillir que les fruits mûrs).</li>
+          <li>Récolte mécanisée pour les grandes plantations (canne à sucre).</li>
+        </ul>
+      </div>
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p><strong>Erreur fréquente :</strong> récolter trop tôt ou trop tard. La qualité marchande du produit est compromise.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VI — La post-récolte",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>La fermentation</h3>
+        <figure>
+          <img data-image-id="agriculturegenerale4_img04" alt="Fèves de cacao en fermentation dans une caisse en bois." />
+          <figcaption>La fermentation du cacao : développer les arômes.</figcaption>
+        </figure>
+        <p>La <strong>fermentation</strong> est une transformation biochimique qui développe les arômes. Pour le cacao : 5 à 7 jours dans des caisses en bois, en remuant régulièrement.</p>
+        <h3>Le séchage</h3>
+        <p>Réduit l'humidité à 7-8 % pour éviter les moisissures. Séchage au soleil (sur claies) ou en séchoir.</p>
+        <h3>Le conditionnement</h3>
+        <p>Mise en sacs de jute, en caisses ou en sachets, selon le produit et le circuit de commercialisation.</p>
+        <h3>La conservation</h3>
+        <p>Lieu sec, aéré, à l'abri des insectes et des rongeurs. Étiquetage pour tracer l'origine.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VII — Le plan technique d'une plantation",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le calendrier des opérations</h3>
+        <p>Le <strong>plan technique</strong> est le calendrier de toutes les opérations culturales :</p>
+        <ul>
+          <li><strong>Année 0 :</strong> pépinière, préparation du sol.</li>
+          <li><strong>Année 1 :</strong> plantation, entretien (désherbage, arrosage, fertilisation).</li>
+          <li><strong>Année 2 :</strong> taille de formation, fertilisation.</li>
+          <li><strong>Année 3 et suivantes :</strong> taille d'entretien, fertilisation, début de récolte.</li>
+        </ul>
+        <h3>Les choix à documenter</h3>
+        <ul>
+          <li>Variétés sélectionnées.</li>
+          <li>Itinéraires techniques (distances, densités, fertilisation).</li>
+          <li>Matériel et main-d'œuvre nécessaires.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VII — Calcul des coûts et rentabilité",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le calcul des coûts</h3>
+        <ul>
+          <li><strong>Semences et plants.</strong></li>
+          <li><strong>Intrants</strong> (engrais, pesticides).</li>
+          <li><strong>Main-d'œuvre</strong> (salaires, journaliers).</li>
+          <li><strong>Matériel</strong> (outils, petit équipement).</li>
+          <li><strong>Énergie, transport.</strong></li>
+        </ul>
+        <h3>La rentabilité</h3>
+        <p><strong>Marge bénéficiaire = chiffre d'affaires − coût total</strong></p>
+        <p><strong>Exemple :</strong> un hectare de cacaoyers produit 800 kg de fèves sèches à 3 USD/kg, soit 2 400 USD. Coût total annuel : 1 500 USD. Marge = 900 USD.</p>
+        <h3>Le seuil de rentabilité</h3>
+        <p>Quantité minimale à produire pour couvrir les coûts.</p>
+      </div>
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p><strong>Erreur fréquente :</strong> lancer une plantation sans étude de marché ni calcul de rentabilité. L'exploitation peut être non viable.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VII — La commercialisation",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les circuits de vente</h3>
+        <ul>
+          <li><strong>Marchés locaux :</strong> vente directe aux consommateurs ou aux détaillants.</li>
+          <li><strong>Coopératives :</strong> regroupement de producteurs pour vendre en gros.</li>
+          <li><strong>Exportateurs :</strong> pour le cacao, le café, le coton.</li>
+          <li><strong>Transformateurs :</strong> huileries, sucreries, usines textiles.</li>
+        </ul>
+        <h3>Le conditionnement</h3>
+        <p>Un produit bien conditionné se vend mieux et se conserve plus longtemps.</p>
+        <h3>Le transport</h3>
+        <p>Choisir un moyen adapté pour éviter les pertes (véhicules couverts, caisses).</p>
+      </div>
+    `
+  },
+  {
+    title: "Contextualisation RDC",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Études de cas congolaises</h3>
+        <ul>
+          <li><strong>Cacaoculture en Équateur :</strong> relance de la filière avec l'appui de partenaires techniques et financiers.</li>
+          <li><strong>Ananas au Kongo Central :</strong> développement d'une filière d'exportation.</li>
+          <li><strong>Canne à sucre à Kwilu-Ngongo :</strong> production sucrière historique du pays.</li>
+          <li><strong>Café au Kivu :</strong> production de café arabica de qualité, orientée vers l'exportation.</li>
+          <li><strong>Palmier à huile au Kwilu :</strong> huile de palme pour la consommation locale et la transformation.</li>
+        </ul>
+        <h3>Défis de la filière</h3>
+        <ul>
+          <li>Accès aux intrants et au financement.</li>
+          <li>Déficit d'infrastructures rurales.</li>
+          <li>Faible mécanisation.</li>
+          <li>Concurrence des produits importés.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Synthèse — De la pépinière au marché",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Synthèse générale</div>
+        <h3>Ce qu'il faut retenir</h3>
+        <ul>
+          <li><strong>Types de cultures :</strong> vivrières (autoconsommation), de rente (vente), industrielles (transformation).</li>
+          <li><strong>Classification :</strong> stimulantes (café, cacao), oléifères (palmier), à fibres (coton), saccharifères (canne), fruitières.</li>
+          <li><strong>Pépinière :</strong> site adapté, substrat, semis, arrosage, repiquage, acclimatation.</li>
+          <li><strong>Plantation :</strong> choix du site, préparation du sol, piquetage (distances), mise en terre, paillage.</li>
+          <li><strong>Taille :</strong> formation, entretien, rajeunissement.</li>
+          <li><strong>Greffage :</strong> multiplication végétative, précocité, résistance, uniformité.</li>
+          <li><strong>Fertilisation :</strong> organique (compost, fumier), minérale (NPK), complémentarité.</li>
+          <li><strong>Protection :</strong> lutte biologique, chimique raisonnée, pratiques culturales.</li>
+          <li><strong>Récolte et post-récolte :</strong> maturité, récolte sélective, fermentation, séchage, conditionnement, conservation.</li>
+          <li><strong>Gestion :</strong> plan technique, coûts, rentabilité, commercialisation.</li>
+        </ul>
+        <p>Un technicien A2 en agriculture générale unit <strong>maîtrise technique</strong>, <strong>gestion économique</strong> et <strong>respect de l'environnement</strong>.</p>
+      </div>
+    `
+  },
+  {
+    title: "Évaluation finale — Agriculture Générale",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Consigne</div>
+        <p>Réponds aux 22 questions suivantes pour vérifier ta maîtrise du cours. Chaque question a une seule bonne réponse parmi quatre propositions.</p>
+      </div>
+      <div class="quiz-container">
+        <div id="quizQuestions"></div>
+        <button id="submitQuiz" class="quiz-btn-submit">
+          Valider mes réponses
+        </button>
+        <div id="quizResult" class="quiz-result"></div>
+      </div>
+    `
+  }
+];
+const questions = [
+  {
+    text: "Les cultures industrielles sont destinées à :",
+    options: [
+      "La transformation",
+      "L'autoconsommation",
+      "La vente directe",
+      "L'exportation brute"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le cacao est une culture :",
+    options: [
+      "Stimulante",
+      "Oléifère",
+      "À fibres",
+      "Saccharifère"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le palmier à huile est une culture :",
+    options: [
+      "Oléifère",
+      "Stimulante",
+      "À fibres",
+      "Saccharifère"
+    ],
+    correct: 0
+  },
+  {
+    text: "La canne à sucre est une culture :",
+    options: [
+      "Saccharifère",
+      "Stimulante",
+      "Oléifère",
+      "À fibres"
+    ],
+    correct: 0
+  },
+  {
+    text: "La pépinière sert à :",
+    options: [
+      "Produire des jeunes plants",
+      "Récolter",
+      "Transformer",
+      "Vendre"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le piquetage consiste à :",
+    options: [
+      "Déterminer les distances de plantation",
+      "Arroser",
+      "Tailler",
+      "Greffer"
+    ],
+    correct: 0
+  },
+  {
+    text: "La taille de formation vise à :",
+    options: [
+      "Donner une structure équilibrée à l'arbre",
+      "Éliminer les branches mortes",
+      "Rajeunir l'arbre",
+      "Récolter"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le greffage est une technique de :",
+    options: [
+      "Multiplication végétative",
+      "Semis",
+      "Fertilisation",
+      "Récolte"
+    ],
+    correct: 0
+  },
+  {
+    text: "La fumure organique comprend :",
+    options: [
+      "Le compost et le fumier",
+      "L'urée",
+      "Le NPK",
+      "Les pesticides"
+    ],
+    correct: 0
+  },
+  {
+    text: "La protection phytosanitaire lutte contre :",
+    options: [
+      "Les ravageurs et maladies",
+      "La sécheresse",
+      "Le vent",
+      "La pluie"
+    ],
+    correct: 0
+  },
+  {
+    text: "La fermentation du cacao dure environ :",
+    options: [
+      "5 à 7 jours",
+      "1 jour",
+      "1 mois",
+      "1 heure"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le séchage du cacao se fait :",
+    options: [
+      "Au soleil ou en séchoir",
+      "Au four",
+      "À l'ombre",
+      "Sous vide"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le plan technique d'une plantation comprend :",
+    options: [
+      "Le calendrier des opérations",
+      "Uniquement le budget",
+      "Uniquement la récolte",
+      "Rien"
+    ],
+    correct: 0
+  },
+  {
+    text: "La densité de plantation se calcule par :",
+    options: [
+      "Surface totale / surface d'un plant",
+      "Nombre de plants × prix",
+      "Poids total / nombre de plants",
+      "Surface × rendement"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le technicien A2 en agriculture générale peut travailler comme :",
+    options: [
+      "Chef d'exploitation",
+      "Médecin",
+      "Avocat",
+      "Pilote"
+    ],
+    correct: 0
+  },
+  {
+    text: "La cacaoculture est en relance dans :",
+    options: [
+      "L'Équateur",
+      "Le Kivu",
+      "Le Katanga",
+      "Kinshasa"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'ananas est développé dans :",
+    options: [
+      "Le Kongo Central",
+      "L'Ituri",
+      "Le Maniema",
+      "Le Kasaï"
+    ],
+    correct: 0
+  },
+  {
+    text: "La canne à sucre est cultivée à :",
+    options: [
+      "Kwilu-Ngongo",
+      "Goma",
+      "Bukavu",
+      "Matadi"
+    ],
+    correct: 0
+  },
+  {
+    text: "Un plant de cacaoyer planté à 4 m × 4 m a une densité de :",
+    options: [
+      "625 plants/ha",
+      "1 000 plants/ha",
+      "250 plants/ha",
+      "10 000 plants/ha"
+    ],
+    correct: 0
+  },
+  {
+    text: "La post-récolte vise à :",
+    options: [
+      "Garantir la qualité marchande",
+      "Réduire les coûts",
+      "Augmenter les rendements",
+      "Planter"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'approche pédagogique recommandée en agriculture générale est :",
+    options: [
+      "Active et inductive",
+      "Magistrale",
+      "Passive",
+      "Théorique uniquement"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'objectif principal de l'agriculture générale en 4e Humanité est de :",
+    options: [
+      "Former des techniciens capables de gérer des plantations",
+      "Former des médecins",
+      "Étudier la littérature",
+      "Gérer les stocks"
+    ],
+    correct: 0
+  }
+];
+
+try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+        questions.forEach(function (q) {
+            if (!q.text) q.text = q.question || q.q || q.enonce || q.titre || "";
+            if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+            if (typeof q.correct === "undefined") {
+                if (typeof q.answer !== "undefined") q.correct = q.answer;
+                else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+            }
+        });
+    }
+} catch (e) {}
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+const pageTitle = document.getElementById('pageTitle');
+pageTitle.textContent = "ECOLIA · " + COURSE_TITLE;
+document.title = "ECOLIA — " + COURSE_TITLE;
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim() || slides.length === 0) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp("(" + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ")", 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderEmptyState() {
+    contentDiv.innerHTML = '<div class="empty-state"><div class="icon">·</div><span class="tag">Bientôt disponible</span><h2>' + COURSE_TITLE + '</h2><p>Ce cours est en préparation. Le contenu sera ajouté prochainement.</p></div>';
+    slideCounterSpan.textContent = '0/0';
+    progressFill.style.width = '0%';
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    counterSpan.textContent = '—';
+}
+
+function renderQuiz() {
+    const qc = document.getElementById('quizQuestions');
+    if (!qc) return;
+    if (typeof questions === 'undefined' || questions.length === 0) {
+        qc.innerHTML = '<p style="color:#666;font-style:italic;">Quiz bientot disponible.</p>';
+        return;
+    }
+    let html = '';
+    questions.forEach((q, i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o, k) => {
+            html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>';
+        });
+        html += '</div>';
+    });
+    qc.innerHTML = html;
+    const submitBtn = document.getElementById('submitQuiz');
+    if (submitBtn) {
+        submitBtn.onclick = () => {
+            let score = 0;
+            questions.forEach((q, i) => {
+                const s = document.querySelector('input[name="q' + i + '"]:checked');
+                if (s && parseInt(s.value) === q.correct) score++;
+            });
+            const pct = Math.round(score/questions.length*100);
+            document.getElementById('quizResult').innerHTML =
+                '<div style="background:var(--bg2);padding:16px;border-radius:10px;margin-top:14px;">' +
+                '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong></div>';
+        };
+    }
+}
+
+function renderSlide(index, keepHighlight) {
+    if (keepHighlight === undefined) keepHighlight = true;
+    if (slides.length === 0) { renderEmptyState(); return; }
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    if (index === slides.length - 1) renderQuiz();
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    if (slides.length === 0) return;
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (slides.length && currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (slides.length && currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+<!-- ECOLIA_IMAGE_LOADER_START -->
+<script>
+(function () {
+  var SITE = "https://ecolia-course.github.io/";
+  var NATIVE = false;
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function abs(u) { return /^(https?:|data:|blob:)/i.test(u) ? u : (NATIVE ? SITE + u.replace(/^(\.\/|\/)+/, "") : u); }
+  function ext(u) { var m = String(u).split("?")[0].match(/\.(jpe?g|png|gif|webp|svg)$/i); return m ? m[1].toLowerCase() : "jpg"; }
+  function hide(img) { img.onerror = null; img.style.display = "none"; }
+  var table = null, queue = [], queued = {}, running = false;
+  function enqueue(full, fn) {
+    if (queued[fn]) return;
+    queued[fn] = 1; queue.push([full, fn]);
+    if (!running) { running = true; setTimeout(next, 2500); }
+  }
+  function next() {
+    if (!queue.length) { running = false; return; }
+    if (!navigator.onLine) { running = false; return; }
+    var q = queue.shift(), t0 = Date.now();
+    try { CoursInterface.download(q[0], q[1]); } catch (e) { return setTimeout(next, 500); }
+    (function wait() {
+      var ok = false;
+      try { ok = !!CoursInterface.exists(q[1]); } catch (e) {}
+      if (ok) setTimeout(next, 1500);
+      else if (Date.now() - t0 > 40000) next();
+      else setTimeout(wait, 700);
+    })();
+  }
+  function exists(fn) { try { return !!CoursInterface.exists(fn); } catch (e) { return false; } }
+  function show(img) {
+    if (!table || img.getAttribute("data-ecolia-done")) return;
+    var id = img.getAttribute("data-image-id");
+    var url = table[id];
+    if (typeof url !== "string" || !url.length) { console.warn("ECOLIA : image absente du JSON :", id); return; }
+    img.setAttribute("data-ecolia-done", "1");
+    if (!NATIVE) { img.onerror = function () { hide(img); }; img.setAttribute("src", url); return; }
+    var full = abs(url), fn = "img_" + id + "." + ext(url);
+    if (exists(fn)) {
+      img.onerror = function () {
+        try { CoursInterface["delete"](fn); } catch (e) {}
+        queued[fn] = 0;
+        img.onerror = function () { hide(img); };
+        img.setAttribute("src", full);
+      };
+      img.setAttribute("src", "https://app.local/cours/" + fn);
+    } else {
+      img.onerror = function () { hide(img); };
+      img.setAttribute("src", full);
+      enqueue(full, fn);
+    }
+  }
+  function scan(root) {
+    if (!root || !root.querySelectorAll) return;
+    if (root.matches && root.matches("img[data-image-id]")) show(root);
+    root.querySelectorAll("img[data-image-id]").forEach(show);
+  }
+  function prefetchAll() {
+    var ids = {};
+    try { JSON.stringify(slides).replace(/data-image-id=\\?"([^"\\]+)/g, function (m, id) { ids[id] = 1; }); } catch (e) {}
+    Object.keys(ids).forEach(function (id) {
+      var url = table[id];
+      if (typeof url !== "string" || !url.length) return;
+      var fn = "img_" + id + "." + ext(url);
+      if (!exists(fn)) enqueue(abs(url), fn);
+    });
+  }
+  function start(tbl) {
+    table = tbl;
+    scan(document.body);
+    new MutationObserver(function (muts) {
+      muts.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.nodeType === 1) scan(n); }); });
+    }).observe(document.body, { childList: true, subtree: true });
+    if (NATIVE) prefetchAll();
+  }
+  var JSON_URL = NATIVE ? SITE + "images_ecolia.json" : "images_ecolia.json";
+  var KEY = "ecolia_images_json";
+  fetch(JSON_URL, NATIVE ? { cache: "no-cache" } : undefined)
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (table) { if (NATIVE) lsSet(KEY, JSON.stringify(table)); start(table); })
+    .catch(function (e) {
+      var saved = null;
+      if (NATIVE) { try { saved = JSON.parse(lsGet(KEY) || "null"); } catch (x) {} }
+      if (saved) start(saved);
+      else console.warn("ECOLIA : JSON des images indisponible.", e);
+    });
+})();
+</script>
+<!-- ECOLIA_IMAGE_LOADER_END -->
+
+
+
+
+
+<!-- ECOLIA_AUDIO_PLAYER_START -->
+<style>
+  #ecolia-audio-btn, #ecolia-dl-btn {
+    width: 30px; height: 30px; min-width: 30px; padding: 0; margin: 0 4px 0 0;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    cursor: pointer; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent; outline: none;
+  }
+  #ecolia-audio-btn { border: none; background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-dl-btn { border: 1.5px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb); }
+  #ecolia-dl-btn.ecolia-full { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-btn.ecolia-fixed { position: fixed; top: 8px; left: 8px; z-index: 2147483000; }
+  #ecolia-audio-btn:active, #ecolia-dl-btn:active { transform: scale(.92); }
+  #ecolia-audio-btn svg, #ecolia-dl-btn svg { width: 15px; height: 15px; fill: currentColor; pointer-events: none; }
+  #ecolia-audio-btn.ecolia-off, #ecolia-dl-btn.ecolia-off { display: none; }
+  #ecolia-audio-banner {
+    display: none; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0;
+    padding: 8px 14px; font-size: .82rem; line-height: 1.35;
+    background: var(--soft, #eef3fb); color: var(--p1, #123); border-bottom: 1px solid var(--bd, #c9d6ea);
+  }
+  #ecolia-audio-banner.on { display: flex; }
+  #ecolia-audio-banner .eab-txt { flex: 1 1 180px; }
+  #ecolia-audio-banner .eab-act { display: flex; gap: 6px; flex-wrap: wrap; }
+  #ecolia-audio-banner button {
+    border: 1px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb);
+    border-radius: 16px; padding: 5px 12px; font-size: .8rem; cursor: pointer;
+  }
+  #ecolia-audio-banner button.pri { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-banner .eab-bar { display: none; flex-basis: 100%; height: 4px; border-radius: 2px; overflow: hidden; background: var(--bd, #c9d6ea); }
+  #ecolia-audio-banner .eab-bar i { display: block; height: 100%; width: 0; background: var(--p2, #2563eb); transition: width .2s; }
+</style>
+<script>
+(function () {
+  var CFG = {"code":"AgricultureGenerale4","base":"https://ecolia-course.github.io/ecolia-media/audio_files/","available":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23],"count":23,"sizeMo":10,"sizes":{"1":668928,"2":740736,"3":521664,"4":312576,"5":431616,"6":316992,"7":421248,"8":425088,"9":346368,"10":532800,"11":398208,"12":398400,"13":311424,"14":394368,"15":522240,"16":397824,"17":385152,"18":366528,"19":467136,"20":307776,"21":367104,"22":745728,"23":106560},"fallback":{"1":[["fr","Sommaire, Agriculture Générale. Présentation du cours. Agriculture Générale, 4e Humanité. Ce cours te forme à conduire une exploitation de cultures industrielles et pérennes, depuis la création de la pépinière jusqu'à la post-récolte, en appliquant des techniques agronomiques modernes, durables et adaptées au contexte congolais. Objectifs d'apprentissage. Distinguer les types de cultures et leur importance économique. Créer et gérer une pépinière. Établir une plantation (site, sol, piquetage, mise en terre). Maîtriser la taille et le greffage. Planifier la fertilisation et la protection phytosanitaire. Conduire la récolte et la post-récolte. Élaborer un plan technique et financier pour une plantation. Grands chapitres. Introduction aux cultures industrielles et de rente. La pépinière. L'établissement d'une plantation. La taille et le greffage. La fertilisation et la protection phytosanitaire. La récolte et la post-récolte. La gestion technico-économique d'une plantation. Profil de sortie visé: Technicien A2 en agriculture générale, capable de gérer une exploitation agricole, une pépinière et des cultures pérennes."]],"2":[["fr","Pourquoi l'agriculture générale? Situation de départ. Un jeune technicien face à un terrain inexploité. À Kisangani, un jeune technicien A2 en agriculture générale reçoit un terrain de deux hectares. Il veut y créer une plantation de caféiers robusta, mais il ne sait pas par où commencer: comment produire les plants? Quelles distances de plantation? Quand tailler? Comment fertiliser? Comment récolter et transformer pour obtenir un produit marchand? Question de départ: quelles connaissances et quelles techniques un technicien doit-il maîtriser pour transformer un terrain nu en plantation productive et rentable? Fondements théoriques. Vision et finalités du cours. L'agriculture générale de 4e année forme un technicien capable de maîtriser les itinéraires techniques complets pour l'établissement et l'entretien des principales cultures industrielles et fruitières. Un levier de développement pour la R D C. La R D C dispose d'environ 80 millions d'hectares de terres arables, dont seulement 10 pour cent sont cultivés. Les cultures industrielles et de rente représentent un potentiel majeur pour diversifier l'économie, créer des revenus en milieu rural et réduire la dépendance aux importations. Débouchés. Chef d'exploitation agricole. Pépiniériste, technicien de plantation. Agent de vulgarisation, entrepreneur agricole."]],"3":[["fr","Chapitre I, Cultures vivrières, de rente et industrielles. Fondements théoriques. Trois catégories à distinguer. Cultures vivrières: destinées à l'autoconsommation familiale (manioc, maïs, riz, banane plantain, haricot). Cultures de rente: destinées à la vente, sans transformation obligatoire (café, cacao, coton brut). Cultures industrielles: destinées à la transformation (canne à sucre, palmier à huile, hévéa, sisal). Pourquoi cette distinction? Elle oriente les choix techniques, les investissements, la commercialisation et la gestion des risques. Une culture de rente demande un marché; une culture industrielle exige un transformateur. À retenir. Erreur fréquente: confondre cultures de rente et cultures industrielles. Une culture de rente peut être vendue sans transformation; une culture industrielle est destinée à la transformation."]],"4":[["fr","Chapitre I, Classification des cultures industrielles. Fondements théoriques. Classification selon l'usage. Catégorie. Exemples. Produit principal. Stimulantes. Café, cacao, thé. Boissons. Oléifères. Palmier à huile, arachide, soja. Huiles. À fibres. Coton, sisal, jute. Fibres textiles. Saccharifères. Canne à sucre. Sucre. Fruitières. Ananas, bananier, agrumes. Fruits. Cette classification facilite la planification et la gestion des filières."]],"5":[["fr","Chapitre I, Importance économique en R D C. Fondements théoriques. Un potentiel immense, sous-exploité. Les cultures industrielles et de rente sont un levier de diversification économique, de création de revenus ruraux et de réduction de la dépendance aux importations. Filières emblématiques. Cacaoculture en relance dans la province de l'Équateur. Ananas en développement dans le Kongo Central. Canne à sucre cultivée à Kwilu-Ngongo. Palmier à huile au Kwilu et au Maniema. Café au Kivu (robusta et arabica). Hévéa au Maniema et dans l'ex-Province Orientale. À retenir. La R D C dispose d'un potentiel agricole majeur, mais les défis (intrants, financement, infrastructures, marchés) limitent encore son exploitation."]],"6":[["fr","Chapitre II, La pépinière: définition et rôle. Fondements théoriques. Qu'est-ce qu'une pépinière? La pépinière: le point de départ de toute plantation. La pépinière est un espace aménagé où l'on produit des jeunes plants à partir de semences ou de boutures, avant leur transplantation en pleine terre. Rôles. Sélectionner et préparer les semences. Assurer une germination régulière. Protéger les jeunes plants des aléas (animaux, sécheresse). Produire des plants vigoureux et homogènes. Permettre l'acclimatation progressive avant la plantation définitive."]],"7":[["fr","Chapitre II, Choix du site et étapes de la pépinière. Fondements théoriques. Choix du site. Proximité d'une source d'eau. Sol fertile et bien drainé. Ombrage partiel (ombrière naturelle ou artificielle). Accessibilité pour le suivi. Protection contre les animaux. Les étapes. Préparation du sol et des planches. Semis en lignes ou en poquets, ou mise en sachets. Arrosage régulier (matin et soir). Repiquage des plants trop serrés. Soins: désherbage, fertilisation légère, protection phytosanitaire. Acclimatation progressive avant la mise en terre. À retenir. Erreur fréquente: utiliser des semences non sélectionnées ou de mauvaise qualité. Le taux de germination et la vigueur des plants sont médiocres."]],"8":[["fr","Chapitre II, Matériel et exemple de pépinière de cacaoyers. Fondements théoriques. Matériel nécessaire. Semences sélectionnées. Outils manuels (houe, arrosoir, machette, transplantoir). Ombrière (feuilles de palmier, filets). Substrat (terre, compost, sable). Sachets ou pots pour plants individuels. Exemple corrigé. Une pépinière de cacaoyers à Mbandaka. Préparation d'un substrat: 2 sur 3 terre, 1 sur 3 compost. Remplissage de sachets. Semis des fèves à 2 centimètres de profondeur. Arrosage quotidien. Mise sous ombrière pendant 3 mois. Acclimatation progressive à la lumière. Transplantation au champ à 3 mètres multiplié par 3 mètres après 4 à 6 mois."]],"9":[["fr","Chapitre III, Choix du site et préparation du sol. Fondements théoriques. Choix du site. Topographie: pente faible (moins de 15 pour cent ). Sol: fertile, profond, bien drainé. Climat: adapté à la culture choisie. Accessibilité: proximité des routes et des marchés. Main-d'œuvre: disponibilité locale. Préparation du sol. Défrichement: élimination des herbes et arbustes. Labour: ameublissement du sol. Hersage: nivellement de la surface. Nivellement: éviter les flaques d'eau. Conservation des matières organiques (compost, résidus)."]],"10":[["fr","Chapitre III, Le piquetage et la densité de plantation. Fondements théoriques. Le piquetage. Le piquetage: organiser l'espace de plantation. Le piquetage consiste à matérialiser les emplacements des plants en respectant les distances recommandées. Ces distances dépendent de la culture: Cacaoyer: 3 mètres multiplié par 3 mètres. Caféier robusta: 3 mètres multiplié par 2 mètres ou 3 mètres multiplié par 3 mètres. Palmier à huile: 9 mètres multiplié par 9 mètres. Hévéa: 6 mètres multiplié par 3 mètres. Ananas: 40 centimètres multiplié par 40 centimètres. Calcul de la densité. Densité égale 10 000 mètres carrés ou (distance rang multiplié par distance plant). Exemple: pour un cacaoyer planté à 3 mètres multiplié par 3 mètres, la surface d'un plant égale 9 mètres carrés, densité égale 10 000 sur 9 environ égal à 1 111 plants ou ha."]],"11":[["fr","Chapitre III, La mise en terre. Fondements théoriques. Étapes de la mise en terre. Creuser un trou d'environ 40 multiplié par 40 multiplié par 40 centimètres. Séparer la terre de surface (fertile) et la terre profonde. Mélanger la terre de surface avec du compost ou du fumier. Placer le jeune plant en veillant à ne pas abîmer les racines. Compléter le trou avec le mélange terre-compost. Tasser légèrement autour du pied. Arroser copieusement. Pailler (couvrir le sol autour du plant) pour conserver l'humidité. À retenir. Erreur fréquente: négliger le piquetage ou planter à des densités inadaptées. La concurrence entre plants réduit les rendements et favorise les maladies."]],"12":[["fr","Chapitre IV, La taille. Fondements théoriques. Les trois types de taille. Taille de formation: donne à l'arbre une structure équilibrée, dès les premières années (choix du tronc, des branches charpentières). Taille d'entretien: élimine les branches mortes, malades ou concurrentes; favorise l'aération et la lumière. Taille de rajeunissement: relance la production d'arbres âgés en réduisant la couronne et en stimulant de nouvelles pousses. Le matériel. Sécateur, ébrancheur, scie à main. Produit cicatrisant pour les grosses plaies. Désinfectant (alcool) pour les lames. À retenir. Erreur fréquente: tailler sans désinfecter les outils. Cela propage les maladies d'un arbre à l'autre."]],"13":[["fr","Chapitre IV, Le greffage. Fondements théoriques. Principe. Le greffage: multiplier et améliorer les plants. Le greffage est une technique de multiplication végétative qui consiste à souder un greffon (partie aérienne) sur un porte-greffe (partie racinaire). Avantages. Précocité de la production. Résistance aux maladies du sol (grâce au porte-greffe). Uniformité des fruits (clones). Adaptation à des sols ou climats difficiles. Exemples. Greffage de l'hévéa, des agrumes, du manguier, du cacaoyer."]],"14":[["fr","Chapitre V, La fertilisation: besoins et fumure organique. Fondements théoriques. Les besoins nutritifs. Macro-éléments: azote (N), phosphore (P), potassium (K), calcium (Ca), magnésium (Mg). Oligo-éléments: fer, zinc, bore, manganèse, cuivre. La fumure organique. Compost: déchets végétaux décomposés, riche en matière organique. Fumier: déjections animales, à épandre après compostage. Engrais verts: plantes (légumineuses) enfouies dans le sol. La fumure organique améliore la structure du sol, la rétention d'eau et fournit des nutriments progressivement."]],"15":[["fr","Chapitre V, La fumure minérale et la protection phytosanitaire. Fondements théoriques. La fumure minérale. Engrais chimiques (NPK, urée, chlorure de potassium): action rapide mais risques de lessivage, d'acidification et de déséquilibre. À utiliser en complément de la fumure organique et selon les besoins réels de la culture. La protection phytosanitaire. Ravageurs: insectes (foreurs, chenilles), rongeurs, oiseaux. Maladies: champignons (mildiou, pourriture brune), virus, bactéries. Méthodes: lutte biologique (prédateurs naturels), lutte chimique raisonnée (pesticides aux doses prescrites), pratiques culturales (rotation, association, élimination des plants malades). À retenir. Erreur fréquente: abuser des pesticides sans respecter les doses ni les délais de carence. Cela nuit à la santé et à l'environnement."]],"16":[["fr","Chapitre VI, La récolte. Fondements théoriques. Reconnaître la maturité. Couleur: les fruits changent de couleur en mûrissant (vert, donc jaune, rouge ou brun). Taille et consistance: les fruits grossissent et deviennent fermes. Délai après floraison: chaque culture a sa durée (ex.: 5 à 6 mois pour le cacao après fécondation). Techniques de récolte. Récolte manuelle (sécateur, machette) pour éviter d'abîmer la plante. Récolte sélective (ne cueillir que les fruits mûrs). Récolte mécanisée pour les grandes plantations (canne à sucre). À retenir. Erreur fréquente: récolter trop tôt ou trop tard. La qualité marchande du produit est compromise."]],"17":[["fr","Chapitre VI, La post-récolte. Fondements théoriques. La fermentation. La fermentation du cacao: développer les arômes. La fermentation est une transformation biochimique qui développe les arômes. Pour le cacao: 5 à 7 jours dans des caisses en bois, en remuant régulièrement. Le séchage. Réduit l'humidité à 7-8 pour cent pour éviter les moisissures. Séchage au soleil (sur claies) ou en séchoir. Le conditionnement. Mise en sacs de jute, en caisses ou en sachets, selon le produit et le circuit de commercialisation. La conservation. Lieu sec, aéré, à l'abri des insectes et des rongeurs. Étiquetage pour tracer l'origine."]],"18":[["fr","Chapitre VII, Le plan technique d'une plantation. Fondements théoriques. Le calendrier des opérations. Le plan technique est le calendrier de toutes les opérations culturales: Année 0: pépinière, préparation du sol. Année 1: plantation, entretien (désherbage, arrosage, fertilisation). Année 2: taille de formation, fertilisation. Année 3 et suivantes: taille d'entretien, fertilisation, début de récolte. Les choix à documenter. Variétés sélectionnées. Itinéraires techniques (distances, densités, fertilisation). Matériel et main-d'œuvre nécessaires."]],"19":[["fr","Chapitre VII, Calcul des coûts et rentabilité. Fondements théoriques. Le calcul des coûts. Semences et plants. Intrants (engrais, pesticides). Main-d'œuvre (salaires, journaliers). Matériel (outils, petit équipement). Énergie, transport. La rentabilité. Marge bénéficiaire égale chiffre d'affaires moins coût total. Exemple: un hectare de cacaoyers produit 800 kilogrammes de fèves sèches à 3 USD ou kg, soit 2 400 USD. Coût total annuel: 1 500 USD. Marge égale 900 USD. Le seuil de rentabilité. Quantité minimale à produire pour couvrir les coûts. À retenir. Erreur fréquente: lancer une plantation sans étude de marché ni calcul de rentabilité. L'exploitation peut être non viable."]],"20":[["fr","Chapitre VII, La commercialisation. Fondements théoriques. Les circuits de vente. Marchés locaux: vente directe aux consommateurs ou aux détaillants. Coopératives: regroupement de producteurs pour vendre en gros. Exportateurs: pour le cacao, le café, le coton. Transformateurs: huileries, sucreries, usines textiles. Le conditionnement. Un produit bien conditionné se vend mieux et se conserve plus longtemps. Le transport. Choisir un moyen adapté pour éviter les pertes (véhicules couverts, caisses)."]],"21":[["fr","Contextualisation R D C. Fondements théoriques. Études de cas congolaises. Cacaoculture en Équateur: relance de la filière avec l'appui de partenaires techniques et financiers. Ananas au Kongo Central: développement d'une filière d'exportation. Canne à sucre à Kwilu-Ngongo: production sucrière historique du pays. Café au Kivu: production de café arabica de qualité, orientée vers l'exportation. Palmier à huile au Kwilu: huile de palme pour la consommation locale et la transformation. Défis de la filière. Accès aux intrants et au financement. Déficit d'infrastructures rurales. Faible mécanisation. Concurrence des produits importés."]],"22":[["fr","Synthèse, De la pépinière au marché. Synthèse générale. Ce qu'il faut retenir. Types de cultures: vivrières (autoconsommation), de rente (vente), industrielles (transformation). Classification: stimulantes (café, cacao), oléifères (palmier), à fibres (coton), saccharifères (canne), fruitières. Pépinière: site adapté, substrat, semis, arrosage, repiquage, acclimatation. Plantation: choix du site, préparation du sol, piquetage (distances), mise en terre, paillage. Taille: formation, entretien, rajeunissement. Greffage: multiplication végétative, précocité, résistance, uniformité. Fertilisation: organique (compost, fumier), minérale (NPK), complémentarité. Protection: lutte biologique, chimique raisonnée, pratiques culturales. Récolte et post-récolte: maturité, récolte sélective, fermentation, séchage, conditionnement, conservation. Gestion: plan technique, coûts, rentabilité, commercialisation. Un technicien A2 en agriculture générale unit maîtrise technique, gestion économique et respect de l'environnement."]],"23":[["fr","Évaluation finale, Agriculture Générale. Consigne. Réponds aux 22 questions suivantes pour vérifier ta maîtrise du cours. Chaque question a une seule bonne réponse parmi quatre propositions."]]}};
+  var CACHE = "ecolia-cours-v1";                       // même cache que l'application
+  var PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  var PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+  var DL = '<svg viewBox="0 0 24 24"><path d="M11 3h2v9.2l3.6-3.6L18 10l-6 6-6-6 1.4-1.4L11 12.2V3zM5 19h14v2H5z"/></svg>';
+  var OK = '<svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>';
+  // Réparation du quiz : certains cours stockent les choix sous "opts" (ou autre) au lieu de "options"
+  try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+      questions.forEach(function (q) {
+        if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+        if (q.text === undefined) q.text = q.question || q.q || q.enonce || q.titre || "";
+        if (typeof q.correct === "undefined") {
+          if (typeof q.answer !== "undefined") q.correct = q.answer;
+          else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+        }
+      });
+    }
+  } catch (e) {}
+  var synth = window.speechSynthesis || null;
+  var HAS_CACHE = !!(window.caches && window.caches.open);
+  var NATIVE = false;           // APK ECOLIA : pont Java "CoursInterface" (fichiers dans le dossier de l'application)
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  var LATER = "ecolia_audio_later_" + CFG.code;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+  function init() {
+    if (document.getElementById("ecolia-audio-btn")) return;
+
+    // ---------- éléments de l'interface ----------
+    var btn = document.createElement("button");
+    btn.id = "ecolia-audio-btn"; btn.type = "button"; btn.className = "ecolia-off";
+    btn.setAttribute("aria-label", "Écouter la leçon"); btn.innerHTML = PLAY;
+    var dlBtn = document.createElement("button");
+    dlBtn.id = "ecolia-dl-btn"; dlBtn.type = "button"; dlBtn.className = "ecolia-off";
+    dlBtn.innerHTML = DL;
+    var host = document.querySelector(".header-right");
+    if (host) { host.insertBefore(dlBtn, host.firstChild); host.insertBefore(btn, dlBtn); }   // dans la barre du haut : ne scrolle jamais
+    else { btn.className += " ecolia-fixed"; document.body.appendChild(btn); }
+
+    var banner = document.createElement("div");
+    banner.id = "ecolia-audio-banner";
+    banner.innerHTML = '<span class="eab-txt"></span><span class="eab-act"></span><div class="eab-bar"><i></i></div>';
+    var content = document.getElementById("content");
+    if (content && content.parentNode) content.parentNode.insertBefore(banner, content);
+    else document.body.insertBefore(banner, document.body.firstChild);
+    var txtEl = banner.querySelector(".eab-txt"), actEl = banner.querySelector(".eab-act");
+    var barEl = banner.querySelector(".eab-bar"), barI = barEl.firstChild;
+
+    var audio = new Audio();            // un seul élément Audio, réutilisé (exigé par les navigateurs mobiles)
+    audio.preload = "auto";
+    var st = { idx: -1, auto: false, advancing: false, mode: null, speaking: false, token: 0, chunks: [], ci: 0, blobUrl: null, playTok: 0 };
+    var dl = { state: "none", cached: 0, busy: false, cancel: false };   // none | partial | full
+    var bnMode = null, hideTimer = null;
+    if (synth && synth.getVoices) { try { synth.getVoices(); } catch (e) {} }
+
+    function cur() {
+      try { if (typeof currentSlide === "number") return currentSlide; } catch (e) {}
+      return 0;
+    }
+    function hasMp3(i) { return CFG.available.indexOf(i + 1) !== -1; }
+    function fb(i) { return CFG.fallback && CFG.fallback[String(i + 1)]; }
+    function hasAudio(i) { return hasMp3(i) || (!!synth && !!fb(i)); }
+    function urlN(n) {   // dans l'APK la page est sur https://app.local : une adresse relative doit pointer vers le site
+      var b = CFG.base;
+      if (NATIVE && !/^https?:/i.test(b)) b = "https://ecolia-course.github.io/" + b.replace(/^(\.\.\/|\.\/)+/, "");
+      return new URL(b + nameN(n), location.href).href;
+    }
+    function setIcon(playing) { btn.innerHTML = playing ? PAUSE : PLAY; }
+    function isPlaying() { return st.mode === "mp3" ? !audio.paused : (st.mode === "tts" && st.speaking); }
+    function mo() { return "≈ " + CFG.sizeMo + " Mo"; }
+    function nameN(n) { return "audio_" + CFG.code + "_" + n + ".mp3"; }
+
+    // ====================================================================
+    //  Stockage hors ligne : 2 moteurs, même interface
+    //    - APK : fichiers du dossier de l'application (CoursInterface), servis par https://app.local/cours/
+    //    - Web : Cache Storage du navigateur (même cache que l'application web)
+    // ====================================================================
+    function nativeStore() {
+      var okKey = "ecolia_audio_ok_" + CFG.code;
+      function readOk() { try { return JSON.parse(lsGet(okKey) || "[]"); } catch (e) { return []; } }
+      function writeOk(a) { lsSet(okKey, JSON.stringify(a)); }
+      function exists(n) { try { return !!CoursInterface.exists(nameN(n)); } catch (e) { return false; } }
+      function local(n) { return location.origin + "/cours/" + nameN(n); }
+      function verify(n) {                                   // fichier complet ? (taille exacte connue à la génération)
+        return fetch(local(n), { cache: "no-store" }).then(function (r) { return r.blob(); }).then(function (b) {
+          var exp = CFG.sizes && CFG.sizes[String(n)];
+          return (b.size > 2000 && (!exp || b.size === exp)) ? b : null;
+        }).catch(function () { return null; });
+      }
+      return {
+        list: function () {
+          var ok = readOk().filter(exists); writeOk(ok); return Promise.resolve(ok);
+        },
+        get: function (n) { return exists(n) ? verify(n) : Promise.resolve(null); },
+        put: function (n) {
+          return new Promise(function (res, rej) {
+            try { CoursInterface.download(urlN(n), nameN(n)); } catch (e) { return rej(e); }
+            var t0 = Date.now();
+            function next() { if (Date.now() - t0 > 120000) rej(new Error("délai dépassé")); else setTimeout(poll, 800); }
+            function poll() {
+              if (!exists(n)) return next();
+              verify(n).then(function (b) {
+                if (!b) return next();
+                var ok = readOk(); if (ok.indexOf(n) < 0) ok.push(n); writeOk(ok); res();
+              });
+            }
+            setTimeout(poll, 800);
+          });
+        },
+        del: function (n) {
+          try { CoursInterface.delete(nameN(n)); } catch (e) {}
+          writeOk(readOk().filter(function (x) { return x !== n; }));
+          return Promise.resolve();
+        }
+      };
+    }
+    function cacheStore() {
+      return {
+        list: function () {
+          return caches.open(CACHE).then(function (c) {
+            return Promise.all(CFG.available.map(function (n) {
+              return c.match(urlN(n)).then(function (r) {
+                if (!r) return 0;
+                if ((r.headers.get("content-type") || "").indexOf("audio") !== 0) { c.delete(urlN(n)); return 0; }   // ancien contenu invalide
+                return n;
+              });
+            }));
+          }).then(function (a) { return a.filter(Boolean); });
+        },
+        get: function (n) {
+          return caches.open(CACHE).then(function (c) { return c.match(urlN(n)); })
+            .then(function (r) { return r ? r.blob() : null; }).then(function (b) { return b && b.size > 2000 ? b : null; });
+        },
+        put: function (n) {
+          var u = urlN(n);
+          return fetch(u, { cache: "no-store" }).then(function (r) {
+            if (!r.ok || r.status !== 200) throw new Error("HTTP " + r.status);
+            return r.blob();
+          }).then(function (b) {
+            if (b.size < 2000 || (b.type && b.type.indexOf("audio") !== 0 && b.type.indexOf("octet") < 0)) throw new Error("fichier invalide");
+            return caches.open(CACHE).then(function (c) { return c.put(u, new Response(b, { headers: { "Content-Type": "audio/mpeg" } })); });
+          });
+        },
+        del: function (n) { return caches.open(CACHE).then(function (c) { return c.delete(urlN(n)); }); }
+      };
+    }
+    var store = NATIVE ? nativeStore() : (HAS_CACHE ? cacheStore() : null);
+
+    // ====================================================================
+    //  Bannière : invitation, confirmations, progression
+    // ====================================================================
+    function showBanner(mode, text, buttons, pct) {
+      clearTimeout(hideTimer);
+      bnMode = mode;
+      txtEl.textContent = text;
+      actEl.innerHTML = "";
+      (buttons || []).forEach(function (b) {
+        var e = document.createElement("button");
+        e.type = "button"; e.textContent = b.label; if (b.pri) e.className = "pri";
+        e.addEventListener("click", function (ev) { ev.stopPropagation(); b.fn(); });
+        actEl.appendChild(e);
+      });
+      if (typeof pct === "number") { barEl.style.display = "block"; barI.style.width = pct + "%"; }
+      else barEl.style.display = "none";
+      banner.classList.add("on");
+    }
+    function hideBanner() { clearTimeout(hideTimer); bnMode = null; banner.classList.remove("on"); }
+    function flash(text) { showBanner("info", text, []); hideTimer = setTimeout(hideBanner, 4000); }
+
+    function refreshUI() {
+      var show = !!store && CFG.available.length > 0;
+      dlBtn.classList.toggle("ecolia-off", !show);
+      dlBtn.classList.toggle("ecolia-full", dl.state === "full");
+      dlBtn.innerHTML = dl.state === "full" ? OK : DL;
+      dlBtn.setAttribute("aria-label", dl.state === "full" ? "Audios téléchargés : supprimer" : "Télécharger les audios");
+      dlBtn.title = dlBtn.getAttribute("aria-label");
+    }
+    function refreshCacheState(done) {
+      if (!store) { dl.state = "none"; refreshUI(); if (done) done(); return; }
+      store.list().then(function (ok) {
+        dl.cached = ok.length;
+        dl.state = dl.cached === 0 ? "none" : (dl.cached >= CFG.available.length ? "full" : "partial");
+      }).catch(function () { dl.state = "none"; }).then(function () { refreshUI(); if (done) done(); });
+    }
+
+    function askDownload(fromInvite) {
+      var left = CFG.available.length - dl.cached;
+      var txt = dl.state === "partial"
+        ? "Il reste " + left + " audio(s) à télécharger pour écouter ce cours sans internet."
+        : "🔊 Télécharger les audios de ce cours (" + mo() + ") pour les écouter sans internet ? Wi-Fi recommandé.";
+      showBanner(fromInvite ? "invite" : "confirm", txt, [
+        { label: fromInvite ? "Plus tard" : "Annuler", fn: function () { if (fromInvite) lsSet(LATER, "1"); hideBanner(); } },
+        { label: "Télécharger", pri: true, fn: startDownload }
+      ]);
+    }
+    function askDelete() {
+      showBanner("confirm", "Supprimer les audios téléchargés de ce cours (" + mo() + ") ? Vous pourrez toujours les écouter en ligne.", [
+        { label: "Annuler", fn: hideBanner },
+        { label: "Supprimer", pri: true, fn: doDelete }
+      ]);
+    }
+
+    function startDownload() {
+      if (dl.busy || !store) return;
+      dl.busy = true; dl.cancel = false;
+      var total = CFG.available.length, done = 0, quota = false, fails = 0, todo = [];
+      store.list().then(function (have) {
+        CFG.available.forEach(function (n) { if (have.indexOf(n) < 0) todo.push(n); });
+        done = total - todo.length;
+        function paint() {
+          var msg = "Téléchargement des audios : " + done + " / " + total;
+          if (bnMode === "progress") {                  // met à jour sans recréer les boutons (sinon un appui peut être perdu)
+            txtEl.textContent = msg; barI.style.width = Math.round(done / total * 100) + "%";
+          } else {
+            showBanner("progress", msg, [
+              { label: "Annuler", fn: function () { dl.cancel = true; } }
+            ], Math.round(done / total * 100));
+          }
+        }
+        paint();
+        function worker() {
+          if (dl.cancel || quota || !todo.length) return Promise.resolve();
+          var n = todo.shift();
+          return store.put(n).then(function () { done++; paint(); }).catch(function (e) {
+            if (e && (e.name === "QuotaExceededError" || /quota/i.test(String(e.message)))) quota = true;
+            fails++;
+          }).then(worker);
+        }
+        return Promise.all([worker(), worker()]);
+      }).catch(function () { fails++; }).then(function () {
+        dl.busy = false;
+        refreshCacheState(function () {
+          if (dl.state === "full") flash("✓ Audios téléchargés : le cours se lit maintenant sans internet.");
+          else if (dl.cancel) flash("Téléchargement interrompu (" + dl.cached + " / " + total + "). Vous pourrez reprendre plus tard.");
+          else showBanner("error", quota ? "Espace insuffisant sur l'appareil. Libérez de la place puis réessayez."
+            : "Certains audios n'ont pas pu être téléchargés (connexion ?).", [
+            { label: "Fermer", fn: hideBanner }, { label: "Réessayer", pri: true, fn: startDownload }
+          ]);
+        });
+      });
+    }
+    function doDelete() {
+      if (!store) return;
+      Promise.all(CFG.available.map(function (n) { return store.del(n); })).catch(function () {}).then(function () {
+        lsDel(LATER);
+        refreshCacheState(function () { flash("Audios supprimés de cet appareil."); });
+      });
+    }
+
+    dlBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (dl.busy) return;
+      if (dl.state === "full") askDelete(); else askDownload(false);
+    });
+
+    // ====================================================================
+    //  Voix intégrée au téléphone (hors ligne, sans limite)
+    // ====================================================================
+    function pickVoice(lang) {
+      var vs = [];
+      try { vs = synth.getVoices() || []; } catch (e) {}
+      var pre = lang === "en" ? "en" : "fr", best = null;
+      for (var k = 0; k < vs.length; k++) {
+        var v = vs[k];
+        if ((v.lang || "").toLowerCase().indexOf(pre) !== 0) continue;
+        if (!best || (v.localService && !best.localService)) best = v;
+      }
+      return best;
+    }
+    function hardSplit(text, max) {
+      var out = [];
+      while (text.length > max) {
+        var cut = text.lastIndexOf(" ", max);
+        if (cut < 40) cut = max;
+        out.push(text.slice(0, cut)); text = text.slice(cut).replace(/^\s+/, "");
+      }
+      if (text) out.push(text);
+      return out;
+    }
+    function buildChunks(segs) {                  // morceaux courts : évite l'arrêt des longs textes sur Chrome
+      var out = [];
+      segs.forEach(function (s) {
+        var cur2 = "", parts = s[1].match(/[^.!?;:]+[.!?;:]*\s*/g) || [s[1]];
+        parts.forEach(function (p) {
+          if (cur2 && (cur2 + p).length > 160) { out.push({ lang: s[0], text: cur2.trim() }); cur2 = p; }
+          else cur2 += p;
+        });
+        if (cur2.trim()) out.push({ lang: s[0], text: cur2.trim() });
+      });
+      var res = [];
+      out.forEach(function (c) { hardSplit(c.text, 190).forEach(function (t) { res.push({ lang: c.lang, text: t }); }); });
+      return res;
+    }
+    function speakFrom(tk) {
+      if (tk !== st.token) return;
+      if (st.ci >= st.chunks.length) {
+        st.speaking = false; st.mode = null; st.ci = 0; setIcon(false);
+        if (st.auto) goNext();
+        return;
+      }
+      var c = st.chunks[st.ci];
+      var u = new SpeechSynthesisUtterance(c.text);
+      u.lang = c.lang === "en" ? "en-US" : "fr-FR";
+      var v = pickVoice(c.lang);
+      if (v) { u.voice = v; u.lang = v.lang; }
+      u.rate = 0.95;
+      u.onend = function () { if (tk !== st.token) return; st.ci++; speakFrom(tk); };
+      u.onerror = function () { if (tk !== st.token) return; st.speaking = false; setIcon(false); st.auto = false; };
+      synth.speak(u);
+    }
+    function startTts(from) {
+      st.token++;
+      var tk = st.token;
+      st.mode = "tts"; st.speaking = true; st.ci = from || 0; setIcon(true);
+      var busy = false;
+      try { busy = synth.speaking || synth.pending; synth.cancel(); } catch (e) {}
+      if (busy) setTimeout(function () { speakFrom(tk); }, 120);   // laisse cancel() se terminer
+      else speakFrom(tk);                                          // sinon tout de suite (exigé par iOS)
+    }
+    function playVoice() {
+      if (!(synth && fb(st.idx))) { st.auto = false; return false; }
+      if (!st.chunks.length) st.chunks = buildChunks(fb(st.idx));
+      startTts(st.ci);
+      return true;
+    }
+
+    // ====================================================================
+    //  Lecture
+    // ====================================================================
+    function freeBlob() { if (st.blobUrl) { try { URL.revokeObjectURL(st.blobUrl); } catch (e) {} st.blobUrl = null; } }
+    function stopAll() {
+      st.playTok++;
+      try { audio.pause(); audio.currentTime = 0; } catch (e) {}
+      st.token++;
+      try { if (synth) synth.cancel(); } catch (e) {}
+      st.speaking = false; st.mode = null; st.chunks = []; st.ci = 0;
+      setIcon(false);
+    }
+    function pauseNow() {
+      if (st.mode === "mp3") audio.pause();
+      else if (st.mode === "tts") {
+        st.token++;
+        try { synth.cancel(); } catch (e) {}
+        st.speaking = false; setIcon(false);      // st.ci conservé : la reprise repart de la phrase en cours
+      }
+    }
+    function startAudio(src, tok) {
+      if (tok !== st.playTok) return;
+      if (audio.getAttribute("data-src") !== src) { audio.setAttribute("data-src", src); audio.src = src; }
+      var p = audio.play();
+      if (p && p.catch) p.catch(function (err) {
+        console.warn("ECOLIA audio :", err);
+        if (tok !== st.playTok) return;
+        if (!(err && err.name === "NotAllowedError") && playVoice()) return;   // lecture impossible : voix du téléphone
+        setIcon(false); st.auto = false;
+      });
+    }
+    function playCurrent() {
+      var i = st.idx;
+      if (hasMp3(i)) {
+        var tok = ++st.playTok, u = urlN(i + 1);
+        st.mode = "mp3";
+        if (!navigator.onLine && dl.state === "none") { st.mode = null; if (playVoice()) return; }   // hors ligne et non téléchargé
+        if (store && dl.state !== "none") {                     // téléchargé : lecture locale, sans réseau
+          store.get(i + 1)
+            .then(function (b) {
+              if (tok !== st.playTok) return;
+              if (b) { freeBlob(); st.blobUrl = URL.createObjectURL(new Blob([b], { type: "audio/mpeg" })); startAudio(st.blobUrl, tok); }
+              else startAudio(u, tok);
+            }).catch(function () { startAudio(u, tok); });
+        } else startAudio(u, tok);                              // sinon lecture en ligne (appel immédiat, exigé par iOS)
+      } else if (!playVoice()) {
+        st.auto = false;
+      }
+    }
+
+    function onSlideChange(i) {
+      var wasAdvancing = st.advancing;
+      st.advancing = false;
+      st.idx = i;
+      btn.classList.toggle("ecolia-off", !hasAudio(i));
+      stopAll();
+      audio.removeAttribute("data-src");
+      freeBlob();
+      if (bnMode === "invite" && i !== 0) hideBanner();       // l'invitation n'apparaît qu'à la première slide
+      if (wasAdvancing && st.auto) setTimeout(playCurrent, 500);   // enchaînement automatique
+      else st.auto = false;                                         // changement manuel : on coupe tout
+    }
+    function goNext() {
+      if (st.idx + 1 >= CFG.count) { st.auto = false; return; }
+      st.advancing = true;
+      if (typeof nextSlide === "function") nextSlide();
+      else { var nb = document.getElementById("nextBtn"); if (nb) nb.click(); }
+      setTimeout(function () { st.advancing = false; }, 4000);
+    }
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var i = cur();
+      if (i !== st.idx) onSlideChange(i);
+      if (isPlaying()) { st.auto = false; pauseNow(); }
+      else { st.auto = true; playCurrent(); }
+    });
+    audio.addEventListener("play", function () { setIcon(true); });
+    audio.addEventListener("pause", function () { if (st.mode === "mp3") setIcon(false); });
+    audio.addEventListener("error", function () {
+      if (st.mode === "mp3" && playVoice()) return;            // fichier introuvable / hors ligne : voix du téléphone
+      setIcon(false); st.auto = false;
+    });
+    audio.addEventListener("ended", function () { setIcon(false); if (st.auto) goNext(); });
+    window.addEventListener("pagehide", function () { stopAll(); freeBlob(); });
+
+    // ---------- démarrage ----------
+    refreshCacheState(function () {
+      if (store && CFG.available.length && dl.state !== "full" && navigator.onLine && cur() === 0 && !lsGet(LATER)) askDownload(true);
+    });
+    st.idx = -1;
+    setInterval(function () { var i = cur(); if (i !== st.idx) onSlideChange(i); }, 250);   // suit la slide affichée
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+<!-- ECOLIA_AUDIO_PLAYER_END -->
+</body>
+</html>

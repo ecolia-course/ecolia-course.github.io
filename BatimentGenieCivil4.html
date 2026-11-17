@@ -1,0 +1,1963 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="violet">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>ECOLIA — Batiment Genie Civil4</title>
+<style>
+[data-theme="bleu"]   { --p1:#0d2b4f; --p2:#1565c0; --p3:#07172e; --p4:#12437a; --p5:#5b8fd0; --bg:#e8f0fb; --bg2:#cfdff5; --bd:#a9c3e8; --soft:#dde8f7; --btn:#2a67b0; }
+[data-theme="vert"]   { --p1:#14442e; --p2:#2e7d32; --p3:#0b2b1a; --p4:#1f5c3a; --p5:#4f9a6b; --bg:#e8f5ec; --bg2:#c8e6d2; --bd:#a5cdb2; --soft:#dcefe2; --btn:#2f7a4f; }
+[data-theme="violet"] { --p1:#2d1b4e; --p2:#6a1b9a; --p3:#1a0f2e; --p4:#4a148c; --p5:#9c6fd0; --bg:#f1e9fb; --bg2:#dccbf2; --bd:#c4a8e6; --soft:#e8ddf6; --btn:#7e3fb2; }
+[data-theme="rouge"]  { --p1:#4a1010; --p2:#b71c1c; --p3:#2b0a0a; --p4:#8e1b1b; --p5:#d9706a; --bg:#fbeaea; --bg2:#f3cdcb; --bd:#e8a9a5; --soft:#f8dede; --btn:#a62a2a; }
+[data-theme="orange"] { --p1:#4e2a0c; --p2:#ef6c00; --p3:#2e1604; --p4:#b34a00; --p5:#f0a15a; --bg:#fff1e0; --bg2:#fbdcb8; --bd:#f3c08a; --soft:#fdebd6; --btn:#c9650a; }
+[data-theme="teal"]   { --p1:#0b3a3a; --p2:#00796b; --p3:#062626; --p4:#00574b; --p5:#4db6ac; --bg:#e0f2f1; --bg2:#b2dfdb; --bd:#80cbc4; --soft:#d5ecea; --btn:#26897d; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:linear-gradient(160deg,var(--p1) 0%,var(--p2) 50%,var(--p3) 100%); display:flex; justify-content:center; align-items:center; padding:8px; }
+.container { width:100%; max-width:1400px; background:#fefdf8; border-radius:20px; overflow:hidden; display:flex; flex-direction:column; height:100%; max-height:100vh; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.progress-bar { height:4px; background:var(--bg2); flex-shrink:0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--p5),var(--p4)); width:0%; transition:width 0.3s; }
+.header { padding:10px 16px; background:var(--bg); border-bottom:1px solid var(--bd); display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+.header h1 { color:var(--p4); font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box { display:flex; background:white; border-radius:20px; padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.search-box input { border:none; padding:6px 10px; border-radius:20px; outline:none; width:130px; font-size:0.8rem; }
+.search-box button { background:none; border:none; cursor:pointer; padding:4px 8px; font-size:0.85rem; color:var(--p2); }
+.badge { background:var(--p5); color:white; padding:4px 10px; border-radius:20px; font-weight:bold; font-size:0.75rem; }
+.search-nav { display:none; gap:4px; background:var(--bg2); padding:2px 8px; border-radius:20px; align-items:center; font-size:0.75rem; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:0.9rem; color:var(--p4); padding:2px 4px; }
+.content { padding:28px 32px; flex:1; overflow-y:auto; background:#fff; scroll-behavior:smooth; line-height:1.85; }
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.slide-title { color:var(--p1); font-size:1.5rem; font-weight:700; padding-bottom:12px; margin-bottom:20px; border-bottom:2px solid var(--p5); }
+.slide-content { color:var(--p3); font-size:1rem; }
+.empty-state { display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-height:60vh; padding:40px 20px; gap:18px; }
+.empty-state .icon { width:72px; height:72px; border-radius:50%; background:var(--bg); border:2px solid var(--bd); display:flex; align-items:center; justify-content:center; color:var(--p2); font-size:2rem; font-weight:300; }
+.empty-state h2 { color:var(--p1); font-size:1.4rem; font-weight:700; margin:0; }
+.empty-state p { color:#666; font-size:0.95rem; max-width:520px; line-height:1.7; }
+.empty-state .tag { display:inline-block; padding:6px 14px; background:var(--bg); color:var(--p4); border:1px solid var(--bd); border-radius:20px; font-size:0.8rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; }
+.bloc { padding:18px 22px; border-radius:12px; margin:22px 0; line-height:1.85; }
+.bloc-label { font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; opacity:0.7; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:var(--bg); border-left:4px solid var(--p5); }
+.theorie .bloc-label { color:var(--p4); }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.sources { background:#f5f5f5; padding:12px 16px; border-radius:10px; margin-top:26px; font-size:0.82rem; color:#666; border-left:3px solid #999; line-height:1.6; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:var(--p1); }
+.quiz-container { padding:22px; background:var(--bg); border-radius:16px; }
+.quiz-question { background:white; border-radius:10px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.quiz-question p { font-weight:600; margin-bottom:10px; color:var(--p1); }
+.quiz-question label { display:block; padding:8px 10px; margin:4px 0; border-radius:6px; cursor:pointer; transition:background 0.2s; }
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit { background:var(--btn); color:white; border:none; padding:12px 24px; border-radius:30px; font-size:1rem; cursor:pointer; font-weight:600; margin-top:14px; }
+.quiz-result { margin-top:16px; font-weight:600; }
+.controls { padding:8px 16px; background:#fafafa; border-top:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0; }
+.nav-btn { background:white; color:var(--p4); border:1px solid #ccc; padding:8px 14px; border-radius:8px; font-size:0.82rem; cursor:pointer; font-weight:500; }
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:var(--soft); }
+.content::-webkit-scrollbar-thumb { background:var(--p5); border-radius:3px; }
+@media (max-width:600px) { body { padding:0; } .container { border-radius:0; max-height:100vh; } .content { padding:20px 18px; } .slide-title { font-size:1.25rem; } .search-box input { width:90px; } .header h1 { font-size:0.85rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="header">
+<h1 id="pageTitle">ECOLIA</h1>
+<div class="header-right">
+<div class="search-box">
+<input id="searchInput" placeholder="Rechercher" type="text"/>
+<button id="searchBtn">⌕</button>
+</div>
+<div class="search-nav" id="searchNav">
+<button id="prevResultBtn">‹</button>
+<span id="resultCounter">0/0</span>
+<button id="nextResultBtn">›</button>
+</div>
+<span class="badge" id="slideCounter">0/0</span>
+</div>
+</div>
+<div class="content" id="content"></div>
+<div class="controls">
+<button class="nav-btn" id="prevBtn">← Précédent</button>
+<span class="counter" id="counter">—</span>
+<button class="nav-btn" id="nextBtn">Suivant →</button>
+</div>
+</div>
+<script>
+const COURSE_TITLE = "Bâtiment et Génie Civil (Technologie de la Construction)";
+const slides = [
+  {
+    title: "Sommaire — Bâtiment et Génie Civil",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Présentation du cours</div>
+        <h3>Bienvenue en Bâtiment et Génie Civil</h3>
+        <p>Ce cours de 4<sup>e</sup> année des Humanités Techniques Industrielles vous prépare aux métiers de la construction : maçon, chef de chantier, dessinateur en bâtiment, métreur, conducteur de travaux. Vous apprendrez à connaître les <strong>matériaux</strong> (ciment, agrégats, acier, bois), à maîtriser les <strong>techniques de construction</strong> (fondations, maçonnerie, béton armé, charpente), à <strong>lire et produire des plans</strong>, à réaliser des <strong>métrés et devis</strong>, à <strong>organiser un chantier</strong> et à appliquer les <strong>règles de sécurité</strong>.</p>
+        <p>En RDC, les besoins en construction sont immenses : écoles, centres de santé, routes, ponts, logements. Le technicien A2 formé en bâtiment est un acteur clé du développement, en particulier dans le cadre du <strong>PDL-145T</strong> (Programme de Développement Local des 145 Territoires) qui mobilise les compétences locales.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Objectifs d'apprentissage</div>
+        <ul>
+          <li>Identifier les matériaux de construction et leurs propriétés.</li>
+          <li>Décrire les techniques de construction (fondations, murs, planchers, toitures).</li>
+          <li>Lire et produire des plans de bâtiment et de génie civil.</li>
+          <li>Réaliser des métrés et des devis simples.</li>
+          <li>Organiser un chantier (planification, installation, sécurité).</li>
+          <li>Appliquer les règles de sécurité sur chantier.</li>
+          <li>Utiliser les notions de topographie pour l'implantation.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Plan du cours</div>
+        <ol>
+          <li>Chapitre I — Les matériaux de construction</li>
+          <li>Chapitre II — Terrassement et fondations</li>
+          <li>Chapitre III — Maçonnerie et béton armé</li>
+          <li>Chapitre IV — Charpente et toiture</li>
+          <li>Chapitre V — Le dessin de bâtiment</li>
+          <li>Chapitre VI — Métrés et devis</li>
+          <li>Chapitre VII — Organisation et gestion de chantier</li>
+          <li>Chapitre VIII — Topographie et implantation</li>
+        </ol>
+      </div>
+
+      <div class="sources">
+        <div class="bloc-label">Sources du cours</div>
+        <p>Programme National de l'Enseignement Technique, option Construction, Cycle Long (EPSP/EDIDEPS, 2007) ; Fiches pédagogiques officielles <em>Dessin de Génie Civil</em> et <em>Organisation et Gestion de Chantier</em>, 4<sup>e</sup> année, option Construction (Édition 2025) ; <em>Recueil d'Items : Construction</em> (Sciences-Africa).</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Pourquoi le bâtiment et le génie civil ?",
+    content: `
+      <div class="bloc cas">
+        <div class="bloc-label">Situation-problème</div>
+        <h3>Une école à construire à Kinshasa</h3>
+        <p>Un technicien A2 est recruté pour construire une école de six salles de classe dans la commune de N'Djili. Il reçoit un plan, un terrain vague, un budget limité et trois mois avant la rentrée. Par où commencer ?</p>
+        <ul>
+          <li><strong>Matériaux</strong> : quels ciments, quels agrégats, quel acier pour la structure ?</li>
+          <li><strong>Fondations</strong> : quel type de fondation pour ce sol ?</li>
+          <li><strong>Dessin</strong> : comment lire le plan et l'implanter sur le terrain ?</li>
+          <li><strong>Métrés</strong> : combien de sacs de ciment, combien de m³ de sable, combien de tonnes d'acier ?</li>
+          <li><strong>Organisation</strong> : comment planifier les tâches pour tenir les délais ?</li>
+          <li><strong>Sécurité</strong> : comment protéger les ouvriers des chutes et des accidents ?</li>
+        </ul>
+        <p>Tout cela relève du <strong>bâtiment et du génie civil</strong>. Un technicien qui maîtrise ces six domaines construit une école solide, dans les délais et sans accident.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Deux domaines complémentaires</h3>
+        <ul>
+          <li><strong>Le bâtiment</strong> : construction de logements, d'écoles, d'hôpitaux, de bâtiments administratifs.</li>
+          <li><strong>Le génie civil</strong> : construction d'infrastructures (routes, ponts, barrages, réseaux d'eau, ports).</li>
+        </ul>
+        <p>Les deux domaines partagent les mêmes matériaux (béton, acier) et les mêmes méthodes (dessin, métrés, planification), mais diffèrent par l'échelle et les contraintes.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Bâtiment = construction de bâtiments.</li>
+          <li>Génie civil = infrastructures.</li>
+          <li>Six compétences clés : matériaux, fondations, dessin, métrés, organisation, sécurité.</li>
+          <li>En RDC, secteur en pleine croissance (PDL-145T).</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Les matériaux de construction",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les matériaux essentiels</h3>
+        <table>
+          <thead>
+            <tr><th>Matériau</th><th>Rôle</th><th>Propriétés clés</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Ciment</strong></td><td>Liant hydraulique qui durcit au contact de l'eau.</td><td>Types CPA, CPJ, CEM III ; dosage en kg/m³.</td></tr>
+            <tr><td><strong>Sable</strong></td><td>Agrégat fin (granulométrie 0-4 mm).</td><td>Propreté (sans argile), granulométrie régulière.</td></tr>
+            <tr><td><strong>Gravier</strong></td><td>Agrégat gros (granulométrie 4-25 mm).</td><td>Résistance, forme des grains.</td></tr>
+            <tr><td><strong>Acier</strong></td><td>Armatures pour le béton armé, charpentes métalliques.</td><td>Barres HA (haute adhérence), limite élastique σ<sub>e</sub>.</td></tr>
+            <tr><td><strong>Bois</strong></td><td>Charpentes, coffrages, menuiseries.</td><td>Essences locales (moabi, iroko), humidité, nœuds.</td></tr>
+            <tr><td><strong>Briques et parpaings</strong></td><td>Murs et cloisons.</td><td>Briques cuites ou parpaings en béton.</td></tr>
+            <tr><td><strong>Eau</strong></td><td>Hydratation du ciment.</td><td>Propre, sans impuretés (pas d'eau de mer pour le béton armé).</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Choix des matériaux</div>
+        <p>Le choix dépend de :</p>
+        <ul>
+          <li>la <strong>résistance</strong> requise (structure, remplissage) ;</li>
+          <li>la <strong>durabilité</strong> (climat tropical, humidité) ;</li>
+          <li>la <strong>disponibilité locale</strong> (matériaux artisanaux) ;</li>
+          <li>le <strong>coût</strong> (transport, main-d'œuvre).</li>
+        </ul>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Utiliser un <strong>sable trop argileux</strong> pour le béton. L'argile empêche l'adhérence entre le ciment et les grains, réduit la résistance et provoque des fissures. Le sable doit être <strong>propre</strong> et de <strong>granulométrie régulière</strong>.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Ciment = liant hydraulique.</li>
+          <li>Sable + gravier = granulats.</li>
+          <li>Acier = armatures.</li>
+          <li>Bois = charpentes et coffrages.</li>
+          <li>Qualité des matériaux = qualité de l'ouvrage.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Le ciment et le béton",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le ciment, liant du béton</h3>
+        <p>Le <strong>ciment</strong> est un liant hydraulique : mélangé à l'eau, il forme une pâte qui durcit et lie les agrégats entre eux. On distingue :</p>
+        <ul>
+          <li><strong>CPA</strong> : Ciment Portland Artificiel (clinker + gypse).</li>
+          <li><strong>CPJ</strong> : Ciment Portland Composé (clinker + ajouts minéraux).</li>
+          <li><strong>CEM III</strong> : Ciment de haut fourneau (clinker + laitier).</li>
+        </ul>
+        <p>En RDC, le ciment est produit localement (CINAT à Lukala, PPC dans le Kongo-Central) ou importé. On le stocke à l'abri de l'humidité (sacs palettisés).</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">La composition du béton</div>
+        <p>Le <strong>béton</strong> est un mélange de :</p>
+        <ul>
+          <li><strong>ciment</strong> (liant) ;</li>
+          <li><strong>sable</strong> (agrégat fin) ;</li>
+          <li><strong>gravier</strong> (agrégat gros) ;</li>
+          <li><strong>eau</strong> (hydratation) ;</li>
+          <li>parfois des <strong>adjuvants</strong> (plastifiants, accélérateurs, retardateurs).</li>
+        </ul>
+        <p>Le <strong>dosage</strong> courant d'un béton structurel est de <strong>350 kg/m³</strong> de ciment. Un béton de propreté utilise 150 à 200 kg/m³. Un béton de fondation 300-350 kg/m³.</p>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Exemple corrigé</div>
+        <p><strong>Donnée :</strong> on doit couler 2,5 m³ de béton dosé à 350 kg/m³.<br>
+        <strong>Question :</strong> combien de sacs de ciment de 50 kg faut-il ?<br>
+        <strong>Calcul :</strong> ciment nécessaire = 350 × 2,5 = 875 kg → 875 / 50 = <strong>17,5 sacs</strong>, arrondi à 18 sacs.<br>
+        <strong>Interprétation :</strong> prévoir une marge de 5 à 10 % pour les pertes → 19 à 20 sacs.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Ciment = liant hydraulique (CPA, CPJ, CEM III).</li>
+          <li>Béton = ciment + sable + gravier + eau.</li>
+          <li>Dosage structurel : 350 kg/m³.</li>
+          <li>Prévoir 5-10 % de pertes.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — Terrassement et reconnaissance du sol",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Reconnaître le sol avant de construire</h3>
+        <p>Avant de creuser, il faut connaître la <strong>nature du sol</strong> et sa <strong>portance</strong>. On distingue :</p>
+        <ul>
+          <li><strong>Sol rocheux</strong> : très résistant, portance élevée ; nécessite des engins puissants.</li>
+          <li><strong>Sol sableux</strong> : bonne portance si compact, mais risque d'éboulement des fouilles.</li>
+          <li><strong>Sol limoneux</strong> : portance moyenne, sensible à l'eau.</li>
+          <li><strong>Sol argileux</strong> : portance faible, sensible au retrait/gonflement avec l'humidité.</li>
+          <li><strong>Sol marécageux</strong> : portance très faible, nappe phréatique haute.</li>
+        </ul>
+        <p>La <strong>portance</strong> (en MPa ou kN/m²) détermine le type de fondation. On peut la vérifier par des essais (pénétromètre, essai de plaque), ou consulter une étude géotechnique.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Le terrassement</div>
+        <p>Le <strong>terrassement</strong> regroupe les opérations de :</p>
+        <ul>
+          <li><strong>décapage</strong> de la terre végétale (sur 20-30 cm) ;</li>
+          <li><strong>fouilles</strong> pour les fondations (en rigole ou en pleine masse) ;</li>
+          <li><strong>remblai</strong> et <strong>compactage</strong> après la construction des fondations.</li>
+        </ul>
+        <p>La profondeur des fouilles dépend du type de fondation et de la profondeur du bon sol. On protège les fouilles contre l'eau (pompage, blindage).</p>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Application RDC</div>
+        <p>À Kinshasa, dans les zones basses (N'Djili, Kingabwa), la nappe phréatique est haute et le sol est argileux. Un chantier mal préparé peut voir ses fouilles envahies par l'eau en saison des pluies. Le technicien doit : anticiper la saison sèche, prévoir un pompage, et choisir des fondations adaptées (radier ou pieux).</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Nature et portance du sol conditionnent la fondation.</li>
+          <li>Décapage, fouilles, remblai.</li>
+          <li>Protection contre l'eau (pompage, blindage).</li>
+          <li>En RDC : anticiper la saison des pluies.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — Les fondations",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Transmettre les charges au sol</h3>
+        <p>La <strong>fondation</strong> est la partie de l'ouvrage qui transmet les charges au sol. Elle doit être :</p>
+        <ul>
+          <li>suffisamment <strong>profonde</strong> pour atteindre le bon sol ;</li>
+          <li>suffisamment <strong>large</strong> pour ne pas dépasser la portance ;</li>
+          <li><strong>stable</strong> (pas de tassement différentiel).</li>
+        </ul>
+      </div>
+
+      <figure>
+        <img data-image-id="batimentgeniecivil4_img01" alt="Schéma des trois principaux types de fondations : semelle isolée sous poteau, semelle filante sous mur, et radier général.">
+        <figcaption>Les fondations : transmettre les charges au sol.</figcaption>
+      </figure>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondations superficielles</div>
+        <ul>
+          <li><strong>Semelle isolée</strong> : sous un poteau, en béton armé, de forme rectangulaire ou carrée.</li>
+          <li><strong>Semelle filante</strong> : sous un mur porteur, continue sur toute la longueur du mur.</li>
+          <li><strong>Radier général</strong> : dalle épaisse couvrant toute la surface du bâtiment, utilisée quand le sol est faible et homogène.</li>
+        </ul>
+        <p>Les fondations superficielles sont utilisées quand le bon sol est proche de la surface (profondeur &lt; 3 m).</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondations profondes</div>
+        <ul>
+          <li><strong>Pieux</strong> : forés ou battus, descendant jusqu'au sol résistant (10-30 m).</li>
+          <li><strong>Puits</strong> : creusés à la main ou à la machine, remplis de béton.</li>
+          <li><strong>Barrettes</strong> : parois moulées en béton armé, pour les ouvrages profonds.</li>
+        </ul>
+        <p>Elles sont utilisées quand le bon sol est profond ou quand les charges sont très élevées.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Négliger la <strong>portance du sol</strong> ou sous-dimensionner la semelle. Résultat : tassements différentiels, fissures dans les murs, parfois effondrement. La fondation est la partie la plus importante de l'ouvrage : <strong>on ne lésine pas dessus</strong>.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Fondation = transmet les charges au sol.</li>
+          <li>Superficielle : semelle isolée, filante, radier.</li>
+          <li>Profonde : pieux, puits, barrettes.</li>
+          <li>Ne jamais négliger la portance.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — La maçonnerie",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Monter des murs</h3>
+        <p>La <strong>maçonnerie</strong> consiste à assembler des éléments (briques, parpaings, pierres) avec un <strong>mortier</strong> (mélange ciment + sable + eau).</p>
+        <p>Règles de base :</p>
+        <ul>
+          <li><strong>Alignement</strong> : les murs doivent être droits, vérifiés au cordeau.</li>
+          <li><strong>Aplomb</strong> : les murs doivent être verticaux, vérifiés au fil à plomb.</li>
+          <li><strong>Joints réguliers</strong> : épaisseur constante (10-15 mm).</li>
+          <li><strong>Chaînages</strong> : poutres en béton armé horizontales et verticales qui ceinturent la maçonnerie pour la solidifier.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les matériaux de maçonnerie</div>
+        <ul>
+          <li><strong>Briques cuites</strong> : terre cuite, bonne résistance, isolation thermique moyenne.</li>
+          <li><strong>Parpaings en béton</strong> : économique, robuste, courant en RDC.</li>
+          <li><strong>Blocs de béton cellulaire</strong> : légers, isolation thermique élevée.</li>
+          <li><strong>Pierres de taille</strong> : pour les murs porteurs anciens ou les ouvrages d'art.</li>
+        </ul>
+        <p>Le mortier de montage est généralement dosé à 300-350 kg/m³ de ciment (mortier gras pour la structure, plus maigre pour le remplissage).</p>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Exemple corrigé</div>
+        <p><strong>Donnée :</strong> un mur de 5 m de long, 2,5 m de haut et 0,20 m d'épaisseur.<br>
+        <strong>Question :</strong> quel est le volume de maçonnerie ?<br>
+        <strong>Calcul :</strong> V = L × H × e = 5 × 2,5 × 0,20 = <strong>2,5 m³</strong>.<br>
+        <strong>Interprétation :</strong> c'est le volume à chiffrer dans le devis (nombre de parpaings, sacs de ciment pour le mortier).</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Maçonnerie = assemblage d'éléments + mortier.</li>
+          <li>Règles : alignement, aplomb, joints réguliers, chaînages.</li>
+          <li>Briques, parpaings, pierres.</li>
+          <li>Mortier de montage 300-350 kg/m³.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — Le béton armé",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Associer béton et acier</h3>
+        <p>Le <strong>béton armé</strong> est un matériau composite : du béton (qui résiste bien à la compression) et de l'acier (qui résiste bien à la traction). Ensemble, ils forment un matériau qui résiste aux deux sollicitations.</p>
+        <p>Cette association fonctionne parce que :</p>
+        <ul>
+          <li>l'acier et le béton ont des <strong>coefficients de dilatation</strong> très proches ;</li>
+          <li>le béton <strong>protège l'acier</strong> de la corrosion (enrobage) ;</li>
+          <li>l'acier <strong>adhère</strong> au béton (grâce aux nervures des barres HA).</li>
+        </ul>
+      </div>
+
+      <figure>
+        <img data-image-id="batimentgeniecivil4_img02" alt="Schéma d'un poteau et d'une poutre en béton armé montrant le ferraillage (armatures longitudinales et étriers).">
+        <figcaption>Le béton armé : association béton-acier.</figcaption>
+      </figure>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les éléments en béton armé</div>
+        <ul>
+          <li><strong>Poteaux</strong> : verticaux, transmettent les charges aux fondations. Armatures longitudinales + étriers.</li>
+          <li><strong>Poutres</strong> : horizontales, supportent le plancher. Armatures tendues en bas, comprimées en haut, étriers pour le cisaillement.</li>
+          <li><strong>Planchers</strong> : dalles ou corps creux, supportent les charges d'exploitation.</li>
+          <li><strong>Semelles</strong> : sous les poteaux, répartissent la charge.</li>
+          <li><strong>Voiles</strong> : murs en béton armé, pour les contreventements ou les ouvrages d'art.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">L'enrobage des armatures</div>
+        <p>L'<strong>enrobage</strong> est l'épaisseur de béton qui recouvre l'acier. Il est indispensable pour <strong>protéger l'acier de la corrosion</strong> et assurer l'adhérence. Valeurs courantes :</p>
+        <ul>
+          <li>2 à 3 cm pour les éléments à l'abri ;</li>
+          <li>3 à 5 cm pour les éléments exposés (extérieur, fondations).</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Négliger l'<strong>enrobage</strong> ou poser les armatures directement sur le coffrage. L'acier rouille, gonfle et fait éclater le béton. La structure perd sa résistance en quelques années. Respecter les enrobages du plan est essentiel.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Béton armé = béton (compression) + acier (traction).</li>
+          <li>Poteaux, poutres, planchers, semelles.</li>
+          <li>Enrobage : 2-5 cm selon exposition.</li>
+          <li>Un enrobage insuffisant détruit la structure.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — Coffrage et ferraillage",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le coffrage</h3>
+        <p>Le <strong>coffrage</strong> est un moule qui donne sa forme au béton avant qu'il ne durcisse. Il est réalisé en bois, en métal ou en plastique.</p>
+        <p>Rôles du coffrage :</p>
+        <ul>
+          <li><strong>contenir</strong> le béton frais (résistance à la pression) ;</li>
+          <li><strong>donner la forme</strong> exacte prévue par le plan ;</li>
+          <li><strong>rester en place</strong> jusqu'à ce que le béton ait atteint une résistance suffisante (décoffrage après 7-14 jours, selon la température).</li>
+        </ul>
+        <p>Un bon coffrage est <strong>étanche</strong> (pas de fuite de laitance), <strong>rigide</strong> (pas de déformation) et <strong>huilé</strong> (démoulage facile).</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Le ferraillage</div>
+        <p>Le <strong>ferraillage</strong> est la mise en place des armatures en acier dans le coffrage. Il doit respecter scrupuleusement les plans de ferraillage :</p>
+        <ul>
+          <li><strong>diamètres</strong> des barres (8, 10, 12, 14, 16 mm…),</li>
+          <li><strong>espacements</strong> entre barres et entre étriers,</li>
+          <li><strong>longueurs</strong> des barres et des recouvrements,</li>
+          <li><strong>enrobage</strong>.</li>
+        </ul>
+        <p>On utilise des <strong>cales d'enrobage</strong> (petits blocs de béton ou plastique) pour maintenir l'espace entre le ferraillage et le coffrage.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">La coulée du béton</div>
+        <ol>
+          <li><strong>Préparer</strong> : vérifier le coffrage et le ferraillage.</li>
+          <li><strong>Mouiller</strong> légèrement le coffrage (pas de flaque).</li>
+          <li><strong>Couler</strong> le béton en couches successives (max 30-50 cm).</li>
+          <li><strong>Vibrer</strong> chaque couche pour éliminer les bulles d'air.</li>
+          <li><strong>Araser</strong> la surface et la protéger du soleil (cure).</li>
+        </ol>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Coffrage = moule qui donne sa forme au béton.</li>
+          <li>Ferraillage = mise en place des aciers selon le plan.</li>
+          <li>Cales d'enrobage indispensables.</li>
+          <li>Coulée par couches, vibrage obligatoire.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre IV — Charpente et toiture",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Supporter la couverture</h3>
+        <p>La <strong>charpente</strong> est l'ossature qui supporte la toiture et transmet les charges (poids de la couverture, vent, pluie) aux murs. Deux types principaux :</p>
+        <ul>
+          <li><strong>Charpente en bois</strong> : fermes (triangles), pannes (horizontales), chevrons (obliques). Essences locales (moabi, iroko) ou importées (sapin).</li>
+          <li><strong>Charpente métallique</strong> : profilés en acier (IPE, IPN, cornières), assemblés par boulonnage ou soudage. Plus résistante et plus durable, mais plus coûteuse.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les couvertures</div>
+        <ul>
+          <li><strong>Tôles galvanisées</strong> : économique, rapide à poser, courante en RDC. Attention : bruit sous la pluie, sensibles à la corrosion si non entretenues.</li>
+          <li><strong>Tuiles</strong> : esthétiques, durables, plus lourdes.</li>
+          <li><strong>Bacs acier</strong> : légers, rapides à poser, bonne étanchéité.</li>
+          <li><strong>Béton</strong> : toitures-terrasses (plates), avec étanchéité multicouche.</li>
+        </ul>
+        <p>La <strong>pente</strong> de la toiture dépend du matériau : 20-30 % pour les tuiles, 10-15 % pour les tôles, 1-2 % pour les toitures-terrasses.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Contraintes en RDC</div>
+        <ul>
+          <li><strong>Fortes pluies</strong> : pente suffisante, gouttières dimensionnées.</li>
+          <li><strong>Humidité</strong> : traitement du bois (anti-termites), ventilation de la sous-toiture.</li>
+          <li><strong>Vent</strong> : fixation solide des tôles (chevilles, crochets).</li>
+          <li><strong>Ensoleillement</strong> : isolation thermique (laine de verre, sous-toiture ventilée).</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Sous-dimensionner la charpente. Une ferme trop faible peut s'effondrer sous le poids de la couverture, du vent ou d'une accumulation d'eau. La charpente est calculée (RDM) et ne doit jamais être improvisée.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Charpente bois ou métallique.</li>
+          <li>Couvertures : tôles, tuiles, bacs acier, béton.</li>
+          <li>Pente adaptée au matériau.</li>
+          <li>Dimensionnement obligatoire (RDM).</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre V — Le dessin de bâtiment",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les plans essentiels</h3>
+        <p>Le <strong>dessin de bâtiment</strong> regroupe les documents graphiques qui décrivent l'ouvrage :</p>
+        <ul>
+          <li><strong>Plan de situation</strong> : emplacement du bâtiment dans la ville ou le quartier.</li>
+          <li><strong>Plan de masse</strong> : implantation du bâtiment sur le terrain.</li>
+          <li><strong>Plan de fondation</strong> : semelles, fouilles, poteaux.</li>
+          <li><strong>Plan d'étage</strong> : murs, portes, fenêtres, cloisons.</li>
+          <li><strong>Plan de coupe</strong> : vue en coupe verticale (hauteurs, planchers).</li>
+          <li><strong>Plan de façade</strong> : aspect extérieur du bâtiment.</li>
+          <li><strong>Plans de détail</strong> : nœuds, escaliers, sanitaires.</li>
+        </ul>
+      </div>
+
+      <figure>
+        <img data-image-id="batimentgeniecivil4_img03" alt="Exemple de plan d'architecte montrant une vue en plan, une coupe et une façade.">
+        <figcaption>Le dessin de bâtiment : lire et produire des plans.</figcaption>
+      </figure>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">La lecture des plans</div>
+        <ul>
+          <li><strong>Échelle</strong> : rapport entre la dimension sur le plan et la dimension réelle (1/50, 1/100, 1/200).</li>
+          <li><strong>Cotation</strong> : dimensions en mètres ou en centimètres.</li>
+          <li><strong>Symboles</strong> : portes, fenêtres, escaliers, sanitaires.</li>
+          <li><strong>Légende</strong> : matériaux, hachures, couleurs.</li>
+          <li><strong>Cartouche</strong> : nom du projet, nom du dessinateur, date, échelle, numéro de plan.</li>
+        </ul>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Exemple corrigé</div>
+        <p><strong>Donnée :</strong> sur un plan au 1/100, un mur mesure 5 cm.<br>
+        <strong>Question :</strong> quelle est sa longueur réelle ?<br>
+        <strong>Calcul :</strong> 5 cm × 100 = 500 cm = <strong>5 m</strong>.<br>
+        <strong>Interprétation :</strong> le mur mesure 5 m dans la réalité. L'échelle 1/100 signifie que 1 cm sur le plan = 1 m réel.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Plans : situation, masse, fondation, étage, coupe, façade, détail.</li>
+          <li>Légende, cotation, cartouche.</li>
+          <li>Échelle : 1/50, 1/100, 1/200.</li>
+          <li>Lire un plan = comprendre l'ouvrage.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre V — Le dessin de génie civil",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les plans d'exécution</h3>
+        <p>Le <strong>dessin de génie civil</strong> complète le dessin de bâtiment par les plans d'exécution des ouvrages en béton armé :</p>
+        <ul>
+          <li><strong>Plan de coffrage</strong> : forme exacte des éléments à couler (poteaux, poutres, planchers).</li>
+          <li><strong>Plan de ferraillage</strong> : position et diamètre des aciers dans chaque élément.</li>
+          <li><strong>Plan de charpente métallique</strong> : profilés, assemblages, boulons, soudures.</li>
+        </ul>
+        <p>Ces plans sont établis par le bureau d'études à partir des notes de calcul (RDM). Le technicien A2 doit savoir les lire et les traduire sur le chantier.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Plan de coffrage vs plan de ferraillage</div>
+        <table>
+          <thead>
+            <tr><th>Plan de coffrage</th><th>Plan de ferraillage</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Donne la <strong>forme</strong> et les <strong>dimensions</strong> des éléments.</td><td>Donne la <strong>position</strong> et le <strong>diamètre</strong> des aciers.</td></tr>
+            <tr><td>Utilisé par le coffreur.</td><td>Utilisé par le ferrailleur.</td></tr>
+            <tr><td>Ne montre pas les aciers.</td><td>Ne montre pas le coffrage.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Confondre <strong>plan de coffrage</strong> et <strong>plan de ferraillage</strong>. Le premier donne la forme (pour le coffreur) ; le second donne les aciers (pour le ferrailleur). Les deux sont nécessaires sur le chantier. Travailler avec un seul plan conduit à des erreurs coûteuses (coffrage manquant d'acier, acier mal positionné).</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Coffrage = forme ; ferraillage = aciers.</li>
+          <li>Les deux viennent du bureau d'études.</li>
+          <li>Le technicien doit lire et appliquer les deux.</li>
+          <li>Ne pas confondre les deux plans.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VI — Les métrés et devis",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le métré</h3>
+        <p>Le <strong>métré</strong> est le calcul des <strong>quantités</strong> de matériaux et d'ouvrages nécessaires à la construction :</p>
+        <ul>
+          <li>surfaces (murs, planchers) en m² ;</li>
+          <li>volumes (béton, terrassement) en m³ ;</li>
+          <li>longueurs (linéaux, clôtures) en m ;</li>
+          <li>quantités (sacs de ciment, parpaings, barres d'acier).</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Le devis</div>
+        <p>Le <strong>devis</strong> est l'estimation du coût total de l'ouvrage. Il comporte :</p>
+        <ul>
+          <li><strong>matériaux</strong> : ciment, sable, gravier, acier, bois, tôles, etc. ;</li>
+          <li><strong>main-d'œuvre</strong> : salaires des ouvriers et du chef d'équipe ;</li>
+          <li><strong>équipement</strong> : location de bétonnière, de grue, de pompe ;</li>
+          <li><strong>transport</strong> : amenée des matériaux sur le chantier ;</li>
+          <li><strong>divers</strong> : eau, électricité, imprévus (5-10 %).</li>
+        </ul>
+        <p>Le devis est établi sur un <strong>bordereau</strong> (ou cadre de devis) qui liste les ouvrages avec quantités et prix unitaires.</p>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Exemple corrigé : devis simplifié d'un mur</div>
+        <p><strong>Donnée :</strong> un mur de 20 m² en parpaings de 20 cm, avec :</p>
+        <ul>
+          <li>parpaings : 12,5 pièces/m² ;</li>
+          <li>ciment : 0,5 sac/m² pour le mortier ;</li>
+          <li>sable : 0,03 m³/m² ;</li>
+          <li>main-d'œuvre : 5 000 FC/m².</li>
+        </ul>
+        <p><strong>Calcul :</strong></p>
+        <ul>
+          <li>parpaings : 20 × 12,5 = 250 pièces ;</li>
+          <li>ciment : 20 × 0,5 = 10 sacs ;</li>
+          <li>sable : 20 × 0,03 = 0,6 m³ ;</li>
+          <li>main-d'œuvre : 20 × 5 000 = 100 000 FC.</li>
+        </ul>
+        <p>On multiplie chaque quantité par son prix unitaire, on additionne, puis on ajoute 5-10 % pour les pertes et imprévus.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Oublier les <strong>pertes et chutes</strong> de matériaux. Un mur de parpaings consomme 5-10 % de plus que le calcul théorique (casse, ajustements). Un devis sans marge est sous-estimé et le chantier manque de matériaux.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Métré = quantités de matériaux.</li>
+          <li>Devis = coût total (matériaux + main-d'œuvre + divers).</li>
+          <li>Bordereau = liste détaillée.</li>
+          <li>Prévoir 5-10 % de pertes.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VII — Organisation et gestion de chantier",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Planifier les tâches</h3>
+        <p>Un chantier comporte de nombreuses tâches qui doivent être <strong>ordonnées</strong> et <strong>coordonnées</strong>. Deux outils classiques :</p>
+        <ul>
+          <li><strong>Diagramme de Gantt</strong> : représentation graphique des tâches sur un axe de temps. Chaque tâche est une barre horizontale dont la longueur représente sa durée. Permet de visualiser l'ordonnancement et de suivre l'avancement.</li>
+          <li><strong>Réseau PERT</strong> : représentation des tâches et de leurs <strong>antériorités</strong> (telle tâche doit être finie avant telle autre). Permet d'identifier le <strong>chemin critique</strong> (la suite de tâches qui détermine la durée totale du chantier).</li>
+        </ul>
+      </div>
+
+      <figure>
+        <img data-image-id="batimentgeniecivil4_img04" alt="Plan d'installation de chantier montrant les zones de stockage, les baraquements, la circulation et les aires de travail.">
+        <figcaption>L'organisation d'un chantier.</figcaption>
+      </figure>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">L'installation de chantier</div>
+        <p>Avant de commencer les travaux, il faut <strong>installer le chantier</strong> :</p>
+        <ul>
+          <li><strong>clôture</strong> et signalisation (sécurité, protection contre le vol) ;</li>
+          <li><strong>base vie</strong> : baraquements, sanitaires, vestiaires ;</li>
+          <li><strong>zones de stockage</strong> : matériaux (ciment, sable, acier), protégés de l'humidité ;</li>
+          <li><strong>circulation</strong> : entrées et sorties des camions, accès des ouvriers ;</li>
+          <li><strong>eau et électricité</strong> : raccordement ou groupe électrogène.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">La gestion des approvisionnements</div>
+        <ul>
+          <li><strong>Commander</strong> les matériaux en temps voulu (délais de livraison).</li>
+          <li><strong>Réceptionner</strong> et vérifier la conformité (qualité, quantité).</li>
+          <li><strong>Stocker</strong> dans les zones prévues (à l'abri de l'eau pour le ciment).</li>
+          <li><strong>Gérer les stocks</strong> (fiches, inventaires, alertes de réapprovisionnement).</li>
+          <li><strong>Anticiper les saisons</strong> : en RDC, les pluies ralentissent les livraisons et les travaux.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Négliger la planification. Sans Gantt ni PERT, les tâches se chevauchent mal, les ouvriers attendent, les matériaux manquent, les délais explosent et les coûts augmentent. <strong>Un chantier non planifié est un chantier en retard.</strong></p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Gantt : tâches et durées.</li>
+          <li>PERT : antériorités et chemin critique.</li>
+          <li>Installation : clôture, base vie, stockage, circulation.</li>
+          <li>Gestion : commande, réception, stockage, anticipation.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VII — La sécurité sur chantier",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les risques du chantier</h3>
+        <p>Un chantier expose les travailleurs à de multiples risques :</p>
+        <ul>
+          <li><strong>chutes de hauteur</strong> (échafaudages, toitures, planchers) ;</li>
+          <li><strong>chutes d'objets</strong> (matériaux, outils) ;</li>
+          <li><strong>effondrement</strong> de fouilles ou de structures ;</li>
+          <li><strong>électrisation</strong> (câbles, groupes) ;</li>
+          <li><strong>écrasement</strong> par les engins ;</li>
+          <li><strong>poussières</strong> et produits chimiques ;</li>
+          <li><strong>bruit</strong> et vibrations.</li>
+        </ul>
+      </div>
+
+      <figure>
+        <img data-image-id="batimentgeniecivil4_img05" alt="Ouvrier du bâtiment portant un casque, un gilet de haute visibilité et des chaussures de sécurité sur un chantier.">
+        <figcaption>La sécurité sur chantier : une priorité.</figcaption>
+      </figure>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les EPI obligatoires</div>
+        <ul>
+          <li><strong>Casque</strong> : protection de la tête contre les chutes d'objets.</li>
+          <li><strong>Chaussures de sécurité</strong> : protection des pieds contre les clous, les chutes.</li>
+          <li><strong>Gilet de haute visibilité</strong> : visibilité auprès des engins.</li>
+          <li><strong>Gants</strong> : protection des mains.</li>
+          <li><strong>Lunettes</strong> : projection de poussières, d'éclats.</li>
+          <li><strong>Harnais</strong> : travail en hauteur.</li>
+          <li><strong>Protection auditive</strong> : bruit des engins.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les protections collectives</div>
+        <ul>
+          <li><strong>Garde-corps</strong> et <strong>filets</strong> autour des zones en hauteur.</li>
+          <li><strong>Échafaudages</strong> stables, ancrés, avec planchers et garde-corps.</li>
+          <li><strong>Étaiements</strong> et <strong>blindages</strong> des fouilles.</li>
+          <li><strong>Signalisation</strong> : panneaux, rubans de danger, zones interdites.</li>
+          <li><strong>Extincteurs</strong> et <strong>trousse de premiers secours</strong> accessibles.</li>
+        </ul>
+        <p>Les protections collectives sont prioritaires : elles protègent tous les travailleurs, même en cas d'oubli d'EPI individuel.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Retirer un garde-corps pour « gagner du temps » ou laisser un échafaudage sans plancher. Chaque année, des ouvriers meurent de chutes de hauteur. La sécurité n'est pas négociable : <strong>aucun travail en hauteur sans protection</strong>.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Risques : chutes, effondrements, électrisation, écrasement.</li>
+          <li>EPI : casque, chaussures, gilet, gants, lunettes.</li>
+          <li>Protections collectives : garde-corps, échafaudages, blindages.</li>
+          <li>Sécurité non négociable.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VIII — Topographie et implantation",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>La topographie</h3>
+        <p>La <strong>topographie</strong> est la science de la mesure et de la représentation du terrain. Elle sert à :</p>
+        <ul>
+          <li>établir un <strong>plan du terrain</strong> (relevé) ;</li>
+          <li>mesurer les <strong>distances</strong>, les <strong>angles</strong>, les <strong>altitudes</strong> ;</li>
+          <li><strong>implanter</strong> le bâtiment sur le terrain ;</li>
+          <li>vérifier les <strong>niveaux</strong> (horizontalité).</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Le nivellement et l'implantation</div>
+        <p>Le <strong>nivellement</strong> mesure les différences d'altitude entre les points d'un terrain. On utilise un <strong>niveau</strong> (lunette horizontale) et une <strong>mire</strong> (règle graduée). Le nivellement est indispensable pour :</p>
+        <ul>
+          <li>vérifier que le terrain est plat ou en pente ;</li>
+          <li>caler les fondations à la bonne altitude ;</li>
+          <li>contrôler les niveaux des planchers.</li>
+        </ul>
+        <p>L'<strong>implantation</strong> consiste à reporter sur le terrain les axes et les cotes du plan. On utilise :</p>
+        <ul>
+          <li>des <strong>piquets</strong> et des <strong>cordeaux</strong> pour matérialiser les murs ;</li>
+          <li>une <strong>équerre</strong> ou une méthode 3-4-5 (théorème de Pythagore) pour les angles droits ;</li>
+          <li>un <strong>niveau</strong> pour l'altitude ;</li>
+          <li>un <strong>théodolite</strong> ou une <strong>station totale</strong> pour les angles précis.</li>
+        </ul>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Méthode 3-4-5</div>
+        <p>Pour tracer un angle droit sur le terrain sans instrument sophistiqué :</p>
+        <ol>
+          <li>Tracer un segment de 4 m.</li>
+          <li>À partir d'une extrémité, tracer un segment de 3 m formant un angle approximatif de 90°.</li>
+          <li>Ajuster cet angle jusqu'à ce que la distance entre les extrémités des deux segments mesure exactement 5 m.</li>
+          <li>L'angle est alors droit (3² + 4² = 5²).</li>
+        </ol>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Une <strong>erreur d'implantation</strong> décale tout l'ouvrage : murs de travers, portes mal placées, toiture asymétrique. Elle entraîne des reprises coûteuses. Il faut toujours <strong>vérifier les axes et les niveaux</strong> avant de commencer la maçonnerie.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Topographie = mesure et représentation du terrain.</li>
+          <li>Nivellement = altitudes (niveau + mire).</li>
+          <li>Implantation = report du plan sur le terrain.</li>
+          <li>Vérifier axes et niveaux avant de construire.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Applications RDC — Le bâtiment en contexte congolais",
+    content: `
+      <div class="bloc cas">
+        <div class="bloc-label">Contextualisation</div>
+        <h3>Le bâtiment en RDC : défis et opportunités</h3>
+        <p>Le secteur de la construction en RDC est en pleine croissance, mais fait face à des défis spécifiques :</p>
+        <ul>
+          <li><strong>Saison des pluies</strong> : ralentit les travaux, envahit les fouilles, dégrade les matériaux mal stockés.</li>
+          <li><strong>Délestages SNEL</strong> : groupes électrogènes nécessaires sur les chantiers (bétonnière, pompe, éclairage).</li>
+          <li><strong>Accès difficile</strong> : certains terrains ne sont pas viabilisés (routes, eau, électricité).</li>
+          <li><strong>Matériaux locaux</strong> : briques artisanales, pierres de taille, agrégats locaux — à contrôler avant usage.</li>
+          <li><strong>Formation de la main-d'œuvre</strong> : besoin de techniciens qualifiés.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Le PDL-145T</div>
+        <p>Le <strong>Programme de Développement Local des 145 Territoires</strong> (PDL-145T) est un vaste programme du gouvernement congolais qui construit des écoles, des centres de santé et des bâtiments administratifs dans les 145 territoires de la RDC. Il mobilise massivement les techniciens A2 en construction (maçons, chefs de chantier, métreurs, dessinateurs).</p>
+        <p>C'est une opportunité majeure pour les diplômés, mais aussi une exigence de <strong>qualité</strong> et de <strong>sécurité</strong> : les ouvrages doivent durer.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Débouchés</div>
+        <ul>
+          <li><strong>Maçon</strong> qualifié.</li>
+          <li><strong>Chef de chantier</strong>.</li>
+          <li><strong>Dessinateur en bâtiment</strong>.</li>
+          <li><strong>Métreur / devis</strong>.</li>
+          <li><strong>Conducteur de travaux</strong>.</li>
+          <li>Poursuite d'études en <strong>génie civil</strong> ou en <strong>architecture</strong>.</li>
+        </ul>
+      </div>
+
+      <div class="sources">
+        <div class="bloc-label">Sources</div>
+        <p>Programme National de l'Enseignement Technique, option Construction, Cycle Long (2007) ; Fiches pédagogiques officielles Dessin de Génie Civil et Organisation de Chantier (Édition 2025) ; documents officiels PDL-145T.</p>
+      </div>
+    `
+  },
+  {
+    title: "Synthèse générale du cours",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Ce qu'il faut retenir</div>
+        <h3>Les idées maîtresses</h3>
+        <ol>
+          <li><strong>Matériaux</strong> : ciment (liant), sable, gravier, acier, bois, briques/parpaings.</li>
+          <li><strong>Béton</strong> : ciment + sable + gravier + eau ; dosage structurel 350 kg/m³.</li>
+          <li><strong>Fondations</strong> : superficielles (semelles, radier) ou profondes (pieux, puits).</li>
+          <li><strong>Maçonnerie</strong> : alignement, aplomb, joints réguliers, chaînages.</li>
+          <li><strong>Béton armé</strong> : béton (compression) + acier (traction) ; enrobage 2-5 cm.</li>
+          <li><strong>Coffrage</strong> (moule) et <strong>ferraillage</strong> (aciers) selon les plans.</li>
+          <li><strong>Charpente</strong> et couverture : bois ou métallique ; pente adaptée.</li>
+          <li><strong>Dessin</strong> : plans de situation, masse, fondation, étage, coupe, façade, détail ; plans de coffrage et ferraillage.</li>
+          <li><strong>Métrés et devis</strong> : quantités + coûts, prévoir 5-10 % de pertes.</li>
+          <li><strong>Organisation</strong> : Gantt, PERT, installation, approvisionnements.</li>
+          <li><strong>Sécurité</strong> : EPI, protections collectives, non négociable.</li>
+          <li><strong>Topographie</strong> : nivellement, implantation (méthode 3-4-5).</li>
+        </ol>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Formules et repères essentiels</div>
+        <table>
+          <thead>
+            <tr><th>Élément</th><th>Repère</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Dosage béton structurel</td><td>350 kg/m³ de ciment</td></tr>
+            <tr><td>Dosage béton de propreté</td><td>150-200 kg/m³</td></tr>
+            <tr><td>Volume d'un mur</td><td>V = L × H × e</td></tr>
+            <tr><td>Enrobage des armatures</td><td>2-5 cm</td></tr>
+            <tr><td>Échelle plan</td><td>1 cm = X cm réels (1/100 → 1 cm = 1 m)</td></tr>
+            <tr><td>Pente toiture</td><td>10-30 % selon matériau</td></tr>
+            <tr><td>Pertes matériaux</td><td>5-10 %</td></tr>
+            <tr><td>Méthode 3-4-5</td><td>3² + 4² = 5² pour un angle droit</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les erreurs à ne plus commettre</div>
+        <ul>
+          <li>Utiliser un sable argileux dans le béton.</li>
+          <li>Négliger la portance du sol.</li>
+          <li>Oublier l'enrobage des armatures.</li>
+          <li>Confondre plan de coffrage et plan de ferraillage.</li>
+          <li>Sous-estimer les métrés (oublier les pertes).</li>
+          <li>Ne pas planifier le chantier.</li>
+          <li>Travailler sans EPI ni protections collectives.</li>
+          <li>Négliger la vérification des axes et niveaux.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Évaluation finale — Bâtiment et Génie Civil",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Consigne</div>
+        <p>Répondez aux 22 questions ci-dessous. Chaque question a une seule bonne réponse. Cliquez sur « Valider mes réponses » pour obtenir votre score. Bonne chance !</p>
+      </div>
+
+      <div class="quiz-container">
+        <div id="quizQuestions"></div>
+        <button id="submitQuiz" class="quiz-btn-submit">
+          Valider mes réponses
+        </button>
+        <div id="quizResult" class="quiz-result"></div>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Conseil</div>
+        <p>En cas d'erreur, relisez la diapositive correspondante. Les questions couvrent les matériaux, les techniques, le dessin, les métrés, l'organisation et la sécurité.</p>
+      </div>
+    `
+  }
+];
+const questions = [
+  {
+    text: "Le ciment est un :",
+    options: [
+      "Liant hydraulique qui durcit au contact de l'eau",
+      "Agrégat fin",
+      "Acier de construction",
+      "Bois de charpente"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le béton est composé de :",
+    options: [
+      "Ciment et acier uniquement",
+      "Ciment, sable, gravier et eau",
+      "Sable et bois",
+      "Gravier et bitume"
+    ],
+    correct: 1
+  },
+  {
+    text: "Le béton résiste bien à :",
+    options: [
+      "La compression",
+      "La traction uniquement",
+      "La torsion",
+      "Au feu uniquement"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'acier dans le béton armé reprend principalement :",
+    options: [
+      "La traction",
+      "La compression",
+      "Rien du tout",
+      "Le poids du béton"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le dosage courant d'un béton structurel est de :",
+    options: [
+      "50 kg/m³ de ciment",
+      "150 kg/m³ de ciment",
+      "350 kg/m³ de ciment",
+      "1 000 kg/m³ de ciment"
+    ],
+    correct: 2
+  },
+  {
+    text: "Une semelle isolée est une fondation :",
+    options: [
+      "Profonde",
+      "Superficielle",
+      "Flottante",
+      "Inexistante"
+    ],
+    correct: 1
+  },
+  {
+    text: "Un pieu est une fondation :",
+    options: [
+      "Superficielle",
+      "Profonde",
+      "En élévation",
+      "Décorative"
+    ],
+    correct: 1
+  },
+  {
+    text: "La maçonnerie consiste à :",
+    options: [
+      "Monter des murs en briques ou parpaings avec du mortier",
+      "Couler du béton dans un coffrage",
+      "Souder de l'acier",
+      "Poser une couverture"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le coffrage sert à :",
+    options: [
+      "Mouler le béton frais et lui donner sa forme",
+      "Ferr ailler les poutres",
+      "Couvrir la toiture",
+      "Isoler les murs"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le ferraillage consiste à :",
+    options: [
+      "Mettre en place les armatures en acier selon le plan",
+      "Couler le béton",
+      "Coffrer les éléments",
+      "Décoffrer les poutres"
+    ],
+    correct: 0
+  },
+  {
+    text: "Un plan de coffrage montre :",
+    options: [
+      "La forme et les dimensions des éléments à couler",
+      "La position des aciers",
+      "La toiture",
+      "Les finitions"
+    ],
+    correct: 0
+  },
+  {
+    text: "Un plan de ferraillage montre :",
+    options: [
+      "La forme du coffrage",
+      "La position et le diamètre des aciers",
+      "La toiture",
+      "Les fenêtres"
+    ],
+    correct: 1
+  },
+  {
+    text: "L'enrobage des armatures dans le béton armé est généralement de :",
+    options: [
+      "0 mm (pas d'enrobage)",
+      "2 à 5 cm selon l'exposition",
+      "20 à 30 cm",
+      "1 m"
+    ],
+    correct: 1
+  },
+  {
+    text: "Sur un plan au 1/100, un segment de 5 cm représente :",
+    options: [
+      "50 cm réels",
+      "5 m réels",
+      "500 m réels",
+      "5 mm réels"
+    ],
+    correct: 1
+  },
+  {
+    text: "Le métré consiste à :",
+    options: [
+      "Calculer les quantités de matériaux et d'ouvrages",
+      "Dessiner les plans",
+      "Couler le béton",
+      "Planifier le chantier"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le devis estime :",
+    options: [
+      "Les coûts (matériaux, main-d'œuvre, équipement)",
+      "Les surfaces uniquement",
+      "Les volumes uniquement",
+      "Les délais uniquement"
+    ],
+    correct: 0
+  },
+  {
+    text: "Dans un devis, il faut prévoir pour les pertes de matériaux :",
+    options: [
+      "0 % (aucune marge)",
+      "5 à 10 %",
+      "50 %",
+      "100 %"
+    ],
+    correct: 1
+  },
+  {
+    text: "Le diagramme de Gantt sert à :",
+    options: [
+      "Planifier les tâches d'un chantier et visualiser leur ordonnancement",
+      "Calculer les métrés",
+      "Dessiner les plans",
+      "Vérifier la RDM"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'implantation consiste à :",
+    options: [
+      "Reporter sur le terrain les axes et cotes du plan",
+      "Couler le béton",
+      "Ferr ailler les poutres",
+      "Coffrer les poteaux"
+    ],
+    correct: 0
+  },
+  {
+    text: "La méthode 3-4-5 sert à :",
+    options: [
+      "Vérifier un angle droit sur le terrain (théorème de Pythagore)",
+      "Calculer un volume de béton",
+      "Estimer un devis",
+      "Dimensionner une poutre"
+    ],
+    correct: 0
+  },
+  {
+    text: "Sur un chantier, les EPI incluent :",
+    options: [
+      "Casque, chaussures de sécurité, gilet de haute visibilité",
+      "Uniquement des lunettes",
+      "Uniquement des gants",
+      "Aucun équipement"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'objectif principal du cours de bâtiment et génie civil en 4ᵉ Humanité Technique est de :",
+    options: [
+      "Remplacer l'ingénieur en génie civil",
+      "Comprendre les matériaux, les techniques, organiser un chantier en sécurité",
+      "Fabriquer des machines industrielles",
+      "Construire des centrales hydroélectriques"
+    ],
+    correct: 1
+  }
+];
+
+try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+        questions.forEach(function (q) {
+            if (!q.text) q.text = q.question || q.q || q.enonce || q.titre || "";
+            if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+            if (typeof q.correct === "undefined") {
+                if (typeof q.answer !== "undefined") q.correct = q.answer;
+                else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+            }
+        });
+    }
+} catch (e) {}
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+const pageTitle = document.getElementById('pageTitle');
+pageTitle.textContent = "ECOLIA · " + COURSE_TITLE;
+document.title = "ECOLIA — " + COURSE_TITLE;
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim() || slides.length === 0) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp("(" + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ")", 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderEmptyState() {
+    contentDiv.innerHTML = '<div class="empty-state"><div class="icon">·</div><span class="tag">Bientôt disponible</span><h2>' + COURSE_TITLE + '</h2><p>Ce cours est en préparation. Le contenu sera ajouté prochainement.</p></div>';
+    slideCounterSpan.textContent = '0/0';
+    progressFill.style.width = '0%';
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    counterSpan.textContent = '—';
+}
+
+function renderQuiz() {
+    const qc = document.getElementById('quizQuestions');
+    if (!qc) return;
+    if (typeof questions === 'undefined' || questions.length === 0) {
+        qc.innerHTML = '<p style="color:#666;font-style:italic;">Quiz bientot disponible.</p>';
+        return;
+    }
+    let html = '';
+    questions.forEach((q, i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o, k) => {
+            html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>';
+        });
+        html += '</div>';
+    });
+    qc.innerHTML = html;
+    const submitBtn = document.getElementById('submitQuiz');
+    if (submitBtn) {
+        submitBtn.onclick = () => {
+            let score = 0;
+            questions.forEach((q, i) => {
+                const s = document.querySelector('input[name="q' + i + '"]:checked');
+                if (s && parseInt(s.value) === q.correct) score++;
+            });
+            const pct = Math.round(score/questions.length*100);
+            document.getElementById('quizResult').innerHTML =
+                '<div style="background:var(--bg2);padding:16px;border-radius:10px;margin-top:14px;">' +
+                '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong></div>';
+        };
+    }
+}
+
+function renderSlide(index, keepHighlight) {
+    if (keepHighlight === undefined) keepHighlight = true;
+    if (slides.length === 0) { renderEmptyState(); return; }
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    if (index === slides.length - 1) renderQuiz();
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    if (slides.length === 0) return;
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (slides.length && currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (slides.length && currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+<!-- ECOLIA_IMAGE_LOADER_START -->
+<script>
+(function () {
+  var SITE = "https://ecolia-course.github.io/";
+  var NATIVE = false;
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function abs(u) { return /^(https?:|data:|blob:)/i.test(u) ? u : (NATIVE ? SITE + u.replace(/^(\.\/|\/)+/, "") : u); }
+  function ext(u) { var m = String(u).split("?")[0].match(/\.(jpe?g|png|gif|webp|svg)$/i); return m ? m[1].toLowerCase() : "jpg"; }
+  function hide(img) { img.onerror = null; img.style.display = "none"; }
+  var table = null, queue = [], queued = {}, running = false;
+  function enqueue(full, fn) {
+    if (queued[fn]) return;
+    queued[fn] = 1; queue.push([full, fn]);
+    if (!running) { running = true; setTimeout(next, 2500); }
+  }
+  function next() {
+    if (!queue.length) { running = false; return; }
+    if (!navigator.onLine) { running = false; return; }
+    var q = queue.shift(), t0 = Date.now();
+    try { CoursInterface.download(q[0], q[1]); } catch (e) { return setTimeout(next, 500); }
+    (function wait() {
+      var ok = false;
+      try { ok = !!CoursInterface.exists(q[1]); } catch (e) {}
+      if (ok) setTimeout(next, 1500);
+      else if (Date.now() - t0 > 40000) next();
+      else setTimeout(wait, 700);
+    })();
+  }
+  function exists(fn) { try { return !!CoursInterface.exists(fn); } catch (e) { return false; } }
+  function show(img) {
+    if (!table || img.getAttribute("data-ecolia-done")) return;
+    var id = img.getAttribute("data-image-id");
+    var url = table[id];
+    if (typeof url !== "string" || !url.length) { console.warn("ECOLIA : image absente du JSON :", id); return; }
+    img.setAttribute("data-ecolia-done", "1");
+    if (!NATIVE) { img.onerror = function () { hide(img); }; img.setAttribute("src", url); return; }
+    var full = abs(url), fn = "img_" + id + "." + ext(url);
+    if (exists(fn)) {
+      img.onerror = function () {
+        try { CoursInterface["delete"](fn); } catch (e) {}
+        queued[fn] = 0;
+        img.onerror = function () { hide(img); };
+        img.setAttribute("src", full);
+      };
+      img.setAttribute("src", "https://app.local/cours/" + fn);
+    } else {
+      img.onerror = function () { hide(img); };
+      img.setAttribute("src", full);
+      enqueue(full, fn);
+    }
+  }
+  function scan(root) {
+    if (!root || !root.querySelectorAll) return;
+    if (root.matches && root.matches("img[data-image-id]")) show(root);
+    root.querySelectorAll("img[data-image-id]").forEach(show);
+  }
+  function prefetchAll() {
+    var ids = {};
+    try { JSON.stringify(slides).replace(/data-image-id=\\?"([^"\\]+)/g, function (m, id) { ids[id] = 1; }); } catch (e) {}
+    Object.keys(ids).forEach(function (id) {
+      var url = table[id];
+      if (typeof url !== "string" || !url.length) return;
+      var fn = "img_" + id + "." + ext(url);
+      if (!exists(fn)) enqueue(abs(url), fn);
+    });
+  }
+  function start(tbl) {
+    table = tbl;
+    scan(document.body);
+    new MutationObserver(function (muts) {
+      muts.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.nodeType === 1) scan(n); }); });
+    }).observe(document.body, { childList: true, subtree: true });
+    if (NATIVE) prefetchAll();
+  }
+  var JSON_URL = NATIVE ? SITE + "images_ecolia.json" : "images_ecolia.json";
+  var KEY = "ecolia_images_json";
+  fetch(JSON_URL, NATIVE ? { cache: "no-cache" } : undefined)
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (table) { if (NATIVE) lsSet(KEY, JSON.stringify(table)); start(table); })
+    .catch(function (e) {
+      var saved = null;
+      if (NATIVE) { try { saved = JSON.parse(lsGet(KEY) || "null"); } catch (x) {} }
+      if (saved) start(saved);
+      else console.warn("ECOLIA : JSON des images indisponible.", e);
+    });
+})();
+</script>
+<!-- ECOLIA_IMAGE_LOADER_END -->
+
+
+
+<!-- ECOLIA_AUDIO_PLAYER_START -->
+<style>
+  #ecolia-audio-btn, #ecolia-dl-btn {
+    width: 30px; height: 30px; min-width: 30px; padding: 0; margin: 0 4px 0 0;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    cursor: pointer; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent; outline: none;
+  }
+  #ecolia-audio-btn { border: none; background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-dl-btn { border: 1.5px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb); }
+  #ecolia-dl-btn.ecolia-full { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-btn.ecolia-fixed { position: fixed; top: 8px; left: 8px; z-index: 2147483000; }
+  #ecolia-audio-btn:active, #ecolia-dl-btn:active { transform: scale(.92); }
+  #ecolia-audio-btn svg, #ecolia-dl-btn svg { width: 15px; height: 15px; fill: currentColor; pointer-events: none; }
+  #ecolia-audio-btn.ecolia-off, #ecolia-dl-btn.ecolia-off { display: none; }
+  #ecolia-audio-banner {
+    display: none; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0;
+    padding: 8px 14px; font-size: .82rem; line-height: 1.35;
+    background: var(--soft, #eef3fb); color: var(--p1, #123); border-bottom: 1px solid var(--bd, #c9d6ea);
+  }
+  #ecolia-audio-banner.on { display: flex; }
+  #ecolia-audio-banner .eab-txt { flex: 1 1 180px; }
+  #ecolia-audio-banner .eab-act { display: flex; gap: 6px; flex-wrap: wrap; }
+  #ecolia-audio-banner button {
+    border: 1px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb);
+    border-radius: 16px; padding: 5px 12px; font-size: .8rem; cursor: pointer;
+  }
+  #ecolia-audio-banner button.pri { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-banner .eab-bar { display: none; flex-basis: 100%; height: 4px; border-radius: 2px; overflow: hidden; background: var(--bd, #c9d6ea); }
+  #ecolia-audio-banner .eab-bar i { display: block; height: 100%; width: 0; background: var(--p2, #2563eb); transition: width .2s; }
+</style>
+<script>
+(function () {
+  var CFG = {"code":"BatimentGenieCivil4","base":"https://ecolia-course.github.io/ecolia-media/audio_files/","available":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"count":19,"sizeMo":19,"sizes":{"1":1032576,"2":919104,"3":923904,"4":1069440,"5":974208,"6":888960,"7":990144,"8":1019904,"9":868032,"10":1063104,"11":997056,"12":791040,"13":1310400,"14":1125120,"15":1011840,"16":1083840,"17":830016,"18":1264512,"19":239808},"fallback":{"1":[["fr","Sommaire, Bâtiment et Génie Civil. Présentation du cours. Bienvenue en Bâtiment et Génie Civil. Ce cours de 4e année des Humanités Techniques Industrielles vous prépare aux métiers de la construction: maçon, chef de chantier, dessinateur en bâtiment, métreur, conducteur de travaux. Vous apprendrez à connaître les matériaux (ciment, agrégats, acier, bois), à maîtriser les techniques de construction (fondations, maçonnerie, béton armé, charpente), à lire et produire des plans, à réaliser des métrés et devis, à organiser un chantier et à appliquer les règles de sécurité. En R D C, les besoins en construction sont immenses: écoles, centres de santé, routes, ponts, logements. Le technicien A2 formé en bâtiment est un acteur clé du développement, en particulier dans le cadre du PDL-145T (Programme de Développement Local des 145 Territoires) qui mobilise les compétences locales. Objectifs d'apprentissage. Identifier les matériaux de construction et leurs propriétés. Décrire les techniques de construction (fondations, murs, planchers, toitures). Lire et produire des plans de bâtiment et de génie civil. Réaliser des métrés et des devis simples. Organiser un chantier (planification, installation, sécurité). Appliquer les règles de sécurité sur chantier. Utiliser les notions de topographie pour l'implantation. Plan du cours. Chapitre I, Les matériaux de construction. Chapitre II, Terrassement et fondations. Chapitre III, Maçonnerie et béton armé. Chapitre IV, Charpente et toiture. Chapitre V, Le dessin de bâtiment. Chapitre VI, Métrés et devis. Chapitre VII, Organisation et gestion de chantier. Chapitre VIII, Topographie et implantation."]],"2":[["fr","Chapitre I, Pourquoi le bâtiment et le génie civil? Situation-problème. Une école à construire à Kinshasa. Un technicien A2 est recruté pour construire une école de six salles de classe dans la commune de N'Djili. Il reçoit un plan, un terrain vague, un budget limité et trois mois avant la rentrée. Par où commencer? Matériaux: quels ciments, quels agrégats, quel acier pour la structure? Fondations: quel type de fondation pour ce sol? Dessin: comment lire le plan et l'implanter sur le terrain? Métrés: combien de sacs de ciment, combien de m au cube de sable, combien de tonnes d'acier? Organisation: comment planifier les tâches pour tenir les délais? Sécurité: comment protéger les ouvriers des chutes et des accidents? Tout cela relève du bâtiment et du génie civil. Un technicien qui maîtrise ces six domaines construit une école solide, dans les délais et sans accident. Fondements théoriques. Deux domaines complémentaires. Le bâtiment: construction de logements, d'écoles, d'hôpitaux, de bâtiments administratifs. Le génie civil: construction d'infrastructures (routes, ponts, barrages, réseaux d'eau, ports). Les deux domaines partagent les mêmes matériaux (béton, acier) et les mêmes méthodes (dessin, métrés, planification), mais diffèrent par l'échelle et les contraintes. Points clés. Bâtiment égale construction de bâtiments. Génie civil égale infrastructures. Six compétences clés: matériaux, fondations, dessin, métrés, organisation, sécurité. En R D C, secteur en pleine croissance (PDL-145T)."]],"3":[["fr","Chapitre I, Les matériaux de construction. Fondements théoriques. Les matériaux essentiels. Matériau. Rôle. Propriétés clés. Ciment. Liant hydraulique qui durcit au contact de l'eau. Types CPA, CPJ, CEM III; dosage en kg ou m au cube. Sable. Agrégat fin (granulométrie 0-4 millimètres). Propreté (sans argile), granulométrie régulière. Gravier. Agrégat gros (granulométrie 4-25 millimètres). Résistance, forme des grains. Acier. Armatures pour le béton armé, charpentes métalliques. Barres HA (haute adhérence), limite élastique σe. Bois. Charpentes, coffrages, menuiseries. Essences locales (moabi, iroko), humidité, nœuds. Briques et parpaings. Murs et cloisons. Briques cuites ou parpaings en béton. Eau. Hydratation du ciment. Propre, sans impuretés (pas d'eau de mer pour le béton armé). Choix des matériaux. Le choix dépend de: la résistance requise (structure, remplissage); la durabilité (climat tropical, humidité); la disponibilité locale (matériaux artisanaux); le coût (transport, main-d'œuvre). Erreur fréquente. Utiliser un sable trop argileux pour le béton. L'argile empêche l'adhérence entre le ciment et les grains, réduit la résistance et provoque des fissures. Le sable doit être propre et de granulométrie régulière. Points clés. Ciment égale liant hydraulique. Sable plus gravier égale granulats. Acier égale armatures. Bois égale charpentes et coffrages. Qualité des matériaux égale qualité de l'ouvrage."]],"4":[["fr","Chapitre I, Le ciment et le béton. Fondements théoriques. Le ciment, liant du béton. Le ciment est un liant hydraulique: mélangé à l'eau, il forme une pâte qui durcit et lie les agrégats entre eux. On distingue: CPA: Ciment Portland Artificiel (clinker plus gypse). CPJ: Ciment Portland Composé (clinker plus ajouts minéraux). CEM III: Ciment de haut fourneau (clinker plus laitier). En R D C, le ciment est produit localement (CINAT à Lukala, PPC dans le Kongo-Central) ou importé. On le stocke à l'abri de l'humidité (sacs palettisés). La composition du béton. Le béton est un mélange de: ciment (liant); sable (agrégat fin); gravier (agrégat gros); eau (hydratation); parfois des adjuvants (plastifiants, accélérateurs, retardateurs). Le dosage courant d'un béton structurel est de 350 kilogrammes ou m au cube de ciment. Un béton de propreté utilise 150 à 200 kilogrammes ou m au cube. Un béton de fondation 300-350 kilogrammes ou m au cube. Exemple corrigé. Donnée: on doit couler 2,5 mètres cubes de béton dosé à 350 kilogrammes ou m au cube. Question: combien de sacs de ciment de 50 kilogrammes faut-il? Calcul: ciment nécessaire égale 350 multiplié par 2,5 égale 875 kilogrammes, donc 875 sur 50 égale 17,5 sacs, arrondi à 18 sacs. Interprétation: prévoir une marge de 5 à 10 pour cent pour les pertes, donc 19 à 20 sacs. Points clés. Ciment égale liant hydraulique (CPA, CPJ, CEM III). Béton égale ciment plus sable plus gravier plus eau. Dosage structurel: 350 kilogrammes ou m au cube. Prévoir 5-10 pour cent de pertes."]],"5":[["fr","Chapitre II, Terrassement et reconnaissance du sol. Fondements théoriques. Reconnaître le sol avant de construire. Avant de creuser, il faut connaître la nature du sol et sa portance. On distingue: Sol rocheux: très résistant, portance élevée; nécessite des engins puissants. Sol sableux: bonne portance si compact, mais risque d'éboulement des fouilles. Sol limoneux: portance moyenne, sensible à l'eau. Sol argileux: portance faible, sensible au retrait ou gonflement avec l'humidité. Sol marécageux: portance très faible, nappe phréatique haute. La portance (en MPa ou kN ou m au carré ) détermine le type de fondation. On peut la vérifier par des essais (pénétromètre, essai de plaque), ou consulter une étude géotechnique. Le terrassement. Le terrassement regroupe les opérations de: décapage de la terre végétale (sur 20-30 centimètres); fouilles pour les fondations (en rigole ou en pleine masse); remblai et compactage après la construction des fondations. La profondeur des fouilles dépend du type de fondation et de la profondeur du bon sol. On protège les fouilles contre l'eau (pompage, blindage). Application R D C. À Kinshasa, dans les zones basses (N'Djili, Kingabwa), la nappe phréatique est haute et le sol est argileux. Un chantier mal préparé peut voir ses fouilles envahies par l'eau en saison des pluies. Le technicien doit: anticiper la saison sèche, prévoir un pompage, et choisir des fondations adaptées (radier ou pieux). Points clés. Nature et portance du sol conditionnent la fondation. Décapage, fouilles, remblai. Protection contre l'eau (pompage, blindage). En R D C: anticiper la saison des pluies."]],"6":[["fr","Chapitre II, Les fondations. Fondements théoriques. Transmettre les charges au sol. La fondation est la partie de l'ouvrage qui transmet les charges au sol. Elle doit être: suffisamment profonde pour atteindre le bon sol; suffisamment large pour ne pas dépasser la portance; stable (pas de tassement différentiel). Les fondations: transmettre les charges au sol. Fondations superficielles. Semelle isolée: sous un poteau, en béton armé, de forme rectangulaire ou carrée. Semelle filante: sous un mur porteur, continue sur toute la longueur du mur. Radier général: dalle épaisse couvrant toute la surface du bâtiment, utilisée quand le sol est faible et homogène. Les fondations superficielles sont utilisées quand le bon sol est proche de la surface (profondeur inférieur à 3 mètres). Fondations profondes. Pieux: forés ou battus, descendant jusqu'au sol résistant (10-30 mètres). Puits: creusés à la main ou à la machine, remplis de béton. Barrettes: parois moulées en béton armé, pour les ouvrages profonds. Elles sont utilisées quand le bon sol est profond ou quand les charges sont très élevées. Erreur fréquente. Négliger la portance du sol ou sous-dimensionner la semelle. Résultat: tassements différentiels, fissures dans les murs, parfois effondrement. La fondation est la partie la plus importante de l'ouvrage: on ne lésine pas dessus. Points clés. Fondation égale transmet les charges au sol. Superficielle: semelle isolée, filante, radier. Profonde: pieux, puits, barrettes. Ne jamais négliger la portance."]],"7":[["fr","Chapitre III, La maçonnerie. Fondements théoriques. Monter des murs. La maçonnerie consiste à assembler des éléments (briques, parpaings, pierres) avec un mortier (mélange ciment plus sable plus eau). Règles de base: Alignement: les murs doivent être droits, vérifiés au cordeau. Aplomb: les murs doivent être verticaux, vérifiés au fil à plomb. Joints réguliers: épaisseur constante (10-15 millimètres). Chaînages: poutres en béton armé horizontales et verticales qui ceinturent la maçonnerie pour la solidifier. Les matériaux de maçonnerie. Briques cuites: terre cuite, bonne résistance, isolation thermique moyenne. Parpaings en béton: économique, robuste, courant en R D C. Blocs de béton cellulaire: légers, isolation thermique élevée. Pierres de taille: pour les murs porteurs anciens ou les ouvrages d'art. Le mortier de montage est généralement dosé à 300-350 kilogrammes ou m au cube de ciment (mortier gras pour la structure, plus maigre pour le remplissage). Exemple corrigé. Donnée: un mur de 5 mètres de long, 2,5 mètres de haut et 0,20 mètres d'épaisseur. Question: quel est le volume de maçonnerie? Calcul: V égale L multiplié par H multiplié par e égale 5 multiplié par 2,5 multiplié par 0,20 égale 2,5 mètres cubes. Interprétation: c'est le volume à chiffrer dans le devis (nombre de parpaings, sacs de ciment pour le mortier). Points clés. Maçonnerie égale assemblage d'éléments plus mortier. Règles: alignement, aplomb, joints réguliers, chaînages. Briques, parpaings, pierres. Mortier de montage 300-350 kilogrammes ou m au cube."]],"8":[["fr","Chapitre III, Le béton armé. Fondements théoriques. Associer béton et acier. Le béton armé est un matériau composite: du béton (qui résiste bien à la compression) et de l'acier (qui résiste bien à la traction). Ensemble, ils forment un matériau qui résiste aux deux sollicitations. Cette association fonctionne parce que: l'acier et le béton ont des coefficients de dilatation très proches; le béton protège l'acier de la corrosion (enrobage); l'acier adhère au béton (grâce aux nervures des barres HA). Le béton armé: association béton-acier. Les éléments en béton armé. Poteaux: verticaux, transmettent les charges aux fondations. Armatures longitudinales plus étriers. Poutres: horizontales, supportent le plancher. Armatures tendues en bas, comprimées en haut, étriers pour le cisaillement. Planchers: dalles ou corps creux, supportent les charges d'exploitation. Semelles: sous les poteaux, répartissent la charge. Voiles: murs en béton armé, pour les contreventements ou les ouvrages d'art. L'enrobage des armatures. L'enrobage est l'épaisseur de béton qui recouvre l'acier. Il est indispensable pour protéger l'acier de la corrosion et assurer l'adhérence. Valeurs courantes: 2 à 3 centimètres pour les éléments à l'abri; 3 à 5 centimètres pour les éléments exposés (extérieur, fondations). Erreur fréquente. Négliger l'enrobage ou poser les armatures directement sur le coffrage. L'acier rouille, gonfle et fait éclater le béton. La structure perd sa résistance en quelques années. Respecter les enrobages du plan est essentiel. Points clés. Béton armé égale béton (compression) plus acier (traction). Poteaux, poutres, planchers, semelles. Enrobage: 2-5 centimètres selon exposition. Un enrobage insuffisant détruit la structure."]],"9":[["fr","Chapitre III, Coffrage et ferraillage. Fondements théoriques. Le coffrage. Le coffrage est un moule qui donne sa forme au béton avant qu'il ne durcisse. Il est réalisé en bois, en métal ou en plastique. Rôles du coffrage: contenir le béton frais (résistance à la pression); donner la forme exacte prévue par le plan; rester en place jusqu'à ce que le béton ait atteint une résistance suffisante (décoffrage après 7-14 jours, selon la température). Un bon coffrage est étanche (pas de fuite de laitance), rigide (pas de déformation) et huilé (démoulage facile). Le ferraillage. Le ferraillage est la mise en place des armatures en acier dans le coffrage. Il doit respecter scrupuleusement les plans de ferraillage: diamètres des barres (8, 10, 12, 14, 16 millimètres…), espacements entre barres et entre étriers, longueurs des barres et des recouvrements, enrobage. On utilise des cales d'enrobage (petits blocs de béton ou plastique) pour maintenir l'espace entre le ferraillage et le coffrage. La coulée du béton. Préparer: vérifier le coffrage et le ferraillage. Mouiller légèrement le coffrage (pas de flaque). Couler le béton en couches successives (max 30-50 centimètres). Vibrer chaque couche pour éliminer les bulles d'air. Araser la surface et la protéger du soleil (cure). Points clés. Coffrage égale moule qui donne sa forme au béton. Ferraillage égale mise en place des aciers selon le plan. Cales d'enrobage indispensables. Coulée par couches, vibrage obligatoire."]],"10":[["fr","Chapitre IV, Charpente et toiture. Fondements théoriques. Supporter la couverture. La charpente est l'ossature qui supporte la toiture et transmet les charges (poids de la couverture, vent, pluie) aux murs. Deux types principaux: Charpente en bois: fermes (triangles), pannes (horizontales), chevrons (obliques). Essences locales (moabi, iroko) ou importées (sapin). Charpente métallique: profilés en acier (IPE, IPN, cornières), assemblés par boulonnage ou soudage. Plus résistante et plus durable, mais plus coûteuse. Les couvertures. Tôles galvanisées: économique, rapide à poser, courante en R D C. Attention: bruit sous la pluie, sensibles à la corrosion si non entretenues. Tuiles: esthétiques, durables, plus lourdes. Bacs acier: légers, rapides à poser, bonne étanchéité. Béton: toitures-terrasses (plates), avec étanchéité multicouche. La pente de la toiture dépend du matériau: 20-30 pour cent pour les tuiles, 10-15 pour cent pour les tôles, 1-2 pour cent pour les toitures-terrasses. Contraintes en R D C. Fortes pluies: pente suffisante, gouttières dimensionnées. Humidité: traitement du bois (anti-termites), ventilation de la sous-toiture. Vent: fixation solide des tôles (chevilles, crochets). Ensoleillement: isolation thermique (laine de verre, sous-toiture ventilée). Erreur fréquente. Sous-dimensionner la charpente. Une ferme trop faible peut s'effondrer sous le poids de la couverture, du vent ou d'une accumulation d'eau. La charpente est calculée (RDM) et ne doit jamais être improvisée. Points clés. Charpente bois ou métallique. Couvertures: tôles, tuiles, bacs acier, béton. Pente adaptée au matériau. Dimensionnement obligatoire (RDM)."]],"11":[["fr","Chapitre V, Le dessin de bâtiment. Fondements théoriques. Les plans essentiels. Le dessin de bâtiment regroupe les documents graphiques qui décrivent l'ouvrage: Plan de situation: emplacement du bâtiment dans la ville ou le quartier. Plan de masse: implantation du bâtiment sur le terrain. Plan de fondation: semelles, fouilles, poteaux. Plan d'étage: murs, portes, fenêtres, cloisons. Plan de coupe: vue en coupe verticale (hauteurs, planchers). Plan de façade: aspect extérieur du bâtiment. Plans de détail: nœuds, escaliers, sanitaires. Le dessin de bâtiment: lire et produire des plans. La lecture des plans. Échelle: rapport entre la dimension sur le plan et la dimension réelle (1 sur 50, 1 sur 100, 1 sur 200). Cotation: dimensions en mètres ou en centimètres. Symboles: portes, fenêtres, escaliers, sanitaires. Légende: matériaux, hachures, couleurs. Cartouche: nom du projet, nom du dessinateur, date, échelle, numéro de plan. Exemple corrigé. Donnée: sur un plan au 1 sur 100, un mur mesure 5 centimètres. Question: quelle est sa longueur réelle? Calcul: 5 centimètres multiplié par 100 égale 500 centimètres égale 5 mètres. Interprétation: le mur mesure 5 mètres dans la réalité. L'échelle 1 sur 100 signifie que 1 centimètres sur le plan égale 1 mètres réel. Points clés. Plans: situation, masse, fondation, étage, coupe, façade, détail. Légende, cotation, cartouche. Échelle: 1 sur 50, 1 sur 100, 1 sur 200. Lire un plan égale comprendre l'ouvrage."]],"12":[["fr","Chapitre V, Le dessin de génie civil. Fondements théoriques. Les plans d'exécution. Le dessin de génie civil complète le dessin de bâtiment par les plans d'exécution des ouvrages en béton armé: Plan de coffrage: forme exacte des éléments à couler (poteaux, poutres, planchers). Plan de ferraillage: position et diamètre des aciers dans chaque élément. Plan de charpente métallique: profilés, assemblages, boulons, soudures. Ces plans sont établis par le bureau d'études à partir des notes de calcul (RDM). Le technicien A2 doit savoir les lire et les traduire sur le chantier. Plan de coffrage vs plan de ferraillage. Plan de coffrage. Plan de ferraillage. Donne la forme et les dimensions des éléments. Donne la position et le diamètre des aciers. Utilisé par le coffreur. Utilisé par le ferrailleur. Ne montre pas les aciers. Ne montre pas le coffrage. Erreur fréquente. Confondre plan de coffrage et plan de ferraillage. Le premier donne la forme (pour le coffreur); le second donne les aciers (pour le ferrailleur). Les deux sont nécessaires sur le chantier. Travailler avec un seul plan conduit à des erreurs coûteuses (coffrage manquant d'acier, acier mal positionné). Points clés. Coffrage égale forme; ferraillage égale aciers. Les deux viennent du bureau d'études. Le technicien doit lire et appliquer les deux. Ne pas confondre les deux plans."]],"13":[["fr","Chapitre VI, Les métrés et devis. Fondements théoriques. Le métré. Le métré est le calcul des quantités de matériaux et d'ouvrages nécessaires à la construction: surfaces (murs, planchers) en m au carré; volumes (béton, terrassement) en m au cube; longueurs (linéaux, clôtures) en m; quantités (sacs de ciment, parpaings, barres d'acier). Le devis. Le devis est l'estimation du coût total de l'ouvrage. Il comporte: matériaux: ciment, sable, gravier, acier, bois, tôles, etc.; main-d'œuvre: salaires des ouvriers et du chef d'équipe; équipement: location de bétonnière, de grue, de pompe; transport: amenée des matériaux sur le chantier; divers: eau, électricité, imprévus (5-10 pour cent ). Le devis est établi sur un bordereau (ou cadre de devis) qui liste les ouvrages avec quantités et prix unitaires. Exemple corrigé: devis simplifié d'un mur. Donnée: un mur de 20 mètres carrés en parpaings de 20 centimètres, avec: parpaings: 12,5 pièces ou m au carré; ciment: 0,5 sac ou m au carré pour le mortier; sable: 0,03 mètres cubes ou m au carré; main-d'œuvre: 5 000 FC ou m au carré. Calcul: parpaings: 20 multiplié par 12,5 égale 250 pièces; ciment: 20 multiplié par 0,5 égale 10 sacs; sable: 20 multiplié par 0,03 égale 0,6 mètres cubes; main-d'œuvre: 20 multiplié par 5 000 égale 100 000 FC. On multiplie chaque quantité par son prix unitaire, on additionne, puis on ajoute 5-10 pour cent pour les pertes et imprévus. Erreur fréquente. Oublier les pertes et chutes de matériaux. Un mur de parpaings consomme 5-10 pour cent de plus que le calcul théorique (casse, ajustements). Un devis sans marge est sous-estimé et le chantier manque de matériaux. Points clés. Métré égale quantités de matériaux. Devis égale coût total (matériaux plus main-d'œuvre plus divers). Bordereau égale liste détaillée. Prévoir 5-10 pour cent de pertes."]],"14":[["fr","Chapitre VII, Organisation et gestion de chantier. Fondements théoriques. Planifier les tâches. Un chantier comporte de nombreuses tâches qui doivent être ordonnées et coordonnées. Deux outils classiques: Diagramme de Gantt: représentation graphique des tâches sur un axe de temps. Chaque tâche est une barre horizontale dont la longueur représente sa durée. Permet de visualiser l'ordonnancement et de suivre l'avancement. Réseau PERT: représentation des tâches et de leurs antériorités (telle tâche doit être finie avant telle autre). Permet d'identifier le chemin critique (la suite de tâches qui détermine la durée totale du chantier). L'organisation d'un chantier. L'installation de chantier. Avant de commencer les travaux, il faut installer le chantier: clôture et signalisation (sécurité, protection contre le vol); base vie: baraquements, sanitaires, vestiaires; zones de stockage: matériaux (ciment, sable, acier), protégés de l'humidité; circulation: entrées et sorties des camions, accès des ouvriers; eau et électricité: raccordement ou groupe électrogène. La gestion des approvisionnements. Commander les matériaux en temps voulu (délais de livraison). Réceptionner et vérifier la conformité (qualité, quantité). Stocker dans les zones prévues (à l'abri de l'eau pour le ciment). Gérer les stocks (fiches, inventaires, alertes de réapprovisionnement). Anticiper les saisons: en R D C, les pluies ralentissent les livraisons et les travaux. Erreur fréquente. Négliger la planification. Sans Gantt ni PERT, les tâches se chevauchent mal, les ouvriers attendent, les matériaux manquent, les délais explosent et les coûts augmentent. Un chantier non planifié est un chantier en retard. Points clés. Gantt: tâches et durées. PERT: antériorités et chemin critique. Installation: clôture, base vie, stockage, circulation. Gestion: commande, réception, stockage, anticipation."]],"15":[["fr","Chapitre VII, La sécurité sur chantier. Fondements théoriques. Les risques du chantier. Un chantier expose les travailleurs à de multiples risques: chutes de hauteur (échafaudages, toitures, planchers); chutes d'objets (matériaux, outils); effondrement de fouilles ou de structures; électrisation (câbles, groupes); écrasement par les engins; poussières et produits chimiques; bruit et vibrations. La sécurité sur chantier: une priorité. Les EPI obligatoires. Casque: protection de la tête contre les chutes d'objets. Chaussures de sécurité: protection des pieds contre les clous, les chutes. Gilet de haute visibilité: visibilité auprès des engins. Gants: protection des mains. Lunettes: projection de poussières, d'éclats. Harnais: travail en hauteur. Protection auditive: bruit des engins. Les protections collectives. Garde-corps et filets autour des zones en hauteur. Échafaudages stables, ancrés, avec planchers et garde-corps. Étaiements et blindages des fouilles. Signalisation: panneaux, rubans de danger, zones interdites. Extincteurs et trousse de premiers secours accessibles. Les protections collectives sont prioritaires: elles protègent tous les travailleurs, même en cas d'oubli d'EPI individuel. Erreur fréquente. Retirer un garde-corps pour « gagner du temps » ou laisser un échafaudage sans plancher. Chaque année, des ouvriers meurent de chutes de hauteur. La sécurité n'est pas négociable: aucun travail en hauteur sans protection. Points clés. Risques: chutes, effondrements, électrisation, écrasement. EPI: casque, chaussures, gilet, gants, lunettes. Protections collectives: garde-corps, échafaudages, blindages. Sécurité non négociable."]],"16":[["fr","Chapitre VIII, Topographie et implantation. Fondements théoriques. La topographie. La topographie est la science de la mesure et de la représentation du terrain. Elle sert à: établir un plan du terrain (relevé); mesurer les distances, les angles, les altitudes; implanter le bâtiment sur le terrain; vérifier les niveaux (horizontalité). Le nivellement et l'implantation. Le nivellement mesure les différences d'altitude entre les points d'un terrain. On utilise un niveau (lunette horizontale) et une mire (règle graduée). Le nivellement est indispensable pour: vérifier que le terrain est plat ou en pente; caler les fondations à la bonne altitude; contrôler les niveaux des planchers. L'implantation consiste à reporter sur le terrain les axes et les cotes du plan. On utilise: des piquets et des cordeaux pour matérialiser les murs; une équerre ou une méthode 3-4-5 (théorème de Pythagore) pour les angles droits; un niveau pour l'altitude; un théodolite ou une station totale pour les angles précis. Méthode 3-4-5. Pour tracer un angle droit sur le terrain sans instrument sophistiqué: Tracer un segment de 4 mètres. À partir d'une extrémité, tracer un segment de 3 mètres formant un angle approximatif de 90 degrés. Ajuster cet angle jusqu'à ce que la distance entre les extrémités des deux segments mesure exactement 5 mètres. L'angle est alors droit (3 au carré plus 4 au carré égale 5 au carré ). Erreur fréquente. Une erreur d'implantation décale tout l'ouvrage: murs de travers, portes mal placées, toiture asymétrique. Elle entraîne des reprises coûteuses. Il faut toujours vérifier les axes et les niveaux avant de commencer la maçonnerie. Points clés. Topographie égale mesure et représentation du terrain. Nivellement égale altitudes (niveau plus mire). Implantation égale report du plan sur le terrain. Vérifier axes et niveaux avant de construire."]],"17":[["fr","Applications R D C, Le bâtiment en contexte congolais. Contextualisation. Le bâtiment en R D C: défis et opportunités. Le secteur de la construction en R D C est en pleine croissance, mais fait face à des défis spécifiques: Saison des pluies: ralentit les travaux, envahit les fouilles, dégrade les matériaux mal stockés. Délestages SNEL: groupes électrogènes nécessaires sur les chantiers (bétonnière, pompe, éclairage). Accès difficile: certains terrains ne sont pas viabilisés (routes, eau, électricité). Matériaux locaux: briques artisanales, pierres de taille, agrégats locaux, à contrôler avant usage. Formation de la main-d'œuvre: besoin de techniciens qualifiés. Le PDL-145T. Le Programme de Développement Local des 145 Territoires (PDL-145T) est un vaste programme du gouvernement congolais qui construit des écoles, des centres de santé et des bâtiments administratifs dans les 145 territoires de la R D C. Il mobilise massivement les techniciens A2 en construction (maçons, chefs de chantier, métreurs, dessinateurs). C'est une opportunité majeure pour les diplômés, mais aussi une exigence de qualité et de sécurité: les ouvrages doivent durer. Débouchés. Maçon qualifié. Chef de chantier. Dessinateur en bâtiment. Métreur ou devis. Conducteur de travaux. Poursuite d'études en génie civil ou en architecture."]],"18":[["fr","Synthèse générale du cours. Ce qu'il faut retenir. Les idées maîtresses. Matériaux: ciment (liant), sable, gravier, acier, bois, briques ou parpaings. Béton: ciment plus sable plus gravier plus eau; dosage structurel 350 kilogrammes ou m au cube. Fondations: superficielles (semelles, radier) ou profondes (pieux, puits). Maçonnerie: alignement, aplomb, joints réguliers, chaînages. Béton armé: béton (compression) plus acier (traction); enrobage 2-5 centimètres. Coffrage (moule) et ferraillage (aciers) selon les plans. Charpente et couverture: bois ou métallique; pente adaptée. Dessin: plans de situation, masse, fondation, étage, coupe, façade, détail; plans de coffrage et ferraillage. Métrés et devis: quantités plus coûts, prévoir 5-10 pour cent de pertes. Organisation: Gantt, PERT, installation, approvisionnements. Sécurité: EPI, protections collectives, non négociable. Topographie: nivellement, implantation (méthode 3-4-5). Formules et repères essentiels. Élément. Repère. Dosage béton structurel. 350 kilogrammes ou m au cube de ciment. Dosage béton de propreté. 150-200 kilogrammes ou m au cube. Volume d'un mur. V égale L multiplié par H multiplié par e. Enrobage des armatures. 2-5 centimètres. Échelle plan. 1 centimètres égale X cm réels (1 sur 100, donc 1 centimètres égale 1 mètres). Pente toiture. 10-30 pour cent selon matériau. Pertes matériaux. 5-10 pour cent. Méthode 3-4-5. 3 au carré plus 4 au carré égale 5 au carré pour un angle droit. Les erreurs à ne plus commettre. Utiliser un sable argileux dans le béton. Négliger la portance du sol. Oublier l'enrobage des armatures. Confondre plan de coffrage et plan de ferraillage. Sous-estimer les métrés (oublier les pertes). Ne pas planifier le chantier. Travailler sans EPI ni protections collectives. Négliger la vérification des axes et niveaux."]],"19":[["fr","Évaluation finale, Bâtiment et Génie Civil. Consigne. Répondez aux 22 questions ci-dessous. Chaque question a une seule bonne réponse. Cliquez sur « Valider mes réponses » pour obtenir votre score. Bonne chance! Conseil. En cas d'erreur, relisez la diapositive correspondante. Les questions couvrent les matériaux, les techniques, le dessin, les métrés, l'organisation et la sécurité."]]}};
+  var CACHE = "ecolia-cours-v1";                       // même cache que l'application
+  var PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  var PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+  var DL = '<svg viewBox="0 0 24 24"><path d="M11 3h2v9.2l3.6-3.6L18 10l-6 6-6-6 1.4-1.4L11 12.2V3zM5 19h14v2H5z"/></svg>';
+  var OK = '<svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>';
+  // Réparation du quiz : certains cours stockent les choix sous "opts" (ou autre) au lieu de "options"
+  try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+      questions.forEach(function (q) {
+        if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+        if (q.text === undefined) q.text = q.question || q.q || q.enonce || q.titre || "";
+        if (typeof q.correct === "undefined") {
+          if (typeof q.answer !== "undefined") q.correct = q.answer;
+          else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+        }
+      });
+    }
+  } catch (e) {}
+  var synth = window.speechSynthesis || null;
+  var HAS_CACHE = !!(window.caches && window.caches.open);
+  var NATIVE = false;           // APK ECOLIA : pont Java "CoursInterface" (fichiers dans le dossier de l'application)
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  var LATER = "ecolia_audio_later_" + CFG.code;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+  function init() {
+    if (document.getElementById("ecolia-audio-btn")) return;
+
+    // ---------- éléments de l'interface ----------
+    var btn = document.createElement("button");
+    btn.id = "ecolia-audio-btn"; btn.type = "button"; btn.className = "ecolia-off";
+    btn.setAttribute("aria-label", "Écouter la leçon"); btn.innerHTML = PLAY;
+    var dlBtn = document.createElement("button");
+    dlBtn.id = "ecolia-dl-btn"; dlBtn.type = "button"; dlBtn.className = "ecolia-off";
+    dlBtn.innerHTML = DL;
+    var host = document.querySelector(".header-right");
+    if (host) { host.insertBefore(dlBtn, host.firstChild); host.insertBefore(btn, dlBtn); }   // dans la barre du haut : ne scrolle jamais
+    else { btn.className += " ecolia-fixed"; document.body.appendChild(btn); }
+
+    var banner = document.createElement("div");
+    banner.id = "ecolia-audio-banner";
+    banner.innerHTML = '<span class="eab-txt"></span><span class="eab-act"></span><div class="eab-bar"><i></i></div>';
+    var content = document.getElementById("content");
+    if (content && content.parentNode) content.parentNode.insertBefore(banner, content);
+    else document.body.insertBefore(banner, document.body.firstChild);
+    var txtEl = banner.querySelector(".eab-txt"), actEl = banner.querySelector(".eab-act");
+    var barEl = banner.querySelector(".eab-bar"), barI = barEl.firstChild;
+
+    var audio = new Audio();            // un seul élément Audio, réutilisé (exigé par les navigateurs mobiles)
+    audio.preload = "auto";
+    var st = { idx: -1, auto: false, advancing: false, mode: null, speaking: false, token: 0, chunks: [], ci: 0, blobUrl: null, playTok: 0 };
+    var dl = { state: "none", cached: 0, busy: false, cancel: false };   // none | partial | full
+    var bnMode = null, hideTimer = null;
+    if (synth && synth.getVoices) { try { synth.getVoices(); } catch (e) {} }
+
+    function cur() {
+      try { if (typeof currentSlide === "number") return currentSlide; } catch (e) {}
+      return 0;
+    }
+    function hasMp3(i) { return CFG.available.indexOf(i + 1) !== -1; }
+    function fb(i) { return CFG.fallback && CFG.fallback[String(i + 1)]; }
+    function hasAudio(i) { return hasMp3(i) || (!!synth && !!fb(i)); }
+    function urlN(n) {   // dans l'APK la page est sur https://app.local : une adresse relative doit pointer vers le site
+      var b = CFG.base;
+      if (NATIVE && !/^https?:/i.test(b)) b = "https://ecolia-course.github.io/" + b.replace(/^(\.\.\/|\.\/)+/, "");
+      return new URL(b + nameN(n), location.href).href;
+    }
+    function setIcon(playing) { btn.innerHTML = playing ? PAUSE : PLAY; }
+    function isPlaying() { return st.mode === "mp3" ? !audio.paused : (st.mode === "tts" && st.speaking); }
+    function mo() { return "≈ " + CFG.sizeMo + " Mo"; }
+    function nameN(n) { return "audio_" + CFG.code + "_" + n + ".mp3"; }
+
+    // ====================================================================
+    //  Stockage hors ligne : 2 moteurs, même interface
+    //    - APK : fichiers du dossier de l'application (CoursInterface), servis par https://app.local/cours/
+    //    - Web : Cache Storage du navigateur (même cache que l'application web)
+    // ====================================================================
+    function nativeStore() {
+      var okKey = "ecolia_audio_ok_" + CFG.code;
+      function readOk() { try { return JSON.parse(lsGet(okKey) || "[]"); } catch (e) { return []; } }
+      function writeOk(a) { lsSet(okKey, JSON.stringify(a)); }
+      function exists(n) { try { return !!CoursInterface.exists(nameN(n)); } catch (e) { return false; } }
+      function local(n) { return location.origin + "/cours/" + nameN(n); }
+      function verify(n) {                                   // fichier complet ? (taille exacte connue à la génération)
+        return fetch(local(n), { cache: "no-store" }).then(function (r) { return r.blob(); }).then(function (b) {
+          var exp = CFG.sizes && CFG.sizes[String(n)];
+          return (b.size > 2000 && (!exp || b.size === exp)) ? b : null;
+        }).catch(function () { return null; });
+      }
+      return {
+        list: function () {
+          var ok = readOk().filter(exists); writeOk(ok); return Promise.resolve(ok);
+        },
+        get: function (n) { return exists(n) ? verify(n) : Promise.resolve(null); },
+        put: function (n) {
+          return new Promise(function (res, rej) {
+            try { CoursInterface.download(urlN(n), nameN(n)); } catch (e) { return rej(e); }
+            var t0 = Date.now();
+            function next() { if (Date.now() - t0 > 120000) rej(new Error("délai dépassé")); else setTimeout(poll, 800); }
+            function poll() {
+              if (!exists(n)) return next();
+              verify(n).then(function (b) {
+                if (!b) return next();
+                var ok = readOk(); if (ok.indexOf(n) < 0) ok.push(n); writeOk(ok); res();
+              });
+            }
+            setTimeout(poll, 800);
+          });
+        },
+        del: function (n) {
+          try { CoursInterface.delete(nameN(n)); } catch (e) {}
+          writeOk(readOk().filter(function (x) { return x !== n; }));
+          return Promise.resolve();
+        }
+      };
+    }
+    function cacheStore() {
+      return {
+        list: function () {
+          return caches.open(CACHE).then(function (c) {
+            return Promise.all(CFG.available.map(function (n) {
+              return c.match(urlN(n)).then(function (r) {
+                if (!r) return 0;
+                if ((r.headers.get("content-type") || "").indexOf("audio") !== 0) { c.delete(urlN(n)); return 0; }   // ancien contenu invalide
+                return n;
+              });
+            }));
+          }).then(function (a) { return a.filter(Boolean); });
+        },
+        get: function (n) {
+          return caches.open(CACHE).then(function (c) { return c.match(urlN(n)); })
+            .then(function (r) { return r ? r.blob() : null; }).then(function (b) { return b && b.size > 2000 ? b : null; });
+        },
+        put: function (n) {
+          var u = urlN(n);
+          return fetch(u, { cache: "no-store" }).then(function (r) {
+            if (!r.ok || r.status !== 200) throw new Error("HTTP " + r.status);
+            return r.blob();
+          }).then(function (b) {
+            if (b.size < 2000 || (b.type && b.type.indexOf("audio") !== 0 && b.type.indexOf("octet") < 0)) throw new Error("fichier invalide");
+            return caches.open(CACHE).then(function (c) { return c.put(u, new Response(b, { headers: { "Content-Type": "audio/mpeg" } })); });
+          });
+        },
+        del: function (n) { return caches.open(CACHE).then(function (c) { return c.delete(urlN(n)); }); }
+      };
+    }
+    var store = NATIVE ? nativeStore() : (HAS_CACHE ? cacheStore() : null);
+
+    // ====================================================================
+    //  Bannière : invitation, confirmations, progression
+    // ====================================================================
+    function showBanner(mode, text, buttons, pct) {
+      clearTimeout(hideTimer);
+      bnMode = mode;
+      txtEl.textContent = text;
+      actEl.innerHTML = "";
+      (buttons || []).forEach(function (b) {
+        var e = document.createElement("button");
+        e.type = "button"; e.textContent = b.label; if (b.pri) e.className = "pri";
+        e.addEventListener("click", function (ev) { ev.stopPropagation(); b.fn(); });
+        actEl.appendChild(e);
+      });
+      if (typeof pct === "number") { barEl.style.display = "block"; barI.style.width = pct + "%"; }
+      else barEl.style.display = "none";
+      banner.classList.add("on");
+    }
+    function hideBanner() { clearTimeout(hideTimer); bnMode = null; banner.classList.remove("on"); }
+    function flash(text) { showBanner("info", text, []); hideTimer = setTimeout(hideBanner, 4000); }
+
+    function refreshUI() {
+      var show = !!store && CFG.available.length > 0;
+      dlBtn.classList.toggle("ecolia-off", !show);
+      dlBtn.classList.toggle("ecolia-full", dl.state === "full");
+      dlBtn.innerHTML = dl.state === "full" ? OK : DL;
+      dlBtn.setAttribute("aria-label", dl.state === "full" ? "Audios téléchargés : supprimer" : "Télécharger les audios");
+      dlBtn.title = dlBtn.getAttribute("aria-label");
+    }
+    function refreshCacheState(done) {
+      if (!store) { dl.state = "none"; refreshUI(); if (done) done(); return; }
+      store.list().then(function (ok) {
+        dl.cached = ok.length;
+        dl.state = dl.cached === 0 ? "none" : (dl.cached >= CFG.available.length ? "full" : "partial");
+      }).catch(function () { dl.state = "none"; }).then(function () { refreshUI(); if (done) done(); });
+    }
+
+    function askDownload(fromInvite) {
+      var left = CFG.available.length - dl.cached;
+      var txt = dl.state === "partial"
+        ? "Il reste " + left + " audio(s) à télécharger pour écouter ce cours sans internet."
+        : "🔊 Télécharger les audios de ce cours (" + mo() + ") pour les écouter sans internet ? Wi-Fi recommandé.";
+      showBanner(fromInvite ? "invite" : "confirm", txt, [
+        { label: fromInvite ? "Plus tard" : "Annuler", fn: function () { if (fromInvite) lsSet(LATER, "1"); hideBanner(); } },
+        { label: "Télécharger", pri: true, fn: startDownload }
+      ]);
+    }
+    function askDelete() {
+      showBanner("confirm", "Supprimer les audios téléchargés de ce cours (" + mo() + ") ? Vous pourrez toujours les écouter en ligne.", [
+        { label: "Annuler", fn: hideBanner },
+        { label: "Supprimer", pri: true, fn: doDelete }
+      ]);
+    }
+
+    function startDownload() {
+      if (dl.busy || !store) return;
+      dl.busy = true; dl.cancel = false;
+      var total = CFG.available.length, done = 0, quota = false, fails = 0, todo = [];
+      store.list().then(function (have) {
+        CFG.available.forEach(function (n) { if (have.indexOf(n) < 0) todo.push(n); });
+        done = total - todo.length;
+        function paint() {
+          var msg = "Téléchargement des audios : " + done + " / " + total;
+          if (bnMode === "progress") {                  // met à jour sans recréer les boutons (sinon un appui peut être perdu)
+            txtEl.textContent = msg; barI.style.width = Math.round(done / total * 100) + "%";
+          } else {
+            showBanner("progress", msg, [
+              { label: "Annuler", fn: function () { dl.cancel = true; } }
+            ], Math.round(done / total * 100));
+          }
+        }
+        paint();
+        function worker() {
+          if (dl.cancel || quota || !todo.length) return Promise.resolve();
+          var n = todo.shift();
+          return store.put(n).then(function () { done++; paint(); }).catch(function (e) {
+            if (e && (e.name === "QuotaExceededError" || /quota/i.test(String(e.message)))) quota = true;
+            fails++;
+          }).then(worker);
+        }
+        return Promise.all([worker(), worker()]);
+      }).catch(function () { fails++; }).then(function () {
+        dl.busy = false;
+        refreshCacheState(function () {
+          if (dl.state === "full") flash("✓ Audios téléchargés : le cours se lit maintenant sans internet.");
+          else if (dl.cancel) flash("Téléchargement interrompu (" + dl.cached + " / " + total + "). Vous pourrez reprendre plus tard.");
+          else showBanner("error", quota ? "Espace insuffisant sur l'appareil. Libérez de la place puis réessayez."
+            : "Certains audios n'ont pas pu être téléchargés (connexion ?).", [
+            { label: "Fermer", fn: hideBanner }, { label: "Réessayer", pri: true, fn: startDownload }
+          ]);
+        });
+      });
+    }
+    function doDelete() {
+      if (!store) return;
+      Promise.all(CFG.available.map(function (n) { return store.del(n); })).catch(function () {}).then(function () {
+        lsDel(LATER);
+        refreshCacheState(function () { flash("Audios supprimés de cet appareil."); });
+      });
+    }
+
+    dlBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (dl.busy) return;
+      if (dl.state === "full") askDelete(); else askDownload(false);
+    });
+
+    // ====================================================================
+    //  Voix intégrée au téléphone (hors ligne, sans limite)
+    // ====================================================================
+    function pickVoice(lang) {
+      var vs = [];
+      try { vs = synth.getVoices() || []; } catch (e) {}
+      var pre = lang === "en" ? "en" : "fr", best = null;
+      for (var k = 0; k < vs.length; k++) {
+        var v = vs[k];
+        if ((v.lang || "").toLowerCase().indexOf(pre) !== 0) continue;
+        if (!best || (v.localService && !best.localService)) best = v;
+      }
+      return best;
+    }
+    function hardSplit(text, max) {
+      var out = [];
+      while (text.length > max) {
+        var cut = text.lastIndexOf(" ", max);
+        if (cut < 40) cut = max;
+        out.push(text.slice(0, cut)); text = text.slice(cut).replace(/^\s+/, "");
+      }
+      if (text) out.push(text);
+      return out;
+    }
+    function buildChunks(segs) {                  // morceaux courts : évite l'arrêt des longs textes sur Chrome
+      var out = [];
+      segs.forEach(function (s) {
+        var cur2 = "", parts = s[1].match(/[^.!?;:]+[.!?;:]*\s*/g) || [s[1]];
+        parts.forEach(function (p) {
+          if (cur2 && (cur2 + p).length > 160) { out.push({ lang: s[0], text: cur2.trim() }); cur2 = p; }
+          else cur2 += p;
+        });
+        if (cur2.trim()) out.push({ lang: s[0], text: cur2.trim() });
+      });
+      var res = [];
+      out.forEach(function (c) { hardSplit(c.text, 190).forEach(function (t) { res.push({ lang: c.lang, text: t }); }); });
+      return res;
+    }
+    function speakFrom(tk) {
+      if (tk !== st.token) return;
+      if (st.ci >= st.chunks.length) {
+        st.speaking = false; st.mode = null; st.ci = 0; setIcon(false);
+        if (st.auto) goNext();
+        return;
+      }
+      var c = st.chunks[st.ci];
+      var u = new SpeechSynthesisUtterance(c.text);
+      u.lang = c.lang === "en" ? "en-US" : "fr-FR";
+      var v = pickVoice(c.lang);
+      if (v) { u.voice = v; u.lang = v.lang; }
+      u.rate = 0.95;
+      u.onend = function () { if (tk !== st.token) return; st.ci++; speakFrom(tk); };
+      u.onerror = function () { if (tk !== st.token) return; st.speaking = false; setIcon(false); st.auto = false; };
+      synth.speak(u);
+    }
+    function startTts(from) {
+      st.token++;
+      var tk = st.token;
+      st.mode = "tts"; st.speaking = true; st.ci = from || 0; setIcon(true);
+      var busy = false;
+      try { busy = synth.speaking || synth.pending; synth.cancel(); } catch (e) {}
+      if (busy) setTimeout(function () { speakFrom(tk); }, 120);   // laisse cancel() se terminer
+      else speakFrom(tk);                                          // sinon tout de suite (exigé par iOS)
+    }
+    function playVoice() {
+      if (!(synth && fb(st.idx))) { st.auto = false; return false; }
+      if (!st.chunks.length) st.chunks = buildChunks(fb(st.idx));
+      startTts(st.ci);
+      return true;
+    }
+
+    // ====================================================================
+    //  Lecture
+    // ====================================================================
+    function freeBlob() { if (st.blobUrl) { try { URL.revokeObjectURL(st.blobUrl); } catch (e) {} st.blobUrl = null; } }
+    function stopAll() {
+      st.playTok++;
+      try { audio.pause(); audio.currentTime = 0; } catch (e) {}
+      st.token++;
+      try { if (synth) synth.cancel(); } catch (e) {}
+      st.speaking = false; st.mode = null; st.chunks = []; st.ci = 0;
+      setIcon(false);
+    }
+    function pauseNow() {
+      if (st.mode === "mp3") audio.pause();
+      else if (st.mode === "tts") {
+        st.token++;
+        try { synth.cancel(); } catch (e) {}
+        st.speaking = false; setIcon(false);      // st.ci conservé : la reprise repart de la phrase en cours
+      }
+    }
+    function startAudio(src, tok) {
+      if (tok !== st.playTok) return;
+      if (audio.getAttribute("data-src") !== src) { audio.setAttribute("data-src", src); audio.src = src; }
+      var p = audio.play();
+      if (p && p.catch) p.catch(function (err) {
+        console.warn("ECOLIA audio :", err);
+        if (tok !== st.playTok) return;
+        if (!(err && err.name === "NotAllowedError") && playVoice()) return;   // lecture impossible : voix du téléphone
+        setIcon(false); st.auto = false;
+      });
+    }
+    function playCurrent() {
+      var i = st.idx;
+      if (hasMp3(i)) {
+        var tok = ++st.playTok, u = urlN(i + 1);
+        st.mode = "mp3";
+        if (!navigator.onLine && dl.state === "none") { st.mode = null; if (playVoice()) return; }   // hors ligne et non téléchargé
+        if (store && dl.state !== "none") {                     // téléchargé : lecture locale, sans réseau
+          store.get(i + 1)
+            .then(function (b) {
+              if (tok !== st.playTok) return;
+              if (b) { freeBlob(); st.blobUrl = URL.createObjectURL(new Blob([b], { type: "audio/mpeg" })); startAudio(st.blobUrl, tok); }
+              else startAudio(u, tok);
+            }).catch(function () { startAudio(u, tok); });
+        } else startAudio(u, tok);                              // sinon lecture en ligne (appel immédiat, exigé par iOS)
+      } else if (!playVoice()) {
+        st.auto = false;
+      }
+    }
+
+    function onSlideChange(i) {
+      var wasAdvancing = st.advancing;
+      st.advancing = false;
+      st.idx = i;
+      btn.classList.toggle("ecolia-off", !hasAudio(i));
+      stopAll();
+      audio.removeAttribute("data-src");
+      freeBlob();
+      if (bnMode === "invite" && i !== 0) hideBanner();       // l'invitation n'apparaît qu'à la première slide
+      if (wasAdvancing && st.auto) setTimeout(playCurrent, 500);   // enchaînement automatique
+      else st.auto = false;                                         // changement manuel : on coupe tout
+    }
+    function goNext() {
+      if (st.idx + 1 >= CFG.count) { st.auto = false; return; }
+      st.advancing = true;
+      if (typeof nextSlide === "function") nextSlide();
+      else { var nb = document.getElementById("nextBtn"); if (nb) nb.click(); }
+      setTimeout(function () { st.advancing = false; }, 4000);
+    }
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var i = cur();
+      if (i !== st.idx) onSlideChange(i);
+      if (isPlaying()) { st.auto = false; pauseNow(); }
+      else { st.auto = true; playCurrent(); }
+    });
+    audio.addEventListener("play", function () { setIcon(true); });
+    audio.addEventListener("pause", function () { if (st.mode === "mp3") setIcon(false); });
+    audio.addEventListener("error", function () {
+      if (st.mode === "mp3" && playVoice()) return;            // fichier introuvable / hors ligne : voix du téléphone
+      setIcon(false); st.auto = false;
+    });
+    audio.addEventListener("ended", function () { setIcon(false); if (st.auto) goNext(); });
+    window.addEventListener("pagehide", function () { stopAll(); freeBlob(); });
+
+    // ---------- démarrage ----------
+    refreshCacheState(function () {
+      if (store && CFG.available.length && dl.state !== "full" && navigator.onLine && cur() === 0 && !lsGet(LATER)) askDownload(true);
+    });
+    st.idx = -1;
+    setInterval(function () { var i = cur(); if (i !== st.idx) onSlideChange(i); }, 250);   // suit la slide affichée
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+<!-- ECOLIA_AUDIO_PLAYER_END -->
+</body>
+</html>

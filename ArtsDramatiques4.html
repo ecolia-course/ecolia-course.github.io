@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="vert">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>ECOLIA — Arts Dramatiques4</title>
+<style>
+[data-theme="bleu"]   { --p1:#0d2b4f; --p2:#1565c0; --p3:#07172e; --p4:#12437a; --p5:#5b8fd0; --bg:#e8f0fb; --bg2:#cfdff5; --bd:#a9c3e8; --soft:#dde8f7; --btn:#2a67b0; }
+[data-theme="vert"]   { --p1:#14442e; --p2:#2e7d32; --p3:#0b2b1a; --p4:#1f5c3a; --p5:#4f9a6b; --bg:#e8f5ec; --bg2:#c8e6d2; --bd:#a5cdb2; --soft:#dcefe2; --btn:#2f7a4f; }
+[data-theme="violet"] { --p1:#2d1b4e; --p2:#6a1b9a; --p3:#1a0f2e; --p4:#4a148c; --p5:#9c6fd0; --bg:#f1e9fb; --bg2:#dccbf2; --bd:#c4a8e6; --soft:#e8ddf6; --btn:#7e3fb2; }
+[data-theme="rouge"]  { --p1:#4a1010; --p2:#b71c1c; --p3:#2b0a0a; --p4:#8e1b1b; --p5:#d9706a; --bg:#fbeaea; --bg2:#f3cdcb; --bd:#e8a9a5; --soft:#f8dede; --btn:#a62a2a; }
+[data-theme="orange"] { --p1:#4e2a0c; --p2:#ef6c00; --p3:#2e1604; --p4:#b34a00; --p5:#f0a15a; --bg:#fff1e0; --bg2:#fbdcb8; --bd:#f3c08a; --soft:#fdebd6; --btn:#c9650a; }
+[data-theme="teal"]   { --p1:#0b3a3a; --p2:#00796b; --p3:#062626; --p4:#00574b; --p5:#4db6ac; --bg:#e0f2f1; --bg2:#b2dfdb; --bd:#80cbc4; --soft:#d5ecea; --btn:#26897d; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:linear-gradient(160deg,var(--p1) 0%,var(--p2) 50%,var(--p3) 100%); display:flex; justify-content:center; align-items:center; padding:8px; }
+.container { width:100%; max-width:1400px; background:#fefdf8; border-radius:20px; overflow:hidden; display:flex; flex-direction:column; height:100%; max-height:100vh; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.progress-bar { height:4px; background:var(--bg2); flex-shrink:0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--p5),var(--p4)); width:0%; transition:width 0.3s; }
+.header { padding:10px 16px; background:var(--bg); border-bottom:1px solid var(--bd); display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+.header h1 { color:var(--p4); font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box { display:flex; background:white; border-radius:20px; padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.search-box input { border:none; padding:6px 10px; border-radius:20px; outline:none; width:130px; font-size:0.8rem; }
+.search-box button { background:none; border:none; cursor:pointer; padding:4px 8px; font-size:0.85rem; color:var(--p2); }
+.badge { background:var(--p5); color:white; padding:4px 10px; border-radius:20px; font-weight:bold; font-size:0.75rem; }
+.search-nav { display:none; gap:4px; background:var(--bg2); padding:2px 8px; border-radius:20px; align-items:center; font-size:0.75rem; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:0.9rem; color:var(--p4); padding:2px 4px; }
+.content { padding:28px 32px; flex:1; overflow-y:auto; background:#fff; scroll-behavior:smooth; line-height:1.85; }
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.slide-title { color:var(--p1); font-size:1.5rem; font-weight:700; padding-bottom:12px; margin-bottom:20px; border-bottom:2px solid var(--p5); }
+.slide-content { color:var(--p3); font-size:1rem; }
+.empty-state { display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-height:60vh; padding:40px 20px; gap:18px; }
+.empty-state .icon { width:72px; height:72px; border-radius:50%; background:var(--bg); border:2px solid var(--bd); display:flex; align-items:center; justify-content:center; color:var(--p2); font-size:2rem; font-weight:300; }
+.empty-state h2 { color:var(--p1); font-size:1.4rem; font-weight:700; margin:0; }
+.empty-state p { color:#666; font-size:0.95rem; max-width:520px; line-height:1.7; }
+.empty-state .tag { display:inline-block; padding:6px 14px; background:var(--bg); color:var(--p4); border:1px solid var(--bd); border-radius:20px; font-size:0.8rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; }
+.bloc { padding:18px 22px; border-radius:12px; margin:22px 0; line-height:1.85; }
+.bloc-label { font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; opacity:0.7; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:var(--bg); border-left:4px solid var(--p5); }
+.theorie .bloc-label { color:var(--p4); }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.sources { background:#f5f5f5; padding:12px 16px; border-radius:10px; margin-top:26px; font-size:0.82rem; color:#666; border-left:3px solid #999; line-height:1.6; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:var(--p1); }
+.quiz-container { padding:22px; background:var(--bg); border-radius:16px; }
+.quiz-question { background:white; border-radius:10px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.quiz-question p { font-weight:600; margin-bottom:10px; color:var(--p1); }
+.quiz-question label { display:block; padding:8px 10px; margin:4px 0; border-radius:6px; cursor:pointer; transition:background 0.2s; }
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit { background:var(--btn); color:white; border:none; padding:12px 24px; border-radius:30px; font-size:1rem; cursor:pointer; font-weight:600; margin-top:14px; }
+.quiz-result { margin-top:16px; font-weight:600; }
+.controls { padding:8px 16px; background:#fafafa; border-top:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0; }
+.nav-btn { background:white; color:var(--p4); border:1px solid #ccc; padding:8px 14px; border-radius:8px; font-size:0.82rem; cursor:pointer; font-weight:500; }
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:var(--soft); }
+.content::-webkit-scrollbar-thumb { background:var(--p5); border-radius:3px; }
+@media (max-width:600px) { body { padding:0; } .container { border-radius:0; max-height:100vh; } .content { padding:20px 18px; } .slide-title { font-size:1.25rem; } .search-box input { width:90px; } .header h1 { font-size:0.85rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="header">
+<h1 id="pageTitle">ECOLIA</h1>
+<div class="header-right">
+<div class="search-box">
+<input id="searchInput" placeholder="Rechercher" type="text"/>
+<button id="searchBtn">⌕</button>
+</div>
+<div class="search-nav" id="searchNav">
+<button id="prevResultBtn">‹</button>
+<span id="resultCounter">0/0</span>
+<button id="nextResultBtn">›</button>
+</div>
+<span class="badge" id="slideCounter">0/0</span>
+</div>
+</div>
+<div class="content" id="content"></div>
+<div class="controls">
+<button class="nav-btn" id="prevBtn">← Précédent</button>
+<span class="counter" id="counter">—</span>
+<button class="nav-btn" id="nextBtn">Suivant →</button>
+</div>
+</div>
+<script>
+const COURSE_TITLE = "Arts Dramatiques (Théâtre)";
+const slides = [
+  {
+    title: "Sommaire — Arts Dramatiques",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Présentation du cours</div>
+        <h3>Arts Dramatiques — 4e Humanité</h3>
+        <p>Ce cours te forme à jouer, à mettre en scène et à créer des spectacles. Tu étudieras les genres dramatiques, le langage théâtral, le jeu d'acteur, l'analyse de texte, la mise en scène, la création collective et le théâtre africain et congolais.</p>
+        <h4>Objectifs d'apprentissage</h4>
+        <ul>
+          <li>Connaître les genres dramatiques et les éléments du langage théâtral.</li>
+          <li>Maîtriser les techniques de base du jeu d'acteur.</li>
+          <li>Analyser un texte dramatique.</li>
+          <li>Concevoir une mise en scène simple.</li>
+          <li>Participer à une création collective.</li>
+          <li>Présenter un spectacle devant un public.</li>
+        </ul>
+        <h4>Grands chapitres</h4>
+        <ol>
+          <li>Introduction au théâtre</li>
+          <li>Le langage théâtral</li>
+          <li>Le jeu d'acteur</li>
+          <li>L'analyse d'un texte dramatique</li>
+          <li>La mise en scène</li>
+          <li>La création collective</li>
+          <li>Le théâtre africain et congolais</li>
+        </ol>
+      </div>
+    `
+  },
+  {
+    title: "Pourquoi les arts dramatiques ?",
+    content: `
+      <div class="bloc cas">
+        <div class="bloc-label">Situation de départ</div>
+        <h3>Préparer un spectacle sur la paix</h3>
+        <p>Une classe de 4e arts dramatiques à Kinshasa prépare un spectacle sur le thème de la paix. Les élèves doivent écrire une saynète, distribuer les rôles, répéter, fabriquer des costumes et présenter le spectacle devant l'école. Ils ne savent pas par où commencer.</p>
+        <p><strong>Question de départ :</strong> quelles connaissances et quelles techniques un élève doit-il maîtriser pour jouer, mettre en scène et créer un spectacle ?</p>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Définition et domaines</h3>
+        <p>Le <strong>théâtre</strong> est un art du spectacle vivant qui représente des actions humaines à travers des personnages, un texte, un espace et un public. Il mobilise le corps, la voix et la présence.</p>
+        <p>En 4e Humanité, l'objectif n'est pas de former des acteurs professionnels confirmés (cela relève des écoles d'art dramatique), mais de développer des compétences de base et une culture théâtrale.</p>
+        <h4>Débouchés</h4>
+        <ul>
+          <li>Comédien, metteur en scène, dramaturge</li>
+          <li>Animateur, formateur, régisseur</li>
+          <li>Médiateur culturel, critique de théâtre</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Définition et origines du théâtre",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Définition</h3>
+        <p>Le <strong>théâtre</strong> est un art du spectacle vivant qui représente des actions humaines à travers des personnages, un texte, un espace et un public.</p>
+        <h3>Origines</h3>
+        <ul>
+          <li><strong>Occident :</strong> le théâtre naît en Grèce antique (Ve siècle av. J.-C.) avec la tragédie et la comédie. Les représentations ont lieu lors des fêtes en l'honneur de Dionysos.</li>
+          <li><strong>Afrique :</strong> le théâtre africain a des origines rituelles et communautaires (masques, danses, récits, griots). Il remplit une fonction sociale et spirituelle.</li>
+        </ul>
+      </div>
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p><strong>Erreur fréquente :</strong> croire que le théâtre se limite au texte. C'est un art du spectacle, qui mobilise le corps, la voix, l'espace et le public.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Les genres dramatiques",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les principaux genres</h3>
+        <figure>
+          <img data-image-id="artsdramatiques4_img01" alt="Masques de la tragédie et de la comédie, symboles du théâtre." />
+          <figcaption>Les deux masques du théâtre.</figcaption>
+        </figure>
+        <ul>
+          <li><strong>La tragédie :</strong> destin, souffrance, catharsis. Les héros affrontent un destin inévitable.</li>
+          <li><strong>La comédie :</strong> rire, satire des mœurs. Elle corrige les défauts humains par le rire.</li>
+          <li><strong>Le drame :</strong> mélange de tragique et de comique, plus proche de la vie réelle.</li>
+          <li><strong>La farce :</strong> comique grossier, situations absurdes, personnages caricaturaux.</li>
+          <li><strong>Le théâtre de l'absurde :</strong> remise en cause du sens et de la logique (Beckett, Ionesco).</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — Le langage théâtral",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les éléments du langage théâtral</h3>
+        <ul>
+          <li><strong>Le texte :</strong> dialogue entre personnages, parfois monologue ou aparté.</li>
+          <li><strong>Les personnages :</strong> rôles, caractères, relations, évolution.</li>
+          <li><strong>Les didascalies :</strong> indications scéniques données par l'auteur (déplacements, gestes, tons, décors).</li>
+          <li><strong>L'espace :</strong> lieu scénique, décor, proximité avec le public.</li>
+          <li><strong>Le temps :</strong> temps de la fiction, temps de la représentation, rythme.</li>
+        </ul>
+      </div>
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p><strong>Erreur fréquente :</strong> négliger les didascalies. Elles sont essentielles à la compréhension des intentions de l'auteur.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — L'espace et le temps au théâtre",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>L'espace</h3>
+        <p>L'espace scénique comprend :</p>
+        <ul>
+          <li>La <strong>scène</strong> (espace de jeu).</li>
+          <li>La <strong>salle</strong> (espace du public).</li>
+          <li>Les <strong>coulisses</strong> (espaces latéraux).</li>
+          <li>Le <strong>décor</strong> (éléments visuels).</li>
+        </ul>
+        <p>La relation scène-salle est essentielle : elle crée la proximité, l'échange, l'émotion.</p>
+        <h3>Le temps</h3>
+        <ul>
+          <li><strong>Temps de la fiction :</strong> époque où se déroule l'histoire.</li>
+          <li><strong>Temps de la représentation :</strong> durée réelle du spectacle.</li>
+          <li><strong>Rythme :</strong> alternance des moments forts et faibles, des pauses et des accélérations.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — Le jeu d'acteur : diction et voix",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>La diction</h3>
+        <p>La <strong>diction</strong> est la prononciation claire et articulée des mots. Elle permet au public de comprendre le texte sans effort.</p>
+        <ul>
+          <li>Articuler chaque son, surtout les consonnes finales.</li>
+          <li>Respecter la ponctuation (pauses, respirations).</li>
+          <li>Travailler avec des virelangues pour améliorer la précision.</li>
+        </ul>
+        <h3>La voix</h3>
+        <ul>
+          <li><strong>Volume :</strong> adapter l'intensité à la salle.</li>
+          <li><strong>Rythme :</strong> varier le débit pour éviter la monotonie.</li>
+          <li><strong>Intonation :</strong> moduler la hauteur pour exprimer les émotions.</li>
+          <li><strong>Nuances :</strong> du murmure au cri.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — La gestuelle et la présence",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>La gestuelle</h3>
+        <p>Les <strong>gestes</strong> accompagnent et renforcent le propos :</p>
+        <ul>
+          <li>Gestes d'ouverture (accueil, générosité).</li>
+          <li>Gestes de précision (désigner, montrer).</li>
+          <li>Gestes d'accompagnement (souligner le rythme).</li>
+        </ul>
+        <p>Éviter les gestes parasites (se toucher les cheveux, croiser les bras, tripoter un objet).</p>
+        <h3>La présence</h3>
+        <p>La <strong>présence</strong> est la capacité à occuper l'espace et à capter l'attention du public. Elle repose sur :</p>
+        <ul>
+          <li>La posture (dos droit, ancrage au sol).</li>
+          <li>Le regard (contact avec le public).</li>
+          <li>Le silence (savoir s'arrêter, respirer).</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — L'écoute et l'improvisation",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>L'écoute</h3>
+        <p>Le théâtre est un <strong>jeu collectif</strong>. L'acteur doit écouter ses partenaires, réagir à leurs répliques, ajuster son jeu en fonction de l'échange.</p>
+        <h3>L'improvisation</h3>
+        <p>L'<strong>improvisation</strong> consiste à jouer sans texte préparé, à partir d'un thème ou d'une consigne. Elle développe :</p>
+        <ul>
+          <li>La spontanéité et la créativité.</li>
+          <li>L'écoute et la réactivité.</li>
+          <li>La confiance en soi.</li>
+        </ul>
+      </div>
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p><strong>Erreur fréquente :</strong> réciter son texte sans écouter les autres. Le théâtre est un jeu collectif : chaque acteur dépend des autres.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre IV — L'analyse d'un texte dramatique",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>La structure</h3>
+        <ul>
+          <li><strong>Les actes et les scènes :</strong> divisions du texte.</li>
+          <li><strong>L'exposition :</strong> présentation des personnages et de la situation.</li>
+          <li><strong>Le nœud :</strong> apparition du conflit.</li>
+          <li><strong>Le dénouement :</strong> résolution du conflit.</li>
+        </ul>
+        <h3>Les personnages</h3>
+        <p>Portrait, motivations, relations, évolution au fil de la pièce.</p>
+        <h3>Le conflit</h3>
+        <p>Le <strong>conflit</strong> est le moteur du drame : opposition entre personnages, valeurs ou intérêts.</p>
+        <h3>Les thèmes</h3>
+        <p>Amour, pouvoir, justice, liberté, mort.</p>
+      </div>
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p><strong>Erreur fréquente :</strong> résumer l'histoire sans analyser le conflit et les personnages. L'analyse doit éclairer le sens de la pièce.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre IV — Les personnages et les thèmes",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Analyser un personnage</h3>
+        <ul>
+          <li><strong>Identité :</strong> nom, âge, condition sociale.</li>
+          <li><strong>Caractère :</strong> qualités, défauts, passions.</li>
+          <li><strong>Motivations :</strong> ce qui le pousse à agir.</li>
+          <li><strong>Évolution :</strong> comment il change au fil de la pièce.</li>
+          <li><strong>Relations :</strong> liens avec les autres personnages.</li>
+        </ul>
+        <h3>Analyser un thème</h3>
+        <p>Un <strong>thème</strong> est une idée développée par la pièce. Il faut :</p>
+        <ul>
+          <li>L'identifier (amour, pouvoir, justice).</li>
+          <li>Repérer comment il est traité (scènes, répliques, symboles).</li>
+          <li>Interpréter son sens (message de l'auteur).</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre V — La mise en scène",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>La lecture du texte</h3>
+        <p>Comprendre le sens, les intentions de l'auteur, les possibilités d'interprétation.</p>
+        <h3>Les partis pris</h3>
+        <p>Le metteur en scène fait des choix artistiques :</p>
+        <ul>
+          <li><strong>Époque :</strong> situer l'action dans son époque d'origine ou la transposer.</li>
+          <li><strong>Style :</strong> réaliste, onirique, absurde, classique.</li>
+          <li><strong>Décor, costumes, musique :</strong> en cohérence avec le propos.</li>
+        </ul>
+        <h3>La direction d'acteurs</h3>
+        <p>Guider les comédiens, proposer des intentions, corriger les erreurs, créer une dynamique de groupe.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre V — La scénographie",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les éléments de la scénographie</h3>
+        <figure>
+          <img data-image-id="artsdramatiques4_img02" alt="Scène de théâtre avec décor, éclairage et comédiens en représentation." />
+          <figcaption>La scénographie : créer l'espace du spectacle.</figcaption>
+        </figure>
+        <ul>
+          <li><strong>Le décor :</strong> éléments construits ou choisis, qui situent l'action.</li>
+          <li><strong>La lumière :</strong> éclaire, souligne, crée des atmosphères.</li>
+          <li><strong>Le son :</strong> musique, bruitages, silences.</li>
+          <li><strong>Les costumes :</strong> caractérisent les personnages, situent l'époque.</li>
+          <li><strong>Les accessoires :</strong> objets manipulés par les acteurs.</li>
+        </ul>
+        <p><strong>En RDC :</strong> décors, costumes et accessoires peuvent être fabriqués avec des matériaux de récupération.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VI — La création collective",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>L'écriture</h3>
+        <p>Écrire ou adapter un texte, seul ou en groupe. La création collective valorise l'apport de chacun.</p>
+        <h3>L'adaptation</h3>
+        <p>Transformer un récit, un conte, un roman en pièce de théâtre. Il faut :</p>
+        <ul>
+          <li>Choisir les scènes essentielles.</li>
+          <li>Transformer le récit en dialogues.</li>
+          <li>Créer des personnages actifs.</li>
+        </ul>
+        <h3>La répétition</h3>
+        <p>Travailler le texte, les déplacements, les intentions, la synchronisation. Les répétitions sont essentielles à la qualité du spectacle.</p>
+        <h3>La production</h3>
+        <p>Organiser le spectacle : lieu, public, matériel, communication, billetterie.</p>
+      </div>
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p><strong>Erreur fréquente :</strong> négliger les répétitions. Un spectacle réussi repose sur un travail régulier et rigoureux.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VII — Le théâtre africain et congolais",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les traditions</h3>
+        <p>Théâtre rituel, masques, danses, récits, griots. Fonction sociale et communautaire : transmettre la mémoire, célébrer, critiquer.</p>
+        <figure>
+          <img data-image-id="artsdramatiques4_img03" alt="Troupe de théâtre africaine en représentation devant un public." />
+          <figcaption>Le théâtre congolais, vivant et engagé.</figcaption>
+        </figure>
+        <h3>Le théâtre congolais</h3>
+        <ul>
+          <li><strong>Troupes :</strong> nombreuses, actives à Kinshasa, Lubumbashi, Goma.</li>
+          <li><strong>Auteurs :</strong> dramaturges congolais contemporains.</li>
+          <li><strong>Salles et festivals :</strong> espaces de diffusion, événements culturels.</li>
+          <li><strong>Théâtre engagé :</strong> vecteur de critique sociale et de sensibilisation (santé, paix, citoyenneté).</li>
+        </ul>
+      </div>
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p><strong>Erreur fréquente :</strong> réduire le théâtre africain au folklore. Il existe une création contemporaine dynamique et diversifiée.</p>
+      </div>
+    `
+  },
+  {
+    title: "Synthèse — Jouer, mettre en scène, créer",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Synthèse générale</div>
+        <h3>Ce qu'il faut retenir</h3>
+        <ul>
+          <li><strong>Définition :</strong> art du spectacle vivant, mobilisant texte, corps, voix, espace et public.</li>
+          <li><strong>Genres :</strong> tragédie (destin), comédie (rire), drame (mélange), farce (comique grossier), absurde (remise en cause du sens).</li>
+          <li><strong>Langage :</strong> texte, personnages, didascalies, espace, temps.</li>
+          <li><strong>Jeu d'acteur :</strong> diction, voix, gestuelle, présence, écoute, improvisation.</li>
+          <li><strong>Analyse :</strong> structure, personnages, conflit, thèmes, contexte.</li>
+          <li><strong>Mise en scène :</strong> lecture, partis pris, direction d'acteurs, scénographie.</li>
+          <li><strong>Création collective :</strong> écriture, adaptation, répétition, production.</li>
+          <li><strong>Théâtre africain :</strong> traditions rituelles, création contemporaine, engagement.</li>
+        </ul>
+        <p>Un artiste dramatique complet unit <strong>technique</strong>, <strong>culture</strong> et <strong>créativité collective</strong>.</p>
+      </div>
+    `
+  },
+  {
+    title: "Évaluation finale — Arts Dramatiques",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Consigne</div>
+        <p>Réponds aux 20 questions suivantes pour vérifier ta maîtrise du cours. Chaque question a une seule bonne réponse parmi quatre propositions.</p>
+      </div>
+      <div class="quiz-container">
+        <div id="quizQuestions"></div>
+        <button id="submitQuiz" class="quiz-btn-submit">
+          Valider mes réponses
+        </button>
+        <div id="quizResult" class="quiz-result"></div>
+      </div>
+    `
+  }
+];
+const questions = [
+  {
+    text: "Le théâtre est :",
+    options: [
+      "Un art du spectacle vivant",
+      "Un art plastique",
+      "Un art musical",
+      "Un sport"
+    ],
+    correct: 0
+  },
+  {
+    text: "La tragédie se caractérise par :",
+    options: [
+      "Le destin et la souffrance",
+      "Le rire",
+      "La satire",
+      "L'absurde"
+    ],
+    correct: 0
+  },
+  {
+    text: "La comédie vise à :",
+    options: [
+      "Faire rire et critiquer les mœurs",
+      "Faire pleurer",
+      "Raconter une épopée",
+      "Chanter"
+    ],
+    correct: 0
+  },
+  {
+    text: "Les didascalies sont :",
+    options: [
+      "Des indications scéniques",
+      "Des dialogues",
+      "Des personnages",
+      "Des décors"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le jeu d'acteur comprend :",
+    options: [
+      "La diction, la voix et la gestuelle",
+      "Uniquement le texte",
+      "Uniquement les costumes",
+      "Uniquement le décor"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'improvisation consiste à :",
+    options: [
+      "Jouer sans texte préparé",
+      "Réciter un texte",
+      "Lire une partition",
+      "Peindre"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le conflit est :",
+    options: [
+      "Le moteur du drame",
+      "La fin de la pièce",
+      "Le décor",
+      "Le costume"
+    ],
+    correct: 0
+  },
+  {
+    text: "La mise en scène consiste à :",
+    options: [
+      "Concevoir et diriger le spectacle",
+      "Écrire le texte",
+      "Jouer un rôle",
+      "Vendre les billets"
+    ],
+    correct: 0
+  },
+  {
+    text: "La scénographie comprend :",
+    options: [
+      "Décor, lumière, costumes",
+      "Uniquement le texte",
+      "Uniquement les acteurs",
+      "Uniquement la musique"
+    ],
+    correct: 0
+  },
+  {
+    text: "La création collective implique :",
+    options: [
+      "L'écriture et la répétition en groupe",
+      "Uniquement l'écriture individuelle",
+      "Uniquement la représentation",
+      "Uniquement le décor"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le théâtre africain traditionnel est souvent :",
+    options: [
+      "Rituel et communautaire",
+      "Individuel",
+      "Écrit",
+      "Silencieux"
+    ],
+    correct: 0
+  },
+  {
+    text: "Les répétitions servent à :",
+    options: [
+      "Maîtriser le spectacle",
+      "Perdre du temps",
+      "Remplacer le texte",
+      "Éviter le public"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le public est :",
+    options: [
+      "Un élément essentiel du théâtre",
+      "Inutile",
+      "Un obstacle",
+      "Un décor"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le théâtre de l'absurde remet en cause :",
+    options: [
+      "Le sens et la logique",
+      "Le décor",
+      "Les costumes",
+      "La musique"
+    ],
+    correct: 0
+  },
+  {
+    text: "La diction consiste à :",
+    options: [
+      "Prononcer clairement",
+      "Crier",
+      "Chuchoter",
+      "Chanter"
+    ],
+    correct: 0
+  },
+  {
+    text: "La présence scénique est :",
+    options: [
+      "La capacité à occuper l'espace et à capter l'attention",
+      "La timidité",
+      "L'absence",
+      "Le silence"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le metteur en scène :",
+    options: [
+      "Dirige les acteurs et conçoit le spectacle",
+      "Écrit le texte",
+      "Joue tous les rôles",
+      "Vend les billets"
+    ],
+    correct: 0
+  },
+  {
+    text: "Les costumes et décors peuvent être fabriqués avec :",
+    options: [
+      "Des matériaux de récupération",
+      "Uniquement des matériaux neufs",
+      "Uniquement du bois",
+      "Uniquement du tissu"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le théâtre congolais est :",
+    options: [
+      "Vivant et engagé",
+      "Inexistant",
+      "Réservé aux étrangers",
+      "Silencieux"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'objectif principal des arts dramatiques en 4e Humanité est de :",
+    options: [
+      "Jouer, mettre en scène et créer des spectacles",
+      "Remplacer la littérature",
+      "Étudier la peinture",
+      "Gérer les stocks"
+    ],
+    correct: 0
+  }
+];
+
+try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+        questions.forEach(function (q) {
+            if (!q.text) q.text = q.question || q.q || q.enonce || q.titre || "";
+            if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+            if (typeof q.correct === "undefined") {
+                if (typeof q.answer !== "undefined") q.correct = q.answer;
+                else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+            }
+        });
+    }
+} catch (e) {}
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+const pageTitle = document.getElementById('pageTitle');
+pageTitle.textContent = "ECOLIA · " + COURSE_TITLE;
+document.title = "ECOLIA — " + COURSE_TITLE;
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim() || slides.length === 0) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp("(" + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ")", 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderEmptyState() {
+    contentDiv.innerHTML = '<div class="empty-state"><div class="icon">·</div><span class="tag">Bientôt disponible</span><h2>' + COURSE_TITLE + '</h2><p>Ce cours est en préparation. Le contenu sera ajouté prochainement.</p></div>';
+    slideCounterSpan.textContent = '0/0';
+    progressFill.style.width = '0%';
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    counterSpan.textContent = '—';
+}
+
+function renderQuiz() {
+    const qc = document.getElementById('quizQuestions');
+    if (!qc) return;
+    if (typeof questions === 'undefined' || questions.length === 0) {
+        qc.innerHTML = '<p style="color:#666;font-style:italic;">Quiz bientot disponible.</p>';
+        return;
+    }
+    let html = '';
+    questions.forEach((q, i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o, k) => {
+            html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>';
+        });
+        html += '</div>';
+    });
+    qc.innerHTML = html;
+    const submitBtn = document.getElementById('submitQuiz');
+    if (submitBtn) {
+        submitBtn.onclick = () => {
+            let score = 0;
+            questions.forEach((q, i) => {
+                const s = document.querySelector('input[name="q' + i + '"]:checked');
+                if (s && parseInt(s.value) === q.correct) score++;
+            });
+            const pct = Math.round(score/questions.length*100);
+            document.getElementById('quizResult').innerHTML =
+                '<div style="background:var(--bg2);padding:16px;border-radius:10px;margin-top:14px;">' +
+                '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong></div>';
+        };
+    }
+}
+
+function renderSlide(index, keepHighlight) {
+    if (keepHighlight === undefined) keepHighlight = true;
+    if (slides.length === 0) { renderEmptyState(); return; }
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    if (index === slides.length - 1) renderQuiz();
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    if (slides.length === 0) return;
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (slides.length && currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (slides.length && currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+<!-- ECOLIA_IMAGE_LOADER_START -->
+<script>
+(function () {
+  var SITE = "https://ecolia-course.github.io/";
+  var NATIVE = false;
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function abs(u) { return /^(https?:|data:|blob:)/i.test(u) ? u : (NATIVE ? SITE + u.replace(/^(\.\/|\/)+/, "") : u); }
+  function ext(u) { var m = String(u).split("?")[0].match(/\.(jpe?g|png|gif|webp|svg)$/i); return m ? m[1].toLowerCase() : "jpg"; }
+  function hide(img) { img.onerror = null; img.style.display = "none"; }
+  var table = null, queue = [], queued = {}, running = false;
+  function enqueue(full, fn) {
+    if (queued[fn]) return;
+    queued[fn] = 1; queue.push([full, fn]);
+    if (!running) { running = true; setTimeout(next, 2500); }
+  }
+  function next() {
+    if (!queue.length) { running = false; return; }
+    if (!navigator.onLine) { running = false; return; }
+    var q = queue.shift(), t0 = Date.now();
+    try { CoursInterface.download(q[0], q[1]); } catch (e) { return setTimeout(next, 500); }
+    (function wait() {
+      var ok = false;
+      try { ok = !!CoursInterface.exists(q[1]); } catch (e) {}
+      if (ok) setTimeout(next, 1500);
+      else if (Date.now() - t0 > 40000) next();
+      else setTimeout(wait, 700);
+    })();
+  }
+  function exists(fn) { try { return !!CoursInterface.exists(fn); } catch (e) { return false; } }
+  function show(img) {
+    if (!table || img.getAttribute("data-ecolia-done")) return;
+    var id = img.getAttribute("data-image-id");
+    var url = table[id];
+    if (typeof url !== "string" || !url.length) { console.warn("ECOLIA : image absente du JSON :", id); return; }
+    img.setAttribute("data-ecolia-done", "1");
+    if (!NATIVE) { img.onerror = function () { hide(img); }; img.setAttribute("src", url); return; }
+    var full = abs(url), fn = "img_" + id + "." + ext(url);
+    if (exists(fn)) {
+      img.onerror = function () {
+        try { CoursInterface["delete"](fn); } catch (e) {}
+        queued[fn] = 0;
+        img.onerror = function () { hide(img); };
+        img.setAttribute("src", full);
+      };
+      img.setAttribute("src", "https://app.local/cours/" + fn);
+    } else {
+      img.onerror = function () { hide(img); };
+      img.setAttribute("src", full);
+      enqueue(full, fn);
+    }
+  }
+  function scan(root) {
+    if (!root || !root.querySelectorAll) return;
+    if (root.matches && root.matches("img[data-image-id]")) show(root);
+    root.querySelectorAll("img[data-image-id]").forEach(show);
+  }
+  function prefetchAll() {
+    var ids = {};
+    try { JSON.stringify(slides).replace(/data-image-id=\\?"([^"\\]+)/g, function (m, id) { ids[id] = 1; }); } catch (e) {}
+    Object.keys(ids).forEach(function (id) {
+      var url = table[id];
+      if (typeof url !== "string" || !url.length) return;
+      var fn = "img_" + id + "." + ext(url);
+      if (!exists(fn)) enqueue(abs(url), fn);
+    });
+  }
+  function start(tbl) {
+    table = tbl;
+    scan(document.body);
+    new MutationObserver(function (muts) {
+      muts.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.nodeType === 1) scan(n); }); });
+    }).observe(document.body, { childList: true, subtree: true });
+    if (NATIVE) prefetchAll();
+  }
+  var JSON_URL = NATIVE ? SITE + "images_ecolia.json" : "images_ecolia.json";
+  var KEY = "ecolia_images_json";
+  fetch(JSON_URL, NATIVE ? { cache: "no-cache" } : undefined)
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (table) { if (NATIVE) lsSet(KEY, JSON.stringify(table)); start(table); })
+    .catch(function (e) {
+      var saved = null;
+      if (NATIVE) { try { saved = JSON.parse(lsGet(KEY) || "null"); } catch (x) {} }
+      if (saved) start(saved);
+      else console.warn("ECOLIA : JSON des images indisponible.", e);
+    });
+})();
+</script>
+<!-- ECOLIA_IMAGE_LOADER_END -->
+
+
+
+
+
+<!-- ECOLIA_AUDIO_PLAYER_START -->
+<style>
+  #ecolia-audio-btn, #ecolia-dl-btn {
+    width: 30px; height: 30px; min-width: 30px; padding: 0; margin: 0 4px 0 0;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    cursor: pointer; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent; outline: none;
+  }
+  #ecolia-audio-btn { border: none; background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-dl-btn { border: 1.5px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb); }
+  #ecolia-dl-btn.ecolia-full { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-btn.ecolia-fixed { position: fixed; top: 8px; left: 8px; z-index: 2147483000; }
+  #ecolia-audio-btn:active, #ecolia-dl-btn:active { transform: scale(.92); }
+  #ecolia-audio-btn svg, #ecolia-dl-btn svg { width: 15px; height: 15px; fill: currentColor; pointer-events: none; }
+  #ecolia-audio-btn.ecolia-off, #ecolia-dl-btn.ecolia-off { display: none; }
+  #ecolia-audio-banner {
+    display: none; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0;
+    padding: 8px 14px; font-size: .82rem; line-height: 1.35;
+    background: var(--soft, #eef3fb); color: var(--p1, #123); border-bottom: 1px solid var(--bd, #c9d6ea);
+  }
+  #ecolia-audio-banner.on { display: flex; }
+  #ecolia-audio-banner .eab-txt { flex: 1 1 180px; }
+  #ecolia-audio-banner .eab-act { display: flex; gap: 6px; flex-wrap: wrap; }
+  #ecolia-audio-banner button {
+    border: 1px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb);
+    border-radius: 16px; padding: 5px 12px; font-size: .8rem; cursor: pointer;
+  }
+  #ecolia-audio-banner button.pri { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-banner .eab-bar { display: none; flex-basis: 100%; height: 4px; border-radius: 2px; overflow: hidden; background: var(--bd, #c9d6ea); }
+  #ecolia-audio-banner .eab-bar i { display: block; height: 100%; width: 0; background: var(--p2, #2563eb); transition: width .2s; }
+</style>
+<script>
+(function () {
+  var CFG = {"code":"ArtsDramatiques4","base":"https://ecolia-course.github.io/ecolia-media/audio_files/","available":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17],"count":17,"sizeMo":7,"sizes":{"1":475584,"2":602880,"3":428736,"4":324480,"5":362880,"6":313728,"7":326784,"8":373632,"9":336576,"10":395904,"11":347712,"12":321216,"13":316992,"14":454272,"15":442176,"16":586176,"17":101184},"fallback":{"1":[["fr","Sommaire, Arts Dramatiques. Présentation du cours. Arts Dramatiques, 4e Humanité. Ce cours te forme à jouer, à mettre en scène et à créer des spectacles. Tu étudieras les genres dramatiques, le langage théâtral, le jeu d'acteur, l'analyse de texte, la mise en scène, la création collective et le théâtre africain et congolais. Objectifs d'apprentissage. Connaître les genres dramatiques et les éléments du langage théâtral. Maîtriser les techniques de base du jeu d'acteur. Analyser un texte dramatique. Concevoir une mise en scène simple. Participer à une création collective. Présenter un spectacle devant un public. Grands chapitres. Introduction au théâtre. Le langage théâtral. Le jeu d'acteur. L'analyse d'un texte dramatique. La mise en scène. La création collective. Le théâtre africain et congolais."]],"2":[["fr","Pourquoi les arts dramatiques? Situation de départ. Préparer un spectacle sur la paix. Une classe de 4e arts dramatiques à Kinshasa prépare un spectacle sur le thème de la paix. Les élèves doivent écrire une saynète, distribuer les rôles, répéter, fabriquer des costumes et présenter le spectacle devant l'école. Ils ne savent pas par où commencer. Question de départ: quelles connaissances et quelles techniques un élève doit-il maîtriser pour jouer, mettre en scène et créer un spectacle? Fondements théoriques. Définition et domaines. Le théâtre est un art du spectacle vivant qui représente des actions humaines à travers des personnages, un texte, un espace et un public. Il mobilise le corps, la voix et la présence. En 4e Humanité, l'objectif n'est pas de former des acteurs professionnels confirmés (cela relève des écoles d'art dramatique), mais de développer des compétences de base et une culture théâtrale. Débouchés. Comédien, metteur en scène, dramaturge. Animateur, formateur, régisseur. Médiateur culturel, critique de théâtre."]],"3":[["fr","Chapitre I, Définition et origines du théâtre. Fondements théoriques. Définition. Le théâtre est un art du spectacle vivant qui représente des actions humaines à travers des personnages, un texte, un espace et un public. Origines. Occident: le théâtre naît en Grèce antique (Ve siècle av. J.-C.) avec la tragédie et la comédie. Les représentations ont lieu lors des fêtes en l'honneur de Dionysos. Afrique: le théâtre africain a des origines rituelles et communautaires (masques, danses, récits, griots). Il remplit une fonction sociale et spirituelle. À retenir. Erreur fréquente: croire que le théâtre se limite au texte. C'est un art du spectacle, qui mobilise le corps, la voix, l'espace et le public."]],"4":[["fr","Chapitre I, Les genres dramatiques. Fondements théoriques. Les principaux genres. Les deux masques du théâtre. La tragédie: destin, souffrance, catharsis. Les héros affrontent un destin inévitable. La comédie: rire, satire des mœurs. Elle corrige les défauts humains par le rire. Le drame: mélange de tragique et de comique, plus proche de la vie réelle. La farce: comique grossier, situations absurdes, personnages caricaturaux. Le théâtre de l'absurde: remise en cause du sens et de la logique (Beckett, Ionesco)."]],"5":[["fr","Chapitre II, Le langage théâtral. Fondements théoriques. Les éléments du langage théâtral. Le texte: dialogue entre personnages, parfois monologue ou aparté. Les personnages: rôles, caractères, relations, évolution. Les didascalies: indications scéniques données par l'auteur (déplacements, gestes, tons, décors). L'espace: lieu scénique, décor, proximité avec le public. Le temps: temps de la fiction, temps de la représentation, rythme. À retenir. Erreur fréquente: négliger les didascalies. Elles sont essentielles à la compréhension des intentions de l'auteur."]],"6":[["fr","Chapitre II, L'espace et le temps au théâtre. Fondements théoriques. L'espace. L'espace scénique comprend: La scène (espace de jeu). La salle (espace du public). Les coulisses (espaces latéraux). Le décor (éléments visuels). La relation scène-salle est essentielle: elle crée la proximité, l'échange, l'émotion. Le temps. Temps de la fiction: époque où se déroule l'histoire. Temps de la représentation: durée réelle du spectacle. Rythme: alternance des moments forts et faibles, des pauses et des accélérations."]],"7":[["fr","Chapitre III, Le jeu d'acteur: diction et voix. Fondements théoriques. La diction. La diction est la prononciation claire et articulée des mots. Elle permet au public de comprendre le texte sans effort. Articuler chaque son, surtout les consonnes finales. Respecter la ponctuation (pauses, respirations). Travailler avec des virelangues pour améliorer la précision. La voix. Volume: adapter l'intensité à la salle. Rythme: varier le débit pour éviter la monotonie. Intonation: moduler la hauteur pour exprimer les émotions. Nuances: du murmure au cri."]],"8":[["fr","Chapitre III, La gestuelle et la présence. Fondements théoriques. La gestuelle. Les gestes accompagnent et renforcent le propos: Gestes d'ouverture (accueil, générosité). Gestes de précision (désigner, montrer). Gestes d'accompagnement (souligner le rythme). Éviter les gestes parasites (se toucher les cheveux, croiser les bras, tripoter un objet). La présence. La présence est la capacité à occuper l'espace et à capter l'attention du public. Elle repose sur: La posture (dos droit, ancrage au sol). Le regard (contact avec le public). Le silence (savoir s'arrêter, respirer)."]],"9":[["fr","Chapitre III, L'écoute et l'improvisation. Fondements théoriques. L'écoute. Le théâtre est un jeu collectif. L'acteur doit écouter ses partenaires, réagir à leurs répliques, ajuster son jeu en fonction de l'échange. L'improvisation. L'improvisation consiste à jouer sans texte préparé, à partir d'un thème ou d'une consigne. Elle développe: La spontanéité et la créativité. L'écoute et la réactivité. La confiance en soi. À retenir. Erreur fréquente: réciter son texte sans écouter les autres. Le théâtre est un jeu collectif: chaque acteur dépend des autres."]],"10":[["fr","Chapitre IV, L'analyse d'un texte dramatique. Fondements théoriques. La structure. Les actes et les scènes: divisions du texte. L'exposition: présentation des personnages et de la situation. Le nœud: apparition du conflit. Le dénouement: résolution du conflit. Les personnages. Portrait, motivations, relations, évolution au fil de la pièce. Le conflit. Le conflit est le moteur du drame: opposition entre personnages, valeurs ou intérêts. Les thèmes. Amour, pouvoir, justice, liberté, mort. À retenir. Erreur fréquente: résumer l'histoire sans analyser le conflit et les personnages. L'analyse doit éclairer le sens de la pièce."]],"11":[["fr","Chapitre IV, Les personnages et les thèmes. Fondements théoriques. Analyser un personnage. Identité: nom, âge, condition sociale. Caractère: qualités, défauts, passions. Motivations: ce qui le pousse à agir. Évolution: comment il change au fil de la pièce. Relations: liens avec les autres personnages. Analyser un thème. Un thème est une idée développée par la pièce. Il faut: L'identifier (amour, pouvoir, justice). Repérer comment il est traité (scènes, répliques, symboles). Interpréter son sens (message de l'auteur)."]],"12":[["fr","Chapitre V, La mise en scène. Fondements théoriques. La lecture du texte. Comprendre le sens, les intentions de l'auteur, les possibilités d'interprétation. Les partis pris. Le metteur en scène fait des choix artistiques: Époque: situer l'action dans son époque d'origine ou la transposer. Style: réaliste, onirique, absurde, classique. Décor, costumes, musique: en cohérence avec le propos. La direction d'acteurs. Guider les comédiens, proposer des intentions, corriger les erreurs, créer une dynamique de groupe."]],"13":[["fr","Chapitre V, La scénographie. Fondements théoriques. Les éléments de la scénographie. La scénographie: créer l'espace du spectacle. Le décor: éléments construits ou choisis, qui situent l'action. La lumière: éclaire, souligne, crée des atmosphères. Le son: musique, bruitages, silences. Les costumes: caractérisent les personnages, situent l'époque. Les accessoires: objets manipulés par les acteurs. En R D C: décors, costumes et accessoires peuvent être fabriqués avec des matériaux de récupération."]],"14":[["fr","Chapitre VI, La création collective. Fondements théoriques. L'écriture. Écrire ou adapter un texte, seul ou en groupe. La création collective valorise l'apport de chacun. L'adaptation. Transformer un récit, un conte, un roman en pièce de théâtre. Il faut: Choisir les scènes essentielles. Transformer le récit en dialogues. Créer des personnages actifs. La répétition. Travailler le texte, les déplacements, les intentions, la synchronisation. Les répétitions sont essentielles à la qualité du spectacle. La production. Organiser le spectacle: lieu, public, matériel, communication, billetterie. À retenir. Erreur fréquente: négliger les répétitions. Un spectacle réussi repose sur un travail régulier et rigoureux."]],"15":[["fr","Chapitre VII, Le théâtre africain et congolais. Fondements théoriques. Les traditions. Théâtre rituel, masques, danses, récits, griots. Fonction sociale et communautaire: transmettre la mémoire, célébrer, critiquer. Le théâtre congolais, vivant et engagé. Le théâtre congolais. Troupes: nombreuses, actives à Kinshasa, Lubumbashi, Goma. Auteurs: dramaturges congolais contemporains. Salles et festivals: espaces de diffusion, événements culturels. Théâtre engagé: vecteur de critique sociale et de sensibilisation (santé, paix, citoyenneté). À retenir. Erreur fréquente: réduire le théâtre africain au folklore. Il existe une création contemporaine dynamique et diversifiée."]],"16":[["fr","Synthèse, Jouer, mettre en scène, créer. Synthèse générale. Ce qu'il faut retenir. Définition: art du spectacle vivant, mobilisant texte, corps, voix, espace et public. Genres: tragédie (destin), comédie (rire), drame (mélange), farce (comique grossier), absurde (remise en cause du sens). Langage: texte, personnages, didascalies, espace, temps. Jeu d'acteur: diction, voix, gestuelle, présence, écoute, improvisation. Analyse: structure, personnages, conflit, thèmes, contexte. Mise en scène: lecture, partis pris, direction d'acteurs, scénographie. Création collective: écriture, adaptation, répétition, production. Théâtre africain: traditions rituelles, création contemporaine, engagement. Un artiste dramatique complet unit technique, culture et créativité collective."]],"17":[["fr","Évaluation finale, Arts Dramatiques. Consigne. Réponds aux 20 questions suivantes pour vérifier ta maîtrise du cours. Chaque question a une seule bonne réponse parmi quatre propositions."]]}};
+  var CACHE = "ecolia-cours-v1";                       // même cache que l'application
+  var PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  var PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+  var DL = '<svg viewBox="0 0 24 24"><path d="M11 3h2v9.2l3.6-3.6L18 10l-6 6-6-6 1.4-1.4L11 12.2V3zM5 19h14v2H5z"/></svg>';
+  var OK = '<svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>';
+  // Réparation du quiz : certains cours stockent les choix sous "opts" (ou autre) au lieu de "options"
+  try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+      questions.forEach(function (q) {
+        if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+        if (q.text === undefined) q.text = q.question || q.q || q.enonce || q.titre || "";
+        if (typeof q.correct === "undefined") {
+          if (typeof q.answer !== "undefined") q.correct = q.answer;
+          else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+        }
+      });
+    }
+  } catch (e) {}
+  var synth = window.speechSynthesis || null;
+  var HAS_CACHE = !!(window.caches && window.caches.open);
+  var NATIVE = false;           // APK ECOLIA : pont Java "CoursInterface" (fichiers dans le dossier de l'application)
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  var LATER = "ecolia_audio_later_" + CFG.code;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+  function init() {
+    if (document.getElementById("ecolia-audio-btn")) return;
+
+    // ---------- éléments de l'interface ----------
+    var btn = document.createElement("button");
+    btn.id = "ecolia-audio-btn"; btn.type = "button"; btn.className = "ecolia-off";
+    btn.setAttribute("aria-label", "Écouter la leçon"); btn.innerHTML = PLAY;
+    var dlBtn = document.createElement("button");
+    dlBtn.id = "ecolia-dl-btn"; dlBtn.type = "button"; dlBtn.className = "ecolia-off";
+    dlBtn.innerHTML = DL;
+    var host = document.querySelector(".header-right");
+    if (host) { host.insertBefore(dlBtn, host.firstChild); host.insertBefore(btn, dlBtn); }   // dans la barre du haut : ne scrolle jamais
+    else { btn.className += " ecolia-fixed"; document.body.appendChild(btn); }
+
+    var banner = document.createElement("div");
+    banner.id = "ecolia-audio-banner";
+    banner.innerHTML = '<span class="eab-txt"></span><span class="eab-act"></span><div class="eab-bar"><i></i></div>';
+    var content = document.getElementById("content");
+    if (content && content.parentNode) content.parentNode.insertBefore(banner, content);
+    else document.body.insertBefore(banner, document.body.firstChild);
+    var txtEl = banner.querySelector(".eab-txt"), actEl = banner.querySelector(".eab-act");
+    var barEl = banner.querySelector(".eab-bar"), barI = barEl.firstChild;
+
+    var audio = new Audio();            // un seul élément Audio, réutilisé (exigé par les navigateurs mobiles)
+    audio.preload = "auto";
+    var st = { idx: -1, auto: false, advancing: false, mode: null, speaking: false, token: 0, chunks: [], ci: 0, blobUrl: null, playTok: 0 };
+    var dl = { state: "none", cached: 0, busy: false, cancel: false };   // none | partial | full
+    var bnMode = null, hideTimer = null;
+    if (synth && synth.getVoices) { try { synth.getVoices(); } catch (e) {} }
+
+    function cur() {
+      try { if (typeof currentSlide === "number") return currentSlide; } catch (e) {}
+      return 0;
+    }
+    function hasMp3(i) { return CFG.available.indexOf(i + 1) !== -1; }
+    function fb(i) { return CFG.fallback && CFG.fallback[String(i + 1)]; }
+    function hasAudio(i) { return hasMp3(i) || (!!synth && !!fb(i)); }
+    function urlN(n) {   // dans l'APK la page est sur https://app.local : une adresse relative doit pointer vers le site
+      var b = CFG.base;
+      if (NATIVE && !/^https?:/i.test(b)) b = "https://ecolia-course.github.io/" + b.replace(/^(\.\.\/|\.\/)+/, "");
+      return new URL(b + nameN(n), location.href).href;
+    }
+    function setIcon(playing) { btn.innerHTML = playing ? PAUSE : PLAY; }
+    function isPlaying() { return st.mode === "mp3" ? !audio.paused : (st.mode === "tts" && st.speaking); }
+    function mo() { return "≈ " + CFG.sizeMo + " Mo"; }
+    function nameN(n) { return "audio_" + CFG.code + "_" + n + ".mp3"; }
+
+    // ====================================================================
+    //  Stockage hors ligne : 2 moteurs, même interface
+    //    - APK : fichiers du dossier de l'application (CoursInterface), servis par https://app.local/cours/
+    //    - Web : Cache Storage du navigateur (même cache que l'application web)
+    // ====================================================================
+    function nativeStore() {
+      var okKey = "ecolia_audio_ok_" + CFG.code;
+      function readOk() { try { return JSON.parse(lsGet(okKey) || "[]"); } catch (e) { return []; } }
+      function writeOk(a) { lsSet(okKey, JSON.stringify(a)); }
+      function exists(n) { try { return !!CoursInterface.exists(nameN(n)); } catch (e) { return false; } }
+      function local(n) { return location.origin + "/cours/" + nameN(n); }
+      function verify(n) {                                   // fichier complet ? (taille exacte connue à la génération)
+        return fetch(local(n), { cache: "no-store" }).then(function (r) { return r.blob(); }).then(function (b) {
+          var exp = CFG.sizes && CFG.sizes[String(n)];
+          return (b.size > 2000 && (!exp || b.size === exp)) ? b : null;
+        }).catch(function () { return null; });
+      }
+      return {
+        list: function () {
+          var ok = readOk().filter(exists); writeOk(ok); return Promise.resolve(ok);
+        },
+        get: function (n) { return exists(n) ? verify(n) : Promise.resolve(null); },
+        put: function (n) {
+          return new Promise(function (res, rej) {
+            try { CoursInterface.download(urlN(n), nameN(n)); } catch (e) { return rej(e); }
+            var t0 = Date.now();
+            function next() { if (Date.now() - t0 > 120000) rej(new Error("délai dépassé")); else setTimeout(poll, 800); }
+            function poll() {
+              if (!exists(n)) return next();
+              verify(n).then(function (b) {
+                if (!b) return next();
+                var ok = readOk(); if (ok.indexOf(n) < 0) ok.push(n); writeOk(ok); res();
+              });
+            }
+            setTimeout(poll, 800);
+          });
+        },
+        del: function (n) {
+          try { CoursInterface.delete(nameN(n)); } catch (e) {}
+          writeOk(readOk().filter(function (x) { return x !== n; }));
+          return Promise.resolve();
+        }
+      };
+    }
+    function cacheStore() {
+      return {
+        list: function () {
+          return caches.open(CACHE).then(function (c) {
+            return Promise.all(CFG.available.map(function (n) {
+              return c.match(urlN(n)).then(function (r) {
+                if (!r) return 0;
+                if ((r.headers.get("content-type") || "").indexOf("audio") !== 0) { c.delete(urlN(n)); return 0; }   // ancien contenu invalide
+                return n;
+              });
+            }));
+          }).then(function (a) { return a.filter(Boolean); });
+        },
+        get: function (n) {
+          return caches.open(CACHE).then(function (c) { return c.match(urlN(n)); })
+            .then(function (r) { return r ? r.blob() : null; }).then(function (b) { return b && b.size > 2000 ? b : null; });
+        },
+        put: function (n) {
+          var u = urlN(n);
+          return fetch(u, { cache: "no-store" }).then(function (r) {
+            if (!r.ok || r.status !== 200) throw new Error("HTTP " + r.status);
+            return r.blob();
+          }).then(function (b) {
+            if (b.size < 2000 || (b.type && b.type.indexOf("audio") !== 0 && b.type.indexOf("octet") < 0)) throw new Error("fichier invalide");
+            return caches.open(CACHE).then(function (c) { return c.put(u, new Response(b, { headers: { "Content-Type": "audio/mpeg" } })); });
+          });
+        },
+        del: function (n) { return caches.open(CACHE).then(function (c) { return c.delete(urlN(n)); }); }
+      };
+    }
+    var store = NATIVE ? nativeStore() : (HAS_CACHE ? cacheStore() : null);
+
+    // ====================================================================
+    //  Bannière : invitation, confirmations, progression
+    // ====================================================================
+    function showBanner(mode, text, buttons, pct) {
+      clearTimeout(hideTimer);
+      bnMode = mode;
+      txtEl.textContent = text;
+      actEl.innerHTML = "";
+      (buttons || []).forEach(function (b) {
+        var e = document.createElement("button");
+        e.type = "button"; e.textContent = b.label; if (b.pri) e.className = "pri";
+        e.addEventListener("click", function (ev) { ev.stopPropagation(); b.fn(); });
+        actEl.appendChild(e);
+      });
+      if (typeof pct === "number") { barEl.style.display = "block"; barI.style.width = pct + "%"; }
+      else barEl.style.display = "none";
+      banner.classList.add("on");
+    }
+    function hideBanner() { clearTimeout(hideTimer); bnMode = null; banner.classList.remove("on"); }
+    function flash(text) { showBanner("info", text, []); hideTimer = setTimeout(hideBanner, 4000); }
+
+    function refreshUI() {
+      var show = !!store && CFG.available.length > 0;
+      dlBtn.classList.toggle("ecolia-off", !show);
+      dlBtn.classList.toggle("ecolia-full", dl.state === "full");
+      dlBtn.innerHTML = dl.state === "full" ? OK : DL;
+      dlBtn.setAttribute("aria-label", dl.state === "full" ? "Audios téléchargés : supprimer" : "Télécharger les audios");
+      dlBtn.title = dlBtn.getAttribute("aria-label");
+    }
+    function refreshCacheState(done) {
+      if (!store) { dl.state = "none"; refreshUI(); if (done) done(); return; }
+      store.list().then(function (ok) {
+        dl.cached = ok.length;
+        dl.state = dl.cached === 0 ? "none" : (dl.cached >= CFG.available.length ? "full" : "partial");
+      }).catch(function () { dl.state = "none"; }).then(function () { refreshUI(); if (done) done(); });
+    }
+
+    function askDownload(fromInvite) {
+      var left = CFG.available.length - dl.cached;
+      var txt = dl.state === "partial"
+        ? "Il reste " + left + " audio(s) à télécharger pour écouter ce cours sans internet."
+        : "🔊 Télécharger les audios de ce cours (" + mo() + ") pour les écouter sans internet ? Wi-Fi recommandé.";
+      showBanner(fromInvite ? "invite" : "confirm", txt, [
+        { label: fromInvite ? "Plus tard" : "Annuler", fn: function () { if (fromInvite) lsSet(LATER, "1"); hideBanner(); } },
+        { label: "Télécharger", pri: true, fn: startDownload }
+      ]);
+    }
+    function askDelete() {
+      showBanner("confirm", "Supprimer les audios téléchargés de ce cours (" + mo() + ") ? Vous pourrez toujours les écouter en ligne.", [
+        { label: "Annuler", fn: hideBanner },
+        { label: "Supprimer", pri: true, fn: doDelete }
+      ]);
+    }
+
+    function startDownload() {
+      if (dl.busy || !store) return;
+      dl.busy = true; dl.cancel = false;
+      var total = CFG.available.length, done = 0, quota = false, fails = 0, todo = [];
+      store.list().then(function (have) {
+        CFG.available.forEach(function (n) { if (have.indexOf(n) < 0) todo.push(n); });
+        done = total - todo.length;
+        function paint() {
+          var msg = "Téléchargement des audios : " + done + " / " + total;
+          if (bnMode === "progress") {                  // met à jour sans recréer les boutons (sinon un appui peut être perdu)
+            txtEl.textContent = msg; barI.style.width = Math.round(done / total * 100) + "%";
+          } else {
+            showBanner("progress", msg, [
+              { label: "Annuler", fn: function () { dl.cancel = true; } }
+            ], Math.round(done / total * 100));
+          }
+        }
+        paint();
+        function worker() {
+          if (dl.cancel || quota || !todo.length) return Promise.resolve();
+          var n = todo.shift();
+          return store.put(n).then(function () { done++; paint(); }).catch(function (e) {
+            if (e && (e.name === "QuotaExceededError" || /quota/i.test(String(e.message)))) quota = true;
+            fails++;
+          }).then(worker);
+        }
+        return Promise.all([worker(), worker()]);
+      }).catch(function () { fails++; }).then(function () {
+        dl.busy = false;
+        refreshCacheState(function () {
+          if (dl.state === "full") flash("✓ Audios téléchargés : le cours se lit maintenant sans internet.");
+          else if (dl.cancel) flash("Téléchargement interrompu (" + dl.cached + " / " + total + "). Vous pourrez reprendre plus tard.");
+          else showBanner("error", quota ? "Espace insuffisant sur l'appareil. Libérez de la place puis réessayez."
+            : "Certains audios n'ont pas pu être téléchargés (connexion ?).", [
+            { label: "Fermer", fn: hideBanner }, { label: "Réessayer", pri: true, fn: startDownload }
+          ]);
+        });
+      });
+    }
+    function doDelete() {
+      if (!store) return;
+      Promise.all(CFG.available.map(function (n) { return store.del(n); })).catch(function () {}).then(function () {
+        lsDel(LATER);
+        refreshCacheState(function () { flash("Audios supprimés de cet appareil."); });
+      });
+    }
+
+    dlBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (dl.busy) return;
+      if (dl.state === "full") askDelete(); else askDownload(false);
+    });
+
+    // ====================================================================
+    //  Voix intégrée au téléphone (hors ligne, sans limite)
+    // ====================================================================
+    function pickVoice(lang) {
+      var vs = [];
+      try { vs = synth.getVoices() || []; } catch (e) {}
+      var pre = lang === "en" ? "en" : "fr", best = null;
+      for (var k = 0; k < vs.length; k++) {
+        var v = vs[k];
+        if ((v.lang || "").toLowerCase().indexOf(pre) !== 0) continue;
+        if (!best || (v.localService && !best.localService)) best = v;
+      }
+      return best;
+    }
+    function hardSplit(text, max) {
+      var out = [];
+      while (text.length > max) {
+        var cut = text.lastIndexOf(" ", max);
+        if (cut < 40) cut = max;
+        out.push(text.slice(0, cut)); text = text.slice(cut).replace(/^\s+/, "");
+      }
+      if (text) out.push(text);
+      return out;
+    }
+    function buildChunks(segs) {                  // morceaux courts : évite l'arrêt des longs textes sur Chrome
+      var out = [];
+      segs.forEach(function (s) {
+        var cur2 = "", parts = s[1].match(/[^.!?;:]+[.!?;:]*\s*/g) || [s[1]];
+        parts.forEach(function (p) {
+          if (cur2 && (cur2 + p).length > 160) { out.push({ lang: s[0], text: cur2.trim() }); cur2 = p; }
+          else cur2 += p;
+        });
+        if (cur2.trim()) out.push({ lang: s[0], text: cur2.trim() });
+      });
+      var res = [];
+      out.forEach(function (c) { hardSplit(c.text, 190).forEach(function (t) { res.push({ lang: c.lang, text: t }); }); });
+      return res;
+    }
+    function speakFrom(tk) {
+      if (tk !== st.token) return;
+      if (st.ci >= st.chunks.length) {
+        st.speaking = false; st.mode = null; st.ci = 0; setIcon(false);
+        if (st.auto) goNext();
+        return;
+      }
+      var c = st.chunks[st.ci];
+      var u = new SpeechSynthesisUtterance(c.text);
+      u.lang = c.lang === "en" ? "en-US" : "fr-FR";
+      var v = pickVoice(c.lang);
+      if (v) { u.voice = v; u.lang = v.lang; }
+      u.rate = 0.95;
+      u.onend = function () { if (tk !== st.token) return; st.ci++; speakFrom(tk); };
+      u.onerror = function () { if (tk !== st.token) return; st.speaking = false; setIcon(false); st.auto = false; };
+      synth.speak(u);
+    }
+    function startTts(from) {
+      st.token++;
+      var tk = st.token;
+      st.mode = "tts"; st.speaking = true; st.ci = from || 0; setIcon(true);
+      var busy = false;
+      try { busy = synth.speaking || synth.pending; synth.cancel(); } catch (e) {}
+      if (busy) setTimeout(function () { speakFrom(tk); }, 120);   // laisse cancel() se terminer
+      else speakFrom(tk);                                          // sinon tout de suite (exigé par iOS)
+    }
+    function playVoice() {
+      if (!(synth && fb(st.idx))) { st.auto = false; return false; }
+      if (!st.chunks.length) st.chunks = buildChunks(fb(st.idx));
+      startTts(st.ci);
+      return true;
+    }
+
+    // ====================================================================
+    //  Lecture
+    // ====================================================================
+    function freeBlob() { if (st.blobUrl) { try { URL.revokeObjectURL(st.blobUrl); } catch (e) {} st.blobUrl = null; } }
+    function stopAll() {
+      st.playTok++;
+      try { audio.pause(); audio.currentTime = 0; } catch (e) {}
+      st.token++;
+      try { if (synth) synth.cancel(); } catch (e) {}
+      st.speaking = false; st.mode = null; st.chunks = []; st.ci = 0;
+      setIcon(false);
+    }
+    function pauseNow() {
+      if (st.mode === "mp3") audio.pause();
+      else if (st.mode === "tts") {
+        st.token++;
+        try { synth.cancel(); } catch (e) {}
+        st.speaking = false; setIcon(false);      // st.ci conservé : la reprise repart de la phrase en cours
+      }
+    }
+    function startAudio(src, tok) {
+      if (tok !== st.playTok) return;
+      if (audio.getAttribute("data-src") !== src) { audio.setAttribute("data-src", src); audio.src = src; }
+      var p = audio.play();
+      if (p && p.catch) p.catch(function (err) {
+        console.warn("ECOLIA audio :", err);
+        if (tok !== st.playTok) return;
+        if (!(err && err.name === "NotAllowedError") && playVoice()) return;   // lecture impossible : voix du téléphone
+        setIcon(false); st.auto = false;
+      });
+    }
+    function playCurrent() {
+      var i = st.idx;
+      if (hasMp3(i)) {
+        var tok = ++st.playTok, u = urlN(i + 1);
+        st.mode = "mp3";
+        if (!navigator.onLine && dl.state === "none") { st.mode = null; if (playVoice()) return; }   // hors ligne et non téléchargé
+        if (store && dl.state !== "none") {                     // téléchargé : lecture locale, sans réseau
+          store.get(i + 1)
+            .then(function (b) {
+              if (tok !== st.playTok) return;
+              if (b) { freeBlob(); st.blobUrl = URL.createObjectURL(new Blob([b], { type: "audio/mpeg" })); startAudio(st.blobUrl, tok); }
+              else startAudio(u, tok);
+            }).catch(function () { startAudio(u, tok); });
+        } else startAudio(u, tok);                              // sinon lecture en ligne (appel immédiat, exigé par iOS)
+      } else if (!playVoice()) {
+        st.auto = false;
+      }
+    }
+
+    function onSlideChange(i) {
+      var wasAdvancing = st.advancing;
+      st.advancing = false;
+      st.idx = i;
+      btn.classList.toggle("ecolia-off", !hasAudio(i));
+      stopAll();
+      audio.removeAttribute("data-src");
+      freeBlob();
+      if (bnMode === "invite" && i !== 0) hideBanner();       // l'invitation n'apparaît qu'à la première slide
+      if (wasAdvancing && st.auto) setTimeout(playCurrent, 500);   // enchaînement automatique
+      else st.auto = false;                                         // changement manuel : on coupe tout
+    }
+    function goNext() {
+      if (st.idx + 1 >= CFG.count) { st.auto = false; return; }
+      st.advancing = true;
+      if (typeof nextSlide === "function") nextSlide();
+      else { var nb = document.getElementById("nextBtn"); if (nb) nb.click(); }
+      setTimeout(function () { st.advancing = false; }, 4000);
+    }
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var i = cur();
+      if (i !== st.idx) onSlideChange(i);
+      if (isPlaying()) { st.auto = false; pauseNow(); }
+      else { st.auto = true; playCurrent(); }
+    });
+    audio.addEventListener("play", function () { setIcon(true); });
+    audio.addEventListener("pause", function () { if (st.mode === "mp3") setIcon(false); });
+    audio.addEventListener("error", function () {
+      if (st.mode === "mp3" && playVoice()) return;            // fichier introuvable / hors ligne : voix du téléphone
+      setIcon(false); st.auto = false;
+    });
+    audio.addEventListener("ended", function () { setIcon(false); if (st.auto) goNext(); });
+    window.addEventListener("pagehide", function () { stopAll(); freeBlob(); });
+
+    // ---------- démarrage ----------
+    refreshCacheState(function () {
+      if (store && CFG.available.length && dl.state !== "full" && navigator.onLine && cur() === 0 && !lsGet(LATER)) askDownload(true);
+    });
+    st.idx = -1;
+    setInterval(function () { var i = cur(); if (i !== st.idx) onSlideChange(i); }, 250);   // suit la slide affichée
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+<!-- ECOLIA_AUDIO_PLAYER_END -->
+</body>
+</html>

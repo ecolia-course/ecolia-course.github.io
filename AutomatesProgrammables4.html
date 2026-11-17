@@ -1,0 +1,2073 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="rouge">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>ECOLIA — Automates Programmables4</title>
+<style>
+[data-theme="bleu"]   { --p1:#0d2b4f; --p2:#1565c0; --p3:#07172e; --p4:#12437a; --p5:#5b8fd0; --bg:#e8f0fb; --bg2:#cfdff5; --bd:#a9c3e8; --soft:#dde8f7; --btn:#2a67b0; }
+[data-theme="vert"]   { --p1:#14442e; --p2:#2e7d32; --p3:#0b2b1a; --p4:#1f5c3a; --p5:#4f9a6b; --bg:#e8f5ec; --bg2:#c8e6d2; --bd:#a5cdb2; --soft:#dcefe2; --btn:#2f7a4f; }
+[data-theme="violet"] { --p1:#2d1b4e; --p2:#6a1b9a; --p3:#1a0f2e; --p4:#4a148c; --p5:#9c6fd0; --bg:#f1e9fb; --bg2:#dccbf2; --bd:#c4a8e6; --soft:#e8ddf6; --btn:#7e3fb2; }
+[data-theme="rouge"]  { --p1:#4a1010; --p2:#b71c1c; --p3:#2b0a0a; --p4:#8e1b1b; --p5:#d9706a; --bg:#fbeaea; --bg2:#f3cdcb; --bd:#e8a9a5; --soft:#f8dede; --btn:#a62a2a; }
+[data-theme="orange"] { --p1:#4e2a0c; --p2:#ef6c00; --p3:#2e1604; --p4:#b34a00; --p5:#f0a15a; --bg:#fff1e0; --bg2:#fbdcb8; --bd:#f3c08a; --soft:#fdebd6; --btn:#c9650a; }
+[data-theme="teal"]   { --p1:#0b3a3a; --p2:#00796b; --p3:#062626; --p4:#00574b; --p5:#4db6ac; --bg:#e0f2f1; --bg2:#b2dfdb; --bd:#80cbc4; --soft:#d5ecea; --btn:#26897d; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:linear-gradient(160deg,var(--p1) 0%,var(--p2) 50%,var(--p3) 100%); display:flex; justify-content:center; align-items:center; padding:8px; }
+.container { width:100%; max-width:1400px; background:#fefdf8; border-radius:20px; overflow:hidden; display:flex; flex-direction:column; height:100%; max-height:100vh; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.progress-bar { height:4px; background:var(--bg2); flex-shrink:0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--p5),var(--p4)); width:0%; transition:width 0.3s; }
+.header { padding:10px 16px; background:var(--bg); border-bottom:1px solid var(--bd); display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+.header h1 { color:var(--p4); font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box { display:flex; background:white; border-radius:20px; padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.search-box input { border:none; padding:6px 10px; border-radius:20px; outline:none; width:130px; font-size:0.8rem; }
+.search-box button { background:none; border:none; cursor:pointer; padding:4px 8px; font-size:0.85rem; color:var(--p2); }
+.badge { background:var(--p5); color:white; padding:4px 10px; border-radius:20px; font-weight:bold; font-size:0.75rem; }
+.search-nav { display:none; gap:4px; background:var(--bg2); padding:2px 8px; border-radius:20px; align-items:center; font-size:0.75rem; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:0.9rem; color:var(--p4); padding:2px 4px; }
+.content { padding:28px 32px; flex:1; overflow-y:auto; background:#fff; scroll-behavior:smooth; line-height:1.85; }
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.slide-title { color:var(--p1); font-size:1.5rem; font-weight:700; padding-bottom:12px; margin-bottom:20px; border-bottom:2px solid var(--p5); }
+.slide-content { color:var(--p3); font-size:1rem; }
+.empty-state { display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-height:60vh; padding:40px 20px; gap:18px; }
+.empty-state .icon { width:72px; height:72px; border-radius:50%; background:var(--bg); border:2px solid var(--bd); display:flex; align-items:center; justify-content:center; color:var(--p2); font-size:2rem; font-weight:300; }
+.empty-state h2 { color:var(--p1); font-size:1.4rem; font-weight:700; margin:0; }
+.empty-state p { color:#666; font-size:0.95rem; max-width:520px; line-height:1.7; }
+.empty-state .tag { display:inline-block; padding:6px 14px; background:var(--bg); color:var(--p4); border:1px solid var(--bd); border-radius:20px; font-size:0.8rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; }
+.bloc { padding:18px 22px; border-radius:12px; margin:22px 0; line-height:1.85; }
+.bloc-label { font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; opacity:0.7; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:var(--bg); border-left:4px solid var(--p5); }
+.theorie .bloc-label { color:var(--p4); }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.sources { background:#f5f5f5; padding:12px 16px; border-radius:10px; margin-top:26px; font-size:0.82rem; color:#666; border-left:3px solid #999; line-height:1.6; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:var(--p1); }
+.quiz-container { padding:22px; background:var(--bg); border-radius:16px; }
+.quiz-question { background:white; border-radius:10px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.quiz-question p { font-weight:600; margin-bottom:10px; color:var(--p1); }
+.quiz-question label { display:block; padding:8px 10px; margin:4px 0; border-radius:6px; cursor:pointer; transition:background 0.2s; }
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit { background:var(--btn); color:white; border:none; padding:12px 24px; border-radius:30px; font-size:1rem; cursor:pointer; font-weight:600; margin-top:14px; }
+.quiz-result { margin-top:16px; font-weight:600; }
+.controls { padding:8px 16px; background:#fafafa; border-top:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0; }
+.nav-btn { background:white; color:var(--p4); border:1px solid #ccc; padding:8px 14px; border-radius:8px; font-size:0.82rem; cursor:pointer; font-weight:500; }
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:var(--soft); }
+.content::-webkit-scrollbar-thumb { background:var(--p5); border-radius:3px; }
+@media (max-width:600px) { body { padding:0; } .container { border-radius:0; max-height:100vh; } .content { padding:20px 18px; } .slide-title { font-size:1.25rem; } .search-box input { width:90px; } .header h1 { font-size:0.85rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="header">
+<h1 id="pageTitle">ECOLIA</h1>
+<div class="header-right">
+<div class="search-box">
+<input id="searchInput" placeholder="Rechercher" type="text"/>
+<button id="searchBtn">⌕</button>
+</div>
+<div class="search-nav" id="searchNav">
+<button id="prevResultBtn">‹</button>
+<span id="resultCounter">0/0</span>
+<button id="nextResultBtn">›</button>
+</div>
+<span class="badge" id="slideCounter">0/0</span>
+</div>
+</div>
+<div class="content" id="content"></div>
+<div class="controls">
+<button class="nav-btn" id="prevBtn">← Précédent</button>
+<span class="counter" id="counter">—</span>
+<button class="nav-btn" id="nextBtn">Suivant →</button>
+</div>
+</div>
+<script>
+const COURSE_TITLE = "Automates Programmables (API et Automatismes Industriels)";
+const slides = [
+  {
+    title: "Sommaire — Automates Programmables",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Présentation du cours</div>
+        <h3>Bienvenue dans le monde de l'automatisation</h3>
+        <p>Ce cours de 4<sup>e</sup> année des Humanités Techniques Industrielles vous initie aux <strong>automates programmables industriels (API)</strong> et aux <strong>systèmes automatisés</strong>. Il prolonge le cours d'Électricité Industrielle : là où la logique câblée utilise des contacteurs et des relais pour commander une machine, l'API remplace cette logique par un <strong>programme enregistré en mémoire</strong>, modifiable sans recâblage.</p>
+        <p>À la fin du cours, vous saurez décrire l'architecture d'un système automatisé, expliquer le cycle de scrutation d'un API, distinguer les capteurs et actionneurs, écrire un programme en langage ladder (auto-maintien, temporisation, comptage), câbler les entrées/sorties, appliquer les règles de sécurité et diagnostiquer une panne simple.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Objectifs d'apprentissage</div>
+        <ul>
+          <li>Décrire l'architecture d'un système automatisé (PO, PC, interface, dialogue).</li>
+          <li>Identifier la constitution d'un API et son cycle de scrutation.</li>
+          <li>Distinguer les capteurs TOR et analogiques, les préactionneurs et les actionneurs.</li>
+          <li>Écrire un programme simple en langage ladder (auto-maintien, temporisation, comptage).</li>
+          <li>Câbler les entrées/sorties et effectuer la mise en service.</li>
+          <li>Appliquer les règles de sécurité des machines automatisées.</li>
+          <li>Diagnostiquer une panne simple sur un système automatisé.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Plan du cours</div>
+        <ol>
+          <li>Chapitre I — Introduction aux systèmes automatisés</li>
+          <li>Chapitre II — Les automates programmables industriels</li>
+          <li>Chapitre III — Les capteurs et les actionneurs</li>
+          <li>Chapitre IV — Le langage ladder (1) : logique combinatoire et auto-maintien</li>
+          <li>Chapitre V — Le langage ladder (2) : temporisateurs et compteurs</li>
+          <li>Chapitre VI — Le langage ladder (3) : Grafcet et séquenceurs</li>
+          <li>Chapitre VII — Mise en œuvre, câblage et sécurité</li>
+          <li>Chapitre VIII — Diagnostic et maintenance</li>
+        </ol>
+      </div>
+
+      <div class="sources">
+        <div class="bloc-label">Sources du cours</div>
+        <p>Manuels Scolaires RDC, <em>Électricité Industrielle et Automatismes, 4<sup>e</sup> année, Option Mécanique Générale</em> (Édition 2025) ; Fiches pédagogiques officielles Électricité Industrielle et Automatismes (Édition 2025-2026) ; Bouteille, Dindeleux, <em>Les automates programmables industriels</em>.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Pourquoi les automates programmables ?",
+    content: `
+      <div class="bloc cas">
+        <div class="bloc-label">Situation-problème</div>
+        <h3>Une minoterie de Kinshasa veut moderniser sa ligne</h3>
+        <p>Une minoterie de Kinshasa exploitait une ligne d'ensachage commandée par logique câblée. À chaque modification du format de sac, il fallait recâbler une partie de l'armoire : plusieurs heures d'arrêt, risque d'erreur de câblage. Aujourd'hui, la même ligne est pilotée par un <strong>automate programmable</strong>. Un simple changement de recette dans le logiciel suffit : le technicien modifie un paramètre et la ligne redémarre en quelques minutes.</p>
+        <p>C'est le grand intérêt de l'API : <strong>la flexibilité</strong>. La logique de commande n'est plus figée dans des fils, elle est inscrite dans un programme que l'on peut lire, sauvegarder, modifier et recharger.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>De la logique câblée à la logique programmée</h3>
+        <table>
+          <thead>
+            <tr><th>Logique câblée (contacteurs, relais)</th><th>Logique programmée (API)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Modification = recâblage complet.</td><td>Modification = correction du programme.</td></tr>
+            <tr><td>Nombre de composants élevé pour des séquences complexes.</td><td>Un seul automate pour des dizaines de fonctions.</td></tr>
+            <tr><td>Usure mécanique des contacts.</td><td>Pas d'usure (contacts virtuels).</td></tr>
+            <tr><td>Diagnostic difficile (armoire volumineuse).</td><td>Diagnostic assisté par logiciel (voyants, forçage, supervision).</td></tr>
+            <tr><td>Coût faible pour une fonction simple.</td><td>Coût plus élevé à l'achat, amorti pour des fonctions nombreuses.</td></tr>
+          </tbody>
+        </table>
+        <p>En RDC, les industries minières du Lualaba, les brasseries et minoteries de Kinshasa, les stations de pompage de la REGIDESO et les cimenteries du Kongo-Central utilisent massivement des API pour commander leurs processus.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>L'API remplace la logique câblée par un programme.</li>
+          <li>Flexibilité : modification du programme sans recâblage.</li>
+          <li>Diagnostic plus rapide grâce aux voyants et au logiciel.</li>
+          <li>Base de l'automatisation industrielle moderne.</li>
+        </ul>
+      </div>
+
+      <div class="sources">
+        <div class="bloc-label">Source</div>
+        <p>Manuels Scolaires RDC, <em>Électricité Industrielle et Automatismes, 4<sup>e</sup> année</em> (Édition 2025).</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Architecture d'un système automatisé",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Quatre éléments à distinguer</h3>
+        <p>Un système automatisé comporte quatre grandes parties :</p>
+        <ul>
+          <li><strong>La partie opérative (PO)</strong> : elle <em>agit</em> sur la matière d'œuvre. Ce sont les moteurs, vérins, pompes, électrovannes, résistances chauffantes, convoyeurs. La PO est l'ensemble des <strong>actionneurs</strong> qui font le travail physique.</li>
+          <li><strong>La partie commande (PC)</strong> : elle <em>décide</em>. C'est l'automate programmable et son programme. La PC reçoit des informations, exécute la logique et envoie des ordres.</li>
+          <li><strong>L'interface</strong> : les <strong>capteurs</strong> (informations vers la PC) et les <strong>préactionneurs</strong> (ordres de la PC vers la PO). Les préactionneurs sont les contacteurs, distributeurs hydrauliques/pneumatiques, variateurs de vitesse.</li>
+          <li><strong>Le dialogue</strong> : le pupitre opérateur, l'écran de supervision, les boutons et voyants qui permettent à l'opérateur de dialoguer avec le système.</li>
+        </ul>
+      </div>
+
+      <figure>
+        <img data-image-id="automatesprogrammables4_img01" alt="Schéma de l'architecture d'un système automatisé : partie opérative avec actionneurs, partie commande avec API, interface capteurs et préactionneurs, dialogue avec pupitre opérateur.">
+        <figcaption>L'architecture d'un système automatisé.</figcaption>
+      </figure>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Exemple concret</div>
+        <p>Dans une station de pompage REGIDESO :</p>
+        <ul>
+          <li><strong>PO</strong> : la pompe et son moteur, la vanne motorisée.</li>
+          <li><strong>PC</strong> : l'API qui déclenche le démarrage à heure programmée et gère le niveau.</li>
+          <li><strong>Interface</strong> : capteur de niveau (analogique), capteur de pression, capteur de présence (TOR), contacteur du moteur (préactionneur).</li>
+          <li><strong>Dialogue</strong> : pupitre avec bouton marche, voyant « en service », écran d'alarme.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>PO agit, PC décide.</li>
+          <li>Interface = capteurs (entrée) + préactionneurs (sortie).</li>
+          <li>Dialogue = pupitre, écran, boutons, voyants.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Les intérêts de l'automatisation",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Pourquoi automatiser ?</h3>
+        <p>Automatiser un processus industriel, ce n'est pas « remplacer les humains » : c'est <strong>améliorer</strong> la production et les conditions de travail. Les intérêts sont multiples :</p>
+        <ul>
+          <li><strong>Productivité</strong> : le système travaille sans pause, à cadence constante.</li>
+          <li><strong>Régularité de la qualité</strong> : chaque pièce est produite selon les mêmes paramètres.</li>
+          <li><strong>Sécurité des opérateurs</strong> : les tâches dangereuses (soudage, découpe, pression) sont réalisées par la machine ; l'opérateur surveille depuis le pupitre.</li>
+          <li><strong>Économie d'énergie et de matière</strong> : arrêt automatique quand la production est terminée, dosage précis.</li>
+          <li><strong>Flexibilité</strong> : changement de recette par programme, sans recâblage.</li>
+          <li><strong>Traçabilité</strong> : les API enregistrent les événements, ce qui facilite la maintenance et la qualité.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les deux niveaux d'automatisation</h3>
+        <ul>
+          <li><strong>Automatisation câblée</strong> : réalisée par contacteurs, relais, temporisateurs électromécaniques. Simple et robuste, mais peu flexible.</li>
+          <li><strong>Automatisation programmée</strong> : réalisée par API, microcontrôleurs ou calculateurs industriels. Flexible, évolutive, diagnosable.</li>
+        </ul>
+        <p>Le cours d'électricité industrielle a présenté la logique câblée ; ce cours-ci présente la logique programmée.</p>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Application RDC</div>
+        <p>Dans une brasserie de Kinshasa, l'automatisation du conditionnement permet de traiter plusieurs formats de bouteilles sur la même ligne : la recette change dans l'API, les guides et cadences s'ajustent automatiquement. Sans API, il faudrait une ligne dédiée par format, ce qui serait économiquement impossible.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>6 intérêts majeurs : productivité, qualité, sécurité, économie, flexibilité, traçabilité.</li>
+          <li>Deux niveaux : câblé (rigide) et programmé (flexible).</li>
+          <li>En RDC, automatisation croissante dans les mines, l'agroalimentaire et le pompage.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — Constitution d'un API",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Un calculateur industriel robuste</h3>
+        <p>L'<strong>automate programmable industriel (API)</strong> est un calculateur conçu pour fonctionner en milieu industriel : températures élevées, vibrations, poussière, perturbations électromagnétiques. Il exécute un programme en temps réel et commande un processus.</p>
+        <p>Sa constitution comprend :</p>
+        <ul>
+          <li><strong>L'unité centrale (CPU)</strong> : le « cerveau » qui exécute le programme, gère les entrées/sorties et communique.</li>
+          <li><strong>Les mémoires</strong> : mémoire programme (où est stocké le programme), mémoire de données (variables, temporisateurs, compteurs), images des entrées et des sorties.</li>
+          <li><strong>Les modules d'entrées</strong> : TOR (tout ou rien, 24 V DC ou 230 V AC) ou analogiques (4-20 mA, 0-10 V).</li>
+          <li><strong>Les modules de sorties</strong> : à relais (pour charges AC ou DC), à transistor (DC seulement, plus rapide), à triac (AC seulement).</li>
+          <li><strong>L'alimentation</strong> : 24 V DC (fréquent), 230 V AC, parfois redondante.</li>
+          <li><strong>Les modules de communication</strong> : Ethernet, Profibus, Modbus, série RS232/RS485.</li>
+        </ul>
+      </div>
+
+      <figure>
+        <img data-image-id="automatesprogrammables4_img02" alt="Photo annotée d'un automate programmable industriel montrant l'unité centrale, les modules d'entrées/sorties et l'alimentation.">
+        <figcaption>La constitution d'un API.</figcaption>
+      </figure>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Exemples industriels</div>
+        <p>Sur le marché, on trouve des API de marques variées : Siemens (S7-1200, S7-1500), Schneider (M221, M241), Allen-Bradley (MicroLogix, CompactLogix), Omron, Mitsubishi. Les principes sont les mêmes, seules la syntaxe de programmation et l'adressage diffèrent (par exemple I0.0 chez Siemens et I:1/0 chez Allen-Bradley désignent tous deux une entrée).</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>CPU + mémoires + modules E/S + alimentation + communication.</li>
+          <li>E/S TOR et analogiques.</li>
+          <li>Sorties à relais, transistor ou triac.</li>
+          <li>API robustes et industriels, pas de simples ordinateurs.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — Le cycle de scrutation",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Comment l'API exécute-t-il son programme ?</h3>
+        <p>Un API ne traite pas les entrées et les sorties en continu. Il fonctionne par <strong>cycles successifs</strong> appelés <strong>cycles de scrutation</strong>. Chaque cycle comporte quatre étapes dans l'ordre :</p>
+        <ol>
+          <li><strong>Lecture des entrées</strong> : l'API lit l'état réel de toutes les entrées et met à jour l'<strong>image des entrées</strong> en mémoire.</li>
+          <li><strong>Exécution du programme</strong> : l'API exécute le programme ligne par ligne, en utilisant l'image des entrées (et non les entrées physiques). Il met à jour l'<strong>image des sorties</strong> en mémoire.</li>
+          <li><strong>Écriture des sorties</strong> : l'API transfère l'image des sorties vers les modules physiques, qui actionnent les préactionneurs.</li>
+          <li><strong>Autotests et communication</strong> : vérification de la mémoire, dialogue avec le superviseur, gestion des alarmes.</li>
+        </ol>
+        <p>Puis le cycle recommence indéfiniment. La durée d'un cycle est le <strong>temps de scrutation</strong> ou <strong>temps de cycle</strong>, typiquement de 1 à 50 ms selon la taille du programme et la vitesse du processeur.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Conséquences pratiques</div>
+        <ul>
+          <li>Une impulsion plus courte que le temps de cycle peut ne pas être vue (rare en pratique).</li>
+          <li>Le programme voit toujours des images cohérentes : une entrée ne change pas au milieu de l'exécution.</li>
+          <li>Pour les processus rapides, on utilise des API rapides ou des modules spécialisés (comptage rapide, interruptions).</li>
+        </ul>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Exemple corrigé</div>
+        <p>Un API a un temps de cycle de 10 ms. Un capteur de passage délivre une impulsion de 30 ms lors du passage d'une pièce. L'API verra-t-il le passage ? <strong>Oui</strong>, car 30 ms &gt; 10 ms : l'impulsion durera au moins 3 cycles. En revanche, une impulsion de 5 ms pourrait être manquée selon l'instant d'arrivée. <strong>Conclusion :</strong> vérifier que la durée des impulsions est supérieure au temps de cycle.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>4 étapes : lire les entrées → exécuter → écrire les sorties → autotests/communication.</li>
+          <li>Le programme utilise les <em>images</em> des E/S, pas les grandeurs physiques.</li>
+          <li>Temps de cycle typique : 1 à 50 ms.</li>
+          <li>Impulsions plus courtes que le cycle : risque de non-détection.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — Critères de choix d'un API",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Choisir un automate adapté</h3>
+        <p>Le choix d'un API dépend de plusieurs critères :</p>
+        <table>
+          <thead>
+            <tr><th>Critère</th><th>Question à se poser</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Nombre d'E/S</td><td>Combien de capteurs et préactionneurs ? Prévoir une réserve de 20 à 30 % pour évolutions.</td></tr>
+            <tr><td>Type d'E/S</td><td>TOR uniquement ou analogiques aussi ? Tensions ? Courants ?</td></tr>
+            <tr><td>Type de sorties</td><td>Relais, transistor ou triac selon les charges.</td></tr>
+            <tr><td>Mémoire</td><td>Taille du programme et des données.</td></tr>
+            <tr><td>Communication</td><td>Ethernet, Modbus, Profibus selon le réseau existant et la supervision.</td></tr>
+            <tr><td>Logiciel</td><td>Disponibilité du logiciel de programmation, simplicité, coût de licence.</td></tr>
+            <tr><td>Robustesse</td><td>Température, vibrations, indice de protection IP.</td></tr>
+            <tr><td>Maintenance</td><td>Disponibilité locale, support du fournisseur, sauvegarde facile.</td></tr>
+            <tr><td>Coût global</td><td>Achat + formation + maintenance + évolution.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">En contexte RDC</div>
+        <p>Beaucoup d'écoles techniques congolaises utilisent d'anciens API Siemens S7-200 ou Allen-Bradley MicroLogix, ou se forment sur des simulateurs logiciels gratuits (TIA Portal, RSLogix, EcoStruxure). L'élève doit savoir s'adapter : les concepts (ladder, E/S, cycle) sont les mêmes, seule la syntaxe change.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Compter les E/S + réserve 20-30 %.</li>
+          <li>Choisir le type de sorties selon les charges.</li>
+          <li>Vérifier communication et logiciel.</li>
+          <li>Coût global, pas seulement prix d'achat.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — Les capteurs TOR",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les capteurs Tout Ou Rien</h3>
+        <p>Un capteur <strong>TOR</strong> (Tout Ou Rien) délivre un signal binaire : soit « 0 » (variable inactive), soit « 1 » (variable active). Il indique la présence ou l'absence d'un événement. Les principaux capteurs TOR industriels sont :</p>
+        <ul>
+          <li><strong>Bouton-poussoir</strong> : commande manuelle de l'opérateur.</li>
+          <li><strong>Fin de course</strong> : détecte la position extrême d'un mobile (fin de course de sécurité, d'inversion, de référence).</li>
+          <li><strong>Détecteur de proximité inductif</strong> : détecte la présence d'un objet <strong>métallique</strong> sans contact, à quelques millimètres.</li>
+          <li><strong>Détecteur de proximité capacitif</strong> : détecte tout type d'objet (métal, plastique, liquide) sans contact.</li>
+          <li><strong>Capteur photoélectrique</strong> : détecte par interruption d'un faisceau lumineux. Fréquent sur les convoyeurs.</li>
+          <li><strong>Thermostat</strong> : contact qui s'ouvre ou se ferme selon la température.</li>
+          <li><strong>Pressostat</strong> : contact qui commute à une pression donnée.</li>
+        </ul>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Application</div>
+        <p>Sur une chaîne d'ensachage : un capteur photoélectrique détecte le passage de chaque sac ; un fin de course vérifie que le sac est bien positionné ; un bouton-poussoir permet à l'opérateur de démarrer la séquence. Trois capteurs TOR, trois entrées sur l'API.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Le choix d'un capteur TOR</div>
+        <ul>
+          <li>Type de détection : métal, tout objet, distance, lumière.</li>
+          <li>Portée : distance de détection.</li>
+          <li>Type de sortie : PNP ou NPN (pour les capteurs 24 V DC).</li>
+          <li>Indice de protection IP : étanchéité (IP65, IP67 selon l'ambiance).</li>
+          <li>Température d'utilisation.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Capteur TOR = signal binaire 0/1.</li>
+          <li>Inductif : métal ; capacitif : tout objet.</li>
+          <li>Photoélectrique : interruption de faisceau.</li>
+          <li>Fin de course : position mécanique.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — Les capteurs analogiques",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Mesurer une grandeur continue</h3>
+        <p>Les capteurs <strong>analogiques</strong> délivrent un signal <strong>proportionnel</strong> à une grandeur physique (pression, température, niveau, débit, position, poids). Ils sont indispensables pour surveiller des grandeurs continues. Les signaux normalisés sont :</p>
+        <ul>
+          <li><strong>4-20 mA</strong> : le standard industriel le plus répandu (immunité au bruit, détection de rupture : 0 mA = défaut).</li>
+          <li><strong>0-10 V</strong> : plus simple, mais plus sensible aux perturbations sur de longues distances.</li>
+          <li><strong>0-5 V, ±10 V, 0-20 mA</strong> : plus rares.</li>
+        </ul>
+        <p>L'API lit ces signaux sur des <strong>modules d'entrées analogiques</strong>, qui convertissent la valeur électrique en <strong>valeur numérique</strong> (par exemple 0-27648 pour un module Siemens 16 bits). Le programme peut alors comparer, afficher, réguler.</p>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Exemple corrigé</div>
+        <p><strong>Donnée :</strong> un capteur de pression délivre 4-20 mA pour une plage de 0 à 10 bars. La mesure actuelle est de 12 mA.<br>
+        <strong>Calcul :</strong> proportion : (12 − 4) / (20 − 4) = 8 / 16 = 0,5 ; pression = 0,5 × 10 = <strong>5 bars</strong>.<br>
+        <strong>Interprétation :</strong> le courant de 12 mA correspond au milieu de la plage, soit 5 bars. Le programme peut alors comparer à un seuil (par exemple 8 bars = alarme).</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Précautions de câblage</div>
+        <ul>
+          <li>Respecter la polarité (boucle 4-20 mA : alimentation + capteur + module en série).</li>
+          <li>Utiliser du câble blindé pour les signaux analogiques (loin des câbles de puissance).</li>
+          <li>Vérifier la configuration du module (type de signal : 4-20 mA ou 0-10 V) dans le logiciel.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Signal analogique = proportionnel à la grandeur physique.</li>
+          <li>Standards : 4-20 mA et 0-10 V.</li>
+          <li>4-20 mA : détection de rupture à 0 mA.</li>
+          <li>Câble blindé, polarité respectée.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — Préactionneurs et actionneurs",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Agir sur la matière d'œuvre</h3>
+        <p>Pour transformer l'ordre de l'API en action physique, il faut deux étages :</p>
+        <ul>
+          <li><strong>Le préactionneur</strong> : il reçoit un signal faible de la part de l'API (24 V) et commute l'énergie vers l'actionneur. C'est un « relais de puissance » :</li>
+        </ul>
+        <table>
+          <thead>
+            <tr><th>Préactionneur</th><th>Actionneur commandé</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Contacteur</td><td>Moteur électrique</td></tr>
+            <tr><td>Distributeur pneumatique</td><td>Vérin pneumatique</td></tr>
+            <tr><td>Distributeur hydraulique</td><td>Vérin hydraulique</td></tr>
+            <tr><td>Variateur de vitesse</td><td>Moteur à vitesse variable</td></tr>
+            <tr><td>Relais statique</td><td>Résistance chauffante</td></tr>
+          </tbody>
+        </table>
+        <ul>
+          <li><strong>L'actionneur</strong> : il produit l'effet physique. C'est le moteur, le vérin, l'électrovanne, la résistance chauffante, le convoyeur.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les sorties de l'API</div>
+        <p>Les sorties de l'API alimentent les bobines des préactionneurs. Trois technologies existent :</p>
+        <ul>
+          <li><strong>Sorties à relais</strong> : universelles (AC ou DC), mais usure mécanique et vitesse limitée. Adaptées aux charges lentes.</li>
+          <li><strong>Sorties à transistor</strong> : uniquement DC, très rapides, pas d'usure. Adaptées au PNP/NPN, aux impulsions rapides (commande de variateurs).</li>
+          <li><strong>Sorties à triac</strong> : uniquement AC, rapides, sans usure mécanique.</li>
+        </ul>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Application</div>
+        <p>Dans une chaîne de conditionnement : l'API commande un contacteur (préactionneur) qui alimente le moteur du convoyeur (actionneur). Un distributeur pneumatique (préactionneur) commande un vérin (actionneur) qui pousse les cartons. Un relais statique (préactionneur) alimente une résistance chauffante (actionneur) pour le thermoscellage.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Préactionneur = interface énergie faible → énergie forte.</li>
+          <li>Actionneur = effet physique final.</li>
+          <li>Sorties relais / transistor / triac selon les charges.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre IV — Le langage ladder : contacts et bobines",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le langage à contacts (ladder)</h3>
+        <p>Le <strong>ladder</strong> (échelle en anglais) est le langage de programmation le plus utilisé pour les API. Il est né de la transposition des schémas électriques de logique câblée : les barres d'alimentation sont représentées à gauche (phase) et à droite (neutre), et le programme est dessiné comme une échelle dont chaque barreau (<em>rung</em>) contient une combinaison de contacts et de bobines.</p>
+        <h4>Les contacts</h4>
+        <ul>
+          <li><strong>Contact NO</strong> (normalement ouvert) : il est <em>fermé</em> (passant) quand la variable associée est à 1.</li>
+          <li><strong>Contact NC</strong> (normalement fermé) : il est <em>fermé</em> (passant) quand la variable associée est à 0.</li>
+        </ul>
+        <h4>Les bobines</h4>
+        <ul>
+          <li><strong>Bobine directe ( )</strong> : la sortie prend la valeur de la ligne (1 si la ligne est passante, 0 sinon).</li>
+          <li><strong>Bobine inversée (/)</strong> : la sortie prend la valeur inverse de la ligne.</li>
+          <li><strong>Bobine Set (S) / Reset (R)</strong> : active ou désactive une variable de façon mémorisée.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Adressage des variables</div>
+        <table>
+          <thead>
+            <tr><th>Type</th><th>Préfixe Siemens</th><th>Préfixe Allen-Bradley</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Entrée</td><td>I (I0.0)</td><td>I (I:1/0)</td></tr>
+            <tr><td>Sortie</td><td>Q (Q0.0)</td><td>O (O:2/0)</td></tr>
+            <tr><td>Mémoire interne</td><td>M (M0.0)</td><td>B3 (B3:0/0)</td></tr>
+            <tr><td>Temporisateur</td><td>T (T1)</td><td>T4 (T4:0)</td></tr>
+            <tr><td>Compteur</td><td>C (C1)</td><td>C5 (C5:0)</td></tr>
+          </tbody>
+        </table>
+        <p>Les principes sont identiques : seuls les préfixes et la syntaxe changent d'un constructeur à l'autre.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Ladder = transposition graphique de la logique câblée.</li>
+          <li>Contact NO : passant si variable = 1.</li>
+          <li>Contact NC : passant si variable = 0.</li>
+          <li>Bobine directe, inversée, Set/Reset.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre IV — L'auto-maintien en ladder",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le circuit de base : démarrer et maintenir</h3>
+        <p>Le premier programme que tout automaticien écrit est l'<strong>auto-maintien</strong> d'un moteur. Le principe : un appui bref sur le bouton marche doit démarrer le moteur, et le moteur doit continuer à tourner après relâchement du bouton, jusqu'à l'appui sur le bouton arrêt.</p>
+        <p>Équation logique :</p>
+        <p><strong>Q0.0 = (I0.0 + Q0.0) · <span style="text-decoration:overline">I0.1</span> · <span style="text-decoration:overline">I0.2</span></strong></p>
+        <ul>
+          <li>I0.0 = bouton marche (NO).</li>
+          <li>Q0.0 = sortie moteur (contact auxiliaire d'auto-maintien en parallèle sur I0.0).</li>
+          <li>I0.1 = bouton arrêt (câblé NC, donc contact fermé au repos).</li>
+          <li>I0.2 = contact du relais thermique (câblé NC).</li>
+        </ul>
+      </div>
+
+      <figure>
+        <img data-image-id="automatesprogrammables4_img03" alt="Schéma ladder d'un auto-maintien de moteur : bouton marche avec contact d'auto-maintien en parallèle, bouton arrêt et relais thermique en série, bobine de sortie moteur.">
+        <figcaption>Le langage ladder : auto-maintien d'un moteur.</figcaption>
+      </figure>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Fonctionnement</div>
+        <ol>
+          <li>Appui sur I0.0 : la ligne est passante, Q0.0 s'active, le moteur démarre.</li>
+          <li>Le contact auxiliaire Q0.0 se ferme : même après relâchement de I0.0, la ligne reste passante par Q0.0 (auto-maintien).</li>
+          <li>Appui sur I0.1 (arrêt) : le contact NC s'ouvre, la ligne se coupe, Q0.0 retombe, le moteur s'arrête.</li>
+          <li>Si I0.2 (relais thermique) déclenche, même effet : arrêt automatique pour protéger le moteur.</li>
+        </ol>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Un élève oublie le contact d'auto-maintien. Résultat : le moteur ne tourne que pendant l'appui sur le bouton. Dès qu'il relâche, le moteur s'arrête. <strong>Règle absolue :</strong> dans un circuit de marche/arrêt, l'auto-maintien est indispensable.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Auto-maintien = contact de la sortie en parallèle sur le bouton marche.</li>
+          <li>Arrêt et relais thermique en série, en NC.</li>
+          <li>Une seule ligne de ladder suffit pour ce programme.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre IV — Les fonctions logiques en ladder (ET, OU, NON)",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Trois opérateurs à maîtriser</h3>
+        <p>En ladder, les fonctions logiques se traduisent par la disposition des contacts :</p>
+        <ul>
+          <li><strong>ET (AND)</strong> : contacts en <strong>série</strong>. La sortie est active si <em>tous</em> les contacts sont passants. Exemple : Q0.0 = I0.0 · I0.1 (deux conditions à réunir).</li>
+          <li><strong>OU (OR)</strong> : contacts en <strong>parallèle</strong>. La sortie est active si <em>au moins un</em> contact est passant. Exemple : Q0.0 = I0.0 + I0.1.</li>
+          <li><strong>NON (NOT)</strong> : contact <strong>NC</strong> au lieu de NO. La sortie est active si la variable est à 0. Exemple : Q0.0 = <span style="text-decoration:overline">I0.0</span>.</li>
+        </ul>
+        <p>On peut <strong>combiner</strong> ces opérateurs : (I0.0 OU I0.1) ET NON I0.2 ET NON I0.3, etc.</p>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Exemple corrigé</div>
+        <p><strong>Énoncé :</strong> un voyant Q0.0 doit s'allumer si le moteur Q0.1 tourne ET si le niveau est bas (I0.3), mais uniquement si le mode automatique est actif (I0.4) et si l'arrêt d'urgence n'est pas pressé (I0.5).<br>
+        <strong>Équation :</strong> Q0.0 = Q0.1 · I0.3 · I0.4 · <span style="text-decoration:overline">I0.5</span>.<br>
+        <strong>Traduction ladder :</strong> tous ces contacts en série, avec I0.5 en NC. Une seule ligne de ladder.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Comparaison avec l'algèbre de Boole</div>
+        <table>
+          <thead>
+            <tr><th>Logique</th><th>Schéma ladder</th><th>Écriture booléenne</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>ET</td><td>Contacts en série</td><td>Q = I1 · I2</td></tr>
+            <tr><td>OU</td><td>Contacts en parallèle</td><td>Q = I1 + I2</td></tr>
+            <tr><td>NON</td><td>Contact NC</td><td>Q = <span style="text-decoration:overline">I1</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>ET = série ; OU = parallèle ; NON = contact NC.</li>
+          <li>Combinaisons : série/parallèle imbriqués.</li>
+          <li>Écrire d'abord l'équation logique, puis la traduire en ladder.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre V — Les temporisateurs (TON, TOF, TONR)",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Retarder, allonger, cumuler</h3>
+        <p>Les <strong>temporisateurs</strong> permettent de retarder l'action d'une sortie. Trois types principaux :</p>
+        <ul>
+          <li><strong>TON</strong> (Timer On Delay) : à la montée de l'entrée, le temporisateur commence à compter ; quand le temps de consigne est atteint, sa sortie (bit de sortie du timer) s'active. Si l'entrée retombe, le timer se réinitialise immédiatement. Sert à <strong>retarder l'activation</strong> d'une sortie.</li>
+          <li><strong>TOF</strong> (Timer Off Delay) : à la montée de l'entrée, la sortie du timer s'active immédiatement ; à la retombée de l'entrée, le timer commence à compter et la sortie reste active pendant le temps réglé, puis retombe. Sert à <strong>prolonger</strong> une action après disparition du signal.</li>
+          <li><strong>TONR</strong> (Timer Retentive On Delay) : cumule les durées d'activation, avec une remise à zéro explicite (par un bit de reset). Sert à <strong>totaliser</strong> un temps de fonctionnement.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Paramètres</div>
+        <ul>
+          <li><strong>IN</strong> : entrée d'activation du timer.</li>
+          <li><strong>PT</strong> (Preset Time) : consigne de temps (par exemple T#5s ou 5000 ms).</li>
+          <li><strong>ET</strong> (Elapsed Time) : temps écoulé.</li>
+          <li><strong>Q</strong> : sortie du timer (bit actif quand ET ≥ PT pour TON).</li>
+        </ul>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Application industrielle</div>
+        <p>Sur un convoyeur d'alimentation d'un broyeur :</p>
+        <ul>
+          <li>Au démarrage, le convoyeur doit attendre 3 s que le broyeur ait atteint sa vitesse nominale. On utilise un <strong>TON</strong> de 3 s qui retarde la sortie « convoyeur ».</li>
+          <li>À l'arrêt, le convoyeur doit continuer 10 s pour évacuer les derniers matériaux. On utilise un <strong>TOF</strong> de 10 s sur la sortie « convoyeur ».</li>
+          <li>Un compteur horaire de maintenance utilise un <strong>TONR</strong> pour totaliser les heures de fonctionnement.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Ne pas réinitialiser un TONR en début de cycle utile : le temps cumulé continue indéfiniment. Prévoir une remise à zéro explicite (bouton « RAZ compteur horaire ») et une sauvegarde périodique.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>TON : retard à la montée, RAZ automatique.</li>
+          <li>TOF : prolongation après retombée de l'entrée.</li>
+          <li>TONR : cumul réinitialisable.</li>
+          <li>Paramètres : IN, PT, ET, Q.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre V — Les compteurs (CTU, CTD)",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Compter des impulsions</h3>
+        <p>Les <strong>compteurs</strong> permettent de compter des événements (pièces sur un convoyeur, appuis sur un bouton, tours de moteur). Trois types principaux :</p>
+        <ul>
+          <li><strong>CTU</strong> (Count Up) : compte à chaque <strong>front montant</strong> de l'entrée de comptage. Quand la valeur courante atteint la consigne (PV = preset), le bit de sortie s'active. Une entrée de reset (R) remet le compteur à zéro.</li>
+          <li><strong>CTD</strong> (Count Down) : compte à la descente (décompte) à partir d'une valeur initiale chargée.</li>
+          <li><strong>CTUD</strong> (Count Up/Down) : compte et décompte selon deux entrées distinctes.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Paramètres</div>
+        <ul>
+          <li><strong>CU</strong> ou <strong>CD</strong> : entrée de comptage (up ou down).</li>
+          <li><strong>R</strong> : entrée de reset.</li>
+          <li><strong>PV</strong> : valeur de consigne (preset).</li>
+          <li><strong>CV</strong> : valeur courante (current value).</li>
+          <li><strong>Q</strong> : bit de sortie (actif quand CV ≥ PV pour CTU).</li>
+        </ul>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Application industrielle</div>
+        <p>Sur une chaîne d'ensachage : un capteur photoélectrique détecte chaque sac. Le compteur CTU est configuré avec PV = 12. À chaque sac détecté, CV augmente. Quand CV = 12, le bit de sortie Q active une alarme « lot complet » et le programme déclenche l'arrêt de la chaîne pour changer le lot. Un bouton « reset » remet le compteur à zéro pour le lot suivant.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Oublier de réinitialiser le compteur en début de cycle : au deuxième lot, le compteur est déjà à 12, l'alarme se déclenche immédiatement. <strong>Prévoir systématiquement une condition de reset</strong> (bouton, changement de recette, démarrage de cycle).</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>CTU : compte à la montée.</li>
+          <li>CTD : décompte.</li>
+          <li>CTUD : compte/décompte.</li>
+          <li>Paramètres : CU/CD, R, PV, CV, Q.</li>
+          <li>Reset obligatoire pour réutiliser le compteur.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VI — Le Grafcet : représenter une séquence",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Un outil de représentation séquentielle</h3>
+        <p>Le <strong>Grafcet</strong> (Graphe fonctionnel de commande étape/transition) est un outil graphique normalisé pour décrire le comportement d'un automatisme séquentiel. Il permet de <strong>penser</strong> la séquence avant de <strong>programmer</strong> l'API. Ses éléments :</p>
+        <ul>
+          <li><strong>Étapes</strong> : cases rectangulaires numérotées (1, 2, 3…). L'étape initiale est un double rectangle. Une étape est <strong>active</strong> ou inactive.</li>
+          <li><strong>Transitions</strong> : barres horizontales entre deux étapes. Chaque transition porte une <strong>condition</strong> (réceptivité) qui, lorsqu'elle est vraie, permet de passer de l'étape amont à l'étape aval.</li>
+          <li><strong>Actions</strong> : associées à chaque étape, inscrites à droite. Elles indiquent ce qui doit être fait lorsque l'étape est active.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Règles d'évolution</div>
+        <ol>
+          <li>À l'initialisation, l'étape initiale est active.</li>
+          <li>Une transition est <strong>franchie</strong> si elle est vraie ET si l'étape amont est active.</li>
+          <li>Le franchissement <strong>désactive</strong> l'étape amont et <strong>active</strong> l'étape aval.</li>
+          <li>Une seule étape est active à la fois dans une séquence linéaire (sauf parallélisme explicite).</li>
+        </ol>
+      </div>
+
+      <figure>
+        <img data-image-id="automatesprogrammables4_img04" alt="Exemple de Grafcet simple représentant le remplissage d'un réservoir avec les étapes d'ouverture de vanne, de remplissage, de fermeture et d'attente.">
+        <figcaption>Le Grafcet : représenter une séquence.</figcaption>
+      </figure>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Exemple : remplissage d'un réservoir</div>
+        <ol>
+          <li><strong>Étape 1 (initiale)</strong> : en attente. Action : —. Transition : bouton « départ » (I0.0).</li>
+          <li><strong>Étape 2</strong> : ouverture vanne. Action : vanne = 1. Transition : niveau bas atteint (I0.1).</li>
+          <li><strong>Étape 3</strong> : remplissage. Action : pompe = 1. Transition : niveau haut atteint (I0.2).</li>
+          <li><strong>Étape 4</strong> : fermeture vanne, arrêt pompe. Action : vanne = 0, pompe = 0. Transition : fin temporisation (T#2s).</li>
+          <li>Retour à l'étape 1 (boucle).</li>
+        </ol>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Grafcet = représentation graphique étape/transition.</li>
+          <li>Une transition franchie désactive l'étape amont et active l'étape aval.</li>
+          <li>Actions associées aux étapes.</li>
+          <li>Outil de conception avant la programmation.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VI — Traduction du Grafcet en ladder",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Du graphe au programme</h3>
+        <p>Un Grafcet se traduit en ladder selon une méthode systématique :</p>
+        <ol>
+          <li><strong>Une mémoire par étape</strong> : à chaque étape X<sub>i</sub> correspond une mémoire M<sub>i</sub>. L'étape initiale est activée par le programme d'initialisation.</li>
+          <li><strong>Activation d'une étape</strong> : M<sub>i</sub> = (M<sub>i−1</sub> ET condition de transition) OU (M<sub>i</sub> ET NON condition de sortie). En pratique, on utilise souvent un Set/Reset : Set M<sub>i</sub> si M<sub>i−1</sub> et transition vraie, Reset M<sub>i</sub> si M<sub>i+1</sub> devient active.</li>
+          <li><strong>Actions</strong> : les sorties physiques sont conditionnées par les mémoires d'étape. Exemple : vanne = M<sub>2</sub> OU M<sub>3</sub> ; pompe = M<sub>3</sub>.</li>
+          <li><strong>Sécurité</strong> : ajouter des conditions de sécurité (arrêt d'urgence, défauts) sur les sorties, indépendamment des étapes.</li>
+        </ol>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Exemple simplifié</div>
+        <p>Traduction du Grafcet de remplissage :</p>
+        <ul>
+          <li>Initialisation : Set M1.</li>
+          <li>Transition 1→2 : M1 ET I0.0 → Set M2, Reset M1.</li>
+          <li>Transition 2→3 : M2 ET I0.1 → Set M3, Reset M2.</li>
+          <li>Transition 3→4 : M3 ET I0.2 → Set M4, Reset M3.</li>
+          <li>Transition 4→1 : M4 ET T1.Q → Set M1, Reset M4.</li>
+          <li>Action vanne : Q0.0 = M2 OU M4.</li>
+          <li>Action pompe : Q0.1 = M3.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Oublier le Reset de l'étape amont lors du franchissement d'une transition : plusieurs étapes restent actives simultanément, le programme devient incohérent. Chaque transition doit <strong>activer l'étape aval et désactiver l'étape amont</strong>.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Une mémoire par étape.</li>
+          <li>Set de l'étape aval + Reset de l'étape amont à chaque transition.</li>
+          <li>Actions conditionnées par les mémoires d'étape.</li>
+          <li>Ajouter les sécurités indépendamment.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VII — Câblage des E/S et adressage",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Du capteur à l'entrée, de la sortie au préactionneur</h3>
+        <p>Le câblage d'un API suit des règles strictes :</p>
+        <ul>
+          <li><strong>Chaque capteur est relié à une entrée</strong> (I ou X). L'adressage dépend du constructeur : I0.0, I0.1, etc. (Siemens) ou I:1/0, I:1/1 (Allen-Bradley).</li>
+          <li><strong>Chaque préactionneur est relié à une sortie</strong> (Q ou Y). Adressage : Q0.0, Q0.1…</li>
+          <li><strong>Respecter la polarité et le type</strong> : 24 V DC, 230 V AC, PNP/NPN pour les capteurs, transistor/relais pour les sorties.</li>
+          <li><strong>Séparer les câbles</strong> : les câbles de puissance (vers les moteurs) sont séparés des câbles de commande et des câbles analogiques, pour éviter les perturbations.</li>
+          <li><strong>Blinder les signaux analogiques</strong> : câble blindé relié à la terre d'un seul côté (généralement côté API).</li>
+          <li><strong>Utiliser des bornes numérotées</strong> : faciliter la lecture des schémas et le dépannage.</li>
+        </ul>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Exemple de câblage</div>
+        <p>Sur une ligne d'ensachage :</p>
+        <ul>
+          <li>Entrée I0.0 : bouton marche.</li>
+          <li>Entrée I0.1 : bouton arrêt.</li>
+          <li>Entrée I0.2 : capteur de présence sac (photoélectrique).</li>
+          <li>Entrée I0.3 : fin de course position haute.</li>
+          <li>Sortie Q0.0 : contacteur convoyeur.</li>
+          <li>Sortie Q0.1 : distributeur vérin.</li>
+          <li>Sortie Q0.2 : voyant « en service ».</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">La mise en service</div>
+        <ol>
+          <li>Vérifier le câblage à l'ohmmètre hors tension.</li>
+          <li>Télécharger le programme dans l'API.</li>
+          <li>Passer en mode RUN.</li>
+          <li>Vérifier les E/S avec le logiciel (forçage ou observation).</li>
+          <li>Tester chaque séquence, pas à pas, en mode manuel puis automatique.</li>
+          <li>Sauvegarder le programme validé.</li>
+        </ol>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Une entrée par capteur, une sortie par préactionneur.</li>
+          <li>Respecter polarité et type.</li>
+          <li>Séparer puissance et commande.</li>
+          <li>Tester chaque E/S avant la mise en service.</li>
+          <li>Sauvegarder le programme validé.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VII — La sécurité des machines automatisées",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Sécurité positive : le principe à respecter</h3>
+        <p>La <strong>sécurité positive</strong> impose que tout défaut (coupure de fil, perte d'alimentation, capteur en panne) entraîne la <strong>mise en sécurité</strong> de la machine, c'est-à-dire son arrêt. Pour cela :</p>
+        <ul>
+          <li>Les <strong>arrêts d'urgence</strong> et les <strong>protections</strong> (capots, barrières) sont câblés avec des contacts <strong>NC</strong> (normalement fermés).</li>
+          <li>Une coupure de fil ou une perte d'alimentation ouvre le circuit : la machine s'arrête.</li>
+          <li>Si l'on utilisait des contacts NO, une coupure passerait inaperçue et la machine resterait en marche : <strong>danger mortel</strong>.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Dispositifs de sécurité</div>
+        <ul>
+          <li><strong>Arrêt d'urgence (AU)</strong> : bouton à champignon avec verrouillage mécanique. Il doit être câblé en série sur le circuit de commande et couper l'énergie des actionneurs (catégorie d'arrêt 0 ou 1 selon la norme).</li>
+          <li><strong>Capots et portes</strong> : interverrouillés ; l'ouverture coupe la commande.</li>
+          <li><strong>Barrières immatérielles</strong> (rideaux lumineux) : arrêtent la machine si une personne franchit la zone dangereuse.</li>
+          <li><strong>Relais de sécurité</strong> : modules redondants certifiés pour les fonctions de sécurité critiques (normes ISO 13849, IEC 62061).</li>
+          <li><strong>Asservissements</strong> : la machine ne peut démarrer que si le capot est fermé, la pièce bien en place, etc.</li>
+        </ul>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Cas concret</div>
+        <p>Une presse hydraulique est équipée d'un capot interverrouillé. Si le capot s'ouvre pendant le cycle, la machine s'arrête immédiatement. Sans cette sécurité, un opérateur pourrait avoir la main écrasée. La sécurité positive impose que l'ouverture du capot ouvre un contact NC et coupe le circuit de commande : c'est un défaut qui entraîne la mise en sécurité.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Sécurité positive : contact NC pour les sécurités.</li>
+          <li>Arrêt d'urgence en série, obligatoire.</li>
+          <li>Capots interverrouillés, barrières immatérielles.</li>
+          <li>Relais de sécurité certifiés pour les fonctions critiques.</li>
+        </ul>
+      </div>
+
+      <div class="sources">
+        <div class="bloc-label">Sources</div>
+        <p>Fiches pédagogiques officielles Électricité Industrielle et Automatismes (Édition 2025-2026) ; normes ISO 13849 et IEC 62061 (notions).</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VIII — Diagnostic et maintenance",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Dépanner un système automatisé</h3>
+        <p>Le dépannage d'un système automatisé suit la même rigueur que pour l'électricité industrielle :</p>
+        <ol>
+          <li><strong>Observer les symptômes</strong> : que fait la machine ? Quels voyants sont allumés ? Y a-t-il un message d'alarme ? L'API est-il en RUN ou en STOP ?</li>
+          <li><strong>Identifier l'élément défaillant</strong> : capteur, actionneur, programme, câblage, alimentation, communication.</li>
+          <li><strong>Tester</strong> : multimètre pour la continuité et les tensions, forçage des E/S depuis le logiciel, observation de la supervision.</li>
+          <li><strong>Réparer</strong> : remplacer le capteur, resserrer une borne, corriger le programme, reconfigurer un module.</li>
+          <li><strong>Vérifier</strong> : relancer la séquence, contrôler le comportement sur plusieurs cycles, sauvegarder.</li>
+        </ol>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les pannes courantes</div>
+        <table>
+          <thead>
+            <tr><th>Symptôme</th><th>Causes probables</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>La machine ne démarre pas</td><td>Capteur défaillant, bouton bloqué, arrêt d'urgence enfoncé, programme en STOP, sortie grillée.</td></tr>
+            <tr><td>Une action ne se fait pas</td><td>Sortie API HS, préactionneur HS, câblage coupé, condition logique non remplie.</td></tr>
+            <tr><td>Comportement erratique</td><td>Capteur instable, perturbation électromagnétique, programme mal conçu, temporisation trop courte.</td></tr>
+            <tr><td>Communication perdue</td><td>Câble débranché, adresse IP incorrecte, module HS.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">La maintenance préventive</div>
+        <ul>
+          <li>Sauvegarder régulièrement le programme (sur PC, sur clé USB, sur serveur).</li>
+          <li>Nettoyer l'armoire (poussière = échauffement).</li>
+          <li>Vérifier le serrage des connexions (une fois par an).</li>
+          <li>Contrôler le fonctionnement des capteurs et actionneurs.</li>
+          <li>Mettre à jour la documentation (schémas, programme, notes d'intervention).</li>
+        </ul>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Modifier le programme directement sur l'API en production, sans sauvegarde préalable. En cas d'erreur, il n'y a plus de version de référence. <strong>Règle :</strong> toute modification doit être précédée d'une sauvegarde et suivie d'une nouvelle sauvegarde validée.</p>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Points clés</div>
+        <ul>
+          <li>Méthode : observer, identifier, tester, réparer, vérifier.</li>
+          <li>Forçage d'E/S et supervision : outils puissants.</li>
+          <li>Sauvegarde régulière du programme.</li>
+          <li>Maintenance préventive : nettoyage, serrage, contrôle.</li>
+        </ul>
+      </div>
+
+      <div class="sources">
+        <div class="bloc-label">Sources</div>
+        <p>Manuels Scolaires RDC, <em>Électricité Industrielle et Automatismes, 4<sup>e</sup> année</em> (Édition 2025) ; Fiches pédagogiques officielles (Édition 2025-2026).</p>
+      </div>
+    `
+  },
+  {
+    title: "Ancrage RDC — Automatisation industrielle congolaise",
+    content: `
+      <div class="bloc cas">
+        <div class="bloc-label">Contextualisation</div>
+        <h3>Les API dans l'industrie congolaise</h3>
+        <ul>
+          <li><strong>Mines du Lualaba</strong> (Kamoa-Kakula, Tenke Fungurume) : concasseurs, convoyeurs, pompes, treuils — tous pilotés par API pour la fiabilité et la traçabilité.</li>
+          <li><strong>Agroalimentaire à Kinshasa</strong> : brasseries (Bralima, Brasimba), minoteries (Marsavco, Utexafrica), lignes de conditionnement.</li>
+          <li><strong>REGIDESO</strong> : stations de pompage automatisées, avec supervision à distance.</li>
+          <li><strong>Cimenteries</strong> du Kongo-Central (CINAT, Lukala) : fours, broyeurs, ensachage.</li>
+          <li><strong>Hydroélectricité</strong> : Inga, centrales hydroélectriques — automatismes de surveillance et de protection.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Défis et atouts</div>
+        <p><strong>Défis :</strong></p>
+        <ul>
+          <li>Manque de techniciens qualifiés en automatismes.</li>
+          <li>Matériel parfois ancien dans les ateliers scolaires (S7-200, MicroLogix).</li>
+          <li>Approvisionnement en pièces détachées parfois long.</li>
+          <li>Réseaux électriques instables (parafoudre, onduleur indispensables).</li>
+        </ul>
+        <p><strong>Atouts :</strong></p>
+        <ul>
+          <li>Forte demande dans les mines et l'agroalimentaire.</li>
+          <li>Formations disponibles (ITI, ITP, ISTM).</li>
+          <li>Simulateurs gratuits pour l'apprentissage.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Débouchés</div>
+        <ul>
+          <li>Électricien automaticien.</li>
+          <li>Technicien de maintenance industrielle.</li>
+          <li>Programmateur d'API (junior).</li>
+          <li>Technicien en instrumentation.</li>
+          <li>Poursuite d'études en génie électrique, automatique, instrumentation.</li>
+        </ul>
+      </div>
+
+      <div class="sources">
+        <div class="bloc-label">Sources</div>
+        <p>Fiches pédagogiques officielles Électricité Industrielle et Automatismes (Édition 2025-2026).</p>
+      </div>
+    `
+  },
+  {
+    title: "Synthèse générale du cours",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Ce qu'il faut retenir</div>
+        <h3>Les huit idées maîtresses</h3>
+        <ol>
+          <li><strong>API = calculateur industriel programmable</strong> qui remplace la logique câblée.</li>
+          <li><strong>Architecture système</strong> : PO (agit), PC (décide), interface (capteurs/préactionneurs), dialogue (pupitre).</li>
+          <li><strong>Cycle de scrutation</strong> : lire entrées → exécuter → écrire sorties → autotests.</li>
+          <li><strong>Capteurs TOR</strong> (binaire) ou <strong>analogiques</strong> (4-20 mA, 0-10 V).</li>
+          <li><strong>Ladder</strong> : contacts (NO/NC) + bobines, ET = série, OU = parallèle.</li>
+          <li><strong>Auto-maintien</strong> : contact de la sortie en parallèle sur le bouton marche.</li>
+          <li><strong>Temporisateurs</strong> (TON, TOF, TONR) et <strong>compteurs</strong> (CTU, CTD) pour gérer le temps et les événements.</li>
+          <li><strong>Grafcet</strong> pour concevoir, <strong>ladder</strong> pour programmer, <strong>sécurité positive</strong> pour protéger.</li>
+        </ol>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les erreurs à ne plus commettre</div>
+        <ul>
+          <li>Oublier l'auto-maintien → le moteur ne tourne que pendant l'appui sur le bouton.</li>
+          <li>Utiliser des contacts NO pour les arrêts d'urgence → danger mortel.</li>
+          <li>Ne pas réinitialiser un compteur ou un timer cumulatif → comportement erratique.</li>
+          <li>Modifier un programme sans sauvegarde → perte de la référence.</li>
+          <li>Confondre PO et PC → mauvaise compréhension du système.</li>
+          <li>Sauter le Reset de l'étape amont en Grafcet → plusieurs étapes actives.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Tableau récapitulatif des fonctions ladder de base</div>
+        <table>
+          <thead>
+            <tr><th>Fonction</th><th>Symbole</th><th>Rôle</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Contact NO</td><td>—| |—</td><td>Passant si variable = 1</td></tr>
+            <tr><td>Contact NC</td><td>—|/|—</td><td>Passant si variable = 0</td></tr>
+            <tr><td>Bobine directe</td><td>—( )—</td><td>Copie l'état de la ligne</td></tr>
+            <tr><td>Bobine Set</td><td>—(S)—</td><td>Mémorise à 1</td></tr>
+            <tr><td>Bobine Reset</td><td>—(R)—</td><td>Mémorise à 0</td></tr>
+            <tr><td>TON</td><td>[TON]</td><td>Retard à la montée</td></tr>
+            <tr><td>TOF</td><td>[TOF]</td><td>Retard à la descente</td></tr>
+            <tr><td>CTU</td><td>[CTU]</td><td>Compteur à la montée</td></tr>
+          </tbody>
+        </table>
+      </div>
+    `
+  },
+  {
+    title: "Évaluation finale — Automates Programmables",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Consigne</div>
+        <p>Répondez aux 22 questions ci-dessous. Chaque question a une seule bonne réponse. Cliquez sur « Valider mes réponses » pour obtenir votre score. Bonne chance !</p>
+      </div>
+
+      <div class="quiz-container">
+        <div id="quizQuestions"></div>
+        <button id="submitQuiz" class="quiz-btn-submit">
+          Valider mes réponses
+        </button>
+        <div id="quizResult" class="quiz-result"></div>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Conseil</div>
+        <p>En cas d'erreur, relisez la diapositive correspondante. Les questions balaient l'ensemble des chapitres : architecture, API, capteurs, ladder, temporisation, Grafcet, sécurité et diagnostic.</p>
+      </div>
+    `
+  }
+];
+const questions = [
+  {
+    text: "Un API est :",
+    options: [
+      "Un simple contacteur de puissance",
+      "Un calculateur industriel programmable conçu pour commander des processus en temps réel",
+      "Un relais électromécanique",
+      "Un moteur à courant continu"
+    ],
+    correct: 1
+  },
+  {
+    text: "La partie opérative d'un système automatisé comprend :",
+    options: [
+      "L'API et son programme",
+      "Les capteurs et le pupitre",
+      "Les moteurs, vérins et autres actionneurs qui agissent sur la matière d'œuvre",
+      "Le logiciel de programmation"
+    ],
+    correct: 2
+  },
+  {
+    text: "Le cycle de scrutation d'un API comprend :",
+    options: [
+      "Lecture des entrées, exécution du programme, écriture des sorties, autotests",
+      "Uniquement l'exécution du programme",
+      "Uniquement la lecture des entrées",
+      "Uniquement l'écriture des sorties"
+    ],
+    correct: 0
+  },
+  {
+    text: "Un capteur TOR délivre :",
+    options: [
+      "Un signal analogique continu",
+      "Un signal binaire (0 ou 1)",
+      "Une tension continue variable",
+      "Rien du tout"
+    ],
+    correct: 1
+  },
+  {
+    text: "Un capteur analogique délivre typiquement :",
+    options: [
+      "Un signal binaire",
+      "Un signal proportionnel (par exemple 4-20 mA ou 0-10 V)",
+      "Un signal uniquement numérique",
+      "Une tension fixe"
+    ],
+    correct: 1
+  },
+  {
+    text: "Le langage ladder est :",
+    options: [
+      "Un langage texte structuré",
+      "Un schéma à contacts, transposition graphique de la logique câblée",
+      "Un langage graphique par blocs",
+      "Un langage machine binaire"
+    ],
+    correct: 1
+  },
+  {
+    text: "Un contact NO en ladder est :",
+    options: [
+      "Fermé si la variable associée est à 1",
+      "Fermé si la variable associée est à 0",
+      "Toujours fermé",
+      "Toujours ouvert"
+    ],
+    correct: 0
+  },
+  {
+    text: "Un contact NC en ladder est :",
+    options: [
+      "Fermé si la variable associée est à 1",
+      "Fermé si la variable associée est à 0",
+      "Toujours fermé",
+      "Toujours ouvert"
+    ],
+    correct: 1
+  },
+  {
+    text: "L'auto-maintien permet à une sortie de :",
+    options: [
+      "S'arrêter immédiatement après relâchement du bouton",
+      "Changer de sens de rotation",
+      "Rester active après relâchement du bouton marche",
+      "Augmenter automatiquement sa vitesse"
+    ],
+    correct: 2
+  },
+  {
+    text: "Un TON est un temporisateur :",
+    options: [
+      "À retard à la montée",
+      "À retard à la descente",
+      "Cumulatif sans reset",
+      "Instantané"
+    ],
+    correct: 0
+  },
+  {
+    text: "Un CTU est un compteur :",
+    options: [
+      "Compteur à la descente",
+      "Compteur à la montée (fronts montants)",
+      "Compte/décompte",
+      "Temporisateur cumulatif"
+    ],
+    correct: 1
+  },
+  {
+    text: "Le Grafcet est :",
+    options: [
+      "Un outil de représentation graphique des séquences (étapes/transitions)",
+      "Un langage de programmation API",
+      "Un type de capteur",
+      "Un modèle d'API"
+    ],
+    correct: 0
+  },
+  {
+    text: "Dans un Grafcet, une étape est :",
+    options: [
+      "Toujours active",
+      "Active ou inactive",
+      "Un capteur",
+      "Une sortie physique"
+    ],
+    correct: 1
+  },
+  {
+    text: "La sécurité positive impose :",
+    options: [
+      "Des contacts NO pour les arrêts d'urgence",
+      "Des contacts NC pour les arrêts d'urgence et les sécurités",
+      "Aucune sécurité câblée",
+      "Des relais uniquement logiciels"
+    ],
+    correct: 1
+  },
+  {
+    text: "Un arrêt d'urgence doit être câblé :",
+    options: [
+      "En parallèle sur la bobine de sortie",
+      "En série sur le circuit de commande",
+      "Ignoré du circuit de commande",
+      "Uniquement dans le programme"
+    ],
+    correct: 1
+  },
+  {
+    text: "L'adressage des entrées est généralement noté :",
+    options: [
+      "I (ou X)",
+      "Q (ou Y)",
+      "M",
+      "T"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'adressage des sorties est généralement noté :",
+    options: [
+      "I (ou X)",
+      "Q (ou Y)",
+      "M",
+      "T"
+    ],
+    correct: 1
+  },
+  {
+    text: "Le mode RUN d'un API signifie que :",
+    options: [
+      "Le programme est arrêté",
+      "Le programme est en cours de téléchargement",
+      "Le programme s'exécute normalement",
+      "Le programme est effacé"
+    ],
+    correct: 2
+  },
+  {
+    text: "Le diagnostic d'une panne commence par :",
+    options: [
+      "Remplacer directement l'API",
+      "Modifier le programme sans sauvegarde",
+      "Observer les symptômes (voyants, alarmes, comportement)",
+      "Arrêter toute l'usine"
+    ],
+    correct: 2
+  },
+  {
+    text: "Un capteur de proximité inductif détecte principalement :",
+    options: [
+      "Les objets métalliques",
+      "Les objets en plastique uniquement",
+      "Les liquides uniquement",
+      "Les gaz"
+    ],
+    correct: 0
+  },
+  {
+    text: "La sauvegarde régulière du programme est :",
+    options: [
+      "Inutile",
+      "Une bonne pratique de maintenance indispensable",
+      "Interdite",
+      "Nuisible à l'API"
+    ],
+    correct: 1
+  },
+  {
+    text: "L'objectif principal du cours d'automates programmables en 4ᵉ Humanité Technique est de :",
+    options: [
+      "Remplacer l'ingénieur automaticien",
+      "Comprendre, programmer et dépanner des automatismes simples à base d'API",
+      "Fabriquer des API en atelier",
+      "Construire de nouvelles usines"
+    ],
+    correct: 1
+  }
+];
+
+try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+        questions.forEach(function (q) {
+            if (!q.text) q.text = q.question || q.q || q.enonce || q.titre || "";
+            if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+            if (typeof q.correct === "undefined") {
+                if (typeof q.answer !== "undefined") q.correct = q.answer;
+                else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+            }
+        });
+    }
+} catch (e) {}
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+const pageTitle = document.getElementById('pageTitle');
+pageTitle.textContent = "ECOLIA · " + COURSE_TITLE;
+document.title = "ECOLIA — " + COURSE_TITLE;
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim() || slides.length === 0) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp("(" + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ")", 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderEmptyState() {
+    contentDiv.innerHTML = '<div class="empty-state"><div class="icon">·</div><span class="tag">Bientôt disponible</span><h2>' + COURSE_TITLE + '</h2><p>Ce cours est en préparation. Le contenu sera ajouté prochainement.</p></div>';
+    slideCounterSpan.textContent = '0/0';
+    progressFill.style.width = '0%';
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    counterSpan.textContent = '—';
+}
+
+function renderQuiz() {
+    const qc = document.getElementById('quizQuestions');
+    if (!qc) return;
+    if (typeof questions === 'undefined' || questions.length === 0) {
+        qc.innerHTML = '<p style="color:#666;font-style:italic;">Quiz bientot disponible.</p>';
+        return;
+    }
+    let html = '';
+    questions.forEach((q, i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o, k) => {
+            html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>';
+        });
+        html += '</div>';
+    });
+    qc.innerHTML = html;
+    const submitBtn = document.getElementById('submitQuiz');
+    if (submitBtn) {
+        submitBtn.onclick = () => {
+            let score = 0;
+            questions.forEach((q, i) => {
+                const s = document.querySelector('input[name="q' + i + '"]:checked');
+                if (s && parseInt(s.value) === q.correct) score++;
+            });
+            const pct = Math.round(score/questions.length*100);
+            document.getElementById('quizResult').innerHTML =
+                '<div style="background:var(--bg2);padding:16px;border-radius:10px;margin-top:14px;">' +
+                '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong></div>';
+        };
+    }
+}
+
+function renderSlide(index, keepHighlight) {
+    if (keepHighlight === undefined) keepHighlight = true;
+    if (slides.length === 0) { renderEmptyState(); return; }
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    if (index === slides.length - 1) renderQuiz();
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    if (slides.length === 0) return;
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (slides.length && currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (slides.length && currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+<!-- ECOLIA_IMAGE_LOADER_START -->
+<script>
+(function () {
+  var SITE = "https://ecolia-course.github.io/";
+  var NATIVE = false;
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function abs(u) { return /^(https?:|data:|blob:)/i.test(u) ? u : (NATIVE ? SITE + u.replace(/^(\.\/|\/)+/, "") : u); }
+  function ext(u) { var m = String(u).split("?")[0].match(/\.(jpe?g|png|gif|webp|svg)$/i); return m ? m[1].toLowerCase() : "jpg"; }
+  function hide(img) { img.onerror = null; img.style.display = "none"; }
+  var table = null, queue = [], queued = {}, running = false;
+  function enqueue(full, fn) {
+    if (queued[fn]) return;
+    queued[fn] = 1; queue.push([full, fn]);
+    if (!running) { running = true; setTimeout(next, 2500); }
+  }
+  function next() {
+    if (!queue.length) { running = false; return; }
+    if (!navigator.onLine) { running = false; return; }
+    var q = queue.shift(), t0 = Date.now();
+    try { CoursInterface.download(q[0], q[1]); } catch (e) { return setTimeout(next, 500); }
+    (function wait() {
+      var ok = false;
+      try { ok = !!CoursInterface.exists(q[1]); } catch (e) {}
+      if (ok) setTimeout(next, 1500);
+      else if (Date.now() - t0 > 40000) next();
+      else setTimeout(wait, 700);
+    })();
+  }
+  function exists(fn) { try { return !!CoursInterface.exists(fn); } catch (e) { return false; } }
+  function show(img) {
+    if (!table || img.getAttribute("data-ecolia-done")) return;
+    var id = img.getAttribute("data-image-id");
+    var url = table[id];
+    if (typeof url !== "string" || !url.length) { console.warn("ECOLIA : image absente du JSON :", id); return; }
+    img.setAttribute("data-ecolia-done", "1");
+    if (!NATIVE) { img.onerror = function () { hide(img); }; img.setAttribute("src", url); return; }
+    var full = abs(url), fn = "img_" + id + "." + ext(url);
+    if (exists(fn)) {
+      img.onerror = function () {
+        try { CoursInterface["delete"](fn); } catch (e) {}
+        queued[fn] = 0;
+        img.onerror = function () { hide(img); };
+        img.setAttribute("src", full);
+      };
+      img.setAttribute("src", "https://app.local/cours/" + fn);
+    } else {
+      img.onerror = function () { hide(img); };
+      img.setAttribute("src", full);
+      enqueue(full, fn);
+    }
+  }
+  function scan(root) {
+    if (!root || !root.querySelectorAll) return;
+    if (root.matches && root.matches("img[data-image-id]")) show(root);
+    root.querySelectorAll("img[data-image-id]").forEach(show);
+  }
+  function prefetchAll() {
+    var ids = {};
+    try { JSON.stringify(slides).replace(/data-image-id=\\?"([^"\\]+)/g, function (m, id) { ids[id] = 1; }); } catch (e) {}
+    Object.keys(ids).forEach(function (id) {
+      var url = table[id];
+      if (typeof url !== "string" || !url.length) return;
+      var fn = "img_" + id + "." + ext(url);
+      if (!exists(fn)) enqueue(abs(url), fn);
+    });
+  }
+  function start(tbl) {
+    table = tbl;
+    scan(document.body);
+    new MutationObserver(function (muts) {
+      muts.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.nodeType === 1) scan(n); }); });
+    }).observe(document.body, { childList: true, subtree: true });
+    if (NATIVE) prefetchAll();
+  }
+  var JSON_URL = NATIVE ? SITE + "images_ecolia.json" : "images_ecolia.json";
+  var KEY = "ecolia_images_json";
+  fetch(JSON_URL, NATIVE ? { cache: "no-cache" } : undefined)
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (table) { if (NATIVE) lsSet(KEY, JSON.stringify(table)); start(table); })
+    .catch(function (e) {
+      var saved = null;
+      if (NATIVE) { try { saved = JSON.parse(lsGet(KEY) || "null"); } catch (x) {} }
+      if (saved) start(saved);
+      else console.warn("ECOLIA : JSON des images indisponible.", e);
+    });
+})();
+</script>
+<!-- ECOLIA_IMAGE_LOADER_END -->
+
+
+
+<!-- ECOLIA_AUDIO_PLAYER_START -->
+<style>
+  #ecolia-audio-btn, #ecolia-dl-btn {
+    width: 30px; height: 30px; min-width: 30px; padding: 0; margin: 0 4px 0 0;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    cursor: pointer; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent; outline: none;
+  }
+  #ecolia-audio-btn { border: none; background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-dl-btn { border: 1.5px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb); }
+  #ecolia-dl-btn.ecolia-full { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-btn.ecolia-fixed { position: fixed; top: 8px; left: 8px; z-index: 2147483000; }
+  #ecolia-audio-btn:active, #ecolia-dl-btn:active { transform: scale(.92); }
+  #ecolia-audio-btn svg, #ecolia-dl-btn svg { width: 15px; height: 15px; fill: currentColor; pointer-events: none; }
+  #ecolia-audio-btn.ecolia-off, #ecolia-dl-btn.ecolia-off { display: none; }
+  #ecolia-audio-banner {
+    display: none; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0;
+    padding: 8px 14px; font-size: .82rem; line-height: 1.35;
+    background: var(--soft, #eef3fb); color: var(--p1, #123); border-bottom: 1px solid var(--bd, #c9d6ea);
+  }
+  #ecolia-audio-banner.on { display: flex; }
+  #ecolia-audio-banner .eab-txt { flex: 1 1 180px; }
+  #ecolia-audio-banner .eab-act { display: flex; gap: 6px; flex-wrap: wrap; }
+  #ecolia-audio-banner button {
+    border: 1px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb);
+    border-radius: 16px; padding: 5px 12px; font-size: .8rem; cursor: pointer;
+  }
+  #ecolia-audio-banner button.pri { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-banner .eab-bar { display: none; flex-basis: 100%; height: 4px; border-radius: 2px; overflow: hidden; background: var(--bd, #c9d6ea); }
+  #ecolia-audio-banner .eab-bar i { display: block; height: 100%; width: 0; background: var(--p2, #2563eb); transition: width .2s; }
+</style>
+<script>
+(function () {
+  var CFG = {"code":"AutomatesProgrammables4","base":"https://ecolia-course.github.io/ecolia-media/audio_files/","available":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23],"count":23,"sizeMo":25,"sizes":{"1":1101888,"2":1036800,"3":916416,"4":1094208,"5":1194240,"6":1185792,"7":872064,"8":1056384,"9":1190208,"10":1032384,"11":1045248,"12":1131648,"13":1157952,"14":1272000,"15":1104576,"16":1140096,"17":1106304,"18":1193664,"19":1094208,"20":1285056,"21":842688,"22":1121472,"23":268416},"fallback":{"1":[["fr","Sommaire, Automates Programmables. Présentation du cours. Bienvenue dans le monde de l'automatisation. Ce cours de 4e année des Humanités Techniques Industrielles vous initie aux automates programmables industriels (API) et aux systèmes automatisés. Il prolonge le cours d'Électricité Industrielle: là où la logique câblée utilise des contacteurs et des relais pour commander une machine, l'API remplace cette logique par un programme enregistré en mémoire, modifiable sans recâblage. À la fin du cours, vous saurez décrire l'architecture d'un système automatisé, expliquer le cycle de scrutation d'un API, distinguer les capteurs et actionneurs, écrire un programme en langage ladder (auto-maintien, temporisation, comptage), câbler les entrées ou sorties, appliquer les règles de sécurité et diagnostiquer une panne simple. Objectifs d'apprentissage. Décrire l'architecture d'un système automatisé (PO, PC, interface, dialogue). Identifier la constitution d'un API et son cycle de scrutation. Distinguer les capteurs TOR et analogiques, les préactionneurs et les actionneurs. Écrire un programme simple en langage ladder (auto-maintien, temporisation, comptage). Câbler les entrées ou sorties et effectuer la mise en service. Appliquer les règles de sécurité des machines automatisées. Diagnostiquer une panne simple sur un système automatisé. Plan du cours. Chapitre I, Introduction aux systèmes automatisés. Chapitre II, Les automates programmables industriels. Chapitre III, Les capteurs et les actionneurs. Chapitre IV, Le langage ladder (1): logique combinatoire et auto-maintien. Chapitre V, Le langage ladder (2): temporisateurs et compteurs. Chapitre VI, Le langage ladder (3): Grafcet et séquenceurs. Chapitre VII, Mise en œuvre, câblage et sécurité. Chapitre VIII, Diagnostic et maintenance."]],"2":[["fr","Chapitre I, Pourquoi les automates programmables? Situation-problème. Une minoterie de Kinshasa veut moderniser sa ligne. Une minoterie de Kinshasa exploitait une ligne d'ensachage commandée par logique câblée. À chaque modification du format de sac, il fallait recâbler une partie de l'armoire: plusieurs heures d'arrêt, risque d'erreur de câblage. Aujourd'hui, la même ligne est pilotée par un automate programmable. Un simple changement de recette dans le logiciel suffit: le technicien modifie un paramètre et la ligne redémarre en quelques minutes. C'est le grand intérêt de l'API: la flexibilité. La logique de commande n'est plus figée dans des fils, elle est inscrite dans un programme que l'on peut lire, sauvegarder, modifier et recharger. Fondements théoriques. De la logique câblée à la logique programmée. Logique câblée (contacteurs, relais). Logique programmée (API). Modification égale recâblage complet. Modification égale correction du programme. Nombre de composants élevé pour des séquences complexes. Un seul automate pour des dizaines de fonctions. Usure mécanique des contacts. Pas d'usure (contacts virtuels). Diagnostic difficile (armoire volumineuse). Diagnostic assisté par logiciel (voyants, forçage, supervision). Coût faible pour une fonction simple. Coût plus élevé à l'achat, amorti pour des fonctions nombreuses. En R D C, les industries minières du Lualaba, les brasseries et minoteries de Kinshasa, les stations de pompage de la REGIDESO et les cimenteries du Kongo-Central utilisent massivement des API pour commander leurs processus. Points clés. L'API remplace la logique câblée par un programme. Flexibilité: modification du programme sans recâblage. Diagnostic plus rapide grâce aux voyants et au logiciel. Base de l'automatisation industrielle moderne."]],"3":[["fr","Chapitre I, Architecture d'un système automatisé. Fondements théoriques. Quatre éléments à distinguer. Un système automatisé comporte quatre grandes parties: La partie opérative (PO): elle agit sur la matière d'œuvre. Ce sont les moteurs, vérins, pompes, électrovannes, résistances chauffantes, convoyeurs. La PO est l'ensemble des actionneurs qui font le travail physique. La partie commande (PC): elle décide. C'est l'automate programmable et son programme. La PC reçoit des informations, exécute la logique et envoie des ordres. L'interface: les capteurs (informations vers la PC) et les préactionneurs (ordres de la PC vers la PO). Les préactionneurs sont les contacteurs, distributeurs hydrauliques ou pneumatiques, variateurs de vitesse. Le dialogue: le pupitre opérateur, l'écran de supervision, les boutons et voyants qui permettent à l'opérateur de dialoguer avec le système. L'architecture d'un système automatisé. Exemple concret. Dans une station de pompage REGIDESO: PO: la pompe et son moteur, la vanne motorisée. PC: l'API qui déclenche le démarrage à heure programmée et gère le niveau. Interface: capteur de niveau (analogique), capteur de pression, capteur de présence (TOR), contacteur du moteur (préactionneur). Dialogue: pupitre avec bouton marche, voyant « en service », écran d'alarme. Points clés. PO agit, PC décide. Interface égale capteurs (entrée) plus préactionneurs (sortie). Dialogue égale pupitre, écran, boutons, voyants."]],"4":[["fr","Chapitre I, Les intérêts de l'automatisation. Fondements théoriques. Pourquoi automatiser? Automatiser un processus industriel, ce n'est pas « remplacer les humains »: c'est améliorer la production et les conditions de travail. Les intérêts sont multiples: Productivité: le système travaille sans pause, à cadence constante. Régularité de la qualité: chaque pièce est produite selon les mêmes paramètres. Sécurité des opérateurs: les tâches dangereuses (soudage, découpe, pression) sont réalisées par la machine; l'opérateur surveille depuis le pupitre. Économie d'énergie et de matière: arrêt automatique quand la production est terminée, dosage précis. Flexibilité: changement de recette par programme, sans recâblage. Traçabilité: les API enregistrent les événements, ce qui facilite la maintenance et la qualité. Fondements théoriques. Les deux niveaux d'automatisation. Automatisation câblée: réalisée par contacteurs, relais, temporisateurs électromécaniques. Simple et robuste, mais peu flexible. Automatisation programmée: réalisée par API, microcontrôleurs ou calculateurs industriels. Flexible, évolutive, diagnosable. Le cours d'électricité industrielle a présenté la logique câblée; ce cours-ci présente la logique programmée. Application R D C. Dans une brasserie de Kinshasa, l'automatisation du conditionnement permet de traiter plusieurs formats de bouteilles sur la même ligne: la recette change dans l'API, les guides et cadences s'ajustent automatiquement. Sans API, il faudrait une ligne dédiée par format, ce qui serait économiquement impossible. Points clés. 6 intérêts majeurs: productivité, qualité, sécurité, économie, flexibilité, traçabilité. Deux niveaux: câblé (rigide) et programmé (flexible). En R D C, automatisation croissante dans les mines, l'agroalimentaire et le pompage."]],"5":[["fr","Chapitre II, Constitution d'un API. Fondements théoriques. Un calculateur industriel robuste. L'automate programmable industriel (API) est un calculateur conçu pour fonctionner en milieu industriel: températures élevées, vibrations, poussière, perturbations électromagnétiques. Il exécute un programme en temps réel et commande un processus. Sa constitution comprend: L'unité centrale (CPU): le « cerveau » qui exécute le programme, gère les entrées ou sorties et communique. Les mémoires: mémoire programme (où est stocké le programme), mémoire de données (variables, temporisateurs, compteurs), images des entrées et des sorties. Les modules d'entrées: TOR (tout ou rien, 24 V DC ou 230 V AC) ou analogiques (4-20 mA, 0-10 V). Les modules de sorties: à relais (pour charges AC ou DC), à transistor (DC seulement, plus rapide), à triac (AC seulement). L'alimentation: 24 V DC (fréquent), 230 V AC, parfois redondante. Les modules de communication: Ethernet, Profibus, Modbus, série R S232/R S485. La constitution d'un API. Exemples industriels. Sur le marché, on trouve des API de marques variées: Siemens (S7-1200, S7-1500), Schneider (M221, M241), Allen-Bradley (MicroLogix, CompactLogix), Omron, Mitsubishi. Les principes sont les mêmes, seules la syntaxe de programmation et l'adressage diffèrent (par exemple I0.0 chez Siemens et I:1 sur 0 chez Allen-Bradley désignent tous deux une entrée). Points clés. CPU plus mémoires plus modules E ou S plus alimentation plus communication. E ou S TOR et analogiques. Sorties à relais, transistor ou triac. API robustes et industriels, pas de simples ordinateurs."]],"6":[["fr","Chapitre II, Le cycle de scrutation. Fondements théoriques. Comment l'API exécute-t-il son programme? Un API ne traite pas les entrées et les sorties en continu. Il fonctionne par cycles successifs appelés cycles de scrutation. Chaque cycle comporte quatre étapes dans l'ordre: Lecture des entrées: l'API lit l'état réel de toutes les entrées et met à jour l'image des entrées en mémoire. Exécution du programme: l'API exécute le programme ligne par ligne, en utilisant l'image des entrées (et non les entrées physiques). Il met à jour l'image des sorties en mémoire. Écriture des sorties: l'API transfère l'image des sorties vers les modules physiques, qui actionnent les préactionneurs. Autotests et communication: vérification de la mémoire, dialogue avec le superviseur, gestion des alarmes. Puis le cycle recommence indéfiniment. La durée d'un cycle est le temps de scrutation ou temps de cycle, typiquement de 1 à 50 ms selon la taille du programme et la vitesse du processeur. Conséquences pratiques. Une impulsion plus courte que le temps de cycle peut ne pas être vue (rare en pratique). Le programme voit toujours des images cohérentes: une entrée ne change pas au milieu de l'exécution. Pour les processus rapides, on utilise des API rapides ou des modules spécialisés (comptage rapide, interruptions). Exemple corrigé. Un API a un temps de cycle de 10 ms. Un capteur de passage délivre une impulsion de 30 ms lors du passage d'une pièce. L'API verra-t-il le passage? Oui, car 30 ms supérieur à 10 ms: l'impulsion durera au moins 3 cycles. En revanche, une impulsion de 5 ms pourrait être manquée selon l'instant d'arrivée. Conclusion: vérifier que la durée des impulsions est supérieure au temps de cycle. Points clés. 4 étapes: lire les entrées, donc exécuter, donc écrire les sorties, donc autotests ou communication. Le programme utilise les images des E ou S, pas les grandeurs physiques. Temps de cycle typique: 1 à 50 ms. Impulsions plus courtes que le cycle: risque de non-détection."]],"7":[["fr","Chapitre II, Critères de choix d'un API. Fondements théoriques. Choisir un automate adapté. Le choix d'un API dépend de plusieurs critères: Critère. Question à se poser. Nombre d'E ou S. Combien de capteurs et préactionneurs? Prévoir une réserve de 20 à 30 pour cent pour évolutions. Type d'E ou S. TOR uniquement ou analogiques aussi? Tensions? Courants? Type de sorties. Relais, transistor ou triac selon les charges. Mémoire. Taille du programme et des données. Communication. Ethernet, Modbus, Profibus selon le réseau existant et la supervision. Logiciel. Disponibilité du logiciel de programmation, simplicité, coût de licence. Robustesse. Température, vibrations, indice de protection IP. Maintenance. Disponibilité locale, support du fournisseur, sauvegarde facile. Coût global. Achat plus formation plus maintenance plus évolution. En contexte R D C. Beaucoup d'écoles techniques congolaises utilisent d'anciens API Siemens S7-200 ou Allen-Bradley MicroLogix, ou se forment sur des simulateurs logiciels gratuits (TIA Portal, RSLogix, EcoStruxure). L'élève doit savoir s'adapter: les concepts (ladder, E ou S, cycle) sont les mêmes, seule la syntaxe change. Points clés. Compter les E ou S plus réserve 20-30 pour cent. Choisir le type de sorties selon les charges. Vérifier communication et logiciel. Coût global, pas seulement prix d'achat."]],"8":[["fr","Chapitre III, Les capteurs TOR. Fondements théoriques. Les capteurs Tout Ou Rien. Un capteur TOR (Tout Ou Rien) délivre un signal binaire: soit « 0 » (variable inactive), soit « 1 » (variable active). Il indique la présence ou l'absence d'un événement. Les principaux capteurs TOR industriels sont: Bouton-poussoir: commande manuelle de l'opérateur. Fin de course: détecte la position extrême d'un mobile (fin de course de sécurité, d'inversion, de référence). Détecteur de proximité inductif: détecte la présence d'un objet métallique sans contact, à quelques millimètres. Détecteur de proximité capacitif: détecte tout type d'objet (métal, plastique, liquide) sans contact. Capteur photoélectrique: détecte par interruption d'un faisceau lumineux. Fréquent sur les convoyeurs. Thermostat: contact qui s'ouvre ou se ferme selon la température. Pressostat: contact qui commute à une pression donnée. Application. Sur une chaîne d'ensachage: un capteur photoélectrique détecte le passage de chaque sac; un fin de course vérifie que le sac est bien positionné; un bouton-poussoir permet à l'opérateur de démarrer la séquence. Trois capteurs TOR, trois entrées sur l'API. Le choix d'un capteur TOR. Type de détection: métal, tout objet, distance, lumière. Portée: distance de détection. Type de sortie: PNP ou NPN (pour les capteurs 24 V DC). Indice de protection IP: étanchéité (I P65, I P67 selon l'ambiance). Température d'utilisation. Points clés. Capteur TOR égale signal binaire 0 sur 1. Inductif: métal; capacitif: tout objet. Photoélectrique: interruption de faisceau. Fin de course: position mécanique."]],"9":[["fr","Chapitre III, Les capteurs analogiques. Fondements théoriques. Mesurer une grandeur continue. Les capteurs analogiques délivrent un signal proportionnel à une grandeur physique (pression, température, niveau, débit, position, poids). Ils sont indispensables pour surveiller des grandeurs continues. Les signaux normalisés sont: 4-20 mA: le standard industriel le plus répandu (immunité au bruit, détection de rupture: 0 mA égale défaut). 0-10 V: plus simple, mais plus sensible aux perturbations sur de longues distances. 0-5 V, ±10 V, 0-20 mA: plus rares. L'API lit ces signaux sur des modules d'entrées analogiques, qui convertissent la valeur électrique en valeur numérique (par exemple 0-27648 pour un module Siemens 16 bits). Le programme peut alors comparer, afficher, réguler. Exemple corrigé. Donnée: un capteur de pression délivre 4-20 mA pour une plage de 0 à 10 bars. La mesure actuelle est de 12 mA. Calcul: proportion: (12 moins 4) ou (20 moins 4) égale 8 sur 16 égale 0,5; pression égale 0,5 multiplié par 10 égale 5 bars. Interprétation: le courant de 12 mA correspond au milieu de la plage, soit 5 bars. Le programme peut alors comparer à un seuil (par exemple 8 bars égale alarme). Précautions de câblage. Respecter la polarité (boucle 4-20 mA: alimentation plus capteur plus module en série). Utiliser du câble blindé pour les signaux analogiques (loin des câbles de puissance). Vérifier la configuration du module (type de signal: 4-20 mA ou 0-10 V) dans le logiciel. Points clés. Signal analogique égale proportionnel à la grandeur physique. Standards: 4-20 mA et 0-10 V. 4-20 mA: détection de rupture à 0 mA. Câble blindé, polarité respectée."]],"10":[["fr","Chapitre III, Préactionneurs et actionneurs. Fondements théoriques. Agir sur la matière d'œuvre. Pour transformer l'ordre de l'API en action physique, il faut deux étages: Le préactionneur: il reçoit un signal faible de la part de l'API (24 V) et commute l'énergie vers l'actionneur. C'est un « relais de puissance »: Préactionneur. Actionneur commandé. Contacteur. Moteur électrique. Distributeur pneumatique. Vérin pneumatique. Distributeur hydraulique. Vérin hydraulique. Variateur de vitesse. Moteur à vitesse variable. Relais statique. Résistance chauffante. L'actionneur: il produit l'effet physique. C'est le moteur, le vérin, l'électrovanne, la résistance chauffante, le convoyeur. Les sorties de l'API. Les sorties de l'API alimentent les bobines des préactionneurs. Trois technologies existent: Sorties à relais: universelles (AC ou DC), mais usure mécanique et vitesse limitée. Adaptées aux charges lentes. Sorties à transistor: uniquement DC, très rapides, pas d'usure. Adaptées au PNP ou NPN, aux impulsions rapides (commande de variateurs). Sorties à triac: uniquement AC, rapides, sans usure mécanique. Application. Dans une chaîne de conditionnement: l'API commande un contacteur (préactionneur) qui alimente le moteur du convoyeur (actionneur). Un distributeur pneumatique (préactionneur) commande un vérin (actionneur) qui pousse les cartons. Un relais statique (préactionneur) alimente une résistance chauffante (actionneur) pour le thermoscellage. Points clés. Préactionneur égale interface énergie faible, donc énergie forte. Actionneur égale effet physique final. Sorties relais ou transistor ou triac selon les charges."]],"11":[["fr","Chapitre IV, Le langage ladder: contacts et bobines. Fondements théoriques. Le langage à contacts (ladder). Le ladder (échelle en anglais) est le langage de programmation le plus utilisé pour les API. Il est né de la transposition des schémas électriques de logique câblée: les barres d'alimentation sont représentées à gauche (phase) et à droite (neutre), et le programme est dessiné comme une échelle dont chaque barreau (rung) contient une combinaison de contacts et de bobines. Les contacts. Contact NO (normalement ouvert): il est fermé (passant) quand la variable associée est à 1. Contact NC (normalement fermé): il est fermé (passant) quand la variable associée est à 0. Les bobines. Bobine directe ( ): la sortie prend la valeur de la ligne (1 si la ligne est passante, 0 sinon). Bobine inversée (/): la sortie prend la valeur inverse de la ligne. Bobine Set (S) ou Reset (R): active ou désactive une variable de façon mémorisée. Adressage des variables. Type. Préfixe Siemens. Préfixe Allen-Bradley. Entrée. I (I0.0). I (I:1 sur 0). Sortie. Q (Q0.0). O (O:2 sur 0). Mémoire interne. M (M0.0). B3 (B3:0 sur 0). Temporisateur. T (T1). T4 (T4:0). Compteur. C (C1). C5 (C5:0). Les principes sont identiques: seuls les préfixes et la syntaxe changent d'un constructeur à l'autre. Points clés. Ladder égale transposition graphique de la logique câblée. Contact NO: passant si variable égale 1. Contact NC: passant si variable égale 0. Bobine directe, inversée, Set ou Reset."]],"12":[["fr","Chapitre IV, L'auto-maintien en ladder. Fondements théoriques. Le circuit de base: démarrer et maintenir. Le premier programme que tout automaticien écrit est l'auto-maintien d'un moteur. Le principe: un appui bref sur le bouton marche doit démarrer le moteur, et le moteur doit continuer à tourner après relâchement du bouton, jusqu'à l'appui sur le bouton arrêt. Équation logique: Q0.0 égale (I0.0 plus Q0.0) multiplié par I0.1 multiplié par I0.2. I0.0 égale bouton marche (NO). Q0.0 égale sortie moteur (contact auxiliaire d'auto-maintien en parallèle sur I0.0). I0.1 égale bouton arrêt (câblé NC, donc contact fermé au repos). I0.2 égale contact du relais thermique (câblé NC). Le langage ladder: auto-maintien d'un moteur. Fonctionnement. Appui sur I0.0: la ligne est passante, Q0.0 secondes'active, le moteur démarre. Le contact auxiliaire Q0.0 se ferme: même après relâchement de I0.0, la ligne reste passante par Q0.0 (auto-maintien). Appui sur I0.1 (arrêt): le contact NC s'ouvre, la ligne se coupe, Q0.0 retombe, le moteur s'arrête. Si I0.2 (relais thermique) déclenche, même effet: arrêt automatique pour protéger le moteur. Erreur fréquente. Un élève oublie le contact d'auto-maintien. Résultat: le moteur ne tourne que pendant l'appui sur le bouton. Dès qu'il relâche, le moteur s'arrête. Règle absolue: dans un circuit de marche ou arrêt, l'auto-maintien est indispensable. Points clés. Auto-maintien égale contact de la sortie en parallèle sur le bouton marche. Arrêt et relais thermique en série, en NC. Une seule ligne de ladder suffit pour ce programme."]],"13":[["fr","Chapitre IV, Les fonctions logiques en ladder (ET, OU, NON). Fondements théoriques. Trois opérateurs à maîtriser. En ladder, les fonctions logiques se traduisent par la disposition des contacts: ET (AND): contacts en série. La sortie est active si tous les contacts sont passants. Exemple: Q0.0 égale I0.0 multiplié par I0.1 (deux conditions à réunir). OU (OR): contacts en parallèle. La sortie est active si au moins un contact est passant. Exemple: Q0.0 égale I0.0 plus I0.1. NON (NOT): contact NC au lieu de NO. La sortie est active si la variable est à 0. Exemple: Q0.0 égale I0.0. On peut combiner ces opérateurs: (I0.0 OU I0.1) ET NON I0.2 ET NON I0.3, etc. Exemple corrigé. Énoncé: un voyant Q0.0 doit s'allumer si le moteur Q0.1 tourne ET si le niveau est bas (I0.3), mais uniquement si le mode automatique est actif (I0.4) et si l'arrêt d'urgence n'est pas pressé (I0.5). Équation: Q0.0 égale Q0.1 multiplié par I0.3 multiplié par I0.4 multiplié par I0.5. Traduction ladder: tous ces contacts en série, avec I0.5 en NC. Une seule ligne de ladder. Comparaison avec l'algèbre de Boole. Logique. Schéma ladder. Écriture booléenne. ET. Contacts en série. Q égale I1 multiplié par I2. OU. Contacts en parallèle. Q égale I1 plus I2. NON. Contact NC. Q égale I1. Points clés. ET égale série; OU égale parallèle; NON égale contact NC. Combinaisons: série ou parallèle imbriqués. Écrire d'abord l'équation logique, puis la traduire en ladder."]],"14":[["fr","Chapitre V, Les temporisateurs (TON, TOF, TONR). Fondements théoriques. Retarder, allonger, cumuler. Les temporisateurs permettent de retarder l'action d'une sortie. Trois types principaux: TON (Timer On Delay): à la montée de l'entrée, le temporisateur commence à compter; quand le temps de consigne est atteint, sa sortie (bit de sortie du timer) s'active. Si l'entrée retombe, le timer se réinitialise immédiatement. Sert à retarder l'activation d'une sortie. TOF (Timer Off Delay): à la montée de l'entrée, la sortie du timer s'active immédiatement; à la retombée de l'entrée, le timer commence à compter et la sortie reste active pendant le temps réglé, puis retombe. Sert à prolonger une action après disparition du signal. TONR (Timer Retentive On Delay): cumule les durées d'activation, avec une remise à zéro explicite (par un bit de reset). Sert à totaliser un temps de fonctionnement. Paramètres. IN: entrée d'activation du timer. PT (Preset Time): consigne de temps (par exemple T#5 secondes ou 5000 ms). ET (Elapsed Time): temps écoulé. Q: sortie du timer (bit actif quand ET supérieur ou égal à PT pour TON). Application industrielle. Sur un convoyeur d'alimentation d'un broyeur: Au démarrage, le convoyeur doit attendre 3 secondes que le broyeur ait atteint sa vitesse nominale. On utilise un TON de 3 secondes qui retarde la sortie « convoyeur ». À l'arrêt, le convoyeur doit continuer 10 secondes pour évacuer les derniers matériaux. On utilise un TOF de 10 secondes sur la sortie « convoyeur ». Un compteur horaire de maintenance utilise un TONR pour totaliser les heures de fonctionnement. Erreur fréquente. Ne pas réinitialiser un TONR en début de cycle utile: le temps cumulé continue indéfiniment. Prévoir une remise à zéro explicite (bouton « RAZ compteur horaire ») et une sauvegarde périodique. Points clés. TON: retard à la montée, RAZ automatique. TOF: prolongation après retombée de l'entrée. TONR: cumul réinitialisable. Paramètres: IN, PT, ET, Q."]],"15":[["fr","Chapitre V, Les compteurs (CTU, CTD). Fondements théoriques. Compter des impulsions. Les compteurs permettent de compter des événements (pièces sur un convoyeur, appuis sur un bouton, tours de moteur). Trois types principaux: CTU (Count Up): compte à chaque front montant de l'entrée de comptage. Quand la valeur courante atteint la consigne (PV égale preset), le bit de sortie s'active. Une entrée de reset (R) remet le compteur à zéro. CTD (Count Down): compte à la descente (décompte) à partir d'une valeur initiale chargée. CTUD (Count Up ou Down): compte et décompte selon deux entrées distinctes. Paramètres. CU ou CD: entrée de comptage (up ou down). R: entrée de reset. PV: valeur de consigne (preset). CV: valeur courante (current value). Q: bit de sortie (actif quand CV supérieur ou égal à PV pour CTU). Application industrielle. Sur une chaîne d'ensachage: un capteur photoélectrique détecte chaque sac. Le compteur CTU est configuré avec PV égale 12. À chaque sac détecté, CV augmente. Quand CV égale 12, le bit de sortie Q active une alarme « lot complet » et le programme déclenche l'arrêt de la chaîne pour changer le lot. Un bouton « reset » remet le compteur à zéro pour le lot suivant. Erreur fréquente. Oublier de réinitialiser le compteur en début de cycle: au deuxième lot, le compteur est déjà à 12, l'alarme se déclenche immédiatement. Prévoir systématiquement une condition de reset (bouton, changement de recette, démarrage de cycle). Points clés. CTU: compte à la montée. CTD: décompte. CTUD: compte ou décompte. Paramètres: CU ou CD, R, PV, CV, Q. Reset obligatoire pour réutiliser le compteur."]],"16":[["fr","Chapitre VI, Le Grafcet: représenter une séquence. Fondements théoriques. Un outil de représentation séquentielle. Le Grafcet (Graphe fonctionnel de commande étape ou transition) est un outil graphique normalisé pour décrire le comportement d'un automatisme séquentiel. Il permet de penser la séquence avant de programmer l'API. Ses éléments: Étapes: cases rectangulaires numérotées (1, 2, 3…). L'étape initiale est un double rectangle. Une étape est active ou inactive. Transitions: barres horizontales entre deux étapes. Chaque transition porte une condition (réceptivité) qui, lorsqu'elle est vraie, permet de passer de l'étape amont à l'étape aval. Actions: associées à chaque étape, inscrites à droite. Elles indiquent ce qui doit être fait lorsque l'étape est active. Règles d'évolution. À l'initialisation, l'étape initiale est active. Une transition est franchie si elle est vraie ET si l'étape amont est active. Le franchissement désactive l'étape amont et active l'étape aval. Une seule étape est active à la fois dans une séquence linéaire (sauf parallélisme explicite). Le Grafcet: représenter une séquence. Exemple: remplissage d'un réservoir. Étape 1 (initiale): en attente. Action: —. Transition: bouton « départ » (I0.0). Étape 2: ouverture vanne. Action: vanne égale 1. Transition: niveau bas atteint (I0.1). Étape 3: remplissage. Action: pompe égale 1. Transition: niveau haut atteint (I0.2). Étape 4: fermeture vanne, arrêt pompe. Action: vanne égale 0, pompe égale 0. Transition: fin temporisation (T#2 secondes). Retour à l'étape 1 (boucle). Points clés. Grafcet égale représentation graphique étape ou transition. Une transition franchie désactive l'étape amont et active l'étape aval. Actions associées aux étapes. Outil de conception avant la programmation."]],"17":[["fr","Chapitre VI, Traduction du Grafcet en ladder. Fondements théoriques. Du graphe au programme. Un Grafcet se traduit en ladder selon une méthode systématique: Une mémoire par étape: à chaque étape Xi correspond une mémoire Mi. L'étape initiale est activée par le programme d'initialisation. Activation d'une étape: Mi égale (Mi moins 1 ET condition de transition) OU (Mi ET NON condition de sortie). En pratique, on utilise souvent un Set ou Reset: Set Mi si Mi moins 1 et transition vraie, Reset Mi si Mi plus 1 devient active. Actions: les sorties physiques sont conditionnées par les mémoires d'étape. Exemple: vanne égale M2 OU M3; pompe égale M3. Sécurité: ajouter des conditions de sécurité (arrêt d'urgence, défauts) sur les sorties, indépendamment des étapes. Exemple simplifié. Traduction du Grafcet de remplissage: Initialisation: Set M1. Transition 1, donc 2: M1 ET I0.0, donc Set M2, Reset M1. Transition 2, donc 3: M2 ET I0.1, donc Set M3, Reset M2. Transition 3, donc 4: M3 ET I0.2, donc Set M4, Reset M3. Transition 4, donc 1: M4 ET T1.Q, donc Set M1, Reset M4. Action vanne: Q0.0 égale M2 OU M4. Action pompe: Q0.1 égale M3. Erreur fréquente. Oublier le Reset de l'étape amont lors du franchissement d'une transition: plusieurs étapes restent actives simultanément, le programme devient incohérent. Chaque transition doit activer l'étape aval et désactiver l'étape amont. Points clés. Une mémoire par étape. Set de l'étape aval plus Reset de l'étape amont à chaque transition. Actions conditionnées par les mémoires d'étape. Ajouter les sécurités indépendamment."]],"18":[["fr","Chapitre VII, Câblage des E ou S et adressage. Fondements théoriques. Du capteur à l'entrée, de la sortie au préactionneur. Le câblage d'un API suit des règles strictes: Chaque capteur est relié à une entrée (I ou X). L'adressage dépend du constructeur: I0.0, I0.1, etc. (Siemens) ou I:1 sur 0, I:1 sur 1 (Allen-Bradley). Chaque préactionneur est relié à une sortie (Q ou Y). Adressage: Q0.0, Q0.1…. Respecter la polarité et le type: 24 V DC, 230 V AC, PNP ou NPN pour les capteurs, transistor ou relais pour les sorties. Séparer les câbles: les câbles de puissance (vers les moteurs) sont séparés des câbles de commande et des câbles analogiques, pour éviter les perturbations. Blinder les signaux analogiques: câble blindé relié à la terre d'un seul côté (généralement côté API). Utiliser des bornes numérotées: faciliter la lecture des schémas et le dépannage. Exemple de câblage. Sur une ligne d'ensachage: Entrée I0.0: bouton marche. Entrée I0.1: bouton arrêt. Entrée I0.2: capteur de présence sac (photoélectrique). Entrée I0.3: fin de course position haute. Sortie Q0.0: contacteur convoyeur. Sortie Q0.1: distributeur vérin. Sortie Q0.2: voyant « en service ». La mise en service. Vérifier le câblage à l'ohmmètre hors tension. Télécharger le programme dans l'API. Passer en mode RUN. Vérifier les E ou S avec le logiciel (forçage ou observation). Tester chaque séquence, pas à pas, en mode manuel puis automatique. Sauvegarder le programme validé. Points clés. Une entrée par capteur, une sortie par préactionneur. Respecter polarité et type. Séparer puissance et commande. Tester chaque E ou S avant la mise en service. Sauvegarder le programme validé."]],"19":[["fr","Chapitre VII, La sécurité des machines automatisées. Fondements théoriques. Sécurité positive: le principe à respecter. La sécurité positive impose que tout défaut (coupure de fil, perte d'alimentation, capteur en panne) entraîne la mise en sécurité de la machine, c'est-à-dire son arrêt. Pour cela: Les arrêts d'urgence et les protections (capots, barrières) sont câblés avec des contacts NC (normalement fermés). Une coupure de fil ou une perte d'alimentation ouvre le circuit: la machine s'arrête. Si l'on utilisait des contacts NO, une coupure passerait inaperçue et la machine resterait en marche: danger mortel. Dispositifs de sécurité. Arrêt d'urgence (AU): bouton à champignon avec verrouillage mécanique. Il doit être câblé en série sur le circuit de commande et couper l'énergie des actionneurs (catégorie d'arrêt 0 ou 1 selon la norme). Capots et portes: interverrouillés; l'ouverture coupe la commande. Barrières immatérielles (rideaux lumineux): arrêtent la machine si une personne franchit la zone dangereuse. Relais de sécurité: modules redondants certifiés pour les fonctions de sécurité critiques (normes ISO 13849, IEC 62061). Asservissements: la machine ne peut démarrer que si le capot est fermé, la pièce bien en place, etc. Cas concret. Une presse hydraulique est équipée d'un capot interverrouillé. Si le capot s'ouvre pendant le cycle, la machine s'arrête immédiatement. Sans cette sécurité, un opérateur pourrait avoir la main écrasée. La sécurité positive impose que l'ouverture du capot ouvre un contact NC et coupe le circuit de commande: c'est un défaut qui entraîne la mise en sécurité. Points clés. Sécurité positive: contact NC pour les sécurités. Arrêt d'urgence en série, obligatoire. Capots interverrouillés, barrières immatérielles. Relais de sécurité certifiés pour les fonctions critiques."]],"20":[["fr","Chapitre VIII, Diagnostic et maintenance. Fondements théoriques. Dépanner un système automatisé. Le dépannage d'un système automatisé suit la même rigueur que pour l'électricité industrielle: Observer les symptômes: que fait la machine? Quels voyants sont allumés? Y a-t-il un message d'alarme? L'API est-il en RUN ou en STOP? Identifier l'élément défaillant: capteur, actionneur, programme, câblage, alimentation, communication. Tester: multimètre pour la continuité et les tensions, forçage des E ou S depuis le logiciel, observation de la supervision. Réparer: remplacer le capteur, resserrer une borne, corriger le programme, reconfigurer un module. Vérifier: relancer la séquence, contrôler le comportement sur plusieurs cycles, sauvegarder. Les pannes courantes. Symptôme. Causes probables. La machine ne démarre pas. Capteur défaillant, bouton bloqué, arrêt d'urgence enfoncé, programme en STOP, sortie grillée. Une action ne se fait pas. Sortie API HS, préactionneur HS, câblage coupé, condition logique non remplie. Comportement erratique. Capteur instable, perturbation électromagnétique, programme mal conçu, temporisation trop courte. Communication perdue. Câble débranché, adresse IP incorrecte, module HS. La maintenance préventive. Sauvegarder régulièrement le programme (sur PC, sur clé USB, sur serveur). Nettoyer l'armoire (poussière égale échauffement). Vérifier le serrage des connexions (une fois par an). Contrôler le fonctionnement des capteurs et actionneurs. Mettre à jour la documentation (schémas, programme, notes d'intervention). Erreur fréquente. Modifier le programme directement sur l'API en production, sans sauvegarde préalable. En cas d'erreur, il n'y a plus de version de référence. Règle: toute modification doit être précédée d'une sauvegarde et suivie d'une nouvelle sauvegarde validée. Points clés. Méthode: observer, identifier, tester, réparer, vérifier. Forçage d'E ou S et supervision: outils puissants. Sauvegarde régulière du programme. Maintenance préventive: nettoyage, serrage, contrôle."]],"21":[["fr","Ancrage R D C, Automatisation industrielle congolaise. Contextualisation. Les API dans l'industrie congolaise. Mines du Lualaba (Kamoa-Kakula, Tenke Fungurume): concasseurs, convoyeurs, pompes, treuils, tous pilotés par API pour la fiabilité et la traçabilité. Agroalimentaire à Kinshasa: brasseries (Bralima, Brasimba), minoteries (Marsavco, Utexafrica), lignes de conditionnement. REGIDESO: stations de pompage automatisées, avec supervision à distance. Cimenteries du Kongo-Central (CINAT, Lukala): fours, broyeurs, ensachage. Hydroélectricité: Inga, centrales hydroélectriques, automatismes de surveillance et de protection. Défis et atouts. Défis: Manque de techniciens qualifiés en automatismes. Matériel parfois ancien dans les ateliers scolaires (S7-200, MicroLogix). Approvisionnement en pièces détachées parfois long. Réseaux électriques instables (parafoudre, onduleur indispensables). Atouts: Forte demande dans les mines et l'agroalimentaire. Formations disponibles (ITI, ITP, ISTM). Simulateurs gratuits pour l'apprentissage. Débouchés. Électricien automaticien. Technicien de maintenance industrielle. Programmateur d'API (junior). Technicien en instrumentation. Poursuite d'études en génie électrique, automatique, instrumentation."]],"22":[["fr","Synthèse générale du cours. Ce qu'il faut retenir. Les huit idées maîtresses. API égale calculateur industriel programmable qui remplace la logique câblée. Architecture système: PO (agit), PC (décide), interface (capteurs ou préactionneurs), dialogue (pupitre). Cycle de scrutation: lire entrées, donc exécuter, donc écrire sorties, donc autotests. Capteurs TOR (binaire) ou analogiques (4-20 mA, 0-10 V). Ladder: contacts (NO ou NC) plus bobines, ET égale série, OU égale parallèle. Auto-maintien: contact de la sortie en parallèle sur le bouton marche. Temporisateurs (TON, TOF, TONR) et compteurs (CTU, CTD) pour gérer le temps et les événements. Grafcet pour concevoir, ladder pour programmer, sécurité positive pour protéger. Les erreurs à ne plus commettre. Oublier l'auto-maintien, donc le moteur ne tourne que pendant l'appui sur le bouton. Utiliser des contacts NO pour les arrêts d'urgence, donc danger mortel. Ne pas réinitialiser un compteur ou un timer cumulatif, donc comportement erratique. Modifier un programme sans sauvegarde, donc perte de la référence. Confondre PO et PC, donc mauvaise compréhension du système. Sauter le Reset de l'étape amont en Grafcet, donc plusieurs étapes actives. Tableau récapitulatif des fonctions ladder de base. Fonction. Symbole. Rôle. Contact NO. —| |—. Passant si variable égale 1. Contact NC. —|/|—. Passant si variable égale 0. Bobine directe. —( )—. Copie l'état de la ligne. Bobine Set. —(S)—. Mémorise à 1. Bobine Reset. —(R)—. Mémorise à 0. TON. [TON]. Retard à la montée. TOF. [TOF]. Retard à la descente. CTU. [CTU]. Compteur à la montée."]],"23":[["fr","Évaluation finale, Automates Programmables. Consigne. Répondez aux 22 questions ci-dessous. Chaque question a une seule bonne réponse. Cliquez sur « Valider mes réponses » pour obtenir votre score. Bonne chance! Conseil. En cas d'erreur, relisez la diapositive correspondante. Les questions balaient l'ensemble des chapitres: architecture, API, capteurs, ladder, temporisation, Grafcet, sécurité et diagnostic."]]}};
+  var CACHE = "ecolia-cours-v1";                       // même cache que l'application
+  var PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  var PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+  var DL = '<svg viewBox="0 0 24 24"><path d="M11 3h2v9.2l3.6-3.6L18 10l-6 6-6-6 1.4-1.4L11 12.2V3zM5 19h14v2H5z"/></svg>';
+  var OK = '<svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>';
+  // Réparation du quiz : certains cours stockent les choix sous "opts" (ou autre) au lieu de "options"
+  try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+      questions.forEach(function (q) {
+        if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+        if (q.text === undefined) q.text = q.question || q.q || q.enonce || q.titre || "";
+        if (typeof q.correct === "undefined") {
+          if (typeof q.answer !== "undefined") q.correct = q.answer;
+          else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+        }
+      });
+    }
+  } catch (e) {}
+  var synth = window.speechSynthesis || null;
+  var HAS_CACHE = !!(window.caches && window.caches.open);
+  var NATIVE = false;           // APK ECOLIA : pont Java "CoursInterface" (fichiers dans le dossier de l'application)
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  var LATER = "ecolia_audio_later_" + CFG.code;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+  function init() {
+    if (document.getElementById("ecolia-audio-btn")) return;
+
+    // ---------- éléments de l'interface ----------
+    var btn = document.createElement("button");
+    btn.id = "ecolia-audio-btn"; btn.type = "button"; btn.className = "ecolia-off";
+    btn.setAttribute("aria-label", "Écouter la leçon"); btn.innerHTML = PLAY;
+    var dlBtn = document.createElement("button");
+    dlBtn.id = "ecolia-dl-btn"; dlBtn.type = "button"; dlBtn.className = "ecolia-off";
+    dlBtn.innerHTML = DL;
+    var host = document.querySelector(".header-right");
+    if (host) { host.insertBefore(dlBtn, host.firstChild); host.insertBefore(btn, dlBtn); }   // dans la barre du haut : ne scrolle jamais
+    else { btn.className += " ecolia-fixed"; document.body.appendChild(btn); }
+
+    var banner = document.createElement("div");
+    banner.id = "ecolia-audio-banner";
+    banner.innerHTML = '<span class="eab-txt"></span><span class="eab-act"></span><div class="eab-bar"><i></i></div>';
+    var content = document.getElementById("content");
+    if (content && content.parentNode) content.parentNode.insertBefore(banner, content);
+    else document.body.insertBefore(banner, document.body.firstChild);
+    var txtEl = banner.querySelector(".eab-txt"), actEl = banner.querySelector(".eab-act");
+    var barEl = banner.querySelector(".eab-bar"), barI = barEl.firstChild;
+
+    var audio = new Audio();            // un seul élément Audio, réutilisé (exigé par les navigateurs mobiles)
+    audio.preload = "auto";
+    var st = { idx: -1, auto: false, advancing: false, mode: null, speaking: false, token: 0, chunks: [], ci: 0, blobUrl: null, playTok: 0 };
+    var dl = { state: "none", cached: 0, busy: false, cancel: false };   // none | partial | full
+    var bnMode = null, hideTimer = null;
+    if (synth && synth.getVoices) { try { synth.getVoices(); } catch (e) {} }
+
+    function cur() {
+      try { if (typeof currentSlide === "number") return currentSlide; } catch (e) {}
+      return 0;
+    }
+    function hasMp3(i) { return CFG.available.indexOf(i + 1) !== -1; }
+    function fb(i) { return CFG.fallback && CFG.fallback[String(i + 1)]; }
+    function hasAudio(i) { return hasMp3(i) || (!!synth && !!fb(i)); }
+    function urlN(n) {   // dans l'APK la page est sur https://app.local : une adresse relative doit pointer vers le site
+      var b = CFG.base;
+      if (NATIVE && !/^https?:/i.test(b)) b = "https://ecolia-course.github.io/" + b.replace(/^(\.\.\/|\.\/)+/, "");
+      return new URL(b + nameN(n), location.href).href;
+    }
+    function setIcon(playing) { btn.innerHTML = playing ? PAUSE : PLAY; }
+    function isPlaying() { return st.mode === "mp3" ? !audio.paused : (st.mode === "tts" && st.speaking); }
+    function mo() { return "≈ " + CFG.sizeMo + " Mo"; }
+    function nameN(n) { return "audio_" + CFG.code + "_" + n + ".mp3"; }
+
+    // ====================================================================
+    //  Stockage hors ligne : 2 moteurs, même interface
+    //    - APK : fichiers du dossier de l'application (CoursInterface), servis par https://app.local/cours/
+    //    - Web : Cache Storage du navigateur (même cache que l'application web)
+    // ====================================================================
+    function nativeStore() {
+      var okKey = "ecolia_audio_ok_" + CFG.code;
+      function readOk() { try { return JSON.parse(lsGet(okKey) || "[]"); } catch (e) { return []; } }
+      function writeOk(a) { lsSet(okKey, JSON.stringify(a)); }
+      function exists(n) { try { return !!CoursInterface.exists(nameN(n)); } catch (e) { return false; } }
+      function local(n) { return location.origin + "/cours/" + nameN(n); }
+      function verify(n) {                                   // fichier complet ? (taille exacte connue à la génération)
+        return fetch(local(n), { cache: "no-store" }).then(function (r) { return r.blob(); }).then(function (b) {
+          var exp = CFG.sizes && CFG.sizes[String(n)];
+          return (b.size > 2000 && (!exp || b.size === exp)) ? b : null;
+        }).catch(function () { return null; });
+      }
+      return {
+        list: function () {
+          var ok = readOk().filter(exists); writeOk(ok); return Promise.resolve(ok);
+        },
+        get: function (n) { return exists(n) ? verify(n) : Promise.resolve(null); },
+        put: function (n) {
+          return new Promise(function (res, rej) {
+            try { CoursInterface.download(urlN(n), nameN(n)); } catch (e) { return rej(e); }
+            var t0 = Date.now();
+            function next() { if (Date.now() - t0 > 120000) rej(new Error("délai dépassé")); else setTimeout(poll, 800); }
+            function poll() {
+              if (!exists(n)) return next();
+              verify(n).then(function (b) {
+                if (!b) return next();
+                var ok = readOk(); if (ok.indexOf(n) < 0) ok.push(n); writeOk(ok); res();
+              });
+            }
+            setTimeout(poll, 800);
+          });
+        },
+        del: function (n) {
+          try { CoursInterface.delete(nameN(n)); } catch (e) {}
+          writeOk(readOk().filter(function (x) { return x !== n; }));
+          return Promise.resolve();
+        }
+      };
+    }
+    function cacheStore() {
+      return {
+        list: function () {
+          return caches.open(CACHE).then(function (c) {
+            return Promise.all(CFG.available.map(function (n) {
+              return c.match(urlN(n)).then(function (r) {
+                if (!r) return 0;
+                if ((r.headers.get("content-type") || "").indexOf("audio") !== 0) { c.delete(urlN(n)); return 0; }   // ancien contenu invalide
+                return n;
+              });
+            }));
+          }).then(function (a) { return a.filter(Boolean); });
+        },
+        get: function (n) {
+          return caches.open(CACHE).then(function (c) { return c.match(urlN(n)); })
+            .then(function (r) { return r ? r.blob() : null; }).then(function (b) { return b && b.size > 2000 ? b : null; });
+        },
+        put: function (n) {
+          var u = urlN(n);
+          return fetch(u, { cache: "no-store" }).then(function (r) {
+            if (!r.ok || r.status !== 200) throw new Error("HTTP " + r.status);
+            return r.blob();
+          }).then(function (b) {
+            if (b.size < 2000 || (b.type && b.type.indexOf("audio") !== 0 && b.type.indexOf("octet") < 0)) throw new Error("fichier invalide");
+            return caches.open(CACHE).then(function (c) { return c.put(u, new Response(b, { headers: { "Content-Type": "audio/mpeg" } })); });
+          });
+        },
+        del: function (n) { return caches.open(CACHE).then(function (c) { return c.delete(urlN(n)); }); }
+      };
+    }
+    var store = NATIVE ? nativeStore() : (HAS_CACHE ? cacheStore() : null);
+
+    // ====================================================================
+    //  Bannière : invitation, confirmations, progression
+    // ====================================================================
+    function showBanner(mode, text, buttons, pct) {
+      clearTimeout(hideTimer);
+      bnMode = mode;
+      txtEl.textContent = text;
+      actEl.innerHTML = "";
+      (buttons || []).forEach(function (b) {
+        var e = document.createElement("button");
+        e.type = "button"; e.textContent = b.label; if (b.pri) e.className = "pri";
+        e.addEventListener("click", function (ev) { ev.stopPropagation(); b.fn(); });
+        actEl.appendChild(e);
+      });
+      if (typeof pct === "number") { barEl.style.display = "block"; barI.style.width = pct + "%"; }
+      else barEl.style.display = "none";
+      banner.classList.add("on");
+    }
+    function hideBanner() { clearTimeout(hideTimer); bnMode = null; banner.classList.remove("on"); }
+    function flash(text) { showBanner("info", text, []); hideTimer = setTimeout(hideBanner, 4000); }
+
+    function refreshUI() {
+      var show = !!store && CFG.available.length > 0;
+      dlBtn.classList.toggle("ecolia-off", !show);
+      dlBtn.classList.toggle("ecolia-full", dl.state === "full");
+      dlBtn.innerHTML = dl.state === "full" ? OK : DL;
+      dlBtn.setAttribute("aria-label", dl.state === "full" ? "Audios téléchargés : supprimer" : "Télécharger les audios");
+      dlBtn.title = dlBtn.getAttribute("aria-label");
+    }
+    function refreshCacheState(done) {
+      if (!store) { dl.state = "none"; refreshUI(); if (done) done(); return; }
+      store.list().then(function (ok) {
+        dl.cached = ok.length;
+        dl.state = dl.cached === 0 ? "none" : (dl.cached >= CFG.available.length ? "full" : "partial");
+      }).catch(function () { dl.state = "none"; }).then(function () { refreshUI(); if (done) done(); });
+    }
+
+    function askDownload(fromInvite) {
+      var left = CFG.available.length - dl.cached;
+      var txt = dl.state === "partial"
+        ? "Il reste " + left + " audio(s) à télécharger pour écouter ce cours sans internet."
+        : "🔊 Télécharger les audios de ce cours (" + mo() + ") pour les écouter sans internet ? Wi-Fi recommandé.";
+      showBanner(fromInvite ? "invite" : "confirm", txt, [
+        { label: fromInvite ? "Plus tard" : "Annuler", fn: function () { if (fromInvite) lsSet(LATER, "1"); hideBanner(); } },
+        { label: "Télécharger", pri: true, fn: startDownload }
+      ]);
+    }
+    function askDelete() {
+      showBanner("confirm", "Supprimer les audios téléchargés de ce cours (" + mo() + ") ? Vous pourrez toujours les écouter en ligne.", [
+        { label: "Annuler", fn: hideBanner },
+        { label: "Supprimer", pri: true, fn: doDelete }
+      ]);
+    }
+
+    function startDownload() {
+      if (dl.busy || !store) return;
+      dl.busy = true; dl.cancel = false;
+      var total = CFG.available.length, done = 0, quota = false, fails = 0, todo = [];
+      store.list().then(function (have) {
+        CFG.available.forEach(function (n) { if (have.indexOf(n) < 0) todo.push(n); });
+        done = total - todo.length;
+        function paint() {
+          var msg = "Téléchargement des audios : " + done + " / " + total;
+          if (bnMode === "progress") {                  // met à jour sans recréer les boutons (sinon un appui peut être perdu)
+            txtEl.textContent = msg; barI.style.width = Math.round(done / total * 100) + "%";
+          } else {
+            showBanner("progress", msg, [
+              { label: "Annuler", fn: function () { dl.cancel = true; } }
+            ], Math.round(done / total * 100));
+          }
+        }
+        paint();
+        function worker() {
+          if (dl.cancel || quota || !todo.length) return Promise.resolve();
+          var n = todo.shift();
+          return store.put(n).then(function () { done++; paint(); }).catch(function (e) {
+            if (e && (e.name === "QuotaExceededError" || /quota/i.test(String(e.message)))) quota = true;
+            fails++;
+          }).then(worker);
+        }
+        return Promise.all([worker(), worker()]);
+      }).catch(function () { fails++; }).then(function () {
+        dl.busy = false;
+        refreshCacheState(function () {
+          if (dl.state === "full") flash("✓ Audios téléchargés : le cours se lit maintenant sans internet.");
+          else if (dl.cancel) flash("Téléchargement interrompu (" + dl.cached + " / " + total + "). Vous pourrez reprendre plus tard.");
+          else showBanner("error", quota ? "Espace insuffisant sur l'appareil. Libérez de la place puis réessayez."
+            : "Certains audios n'ont pas pu être téléchargés (connexion ?).", [
+            { label: "Fermer", fn: hideBanner }, { label: "Réessayer", pri: true, fn: startDownload }
+          ]);
+        });
+      });
+    }
+    function doDelete() {
+      if (!store) return;
+      Promise.all(CFG.available.map(function (n) { return store.del(n); })).catch(function () {}).then(function () {
+        lsDel(LATER);
+        refreshCacheState(function () { flash("Audios supprimés de cet appareil."); });
+      });
+    }
+
+    dlBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (dl.busy) return;
+      if (dl.state === "full") askDelete(); else askDownload(false);
+    });
+
+    // ====================================================================
+    //  Voix intégrée au téléphone (hors ligne, sans limite)
+    // ====================================================================
+    function pickVoice(lang) {
+      var vs = [];
+      try { vs = synth.getVoices() || []; } catch (e) {}
+      var pre = lang === "en" ? "en" : "fr", best = null;
+      for (var k = 0; k < vs.length; k++) {
+        var v = vs[k];
+        if ((v.lang || "").toLowerCase().indexOf(pre) !== 0) continue;
+        if (!best || (v.localService && !best.localService)) best = v;
+      }
+      return best;
+    }
+    function hardSplit(text, max) {
+      var out = [];
+      while (text.length > max) {
+        var cut = text.lastIndexOf(" ", max);
+        if (cut < 40) cut = max;
+        out.push(text.slice(0, cut)); text = text.slice(cut).replace(/^\s+/, "");
+      }
+      if (text) out.push(text);
+      return out;
+    }
+    function buildChunks(segs) {                  // morceaux courts : évite l'arrêt des longs textes sur Chrome
+      var out = [];
+      segs.forEach(function (s) {
+        var cur2 = "", parts = s[1].match(/[^.!?;:]+[.!?;:]*\s*/g) || [s[1]];
+        parts.forEach(function (p) {
+          if (cur2 && (cur2 + p).length > 160) { out.push({ lang: s[0], text: cur2.trim() }); cur2 = p; }
+          else cur2 += p;
+        });
+        if (cur2.trim()) out.push({ lang: s[0], text: cur2.trim() });
+      });
+      var res = [];
+      out.forEach(function (c) { hardSplit(c.text, 190).forEach(function (t) { res.push({ lang: c.lang, text: t }); }); });
+      return res;
+    }
+    function speakFrom(tk) {
+      if (tk !== st.token) return;
+      if (st.ci >= st.chunks.length) {
+        st.speaking = false; st.mode = null; st.ci = 0; setIcon(false);
+        if (st.auto) goNext();
+        return;
+      }
+      var c = st.chunks[st.ci];
+      var u = new SpeechSynthesisUtterance(c.text);
+      u.lang = c.lang === "en" ? "en-US" : "fr-FR";
+      var v = pickVoice(c.lang);
+      if (v) { u.voice = v; u.lang = v.lang; }
+      u.rate = 0.95;
+      u.onend = function () { if (tk !== st.token) return; st.ci++; speakFrom(tk); };
+      u.onerror = function () { if (tk !== st.token) return; st.speaking = false; setIcon(false); st.auto = false; };
+      synth.speak(u);
+    }
+    function startTts(from) {
+      st.token++;
+      var tk = st.token;
+      st.mode = "tts"; st.speaking = true; st.ci = from || 0; setIcon(true);
+      var busy = false;
+      try { busy = synth.speaking || synth.pending; synth.cancel(); } catch (e) {}
+      if (busy) setTimeout(function () { speakFrom(tk); }, 120);   // laisse cancel() se terminer
+      else speakFrom(tk);                                          // sinon tout de suite (exigé par iOS)
+    }
+    function playVoice() {
+      if (!(synth && fb(st.idx))) { st.auto = false; return false; }
+      if (!st.chunks.length) st.chunks = buildChunks(fb(st.idx));
+      startTts(st.ci);
+      return true;
+    }
+
+    // ====================================================================
+    //  Lecture
+    // ====================================================================
+    function freeBlob() { if (st.blobUrl) { try { URL.revokeObjectURL(st.blobUrl); } catch (e) {} st.blobUrl = null; } }
+    function stopAll() {
+      st.playTok++;
+      try { audio.pause(); audio.currentTime = 0; } catch (e) {}
+      st.token++;
+      try { if (synth) synth.cancel(); } catch (e) {}
+      st.speaking = false; st.mode = null; st.chunks = []; st.ci = 0;
+      setIcon(false);
+    }
+    function pauseNow() {
+      if (st.mode === "mp3") audio.pause();
+      else if (st.mode === "tts") {
+        st.token++;
+        try { synth.cancel(); } catch (e) {}
+        st.speaking = false; setIcon(false);      // st.ci conservé : la reprise repart de la phrase en cours
+      }
+    }
+    function startAudio(src, tok) {
+      if (tok !== st.playTok) return;
+      if (audio.getAttribute("data-src") !== src) { audio.setAttribute("data-src", src); audio.src = src; }
+      var p = audio.play();
+      if (p && p.catch) p.catch(function (err) {
+        console.warn("ECOLIA audio :", err);
+        if (tok !== st.playTok) return;
+        if (!(err && err.name === "NotAllowedError") && playVoice()) return;   // lecture impossible : voix du téléphone
+        setIcon(false); st.auto = false;
+      });
+    }
+    function playCurrent() {
+      var i = st.idx;
+      if (hasMp3(i)) {
+        var tok = ++st.playTok, u = urlN(i + 1);
+        st.mode = "mp3";
+        if (!navigator.onLine && dl.state === "none") { st.mode = null; if (playVoice()) return; }   // hors ligne et non téléchargé
+        if (store && dl.state !== "none") {                     // téléchargé : lecture locale, sans réseau
+          store.get(i + 1)
+            .then(function (b) {
+              if (tok !== st.playTok) return;
+              if (b) { freeBlob(); st.blobUrl = URL.createObjectURL(new Blob([b], { type: "audio/mpeg" })); startAudio(st.blobUrl, tok); }
+              else startAudio(u, tok);
+            }).catch(function () { startAudio(u, tok); });
+        } else startAudio(u, tok);                              // sinon lecture en ligne (appel immédiat, exigé par iOS)
+      } else if (!playVoice()) {
+        st.auto = false;
+      }
+    }
+
+    function onSlideChange(i) {
+      var wasAdvancing = st.advancing;
+      st.advancing = false;
+      st.idx = i;
+      btn.classList.toggle("ecolia-off", !hasAudio(i));
+      stopAll();
+      audio.removeAttribute("data-src");
+      freeBlob();
+      if (bnMode === "invite" && i !== 0) hideBanner();       // l'invitation n'apparaît qu'à la première slide
+      if (wasAdvancing && st.auto) setTimeout(playCurrent, 500);   // enchaînement automatique
+      else st.auto = false;                                         // changement manuel : on coupe tout
+    }
+    function goNext() {
+      if (st.idx + 1 >= CFG.count) { st.auto = false; return; }
+      st.advancing = true;
+      if (typeof nextSlide === "function") nextSlide();
+      else { var nb = document.getElementById("nextBtn"); if (nb) nb.click(); }
+      setTimeout(function () { st.advancing = false; }, 4000);
+    }
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var i = cur();
+      if (i !== st.idx) onSlideChange(i);
+      if (isPlaying()) { st.auto = false; pauseNow(); }
+      else { st.auto = true; playCurrent(); }
+    });
+    audio.addEventListener("play", function () { setIcon(true); });
+    audio.addEventListener("pause", function () { if (st.mode === "mp3") setIcon(false); });
+    audio.addEventListener("error", function () {
+      if (st.mode === "mp3" && playVoice()) return;            // fichier introuvable / hors ligne : voix du téléphone
+      setIcon(false); st.auto = false;
+    });
+    audio.addEventListener("ended", function () { setIcon(false); if (st.auto) goNext(); });
+    window.addEventListener("pagehide", function () { stopAll(); freeBlob(); });
+
+    // ---------- démarrage ----------
+    refreshCacheState(function () {
+      if (store && CFG.available.length && dl.state !== "full" && navigator.onLine && cur() === 0 && !lsGet(LATER)) askDownload(true);
+    });
+    st.idx = -1;
+    setInterval(function () { var i = cur(); if (i !== st.idx) onSlideChange(i); }, 250);   // suit la slide affichée
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+<!-- ECOLIA_AUDIO_PLAYER_END -->
+</body>
+</html>

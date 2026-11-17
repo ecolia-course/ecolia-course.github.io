@@ -1,0 +1,1928 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="bleu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>ECOLIA — Biochimie Clinique4</title>
+<style>
+[data-theme="bleu"]   { --p1:#0d2b4f; --p2:#1565c0; --p3:#07172e; --p4:#12437a; --p5:#5b8fd0; --bg:#e8f0fb; --bg2:#cfdff5; --bd:#a9c3e8; --soft:#dde8f7; --btn:#2a67b0; }
+[data-theme="vert"]   { --p1:#14442e; --p2:#2e7d32; --p3:#0b2b1a; --p4:#1f5c3a; --p5:#4f9a6b; --bg:#e8f5ec; --bg2:#c8e6d2; --bd:#a5cdb2; --soft:#dcefe2; --btn:#2f7a4f; }
+[data-theme="violet"] { --p1:#2d1b4e; --p2:#6a1b9a; --p3:#1a0f2e; --p4:#4a148c; --p5:#9c6fd0; --bg:#f1e9fb; --bg2:#dccbf2; --bd:#c4a8e6; --soft:#e8ddf6; --btn:#7e3fb2; }
+[data-theme="rouge"]  { --p1:#4a1010; --p2:#b71c1c; --p3:#2b0a0a; --p4:#8e1b1b; --p5:#d9706a; --bg:#fbeaea; --bg2:#f3cdcb; --bd:#e8a9a5; --soft:#f8dede; --btn:#a62a2a; }
+[data-theme="orange"] { --p1:#4e2a0c; --p2:#ef6c00; --p3:#2e1604; --p4:#b34a00; --p5:#f0a15a; --bg:#fff1e0; --bg2:#fbdcb8; --bd:#f3c08a; --soft:#fdebd6; --btn:#c9650a; }
+[data-theme="teal"]   { --p1:#0b3a3a; --p2:#00796b; --p3:#062626; --p4:#00574b; --p5:#4db6ac; --bg:#e0f2f1; --bg2:#b2dfdb; --bd:#80cbc4; --soft:#d5ecea; --btn:#26897d; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:linear-gradient(160deg,var(--p1) 0%,var(--p2) 50%,var(--p3) 100%); display:flex; justify-content:center; align-items:center; padding:8px; }
+.container { width:100%; max-width:1400px; background:#fefdf8; border-radius:20px; overflow:hidden; display:flex; flex-direction:column; height:100%; max-height:100vh; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.progress-bar { height:4px; background:var(--bg2); flex-shrink:0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--p5),var(--p4)); width:0%; transition:width 0.3s; }
+.header { padding:10px 16px; background:var(--bg); border-bottom:1px solid var(--bd); display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+.header h1 { color:var(--p4); font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box { display:flex; background:white; border-radius:20px; padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.search-box input { border:none; padding:6px 10px; border-radius:20px; outline:none; width:130px; font-size:0.8rem; }
+.search-box button { background:none; border:none; cursor:pointer; padding:4px 8px; font-size:0.85rem; color:var(--p2); }
+.badge { background:var(--p5); color:white; padding:4px 10px; border-radius:20px; font-weight:bold; font-size:0.75rem; }
+.search-nav { display:none; gap:4px; background:var(--bg2); padding:2px 8px; border-radius:20px; align-items:center; font-size:0.75rem; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:0.9rem; color:var(--p4); padding:2px 4px; }
+.content { padding:28px 32px; flex:1; overflow-y:auto; background:#fff; scroll-behavior:smooth; line-height:1.85; }
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.slide-title { color:var(--p1); font-size:1.5rem; font-weight:700; padding-bottom:12px; margin-bottom:20px; border-bottom:2px solid var(--p5); }
+.slide-content { color:var(--p3); font-size:1rem; }
+.empty-state { display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-height:60vh; padding:40px 20px; gap:18px; }
+.empty-state .icon { width:72px; height:72px; border-radius:50%; background:var(--bg); border:2px solid var(--bd); display:flex; align-items:center; justify-content:center; color:var(--p2); font-size:2rem; font-weight:300; }
+.empty-state h2 { color:var(--p1); font-size:1.4rem; font-weight:700; margin:0; }
+.empty-state p { color:#666; font-size:0.95rem; max-width:520px; line-height:1.7; }
+.empty-state .tag { display:inline-block; padding:6px 14px; background:var(--bg); color:var(--p4); border:1px solid var(--bd); border-radius:20px; font-size:0.8rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; }
+.bloc { padding:18px 22px; border-radius:12px; margin:22px 0; line-height:1.85; }
+.bloc-label { font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; opacity:0.7; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:var(--bg); border-left:4px solid var(--p5); }
+.theorie .bloc-label { color:var(--p4); }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.sources { background:#f5f5f5; padding:12px 16px; border-radius:10px; margin-top:26px; font-size:0.82rem; color:#666; border-left:3px solid #999; line-height:1.6; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:var(--p1); }
+.quiz-container { padding:22px; background:var(--bg); border-radius:16px; }
+.quiz-question { background:white; border-radius:10px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.quiz-question p { font-weight:600; margin-bottom:10px; color:var(--p1); }
+.quiz-question label { display:block; padding:8px 10px; margin:4px 0; border-radius:6px; cursor:pointer; transition:background 0.2s; }
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit { background:var(--btn); color:white; border:none; padding:12px 24px; border-radius:30px; font-size:1rem; cursor:pointer; font-weight:600; margin-top:14px; }
+.quiz-result { margin-top:16px; font-weight:600; }
+.controls { padding:8px 16px; background:#fafafa; border-top:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0; }
+.nav-btn { background:white; color:var(--p4); border:1px solid #ccc; padding:8px 14px; border-radius:8px; font-size:0.82rem; cursor:pointer; font-weight:500; }
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:var(--soft); }
+.content::-webkit-scrollbar-thumb { background:var(--p5); border-radius:3px; }
+@media (max-width:600px) { body { padding:0; } .container { border-radius:0; max-height:100vh; } .content { padding:20px 18px; } .slide-title { font-size:1.25rem; } .search-box input { width:90px; } .header h1 { font-size:0.85rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="header">
+<h1 id="pageTitle">ECOLIA</h1>
+<div class="header-right">
+<div class="search-box">
+<input id="searchInput" placeholder="Rechercher" type="text"/>
+<button id="searchBtn">⌕</button>
+</div>
+<div class="search-nav" id="searchNav">
+<button id="prevResultBtn">‹</button>
+<span id="resultCounter">0/0</span>
+<button id="nextResultBtn">›</button>
+</div>
+<span class="badge" id="slideCounter">0/0</span>
+</div>
+</div>
+<div class="content" id="content"></div>
+<div class="controls">
+<button class="nav-btn" id="prevBtn">← Précédent</button>
+<span class="counter" id="counter">—</span>
+<button class="nav-btn" id="nextBtn">Suivant →</button>
+</div>
+</div>
+<script>
+const COURSE_TITLE = "Biochimie Clinique (Explorations Biologiques et Interprétation)";
+const slides = [
+  {
+    title: "Sommaire — Biochimie Clinique (Explorations Biologiques et Interprétation)",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Présentation du cours</div>
+        <h3>Interpréter les résultats du laboratoire pour mieux soigner</h3>
+        <p>La biochimie clinique est la discipline qui applique les méthodes chimiques au diagnostic, au suivi et à la prévention des maladies. Chaque jour, dans les hôpitaux et centres de santé de la RDC, des prélèvements sanguins sont analysés : urée, créatinine, glycémie, transaminases, électrolytes, bilan lipidique. Savoir interpréter ces résultats, en tenant compte du contexte clinique et des valeurs de référence, est une compétence professionnelle indispensable pour le technicien de laboratoire et l'infirmier A2.</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Objectifs d'apprentissage</div>
+        <h3>À la fin de ce cours, vous serez capable de :</h3>
+        <ul>
+          <li>Définir la biochimie clinique et ses trois aspects (technique, analytique, clinique).</li>
+          <li>Connaître les unités et les valeurs de référence des principaux paramètres.</li>
+          <li>Interpréter les paramètres azotés : urée, créatinine, acide urique.</li>
+          <li>Interpréter les paramètres glucidiques et lipidiques.</li>
+          <li>Interpréter les protéines plasmatiques et les enzymes (ALAT, ASAT, GGT, PAL, amylase, CPK, LDH).</li>
+          <li>Comprendre les électrolytes et l'équilibre acido-basique.</li>
+          <li>Distinguer les phases pré-analytique, analytique et post-analytique du laboratoire.</li>
+          <li>Appliquer le rôle infirmier : prélèvement de qualité, transport, éducation du patient.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Plan du cours</div>
+        <h3>Huit chapitres progressifs</h3>
+        <ol>
+          <li>Introduction à la biochimie clinique</li>
+          <li>Les constituants azotés non protéiques</li>
+          <li>Le glucose et les troubles du métabolisme glucidique</li>
+          <li>Les lipides et les dyslipidémies</li>
+          <li>Les protéines plasmatiques et les enzymes</li>
+          <li>Les électrolytes et l'équilibre hydro-électrolytique</li>
+          <li>L'équilibre acido-basique</li>
+          <li>Le laboratoire et le rôle infirmier</li>
+        </ol>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Importance en RDC</div>
+        <p>La biochimie clinique est une épreuve du <strong>jury national des ITM</strong> pour les techniciens de laboratoire. Les intervalles de référence ont été établis pour les populations d'Afrique centrale (créatinine 0,65-1,22 mg/dL, enzymes hépatiques, électrolytes). Les bilans biochimiques sont utilisés quotidiennement pour le suivi du diabète, de l'hypertension, des hépatites, de l'insuffisance rénale et des désordres hydro-électrolytiques.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 1 — Définition et aspects de la biochimie clinique",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Une discipline à trois visages</h3>
+        <p>La <strong>biochimie clinique</strong> (ou chimie clinique) est l'étude des aspects chimiques de la vie de l'homme sain et l'application à la médecine des méthodes chimiques employées au laboratoire pour le diagnostic, le contrôle et la prévention des maladies.</p>
+
+        <h4>Trois aspects complémentaires</h4>
+        <ul>
+          <li><strong>Aspect technique</strong> : les instruments utilisés (automates, spectrophotomètres, électrodes).</li>
+          <li><strong>Aspect analytique</strong> : les méthodes de dosage (colorimétrie, enzymologie, immuno-analyse).</li>
+          <li><strong>Aspect clinique</strong> : l'interprétation physiopathologique des résultats dans le contexte du patient.</li>
+        </ul>
+
+        <h4>Les grands domaines explorés</h4>
+        <ul>
+          <li>Bilan rénal (urée, créatinine, acide urique).</li>
+          <li>Bilan glucidique (glycémie, HbA1c).</li>
+          <li>Bilan lipidique (cholestérol, triglycérides).</li>
+          <li>Bilan hépatique (protéines, transaminases, GGT, PAL, bilirubine).</li>
+          <li>Bilan hydro-électrolytique (sodium, potassium, chlore).</li>
+          <li>Équilibre acido-basique (pH, bicarbonates, gaz du sang).</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>La biochimie clinique n'est pas qu'un ensemble de chiffres : c'est un outil d'aide à la décision médicale. Sans interprétation clinique, un résultat biologique n'a pas de valeur diagnostique en soi.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 1 — Unités, valeurs de référence et variabilité pré-analytique",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Les unités</div>
+        <h3>Savoir lire un résultat</h3>
+        <p>Les résultats de biochimie s'expriment dans différentes unités :</p>
+        <ul>
+          <li><strong>Concentration massique</strong> : g/L, mg/dL, g%.</li>
+          <li><strong>Concentration molaire</strong> : mol/L, mmol/L, µmol/L.</li>
+          <li><strong>Unités internationales</strong> : UI/L pour les enzymes.</li>
+        </ul>
+        <p>La conversion entre unités est une compétence essentielle. Par exemple :</p>
+        <ul>
+          <li>Glycémie : 1 g/L = 5,55 mmol/L.</li>
+          <li>Créatinine : 1 mg/dL ≈ 88,4 µmol/L.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les valeurs de référence</div>
+        <h3>Des intervalles établis pour chaque population</h3>
+        <p>Les <strong>valeurs de référence</strong> sont des intervalles de valeurs observés chez une population saine. Elles sont définies en tenant compte de :</p>
+        <ul>
+          <li>L'âge (valeurs différentes chez l'enfant, l'adulte, la personne âgée).</li>
+          <li>Le sexe (valeurs différentes chez l'homme et la femme).</li>
+          <li>L'état physiologique (grossesse, jeûne, effort).</li>
+          <li>L'origine géographique (les valeurs d'Afrique centrale peuvent différer de celles d'Europe).</li>
+        </ul>
+
+        <h4>Exemples en Afrique centrale (études récentes)</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Paramètre</th>
+              <th>Valeur de référence</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Créatinine (adulte)</td><td>0,65-1,22 mg/dL</td></tr>
+            <tr><td>Urée (adulte)</td><td>5,4-24,7 mg/dL</td></tr>
+            <tr><td>ALAT</td><td>3-43 UI/L</td></tr>
+            <tr><td>ASAT</td><td>3-38 UI/L</td></tr>
+            <tr><td>GGT</td><td>7,8-35,3 UI/L</td></tr>
+            <tr><td>Phosphatases alcalines</td><td>39-246 UI/L</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Variabilité pré-analytique</div>
+        <h3>Ce qui se passe avant le dosage</h3>
+        <p>De nombreux facteurs peuvent influencer un résultat avant même l'analyse :</p>
+        <ul>
+          <li><strong>Le jeûne</strong> : la glycémie et les triglycérides augmentent après un repas.</li>
+          <li><strong>La position</strong> : la position debout prolongée concentre les protéines.</li>
+          <li><strong>L'exercice</strong> : les transaminases et la CPK augmentent après un effort intense.</li>
+          <li><strong>Le stress</strong> : la glycémie et le cortisol augmentent.</li>
+          <li><strong>Les médicaments</strong> : certains modifient les résultats.</li>
+          <li><strong>L'hémolyse</strong> : la destruction des globules rouges fausse le potassium, le LDH, les transaminases.</li>
+          <li><strong>Le délai de transport</strong> : la glycémie diminue dans un tube non traité.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Interpréter un résultat sans tenir compte du contexte clinique et des conditions de prélèvement. Un chiffre isolé n'a pas de valeur diagnostique : il faut le confronter aux signes cliniques, aux antécédents et aux valeurs de référence.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 2 — L'urée",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le produit final du métabolisme des protéines</h3>
+        <p>L'<strong>urée</strong> est le produit final du métabolisme des protéines. Elle est <strong>synthétisée dans le foie</strong> à partir de l'ammoniac et éliminée principalement par le <strong>rein</strong> dans les urines.</p>
+
+        <h4>But du dosage</h4>
+        <ul>
+          <li>Évaluer la fonction rénale (dépistage de l'insuffisance rénale).</li>
+          <li>Évaluer l'état d'hydratation.</li>
+          <li>Suivre l'évolution d'une maladie rénale ou hépatique.</li>
+        </ul>
+
+        <h4>Valeurs de référence</h4>
+        <p>Chez l'adulte en Afrique centrale : <strong>5,4 à 24,7 mg/dL</strong> (soit environ 0,9 à 4,1 mmol/L).</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Interprétation</div>
+        <h3>Quand l'urée augmente ou diminue</h3>
+        <h4>Augmentation de l'urée (hyperurémie)</h4>
+        <ul>
+          <li><strong>Insuffisance rénale</strong> (aiguë ou chronique) : le rein n'élimine plus l'urée.</li>
+          <li><strong>Déshydratation</strong> : concentration du sang, insuffisance rénale fonctionnelle.</li>
+          <li><strong>Saignement digestif</strong> : le sang digéré libère des protéines qui sont transformées en urée.</li>
+          <li><strong>Régime hyperprotidique</strong> : apport excessif de protéines.</li>
+          <li><strong>Choc, défaillance cardiaque</strong> : baisse de la perfusion rénale.</li>
+        </ul>
+
+        <h4>Diminution de l'urée (hypo-urémie)</h4>
+        <ul>
+          <li><strong>Insuffisance hépatique</strong> : le foie ne synthétise plus l'urée.</li>
+          <li><strong>Malnutrition</strong> : carence d'apport protéique.</li>
+          <li><strong>Grossesse</strong> : hémodilution et besoins accrus.</li>
+          <li><strong>Hyperhydratation</strong> : dilution.</li>
+        </ul>
+      </div>
+
+      <figure>
+        <img data-image-id="biochimieclinique4_img01" alt="Schéma du métabolisme de l'urée et de la créatinine, montrant leur synthèse hépatique et leur élimination rénale" />
+        <figcaption>L'urée et la créatinine, marqueurs de la fonction rénale.</figcaption>
+      </figure>
+    `
+  },
+  {
+    title: "Chapitre 2 — La créatinine",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le meilleur marqueur simple de la fonction rénale</h3>
+        <p>La <strong>créatinine</strong> est le produit de dégradation de la créatine musculaire. Elle est produite de façon continue par les muscles, libérée dans le sang, puis <strong>éliminée par le rein</strong> par filtration glomérulaire.</p>
+
+        <h4>Pourquoi la créatinine est-elle meilleure que l'urée ?</h4>
+        <ul>
+          <li>Sa production est constante et dépend peu de l'alimentation.</li>
+          <li>Elle est peu influencée par le métabolisme protéique.</li>
+          <li>Elle reflète mieux le débit de filtration glomérulaire (DFG).</li>
+        </ul>
+
+        <h4>Valeurs de référence en Afrique centrale</h4>
+        <p>Chez l'adulte : <strong>0,65 à 1,22 mg/dL</strong> (environ 57 à 108 µmol/L).</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Interprétation</div>
+        <h3>Quand la créatinine augmente ou diminue</h3>
+        <h4>Augmentation (hypercréatininémie)</h4>
+        <ul>
+          <li><strong>Insuffisance rénale</strong> (aiguë ou chronique) : le rein n'élimine plus la créatinine.</li>
+          <li><strong>Obstruction urinaire</strong> (lithiase, tumeur) : obstacle à l'élimination.</li>
+          <li><strong>Déshydratation sévère</strong> : insuffisance rénale fonctionnelle.</li>
+          <li><strong>Médicaments néphrotoxiques</strong> : aminosides, AINS, produits de contraste.</li>
+          <li><strong>Rhabdomyolyse</strong> : destruction musculaire massive.</li>
+        </ul>
+
+        <h4>Diminution (hypocréatininémie)</h4>
+        <ul>
+          <li><strong>Faible masse musculaire</strong> : personne âgée, dénutrition, immobilisation prolongée.</li>
+          <li><strong>Grossesse</strong> : hémodilution et hyperfiltration rénale.</li>
+          <li><strong>Insuffisance hépatique sévère</strong> : diminution de la production.</li>
+        </ul>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Application clinique</div>
+        <h3>Interpréter une créatinine élevée</h3>
+        <p>Un patient de 55 ans, hypertendu connu, présente une créatinine à 2,5 mg/dL. Que signifie ce résultat ?</p>
+        <ul>
+          <li>La créatinine est nettement au-dessus des valeurs de référence (0,65-1,22 mg/dL).</li>
+          <li>Cela évoque une <strong>insuffisance rénale</strong>, probablement liée à l'hypertension (néphropathie hypertensive).</li>
+          <li>Il faut calculer le débit de filtration glomérulaire (DFG) pour évaluer le stade de l'insuffisance rénale.</li>
+          <li>Il faut rechercher d'autres causes (diabète, médicaments néphrotoxiques, obstruction).</li>
+          <li>Le patient doit être référé au médecin pour une prise en charge néphrologique.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 2 — L'acide urique",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le produit final du catabolisme des purines</h3>
+        <p>L'<strong>acide urique</strong> est le produit final du catabolisme des <strong>purines</strong> (constituants de l'ADN et de l'ARN). Il est synthétisé dans le foie et éliminé principalement par le rein (et en partie par le tube digestif).</p>
+
+        <h4>But du dosage</h4>
+        <ul>
+          <li>Diagnostic et suivi de la <strong>goutte</strong> (arthrite microcristalline).</li>
+          <li>Évaluation du <strong>syndrome de lyse tumorale</strong> (après chimiothérapie).</li>
+          <li>Bilan de l'insuffisance rénale.</li>
+        </ul>
+
+        <h4>Valeurs de référence</h4>
+        <ul>
+          <li>Homme : 3,5 à 7,2 mg/dL (208 à 428 µmol/L).</li>
+          <li>Femme : 2,6 à 6,0 mg/dL (155 à 357 µmol/L).</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Interprétation</div>
+        <h3>Quand l'acide urique augmente ou diminue</h3>
+        <h4>Augmentation (hyperuricémie)</h4>
+        <ul>
+          <li><strong>Goutte</strong> : dépôt de cristaux d'urate dans les articulations (orteil, genou), très douloureux.</li>
+          <li><strong>Insuffisance rénale</strong> : diminution de l'élimination.</li>
+          <li><strong>Hémopathies</strong> (leucémies, lymphomes) : augmentation du catabolisme des purines.</li>
+          <li><strong>Syndrome de lyse tumorale</strong> après chimiothérapie.</li>
+          <li><strong>Régime riche en purines</strong> (viande rouge, abats, fruits de mer).</li>
+          <li><strong>Diurétiques</strong> (thiazidiques, furosémide).</li>
+        </ul>
+
+        <h4>Diminution (hypo-uricémie)</h4>
+        <ul>
+          <li>Certains médicaments (allopurinol, uricosuriques).</li>
+          <li>Maladies hépatiques sévères.</li>
+          <li>Syndrome de Fanconi.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Confondre urée et créatinine. La créatinine est un meilleur reflet de la fonction rénale, car elle est moins dépendante de l'alimentation. L'urée est influencée par l'apport protéique et l'hydratation, mais elle reste utile pour le suivi global.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 3 — La glycémie et le diagnostic du diabète",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le glucose, source d'énergie de l'organisme</h3>
+        <p>La <strong>glycémie</strong> est le taux de glucose dans le sang. Le glucose est la principale source d'énergie des cellules, notamment du cerveau. Sa régulation dépend de l'<strong>insuline</strong> (hypoglycémiante) et du <strong>glucagon</strong> (hyperglycémiant), deux hormones produites par le pancréas.</p>
+
+        <h4>Valeurs de référence</h4>
+        <ul>
+          <li><strong>À jeun</strong> : 0,70 à 1,10 g/L (3,9 à 6,1 mmol/L).</li>
+          <li><strong>Après un repas</strong> : &lt; 1,40 g/L à 2 heures.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Le diabète</div>
+        <h3>Un trouble chronique de la régulation glycémique</h3>
+        <p>Le <strong>diabète</strong> est un trouble chronique caractérisé par une hyperglycémie persistante, due à un défaut de sécrétion ou d'action de l'insuline.</p>
+
+        <h4>Critères diagnostiques</h4>
+        <ul>
+          <li><strong>Glycémie à jeun ≥ 1,26 g/L</strong> (7,0 mmol/L) à deux reprises.</li>
+          <li><strong>Glycémie aléatoire ≥ 2 g/L</strong> (11,1 mmol/L) avec symptômes (soif, polyurie, amaigrissement).</li>
+          <li><strong>HbA1c ≥ 6,5 %</strong>.</li>
+        </ul>
+
+        <h4>Types de diabète</h4>
+        <ul>
+          <li><strong>Diabète de type 1</strong> : carence absolue en insuline, souvent chez l'enfant et l'adulte jeune.</li>
+          <li><strong>Diabète de type 2</strong> : insulinorésistance, plus fréquent, souvent lié à l'obésité et à l'âge.</li>
+          <li><strong>Diabète gestationnel</strong> : apparaît pendant la grossesse.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">L'hypoglycémie</div>
+        <h3>Quand la glycémie est trop basse</h3>
+        <p>L'<strong>hypoglycémie</strong> est définie par une glycémie inférieure à <strong>0,50 g/L</strong> (2,8 mmol/L).</p>
+
+        <h4>Causes</h4>
+        <ul>
+          <li>Jeûne prolongé.</li>
+          <li>Surdosage en insuline ou en sulfamides hypoglycémiants.</li>
+          <li>Insuffisance hépatique sévère.</li>
+          <li>Alcoolisme.</li>
+          <li>Effort physique intense sans apport glucidique.</li>
+        </ul>
+
+        <h4>Signes cliniques</h4>
+        <ul>
+          <li>Sueurs, tremblements, palpitations.</li>
+          <li>Faim impérieuse.</li>
+          <li>Confusion, troubles du comportement.</li>
+          <li>Convulsions, coma (hypoglycémie sévère).</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Interpréter une glycémie sans préciser si le patient est à jeun. Les seuils diagnostiques diffèrent selon le contexte (à jeun, aléatoire, post-prandial). Il faut toujours noter l'heure du prélèvement par rapport au dernier repas.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 3 — L'HbA1c et le suivi du diabète",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Le reflet de l'équilibre glycémique sur 3 mois</h3>
+        <p>L'<strong>HbA1c</strong> (hémoglobine glyquée) est une forme d'hémoglobine à laquelle du glucose s'est fixé de façon irréversible. Sa concentration dépend de la glycémie moyenne des <strong>2 à 3 derniers mois</strong> (durée de vie des globules rouges).</p>
+
+        <h4>Intérêt clinique</h4>
+        <ul>
+          <li>Évaluer l'équilibre glycémique d'un patient diabétique sur le long terme.</li>
+          <li>Confirmer le diagnostic de diabète (HbA1c ≥ 6,5 %).</li>
+          <li>Ajuster le traitement.</li>
+        </ul>
+
+        <h4>Valeurs de référence</h4>
+        <ul>
+          <li><strong>Non diabétique</strong> : &lt; 5,7 %.</li>
+          <li><strong>Prédiabète</strong> : 5,7 à 6,4 %.</li>
+          <li><strong>Diabète</strong> : ≥ 6,5 %.</li>
+          <li><strong>Objectif thérapeutique chez le diabétique</strong> : généralement &lt; 7 % (à individualiser).</li>
+        </ul>
+      </div>
+
+      <div class="bloc exemple">
+        <div class="bloc-label">Application clinique</div>
+        <h3>Un patient diabétique déséquilibré</h3>
+        <p>Un patient diabétique de type 2 se présente pour un contrôle. Sa glycémie à jeun est à 2,5 g/L et son HbA1c à 9 %. Que signifie ce résultat ?</p>
+        <ul>
+          <li>La glycémie à jeun est très au-dessus du seuil (1,26 g/L).</li>
+          <li>L'HbA1c à 9 % indique un <strong>déséquilibre chronique</strong> sur les 3 derniers mois (objectif habituel &lt; 7 %).</li>
+          <li>Le traitement doit être réévalué.</li>
+          <li>L'éducation du patient doit être renforcée : alimentation, observance, activité physique.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <ul>
+          <li>Glycémie = photo instantanée du glucose.</li>
+          <li>HbA1c = film des 3 derniers mois.</li>
+          <li>Les deux examens sont complémentaires dans le suivi du diabète.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 4 — Le bilan lipidique et les dyslipidémies",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Quatre paramètres à connaître</h3>
+        <p>Le <strong>bilan lipidique</strong> comprend quatre paramètres, mesurés après un jeûne de 12 heures :</p>
+        <ul>
+          <li><strong>Cholestérol total</strong> : somme de tous les cholestérols transportés.</li>
+          <li><strong>LDL-cholestérol</strong> (« mauvais » cholestérol) : transporteur du cholestérol vers les artères, favorise l'athérosclérose.</li>
+          <li><strong>HDL-cholestérol</strong> (« bon » cholestérol) : ramène le cholestérol des artères vers le foie, effet protecteur.</li>
+          <li><strong>Triglycérides</strong> : forme de stockage des graisses.</li>
+        </ul>
+
+        <h4>Valeurs de référence (à jeun)</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Paramètre</th>
+              <th>Valeur souhaitable</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Cholestérol total</td><td>&lt; 2 g/L</td></tr>
+            <tr><td>LDL-cholestérol</td><td>&lt; 1,6 g/L</td></tr>
+            <tr><td>HDL-cholestérol</td><td>&gt; 0,4 g/L</td></tr>
+            <tr><td>Triglycérides</td><td>&lt; 1,5 g/L</td></tr>
+          </tbody>
+        </table>
+        <p>Ces seuils doivent être adaptés au <strong>risque cardiovasculaire</strong> du patient (diabète, hypertension, tabagisme, antécédents familiaux).</p>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Interprétation</div>
+        <h3>Les dyslipidémies</h3>
+        <ul>
+          <li><strong>Hypercholestérolémie</strong> : cholestérol total élevé. Risque athérogène (infarctus, AVC).</li>
+          <li><strong>Hypertriglycéridémie</strong> : triglycérides élevés. Risque de pancréatite aiguë si très élevés, syndrome métabolique.</li>
+          <li><strong>HDL bas</strong> : facteur de risque cardiovasculaire (le HDL protège normalement les artères).</li>
+          <li><strong>Dyslipidémie mixte</strong> : élévation du cholestérol et des triglycérides.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Interpréter un bilan lipidique sans tenir compte du jeûne. Les triglycérides augmentent fortement après un repas. Un bilan lipidique doit être réalisé après 12 heures de jeûne. Il faut également tenir compte du risque cardiovasculaire global du patient.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 5 — Les protéines plasmatiques",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Albumine et globulines</h3>
+        <p>Les <strong>protéines plasmatiques</strong> sont nombreuses et jouent des rôles variés : transport, immunité, pression oncotique, coagulation.</p>
+
+        <h4>L'albumine</h4>
+        <p>C'est la <strong>protéine la plus abondante</strong> du plasma (environ 60 % des protéines totales). Elle est synthétisée par le foie. Ses rôles :</p>
+        <ul>
+          <li><strong>Maintien de la pression oncotique</strong> : retient l'eau dans les vaisseaux.</li>
+          <li><strong>Transport</strong> de nombreuses molécules (hormones, médicaments, bilirubine, acides gras).</li>
+        </ul>
+
+        <h4>Les globulines</h4>
+        <p>Ensemble des autres protéines plasmatiques :</p>
+        <ul>
+          <li><strong>Alpha et bêta-globulines</strong> : transport (fer, cuivre, lipides).</li>
+          <li><strong>Gamma-globulines (immunoglobulines)</strong> : immunité (anticorps).</li>
+          <li><strong>Fibrinogène</strong> : coagulation.</li>
+        </ul>
+
+        <h4>Valeurs de référence</h4>
+        <ul>
+          <li>Protéines totales : 60 à 80 g/L.</li>
+          <li>Albumine : 35 à 50 g/L.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Interprétation</div>
+        <h3>Quand les protéines augmentent ou diminuent</h3>
+        <h4>Hypoalbuminémie</h4>
+        <ul>
+          <li><strong>Dénutrition</strong> (apport protéique insuffisant).</li>
+          <li><strong>Syndrome néphrotique</strong> (perte urinaire d'albumine).</li>
+          <li><strong>Insuffisance hépatique</strong> (défaut de synthèse).</li>
+          <li><strong>Entéropathie exsudative</strong> (perte digestive).</li>
+          <li><strong>Inflammation chronique</strong>.</li>
+        </ul>
+        <p>Une hypoalbuminémie provoque des <strong>œdèmes</strong> (baisse de la pression oncotique) et une <strong>ascite</strong> dans les cirrhoses.</p>
+
+        <h4>Hyperprotidémie</h4>
+        <ul>
+          <li><strong>Déshydratation</strong> (hémoconcentration).</li>
+          <li><strong>Myélome multiple</strong> (production excessive d'immunoglobulines monoclonales).</li>
+          <li><strong>Infections chroniques</strong> (hypergammaglobulinémie).</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>L'albumine est le reflet de l'état nutritionnel et de la fonction hépatique. Une hypoalbuminémie entraîne des œdèmes. Une hyperprotidémie évoque une déshydratation ou une gammapathie monoclonale.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 5 — Les transaminases (ALAT et ASAT)",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Les marqueurs de la cytolyse hépatique</h3>
+        <p>Les <strong>transaminases</strong> sont des enzymes présentes dans les cellules, surtout du foie et des muscles. Lorsque les cellules sont détruites (cytolyse), elles libèrent leurs enzymes dans le sang, ce qui augmente leur concentration plasmatique.</p>
+
+        <h4>Deux transaminases</h4>
+        <ul>
+          <li><strong>ALAT</strong> (alanine aminotransférase) ou SGPT : plus spécifique du foie.</li>
+          <li><strong>ASAT</strong> (aspartate aminotransférase) ou SGOT : présente dans le foie, mais aussi dans le muscle cardiaque, les muscles squelettiques, les globules rouges.</li>
+        </ul>
+
+        <h4>Valeurs de référence (Afrique centrale)</h4>
+        <ul>
+          <li>ALAT : 3 à 43 UI/L.</li>
+          <li>ASAT : 3 à 38 UI/L.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Interprétation</div>
+        <h3>Quand les transaminases augmentent</h3>
+        <p>Une élévation des transaminases signe une <strong>cytolyse hépatique</strong>. Les causes :</p>
+        <ul>
+          <li><strong>Hépatites virales</strong> (A, B, C, E) : élévation souvent très importante (10 à 100 fois la normale).</li>
+          <li><strong>Stéatose hépatique</strong> (foie gras) : élévation modérée, souvent liée à l'obésité ou à l'alcool.</li>
+          <li><strong>Médicaments hépatotoxiques</strong> : paracétamol à forte dose, antituberculeux, certains antibiotiques.</li>
+          <li><strong>Alcool</strong> : élévation modérée, avec ASAT souvent &gt; ALAT.</li>
+          <li><strong>Hémochromatose, maladie de Wilson</strong> (plus rares).</li>
+          <li><strong>Effort intense</strong> : élévation modérée et transitoire.</li>
+        </ul>
+
+        <h4>Rapport ASAT/ALAT</h4>
+        <ul>
+          <li>ASAT/ALAT &gt; 1 : évoque une cause alcoolique ou une cirrhose.</li>
+          <li>ASAT/ALAT &lt; 1 : évoque une hépatite virale ou une stéatose non alcoolique.</li>
+        </ul>
+      </div>
+
+      <figure>
+        <img data-image-id="biochimieclinique4_img02" alt="Schéma d'une hépatite avec cytolyse et élévation des transaminases dans le sang" />
+        <figcaption>Les transaminases, marqueurs de cytolyse hépatique.</figcaption>
+      </figure>
+    `
+  },
+  {
+    title: "Chapitre 5 — GGT et phosphatases alcalines",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">La GGT</div>
+        <h3>Gamma-glutamyl transférase</h3>
+        <p>La <strong>GGT</strong> est une enzyme présente dans le foie, les voies biliaires et le rein. Elle est un marqueur de <strong>cholestase</strong> (stase biliaire) et d'<strong>imprégnation alcoolique</strong>.</p>
+
+        <h4>Valeur de référence en Afrique centrale</h4>
+        <p>7,8 à 35,3 UI/L.</p>
+
+        <h4>Interprétation</h4>
+        <ul>
+          <li><strong>Cholestase</strong> (obstruction biliaire, lithiase, tumeur) : GGT élevée.</li>
+          <li><strong>Alcoolisme chronique</strong> : GGT élevée, souvent avec macrocytose (VGM augmenté).</li>
+          <li><strong>Médicaments</strong> : inducteurs enzymatiques (phénobarbital, rifampicine).</li>
+          <li><strong>Stéatose hépatique</strong> : élévation modérée.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les phosphatases alcalines</div>
+        <h3>PAL (Phosphatases Alcalines)</h3>
+        <p>Les <strong>phosphatases alcalines</strong> sont des enzymes présentes dans le foie (voies biliaires), les os, le placenta et l'intestin. Elles sont des marqueurs de <strong>cholestase</strong> et d'<strong>activité osseuse</strong>.</p>
+
+        <h4>Valeur de référence en Afrique centrale</h4>
+        <p>39 à 246 UI/L (variable selon l'âge et le sexe).</p>
+
+        <h4>Interprétation</h4>
+        <ul>
+          <li><strong>Cholestase</strong> (obstruction biliaire) : PAL élevées.</li>
+          <li><strong>Maladies osseuses</strong> : maladie de Paget, métastases osseuses, rachitisme, fractures en consolidation.</li>
+          <li><strong>Grossesse</strong> (3<sup>e</sup> trimestre) : élévation physiologique par le placenta.</li>
+          <li><strong>Croissance</strong> chez l'enfant : élévation physiologique.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <ul>
+          <li><strong>GGT + PAL élevées</strong> = cholestase.</li>
+          <li><strong>GGT isolée élevée</strong> = évoquer alcoolisme ou médicaments.</li>
+          <li><strong>PAL isolées élevées</strong> = évoquer une atteinte osseuse.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 5 — Amylase, CPK et LDH",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">L'amylase</div>
+        <h3>Marqueur de pancréatite aiguë</h3>
+        <p>L'<strong>amylase</strong> est une enzyme produite par le pancréas et les glandes salivaires. Elle est un marqueur de <strong>pancréatite aiguë</strong>.</p>
+
+        <h4>Interprétation</h4>
+        <ul>
+          <li><strong>Pancréatite aiguë</strong> : amylase élevée (souvent &gt; 3 fois la normale), avec douleur abdominale intense et vomissements.</li>
+          <li><strong>Parotidite</strong> (oreillons) : amylase salivaire élevée.</li>
+          <li><strong>Insuffisance rénale</strong> : défaut d'élimination.</li>
+          <li><strong>Ulcère perforé, occlusion intestinale</strong> : amylase modérément élevée.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">La CPK</div>
+        <h3>Créatine phosphokinase</h3>
+        <p>La <strong>CPK</strong> (ou CK) est une enzyme présente surtout dans les muscles squelettiques, le muscle cardiaque et le cerveau. Elle est un marqueur de <strong>souffrance musculaire</strong>.</p>
+
+        <h4>Interprétation</h4>
+        <ul>
+          <li><strong>Infarctus du myocarde</strong> : CPK et CPK-MB augmentées.</li>
+          <li><strong>Rhabdomyolyse</strong> (destruction musculaire massive) : CPK très élevée (&gt; 5 à 10 fois la normale).</li>
+          <li><strong>Myosite, effort intense, traumatisme</strong> : CPK modérément élevée.</li>
+          <li><strong>Médicaments</strong> (statines) : myopathie possible.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">La LDH</div>
+        <h3>Lactate déshydrogénase</h3>
+        <p>La <strong>LDH</strong> est une enzyme présente dans presque toutes les cellules. C'est un marqueur <strong>non spécifique</strong> de lyse cellulaire.</p>
+
+        <h4>Interprétation</h4>
+        <ul>
+          <li><strong>Hémolyse</strong> (destruction des globules rouges) : LDH élevée.</li>
+          <li><strong>Infarctus</strong> (cardiaque, pulmonaire, intestinal) : LDH élevée.</li>
+          <li><strong>Hémopathies malignes</strong> (leucémies, lymphomes) : LDH élevée, marqueur pronostique.</li>
+          <li><strong>Hépatites</strong> : LDH modérément élevée.</li>
+          <li><strong>Hémolyse du prélèvement</strong> : faux positif fréquent (tube hémolysé).</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Interpréter une enzyme isolée sans tenir compte du contexte. Une élévation modérée des transaminases peut être due à un effort intense ou à un médicament ; une LDH élevée peut être due à une hémolyse du prélèvement. Le contexte clinique et les autres paramètres sont indispensables.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 6 — Les électrolytes : sodium, potassium, chlore",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Le sodium (Na⁺)</div>
+        <h3>Principal cation extracellulaire</h3>
+        <p>Le <strong>sodium</strong> est le principal cation du liquide extracellulaire. Il est le principal déterminant de l'<strong>osmolalité plasmatique</strong> et régule la répartition de l'eau dans l'organisme.</p>
+
+        <h4>Valeurs de référence</h4>
+        <p>135 à 145 mmol/L.</p>
+
+        <h4>Interprétation</h4>
+        <ul>
+          <li><strong>Hyponatrémie</strong> (&lt; 135 mmol/L) : dilution (insuffisance cardiaque, cirrhose), pertes digestives (vomissements, diarrhée), insuffisance surrénale, SIADH. Signes : nausées, confusion, convulsions (si sévère).</li>
+          <li><strong>Hypernatrémie</strong> (&gt; 145 mmol/L) : déshydratation (pertes digestives ou cutanées), apports excessifs (perfusions), diabète insipide. Signes : soif intense, troubles neurologiques.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Le potassium (K⁺)</div>
+        <h3>Principal cation intracellulaire</h3>
+        <p>Le <strong>potassium</strong> est le principal cation intracellulaire. Il est essentiel au fonctionnement des cellules excitables (cœur, muscles, nerfs).</p>
+
+        <h4>Valeurs de référence</h4>
+        <p>3,5 à 5,0 mmol/L.</p>
+
+        <h4>Interprétation</h4>
+        <ul>
+          <li><strong>Hypokaliémie</strong> (&lt; 3,5 mmol/L) : pertes digestives (vomissements, diarrhée), diurétiques, alcalose. Signes : faiblesse musculaire, crampes, troubles du rythme cardiaque.</li>
+          <li><strong>Hyperkaliémie</strong> (&gt; 5,0 mmol/L) : insuffisance rénale, médicaments (IEC, spironolactone), hémolyse, acidose. <strong>Urgence médicale</strong> : risque d'arythmie cardiaque grave (bloc, arrêt cardiaque).</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Le chlore (Cl⁻)</div>
+        <h3>Principal anion extracellulaire</h3>
+        <p>Le <strong>chlore</strong> est le principal anion du liquide extracellulaire. Il est associé au sodium et participe à l'équilibre acido-basique.</p>
+
+        <h4>Valeurs de référence</h4>
+        <p>95 à 105 mmol/L.</p>
+
+        <h4>Interprétation</h4>
+        <ul>
+          <li><strong>Hypochlorémie</strong> : vomissements, diurétiques.</li>
+          <li><strong>Hyperchlorémie</strong> : déshydratation, acidose métabolique.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Urgence : l'hyperkaliémie</div>
+        <p>Une hyperkaliémie sévère (&gt; 6,5 mmol/L) peut provoquer un arrêt cardiaque. C'est une <strong>urgence médicale</strong>. Il faut alerter immédiatement le médecin, faire un ECG et préparer le traitement (gluconate de calcium, insuline-glucose, bicarbonate, résine échangeuse d'ions, dialyse).</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 6 — Calcium, phosphore et magnésium",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Le calcium (Ca²⁺)</div>
+        <h3>Un cation à double rôle</h3>
+        <p>Le <strong>calcium</strong> est un cation essentiel :</p>
+        <ul>
+          <li><strong>Structurel</strong> : 99 % du calcium est dans les os (hydroxyapatite).</li>
+          <li><strong>Fonctionnel</strong> : contraction musculaire, transmission nerveuse, coagulation, signalisation cellulaire.</li>
+        </ul>
+
+        <h4>Valeurs de référence</h4>
+        <p>Calcium total : 2,20 à 2,60 mmol/L (88 à 104 mg/L).</p>
+
+        <h4>Interprétation</h4>
+        <ul>
+          <li><strong>Hypocalcémie</strong> : tétanie, convulsions, allongement du QT. Causes : hypoparathyroïdie, carence en vitamine D, insuffisance rénale, pancréatite.</li>
+          <li><strong>Hypercalcémie</strong> : nausées, confusion, polyurie, insuffisance rénale. Causes : hyperparathyroïdie primaire, métastases osseuses, myélome, intoxication à la vitamine D.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Le phosphore (P)</div>
+        <h3>Structure des os et métabolisme énergétique</h3>
+        <p>Le <strong>phosphore</strong> est présent dans les os, les acides nucléiques (ADN, ARN) et l'ATP (énergie cellulaire).</p>
+
+        <h4>Valeurs de référence</h4>
+        <p>0,80 à 1,45 mmol/L (25 à 45 mg/L).</p>
+
+        <h4>Interprétation</h4>
+        <ul>
+          <li><strong>Hypophosphatémie</strong> : faiblesse musculaire, confusion, hémolyse. Causes : dénutrition, alcoolisme, hyperparathyroïdie.</li>
+          <li><strong>Hyperphosphatémie</strong> : insuffisance rénale (cause la plus fréquente), hypoparathyroïdie.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Le magnésium (Mg²⁺)</div>
+        <h3>Un cofacteur enzymatique</h3>
+        <p>Le <strong>magnésium</strong> est un cofacteur de nombreuses enzymes (plus de 300). Il intervient dans la transmission nerveuse, la contraction musculaire et le métabolisme énergétique.</p>
+
+        <h4>Valeurs de référence</h4>
+        <p>0,70 à 1,00 mmol/L.</p>
+
+        <h4>Interprétation</h4>
+        <ul>
+          <li><strong>Hypomagnésémie</strong> : alcoolisme, dénutrition, diurétiques, diarrhée. Signes : tremblements, convulsions, arythmies.</li>
+          <li><strong>Hypermagnésémie</strong> : insuffisance rénale, apport excessif (perfusion). Signes : dépression neurologique, bradycardie, arrêt cardiaque.</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Le calcium, le phosphore et le magnésium sont interdépendants (régulation par la vitamine D, la parathormone, le rein). Une anomalie de l'un doit conduire à vérifier les autres.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 7 — L'équilibre acido-basique",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Fondements théoriques</div>
+        <h3>Un équilibre vital</h3>
+        <p>Le pH sanguin doit rester stable entre <strong>7,35 et 7,45</strong> pour permettre le fonctionnement des enzymes et des cellules. Cet équilibre résulte de trois systèmes :</p>
+        <ul>
+          <li>Les <strong>tampons chimiques</strong> (bicarbonates, protéines, phosphates).</li>
+          <li>La <strong>régulation respiratoire</strong> (élimination du CO₂ par les poumons).</li>
+          <li>La <strong>régulation rénale</strong> (élimination des acides et réabsorption des bicarbonates).</li>
+        </ul>
+
+        <h4>Les quatre paramètres</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Paramètre</th>
+              <th>Valeur normale</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>pH</td><td>7,35 - 7,45</td></tr>
+            <tr><td>PaCO₂</td><td>35 - 45 mmHg</td></tr>
+            <tr><td>Bicarbonates (HCO₃⁻)</td><td>22 - 26 mmol/L</td></tr>
+            <tr><td>Trou anionique</td><td>8 - 16 mmol/L</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Les quatre troubles</div>
+        <h3>Reconnaître une acidose ou une alcalose</h3>
+        <h4>Acidose métabolique</h4>
+        <ul>
+          <li>pH bas, bicarbonates bas.</li>
+          <li>Causes : acidocétose diabétique, insuffisance rénale, diarrhée sévère, choc.</li>
+          <li>Compensation respiratoire : hyperventilation (baisse de PaCO₂).</li>
+        </ul>
+
+        <h4>Acidose respiratoire</h4>
+        <ul>
+          <li>pH bas, PaCO₂ élevée.</li>
+          <li>Causes : insuffisance respiratoire, obstruction des voies aériennes, dépression respiratoire.</li>
+        </ul>
+
+        <h4>Alcalose métabolique</h4>
+        <ul>
+          <li>pH élevé, bicarbonates élevés.</li>
+          <li>Causes : vomissements répétés, diurétiques, hypokaliémie.</li>
+        </ul>
+
+        <h4>Alcalose respiratoire</h4>
+        <ul>
+          <li>pH élevé, PaCO₂ basse.</li>
+          <li>Causes : hyperventilation (anxiété, douleur, hypoxie, fièvre).</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Interpréter un trouble acido-basique sans tenir compte de la compensation. L'organisme compense toujours un désordre primaire : respiratoire (immédiat) ou rénal (plus lent, quelques jours). Il faut identifier le trouble primaire et évaluer la compensation.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre 8 — Les phases du laboratoire et le contrôle qualité",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Les trois phases du laboratoire</div>
+        <h3>De la demande à la validation du résultat</h3>
+        <h4>1. Phase pré-analytique</h4>
+        <p>C'est la phase qui précède l'analyse. Elle comprend :</p>
+        <ul>
+          <li>La prescription médicale.</li>
+          <li>L'identification du patient.</li>
+          <li>Le prélèvement (choix du tube, moment du prélèvement, jeûne).</li>
+          <li>Le conditionnement (respect de la chaîne du froid, protection de la lumière).</li>
+          <li>Le transport (délai, conditions).</li>
+        </ul>
+        <p><strong>70 à 80 % des erreurs de laboratoire</strong> surviennent en phase pré-analytique.</p>
+
+        <h4>2. Phase analytique</h4>
+        <p>C'est la phase de dosage proprement dit. Elle repose sur :</p>
+        <ul>
+          <li>Des automates ou des méthodes manuelles.</li>
+          <li>Des réactifs contrôlés.</li>
+          <li>Des procédures standardisées.</li>
+        </ul>
+
+        <h4>3. Phase post-analytique</h4>
+        <p>Elle comprend :</p>
+        <ul>
+          <li>La validation biologique des résultats.</li>
+          <li>La validation clinique (par le médecin).</li>
+          <li>La communication des résultats au patient ou au prescripteur.</li>
+          <li>L'archivage.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Le contrôle qualité</div>
+        <h3>Garantir la fiabilité des résultats</h3>
+        <ul>
+          <li><strong>Contrôle qualité interne (CQI)</strong> : réalisé quotidiennement dans chaque laboratoire, avec des sérums de contrôle à valeurs connues. Il vérifie la reproductibilité des analyses.</li>
+          <li><strong>Contrôle qualité externe (CQE)</strong> : réalisé périodiquement, par comparaison entre laboratoires. Il évalue la justesse des résultats.</li>
+          <li><strong>Contrôle qualité global</strong> : ensemble des procédures d'assurance qualité.</li>
+        </ul>
+      </div>
+
+      <figure>
+        <img data-image-id="biochimieclinique4_img03" alt="Laboratoire de biochimie clinique avec automate et technicien de laboratoire" />
+        <figcaption>Le laboratoire de biochimie clinique : de l'échantillon au résultat.</figcaption>
+      </figure>
+    `
+  },
+  {
+    title: "Chapitre 8 — Le rôle infirmier dans le prélèvement et le transport",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Préparer le patient</div>
+        <h3>Un prélèvement de qualité commence par là</h3>
+        <ul>
+          <li>Vérifier le <strong>jeûne</strong> (8 à 12 heures pour la glycémie, le bilan lipidique).</li>
+          <li>Vérifier les <strong>médicaments</strong> pris par le patient (certains doivent être suspendus sur avis médical).</li>
+          <li>Expliquer le prélèvement au patient (rassurer, informer).</li>
+          <li>Vérifier l'<strong>identité</strong> du patient (nom, prénom, date de naissance).</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Réaliser le prélèvement</div>
+        <h3>Les bonnes pratiques</h3>
+        <ul>
+          <li>Respecter l'<strong>hygiène</strong> (lavage des mains, gants, antiseptique).</li>
+          <li>Choisir le <strong>tube adapté</strong> (sec pour biochimie, EDTA pour hématologie, citrate pour coagulation).</li>
+          <li>Éviter l'<strong>hémolyse</strong> (ne pas secouer le tube, ne pas trop aspirer, retirer l'aiguille avant de remplir les tubes).</li>
+          <li>Éviter la <strong>stase veineuse</strong> prolongée (garrot &lt; 1 minute).</li>
+          <li>Respecter l'<strong>ordre de remplissage</strong> des tubes.</li>
+          <li>Étiqueter immédiatement les tubes.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Conditionner et transporter</div>
+        <h3>La chaîne pré-analytique</h3>
+        <ul>
+          <li><strong>Protéger de la lumière</strong> (bilirubine, vitamines).</li>
+          <li><strong>Conserver au froid</strong> (4 °C) pour certains paramètres (gaz du sang, ammoniac).</li>
+          <li><strong>Transporter rapidement</strong> (moins de 2 heures pour la plupart des paramètres).</li>
+          <li><strong>Éviter les chocs</strong> (hémolyse).</li>
+          <li><strong>Documenter</strong> l'heure du prélèvement et du transport.</li>
+        </ul>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Éduquer le patient</div>
+        <h3>Un rôle continu</h3>
+        <ul>
+          <li>Expliquer l'importance du jeûne et de l'observance.</li>
+          <li>Informer sur les résultats et la conduite à tenir.</li>
+          <li>Rappeler les signes d'alerte (hypoglycémie, déshydratation, douleur).</li>
+          <li>Renforcer l'éducation diététique (diabète, dyslipidémie, insuffisance rénale).</li>
+        </ul>
+      </div>
+
+      <div class="bloc resume">
+        <div class="bloc-label">Erreur fréquente</div>
+        <p>Négliger la phase pré-analytique. Une erreur de prélèvement (hémolyse, tube inadapté, délai de transport) peut fausser le résultat et entraîner une erreur diagnostique, un traitement inutile ou une prise en charge inadéquate. La qualité du résultat dépend de la qualité du prélèvement.</p>
+      </div>
+    `
+  },
+  {
+    title: "Synthèse — Interpréter pour agir",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Synthèse générale</div>
+        <h3>Les points clés du cours de biochimie clinique</h3>
+        <ol>
+          <li><strong>Définition</strong> : application des méthodes chimiques au diagnostic, au suivi et à la prévention des maladies.</li>
+          <li><strong>Valeurs de référence</strong> : dépendantes de l'âge, du sexe, du jeûne et de l'origine géographique.</li>
+          <li><strong>Urée et créatinine</strong> : marqueurs de la fonction rénale. La créatinine est plus fiable (moins influencée par l'alimentation).</li>
+          <li><strong>Acide urique</strong> : marqueur de la goutte et du syndrome de lyse tumorale.</li>
+          <li><strong>Glycémie</strong> : diabète si ≥ 1,26 g/L à jeun à deux reprises.</li>
+          <li><strong>HbA1c</strong> : reflet de l'équilibre glycémique sur 3 mois. Objectif thérapeutique &lt; 7 %.</li>
+          <li><strong>Bilan lipidique</strong> : à jeun, avec cholestérol total, LDL, HDL et triglycérides.</li>
+          <li><strong>Protéines</strong> : albumine (nutrition, pression oncotique) et globulines (immunité).</li>
+          <li><strong>Transaminases</strong> : marqueurs de cytolyse hépatique. ALAT plus spécifique que ASAT.</li>
+          <li><strong>GGT + PAL</strong> : marqueurs de cholestase.</li>
+          <li><strong>Amylase, CPK, LDH</strong> : marqueurs non spécifiques (pancréas, muscle, lyse cellulaire).</li>
+          <li><strong>Électrolytes</strong> : sodium, potassium, chlore, calcium, phosphore, magnésium. Hyperkaliémie = urgence.</li>
+          <li><strong>Équilibre acido-basique</strong> : pH, bicarbonates, PaCO₂. Identifier le trouble primaire.</li>
+          <li><strong>Phases du laboratoire</strong> : pré-analytique, analytique, post-analytique. Le contrôle qualité garantit la fiabilité.</li>
+          <li><strong>Rôle infirmier</strong> : prélèvement de qualité, transport, éducation du patient.</li>
+        </ol>
+      </div>
+
+      <div class="bloc theorie">
+        <div class="bloc-label">Message final</div>
+        <h3>Un métier de précision et de responsabilité</h3>
+        <p>La biochimie clinique est un maillon essentiel de la chaîne du soin. Un résultat juste, interprété avec rigueur, aide le médecin à poser le bon diagnostic et à prescrire le bon traitement. Un prélèvement de qualité, un transport rapide, une interprétation prudente : autant de gestes qui font la différence pour la santé des patients en RDC.</p>
+      </div>
+
+      <div class="sources">
+        <strong>Sources :</strong>
+        <ul>
+          <li>ISTM/Goma, <em>Programme de cours : G1 Pédiatrie</em> — Biochimie (30 h).</li>
+          <li>ISTM/Ngandajika, <em>Cours de Chimie Clinique</em> (Dr Kabongo Mende Félix, CT Tshivuadi Kabongo Nestor).</li>
+          <li>ISTM Bukavu, <em>Master complémentaire — Biochimie &amp; Chimie Clinique</em>.</li>
+          <li>Africa-Press (2025) — jury national des ITM pour les techniciens de laboratoire.</li>
+          <li>Kivu Medical Journal / Practical Laboratory Medicine (2025) — intervalles de référence en Afrique centrale.</li>
+          <li>BMC Nephrology (2025) — intervalles de référence de la créatinine sérique chez l'adulte congolais.</li>
+          <li>OMS — manuels de biochimie clinique.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Évaluation finale — Biochimie Clinique",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Consignes</div>
+        <p>Répondez aux questions suivantes en choisissant la seule bonne réponse parmi les quatre propositions. Chaque question est indépendante et porte sur les notions développées dans le cours. Prenez le temps de relire les chapitres en cas de doute.</p>
+      </div>
+      <div class="quiz-container">
+        <div id="quizQuestions"></div>
+        <button id="submitQuiz" class="quiz-btn-submit">
+          Valider mes réponses
+        </button>
+        <div id="quizResult" class="quiz-result"></div>
+      </div>
+    `
+  }
+];
+const questions = [
+  {
+    text: "La biochimie clinique étudie :",
+    options: ["Les aspects chimiques de la vie de l'homme sain et l'application au diagnostic", "Uniquement les aliments", "Uniquement les bactéries", "Uniquement les virus"],
+    correct: 0
+  },
+  {
+    text: "Les valeurs de référence sont :",
+    options: ["Des intervalles observés chez une population saine", "Des valeurs pathologiques", "Des valeurs fixées par l'OMS", "Des valeurs aléatoires"],
+    correct: 0
+  },
+  {
+    text: "Quel facteur peut influencer un résultat de biochimie avant l'analyse ?",
+    options: ["Le jeûne", "Le nom du patient", "La couleur du tube", "La marque de l'automate"],
+    correct: 0
+  },
+  {
+    text: "L'urée est synthétisée dans :",
+    options: ["Le foie", "Le rein", "Le pancréas", "La rate"],
+    correct: 0
+  },
+  {
+    text: "La créatinine est un marqueur de :",
+    options: ["La fonction rénale", "La fonction hépatique", "La fonction pancréatique", "La fonction cardiaque"],
+    correct: 0
+  },
+  {
+    text: "Pourquoi la créatinine est-elle un meilleur marqueur rénal que l'urée ?",
+    options: ["Elle est moins influencée par l'alimentation", "Elle est plus facile à doser", "Elle est plus abondante", "Elle ne dépend pas du rein"],
+    correct: 0
+  },
+  {
+    text: "Une hypercréatininémie évoque :",
+    options: ["Une insuffisance rénale", "Une hépatite", "Un diabète", "Une anémie"],
+    correct: 0
+  },
+  {
+    text: "L'acide urique est le produit final du catabolisme :",
+    options: ["Des purines", "Des protéines", "Des lipides", "Des glucides"],
+    correct: 0
+  },
+  {
+    text: "Le seuil de glycémie à jeun pour le diagnostic du diabète est :",
+    options: ["1,26 g/L", "0,70 g/L", "1,10 g/L", "2 g/L"],
+    correct: 0
+  },
+  {
+    text: "L'HbA1c reflète l'équilibre glycémique sur :",
+    options: ["3 mois", "1 semaine", "1 jour", "1 an"],
+    correct: 0
+  },
+  {
+    text: "Le LDL-cholestérol est appelé :",
+    options: ["« Mauvais » cholestérol", "« Bon » cholestérol", "Cholestérol total", "Triglycéride"],
+    correct: 0
+  },
+  {
+    text: "Le bilan lipidique doit être réalisé :",
+    options: ["Après 12 heures de jeûne", "Sans jeûne", "Après un repas gras", "Uniquement le matin"],
+    correct: 0
+  },
+  {
+    text: "L'albumine est une protéine :",
+    options: ["Plasmatique", "Urinaire", "Digestive", "Musculaire"],
+    correct: 0
+  },
+  {
+    text: "Une hypoalbuminémie évoque :",
+    options: ["Une dénutrition ou une insuffisance hépatique", "Une déshydratation", "Un diabète", "Une anémie"],
+    correct: 0
+  },
+  {
+    text: "Les transaminases sont des marqueurs de :",
+    options: ["Cytolyse hépatique", "Cholestase", "Insuffisance rénale", "Diabète"],
+    correct: 0
+  },
+  {
+    text: "La GGT est un marqueur de :",
+    options: ["Cholestase et imprégnation alcoolique", "Cytolyse", "Insuffisance rénale", "Anémie"],
+    correct: 0
+  },
+  {
+    text: "Les phosphatases alcalines sont élevées dans :",
+    options: ["La cholestase et les maladies osseuses", "La cytolyse hépatique", "Le diabète", "L'anémie"],
+    correct: 0
+  },
+  {
+    text: "L'amylase est un marqueur de :",
+    options: ["Pancréatite aiguë", "Hépatite", "Infarctus", "Anémie"],
+    correct: 0
+  },
+  {
+    text: "La CPK est un marqueur de :",
+    options: ["Souffrance musculaire", "Cytolyse hépatique", "Cholestase", "Insuffisance rénale"],
+    correct: 0
+  },
+  {
+    text: "Le sodium est le principal cation :",
+    options: ["Extracellulaire", "Intracellulaire", "Osseux", "Urinaire"],
+    correct: 0
+  },
+  {
+    text: "Le potassium est le principal cation :",
+    options: ["Intracellulaire", "Extracellulaire", "Osseux", "Plasmatique"],
+    correct: 0
+  },
+  {
+    text: "Une hyperkaliémie sévère peut provoquer :",
+    options: ["Des troubles du rythme cardiaque graves", "Une hépatite", "Un diabète", "Une anémie"],
+    correct: 0
+  },
+  {
+    text: "L'acidose métabolique se caractérise par :",
+    options: ["Une baisse des bicarbonates et du pH", "Une augmentation des bicarbonates", "Une augmentation du pH", "Aucune anomalie"],
+    correct: 0
+  },
+  {
+    text: "La phase pré-analytique comprend :",
+    options: ["Le prélèvement, le conditionnement et le transport", "Le dosage", "La validation", "L'interprétation"],
+    correct: 0
+  }
+];
+
+try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+        questions.forEach(function (q) {
+            if (!q.text) q.text = q.question || q.q || q.enonce || q.titre || "";
+            if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+            if (typeof q.correct === "undefined") {
+                if (typeof q.answer !== "undefined") q.correct = q.answer;
+                else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+            }
+        });
+    }
+} catch (e) {}
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+const pageTitle = document.getElementById('pageTitle');
+pageTitle.textContent = "ECOLIA · " + COURSE_TITLE;
+document.title = "ECOLIA — " + COURSE_TITLE;
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim() || slides.length === 0) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp("(" + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ")", 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderEmptyState() {
+    contentDiv.innerHTML = '<div class="empty-state"><div class="icon">·</div><span class="tag">Bientôt disponible</span><h2>' + COURSE_TITLE + '</h2><p>Ce cours est en préparation. Le contenu sera ajouté prochainement.</p></div>';
+    slideCounterSpan.textContent = '0/0';
+    progressFill.style.width = '0%';
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    counterSpan.textContent = '—';
+}
+
+function renderQuiz() {
+    const qc = document.getElementById('quizQuestions');
+    if (!qc) return;
+    if (typeof questions === 'undefined' || questions.length === 0) {
+        qc.innerHTML = '<p style="color:#666;font-style:italic;">Quiz bientot disponible.</p>';
+        return;
+    }
+    let html = '';
+    questions.forEach((q, i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o, k) => {
+            html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>';
+        });
+        html += '</div>';
+    });
+    qc.innerHTML = html;
+    const submitBtn = document.getElementById('submitQuiz');
+    if (submitBtn) {
+        submitBtn.onclick = () => {
+            let score = 0;
+            questions.forEach((q, i) => {
+                const s = document.querySelector('input[name="q' + i + '"]:checked');
+                if (s && parseInt(s.value) === q.correct) score++;
+            });
+            const pct = Math.round(score/questions.length*100);
+            document.getElementById('quizResult').innerHTML =
+                '<div style="background:var(--bg2);padding:16px;border-radius:10px;margin-top:14px;">' +
+                '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong></div>';
+        };
+    }
+}
+
+function renderSlide(index, keepHighlight) {
+    if (keepHighlight === undefined) keepHighlight = true;
+    if (slides.length === 0) { renderEmptyState(); return; }
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    if (index === slides.length - 1) renderQuiz();
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    if (slides.length === 0) return;
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (slides.length && currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (slides.length && currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+<!-- ECOLIA_IMAGE_LOADER_START -->
+<script>
+(function () {
+  var SITE = "https://ecolia-course.github.io/";
+  var NATIVE = false;
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function abs(u) { return /^(https?:|data:|blob:)/i.test(u) ? u : (NATIVE ? SITE + u.replace(/^(\.\/|\/)+/, "") : u); }
+  function ext(u) { var m = String(u).split("?")[0].match(/\.(jpe?g|png|gif|webp|svg)$/i); return m ? m[1].toLowerCase() : "jpg"; }
+  function hide(img) { img.onerror = null; img.style.display = "none"; }
+  var table = null, queue = [], queued = {}, running = false;
+  function enqueue(full, fn) {
+    if (queued[fn]) return;
+    queued[fn] = 1; queue.push([full, fn]);
+    if (!running) { running = true; setTimeout(next, 2500); }
+  }
+  function next() {
+    if (!queue.length) { running = false; return; }
+    if (!navigator.onLine) { running = false; return; }
+    var q = queue.shift(), t0 = Date.now();
+    try { CoursInterface.download(q[0], q[1]); } catch (e) { return setTimeout(next, 500); }
+    (function wait() {
+      var ok = false;
+      try { ok = !!CoursInterface.exists(q[1]); } catch (e) {}
+      if (ok) setTimeout(next, 1500);
+      else if (Date.now() - t0 > 40000) next();
+      else setTimeout(wait, 700);
+    })();
+  }
+  function exists(fn) { try { return !!CoursInterface.exists(fn); } catch (e) { return false; } }
+  function show(img) {
+    if (!table || img.getAttribute("data-ecolia-done")) return;
+    var id = img.getAttribute("data-image-id");
+    var url = table[id];
+    if (typeof url !== "string" || !url.length) { console.warn("ECOLIA : image absente du JSON :", id); return; }
+    img.setAttribute("data-ecolia-done", "1");
+    if (!NATIVE) { img.onerror = function () { hide(img); }; img.setAttribute("src", url); return; }
+    var full = abs(url), fn = "img_" + id + "." + ext(url);
+    if (exists(fn)) {
+      img.onerror = function () {
+        try { CoursInterface["delete"](fn); } catch (e) {}
+        queued[fn] = 0;
+        img.onerror = function () { hide(img); };
+        img.setAttribute("src", full);
+      };
+      img.setAttribute("src", "https://app.local/cours/" + fn);
+    } else {
+      img.onerror = function () { hide(img); };
+      img.setAttribute("src", full);
+      enqueue(full, fn);
+    }
+  }
+  function scan(root) {
+    if (!root || !root.querySelectorAll) return;
+    if (root.matches && root.matches("img[data-image-id]")) show(root);
+    root.querySelectorAll("img[data-image-id]").forEach(show);
+  }
+  function prefetchAll() {
+    var ids = {};
+    try { JSON.stringify(slides).replace(/data-image-id=\\?"([^"\\]+)/g, function (m, id) { ids[id] = 1; }); } catch (e) {}
+    Object.keys(ids).forEach(function (id) {
+      var url = table[id];
+      if (typeof url !== "string" || !url.length) return;
+      var fn = "img_" + id + "." + ext(url);
+      if (!exists(fn)) enqueue(abs(url), fn);
+    });
+  }
+  function start(tbl) {
+    table = tbl;
+    scan(document.body);
+    new MutationObserver(function (muts) {
+      muts.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.nodeType === 1) scan(n); }); });
+    }).observe(document.body, { childList: true, subtree: true });
+    if (NATIVE) prefetchAll();
+  }
+  var JSON_URL = NATIVE ? SITE + "images_ecolia.json" : "images_ecolia.json";
+  var KEY = "ecolia_images_json";
+  fetch(JSON_URL, NATIVE ? { cache: "no-cache" } : undefined)
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (table) { if (NATIVE) lsSet(KEY, JSON.stringify(table)); start(table); })
+    .catch(function (e) {
+      var saved = null;
+      if (NATIVE) { try { saved = JSON.parse(lsGet(KEY) || "null"); } catch (x) {} }
+      if (saved) start(saved);
+      else console.warn("ECOLIA : JSON des images indisponible.", e);
+    });
+})();
+</script>
+<!-- ECOLIA_IMAGE_LOADER_END -->
+
+
+
+
+
+<!-- ECOLIA_AUDIO_PLAYER_START -->
+<style>
+  #ecolia-audio-btn, #ecolia-dl-btn {
+    width: 30px; height: 30px; min-width: 30px; padding: 0; margin: 0 4px 0 0;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    cursor: pointer; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent; outline: none;
+  }
+  #ecolia-audio-btn { border: none; background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-dl-btn { border: 1.5px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb); }
+  #ecolia-dl-btn.ecolia-full { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-btn.ecolia-fixed { position: fixed; top: 8px; left: 8px; z-index: 2147483000; }
+  #ecolia-audio-btn:active, #ecolia-dl-btn:active { transform: scale(.92); }
+  #ecolia-audio-btn svg, #ecolia-dl-btn svg { width: 15px; height: 15px; fill: currentColor; pointer-events: none; }
+  #ecolia-audio-btn.ecolia-off, #ecolia-dl-btn.ecolia-off { display: none; }
+  #ecolia-audio-banner {
+    display: none; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0;
+    padding: 8px 14px; font-size: .82rem; line-height: 1.35;
+    background: var(--soft, #eef3fb); color: var(--p1, #123); border-bottom: 1px solid var(--bd, #c9d6ea);
+  }
+  #ecolia-audio-banner.on { display: flex; }
+  #ecolia-audio-banner .eab-txt { flex: 1 1 180px; }
+  #ecolia-audio-banner .eab-act { display: flex; gap: 6px; flex-wrap: wrap; }
+  #ecolia-audio-banner button {
+    border: 1px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb);
+    border-radius: 16px; padding: 5px 12px; font-size: .8rem; cursor: pointer;
+  }
+  #ecolia-audio-banner button.pri { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-banner .eab-bar { display: none; flex-basis: 100%; height: 4px; border-radius: 2px; overflow: hidden; background: var(--bd, #c9d6ea); }
+  #ecolia-audio-banner .eab-bar i { display: block; height: 100%; width: 0; background: var(--p2, #2563eb); transition: width .2s; }
+</style>
+<script>
+(function () {
+  var CFG = {"code":"BiochimieClinique4","base":"https://ecolia-course.github.io/ecolia-media/audio_files/","available":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],"count":20,"sizeMo":21,"sizes":{"1":1318272,"2":762624,"3":1415424,"4":767424,"5":1206336,"6":946368,"7":1258368,"8":940224,"9":965184,"10":978624,"11":957888,"12":891648,"13":1118592,"14":1361856,"15":1317312,"16":1055040,"17":844992,"18":1082304,"19":1185792,"20":156288},"fallback":{"1":[["fr","Sommaire, Biochimie Clinique (Explorations Biologiques et Interprétation). Présentation du cours. Interpréter les résultats du laboratoire pour mieux soigner. La biochimie clinique est la discipline qui applique les méthodes chimiques au diagnostic, au suivi et à la prévention des maladies. Chaque jour, dans les hôpitaux et centres de santé de la R D C, des prélèvements sanguins sont analysés: urée, créatinine, glycémie, transaminases, électrolytes, bilan lipidique. Savoir interpréter ces résultats, en tenant compte du contexte clinique et des valeurs de référence, est une compétence professionnelle indispensable pour le technicien de laboratoire et l'infirmier A2. Objectifs d'apprentissage. À la fin de ce cours, vous serez capable de: Définir la biochimie clinique et ses trois aspects (technique, analytique, clinique). Connaître les unités et les valeurs de référence des principaux paramètres. Interpréter les paramètres azotés: urée, créatinine, acide urique. Interpréter les paramètres glucidiques et lipidiques. Interpréter les protéines plasmatiques et les enzymes (ALAT, ASAT, GGT, PAL, amylase, CPK, LDH). Comprendre les électrolytes et l'équilibre acido-basique. Distinguer les phases pré-analytique, analytique et post-analytique du laboratoire. Appliquer le rôle infirmier: prélèvement de qualité, transport, éducation du patient. Plan du cours. Huit chapitres progressifs. Introduction à la biochimie clinique. Les constituants azotés non protéiques. Le glucose et les troubles du métabolisme glucidique. Les lipides et les dyslipidémies. Les protéines plasmatiques et les enzymes. Les électrolytes et l'équilibre hydro-électrolytique. L'équilibre acido-basique. Le laboratoire et le rôle infirmier. Importance en R D C. La biochimie clinique est une épreuve du jury national des ITM pour les techniciens de laboratoire. Les intervalles de référence ont été établis pour les populations d'Afrique centrale (créatinine 0,65-1,22 milligrammes ou dL, enzymes hépatiques, électrolytes). Les bilans biochimiques sont utilisés quotidiennement pour le suivi du diabète, de l'hypertension, des hépatites, de l'insuffisance rénale et des désordres hydro-électrolytiques."]],"2":[["fr","Chapitre 1, Définition et aspects de la biochimie clinique. Fondements théoriques. Une discipline à trois visages. La biochimie clinique (ou chimie clinique) est l'étude des aspects chimiques de la vie de l'homme sain et l'application à la médecine des méthodes chimiques employées au laboratoire pour le diagnostic, le contrôle et la prévention des maladies. Trois aspects complémentaires. Aspect technique: les instruments utilisés (automates, spectrophotomètres, électrodes). Aspect analytique: les méthodes de dosage (colorimétrie, enzymologie, immuno-analyse). Aspect clinique: l'interprétation physiopathologique des résultats dans le contexte du patient. Les grands domaines explorés. Bilan rénal (urée, créatinine, acide urique). Bilan glucidique (glycémie, HbA1c). Bilan lipidique (cholestérol, triglycérides). Bilan hépatique (protéines, transaminases, GGT, PAL, bilirubine). Bilan hydro-électrolytique (sodium, potassium, chlore). Équilibre acido-basique (pH, bicarbonates, gaz du sang). À retenir. La biochimie clinique n'est pas qu'un ensemble de chiffres: c'est un outil d'aide à la décision médicale. Sans interprétation clinique, un résultat biologique n'a pas de valeur diagnostique en soi."]],"3":[["fr","Chapitre 1, Unités, valeurs de référence et variabilité pré-analytique. Les unités. Savoir lire un résultat. Les résultats de biochimie s'expriment dans différentes unités: Concentration massique: g ou L, mg ou dL, g pour cent. Concentration molaire: mol ou L, mmol ou L, µmol ou L. Unités internationales: UI ou L pour les enzymes. La conversion entre unités est une compétence essentielle. Par exemple: Glycémie: 1 grammes ou L égale 5,55 mmol ou L. Créatinine: 1 milligrammes ou dL environ égal à 88,4 µmol ou L. Les valeurs de référence. Des intervalles établis pour chaque population. Les valeurs de référence sont des intervalles de valeurs observés chez une population saine. Elles sont définies en tenant compte de: L'âge (valeurs différentes chez l'enfant, l'adulte, la personne âgée). Le sexe (valeurs différentes chez l'homme et la femme). L'état physiologique (grossesse, jeûne, effort). L'origine géographique (les valeurs d'Afrique centrale peuvent différer de celles d'Europe). Exemples en Afrique centrale (études récentes). Paramètre. Valeur de référence. Créatinine (adulte). 0,65-1,22 milligrammes ou dL. Urée (adulte). 5,4-24,7 milligrammes ou dL. ALAT. 3-43 UI ou L. ASAT. 3-38 UI ou L. GGT. 7,8-35,3 UI ou L. Phosphatases alcalines. 39-246 UI ou L. Variabilité pré-analytique. Ce qui se passe avant le dosage. De nombreux facteurs peuvent influencer un résultat avant même l'analyse: Le jeûne: la glycémie et les triglycérides augmentent après un repas. La position: la position debout prolongée concentre les protéines. L'exercice: les transaminases et la CPK augmentent après un effort intense. Le stress: la glycémie et le cortisol augmentent. Les médicaments: certains modifient les résultats. L'hémolyse: la destruction des globules rouges fausse le potassium, le LDH, les transaminases. Le délai de transport: la glycémie diminue dans un tube non traité. Erreur fréquente. Interpréter un résultat sans tenir compte du contexte clinique et des conditions de prélèvement. Un chiffre isolé n'a pas de valeur diagnostique: il faut le confronter aux signes cliniques, aux antécédents et aux valeurs de référence."]],"4":[["fr","Chapitre 2, L'urée. Fondements théoriques. Le produit final du métabolisme des protéines. L'urée est le produit final du métabolisme des protéines. Elle est synthétisée dans le foie à partir de l'ammoniac et éliminée principalement par le rein dans les urines. But du dosage. Évaluer la fonction rénale (dépistage de l'insuffisance rénale). Évaluer l'état d'hydratation. Suivre l'évolution d'une maladie rénale ou hépatique. Valeurs de référence. Chez l'adulte en Afrique centrale: 5,4 à 24,7 milligrammes ou dL (soit environ 0,9 à 4,1 mmol ou L). Interprétation. Quand l'urée augmente ou diminue. Augmentation de l'urée (hyperurémie). Insuffisance rénale (aiguë ou chronique): le rein n'élimine plus l'urée. Déshydratation: concentration du sang, insuffisance rénale fonctionnelle. Saignement digestif: le sang digéré libère des protéines qui sont transformées en urée. Régime hyperprotidique: apport excessif de protéines. Choc, défaillance cardiaque: baisse de la perfusion rénale. Diminution de l'urée (hypo-urémie). Insuffisance hépatique: le foie ne synthétise plus l'urée. Malnutrition: carence d'apport protéique. Grossesse: hémodilution et besoins accrus. Hyperhydratation: dilution. L'urée et la créatinine, marqueurs de la fonction rénale."]],"5":[["fr","Chapitre 2, La créatinine. Fondements théoriques. Le meilleur marqueur simple de la fonction rénale. La créatinine est le produit de dégradation de la créatine musculaire. Elle est produite de façon continue par les muscles, libérée dans le sang, puis éliminée par le rein par filtration glomérulaire. Pourquoi la créatinine est-elle meilleure que l'urée? Sa production est constante et dépend peu de l'alimentation. Elle est peu influencée par le métabolisme protéique. Elle reflète mieux le débit de filtration glomérulaire (DFG). Valeurs de référence en Afrique centrale. Chez l'adulte: 0,65 à 1,22 milligrammes ou dL (environ 57 à 108 µmol ou L). Interprétation. Quand la créatinine augmente ou diminue. Augmentation (hypercréatininémie). Insuffisance rénale (aiguë ou chronique): le rein n'élimine plus la créatinine. Obstruction urinaire (lithiase, tumeur): obstacle à l'élimination. Déshydratation sévère: insuffisance rénale fonctionnelle. Médicaments néphrotoxiques: aminosides, AINS, produits de contraste. Rhabdomyolyse: destruction musculaire massive. Diminution (hypocréatininémie). Faible masse musculaire: personne âgée, dénutrition, immobilisation prolongée. Grossesse: hémodilution et hyperfiltration rénale. Insuffisance hépatique sévère: diminution de la production. Application clinique. Interpréter une créatinine élevée. Un patient de 55 ans, hypertendu connu, présente une créatinine à 2,5 milligrammes ou dL. Que signifie ce résultat? La créatinine est nettement au-dessus des valeurs de référence (0,65-1,22 milligrammes ou dL). Cela évoque une insuffisance rénale, probablement liée à l'hypertension (néphropathie hypertensive). Il faut calculer le débit de filtration glomérulaire (DFG) pour évaluer le stade de l'insuffisance rénale. Il faut rechercher d'autres causes (diabète, médicaments néphrotoxiques, obstruction). Le patient doit être référé au médecin pour une prise en charge néphrologique."]],"6":[["fr","Chapitre 2, L'acide urique. Fondements théoriques. Le produit final du catabolisme des purines. L'acide urique est le produit final du catabolisme des purines (constituants de l'ADN et de l'ARN). Il est synthétisé dans le foie et éliminé principalement par le rein (et en partie par le tube digestif). But du dosage. Diagnostic et suivi de la goutte (arthrite microcristalline). Évaluation du syndrome de lyse tumorale (après chimiothérapie). Bilan de l'insuffisance rénale. Valeurs de référence. Homme: 3,5 à 7,2 milligrammes ou dL (208 à 428 µmol ou L). Femme: 2,6 à 6,0 milligrammes ou dL (155 à 357 µmol ou L). Interprétation. Quand l'acide urique augmente ou diminue. Augmentation (hyperuricémie). Goutte: dépôt de cristaux d'urate dans les articulations (orteil, genou), très douloureux. Insuffisance rénale: diminution de l'élimination. Hémopathies (leucémies, lymphomes): augmentation du catabolisme des purines. Syndrome de lyse tumorale après chimiothérapie. Régime riche en purines (viande rouge, abats, fruits de mer). Diurétiques (thiazidiques, furosémide). Diminution (hypo-uricémie). Certains médicaments (allopurinol, uricosuriques). Maladies hépatiques sévères. Syndrome de Fanconi. Erreur fréquente. Confondre urée et créatinine. La créatinine est un meilleur reflet de la fonction rénale, car elle est moins dépendante de l'alimentation. L'urée est influencée par l'apport protéique et l'hydratation, mais elle reste utile pour le suivi global."]],"7":[["fr","Chapitre 3, La glycémie et le diagnostic du diabète. Fondements théoriques. Le glucose, source d'énergie de l'organisme. La glycémie est le taux de glucose dans le sang. Le glucose est la principale source d'énergie des cellules, notamment du cerveau. Sa régulation dépend de l'insuline (hypoglycémiante) et du glucagon (hyperglycémiant), deux hormones produites par le pancréas. Valeurs de référence. À jeun: 0,70 à 1,10 grammes ou L (3,9 à 6,1 mmol ou L). Après un repas: inférieur à 1,40 grammes ou L à 2 heures. Le diabète. Un trouble chronique de la régulation glycémique. Le diabète est un trouble chronique caractérisé par une hyperglycémie persistante, due à un défaut de sécrétion ou d'action de l'insuline. Critères diagnostiques. Glycémie à jeun supérieur ou égal à 1,26 grammes ou L (7,0 mmol ou L) à deux reprises. Glycémie aléatoire supérieur ou égal à 2 grammes ou L (11,1 mmol ou L) avec symptômes (soif, polyurie, amaigrissement). HbA1c supérieur ou égal à 6,5 pour cent. Types de diabète. Diabète de type 1: carence absolue en insuline, souvent chez l'enfant et l'adulte jeune. Diabète de type 2: insulinorésistance, plus fréquent, souvent lié à l'obésité et à l'âge. Diabète gestationnel: apparaît pendant la grossesse. L'hypoglycémie. Quand la glycémie est trop basse. L'hypoglycémie est définie par une glycémie inférieure à 0,50 grammes ou L (2,8 mmol ou L). Causes. Jeûne prolongé. Surdosage en insuline ou en sulfamides hypoglycémiants. Insuffisance hépatique sévère. Alcoolisme. Effort physique intense sans apport glucidique. Signes cliniques. Sueurs, tremblements, palpitations. Faim impérieuse. Confusion, troubles du comportement. Convulsions, coma (hypoglycémie sévère). Erreur fréquente. Interpréter une glycémie sans préciser si le patient est à jeun. Les seuils diagnostiques diffèrent selon le contexte (à jeun, aléatoire, post-prandial). Il faut toujours noter l'heure du prélèvement par rapport au dernier repas."]],"8":[["fr","Chapitre 3, L'HbA1c et le suivi du diabète. Fondements théoriques. Le reflet de l'équilibre glycémique sur 3 mois. L'HbA1c (hémoglobine glyquée) est une forme d'hémoglobine à laquelle du glucose s'est fixé de façon irréversible. Sa concentration dépend de la glycémie moyenne des 2 à 3 derniers mois (durée de vie des globules rouges). Intérêt clinique. Évaluer l'équilibre glycémique d'un patient diabétique sur le long terme. Confirmer le diagnostic de diabète (HbA1c supérieur ou égal à 6,5 pour cent ). Ajuster le traitement. Valeurs de référence. Non diabétique: inférieur à 5,7 pour cent. Prédiabète: 5,7 à 6,4 pour cent. Diabète: supérieur ou égal à 6,5 pour cent. Objectif thérapeutique chez le diabétique: généralement inférieur à 7 pour cent (à individualiser). Application clinique. Un patient diabétique déséquilibré. Un patient diabétique de type 2 se présente pour un contrôle. Sa glycémie à jeun est à 2,5 grammes ou L et son HbA1c à 9 pour cent. Que signifie ce résultat? La glycémie à jeun est très au-dessus du seuil (1,26 grammes ou L). L'HbA1c à 9 pour cent indique un déséquilibre chronique sur les 3 derniers mois (objectif habituel inférieur à 7 pour cent ). Le traitement doit être réévalué. L'éducation du patient doit être renforcée: alimentation, observance, activité physique. À retenir. Glycémie égale photo instantanée du glucose. HbA1c égale film des 3 derniers mois. Les deux examens sont complémentaires dans le suivi du diabète."]],"9":[["fr","Chapitre 4, Le bilan lipidique et les dyslipidémies. Fondements théoriques. Quatre paramètres à connaître. Le bilan lipidique comprend quatre paramètres, mesurés après un jeûne de 12 heures: Cholestérol total: somme de tous les cholestérols transportés. LDL-cholestérol (« mauvais » cholestérol): transporteur du cholestérol vers les artères, favorise l'athérosclérose. HDL-cholestérol (« bon » cholestérol): ramène le cholestérol des artères vers le foie, effet protecteur. Triglycérides: forme de stockage des graisses. Valeurs de référence (à jeun). Paramètre. Valeur souhaitable. Cholestérol total. inférieur à 2 grammes ou L. LDL-cholestérol. inférieur à 1,6 grammes ou L. HDL-cholestérol. supérieur à 0,4 grammes ou L. Triglycérides. inférieur à 1,5 grammes ou L. Ces seuils doivent être adaptés au risque cardiovasculaire du patient (diabète, hypertension, tabagisme, antécédents familiaux). Interprétation. Les dyslipidémies. Hypercholestérolémie: cholestérol total élevé. Risque athérogène (infarctus, AVC). Hypertriglycéridémie: triglycérides élevés. Risque de pancréatite aiguë si très élevés, syndrome métabolique. HDL bas: facteur de risque cardiovasculaire (le HDL protège normalement les artères). Dyslipidémie mixte: élévation du cholestérol et des triglycérides. Erreur fréquente. Interpréter un bilan lipidique sans tenir compte du jeûne. Les triglycérides augmentent fortement après un repas. Un bilan lipidique doit être réalisé après 12 heures de jeûne. Il faut également tenir compte du risque cardiovasculaire global du patient."]],"10":[["fr","Chapitre 5, Les protéines plasmatiques. Fondements théoriques. Albumine et globulines. Les protéines plasmatiques sont nombreuses et jouent des rôles variés: transport, immunité, pression oncotique, coagulation. L'albumine. C'est la protéine la plus abondante du plasma (environ 60 pour cent des protéines totales). Elle est synthétisée par le foie. Ses rôles: Maintien de la pression oncotique: retient l'eau dans les vaisseaux. Transport de nombreuses molécules (hormones, médicaments, bilirubine, acides gras). Les globulines. Ensemble des autres protéines plasmatiques: Alpha et bêta-globulines: transport (fer, cuivre, lipides). Gamma-globulines (immunoglobulines): immunité (anticorps). Fibrinogène: coagulation. Valeurs de référence. Protéines totales: 60 à 80 grammes ou L. Albumine: 35 à 50 grammes ou L. Interprétation. Quand les protéines augmentent ou diminuent. Hypoalbuminémie. Dénutrition (apport protéique insuffisant). Syndrome néphrotique (perte urinaire d'albumine). Insuffisance hépatique (défaut de synthèse). Entéropathie exsudative (perte digestive). Inflammation chronique. Une hypoalbuminémie provoque des œdèmes (baisse de la pression oncotique) et une ascite dans les cirrhoses. Hyperprotidémie. Déshydratation (hémoconcentration). Myélome multiple (production excessive d'immunoglobulines monoclonales). Infections chroniques (hypergammaglobulinémie). À retenir. L'albumine est le reflet de l'état nutritionnel et de la fonction hépatique. Une hypoalbuminémie entraîne des œdèmes. Une hyperprotidémie évoque une déshydratation ou une gammapathie monoclonale."]],"11":[["fr","Chapitre 5, Les transaminases (ALAT et ASAT). Fondements théoriques. Les marqueurs de la cytolyse hépatique. Les transaminases sont des enzymes présentes dans les cellules, surtout du foie et des muscles. Lorsque les cellules sont détruites (cytolyse), elles libèrent leurs enzymes dans le sang, ce qui augmente leur concentration plasmatique. Deux transaminases. ALAT (alanine aminotransférase) ou SGPT: plus spécifique du foie. ASAT (aspartate aminotransférase) ou SGOT: présente dans le foie, mais aussi dans le muscle cardiaque, les muscles squelettiques, les globules rouges. Valeurs de référence (Afrique centrale). ALAT: 3 à 43 UI ou L. ASAT: 3 à 38 UI ou L. Interprétation. Quand les transaminases augmentent. Une élévation des transaminases signe une cytolyse hépatique. Les causes: Hépatites virales (A, B, C, E): élévation souvent très importante (10 à 100 fois la normale). Stéatose hépatique (foie gras): élévation modérée, souvent liée à l'obésité ou à l'alcool. Médicaments hépatotoxiques: paracétamol à forte dose, antituberculeux, certains antibiotiques. Alcool: élévation modérée, avec ASAT souvent supérieur à ALAT. Hémochromatose, maladie de Wilson (plus rares). Effort intense: élévation modérée et transitoire. Rapport ASAT ou ALAT. ASAT ou ALAT supérieur à 1: évoque une cause alcoolique ou une cirrhose. ASAT ou ALAT inférieur à 1: évoque une hépatite virale ou une stéatose non alcoolique. Les transaminases, marqueurs de cytolyse hépatique."]],"12":[["fr","Chapitre 5, GGT et phosphatases alcalines. La GGT. Gamma-glutamyl transférase. La GGT est une enzyme présente dans le foie, les voies biliaires et le rein. Elle est un marqueur de cholestase (stase biliaire) et d'imprégnation alcoolique. Valeur de référence en Afrique centrale. 7,8 à 35,3 UI ou L. Interprétation. Cholestase (obstruction biliaire, lithiase, tumeur): GGT élevée. Alcoolisme chronique: GGT élevée, souvent avec macrocytose (VGM augmenté). Médicaments: inducteurs enzymatiques (phénobarbital, rifampicine). Stéatose hépatique: élévation modérée. Les phosphatases alcalines. PAL (Phosphatases Alcalines). Les phosphatases alcalines sont des enzymes présentes dans le foie (voies biliaires), les os, le placenta et l'intestin. Elles sont des marqueurs de cholestase et d'activité osseuse. Valeur de référence en Afrique centrale. 39 à 246 UI ou L (variable selon l'âge et le sexe). Interprétation. Cholestase (obstruction biliaire): PAL élevées. Maladies osseuses: maladie de Paget, métastases osseuses, rachitisme, fractures en consolidation. Grossesse (3e trimestre): élévation physiologique par le placenta. Croissance chez l'enfant: élévation physiologique. À retenir. GGT plus PAL élevées égale cholestase. GGT isolée élevée égale évoquer alcoolisme ou médicaments. PAL isolées élevées égale évoquer une atteinte osseuse."]],"13":[["fr","Chapitre 5, Amylase, CPK et LDH. L'amylase. Marqueur de pancréatite aiguë. L'amylase est une enzyme produite par le pancréas et les glandes salivaires. Elle est un marqueur de pancréatite aiguë. Interprétation. Pancréatite aiguë: amylase élevée (souvent supérieur à 3 fois la normale), avec douleur abdominale intense et vomissements. Parotidite (oreillons): amylase salivaire élevée. Insuffisance rénale: défaut d'élimination. Ulcère perforé, occlusion intestinale: amylase modérément élevée. La CPK. Créatine phosphokinase. La CPK (ou CK) est une enzyme présente surtout dans les muscles squelettiques, le muscle cardiaque et le cerveau. Elle est un marqueur de souffrance musculaire. Interprétation. Infarctus du myocarde: CPK et CPK-MB augmentées. Rhabdomyolyse (destruction musculaire massive): CPK très élevée ( supérieur à 5 à 10 fois la normale). Myosite, effort intense, traumatisme: CPK modérément élevée. Médicaments (statines): myopathie possible. La LDH. Lactate déshydrogénase. La LDH est une enzyme présente dans presque toutes les cellules. C'est un marqueur non spécifique de lyse cellulaire. Interprétation. Hémolyse (destruction des globules rouges): LDH élevée. Infarctus (cardiaque, pulmonaire, intestinal): LDH élevée. Hémopathies malignes (leucémies, lymphomes): LDH élevée, marqueur pronostique. Hépatites: LDH modérément élevée. Hémolyse du prélèvement: faux positif fréquent (tube hémolysé). Erreur fréquente. Interpréter une enzyme isolée sans tenir compte du contexte. Une élévation modérée des transaminases peut être due à un effort intense ou à un médicament; une LDH élevée peut être due à une hémolyse du prélèvement. Le contexte clinique et les autres paramètres sont indispensables."]],"14":[["fr","Chapitre 6, Les électrolytes: sodium, potassium, chlore. Le sodium (Na⁺). Principal cation extracellulaire. Le sodium est le principal cation du liquide extracellulaire. Il est le principal déterminant de l'osmolalité plasmatique et régule la répartition de l'eau dans l'organisme. Valeurs de référence. 135 à 145 mmol ou L. Interprétation. Hyponatrémie ( inférieur à 135 mmol ou L): dilution (insuffisance cardiaque, cirrhose), pertes digestives (vomissements, diarrhée), insuffisance surrénale, SIADH. Signes: nausées, confusion, convulsions (si sévère). Hypernatrémie ( supérieur à 145 mmol ou L): déshydratation (pertes digestives ou cutanées), apports excessifs (perfusions), diabète insipide. Signes: soif intense, troubles neurologiques. Le potassium (K⁺). Principal cation intracellulaire. Le potassium est le principal cation intracellulaire. Il est essentiel au fonctionnement des cellules excitables (cœur, muscles, nerfs). Valeurs de référence. 3,5 à 5,0 mmol ou L. Interprétation. Hypokaliémie ( inférieur à 3,5 mmol ou L): pertes digestives (vomissements, diarrhée), diurétiques, alcalose. Signes: faiblesse musculaire, crampes, troubles du rythme cardiaque. Hyperkaliémie ( supérieur à 5,0 mmol ou L): insuffisance rénale, médicaments (IEC, spironolactone), hémolyse, acidose. Urgence médicale: risque d'arythmie cardiaque grave (bloc, arrêt cardiaque). Le chlore (Cl⁻). Principal anion extracellulaire. Le chlore est le principal anion du liquide extracellulaire. Il est associé au sodium et participe à l'équilibre acido-basique. Valeurs de référence. 95 à 105 mmol ou L. Interprétation. Hypochlorémie: vomissements, diurétiques. Hyperchlorémie: déshydratation, acidose métabolique. Urgence: l'hyperkaliémie. Une hyperkaliémie sévère ( supérieur à 6,5 mmol ou L) peut provoquer un arrêt cardiaque. C'est une urgence médicale. Il faut alerter immédiatement le médecin, faire un ECG et préparer le traitement (gluconate de calcium, insuline-glucose, bicarbonate, résine échangeuse d'ions, dialyse)."]],"15":[["fr","Chapitre 6, Calcium, phosphore et magnésium. Le calcium (Ca au carré ⁺). Un cation à double rôle. Le calcium est un cation essentiel: Structurel: 99 pour cent du calcium est dans les os (hydroxyapatite). Fonctionnel: contraction musculaire, transmission nerveuse, coagulation, signalisation cellulaire. Valeurs de référence. Calcium total: 2,20 à 2,60 mmol ou L (88 à 104 milligrammes ou L). Interprétation. Hypocalcémie: tétanie, convulsions, allongement du QT. Causes: hypoparathyroïdie, carence en vitamine D, insuffisance rénale, pancréatite. Hypercalcémie: nausées, confusion, polyurie, insuffisance rénale. Causes: hyperparathyroïdie primaire, métastases osseuses, myélome, intoxication à la vitamine D. Le phosphore (P). Structure des os et métabolisme énergétique. Le phosphore est présent dans les os, les acides nucléiques (ADN, ARN) et l'ATP (énergie cellulaire). Valeurs de référence. 0,80 à 1,45 mmol ou L (25 à 45 milligrammes ou L). Interprétation. Hypophosphatémie: faiblesse musculaire, confusion, hémolyse. Causes: dénutrition, alcoolisme, hyperparathyroïdie. Hyperphosphatémie: insuffisance rénale (cause la plus fréquente), hypoparathyroïdie. Le magnésium (Mg au carré ⁺). Un cofacteur enzymatique. Le magnésium est un cofacteur de nombreuses enzymes (plus de 300). Il intervient dans la transmission nerveuse, la contraction musculaire et le métabolisme énergétique. Valeurs de référence. 0,70 à 1,00 mmol ou L. Interprétation. Hypomagnésémie: alcoolisme, dénutrition, diurétiques, diarrhée. Signes: tremblements, convulsions, arythmies. Hypermagnésémie: insuffisance rénale, apport excessif (perfusion). Signes: dépression neurologique, bradycardie, arrêt cardiaque. À retenir. Le calcium, le phosphore et le magnésium sont interdépendants (régulation par la vitamine D, la parathormone, le rein). Une anomalie de l'un doit conduire à vérifier les autres."]],"16":[["fr","Chapitre 7, L'équilibre acido-basique. Fondements théoriques. Un équilibre vital. Le pH sanguin doit rester stable entre 7,35 et 7,45 pour permettre le fonctionnement des enzymes et des cellules. Cet équilibre résulte de trois systèmes: Les tampons chimiques (bicarbonates, protéines, phosphates). La régulation respiratoire (élimination du C O2 par les poumons). La régulation rénale (élimination des acides et réabsorption des bicarbonates). Les quatre paramètres. Paramètre. Valeur normale. pH. 7,35 moins 7,45. Pa C O2. 35 moins 45 mmHg. Bicarbonates (H C O3⁻). 22 moins 26 mmol ou L. Trou anionique. 8 moins 16 mmol ou L. Les quatre troubles. Reconnaître une acidose ou une alcalose. Acidose métabolique. pH bas, bicarbonates bas. Causes: acidocétose diabétique, insuffisance rénale, diarrhée sévère, choc. Compensation respiratoire: hyperventilation (baisse de Pa C O2). Acidose respiratoire. pH bas, Pa C O2 élevée. Causes: insuffisance respiratoire, obstruction des voies aériennes, dépression respiratoire. Alcalose métabolique. pH élevé, bicarbonates élevés. Causes: vomissements répétés, diurétiques, hypokaliémie. Alcalose respiratoire. pH élevé, Pa C O2 basse. Causes: hyperventilation (anxiété, douleur, hypoxie, fièvre). Erreur fréquente. Interpréter un trouble acido-basique sans tenir compte de la compensation. L'organisme compense toujours un désordre primaire: respiratoire (immédiat) ou rénal (plus lent, quelques jours). Il faut identifier le trouble primaire et évaluer la compensation."]],"17":[["fr","Chapitre 8, Les phases du laboratoire et le contrôle qualité. Les trois phases du laboratoire. De la demande à la validation du résultat. 1. Phase pré-analytique. C'est la phase qui précède l'analyse. Elle comprend: La prescription médicale. L'identification du patient. Le prélèvement (choix du tube, moment du prélèvement, jeûne). Le conditionnement (respect de la chaîne du froid, protection de la lumière). Le transport (délai, conditions). 70 à 80 pour cent des erreurs de laboratoire surviennent en phase pré-analytique. 2. Phase analytique. C'est la phase de dosage proprement dit. Elle repose sur: Des automates ou des méthodes manuelles. Des réactifs contrôlés. Des procédures standardisées. 3. Phase post-analytique. Elle comprend: La validation biologique des résultats. La validation clinique (par le médecin). La communication des résultats au patient ou au prescripteur. L'archivage. Le contrôle qualité. Garantir la fiabilité des résultats. Contrôle qualité interne (CQI): réalisé quotidiennement dans chaque laboratoire, avec des sérums de contrôle à valeurs connues. Il vérifie la reproductibilité des analyses. Contrôle qualité externe (CQE): réalisé périodiquement, par comparaison entre laboratoires. Il évalue la justesse des résultats. Contrôle qualité global: ensemble des procédures d'assurance qualité. Le laboratoire de biochimie clinique: de l'échantillon au résultat."]],"18":[["fr","Chapitre 8, Le rôle infirmier dans le prélèvement et le transport. Préparer le patient. Un prélèvement de qualité commence par là. Vérifier le jeûne (8 à 12 heures pour la glycémie, le bilan lipidique). Vérifier les médicaments pris par le patient (certains doivent être suspendus sur avis médical). Expliquer le prélèvement au patient (rassurer, informer). Vérifier l'identité du patient (nom, prénom, date de naissance). Réaliser le prélèvement. Les bonnes pratiques. Respecter l'hygiène (lavage des mains, gants, antiseptique). Choisir le tube adapté (sec pour biochimie, EDTA pour hématologie, citrate pour coagulation). Éviter l'hémolyse (ne pas secouer le tube, ne pas trop aspirer, retirer l'aiguille avant de remplir les tubes). Éviter la stase veineuse prolongée (garrot inférieur à 1 minute). Respecter l'ordre de remplissage des tubes. Étiqueter immédiatement les tubes. Conditionner et transporter. La chaîne pré-analytique. Protéger de la lumière (bilirubine, vitamines). Conserver au froid (4 degrés Celsius) pour certains paramètres (gaz du sang, ammoniac). Transporter rapidement (moins de 2 heures pour la plupart des paramètres). Éviter les chocs (hémolyse). Documenter l'heure du prélèvement et du transport. Éduquer le patient. Un rôle continu. Expliquer l'importance du jeûne et de l'observance. Informer sur les résultats et la conduite à tenir. Rappeler les signes d'alerte (hypoglycémie, déshydratation, douleur). Renforcer l'éducation diététique (diabète, dyslipidémie, insuffisance rénale). Erreur fréquente. Négliger la phase pré-analytique. Une erreur de prélèvement (hémolyse, tube inadapté, délai de transport) peut fausser le résultat et entraîner une erreur diagnostique, un traitement inutile ou une prise en charge inadéquate. La qualité du résultat dépend de la qualité du prélèvement."]],"19":[["fr","Synthèse, Interpréter pour agir. Synthèse générale. Les points clés du cours de biochimie clinique. Définition: application des méthodes chimiques au diagnostic, au suivi et à la prévention des maladies. Valeurs de référence: dépendantes de l'âge, du sexe, du jeûne et de l'origine géographique. Urée et créatinine: marqueurs de la fonction rénale. La créatinine est plus fiable (moins influencée par l'alimentation). Acide urique: marqueur de la goutte et du syndrome de lyse tumorale. Glycémie: diabète si supérieur ou égal à 1,26 grammes ou L à jeun à deux reprises. HbA1c: reflet de l'équilibre glycémique sur 3 mois. Objectif thérapeutique inférieur à 7 pour cent. Bilan lipidique: à jeun, avec cholestérol total, LDL, HDL et triglycérides. Protéines: albumine (nutrition, pression oncotique) et globulines (immunité). Transaminases: marqueurs de cytolyse hépatique. ALAT plus spécifique que ASAT. GGT plus PAL: marqueurs de cholestase. Amylase, CPK, LDH: marqueurs non spécifiques (pancréas, muscle, lyse cellulaire). Électrolytes: sodium, potassium, chlore, calcium, phosphore, magnésium. Hyperkaliémie égale urgence. Équilibre acido-basique: pH, bicarbonates, Pa C O2. Identifier le trouble primaire. Phases du laboratoire: pré-analytique, analytique, post-analytique. Le contrôle qualité garantit la fiabilité. Rôle infirmier: prélèvement de qualité, transport, éducation du patient. Message final. Un métier de précision et de responsabilité. La biochimie clinique est un maillon essentiel de la chaîne du soin. Un résultat juste, interprété avec rigueur, aide le médecin à poser le bon diagnostic et à prescrire le bon traitement. Un prélèvement de qualité, un transport rapide, une interprétation prudente: autant de gestes qui font la différence pour la santé des patients en R D C."]],"20":[["fr","Évaluation finale, Biochimie Clinique. Consignes. Répondez aux questions suivantes en choisissant la seule bonne réponse parmi les quatre propositions. Chaque question est indépendante et porte sur les notions développées dans le cours. Prenez le temps de relire les chapitres en cas de doute."]]}};
+  var CACHE = "ecolia-cours-v1";                       // même cache que l'application
+  var PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  var PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+  var DL = '<svg viewBox="0 0 24 24"><path d="M11 3h2v9.2l3.6-3.6L18 10l-6 6-6-6 1.4-1.4L11 12.2V3zM5 19h14v2H5z"/></svg>';
+  var OK = '<svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>';
+  // Réparation du quiz : certains cours stockent les choix sous "opts" (ou autre) au lieu de "options"
+  try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+      questions.forEach(function (q) {
+        if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+        if (q.text === undefined) q.text = q.question || q.q || q.enonce || q.titre || "";
+        if (typeof q.correct === "undefined") {
+          if (typeof q.answer !== "undefined") q.correct = q.answer;
+          else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+        }
+      });
+    }
+  } catch (e) {}
+  var synth = window.speechSynthesis || null;
+  var HAS_CACHE = !!(window.caches && window.caches.open);
+  var NATIVE = false;           // APK ECOLIA : pont Java "CoursInterface" (fichiers dans le dossier de l'application)
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  var LATER = "ecolia_audio_later_" + CFG.code;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+  function init() {
+    if (document.getElementById("ecolia-audio-btn")) return;
+
+    // ---------- éléments de l'interface ----------
+    var btn = document.createElement("button");
+    btn.id = "ecolia-audio-btn"; btn.type = "button"; btn.className = "ecolia-off";
+    btn.setAttribute("aria-label", "Écouter la leçon"); btn.innerHTML = PLAY;
+    var dlBtn = document.createElement("button");
+    dlBtn.id = "ecolia-dl-btn"; dlBtn.type = "button"; dlBtn.className = "ecolia-off";
+    dlBtn.innerHTML = DL;
+    var host = document.querySelector(".header-right");
+    if (host) { host.insertBefore(dlBtn, host.firstChild); host.insertBefore(btn, dlBtn); }   // dans la barre du haut : ne scrolle jamais
+    else { btn.className += " ecolia-fixed"; document.body.appendChild(btn); }
+
+    var banner = document.createElement("div");
+    banner.id = "ecolia-audio-banner";
+    banner.innerHTML = '<span class="eab-txt"></span><span class="eab-act"></span><div class="eab-bar"><i></i></div>';
+    var content = document.getElementById("content");
+    if (content && content.parentNode) content.parentNode.insertBefore(banner, content);
+    else document.body.insertBefore(banner, document.body.firstChild);
+    var txtEl = banner.querySelector(".eab-txt"), actEl = banner.querySelector(".eab-act");
+    var barEl = banner.querySelector(".eab-bar"), barI = barEl.firstChild;
+
+    var audio = new Audio();            // un seul élément Audio, réutilisé (exigé par les navigateurs mobiles)
+    audio.preload = "auto";
+    var st = { idx: -1, auto: false, advancing: false, mode: null, speaking: false, token: 0, chunks: [], ci: 0, blobUrl: null, playTok: 0 };
+    var dl = { state: "none", cached: 0, busy: false, cancel: false };   // none | partial | full
+    var bnMode = null, hideTimer = null;
+    if (synth && synth.getVoices) { try { synth.getVoices(); } catch (e) {} }
+
+    function cur() {
+      try { if (typeof currentSlide === "number") return currentSlide; } catch (e) {}
+      return 0;
+    }
+    function hasMp3(i) { return CFG.available.indexOf(i + 1) !== -1; }
+    function fb(i) { return CFG.fallback && CFG.fallback[String(i + 1)]; }
+    function hasAudio(i) { return hasMp3(i) || (!!synth && !!fb(i)); }
+    function urlN(n) {   // dans l'APK la page est sur https://app.local : une adresse relative doit pointer vers le site
+      var b = CFG.base;
+      if (NATIVE && !/^https?:/i.test(b)) b = "https://ecolia-course.github.io/" + b.replace(/^(\.\.\/|\.\/)+/, "");
+      return new URL(b + nameN(n), location.href).href;
+    }
+    function setIcon(playing) { btn.innerHTML = playing ? PAUSE : PLAY; }
+    function isPlaying() { return st.mode === "mp3" ? !audio.paused : (st.mode === "tts" && st.speaking); }
+    function mo() { return "≈ " + CFG.sizeMo + " Mo"; }
+    function nameN(n) { return "audio_" + CFG.code + "_" + n + ".mp3"; }
+
+    // ====================================================================
+    //  Stockage hors ligne : 2 moteurs, même interface
+    //    - APK : fichiers du dossier de l'application (CoursInterface), servis par https://app.local/cours/
+    //    - Web : Cache Storage du navigateur (même cache que l'application web)
+    // ====================================================================
+    function nativeStore() {
+      var okKey = "ecolia_audio_ok_" + CFG.code;
+      function readOk() { try { return JSON.parse(lsGet(okKey) || "[]"); } catch (e) { return []; } }
+      function writeOk(a) { lsSet(okKey, JSON.stringify(a)); }
+      function exists(n) { try { return !!CoursInterface.exists(nameN(n)); } catch (e) { return false; } }
+      function local(n) { return location.origin + "/cours/" + nameN(n); }
+      function verify(n) {                                   // fichier complet ? (taille exacte connue à la génération)
+        return fetch(local(n), { cache: "no-store" }).then(function (r) { return r.blob(); }).then(function (b) {
+          var exp = CFG.sizes && CFG.sizes[String(n)];
+          return (b.size > 2000 && (!exp || b.size === exp)) ? b : null;
+        }).catch(function () { return null; });
+      }
+      return {
+        list: function () {
+          var ok = readOk().filter(exists); writeOk(ok); return Promise.resolve(ok);
+        },
+        get: function (n) { return exists(n) ? verify(n) : Promise.resolve(null); },
+        put: function (n) {
+          return new Promise(function (res, rej) {
+            try { CoursInterface.download(urlN(n), nameN(n)); } catch (e) { return rej(e); }
+            var t0 = Date.now();
+            function next() { if (Date.now() - t0 > 120000) rej(new Error("délai dépassé")); else setTimeout(poll, 800); }
+            function poll() {
+              if (!exists(n)) return next();
+              verify(n).then(function (b) {
+                if (!b) return next();
+                var ok = readOk(); if (ok.indexOf(n) < 0) ok.push(n); writeOk(ok); res();
+              });
+            }
+            setTimeout(poll, 800);
+          });
+        },
+        del: function (n) {
+          try { CoursInterface.delete(nameN(n)); } catch (e) {}
+          writeOk(readOk().filter(function (x) { return x !== n; }));
+          return Promise.resolve();
+        }
+      };
+    }
+    function cacheStore() {
+      return {
+        list: function () {
+          return caches.open(CACHE).then(function (c) {
+            return Promise.all(CFG.available.map(function (n) {
+              return c.match(urlN(n)).then(function (r) {
+                if (!r) return 0;
+                if ((r.headers.get("content-type") || "").indexOf("audio") !== 0) { c.delete(urlN(n)); return 0; }   // ancien contenu invalide
+                return n;
+              });
+            }));
+          }).then(function (a) { return a.filter(Boolean); });
+        },
+        get: function (n) {
+          return caches.open(CACHE).then(function (c) { return c.match(urlN(n)); })
+            .then(function (r) { return r ? r.blob() : null; }).then(function (b) { return b && b.size > 2000 ? b : null; });
+        },
+        put: function (n) {
+          var u = urlN(n);
+          return fetch(u, { cache: "no-store" }).then(function (r) {
+            if (!r.ok || r.status !== 200) throw new Error("HTTP " + r.status);
+            return r.blob();
+          }).then(function (b) {
+            if (b.size < 2000 || (b.type && b.type.indexOf("audio") !== 0 && b.type.indexOf("octet") < 0)) throw new Error("fichier invalide");
+            return caches.open(CACHE).then(function (c) { return c.put(u, new Response(b, { headers: { "Content-Type": "audio/mpeg" } })); });
+          });
+        },
+        del: function (n) { return caches.open(CACHE).then(function (c) { return c.delete(urlN(n)); }); }
+      };
+    }
+    var store = NATIVE ? nativeStore() : (HAS_CACHE ? cacheStore() : null);
+
+    // ====================================================================
+    //  Bannière : invitation, confirmations, progression
+    // ====================================================================
+    function showBanner(mode, text, buttons, pct) {
+      clearTimeout(hideTimer);
+      bnMode = mode;
+      txtEl.textContent = text;
+      actEl.innerHTML = "";
+      (buttons || []).forEach(function (b) {
+        var e = document.createElement("button");
+        e.type = "button"; e.textContent = b.label; if (b.pri) e.className = "pri";
+        e.addEventListener("click", function (ev) { ev.stopPropagation(); b.fn(); });
+        actEl.appendChild(e);
+      });
+      if (typeof pct === "number") { barEl.style.display = "block"; barI.style.width = pct + "%"; }
+      else barEl.style.display = "none";
+      banner.classList.add("on");
+    }
+    function hideBanner() { clearTimeout(hideTimer); bnMode = null; banner.classList.remove("on"); }
+    function flash(text) { showBanner("info", text, []); hideTimer = setTimeout(hideBanner, 4000); }
+
+    function refreshUI() {
+      var show = !!store && CFG.available.length > 0;
+      dlBtn.classList.toggle("ecolia-off", !show);
+      dlBtn.classList.toggle("ecolia-full", dl.state === "full");
+      dlBtn.innerHTML = dl.state === "full" ? OK : DL;
+      dlBtn.setAttribute("aria-label", dl.state === "full" ? "Audios téléchargés : supprimer" : "Télécharger les audios");
+      dlBtn.title = dlBtn.getAttribute("aria-label");
+    }
+    function refreshCacheState(done) {
+      if (!store) { dl.state = "none"; refreshUI(); if (done) done(); return; }
+      store.list().then(function (ok) {
+        dl.cached = ok.length;
+        dl.state = dl.cached === 0 ? "none" : (dl.cached >= CFG.available.length ? "full" : "partial");
+      }).catch(function () { dl.state = "none"; }).then(function () { refreshUI(); if (done) done(); });
+    }
+
+    function askDownload(fromInvite) {
+      var left = CFG.available.length - dl.cached;
+      var txt = dl.state === "partial"
+        ? "Il reste " + left + " audio(s) à télécharger pour écouter ce cours sans internet."
+        : "🔊 Télécharger les audios de ce cours (" + mo() + ") pour les écouter sans internet ? Wi-Fi recommandé.";
+      showBanner(fromInvite ? "invite" : "confirm", txt, [
+        { label: fromInvite ? "Plus tard" : "Annuler", fn: function () { if (fromInvite) lsSet(LATER, "1"); hideBanner(); } },
+        { label: "Télécharger", pri: true, fn: startDownload }
+      ]);
+    }
+    function askDelete() {
+      showBanner("confirm", "Supprimer les audios téléchargés de ce cours (" + mo() + ") ? Vous pourrez toujours les écouter en ligne.", [
+        { label: "Annuler", fn: hideBanner },
+        { label: "Supprimer", pri: true, fn: doDelete }
+      ]);
+    }
+
+    function startDownload() {
+      if (dl.busy || !store) return;
+      dl.busy = true; dl.cancel = false;
+      var total = CFG.available.length, done = 0, quota = false, fails = 0, todo = [];
+      store.list().then(function (have) {
+        CFG.available.forEach(function (n) { if (have.indexOf(n) < 0) todo.push(n); });
+        done = total - todo.length;
+        function paint() {
+          var msg = "Téléchargement des audios : " + done + " / " + total;
+          if (bnMode === "progress") {                  // met à jour sans recréer les boutons (sinon un appui peut être perdu)
+            txtEl.textContent = msg; barI.style.width = Math.round(done / total * 100) + "%";
+          } else {
+            showBanner("progress", msg, [
+              { label: "Annuler", fn: function () { dl.cancel = true; } }
+            ], Math.round(done / total * 100));
+          }
+        }
+        paint();
+        function worker() {
+          if (dl.cancel || quota || !todo.length) return Promise.resolve();
+          var n = todo.shift();
+          return store.put(n).then(function () { done++; paint(); }).catch(function (e) {
+            if (e && (e.name === "QuotaExceededError" || /quota/i.test(String(e.message)))) quota = true;
+            fails++;
+          }).then(worker);
+        }
+        return Promise.all([worker(), worker()]);
+      }).catch(function () { fails++; }).then(function () {
+        dl.busy = false;
+        refreshCacheState(function () {
+          if (dl.state === "full") flash("✓ Audios téléchargés : le cours se lit maintenant sans internet.");
+          else if (dl.cancel) flash("Téléchargement interrompu (" + dl.cached + " / " + total + "). Vous pourrez reprendre plus tard.");
+          else showBanner("error", quota ? "Espace insuffisant sur l'appareil. Libérez de la place puis réessayez."
+            : "Certains audios n'ont pas pu être téléchargés (connexion ?).", [
+            { label: "Fermer", fn: hideBanner }, { label: "Réessayer", pri: true, fn: startDownload }
+          ]);
+        });
+      });
+    }
+    function doDelete() {
+      if (!store) return;
+      Promise.all(CFG.available.map(function (n) { return store.del(n); })).catch(function () {}).then(function () {
+        lsDel(LATER);
+        refreshCacheState(function () { flash("Audios supprimés de cet appareil."); });
+      });
+    }
+
+    dlBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (dl.busy) return;
+      if (dl.state === "full") askDelete(); else askDownload(false);
+    });
+
+    // ====================================================================
+    //  Voix intégrée au téléphone (hors ligne, sans limite)
+    // ====================================================================
+    function pickVoice(lang) {
+      var vs = [];
+      try { vs = synth.getVoices() || []; } catch (e) {}
+      var pre = lang === "en" ? "en" : "fr", best = null;
+      for (var k = 0; k < vs.length; k++) {
+        var v = vs[k];
+        if ((v.lang || "").toLowerCase().indexOf(pre) !== 0) continue;
+        if (!best || (v.localService && !best.localService)) best = v;
+      }
+      return best;
+    }
+    function hardSplit(text, max) {
+      var out = [];
+      while (text.length > max) {
+        var cut = text.lastIndexOf(" ", max);
+        if (cut < 40) cut = max;
+        out.push(text.slice(0, cut)); text = text.slice(cut).replace(/^\s+/, "");
+      }
+      if (text) out.push(text);
+      return out;
+    }
+    function buildChunks(segs) {                  // morceaux courts : évite l'arrêt des longs textes sur Chrome
+      var out = [];
+      segs.forEach(function (s) {
+        var cur2 = "", parts = s[1].match(/[^.!?;:]+[.!?;:]*\s*/g) || [s[1]];
+        parts.forEach(function (p) {
+          if (cur2 && (cur2 + p).length > 160) { out.push({ lang: s[0], text: cur2.trim() }); cur2 = p; }
+          else cur2 += p;
+        });
+        if (cur2.trim()) out.push({ lang: s[0], text: cur2.trim() });
+      });
+      var res = [];
+      out.forEach(function (c) { hardSplit(c.text, 190).forEach(function (t) { res.push({ lang: c.lang, text: t }); }); });
+      return res;
+    }
+    function speakFrom(tk) {
+      if (tk !== st.token) return;
+      if (st.ci >= st.chunks.length) {
+        st.speaking = false; st.mode = null; st.ci = 0; setIcon(false);
+        if (st.auto) goNext();
+        return;
+      }
+      var c = st.chunks[st.ci];
+      var u = new SpeechSynthesisUtterance(c.text);
+      u.lang = c.lang === "en" ? "en-US" : "fr-FR";
+      var v = pickVoice(c.lang);
+      if (v) { u.voice = v; u.lang = v.lang; }
+      u.rate = 0.95;
+      u.onend = function () { if (tk !== st.token) return; st.ci++; speakFrom(tk); };
+      u.onerror = function () { if (tk !== st.token) return; st.speaking = false; setIcon(false); st.auto = false; };
+      synth.speak(u);
+    }
+    function startTts(from) {
+      st.token++;
+      var tk = st.token;
+      st.mode = "tts"; st.speaking = true; st.ci = from || 0; setIcon(true);
+      var busy = false;
+      try { busy = synth.speaking || synth.pending; synth.cancel(); } catch (e) {}
+      if (busy) setTimeout(function () { speakFrom(tk); }, 120);   // laisse cancel() se terminer
+      else speakFrom(tk);                                          // sinon tout de suite (exigé par iOS)
+    }
+    function playVoice() {
+      if (!(synth && fb(st.idx))) { st.auto = false; return false; }
+      if (!st.chunks.length) st.chunks = buildChunks(fb(st.idx));
+      startTts(st.ci);
+      return true;
+    }
+
+    // ====================================================================
+    //  Lecture
+    // ====================================================================
+    function freeBlob() { if (st.blobUrl) { try { URL.revokeObjectURL(st.blobUrl); } catch (e) {} st.blobUrl = null; } }
+    function stopAll() {
+      st.playTok++;
+      try { audio.pause(); audio.currentTime = 0; } catch (e) {}
+      st.token++;
+      try { if (synth) synth.cancel(); } catch (e) {}
+      st.speaking = false; st.mode = null; st.chunks = []; st.ci = 0;
+      setIcon(false);
+    }
+    function pauseNow() {
+      if (st.mode === "mp3") audio.pause();
+      else if (st.mode === "tts") {
+        st.token++;
+        try { synth.cancel(); } catch (e) {}
+        st.speaking = false; setIcon(false);      // st.ci conservé : la reprise repart de la phrase en cours
+      }
+    }
+    function startAudio(src, tok) {
+      if (tok !== st.playTok) return;
+      if (audio.getAttribute("data-src") !== src) { audio.setAttribute("data-src", src); audio.src = src; }
+      var p = audio.play();
+      if (p && p.catch) p.catch(function (err) {
+        console.warn("ECOLIA audio :", err);
+        if (tok !== st.playTok) return;
+        if (!(err && err.name === "NotAllowedError") && playVoice()) return;   // lecture impossible : voix du téléphone
+        setIcon(false); st.auto = false;
+      });
+    }
+    function playCurrent() {
+      var i = st.idx;
+      if (hasMp3(i)) {
+        var tok = ++st.playTok, u = urlN(i + 1);
+        st.mode = "mp3";
+        if (!navigator.onLine && dl.state === "none") { st.mode = null; if (playVoice()) return; }   // hors ligne et non téléchargé
+        if (store && dl.state !== "none") {                     // téléchargé : lecture locale, sans réseau
+          store.get(i + 1)
+            .then(function (b) {
+              if (tok !== st.playTok) return;
+              if (b) { freeBlob(); st.blobUrl = URL.createObjectURL(new Blob([b], { type: "audio/mpeg" })); startAudio(st.blobUrl, tok); }
+              else startAudio(u, tok);
+            }).catch(function () { startAudio(u, tok); });
+        } else startAudio(u, tok);                              // sinon lecture en ligne (appel immédiat, exigé par iOS)
+      } else if (!playVoice()) {
+        st.auto = false;
+      }
+    }
+
+    function onSlideChange(i) {
+      var wasAdvancing = st.advancing;
+      st.advancing = false;
+      st.idx = i;
+      btn.classList.toggle("ecolia-off", !hasAudio(i));
+      stopAll();
+      audio.removeAttribute("data-src");
+      freeBlob();
+      if (bnMode === "invite" && i !== 0) hideBanner();       // l'invitation n'apparaît qu'à la première slide
+      if (wasAdvancing && st.auto) setTimeout(playCurrent, 500);   // enchaînement automatique
+      else st.auto = false;                                         // changement manuel : on coupe tout
+    }
+    function goNext() {
+      if (st.idx + 1 >= CFG.count) { st.auto = false; return; }
+      st.advancing = true;
+      if (typeof nextSlide === "function") nextSlide();
+      else { var nb = document.getElementById("nextBtn"); if (nb) nb.click(); }
+      setTimeout(function () { st.advancing = false; }, 4000);
+    }
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var i = cur();
+      if (i !== st.idx) onSlideChange(i);
+      if (isPlaying()) { st.auto = false; pauseNow(); }
+      else { st.auto = true; playCurrent(); }
+    });
+    audio.addEventListener("play", function () { setIcon(true); });
+    audio.addEventListener("pause", function () { if (st.mode === "mp3") setIcon(false); });
+    audio.addEventListener("error", function () {
+      if (st.mode === "mp3" && playVoice()) return;            // fichier introuvable / hors ligne : voix du téléphone
+      setIcon(false); st.auto = false;
+    });
+    audio.addEventListener("ended", function () { setIcon(false); if (st.auto) goNext(); });
+    window.addEventListener("pagehide", function () { stopAll(); freeBlob(); });
+
+    // ---------- démarrage ----------
+    refreshCacheState(function () {
+      if (store && CFG.available.length && dl.state !== "full" && navigator.onLine && cur() === 0 && !lsGet(LATER)) askDownload(true);
+    });
+    st.idx = -1;
+    setInterval(function () { var i = cur(); if (i !== st.idx) onSlideChange(i); }, 250);   // suit la slide affichée
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+<!-- ECOLIA_AUDIO_PLAYER_END -->
+</body>
+</html>

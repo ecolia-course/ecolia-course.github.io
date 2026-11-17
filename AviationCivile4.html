@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="violet">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>ECOLIA — Aviation Civile4</title>
+<style>
+[data-theme="bleu"]   { --p1:#0d2b4f; --p2:#1565c0; --p3:#07172e; --p4:#12437a; --p5:#5b8fd0; --bg:#e8f0fb; --bg2:#cfdff5; --bd:#a9c3e8; --soft:#dde8f7; --btn:#2a67b0; }
+[data-theme="vert"]   { --p1:#14442e; --p2:#2e7d32; --p3:#0b2b1a; --p4:#1f5c3a; --p5:#4f9a6b; --bg:#e8f5ec; --bg2:#c8e6d2; --bd:#a5cdb2; --soft:#dcefe2; --btn:#2f7a4f; }
+[data-theme="violet"] { --p1:#2d1b4e; --p2:#6a1b9a; --p3:#1a0f2e; --p4:#4a148c; --p5:#9c6fd0; --bg:#f1e9fb; --bg2:#dccbf2; --bd:#c4a8e6; --soft:#e8ddf6; --btn:#7e3fb2; }
+[data-theme="rouge"]  { --p1:#4a1010; --p2:#b71c1c; --p3:#2b0a0a; --p4:#8e1b1b; --p5:#d9706a; --bg:#fbeaea; --bg2:#f3cdcb; --bd:#e8a9a5; --soft:#f8dede; --btn:#a62a2a; }
+[data-theme="orange"] { --p1:#4e2a0c; --p2:#ef6c00; --p3:#2e1604; --p4:#b34a00; --p5:#f0a15a; --bg:#fff1e0; --bg2:#fbdcb8; --bd:#f3c08a; --soft:#fdebd6; --btn:#c9650a; }
+[data-theme="teal"]   { --p1:#0b3a3a; --p2:#00796b; --p3:#062626; --p4:#00574b; --p5:#4db6ac; --bg:#e0f2f1; --bg2:#b2dfdb; --bd:#80cbc4; --soft:#d5ecea; --btn:#26897d; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:linear-gradient(160deg,var(--p1) 0%,var(--p2) 50%,var(--p3) 100%); display:flex; justify-content:center; align-items:center; padding:8px; }
+.container { width:100%; max-width:1400px; background:#fefdf8; border-radius:20px; overflow:hidden; display:flex; flex-direction:column; height:100%; max-height:100vh; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.progress-bar { height:4px; background:var(--bg2); flex-shrink:0; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--p5),var(--p4)); width:0%; transition:width 0.3s; }
+.header { padding:10px 16px; background:var(--bg); border-bottom:1px solid var(--bd); display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+.header h1 { color:var(--p4); font-size:1rem; font-weight:600; }
+.header-right { display:flex; gap:6px; align-items:center; }
+.search-box { display:flex; background:white; border-radius:20px; padding:2px 4px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.search-box input { border:none; padding:6px 10px; border-radius:20px; outline:none; width:130px; font-size:0.8rem; }
+.search-box button { background:none; border:none; cursor:pointer; padding:4px 8px; font-size:0.85rem; color:var(--p2); }
+.badge { background:var(--p5); color:white; padding:4px 10px; border-radius:20px; font-weight:bold; font-size:0.75rem; }
+.search-nav { display:none; gap:4px; background:var(--bg2); padding:2px 8px; border-radius:20px; align-items:center; font-size:0.75rem; }
+.search-nav button { background:none; border:none; cursor:pointer; font-size:0.9rem; color:var(--p4); padding:2px 4px; }
+.content { padding:28px 32px; flex:1; overflow-y:auto; background:#fff; scroll-behavior:smooth; line-height:1.85; }
+.slide { display:none; }
+.slide.active { display:block; animation:fadeSlide 0.35s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.slide-title { color:var(--p1); font-size:1.5rem; font-weight:700; padding-bottom:12px; margin-bottom:20px; border-bottom:2px solid var(--p5); }
+.slide-content { color:var(--p3); font-size:1rem; }
+.empty-state { display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-height:60vh; padding:40px 20px; gap:18px; }
+.empty-state .icon { width:72px; height:72px; border-radius:50%; background:var(--bg); border:2px solid var(--bd); display:flex; align-items:center; justify-content:center; color:var(--p2); font-size:2rem; font-weight:300; }
+.empty-state h2 { color:var(--p1); font-size:1.4rem; font-weight:700; margin:0; }
+.empty-state p { color:#666; font-size:0.95rem; max-width:520px; line-height:1.7; }
+.empty-state .tag { display:inline-block; padding:6px 14px; background:var(--bg); color:var(--p4); border:1px solid var(--bd); border-radius:20px; font-size:0.8rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; }
+.bloc { padding:18px 22px; border-radius:12px; margin:22px 0; line-height:1.85; }
+.bloc-label { font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; opacity:0.7; }
+.cas { background:#fff8e1; border-left:4px solid #ff8f00; }
+.cas .bloc-label { color:#e65100; }
+.theorie { background:var(--bg); border-left:4px solid var(--p5); }
+.theorie .bloc-label { color:var(--p4); }
+.exemple { background:#fce4ec; border-left:4px solid #c62828; }
+.exemple .bloc-label { color:#b71c1c; }
+.resume { background:#e1f5fe; border:2px solid #0277bd; }
+.resume .bloc-label { color:#01579b; }
+.sources { background:#f5f5f5; padding:12px 16px; border-radius:10px; margin-top:26px; font-size:0.82rem; color:#666; border-left:3px solid #999; line-height:1.6; }
+.bloc ul, .bloc ol { margin-left:22px; margin-top:8px; }
+.bloc li { margin-bottom:8px; }
+.bloc strong { color:var(--p1); }
+.quiz-container { padding:22px; background:var(--bg); border-radius:16px; }
+.quiz-question { background:white; border-radius:10px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.quiz-question p { font-weight:600; margin-bottom:10px; color:var(--p1); }
+.quiz-question label { display:block; padding:8px 10px; margin:4px 0; border-radius:6px; cursor:pointer; transition:background 0.2s; }
+.quiz-question label:hover { background:#f5f5f5; }
+.quiz-question input { margin-right:8px; }
+.quiz-btn-submit { background:var(--btn); color:white; border:none; padding:12px 24px; border-radius:30px; font-size:1rem; cursor:pointer; font-weight:600; margin-top:14px; }
+.quiz-result { margin-top:16px; font-weight:600; }
+.controls { padding:8px 16px; background:#fafafa; border-top:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0; }
+.nav-btn { background:white; color:var(--p4); border:1px solid #ccc; padding:8px 14px; border-radius:8px; font-size:0.82rem; cursor:pointer; font-weight:500; }
+.nav-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.counter { font-size:0.78rem; color:#666; }
+.content::-webkit-scrollbar { width:6px; }
+.content::-webkit-scrollbar-track { background:var(--soft); }
+.content::-webkit-scrollbar-thumb { background:var(--p5); border-radius:3px; }
+@media (max-width:600px) { body { padding:0; } .container { border-radius:0; max-height:100vh; } .content { padding:20px 18px; } .slide-title { font-size:1.25rem; } .search-box input { width:90px; } .header h1 { font-size:0.85rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="header">
+<h1 id="pageTitle">ECOLIA</h1>
+<div class="header-right">
+<div class="search-box">
+<input id="searchInput" placeholder="Rechercher" type="text"/>
+<button id="searchBtn">⌕</button>
+</div>
+<div class="search-nav" id="searchNav">
+<button id="prevResultBtn">‹</button>
+<span id="resultCounter">0/0</span>
+<button id="nextResultBtn">›</button>
+</div>
+<span class="badge" id="slideCounter">0/0</span>
+</div>
+</div>
+<div class="content" id="content"></div>
+<div class="controls">
+<button class="nav-btn" id="prevBtn">← Précédent</button>
+<span class="counter" id="counter">—</span>
+<button class="nav-btn" id="nextBtn">Suivant →</button>
+</div>
+</div>
+<script>
+const COURSE_TITLE = "Aviation Civile (Réglementation, Navigation Aérienne et Sécurité)";
+const slides = [
+  {
+    title: "Sommaire — Aviation Civile",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Présentation du cours</div>
+        <h3>Comprendre le monde de l'aviation civile</h3>
+        <p>Ce cours d'Aviation Civile de la 4<sup>e</sup> Humanité Technique Industrielle vous initie à l'organisation, à la réglementation, à la navigation aérienne et aux exigences de sécurité du transport aérien. Vous étudierez les acteurs (OACI, AAC/RDC), les licences du personnel aéronautique, les infrastructures aéroportuaires et le contexte congolais marqué par la modernisation des aéroports.</p>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Objectifs d'apprentissage</div>
+        <h3>À la fin de ce cours, vous serez capable de :</h3>
+        <ul>
+          <li>Identifier les acteurs et le cadre réglementaire de l'aviation civile.</li>
+          <li>Décrire les licences et qualifications du personnel aéronautique.</li>
+          <li>Expliquer les principes de la navigation aérienne et de la circulation aérienne.</li>
+          <li>Connaître les infrastructures aéroportuaires et les aides à la navigation.</li>
+          <li>Appliquer les règles de sécurité et de sûreté.</li>
+          <li>Comprendre les enjeux environnementaux et les nouvelles technologies (drones).</li>
+          <li>Se situer dans le contexte congolais (PPSA II, audits OACI).</li>
+        </ul>
+      </div>
+      <div class="bloc exemple">
+        <div class="bloc-label">Plan des chapitres</div>
+        <h3>Les huit chapitres du programme</h3>
+        <ol>
+          <li>Introduction à l'aviation civile</li>
+          <li>Cadre réglementaire international et national</li>
+          <li>Licences et qualifications du personnel aéronautique</li>
+          <li>Navigation aérienne</li>
+          <li>Météorologie aéronautique</li>
+          <li>Infrastructures aéroportuaires</li>
+          <li>Sécurité et sûreté aériennes</li>
+          <li>Environnement et nouvelles technologies</li>
+        </ol>
+        <p><strong>Compétence visée :</strong> comprendre l'environnement aéronautique, appliquer les règles de sécurité et de sûreté, et se situer dans les filières de maintenance ou de logistique aéroportuaire.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Pourquoi l'aviation civile ?",
+    content: `
+      <div class="bloc cas">
+        <div class="bloc-label">Situation-problème</div>
+        <h3>Un pays grand comme un continent</h3>
+        <p>La RDC couvre 2,3 millions de km², avec des infrastructures routières limitées et des distances considérables entre Kinshasa, Lubumbashi, Goma et Kisangani. Comment transporter rapidement des médicaments vers un hôpital isolé ? Comment acheminer des personnels et du fret vers des zones enclavées ? Comment désenclaver les régions privées de routes praticables ? L'aviation civile répond à ces défis.</p>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Définition</div>
+        <h3>L'aviation civile</h3>
+        <p>L'<strong>aviation civile</strong> englobe toutes les activités aériennes non militaires : transport de passagers et de fret, aviation d'affaires, aviation légère, travail aérien (épandage, photographie), formation et maintenance. Elle repose sur un cadre réglementaire international et national strict.</p>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Importance en RDC</div>
+        <h3>Le désenclavement</h3>
+        <p>Le transport aérien est vital pour la RDC : il assure le désenclavement des zones reculées, le transport de médicaments, de personnels et de marchandises. Les aéroports de N'djili (Kinshasa), de Lubumbashi, de Goma et de Kisangani sont des portes d'entrée essentielles.</p>
+      </div>
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>L'aviation civile ne se limite pas au transport de passagers : elle englobe aussi le fret, la maintenance, la formation et les services de navigation aérienne.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre I — Les acteurs de l'aviation civile",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Les organisations internationales</div>
+        <h3>OACI et IATA</h3>
+        <ul>
+          <li><strong>OACI</strong> (Organisation de l'Aviation Civile Internationale) : agence des Nations Unies, elle fixe les standards internationaux (Annexes) et audite les États.</li>
+          <li><strong>IATA</strong> (Association internationale du transport aérien) : organisation des compagnies aériennes, elle édite des règles commerciales et techniques.</li>
+        </ul>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Les organismes nationaux</div>
+        <h3>AAC/RDC et RVA</h3>
+        <ul>
+          <li><strong>AAC/RDC</strong> (Autorité de l'Aviation Civile) : édicte les règlements (RACD), délivre les licences, surveille la sécurité.</li>
+          <li><strong>RVA</strong> (Régie des Voies Aériennes) : gère les infrastructures et les services de navigation aérienne.</li>
+        </ul>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Les autres acteurs</div>
+        <h3>Compagnies, aéroports, écoles</h3>
+        <p>Les <strong>compagnies aériennes</strong> assurent le transport ; les <strong>gestionnaires d'aéroports</strong> entretiennent les infrastructures ; les <strong>organismes de formation agréés (OFA)</strong> forment les pilotes, techniciens et contrôleurs.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — Le cadre réglementaire international",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">La Convention de Chicago</div>
+        <h3>La base du système</h3>
+        <p>La <strong>Convention de Chicago</strong> (1944) a créé l'OACI et posé les bases du droit aérien international. Elle est complétée par des <strong>Annexes</strong> (1 à 19) qui fixent les <strong>Standards and Recommended Practices (SARPs)</strong>.</p>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Les Annexes clés</div>
+        <h3>Un cadre technique</h3>
+        <table>
+          <thead>
+            <tr><th>Annexe</th><th>Contenu</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>Licences du personnel</td></tr>
+            <tr><td>2</td><td>Règles de l'air</td></tr>
+            <tr><td>3</td><td>Météorologie</td></tr>
+            <tr><td>10</td><td>Aides à la navigation</td></tr>
+            <tr><td>11</td><td>Circulation aérienne</td></tr>
+            <tr><td>14</td><td>Aérodromes</td></tr>
+            <tr><td>17</td><td>Sûreté</td></tr>
+            <tr><td>19</td><td>Gestion de la sécurité</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Les audits OACI</div>
+        <h3>Mesurer la conformité</h3>
+        <p>L'OACI réalise des <strong>audits</strong> pour vérifier la mise en œuvre effective des normes. La RDC a obtenu un taux de conformité d'environ <strong>69,15 %</strong> lors du dernier audit, ce qui traduit des progrès mais aussi des besoins de formation et d'équipement.</p>
+      </div>
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Les Annexes de l'OACI sont la base du droit aérien international. Chaque État doit les traduire en règlements nationaux.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre II — Le cadre réglementaire congolais",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">La loi nationale</div>
+        <h3>Loi n° 23/001 de 2023</h3>
+        <p>La <strong>Loi n° 10/014 du 31 décembre 2010</strong> relative à l'aviation civile a été modifiée par la <strong>Loi n° 23/001 du 12 janvier 2023</strong>. Cette révision intègre les exigences de l'OACI, encadre les <strong>drones</strong> (aéronefs télépilotés) et renforce la protection de l'environnement.</p>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Les RACD</div>
+        <h3>Les règlements aéronautiques congolais</h3>
+        <p>L'<strong>AAC/RDC</strong> édicte les <strong>RACD</strong> (Règlements Aéronautiques Congolais) qui déclinent les Annexes de l'OACI au contexte national :</p>
+        <ul>
+          <li><strong>RACD 02</strong> : licences du personnel aéronautique.</li>
+          <li><strong>RACD 03</strong> : organismes de formation agréés (OFA).</li>
+          <li>Autres RACD : opérations, navigabilité, sûreté, gestion de la sécurité.</li>
+        </ul>
+        <figure>
+          <img data-image-id="aviationcivile4_img01" alt="Organigramme du cadre réglementaire de l'aviation civile en RDC : OACI, loi nationale, RACD, AAC" />
+          <figcaption>La pyramide réglementaire de l'aviation civile en RDC.</figcaption>
+        </figure>
+      </div>
+      <div class="bloc exemple">
+        <div class="bloc-label">Erreur fréquente</div>
+        <h3>Ignorer le double niveau</h3>
+        <p>La réglementation nationale (RACD) est directement dérivée des normes OACI. Un professionnel formé en RDC doit connaître les deux niveaux : les Annexes et les RACD.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — Les licences de pilote",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Les principales licences</div>
+        <h3>PPL, CPL, ATPL</h3>
+        <ul>
+          <li><strong>PPL</strong> (Private Pilot Licence) : pilote privé, vols sans rémunération.</li>
+          <li><strong>CPL</strong> (Commercial Pilot Licence) : pilote professionnel, vols rémunérés.</li>
+          <li><strong>ATPL</strong> (Airline Transport Pilot Licence) : pilote de ligne, commandant de bord.</li>
+        </ul>
+        <p>Chaque licence est associée à des <strong>qualifications</strong> : avion, hélicoptère, vol aux instruments (IR), type d'aéronef.</p>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Conditions de délivrance</div>
+        <h3>Le RACD 02</h3>
+        <p>Le <strong>RACD 02</strong> fixe les conditions de délivrance : âge minimum, formation théorique et pratique, expérience de vol, conditions médicales (certificat médical), compétences linguistiques (anglais aéronautique).</p>
+      </div>
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>PPL = pilote privé non rémunéré. CPL = pilote professionnel. ATPL = pilote de ligne. Toutes les licences sont délivrées par l'AAC/RDC après des contrôles stricts.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre III — Les licences de technicien de maintenance",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Les catégories</div>
+        <h3>A, B1, B2</h3>
+        <ul>
+          <li><strong>Catégorie A</strong> : maintenance limitée, tâches simples listées.</li>
+          <li><strong>B1</strong> : maintenance mécanique (structure, moteur, systèmes).</li>
+          <li><strong>B2</strong> : avionique (électricité, électronique, instruments).</li>
+        </ul>
+        <p>La <strong>catégorie A2</strong> concerne les avions de 5 700 kg et moins.</p>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Formation et expérience</div>
+        <h3>Un long parcours</h3>
+        <p>Le technicien de maintenance suit une formation agréée, justifie d'une expérience pratique documentée (carnet de maintenance) et réussit des examens. Il est ensuite autorisé à délivrer l'<strong>APRS</strong> (Autorisation de Remise en Service) après travaux.</p>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Les organismes de formation</div>
+        <h3>Le RACD 03</h3>
+        <p>Le <strong>RACD 03</strong> définit les exigences pour les OFA : programme de formation, qualifications des instructeurs, matériel, contrôles d'étapes, documentation. Les écoles doivent être agréées par l'AAC.</p>
+      </div>
+      <div class="bloc exemple">
+        <div class="bloc-label">Erreur fréquente</div>
+        <h3>Croire qu'une formation technique suffit</h3>
+        <p>Un technicien formé dans une école ordinaire ne peut pas travailler sur un aéronef civil sans <strong>licence délivrée par l'AAC</strong>. La licence est un document officiel qui atteste de la compétence.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre IV — La navigation aérienne",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Les espaces aériens</div>
+        <h3>Un espace structuré</h3>
+        <p>L'espace aérien est divisé en <strong>classes</strong> (A à G) selon le niveau de contrôle. Les <strong>routes aériennes</strong> relient les aéroports. Les <strong>procédures</strong> de départ (SID) et d'arrivée (STAR) guident les avions.</p>
+        <figure>
+          <img data-image-id="aviationcivile4_img02" alt="Carte des routes aériennes et des espaces aériens au-dessus de la RDC" />
+          <figcaption>Les routes aériennes et les espaces contrôlés.</figcaption>
+        </figure>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">La circulation aérienne</div>
+        <h3>Assurer la séparation</h3>
+        <p>Les <strong>contrôleurs de la circulation aérienne</strong> assurent la séparation des aéronefs : verticale (altitudes différentes) et horizontale (distances). Ils gèrent les séquences d'approche et les flux de trafic.</p>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">L'anglais aéronautique</div>
+        <h3>Une phraséologie standard</h3>
+        <p>Les communications pilote-contrôleur utilisent une <strong>phraséologie standardisée en anglais</strong>. La méconnaissance de cette langue est une source majeure d'incidents : c'est pourquoi la compétence linguistique est exigée pour les licences.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre IV — Les aides à la navigation",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Les aides classiques</div>
+        <h3>VOR et ILS</h3>
+        <ul>
+          <li><strong>VOR</strong> (VHF Omnidirectional Range) : radiophare qui donne un cap magnétique vers ou depuis une station.</li>
+          <li><strong>ILS</strong> (Instrument Landing System) : système d'atterrissage aux instruments, qui guide l'avion en approche finale (axe de piste et plan de descente).</li>
+        </ul>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">La navigation par satellite</div>
+        <h3>GNSS</h3>
+        <p>Le <strong>GNSS</strong> (Global Navigation Satellite System) regroupe les constellations de satellites : GPS (États-Unis), GLONASS (Russie), Galileo (Europe), Beidou (Chine). Il permet une navigation de précision sur tout le globe.</p>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Les systèmes modernes</div>
+        <h3>ADS-B et CPDLC</h3>
+        <p>L'<strong>ADS-B</strong> (Automatic Dependent Surveillance-Broadcast) transmet automatiquement la position de l'avion aux stations au sol. Le <strong>CPDLC</strong> (Controller-Pilot Data Link Communications) permet des échanges de messages texte entre pilote et contrôleur, réduisant les erreurs de communication vocale.</p>
+      </div>
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>VOR et ILS sont les aides classiques ; le GNSS et l'ADS-B sont les technologies modernes. Le CPDLC est déjà déployé à N'djili.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre V — La météorologie aéronautique",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Les messages METAR et TAF</div>
+        <h3>Observer et prévoir</h3>
+        <ul>
+          <li><strong>METAR</strong> : observation météorologique régulière d'un aérodrome (vent, visibilité, nuages, température, pression).</li>
+          <li><strong>TAF</strong> : prévision d'aérodrome pour une période donnée (généralement 24 à 30 heures).</li>
+        </ul>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Les phénomènes dangereux</div>
+        <h3>Ce qui menace le vol</h3>
+        <ul>
+          <li><strong>Orages :</strong> turbulences, grêle, foudre.</li>
+          <li><strong>Givrage :</strong> dépôt de glace sur les ailes, perte de portance.</li>
+          <li><strong>Turbulences :</strong> secousses, inconfort, risques structurels.</li>
+          <li><strong>Cisaillement de vent :</strong> variation brutale du vent, danger en approche.</li>
+          <li><strong>Brouillard :</strong> visibilité réduite, approche difficile.</li>
+        </ul>
+      </div>
+      <div class="bloc exemple">
+        <div class="bloc-label">Erreur fréquente</div>
+        <h3>Sous-estimer la météo</h3>
+        <p>De nombreux accidents sont liés à des conditions météorologiques défavorables. Un pilote doit toujours consulter les informations météorologiques avant et pendant le vol, et savoir renoncer si nécessaire.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VI — Les infrastructures aéroportuaires",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Les pistes</div>
+        <h3>Longueur, largeur, revêtement</h3>
+        <p>Une <strong>piste</strong> doit être dimensionnée selon les types d'aéronefs qui la fréquentent. Sa longueur dépend de la masse de l'avion, de l'altitude et de la température. Le <strong>revêtement</strong> doit résister au passage répété des avions. En RDC, la piste de Mbuji-Mayi (2,3 km) et celle de Kananga (3 000 m) illustrent les efforts de modernisation.</p>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Le balisage</div>
+        <h3>Voir et être vu</h3>
+        <p>Le <strong>balisage lumineux</strong> (feux de piste, de seuil, d'axe, de bord) permet les opérations de nuit et par mauvaise visibilité. L'aéroport de Mbandaka, équipé de balisage lumineux, est désormais opérationnel de jour comme de nuit.</p>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Les tours de contrôle</div>
+        <h3>Le cerveau de l'aéroport</h3>
+        <p>La <strong>tour de contrôle</strong> est équipée de radars, de systèmes de communication, d'affichage des vols. N'djili dispose de la technologie <strong>TopSky</strong> et du <strong>CPDLC</strong>, ce qui améliore la sécurité et l'efficacité.</p>
+      </div>
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Une piste dégradée ou un balisage défectueux augmente les risques. L'entretien des infrastructures est une obligation de sécurité.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VI — La modernisation en RDC",
+    content: `
+      <div class="bloc cas">
+        <div class="bloc-label">Le PPSA II</div>
+        <h3>Un projet majeur</h3>
+        <p>Le <strong>Projet Prioritaire de Sécurité Aérienne (PPSA II)</strong>, financé par la Banque Africaine de Développement (environ 105 millions USD), a modernisé les aéroports de N'djili, Kisangani, Kindu et Mbuji-Mayi. Il a installé des équipements de surveillance (TopSky), des communications (CPDLC) et une nouvelle station incendie.</p>
+        <figure>
+          <img data-image-id="aviationcivile4_img03" alt="Tour de contrôle de N'djili ou équipement TopSky installé dans le cadre du PPSA II" />
+          <figcaption>La modernisation des infrastructures aéroportuaires en RDC.</figcaption>
+        </figure>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Les résultats</div>
+        <h3>Des progrès reconnus</h3>
+        <p>Les audits de l'OACI ont salué les progrès de la RDC (taux de conformité de 69,15 %). La <strong>levée de la préoccupation significative de sûreté</strong> est un signal positif pour le secteur. La RDC sort progressivement de sa réputation de « trous noirs » dans son espace aérien.</p>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Les besoins</div>
+        <h3>Former des professionnels</h3>
+        <p>La maintenance aéronautique, la gestion du trafic aérien et la logistique aéroportuaire nécessitent des techniciens qualifiés. Les écoles agréées (OFA) selon le RACD 03 forment ces professionnels.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VII — La sécurité (safety)",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Définition</div>
+        <h3>Prévenir les accidents</h3>
+        <p>La <strong>sécurité (safety)</strong> est la prévention des accidents et incidents. Elle repose sur la maintenance, la formation, les procédures, la gestion des risques et les facteurs humains.</p>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Les facteurs humains</div>
+        <h3>Le maillon clé</h3>
+        <ul>
+          <li><strong>Fatigue</strong> : réduction de la vigilance.</li>
+          <li><strong>Stress</strong> : dégradation de la prise de décision.</li>
+          <li><strong>Communication</strong> : erreurs de transmission.</li>
+          <li><strong>Prise de décision</strong> : choix sous pression.</li>
+        </ul>
+        <p>Le <strong>CRM</strong> (Crew Resource Management) forme les équipages à la coordination, à la communication et à la gestion des ressources.</p>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">La maintenance</div>
+        <h3>Une exigence permanente</h3>
+        <p>La maintenance aéronautique suit un <strong>programme d'entretien</strong> strict : inspections périodiques, remplacement des pièces, traçabilité, contrôles qualité. Un avion mal entretenu est un danger.</p>
+      </div>
+      <div class="bloc exemple">
+        <div class="bloc-label">Erreur fréquente</div>
+        <h3>Négliger la maintenance préventive</h3>
+        <p>Attendre la panne plutôt que de prévenir est une erreur grave en aviation. La maintenance préventive est une obligation réglementaire.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VII — La sûreté (security)",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Définition</div>
+        <h3>Protéger contre les actes malveillants</h3>
+        <p>La <strong>sûreté (security)</strong> est la protection contre les actes intentionnels : terrorisme, sabotage, vol, intrusion. Elle concerne le contrôle des passagers, des bagages, du fret, et la sécurisation des accès.</p>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Les mesures</div>
+        <h3>Contrôles et accès</h3>
+        <ul>
+          <li><strong>Contrôle des passagers</strong> : détecteurs de métaux, scanners.</li>
+          <li><strong>Contrôle des bagages</strong> : radiographie, fouille.</li>
+          <li><strong>Contrôle du fret</strong> : inspection, chaîne logistique sécurisée.</li>
+          <li><strong>Accès restreints</strong> : badges, zones réservées.</li>
+        </ul>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Le SSLIA</div>
+        <h3>Les services de sauvetage</h3>
+        <p>Le <strong>SSLIA</strong> (Service de Sauvetage et de Lutte contre l'Incendie d'Aérodrome) est un service obligatoire sur tout aéroport. Il dispose de véhicules incendie, d'agents formés et de procédures d'intervention rapide.</p>
+        <figure>
+          <img data-image-id="aviationcivile4_img04" alt="Véhicule incendie SSLIA sur le tarmac d'un aéroport" />
+          <figcaption>Les services de sauvetage et de lutte contre l'incendie.</figcaption>
+        </figure>
+      </div>
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>Sécurité (safety) = prévention des accidents. Sûreté (security) = prévention des actes malveillants. Les deux sont indispensables et complémentaires.</p>
+      </div>
+    `
+  },
+  {
+    title: "Chapitre VIII — L'environnement et les nouvelles technologies",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">L'impact environnemental</div>
+        <h3>Bruit et émissions</h3>
+        <p>L'aviation civile a un impact environnemental : <strong>bruit</strong> autour des aéroports, <strong>émissions de gaz à effet de serre</strong>, <strong>consommation de carburant</strong>. Les constructeurs et les compagnies adoptent des avions plus économes et des procédures de réduction du bruit.</p>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Les drones</div>
+        <h3>Une nouvelle donne</h3>
+        <p>La Loi n° 23/001 de 2023 intègre les <strong>aéronefs télépilotés (drones)</strong>. Leur usage se développe : surveillance, cartographie, livraison. Une réglementation spécifique encadre leur intégration dans l'espace aérien pour éviter les collisions et protéger la vie privée.</p>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Les technologies modernes</div>
+        <h3>Navigation et communication</h3>
+        <ul>
+          <li><strong>GNSS</strong> : navigation par satellite.</li>
+          <li><strong>CPDLC</strong> : communications texte pilote-contrôleur.</li>
+          <li><strong>ADS-B</strong> : surveillance automatique par diffusion.</li>
+          <li><strong>Aéroports intelligents</strong> : gestion automatisée des flux.</li>
+        </ul>
+      </div>
+      <div class="bloc resume">
+        <div class="bloc-label">À retenir</div>
+        <p>L'aviation civile est soumise à des normes environnementales de plus en plus strictes. Les nouvelles technologies améliorent la sécurité et l'efficacité.</p>
+      </div>
+    `
+  },
+  {
+    title: "Synthèse — De la réglementation à la sécurité",
+    content: `
+      <div class="bloc resume">
+        <div class="bloc-label">Récapitulatif général</div>
+        <h3>Le grand enchaînement</h3>
+        <ol>
+          <li><strong>Cadre international :</strong> OACI, Convention de Chicago, Annexes.</li>
+          <li><strong>Cadre national :</strong> Loi n° 23/001, RACD, AAC/RDC.</li>
+          <li><strong>Licences :</strong> pilotes (PPL, CPL, ATPL), techniciens (A, B1, B2), contrôleurs.</li>
+          <li><strong>Navigation :</strong> espaces aériens, routes, aides (VOR, ILS, GNSS).</li>
+          <li><strong>Météorologie :</strong> METAR, TAF, phénomènes dangereux.</li>
+          <li><strong>Infrastructures :</strong> pistes, balisage, tours, SSLIA.</li>
+          <li><strong>Sécurité et sûreté :</strong> facteurs humains, maintenance, contrôles.</li>
+          <li><strong>Environnement :</strong> bruit, émissions, drones.</li>
+        </ol>
+      </div>
+      <div class="bloc theorie">
+        <div class="bloc-label">Points clés à retenir</div>
+        <h3>Les notions essentielles</h3>
+        <ul>
+          <li>Aviation civile = toutes les activités aériennes non militaires.</li>
+          <li>OACI (international) + AAC/RDC (national) = cadre réglementaire.</li>
+          <li>RACD 02 = licences ; RACD 03 = organismes de formation.</li>
+          <li>PPL, CPL, ATPL pour les pilotes ; A, B1, B2 pour les techniciens.</li>
+          <li>VOR, ILS, GNSS pour la navigation ; METAR et TAF pour la météo.</li>
+          <li>Sécurité (safety) = prévention des accidents ; sûreté (security) = prévention des actes malveillants.</li>
+          <li>SSLIA = sauvetage et lutte contre l'incendie.</li>
+          <li>RDC : PPSA II, taux de conformité 69,15 %, N'djili équipé de TopSky et CPDLC.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    title: "Évaluation finale — Aviation Civile",
+    content: `
+      <div class="bloc theorie">
+        <div class="bloc-label">Consignes</div>
+        <p>Répondez aux questions suivantes en choisissant une seule bonne réponse parmi les quatre propositions. Le résultat s'affiche après validation.</p>
+      </div>
+      <div class="quiz-container">
+        <div id="quizQuestions"></div>
+        <button id="submitQuiz" class="quiz-btn-submit">
+          Valider mes réponses
+        </button>
+        <div id="quizResult" class="quiz-result"></div>
+      </div>
+    `
+  }
+];
+const questions = [
+  {
+    text: "L'aviation civile concerne :",
+    options: [
+      "Le transport aérien non militaire",
+      "Uniquement les avions de chasse",
+      "Uniquement les hélicoptères",
+      "Les navires"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'OACI est une agence :",
+    options: [
+      "Des Nations Unies",
+      "De l'Union africaine",
+      "De l'Union européenne",
+      "De l'OTAN"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le RACD 02 concerne :",
+    options: [
+      "Les licences du personnel aéronautique",
+      "Les organismes de formation",
+      "Les aéroports",
+      "Les drones"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le RACD 03 concerne :",
+    options: [
+      "Les organismes de formation agréés",
+      "Les licences",
+      "Les opérations aériennes",
+      "La sûreté"
+    ],
+    correct: 0
+  },
+  {
+    text: "La loi n° 23/001 de 2023 modifie :",
+    options: [
+      "La loi relative à l'aviation civile",
+      "Le code du travail",
+      "La loi minière",
+      "Le code pénal"
+    ],
+    correct: 0
+  },
+  {
+    text: "La licence PPL est une licence de :",
+    options: [
+      "Pilote privé",
+      "Pilote professionnel",
+      "Pilote de ligne",
+      "Contrôleur"
+    ],
+    correct: 0
+  },
+  {
+    text: "La licence CPL permet de :",
+    options: [
+      "Exercer comme pilote professionnel rémunéré",
+      "Piloter un drone",
+      "Être contrôleur",
+      "Être mécanicien"
+    ],
+    correct: 0
+  },
+  {
+    text: "La catégorie A2 de maintenance concerne :",
+    options: [
+      "Les avions de 5700 kg et moins",
+      "Les gros porteurs",
+      "Les hélicoptères uniquement",
+      "Les drones"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'ILS est un système :",
+    options: [
+      "D'atterrissage aux instruments",
+      "De communication par satellite",
+      "De surveillance radar",
+      "De météorologie"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le METAR est :",
+    options: [
+      "Une observation météorologique",
+      "Une prévision",
+      "Un plan de vol",
+      "Une licence"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le TAF est :",
+    options: [
+      "Une prévision météorologique d'aérodrome",
+      "Une observation",
+      "Un radar",
+      "Une procédure"
+    ],
+    correct: 0
+  },
+  {
+    text: "La sécurité (safety) concerne :",
+    options: [
+      "La prévention des accidents",
+      "Les actes malveillants",
+      "Le fret",
+      "Les passagers"
+    ],
+    correct: 0
+  },
+  {
+    text: "La sûreté (security) concerne :",
+    options: [
+      "La protection contre les actes malveillants",
+      "Les accidents",
+      "La maintenance",
+      "La météo"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le PPSA II a été financé par :",
+    options: [
+      "La Banque Africaine de Développement",
+      "L'Union européenne",
+      "Les Nations Unies",
+      "La Chine"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'aéroport de N'djili dispose de :",
+    options: [
+      "La technologie TopSky et du CPDLC",
+      "Uniquement une piste en terre",
+      "Aucun radar",
+      "Uniquement des balises lumineuses"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le taux de conformité OACI de la RDC est d'environ :",
+    options: [
+      "69,15 %",
+      "20 %",
+      "95 %",
+      "50 %"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'aéroport de Mbandaka est désormais opérationnel :",
+    options: [
+      "De jour comme de nuit grâce au balisage",
+      "Uniquement de jour",
+      "Uniquement pour les hélicoptères",
+      "Fermé"
+    ],
+    correct: 0
+  },
+  {
+    text: "Les drones sont encadrés par :",
+    options: [
+      "La loi n° 23/001 de 2023",
+      "Le RACD 01",
+      "L'OACI uniquement",
+      "Aucune loi"
+    ],
+    correct: 0
+  },
+  {
+    text: "Les facteurs humains en aviation étudient :",
+    options: [
+      "La fatigue et le stress des équipages",
+      "La météo",
+      "Les pistes",
+      "Les radars"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le CRM signifie :",
+    options: [
+      "Crew Resource Management",
+      "Civil Radar Monitoring",
+      "Control Room Management",
+      "Cargo Routing Management"
+    ],
+    correct: 0
+  },
+  {
+    text: "Le SSLIA est le service de :",
+    options: [
+      "Sauvetage et lutte contre l'incendie d'aérodrome",
+      "Sécurité des bagages",
+      "Contrôle aérien",
+      "Météo"
+    ],
+    correct: 0
+  },
+  {
+    text: "L'objectif principal de l'aviation civile en 4e Humanité Technique est de :",
+    options: [
+      "Comprendre la réglementation et la sécurité aériennes",
+      "Piloter des avions",
+      "Construire des aéroports",
+      "Réparer des moteurs"
+    ],
+    correct: 0
+  }
+];
+
+try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+        questions.forEach(function (q) {
+            if (!q.text) q.text = q.question || q.q || q.enonce || q.titre || "";
+            if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+            if (typeof q.correct === "undefined") {
+                if (typeof q.answer !== "undefined") q.correct = q.answer;
+                else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+            }
+        });
+    }
+} catch (e) {}
+
+let currentSlide = 0;
+let lastSearchTerm = "", searchResults = [], currentResultIdx = -1;
+const contentDiv = document.getElementById('content');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const slideCounterSpan = document.getElementById('slideCounter');
+const progressFill = document.getElementById('progressFill');
+const counterSpan = document.getElementById('counter');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const searchNav = document.getElementById('searchNav');
+const prevResultBtn = document.getElementById('prevResultBtn');
+const nextResultBtn = document.getElementById('nextResultBtn');
+const resultCounterSpan = document.getElementById('resultCounter');
+const pageTitle = document.getElementById('pageTitle');
+pageTitle.textContent = "ECOLIA · " + COURSE_TITLE;
+document.title = "ECOLIA — " + COURSE_TITLE;
+
+function getTextFromHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+function searchSlides(term) {
+    if (!term.trim() || slides.length === 0) return [];
+    const l = term.toLowerCase();
+    const r = [];
+    slides.forEach((s, i) => { if (s.title.toLowerCase().includes(l) || getTextFromHtml(s.content).toLowerCase().includes(l)) r.push(i); });
+    return r;
+}
+function highlightInCurrentSlide(term) {
+    if (!term) return;
+    const sc = document.querySelector('.slide-content');
+    if (!sc) return;
+    const regex = new RegExp("(" + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ")", 'gi');
+    const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (let n of nodes) {
+        if (n.nodeValue && regex.test(n.nodeValue)) {
+            const sp = document.createElement('span');
+            sp.innerHTML = n.nodeValue.replace(regex, '<span style="background:#fff59d;padding:1px 3px;border-radius:2px;">$1</span>');
+            n.parentNode.replaceChild(sp, n);
+        }
+    }
+}
+function renderEmptyState() {
+    contentDiv.innerHTML = '<div class="empty-state"><div class="icon">·</div><span class="tag">Bientôt disponible</span><h2>' + COURSE_TITLE + '</h2><p>Ce cours est en préparation. Le contenu sera ajouté prochainement.</p></div>';
+    slideCounterSpan.textContent = '0/0';
+    progressFill.style.width = '0%';
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    counterSpan.textContent = '—';
+}
+
+function renderQuiz() {
+    const qc = document.getElementById('quizQuestions');
+    if (!qc) return;
+    if (typeof questions === 'undefined' || questions.length === 0) {
+        qc.innerHTML = '<p style="color:#666;font-style:italic;">Quiz bientot disponible.</p>';
+        return;
+    }
+    let html = '';
+    questions.forEach((q, i) => {
+        html += '<div class="quiz-question"><p>' + (i+1) + '. ' + q.text + '</p>';
+        q.options.forEach((o, k) => {
+            html += '<label><input type="radio" name="q' + i + '" value="' + k + '"> ' + o + '</label>';
+        });
+        html += '</div>';
+    });
+    qc.innerHTML = html;
+    const submitBtn = document.getElementById('submitQuiz');
+    if (submitBtn) {
+        submitBtn.onclick = () => {
+            let score = 0;
+            questions.forEach((q, i) => {
+                const s = document.querySelector('input[name="q' + i + '"]:checked');
+                if (s && parseInt(s.value) === q.correct) score++;
+            });
+            const pct = Math.round(score/questions.length*100);
+            document.getElementById('quizResult').innerHTML =
+                '<div style="background:var(--bg2);padding:16px;border-radius:10px;margin-top:14px;">' +
+                '<strong>Score : ' + score + '/' + questions.length + ' (' + pct + '%)</strong></div>';
+        };
+    }
+}
+
+function renderSlide(index, keepHighlight) {
+    if (keepHighlight === undefined) keepHighlight = true;
+    if (slides.length === 0) { renderEmptyState(); return; }
+    contentDiv.innerHTML = '<div class="slide active"><h2 class="slide-title">' + slides[index].title + '</h2><div class="slide-content">' + slides[index].content + '</div></div>';
+    slideCounterSpan.textContent = (index+1) + '/' + slides.length;
+    progressFill.style.width = ((index+1)/slides.length*100) + '%';
+    prevBtn.disabled = (index === 0);
+    nextBtn.disabled = (index === slides.length-1);
+    counterSpan.textContent = 'Leçon ' + (index+1) + ' / ' + slides.length;
+    if (index === slides.length - 1) renderQuiz();
+    contentDiv.scrollTop = 0;
+    if (keepHighlight && lastSearchTerm) highlightInCurrentSlide(lastSearchTerm);
+}
+function updateResultDisplay() {
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    searchNav.style.display = 'flex';
+    resultCounterSpan.textContent = (currentResultIdx+1) + '/' + searchResults.length;
+}
+function goToResult(idx) {
+    if (idx < 0 || idx >= searchResults.length) return;
+    currentResultIdx = idx;
+    currentSlide = searchResults[currentResultIdx];
+    renderSlide(currentSlide, true);
+    updateResultDisplay();
+}
+function performSearch() {
+    if (slides.length === 0) return;
+    const term = searchInput.value.trim();
+    if (!term) return;
+    lastSearchTerm = term;
+    searchResults = searchSlides(term);
+    if (searchResults.length === 0) { searchNav.style.display = 'none'; return; }
+    currentResultIdx = 0;
+    goToResult(0);
+}
+function nextResult() { if (searchResults.length) goToResult((currentResultIdx+1) % searchResults.length); }
+function prevResult() { if (searchResults.length) goToResult((currentResultIdx-1+searchResults.length) % searchResults.length); }
+function nextSlide() { if (slides.length && currentSlide < slides.length-1) { currentSlide++; renderSlide(currentSlide, true); } }
+function prevSlide() { if (slides.length && currentSlide > 0) { currentSlide--; renderSlide(currentSlide, true); } }
+prevBtn.onclick = prevSlide;
+nextBtn.onclick = nextSlide;
+searchBtn.onclick = performSearch;
+prevResultBtn.onclick = prevResult;
+nextResultBtn.onclick = nextResult;
+searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') performSearch(); });
+renderSlide(0, false);
+</script>
+<!-- ECOLIA_IMAGE_LOADER_START -->
+<script>
+(function () {
+  var SITE = "https://ecolia-course.github.io/";
+  var NATIVE = false;
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function abs(u) { return /^(https?:|data:|blob:)/i.test(u) ? u : (NATIVE ? SITE + u.replace(/^(\.\/|\/)+/, "") : u); }
+  function ext(u) { var m = String(u).split("?")[0].match(/\.(jpe?g|png|gif|webp|svg)$/i); return m ? m[1].toLowerCase() : "jpg"; }
+  function hide(img) { img.onerror = null; img.style.display = "none"; }
+  var table = null, queue = [], queued = {}, running = false;
+  function enqueue(full, fn) {
+    if (queued[fn]) return;
+    queued[fn] = 1; queue.push([full, fn]);
+    if (!running) { running = true; setTimeout(next, 2500); }
+  }
+  function next() {
+    if (!queue.length) { running = false; return; }
+    if (!navigator.onLine) { running = false; return; }
+    var q = queue.shift(), t0 = Date.now();
+    try { CoursInterface.download(q[0], q[1]); } catch (e) { return setTimeout(next, 500); }
+    (function wait() {
+      var ok = false;
+      try { ok = !!CoursInterface.exists(q[1]); } catch (e) {}
+      if (ok) setTimeout(next, 1500);
+      else if (Date.now() - t0 > 40000) next();
+      else setTimeout(wait, 700);
+    })();
+  }
+  function exists(fn) { try { return !!CoursInterface.exists(fn); } catch (e) { return false; } }
+  function show(img) {
+    if (!table || img.getAttribute("data-ecolia-done")) return;
+    var id = img.getAttribute("data-image-id");
+    var url = table[id];
+    if (typeof url !== "string" || !url.length) { console.warn("ECOLIA : image absente du JSON :", id); return; }
+    img.setAttribute("data-ecolia-done", "1");
+    if (!NATIVE) { img.onerror = function () { hide(img); }; img.setAttribute("src", url); return; }
+    var full = abs(url), fn = "img_" + id + "." + ext(url);
+    if (exists(fn)) {
+      img.onerror = function () {
+        try { CoursInterface["delete"](fn); } catch (e) {}
+        queued[fn] = 0;
+        img.onerror = function () { hide(img); };
+        img.setAttribute("src", full);
+      };
+      img.setAttribute("src", "https://app.local/cours/" + fn);
+    } else {
+      img.onerror = function () { hide(img); };
+      img.setAttribute("src", full);
+      enqueue(full, fn);
+    }
+  }
+  function scan(root) {
+    if (!root || !root.querySelectorAll) return;
+    if (root.matches && root.matches("img[data-image-id]")) show(root);
+    root.querySelectorAll("img[data-image-id]").forEach(show);
+  }
+  function prefetchAll() {
+    var ids = {};
+    try { JSON.stringify(slides).replace(/data-image-id=\\?"([^"\\]+)/g, function (m, id) { ids[id] = 1; }); } catch (e) {}
+    Object.keys(ids).forEach(function (id) {
+      var url = table[id];
+      if (typeof url !== "string" || !url.length) return;
+      var fn = "img_" + id + "." + ext(url);
+      if (!exists(fn)) enqueue(abs(url), fn);
+    });
+  }
+  function start(tbl) {
+    table = tbl;
+    scan(document.body);
+    new MutationObserver(function (muts) {
+      muts.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.nodeType === 1) scan(n); }); });
+    }).observe(document.body, { childList: true, subtree: true });
+    if (NATIVE) prefetchAll();
+  }
+  var JSON_URL = NATIVE ? SITE + "images_ecolia.json" : "images_ecolia.json";
+  var KEY = "ecolia_images_json";
+  fetch(JSON_URL, NATIVE ? { cache: "no-cache" } : undefined)
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (table) { if (NATIVE) lsSet(KEY, JSON.stringify(table)); start(table); })
+    .catch(function (e) {
+      var saved = null;
+      if (NATIVE) { try { saved = JSON.parse(lsGet(KEY) || "null"); } catch (x) {} }
+      if (saved) start(saved);
+      else console.warn("ECOLIA : JSON des images indisponible.", e);
+    });
+})();
+</script>
+<!-- ECOLIA_IMAGE_LOADER_END -->
+
+
+
+<!-- ECOLIA_AUDIO_PLAYER_START -->
+<style>
+  #ecolia-audio-btn, #ecolia-dl-btn {
+    width: 30px; height: 30px; min-width: 30px; padding: 0; margin: 0 4px 0 0;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    cursor: pointer; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent; outline: none;
+  }
+  #ecolia-audio-btn { border: none; background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-dl-btn { border: 1.5px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb); }
+  #ecolia-dl-btn.ecolia-full { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-btn.ecolia-fixed { position: fixed; top: 8px; left: 8px; z-index: 2147483000; }
+  #ecolia-audio-btn:active, #ecolia-dl-btn:active { transform: scale(.92); }
+  #ecolia-audio-btn svg, #ecolia-dl-btn svg { width: 15px; height: 15px; fill: currentColor; pointer-events: none; }
+  #ecolia-audio-btn.ecolia-off, #ecolia-dl-btn.ecolia-off { display: none; }
+  #ecolia-audio-banner {
+    display: none; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0;
+    padding: 8px 14px; font-size: .82rem; line-height: 1.35;
+    background: var(--soft, #eef3fb); color: var(--p1, #123); border-bottom: 1px solid var(--bd, #c9d6ea);
+  }
+  #ecolia-audio-banner.on { display: flex; }
+  #ecolia-audio-banner .eab-txt { flex: 1 1 180px; }
+  #ecolia-audio-banner .eab-act { display: flex; gap: 6px; flex-wrap: wrap; }
+  #ecolia-audio-banner button {
+    border: 1px solid var(--p2, #2563eb); background: #fff; color: var(--p2, #2563eb);
+    border-radius: 16px; padding: 5px 12px; font-size: .8rem; cursor: pointer;
+  }
+  #ecolia-audio-banner button.pri { background: var(--p2, #2563eb); color: #fff; }
+  #ecolia-audio-banner .eab-bar { display: none; flex-basis: 100%; height: 4px; border-radius: 2px; overflow: hidden; background: var(--bd, #c9d6ea); }
+  #ecolia-audio-banner .eab-bar i { display: block; height: 100%; width: 0; background: var(--p2, #2563eb); transition: width .2s; }
+</style>
+<script>
+(function () {
+  var CFG = {"code":"AviationCivile4","base":"https://ecolia-course.github.io/ecolia-media/audio_files/","available":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17],"count":17,"sizeMo":11,"sizes":{"1":903744,"2":762432,"3":581184,"4":637440,"5":699840,"6":601536,"7":714240,"8":483840,"9":683712,"10":555840,"11":664704,"12":661824,"13":595008,"14":649344,"15":637248,"16":977856,"17":109056},"fallback":{"1":[["fr","Sommaire, Aviation Civile. Présentation du cours. Comprendre le monde de l'aviation civile. Ce cours d'Aviation Civile de la 4e Humanité Technique Industrielle vous initie à l'organisation, à la réglementation, à la navigation aérienne et aux exigences de sécurité du transport aérien. Vous étudierez les acteurs (OACI, AAC ou R D C), les licences du personnel aéronautique, les infrastructures aéroportuaires et le contexte congolais marqué par la modernisation des aéroports. Objectifs d'apprentissage. À la fin de ce cours, vous serez capable de: Identifier les acteurs et le cadre réglementaire de l'aviation civile. Décrire les licences et qualifications du personnel aéronautique. Expliquer les principes de la navigation aérienne et de la circulation aérienne. Connaître les infrastructures aéroportuaires et les aides à la navigation. Appliquer les règles de sécurité et de sûreté. Comprendre les enjeux environnementaux et les nouvelles technologies (drones). Se situer dans le contexte congolais (PPSA II, audits OACI). Plan des chapitres. Les huit chapitres du programme. Introduction à l'aviation civile. Cadre réglementaire international et national. Licences et qualifications du personnel aéronautique. Navigation aérienne. Météorologie aéronautique. Infrastructures aéroportuaires. Sécurité et sûreté aériennes. Environnement et nouvelles technologies. Compétence visée: comprendre l'environnement aéronautique, appliquer les règles de sécurité et de sûreté, et se situer dans les filières de maintenance ou de logistique aéroportuaire."]],"2":[["fr","Chapitre I, Pourquoi l'aviation civile? Situation-problème. Un pays grand comme un continent. La R D C couvre 2,3 millions de km au carré, avec des infrastructures routières limitées et des distances considérables entre Kinshasa, Lubumbashi, Goma et Kisangani. Comment transporter rapidement des médicaments vers un hôpital isolé? Comment acheminer des personnels et du fret vers des zones enclavées? Comment désenclaver les régions privées de routes praticables? L'aviation civile répond à ces défis. Définition. L'aviation civile. L'aviation civile englobe toutes les activités aériennes non militaires: transport de passagers et de fret, aviation d'affaires, aviation légère, travail aérien (épandage, photographie), formation et maintenance. Elle repose sur un cadre réglementaire international et national strict. Importance en R D C. Le désenclavement. Le transport aérien est vital pour la R D C: il assure le désenclavement des zones reculées, le transport de médicaments, de personnels et de marchandises. Les aéroports de N'djili (Kinshasa), de Lubumbashi, de Goma et de Kisangani sont des portes d'entrée essentielles. À retenir. L'aviation civile ne se limite pas au transport de passagers: elle englobe aussi le fret, la maintenance, la formation et les services de navigation aérienne."]],"3":[["fr","Chapitre I, Les acteurs de l'aviation civile. Les organisations internationales. OACI et IATA. OACI (Organisation de l'Aviation Civile Internationale): agence des Nations Unies, elle fixe les standards internationaux (Annexes) et audite les États. IATA (Association internationale du transport aérien): organisation des compagnies aériennes, elle édite des règles commerciales et techniques. Les organismes nationaux. AAC ou R D C et RVA. AAC ou R D C (Autorité de l'Aviation Civile): édicte les règlements (RACD), délivre les licences, surveille la sécurité. RVA (Régie des Voies Aériennes): gère les infrastructures et les services de navigation aérienne. Les autres acteurs. Compagnies, aéroports, écoles. Les compagnies aériennes assurent le transport; les gestionnaires d'aéroports entretiennent les infrastructures; les organismes de formation agréés (OFA) forment les pilotes, techniciens et contrôleurs."]],"4":[["fr","Chapitre II, Le cadre réglementaire international. La Convention de Chicago. La base du système. La Convention de Chicago (1944) a créé l'OACI et posé les bases du droit aérien international. Elle est complétée par des Annexes (1 à 19) qui fixent les Standards and Recommended Practices (SARPs). Les Annexes clés. Un cadre technique. Annexe. Contenu. 1. Licences du personnel. 2. Règles de l'air. 3. Météorologie. 10. Aides à la navigation. 11. Circulation aérienne. 14. Aérodromes. 17. Sûreté. 19. Gestion de la sécurité. Les audits OACI. Mesurer la conformité. L'OACI réalise des audits pour vérifier la mise en œuvre effective des normes. La R D C a obtenu un taux de conformité d'environ 69,15 pour cent lors du dernier audit, ce qui traduit des progrès mais aussi des besoins de formation et d'équipement. À retenir. Les Annexes de l'OACI sont la base du droit aérien international. Chaque État doit les traduire en règlements nationaux."]],"5":[["fr","Chapitre II, Le cadre réglementaire congolais. La loi nationale. Loi n° 23 sur 001 de 2023. La Loi n° 10 sur 014 du 31 décembre 2010 relative à l'aviation civile a été modifiée par la Loi n° 23 sur 001 du 12 janvier 2023. Cette révision intègre les exigences de l'OACI, encadre les drones (aéronefs télépilotés) et renforce la protection de l'environnement. Les RACD. Les règlements aéronautiques congolais. L'AAC ou R D C édicte les RACD (Règlements Aéronautiques Congolais) qui déclinent les Annexes de l'OACI au contexte national: RACD 02: licences du personnel aéronautique. RACD 03: organismes de formation agréés (OFA). Autres RACD: opérations, navigabilité, sûreté, gestion de la sécurité. La pyramide réglementaire de l'aviation civile en R D C. Erreur fréquente. Ignorer le double niveau. La réglementation nationale (RACD) est directement dérivée des normes OACI. Un professionnel formé en R D C doit connaître les deux niveaux: les Annexes et les RACD."]],"6":[["fr","Chapitre III, Les licences de pilote. Les principales licences. PPL, CPL, ATPL. PPL (Private Pilot Licence): pilote privé, vols sans rémunération. CPL (Commercial Pilot Licence): pilote professionnel, vols rémunérés. ATPL (Airline Transport Pilot Licence): pilote de ligne, commandant de bord. Chaque licence est associée à des qualifications: avion, hélicoptère, vol aux instruments (IR), type d'aéronef. Conditions de délivrance. Le RACD 02. Le RACD 02 fixe les conditions de délivrance: âge minimum, formation théorique et pratique, expérience de vol, conditions médicales (certificat médical), compétences linguistiques (anglais aéronautique). À retenir. PPL égale pilote privé non rémunéré. CPL égale pilote professionnel. ATPL égale pilote de ligne. Toutes les licences sont délivrées par l'AAC ou R D C après des contrôles stricts."]],"7":[["fr","Chapitre III, Les licences de technicien de maintenance. Les catégories. A, B1, B2. Catégorie A: maintenance limitée, tâches simples listées. B1: maintenance mécanique (structure, moteur, systèmes). B2: avionique (électricité, électronique, instruments). La catégorie A2 concerne les avions de 5 700 kilogrammes et moins. Formation et expérience. Un long parcours. Le technicien de maintenance suit une formation agréée, justifie d'une expérience pratique documentée (carnet de maintenance) et réussit des examens. Il est ensuite autorisé à délivrer l'APRS (Autorisation de Remise en Service) après travaux. Les organismes de formation. Le RACD 03. Le RACD 03 définit les exigences pour les OFA: programme de formation, qualifications des instructeurs, matériel, contrôles d'étapes, documentation. Les écoles doivent être agréées par l'AAC. Erreur fréquente. Croire qu'une formation technique suffit. Un technicien formé dans une école ordinaire ne peut pas travailler sur un aéronef civil sans licence délivrée par l'AAC. La licence est un document officiel qui atteste de la compétence."]],"8":[["fr","Chapitre IV, La navigation aérienne. Les espaces aériens. Un espace structuré. L'espace aérien est divisé en classes (A à G) selon le niveau de contrôle. Les routes aériennes relient les aéroports. Les procédures de départ (SID) et d'arrivée (STAR) guident les avions. Les routes aériennes et les espaces contrôlés. La circulation aérienne. Assurer la séparation. Les contrôleurs de la circulation aérienne assurent la séparation des aéronefs: verticale (altitudes différentes) et horizontale (distances). Ils gèrent les séquences d'approche et les flux de trafic. L'anglais aéronautique. Une phraséologie standard. Les communications pilote-contrôleur utilisent une phraséologie standardisée en anglais. La méconnaissance de cette langue est une source majeure d'incidents: c'est pourquoi la compétence linguistique est exigée pour les licences."]],"9":[["fr","Chapitre IV, Les aides à la navigation. Les aides classiques. VOR et ILS. VOR (VHF Omnidirectional Range): radiophare qui donne un cap magnétique vers ou depuis une station. ILS (Instrument Landing System): système d'atterrissage aux instruments, qui guide l'avion en approche finale (axe de piste et plan de descente). La navigation par satellite. GNSS. Le GNSS (Global Navigation Satellite System) regroupe les constellations de satellites: GPS (États-Unis), GLONASS (Russie), Galileo (Europe), Beidou (Chine). Il permet une navigation de précision sur tout le globe. Les systèmes modernes. ADS-B et CPDLC. L'ADS-B (Automatic Dependent Surveillance-Broadcast) transmet automatiquement la position de l'avion aux stations au sol. Le CPDLC (Controller-Pilot Data Link Communications) permet des échanges de messages texte entre pilote et contrôleur, réduisant les erreurs de communication vocale. À retenir. VOR et ILS sont les aides classiques; le GNSS et l'ADS-B sont les technologies modernes. Le CPDLC est déjà déployé à N'djili."]],"10":[["fr","Chapitre V, La météorologie aéronautique. Les messages METAR et TAF. Observer et prévoir. METAR: observation météorologique régulière d'un aérodrome (vent, visibilité, nuages, température, pression). TAF: prévision d'aérodrome pour une période donnée (généralement 24 à 30 heures). Les phénomènes dangereux. Ce qui menace le vol. Orages: turbulences, grêle, foudre. Givrage: dépôt de glace sur les ailes, perte de portance. Turbulences: secousses, inconfort, risques structurels. Cisaillement de vent: variation brutale du vent, danger en approche. Brouillard: visibilité réduite, approche difficile. Erreur fréquente. Sous-estimer la météo. De nombreux accidents sont liés à des conditions météorologiques défavorables. Un pilote doit toujours consulter les informations météorologiques avant et pendant le vol, et savoir renoncer si nécessaire."]],"11":[["fr","Chapitre VI, Les infrastructures aéroportuaires. Les pistes. Longueur, largeur, revêtement. Une piste doit être dimensionnée selon les types d'aéronefs qui la fréquentent. Sa longueur dépend de la masse de l'avion, de l'altitude et de la température. Le revêtement doit résister au passage répété des avions. En R D C, la piste de Mbuji-Mayi (2,3 kilomètres) et celle de Kananga (3 000 mètres) illustrent les efforts de modernisation. Le balisage. Voir et être vu. Le balisage lumineux (feux de piste, de seuil, d'axe, de bord) permet les opérations de nuit et par mauvaise visibilité. L'aéroport de Mbandaka, équipé de balisage lumineux, est désormais opérationnel de jour comme de nuit. Les tours de contrôle. Le cerveau de l'aéroport. La tour de contrôle est équipée de radars, de systèmes de communication, d'affichage des vols. N'djili dispose de la technologie TopSky et du CPDLC, ce qui améliore la sécurité et l'efficacité. À retenir. Une piste dégradée ou un balisage défectueux augmente les risques. L'entretien des infrastructures est une obligation de sécurité."]],"12":[["fr","Chapitre VI, La modernisation en R D C. Le PPSA II. Un projet majeur. Le Projet Prioritaire de Sécurité Aérienne (PPSA II), financé par la Banque Africaine de Développement (environ 105 millions USD), a modernisé les aéroports de N'djili, Kisangani, Kindu et Mbuji-Mayi. Il a installé des équipements de surveillance (TopSky), des communications (CPDLC) et une nouvelle station incendie. La modernisation des infrastructures aéroportuaires en R D C. Les résultats. Des progrès reconnus. Les audits de l'OACI ont salué les progrès de la R D C (taux de conformité de 69,15 pour cent ). La levée de la préoccupation significative de sûreté est un signal positif pour le secteur. La R D C sort progressivement de sa réputation de « trous noirs » dans son espace aérien. Les besoins. Former des professionnels. La maintenance aéronautique, la gestion du trafic aérien et la logistique aéroportuaire nécessitent des techniciens qualifiés. Les écoles agréées (OFA) selon le RACD 03 forment ces professionnels."]],"13":[["fr","Chapitre VII, La sécurité (safety). Définition. Prévenir les accidents. La sécurité (safety) est la prévention des accidents et incidents. Elle repose sur la maintenance, la formation, les procédures, la gestion des risques et les facteurs humains. Les facteurs humains. Le maillon clé. Fatigue: réduction de la vigilance. Stress: dégradation de la prise de décision. Communication: erreurs de transmission. Prise de décision: choix sous pression. Le CRM (Crew Resource Management) forme les équipages à la coordination, à la communication et à la gestion des ressources. La maintenance. Une exigence permanente. La maintenance aéronautique suit un programme d'entretien strict: inspections périodiques, remplacement des pièces, traçabilité, contrôles qualité. Un avion mal entretenu est un danger. Erreur fréquente. Négliger la maintenance préventive. Attendre la panne plutôt que de prévenir est une erreur grave en aviation. La maintenance préventive est une obligation réglementaire."]],"14":[["fr","Chapitre VII, La sûreté (security). Définition. Protéger contre les actes malveillants. La sûreté (security) est la protection contre les actes intentionnels: terrorisme, sabotage, vol, intrusion. Elle concerne le contrôle des passagers, des bagages, du fret, et la sécurisation des accès. Les mesures. Contrôles et accès. Contrôle des passagers: détecteurs de métaux, scanners. Contrôle des bagages: radiographie, fouille. Contrôle du fret: inspection, chaîne logistique sécurisée. Accès restreints: badges, zones réservées. Le SSLIA. Les services de sauvetage. Le SSLIA (Service de Sauvetage et de Lutte contre l'Incendie d'Aérodrome) est un service obligatoire sur tout aéroport. Il dispose de véhicules incendie, d'agents formés et de procédures d'intervention rapide. Les services de sauvetage et de lutte contre l'incendie. À retenir. Sécurité (safety) égale prévention des accidents. Sûreté (security) égale prévention des actes malveillants. Les deux sont indispensables et complémentaires."]],"15":[["fr","Chapitre VIII, L'environnement et les nouvelles technologies. L'impact environnemental. Bruit et émissions. L'aviation civile a un impact environnemental: bruit autour des aéroports, émissions de gaz à effet de serre, consommation de carburant. Les constructeurs et les compagnies adoptent des avions plus économes et des procédures de réduction du bruit. Les drones. Une nouvelle donne. La Loi n° 23 sur 001 de 2023 intègre les aéronefs télépilotés (drones). Leur usage se développe: surveillance, cartographie, livraison. Une réglementation spécifique encadre leur intégration dans l'espace aérien pour éviter les collisions et protéger la vie privée. Les technologies modernes. Navigation et communication. GNSS: navigation par satellite. CPDLC: communications texte pilote-contrôleur. ADS-B: surveillance automatique par diffusion. Aéroports intelligents: gestion automatisée des flux. À retenir. L'aviation civile est soumise à des normes environnementales de plus en plus strictes. Les nouvelles technologies améliorent la sécurité et l'efficacité."]],"16":[["fr","Synthèse, De la réglementation à la sécurité. Récapitulatif général. Le grand enchaînement. Cadre international: OACI, Convention de Chicago, Annexes. Cadre national: Loi n° 23 sur 001, RACD, AAC ou R D C. Licences: pilotes (PPL, CPL, ATPL), techniciens (A, B1, B2), contrôleurs. Navigation: espaces aériens, routes, aides (VOR, ILS, GNSS). Météorologie: METAR, TAF, phénomènes dangereux. Infrastructures: pistes, balisage, tours, SSLIA. Sécurité et sûreté: facteurs humains, maintenance, contrôles. Environnement: bruit, émissions, drones. Points clés à retenir. Les notions essentielles. Aviation civile égale toutes les activités aériennes non militaires. OACI (international) plus AAC ou R D C (national) égale cadre réglementaire. RACD 02 égale licences; RACD 03 égale organismes de formation. PPL, CPL, ATPL pour les pilotes; A, B1, B2 pour les techniciens. VOR, ILS, GNSS pour la navigation; METAR et TAF pour la météo. Sécurité (safety) égale prévention des accidents; sûreté (security) égale prévention des actes malveillants. SSLIA égale sauvetage et lutte contre l'incendie. R D C: PPSA II, taux de conformité 69,15 pour cent, N'djili équipé de TopSky et CPDLC."]],"17":[["fr","Évaluation finale, Aviation Civile. Consignes. Répondez aux questions suivantes en choisissant une seule bonne réponse parmi les quatre propositions. Le résultat s'affiche après validation."]]}};
+  var CACHE = "ecolia-cours-v1";                       // même cache que l'application
+  var PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  var PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+  var DL = '<svg viewBox="0 0 24 24"><path d="M11 3h2v9.2l3.6-3.6L18 10l-6 6-6-6 1.4-1.4L11 12.2V3zM5 19h14v2H5z"/></svg>';
+  var OK = '<svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>';
+  // Réparation du quiz : certains cours stockent les choix sous "opts" (ou autre) au lieu de "options"
+  try {
+    if (typeof questions !== "undefined" && questions && questions.forEach) {
+      questions.forEach(function (q) {
+        if (!q.options) q.options = q.opts || q.choices || q.choix || q.reponses || q.propositions || [];
+        if (q.text === undefined) q.text = q.question || q.q || q.enonce || q.titre || "";
+        if (typeof q.correct === "undefined") {
+          if (typeof q.answer !== "undefined") q.correct = q.answer;
+          else if (typeof q.reponse !== "undefined") q.correct = q.reponse;
+        }
+      });
+    }
+  } catch (e) {}
+  var synth = window.speechSynthesis || null;
+  var HAS_CACHE = !!(window.caches && window.caches.open);
+  var NATIVE = false;           // APK ECOLIA : pont Java "CoursInterface" (fichiers dans le dossier de l'application)
+  try { NATIVE = !!(window.CoursInterface && typeof CoursInterface.exists === "function" && typeof CoursInterface.download === "function" && location.origin === "https://app.local"); } catch (e) {}
+  var LATER = "ecolia_audio_later_" + CFG.code;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+  function init() {
+    if (document.getElementById("ecolia-audio-btn")) return;
+
+    // ---------- éléments de l'interface ----------
+    var btn = document.createElement("button");
+    btn.id = "ecolia-audio-btn"; btn.type = "button"; btn.className = "ecolia-off";
+    btn.setAttribute("aria-label", "Écouter la leçon"); btn.innerHTML = PLAY;
+    var dlBtn = document.createElement("button");
+    dlBtn.id = "ecolia-dl-btn"; dlBtn.type = "button"; dlBtn.className = "ecolia-off";
+    dlBtn.innerHTML = DL;
+    var host = document.querySelector(".header-right");
+    if (host) { host.insertBefore(dlBtn, host.firstChild); host.insertBefore(btn, dlBtn); }   // dans la barre du haut : ne scrolle jamais
+    else { btn.className += " ecolia-fixed"; document.body.appendChild(btn); }
+
+    var banner = document.createElement("div");
+    banner.id = "ecolia-audio-banner";
+    banner.innerHTML = '<span class="eab-txt"></span><span class="eab-act"></span><div class="eab-bar"><i></i></div>';
+    var content = document.getElementById("content");
+    if (content && content.parentNode) content.parentNode.insertBefore(banner, content);
+    else document.body.insertBefore(banner, document.body.firstChild);
+    var txtEl = banner.querySelector(".eab-txt"), actEl = banner.querySelector(".eab-act");
+    var barEl = banner.querySelector(".eab-bar"), barI = barEl.firstChild;
+
+    var audio = new Audio();            // un seul élément Audio, réutilisé (exigé par les navigateurs mobiles)
+    audio.preload = "auto";
+    var st = { idx: -1, auto: false, advancing: false, mode: null, speaking: false, token: 0, chunks: [], ci: 0, blobUrl: null, playTok: 0 };
+    var dl = { state: "none", cached: 0, busy: false, cancel: false };   // none | partial | full
+    var bnMode = null, hideTimer = null;
+    if (synth && synth.getVoices) { try { synth.getVoices(); } catch (e) {} }
+
+    function cur() {
+      try { if (typeof currentSlide === "number") return currentSlide; } catch (e) {}
+      return 0;
+    }
+    function hasMp3(i) { return CFG.available.indexOf(i + 1) !== -1; }
+    function fb(i) { return CFG.fallback && CFG.fallback[String(i + 1)]; }
+    function hasAudio(i) { return hasMp3(i) || (!!synth && !!fb(i)); }
+    function urlN(n) {   // dans l'APK la page est sur https://app.local : une adresse relative doit pointer vers le site
+      var b = CFG.base;
+      if (NATIVE && !/^https?:/i.test(b)) b = "https://ecolia-course.github.io/" + b.replace(/^(\.\.\/|\.\/)+/, "");
+      return new URL(b + nameN(n), location.href).href;
+    }
+    function setIcon(playing) { btn.innerHTML = playing ? PAUSE : PLAY; }
+    function isPlaying() { return st.mode === "mp3" ? !audio.paused : (st.mode === "tts" && st.speaking); }
+    function mo() { return "≈ " + CFG.sizeMo + " Mo"; }
+    function nameN(n) { return "audio_" + CFG.code + "_" + n + ".mp3"; }
+
+    // ====================================================================
+    //  Stockage hors ligne : 2 moteurs, même interface
+    //    - APK : fichiers du dossier de l'application (CoursInterface), servis par https://app.local/cours/
+    //    - Web : Cache Storage du navigateur (même cache que l'application web)
+    // ====================================================================
+    function nativeStore() {
+      var okKey = "ecolia_audio_ok_" + CFG.code;
+      function readOk() { try { return JSON.parse(lsGet(okKey) || "[]"); } catch (e) { return []; } }
+      function writeOk(a) { lsSet(okKey, JSON.stringify(a)); }
+      function exists(n) { try { return !!CoursInterface.exists(nameN(n)); } catch (e) { return false; } }
+      function local(n) { return location.origin + "/cours/" + nameN(n); }
+      function verify(n) {                                   // fichier complet ? (taille exacte connue à la génération)
+        return fetch(local(n), { cache: "no-store" }).then(function (r) { return r.blob(); }).then(function (b) {
+          var exp = CFG.sizes && CFG.sizes[String(n)];
+          return (b.size > 2000 && (!exp || b.size === exp)) ? b : null;
+        }).catch(function () { return null; });
+      }
+      return {
+        list: function () {
+          var ok = readOk().filter(exists); writeOk(ok); return Promise.resolve(ok);
+        },
+        get: function (n) { return exists(n) ? verify(n) : Promise.resolve(null); },
+        put: function (n) {
+          return new Promise(function (res, rej) {
+            try { CoursInterface.download(urlN(n), nameN(n)); } catch (e) { return rej(e); }
+            var t0 = Date.now();
+            function next() { if (Date.now() - t0 > 120000) rej(new Error("délai dépassé")); else setTimeout(poll, 800); }
+            function poll() {
+              if (!exists(n)) return next();
+              verify(n).then(function (b) {
+                if (!b) return next();
+                var ok = readOk(); if (ok.indexOf(n) < 0) ok.push(n); writeOk(ok); res();
+              });
+            }
+            setTimeout(poll, 800);
+          });
+        },
+        del: function (n) {
+          try { CoursInterface.delete(nameN(n)); } catch (e) {}
+          writeOk(readOk().filter(function (x) { return x !== n; }));
+          return Promise.resolve();
+        }
+      };
+    }
+    function cacheStore() {
+      return {
+        list: function () {
+          return caches.open(CACHE).then(function (c) {
+            return Promise.all(CFG.available.map(function (n) {
+              return c.match(urlN(n)).then(function (r) {
+                if (!r) return 0;
+                if ((r.headers.get("content-type") || "").indexOf("audio") !== 0) { c.delete(urlN(n)); return 0; }   // ancien contenu invalide
+                return n;
+              });
+            }));
+          }).then(function (a) { return a.filter(Boolean); });
+        },
+        get: function (n) {
+          return caches.open(CACHE).then(function (c) { return c.match(urlN(n)); })
+            .then(function (r) { return r ? r.blob() : null; }).then(function (b) { return b && b.size > 2000 ? b : null; });
+        },
+        put: function (n) {
+          var u = urlN(n);
+          return fetch(u, { cache: "no-store" }).then(function (r) {
+            if (!r.ok || r.status !== 200) throw new Error("HTTP " + r.status);
+            return r.blob();
+          }).then(function (b) {
+            if (b.size < 2000 || (b.type && b.type.indexOf("audio") !== 0 && b.type.indexOf("octet") < 0)) throw new Error("fichier invalide");
+            return caches.open(CACHE).then(function (c) { return c.put(u, new Response(b, { headers: { "Content-Type": "audio/mpeg" } })); });
+          });
+        },
+        del: function (n) { return caches.open(CACHE).then(function (c) { return c.delete(urlN(n)); }); }
+      };
+    }
+    var store = NATIVE ? nativeStore() : (HAS_CACHE ? cacheStore() : null);
+
+    // ====================================================================
+    //  Bannière : invitation, confirmations, progression
+    // ====================================================================
+    function showBanner(mode, text, buttons, pct) {
+      clearTimeout(hideTimer);
+      bnMode = mode;
+      txtEl.textContent = text;
+      actEl.innerHTML = "";
+      (buttons || []).forEach(function (b) {
+        var e = document.createElement("button");
+        e.type = "button"; e.textContent = b.label; if (b.pri) e.className = "pri";
+        e.addEventListener("click", function (ev) { ev.stopPropagation(); b.fn(); });
+        actEl.appendChild(e);
+      });
+      if (typeof pct === "number") { barEl.style.display = "block"; barI.style.width = pct + "%"; }
+      else barEl.style.display = "none";
+      banner.classList.add("on");
+    }
+    function hideBanner() { clearTimeout(hideTimer); bnMode = null; banner.classList.remove("on"); }
+    function flash(text) { showBanner("info", text, []); hideTimer = setTimeout(hideBanner, 4000); }
+
+    function refreshUI() {
+      var show = !!store && CFG.available.length > 0;
+      dlBtn.classList.toggle("ecolia-off", !show);
+      dlBtn.classList.toggle("ecolia-full", dl.state === "full");
+      dlBtn.innerHTML = dl.state === "full" ? OK : DL;
+      dlBtn.setAttribute("aria-label", dl.state === "full" ? "Audios téléchargés : supprimer" : "Télécharger les audios");
+      dlBtn.title = dlBtn.getAttribute("aria-label");
+    }
+    function refreshCacheState(done) {
+      if (!store) { dl.state = "none"; refreshUI(); if (done) done(); return; }
+      store.list().then(function (ok) {
+        dl.cached = ok.length;
+        dl.state = dl.cached === 0 ? "none" : (dl.cached >= CFG.available.length ? "full" : "partial");
+      }).catch(function () { dl.state = "none"; }).then(function () { refreshUI(); if (done) done(); });
+    }
+
+    function askDownload(fromInvite) {
+      var left = CFG.available.length - dl.cached;
+      var txt = dl.state === "partial"
+        ? "Il reste " + left + " audio(s) à télécharger pour écouter ce cours sans internet."
+        : "🔊 Télécharger les audios de ce cours (" + mo() + ") pour les écouter sans internet ? Wi-Fi recommandé.";
+      showBanner(fromInvite ? "invite" : "confirm", txt, [
+        { label: fromInvite ? "Plus tard" : "Annuler", fn: function () { if (fromInvite) lsSet(LATER, "1"); hideBanner(); } },
+        { label: "Télécharger", pri: true, fn: startDownload }
+      ]);
+    }
+    function askDelete() {
+      showBanner("confirm", "Supprimer les audios téléchargés de ce cours (" + mo() + ") ? Vous pourrez toujours les écouter en ligne.", [
+        { label: "Annuler", fn: hideBanner },
+        { label: "Supprimer", pri: true, fn: doDelete }
+      ]);
+    }
+
+    function startDownload() {
+      if (dl.busy || !store) return;
+      dl.busy = true; dl.cancel = false;
+      var total = CFG.available.length, done = 0, quota = false, fails = 0, todo = [];
+      store.list().then(function (have) {
+        CFG.available.forEach(function (n) { if (have.indexOf(n) < 0) todo.push(n); });
+        done = total - todo.length;
+        function paint() {
+          var msg = "Téléchargement des audios : " + done + " / " + total;
+          if (bnMode === "progress") {                  // met à jour sans recréer les boutons (sinon un appui peut être perdu)
+            txtEl.textContent = msg; barI.style.width = Math.round(done / total * 100) + "%";
+          } else {
+            showBanner("progress", msg, [
+              { label: "Annuler", fn: function () { dl.cancel = true; } }
+            ], Math.round(done / total * 100));
+          }
+        }
+        paint();
+        function worker() {
+          if (dl.cancel || quota || !todo.length) return Promise.resolve();
+          var n = todo.shift();
+          return store.put(n).then(function () { done++; paint(); }).catch(function (e) {
+            if (e && (e.name === "QuotaExceededError" || /quota/i.test(String(e.message)))) quota = true;
+            fails++;
+          }).then(worker);
+        }
+        return Promise.all([worker(), worker()]);
+      }).catch(function () { fails++; }).then(function () {
+        dl.busy = false;
+        refreshCacheState(function () {
+          if (dl.state === "full") flash("✓ Audios téléchargés : le cours se lit maintenant sans internet.");
+          else if (dl.cancel) flash("Téléchargement interrompu (" + dl.cached + " / " + total + "). Vous pourrez reprendre plus tard.");
+          else showBanner("error", quota ? "Espace insuffisant sur l'appareil. Libérez de la place puis réessayez."
+            : "Certains audios n'ont pas pu être téléchargés (connexion ?).", [
+            { label: "Fermer", fn: hideBanner }, { label: "Réessayer", pri: true, fn: startDownload }
+          ]);
+        });
+      });
+    }
+    function doDelete() {
+      if (!store) return;
+      Promise.all(CFG.available.map(function (n) { return store.del(n); })).catch(function () {}).then(function () {
+        lsDel(LATER);
+        refreshCacheState(function () { flash("Audios supprimés de cet appareil."); });
+      });
+    }
+
+    dlBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (dl.busy) return;
+      if (dl.state === "full") askDelete(); else askDownload(false);
+    });
+
+    // ====================================================================
+    //  Voix intégrée au téléphone (hors ligne, sans limite)
+    // ====================================================================
+    function pickVoice(lang) {
+      var vs = [];
+      try { vs = synth.getVoices() || []; } catch (e) {}
+      var pre = lang === "en" ? "en" : "fr", best = null;
+      for (var k = 0; k < vs.length; k++) {
+        var v = vs[k];
+        if ((v.lang || "").toLowerCase().indexOf(pre) !== 0) continue;
+        if (!best || (v.localService && !best.localService)) best = v;
+      }
+      return best;
+    }
+    function hardSplit(text, max) {
+      var out = [];
+      while (text.length > max) {
+        var cut = text.lastIndexOf(" ", max);
+        if (cut < 40) cut = max;
+        out.push(text.slice(0, cut)); text = text.slice(cut).replace(/^\s+/, "");
+      }
+      if (text) out.push(text);
+      return out;
+    }
+    function buildChunks(segs) {                  // morceaux courts : évite l'arrêt des longs textes sur Chrome
+      var out = [];
+      segs.forEach(function (s) {
+        var cur2 = "", parts = s[1].match(/[^.!?;:]+[.!?;:]*\s*/g) || [s[1]];
+        parts.forEach(function (p) {
+          if (cur2 && (cur2 + p).length > 160) { out.push({ lang: s[0], text: cur2.trim() }); cur2 = p; }
+          else cur2 += p;
+        });
+        if (cur2.trim()) out.push({ lang: s[0], text: cur2.trim() });
+      });
+      var res = [];
+      out.forEach(function (c) { hardSplit(c.text, 190).forEach(function (t) { res.push({ lang: c.lang, text: t }); }); });
+      return res;
+    }
+    function speakFrom(tk) {
+      if (tk !== st.token) return;
+      if (st.ci >= st.chunks.length) {
+        st.speaking = false; st.mode = null; st.ci = 0; setIcon(false);
+        if (st.auto) goNext();
+        return;
+      }
+      var c = st.chunks[st.ci];
+      var u = new SpeechSynthesisUtterance(c.text);
+      u.lang = c.lang === "en" ? "en-US" : "fr-FR";
+      var v = pickVoice(c.lang);
+      if (v) { u.voice = v; u.lang = v.lang; }
+      u.rate = 0.95;
+      u.onend = function () { if (tk !== st.token) return; st.ci++; speakFrom(tk); };
+      u.onerror = function () { if (tk !== st.token) return; st.speaking = false; setIcon(false); st.auto = false; };
+      synth.speak(u);
+    }
+    function startTts(from) {
+      st.token++;
+      var tk = st.token;
+      st.mode = "tts"; st.speaking = true; st.ci = from || 0; setIcon(true);
+      var busy = false;
+      try { busy = synth.speaking || synth.pending; synth.cancel(); } catch (e) {}
+      if (busy) setTimeout(function () { speakFrom(tk); }, 120);   // laisse cancel() se terminer
+      else speakFrom(tk);                                          // sinon tout de suite (exigé par iOS)
+    }
+    function playVoice() {
+      if (!(synth && fb(st.idx))) { st.auto = false; return false; }
+      if (!st.chunks.length) st.chunks = buildChunks(fb(st.idx));
+      startTts(st.ci);
+      return true;
+    }
+
+    // ====================================================================
+    //  Lecture
+    // ====================================================================
+    function freeBlob() { if (st.blobUrl) { try { URL.revokeObjectURL(st.blobUrl); } catch (e) {} st.blobUrl = null; } }
+    function stopAll() {
+      st.playTok++;
+      try { audio.pause(); audio.currentTime = 0; } catch (e) {}
+      st.token++;
+      try { if (synth) synth.cancel(); } catch (e) {}
+      st.speaking = false; st.mode = null; st.chunks = []; st.ci = 0;
+      setIcon(false);
+    }
+    function pauseNow() {
+      if (st.mode === "mp3") audio.pause();
+      else if (st.mode === "tts") {
+        st.token++;
+        try { synth.cancel(); } catch (e) {}
+        st.speaking = false; setIcon(false);      // st.ci conservé : la reprise repart de la phrase en cours
+      }
+    }
+    function startAudio(src, tok) {
+      if (tok !== st.playTok) return;
+      if (audio.getAttribute("data-src") !== src) { audio.setAttribute("data-src", src); audio.src = src; }
+      var p = audio.play();
+      if (p && p.catch) p.catch(function (err) {
+        console.warn("ECOLIA audio :", err);
+        if (tok !== st.playTok) return;
+        if (!(err && err.name === "NotAllowedError") && playVoice()) return;   // lecture impossible : voix du téléphone
+        setIcon(false); st.auto = false;
+      });
+    }
+    function playCurrent() {
+      var i = st.idx;
+      if (hasMp3(i)) {
+        var tok = ++st.playTok, u = urlN(i + 1);
+        st.mode = "mp3";
+        if (!navigator.onLine && dl.state === "none") { st.mode = null; if (playVoice()) return; }   // hors ligne et non téléchargé
+        if (store && dl.state !== "none") {                     // téléchargé : lecture locale, sans réseau
+          store.get(i + 1)
+            .then(function (b) {
+              if (tok !== st.playTok) return;
+              if (b) { freeBlob(); st.blobUrl = URL.createObjectURL(new Blob([b], { type: "audio/mpeg" })); startAudio(st.blobUrl, tok); }
+              else startAudio(u, tok);
+            }).catch(function () { startAudio(u, tok); });
+        } else startAudio(u, tok);                              // sinon lecture en ligne (appel immédiat, exigé par iOS)
+      } else if (!playVoice()) {
+        st.auto = false;
+      }
+    }
+
+    function onSlideChange(i) {
+      var wasAdvancing = st.advancing;
+      st.advancing = false;
+      st.idx = i;
+      btn.classList.toggle("ecolia-off", !hasAudio(i));
+      stopAll();
+      audio.removeAttribute("data-src");
+      freeBlob();
+      if (bnMode === "invite" && i !== 0) hideBanner();       // l'invitation n'apparaît qu'à la première slide
+      if (wasAdvancing && st.auto) setTimeout(playCurrent, 500);   // enchaînement automatique
+      else st.auto = false;                                         // changement manuel : on coupe tout
+    }
+    function goNext() {
+      if (st.idx + 1 >= CFG.count) { st.auto = false; return; }
+      st.advancing = true;
+      if (typeof nextSlide === "function") nextSlide();
+      else { var nb = document.getElementById("nextBtn"); if (nb) nb.click(); }
+      setTimeout(function () { st.advancing = false; }, 4000);
+    }
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var i = cur();
+      if (i !== st.idx) onSlideChange(i);
+      if (isPlaying()) { st.auto = false; pauseNow(); }
+      else { st.auto = true; playCurrent(); }
+    });
+    audio.addEventListener("play", function () { setIcon(true); });
+    audio.addEventListener("pause", function () { if (st.mode === "mp3") setIcon(false); });
+    audio.addEventListener("error", function () {
+      if (st.mode === "mp3" && playVoice()) return;            // fichier introuvable / hors ligne : voix du téléphone
+      setIcon(false); st.auto = false;
+    });
+    audio.addEventListener("ended", function () { setIcon(false); if (st.auto) goNext(); });
+    window.addEventListener("pagehide", function () { stopAll(); freeBlob(); });
+
+    // ---------- démarrage ----------
+    refreshCacheState(function () {
+      if (store && CFG.available.length && dl.state !== "full" && navigator.onLine && cur() === 0 && !lsGet(LATER)) askDownload(true);
+    });
+    st.idx = -1;
+    setInterval(function () { var i = cur(); if (i !== st.idx) onSlideChange(i); }, 250);   // suit la slide affichée
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+<!-- ECOLIA_AUDIO_PLAYER_END -->
+</body>
+</html>
