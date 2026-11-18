@@ -43,6 +43,7 @@ self.addEventListener('activate', event => {
     const cache = await caches.open(CACHE);
     for (const req of await cache.keys()) {
       const u = new URL(req.url);
+      if (/\.ecolia$/i.test(u.pathname)) { await cache.delete(req); continue; }   // anciennes copies encodées inutiles (le cours décodé est stocké en .html)
       const key = cleanKey(u);
       if (key.url === req.url) continue;                      // déjà propre
       const resp = await cache.match(req);
@@ -59,6 +60,9 @@ self.addEventListener('fetch', event => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;            // autres sites : on ne touche à rien
+  // Téléchargements de cours : gérés par l'app seule (pas de 2e copie en cache, pas de coupure à 8 s sur réseau lent)
+  if (/\.ecolia$/i.test(url.pathname)) return;
+  if (req.cache === 'no-store' && !/\.json$/i.test(url.pathname)) return;
   if (isMedia(url.pathname)) { event.respondWith(media(req, url)); return; }
   // catalogue.json, promos.json… et tout téléchargement demandé explicitement par l'app (cache:'no-store' / 'reload') :
   // on va chercher la version FRAÎCHE ; le cache ne sert qu'hors ligne.
