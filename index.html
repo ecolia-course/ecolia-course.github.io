@@ -84,11 +84,25 @@ h1 { color:#00ff88; font-size:22px; margin-bottom:4px; }
 .progress.err { color:#ff6666; }
 .empty { text-align:center; color:#666; padding:30px; }
 
+.fab-menu { position:fixed; right:16px; bottom:72px; width:56px; height:56px; border-radius:50%; background:#00ff88; color:#121212; border:none; font-size:22px; font-weight:bold; cursor:pointer; box-shadow:0 4px 18px rgba(0,255,136,0.45); z-index:900; display:flex; align-items:center; justify-content:center; }
+.fab-menu:active { transform:scale(0.94); }
+
+.modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:950; align-items:center; justify-content:center; padding:20px; }
+.modal-overlay.open { display:flex; }
+.modal-panel { background:#161b22; border-radius:16px; padding:16px; width:100%; max-width:380px; border:1px solid #21262d; display:flex; flex-direction:column; gap:10px; max-height:90vh; overflow-y:auto; }
+.modal-title { font-size:18px; color:#00ff88; margin-bottom:4px; text-align:center; font-weight:bold; }
+.modal-desc { font-size:12px; color:#8b949e; text-align:center; margin-bottom:6px; }
+.modal-btn { padding:14px 16px; border-radius:12px; border:1px solid #21262d; background:#0d1117; color:#e6f1ff; font-size:15px; font-weight:600; text-align:left; cursor:pointer; }
+.modal-btn:active { background:#21262d; }
+.modal-btn.primary { background:#00ff88; color:#121212; border-color:#00ff88; text-align:center; }
+.modal-btn.close-btn { background:transparent; color:#888; text-align:center; border:none; }
+.id-display { padding:14px; background:#0d1117; border:1px solid #00ff88; border-radius:10px; font-family:monospace; font-size:14px; color:#00ff88; text-align:center; word-break:break-all; letter-spacing:1px; }
+
 #decouvertesOverlay { display:none; position:fixed; inset:0; z-index:99999; background:#0d1117; overflow-y:auto; padding:16px; }
-#decouvertesOverlay .dec-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; max-width:500px; margin-left:auto; margin-right:auto; }
-#decouvertesOverlay .dec-header h1 { color:#00ff88; font-size:22px; margin:0; }
-#decouvertesOverlay .dec-close { padding:8px 16px; background:#161b22; color:#fff; border:1px solid #21262d; border-radius:20px; cursor:pointer; font-size:14px; }
-#decouvertesOverlay .dec-intro { color:#888; font-size:12px; margin-bottom:16px; max-width:500px; margin-left:auto; margin-right:auto; }
+.dec-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; max-width:500px; margin-left:auto; margin-right:auto; }
+.dec-header h1 { color:#00ff88; font-size:22px; margin:0; }
+.dec-close { padding:8px 16px; background:#161b22; color:#fff; border:1px solid #21262d; border-radius:20px; cursor:pointer; font-size:14px; }
+.dec-intro { color:#888; font-size:12px; margin-bottom:16px; max-width:500px; margin-left:auto; margin-right:auto; }
 #promosListe { max-width:500px; margin:0 auto; }
 .promo-card { background:#161b22; border-radius:14px; padding:16px; margin-bottom:12px; border:1px solid #21262d; }
 .promo-card .promo-head { display:flex; gap:12px; align-items:flex-start; }
@@ -100,6 +114,10 @@ h1 { color:#00ff88; font-size:22px; margin-bottom:4px; }
 .promo-card .promo-meta { font-size:11px; color:#666; margin-bottom:10px; }
 .promo-card .promo-lien { display:inline-block; padding:8px 16px; background:#00ccff; color:#121212; text-decoration:none; border-radius:20px; font-weight:bold; font-size:12px; }
 .promo-card .promo-badge { display:inline-block; padding:2px 8px; border-radius:10px; background:rgba(0,204,255,0.15); color:#00ccff; font-size:10px; font-weight:bold; margin-left:6px; vertical-align:middle; }
+
+#coursHOverlay { display:none; position:fixed; inset:0; z-index:99999; background:#0d1117; overflow-y:auto; padding:16px; padding-bottom:80px; }
+#coursHOverlay .h-container { max-width:500px; margin:0 auto; }
+#coursHOverlay .h-loading { color:#666; text-align:center; padding:30px; }
 </style>
 </head>
 <body>
@@ -135,7 +153,7 @@ h1 { color:#00ff88; font-size:22px; margin-bottom:4px; }
 </div>
 
 <!-- PAGE PRINCIPALE -->
-<h1>🎒 ECOLI​A</h1>
+<h1>🎒 ECOLIA</h1>
 <p class="sub">Programme scolaire RDC — 7e à 4e secondaire</p>
 
 <div class="search-row">
@@ -153,6 +171,29 @@ h1 { color:#00ff88; font-size:22px; margin-bottom:4px; }
 <div id="liste"></div>
 <p class="progress" id="progress">Chargement...</p>
 
+<!-- FAB + MENU -->
+<button class="fab-menu" id="fabMenu" onclick="ouvrirMenu()" title="Menu">☰</button>
+
+<div class="modal-overlay" id="menuOverlay" onclick="if(event.target===this)fermerMenu()">
+    <div class="modal-panel">
+        <div class="modal-title">ECOLIA</div>
+        <button class="modal-btn" onclick="afficherMonID()">🆔 Mon ID</button>
+        <button class="modal-btn" onclick="ouvrirCoursH()">📚 Voir les cours H</button>
+        <button class="modal-btn" onclick="partagerECOLIA()">📤 Partager ECOLIA</button>
+        <button class="modal-btn close-btn" onclick="fermerMenu()">✕ Fermer</button>
+    </div>
+</div>
+
+<div class="modal-overlay" id="idOverlay" onclick="if(event.target===this)fermerID()">
+    <div class="modal-panel">
+        <div class="modal-title">🆔 Mon ID ECOLIA</div>
+        <p class="modal-desc">Identifiant d'installation. Conserve-le pour retrouver tes cours sur cet appareil.</p>
+        <div class="id-display" id="idValue">…</div>
+        <button class="modal-btn primary" onclick="copierID()">📋 Copier</button>
+        <button class="modal-btn close-btn" onclick="fermerID()">Fermer</button>
+    </div>
+</div>
+
 <!-- OVERLAY DÉCOUVERTES -->
 <div id="decouvertesOverlay">
     <div class="dec-header">
@@ -162,6 +203,20 @@ h1 { color:#00ff88; font-size:22px; margin-bottom:4px; }
     <p class="dec-intro">Offres de partenaires (Sponsorisé). Les clics sont comptés de façon anonyme.</p>
     <div id="promosListe">
         <p style="color:#666;text-align:center;padding:30px;">Chargement...</p>
+    </div>
+</div>
+
+<!-- OVERLAY COURS H -->
+<div id="coursHOverlay">
+    <div class="h-container">
+        <div class="dec-header">
+            <h1>📚 Cours H</h1>
+            <button class="dec-close" onclick="fermerCoursH()">✕</button>
+        </div>
+        <p class="dec-intro">Catalogue H — cours enrichis, mêmes fonctions que les cours classiques.</p>
+        <div class="niveaux" id="hNiveaux"></div>
+        <div class="souscats" id="hSouscats"></div>
+        <div id="hListe"><p class="h-loading">Chargement…</p></div>
     </div>
 </div>
 
@@ -182,7 +237,6 @@ h1 { color:#00ff88; font-size:22px; margin-bottom:4px; }
         return d;
     }
 
-    /* — Mise à jour : invite SEULEMENT quand une vraie nouvelle version attend (jamais à la 1re visite) — */
     if ('serviceWorker' in navigator) {
         var avaitControleur = !!navigator.serviceWorker.controller;
         var recharge = false;
@@ -214,7 +268,6 @@ h1 { color:#00ff88; font-size:22px; margin-bottom:4px; }
         });
     }
 
-    /* — Tutoriel d'installation iOS (Safari n'envoie jamais « beforeinstallprompt ») — */
     var ua = navigator.userAgent || '';
     var estIOS = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     var installee = navigator.standalone === true || (window.matchMedia && matchMedia('(display-mode: standalone)').matches);
@@ -233,7 +286,6 @@ h1 { color:#00ff88; font-size:22px; margin-bottom:4px; }
         document.getElementById('ecolia-ios-ok').onclick = function () { d.remove(); };
         document.getElementById('ecolia-ios-never').onclick = function () { stock('ecolia_ios_guide', 'never'); d.remove(); };
     };
-    /* affiché une fois l'introduction fermée (appelé aussi par fermerIntro) */
     window.ecoliaMaybeIOS = function () {
         if (!estIOS || installee || stock('ecolia_ios_guide') === 'never') return;
         var intro = document.getElementById('intro');
@@ -246,13 +298,14 @@ h1 { color:#00ff88; font-size:22px; margin-bottom:4px; }
 
 <script>
 /* ═══════════ CONFIG ═══════════ */
-var CATALOGUE_URL = 'https://ecolia-course.github.io/catalogue.json';
-var BASE_URL = 'https://ecolia-course.github.io/';
-var PROMOS_URL = 'https://ecolia-course.github.io/promos.json';
-var PROMOS_CACHE = 'ecolia-promos-v1';
-var APP_SOURCE = 'ecolia';
+var CATALOGUE_URL   = 'https://ecolia-course.github.io/catalogue.json';
+var CATALOGUE_H_URL = 'https://ecolia-course.github.io/ecolia-h/catalogue-h.json';
+var BASE_URL        = 'https://ecolia-course.github.io/';
+var BASE_URL_H      = 'https://ecolia-course.github.io/ecolia-h/';
+var PROMOS_URL      = 'https://ecolia-course.github.io/promos.json';
+var PROMOS_CACHE    = 'ecolia-promos-v1';
+var APP_SOURCE      = 'ecolia';
 
-/* Les .ecolia sont décodés au téléchargement ; le lecteur ne manipule que des .html. */
 function fichierHTML(f) { return /\.ecolia$/i.test(f) ? f.replace(/\.ecolia$/i, '.html') : f; }
 function decoderEcolia(texte) {
     var m = texte.match(/^\s*<!--\s*ECOLIA1\s*([\s\S]*?)\s*-->\s*$/i);
@@ -270,27 +323,35 @@ function decoderEcolia(texte) {
 var CoursStorage = {
     COURS_CACHE: 'ecolia-cours-v1',
     async _c() { return caches.open(this.COURS_CACHE); },
-    async exists(f) {
+    async exists(filename) {
         var c = await this._c();
-        return !!(await c.match(BASE_URL + fichierHTML(f), { ignoreSearch: true }));
+        var html = fichierHTML(filename);
+        if (await c.match(BASE_URL + html, { ignoreSearch: true })) return true;
+        if (await c.match(BASE_URL_H + html, { ignoreSearch: true })) return true;
+        return false;
     },
-    async download(url, f) {
+    async download(url, filename) {
         try {
             var r = await fetch(url, { cache: 'no-store' });
             if (!r.ok) throw new Error('HTTP ' + r.status);
             var c = await this._c();
-            if (/\.ecolia$/i.test(f)) {
+            var cacheKey = url.replace(/\.ecolia$/i, '.html');
+            if (/\.ecolia$/i.test(filename)) {
                 var html = decoderEcolia(await r.text());
-                var cible = BASE_URL + fichierHTML(f);
-                await c.put(cible, new Response(html, { headers: { 'Content-Type': 'text/html; charset=utf-8' } }));
+                await c.put(cacheKey, new Response(html, { headers: { 'Content-Type': 'text/html; charset=utf-8' } }));
             } else {
-                await c.put(BASE_URL + f, r.clone());
+                await c.put(cacheKey, r.clone());
             }
             return true;
         } catch (e) { console.error('DL err:', e.message); return false; }
     },
-    async delete(f) {
-        try { var c = await this._c(); await c.delete(BASE_URL + fichierHTML(f), { ignoreSearch: true }); } catch (e) {}
+    async delete(filename) {
+        try {
+            var c = await this._c();
+            var html = fichierHTML(filename);
+            try { await c.delete(BASE_URL + html, { ignoreSearch: true }); } catch(e) {}
+            try { await c.delete(BASE_URL_H + html, { ignoreSearch: true }); } catch(e) {}
+        } catch(e) {}
     },
     async getVersion(id) { return parseInt(localStorage.getItem('ecolia_v_' + id) || '0'); },
     async setVersion(id, v) { localStorage.setItem('ecolia_v_' + id, v.toString()); }
@@ -300,10 +361,30 @@ var CoursStorage = {
 var CATALOGUE = null;
 var NIVEAU_ACTIVE = null;
 var SOUSCAT_ACTIVE = null;
+var H_CATALOGUE = null;
+var H_NIVEAU_ACTIVE = null;
+var H_SOUSCAT_ACTIVE = null;
 var telechargementsEnCours = {};
 var recherche = '';
 
-/* ═══════════ INTRO ═══════════ */
+function toast(msg) {
+    var t = document.createElement('div');
+    t.textContent = msg;
+    t.style.cssText = 'position:fixed;bottom:140px;left:50%;transform:translateX(-50%);background:#00ff88;color:#121212;padding:10px 20px;border-radius:20px;font-weight:bold;z-index:99999;font-size:13px;box-shadow:0 4px 18px rgba(0,0,0,0.4);';
+    document.body.appendChild(t);
+    setTimeout(function() { t.remove(); }, 2000);
+}
+function copierTexte(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(text);
+    return new Promise(function(resolve, reject) {
+        var ta = document.createElement('textarea');
+        ta.value = text; ta.style.cssText = 'position:fixed;left:-9999px;';
+        document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); resolve(); } catch(e) { reject(e); }
+        ta.remove();
+    });
+}
+
 function fermerIntro() {
     document.getElementById('intro').style.display = 'none';
     try { localStorage.setItem('intro_seen', 'true'); } catch(e) {}
@@ -311,7 +392,6 @@ function fermerIntro() {
 }
 try { if (localStorage.getItem('intro_seen') === 'true') document.getElementById('intro').style.display = 'none'; } catch(e) {}
 
-/* ═══════════ CHARGEMENT ═══════════ */
 function charger() {
     try {
         var cached = localStorage.getItem('catalogue_cache');
@@ -339,15 +419,11 @@ function setProgress(txt, cls) {
     p.className = 'progress ' + (cls || '');
 }
 
-/* ═══════════ AFFICHAGE ═══════════ */
 function afficherTout() {
     if (!CATALOGUE || !CATALOGUE.categories) return;
     try {
         var s = JSON.parse(localStorage.getItem('ecolia_section') || 'null');
-        if (s && s.niveau) {
-            NIVEAU_ACTIVE = s.niveau;
-            if (s.souscat) SOUSCAT_ACTIVE = s.souscat;
-        }
+        if (s && s.niveau) { NIVEAU_ACTIVE = s.niveau; if (s.souscat) SOUSCAT_ACTIVE = s.souscat; }
     } catch(e) {}
     if (!NIVEAU_ACTIVE) NIVEAU_ACTIVE = CATALOGUE.categories[0].id;
     afficherNiveaux(); afficherSousCats(); afficherListe();
@@ -373,8 +449,7 @@ function afficherNiveaux() {
         t.textContent = cat.icone + ' ' + cat.nom;
         t.onclick = function() {
             NIVEAU_ACTIVE = cat.id; SOUSCAT_ACTIVE = null;
-            sauverSection();
-            afficherNiveaux(); afficherSousCats(); afficherListe();
+            sauverSection(); afficherNiveaux(); afficherSousCats(); afficherListe();
         };
         c.appendChild(t);
     });
@@ -394,9 +469,7 @@ function afficherSousCats() {
         t.className = 'souscat-tab' + (SOUSCAT_ACTIVE === sub.id ? ' active' : '');
         t.textContent = sub.nom;
         t.onclick = function() {
-            SOUSCAT_ACTIVE = sub.id;
-            sauverSection();
-            afficherSousCats(); afficherListe();
+            SOUSCAT_ACTIVE = sub.id; sauverSection(); afficherSousCats(); afficherListe();
         };
         c.appendChild(t);
     });
@@ -466,7 +539,7 @@ async function creerCoursElement(c) {
         b3.onclick = function() { telecharger(c); }; actions.appendChild(b3);
         var b4 = document.createElement('button');
         b4.className = 'btn-ligne'; b4.textContent = '🌐 En ligne';
-        b4.onclick = function() { window.location.href = BASE_URL + c.fichiers[0]; }; actions.appendChild(b4);
+        b4.onclick = function() { window.location.href = (c._base || BASE_URL) + c.fichiers[0]; }; actions.appendChild(b4);
     }
     if (dejaLa && c.version > localV && online && !enCours) {
         var b5 = document.createElement('button');
@@ -476,7 +549,11 @@ async function creerCoursElement(c) {
     return div;
 }
 
-/* ═══════════ RECHERCHE ═══════════ */
+function rafraichirListes() {
+    afficherListe();
+    if (H_CATALOGUE) afficherHListe();
+}
+
 function filtrer() {
     recherche = document.getElementById('search').value.toLowerCase().trim();
     if (recherche) afficherListeRecherche(); else afficherListe();
@@ -495,15 +572,15 @@ async function afficherListeRecherche() {
     for (var i = 0; i < tous.length; i++) liste.appendChild(await creerCoursElement(tous[i]));
 }
 
-/* ═══════════ TÉLÉCHARGEMENT ═══════════ */
 async function telecharger(c) {
     if (!navigator.onLine) { setProgress('⚠ Pas de connexion', 'err'); return; }
     if (telechargementsEnCours[c.id]) return;
+    var base = c._base || BASE_URL;
     telechargementsEnCours[c.id] = { total: c.fichiers.length, done: 0 };
     setProgress('⏳ ' + c.titre + ' : 0/' + c.fichiers.length, '');
-    afficherListe();
+    rafraichirListes();
     for (var i = 0; i < c.fichiers.length; i++) {
-        var ok = await CoursStorage.download(BASE_URL + c.fichiers[i], c.fichiers[i]);
+        var ok = await CoursStorage.download(base + c.fichiers[i], c.fichiers[i]);
         if (ok) onDownloadDone(c.fichiers[i]); else onDownloadError(c.fichiers[i]);
     }
 }
@@ -518,7 +595,7 @@ function onDownloadDone(f) {
                 delete telechargementsEnCours[c.id];
                 setProgress('✓ ' + c.titre + ' téléchargé', 'ok');
             } else setProgress('⏳ ' + c.titre + ' : ' + t.done + '/' + t.total, '');
-            afficherListe();
+            rafraichirListes();
         }
     });
 }
@@ -529,7 +606,7 @@ function onDownloadError(f) {
         if (c.fichiers.indexOf(f) !== -1 && telechargementsEnCours[c.id]) {
             delete telechargementsEnCours[c.id];
             setProgress('❌ Erreur : ' + f, 'err');
-            afficherListe();
+            rafraichirListes();
         }
     });
 }
@@ -544,9 +621,9 @@ function getAllCours() {
     return tous;
 }
 
-/* ═══════════ LECTURE / SUPPRESSION ═══════════ */
 async function ouvrirLocal(c) {
-    var url = BASE_URL + fichierHTML(c.fichiers[0]);
+    var base = c._base || BASE_URL;
+    var url = base + fichierHTML(c.fichiers[0]);
     try { if (!(await CoursStorage.getVersion(c.id))) await CoursStorage.setVersion(c.id, c.version); } catch(e) {}
     track('ecolia_open', { cours_id: c.id, cours_titre: c.titre });
 
@@ -566,7 +643,7 @@ async function ouvrirLocal(c) {
         var cache = await caches.open(CoursStorage.COURS_CACHE);
         var resp = await cache.match(url, { ignoreSearch: true });
         if (!resp) {
-            var source = BASE_URL + c.fichiers[0];
+            var source = base + c.fichiers[0];
             resp = await fetch(source);
             if (!resp.ok) throw new Error('HTTP ' + resp.status);
             var contenu = await resp.text();
@@ -575,7 +652,7 @@ async function ouvrirLocal(c) {
             await cache.put(url, resp.clone());
         }
         var html = await resp.text();
-        if (!/<base\s/i.test(html)) html = html.replace(/<head([^>]*)>/i, '<head$1><base href="' + BASE_URL + '">');
+        if (!/<base\s/i.test(html)) html = html.replace(/<head([^>]*)>/i, '<head$1><base href="' + base + '">');
         frame.srcdoc = html;
     } catch(e) {
         frame.srcdoc = '<html><body style="padding:20px;font-family:sans-serif;"><h2>❌ Indisponible</h2><p>Connecte-toi pour télécharger ce cours.</p></body></html>';
@@ -587,12 +664,169 @@ async function supprimer(c) {
     for (var i = 0; i < c.fichiers.length; i++) await CoursStorage.delete(c.fichiers[i]);
     await CoursStorage.setVersion(c.id, 0);
     setProgress('🗑️ ' + c.titre + ' supprimé', '');
-    afficherListe();
+    rafraichirListes();
 }
 
-/* ═══════════ ÉVÉNEMENTS ═══════════ */
 window.addEventListener('online', function() { setProgress('✓ Connecté', 'ok'); charger(); });
 window.addEventListener('offline', function() { setProgress('⚠ Hors ligne', ''); afficherListe(); });
+
+/* ═══════════ MENU FLOTTANT ═══════════ */
+function ouvrirMenu() { document.getElementById('menuOverlay').classList.add('open'); }
+function fermerMenu() { document.getElementById('menuOverlay').classList.remove('open'); }
+
+/* ═══════════ MON ID ═══════════ */
+function genHex(n) {
+    var s = '';
+    if (window.crypto && crypto.getRandomValues) {
+        var arr = new Uint8Array(n);
+        crypto.getRandomValues(arr);
+        for (var i = 0; i < n; i++) s += ('0' + arr[i].toString(16)).slice(-2);
+    } else {
+        for (var i = 0; i < n * 2; i++) s += Math.floor(Math.random() * 16).toString(16);
+    }
+    return s.toUpperCase();
+}
+function getOrCreateID() {
+    try {
+        var id = localStorage.getItem('ecolia_id');
+        if (id) return id;
+        var newId = 'ECOLIA-' + genHex(6) + '-' + genHex(6);
+        localStorage.setItem('ecolia_id', newId);
+        return newId;
+    } catch(e) { return 'ECOLIA-UNKNOWN'; }
+}
+function afficherMonID() {
+    fermerMenu();
+    document.getElementById('idValue').textContent = getOrCreateID();
+    document.getElementById('idOverlay').classList.add('open');
+    track('ecolia_id_view', {});
+}
+function fermerID() { document.getElementById('idOverlay').classList.remove('open'); }
+function copierID() {
+    copierTexte(getOrCreateID())
+        .then(function() { toast('✓ ID copié'); })
+        .catch(function() { toast('❌ Copie impossible'); });
+}
+
+/* ═══════════ PARTAGER ECOLIA ═══════════ */
+function partagerECOLIA() {
+    fermerMenu();
+    var texte = "Découvre ECOLIA 🎒 — les cours du programme scolaire RDC, gratuits et hors ligne.\n" + BASE_URL;
+    track('ecolia_share', {});
+    if (navigator.share) {
+        navigator.share({ title: 'ECOLIA', text: texte, url: BASE_URL }).catch(function() {});
+        return;
+    }
+    copierTexte(texte).then(function() { toast('✓ Lien copié'); }).catch(function() { toast('❌ Copie impossible'); });
+}
+
+/* ═══════════ COURS H ═══════════ */
+function tagHBase(cat) {
+    if (cat.cours) cat.cours.forEach(function(c) { c._base = BASE_URL_H; });
+    if (cat.sousCategories) cat.sousCategories.forEach(function(sub) {
+        sub.cours.forEach(function(c) { c._base = BASE_URL_H; });
+    });
+}
+
+async function chargerCatalogueH() {
+    var cached = null;
+    try { cached = JSON.parse(localStorage.getItem('ecolia_catalogue_h_cache') || 'null'); } catch(e) {}
+    if (cached) {
+        H_CATALOGUE = cached;
+        H_CATALOGUE.categories.forEach(tagHBase);
+        if (!H_NIVEAU_ACTIVE && H_CATALOGUE.categories.length > 0) H_NIVEAU_ACTIVE = H_CATALOGUE.categories[0].id;
+        afficherH();
+    }
+    if (!navigator.onLine) {
+        if (!cached) document.getElementById('hListe').innerHTML = '<p class="h-loading">⚠ Hors ligne — catalogue H indisponible.</p>';
+        return;
+    }
+    try {
+        var resp = await fetch(CATALOGUE_H_URL + '?t=' + Date.now());
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        var data = await resp.json();
+        H_CATALOGUE = data;
+        H_CATALOGUE.categories.forEach(tagHBase);
+        if (!H_NIVEAU_ACTIVE && H_CATALOGUE.categories.length > 0) H_NIVEAU_ACTIVE = H_CATALOGUE.categories[0].id;
+        try { localStorage.setItem('ecolia_catalogue_h_cache', JSON.stringify(data)); } catch(e) {}
+        afficherH();
+    } catch(e) {
+        if (!cached) document.getElementById('hListe').innerHTML = '<p class="h-loading">❌ Catalogue H indisponible.</p>';
+    }
+}
+
+function getHNiveauActif() {
+    if (!H_CATALOGUE) return null;
+    for (var i = 0; i < H_CATALOGUE.categories.length; i++) {
+        if (H_CATALOGUE.categories[i].id === H_NIVEAU_ACTIVE) return H_CATALOGUE.categories[i];
+    }
+    return null;
+}
+
+function afficherH() { afficherHNiveaux(); afficherHSouscats(); afficherHListe(); }
+
+function afficherHNiveaux() {
+    var c = document.getElementById('hNiveaux'); c.innerHTML = '';
+    if (!H_CATALOGUE) return;
+    H_CATALOGUE.categories.forEach(function(cat) {
+        var t = document.createElement('div');
+        t.className = 'niveau-tab' + (H_NIVEAU_ACTIVE === cat.id ? ' active' : '');
+        t.textContent = (cat.icone || '📚') + ' ' + cat.nom;
+        t.onclick = function() {
+            H_NIVEAU_ACTIVE = cat.id; H_SOUSCAT_ACTIVE = null;
+            afficherHNiveaux(); afficherHSouscats(); afficherHListe();
+        };
+        c.appendChild(t);
+    });
+}
+
+function afficherHSouscats() {
+    var c = document.getElementById('hSouscats'); c.innerHTML = '';
+    var niveau = getHNiveauActif();
+    if (!niveau) { c.classList.remove('active'); return; }
+    if (!niveau.sousCategories || niveau.sousCategories.length === 0) {
+        c.classList.remove('active'); H_SOUSCAT_ACTIVE = null; return;
+    }
+    if (!H_SOUSCAT_ACTIVE) H_SOUSCAT_ACTIVE = niveau.sousCategories[0].id;
+    c.classList.add('active');
+    niveau.sousCategories.forEach(function(sub) {
+        var t = document.createElement('div');
+        t.className = 'souscat-tab' + (H_SOUSCAT_ACTIVE === sub.id ? ' active' : '');
+        t.textContent = sub.nom;
+        t.onclick = function() {
+            H_SOUSCAT_ACTIVE = sub.id; afficherHSouscats(); afficherHListe();
+        };
+        c.appendChild(t);
+    });
+}
+
+async function afficherHListe() {
+    var liste = document.getElementById('hListe');
+    if (!H_CATALOGUE) { liste.innerHTML = '<p class="h-loading">Chargement…</p>'; return; }
+    liste.innerHTML = '';
+    var niveau = getHNiveauActif();
+    if (!niveau) { liste.innerHTML = '<p class="empty">Aucun niveau.</p>'; return; }
+    var coursAffichables = [];
+    if (niveau.cours) niveau.cours.forEach(function(c) { coursAffichables.push(c); });
+    if (niveau.sousCategories) {
+        niveau.sousCategories.forEach(function(sub) {
+            if (H_SOUSCAT_ACTIVE && sub.id !== H_SOUSCAT_ACTIVE) return;
+            sub.cours.forEach(function(c) { coursAffichables.push(c); });
+        });
+    }
+    if (coursAffichables.length === 0) { liste.innerHTML = '<p class="empty">Aucun cours H.</p>'; return; }
+    for (var i = 0; i < coursAffichables.length; i++) {
+        liste.appendChild(await creerCoursElement(coursAffichables[i]));
+    }
+}
+
+function ouvrirCoursH() {
+    fermerMenu();
+    document.getElementById('coursHOverlay').style.display = 'block';
+    track('ecolia_h_open', {});
+    if (!H_CATALOGUE) chargerCatalogueH(); else afficherH();
+}
+function fermerCoursH() { document.getElementById('coursHOverlay').style.display = 'none'; }
 
 /* ═══════════ DÉCOUVERTES ═══════════ */
 async function ouvrirDecouvertes() {
@@ -602,7 +836,6 @@ async function ouvrirDecouvertes() {
 }
 function fermerDecouvertes() { document.getElementById('decouvertesOverlay').style.display = 'none'; }
 
-/* promos.json : on demande TOUJOURS la version fraîche ; la copie en cache ne sert que hors ligne */
 async function lirePromos() {
     var cache = await caches.open(PROMOS_CACHE);
     try {
@@ -648,7 +881,7 @@ function afficherPromos(promos) {
             'utm_source=' + APP_SOURCE + '&utm_medium=app&utm_campaign=' + (p.id || 'promo');
         var div = document.createElement('div');
         div.className = 'promo-card';
-        var badgeHtml = '<span class="promo-badge">Sponsorisé</span>';   // toutes les promos affichées sont payantes (filtre p.paye)
+        var badgeHtml = '<span class="promo-badge">Sponsorisé</span>';
         div.innerHTML =
             '<div class="promo-head">' +
                 '<div class="promo-ico">' + (p.image ? '<img src="' + p.image + '" alt="" loading="lazy">' : (p.icone || '📌')) + '</div>' +
@@ -676,16 +909,16 @@ async function verifierBadgePromos() {
 
 /* ═══════════ TRACKING ═══════════ */
 function track(nom, params) { if (typeof gtag === 'function') gtag('event', nom, params || {}); }
-track('ecolia_app_open', { version: '1.0.0', pwa: window.matchMedia('(display-mode: standalone)').matches });
+track('ecolia_app_open', { version: '1.1.0', pwa: window.matchMedia('(display-mode: standalone)').matches });
 
 var _oldDownload = telecharger;
 telecharger = function(c) {
-    track('ecolia_download', { cours_id: c.id, cours_titre: c.titre, fichiers: c.fichiers.length });
+    track('ecolia_download', { cours_id: c.id, cours_titre: c.titre, fichiers: c.fichiers.length, source: c._base === BASE_URL_H ? 'h' : 'classique' });
     return _oldDownload.call(this, c);
 };
 var _oldSupprimer = supprimer;
 supprimer = function(c) {
-    track('ecolia_delete', { cours_id: c.id });
+    track('ecolia_delete', { cours_id: c.id, source: c._base === BASE_URL_H ? 'h' : 'classique' });
     return _oldSupprimer.call(this, c);
 };
 var _oldFiltrer = filtrer;
