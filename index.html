@@ -252,25 +252,45 @@ var PROMOS_URL = 'https://ecolia-course.github.io/promos.json';
 var PROMOS_CACHE = 'ecolia-promos-v1';
 var APP_SOURCE = 'ecolia';
 
+/* Les .ecolia sont décodés au téléchargement ; le lecteur ne manipule que des .html. */
+function fichierHTML(f) { return /\.ecolia$/i.test(f) ? f.replace(/\.ecolia$/i, '.html') : f; }
+function decoderEcolia(texte) {
+    var m = texte.match(/^\s*<!--\s*ECOLIA1\s*([\s\S]*?)\s*-->\s*$/i);
+    if (!m) throw new Error('Format .ecolia invalide');
+    var b64 = m[1].replace(/\s+/g, '');
+    var bin = atob(b64);
+    var bytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    if (window.TextDecoder) return new TextDecoder('utf-8').decode(bytes);
+    var escaped = ''; for (var j = 0; j < bytes.length; j++) escaped += '%' + ('0' + bytes[j].toString(16)).slice(-2);
+    return decodeURIComponent(escaped);
+}
+
 /* ═══════════ STOCKAGE — CACHE API ═══════════ */
 var CoursStorage = {
     COURS_CACHE: 'ecolia-cours-v1',
     async _c() { return caches.open(this.COURS_CACHE); },
     async exists(f) {
         var c = await this._c();
-        return !!(await c.match(BASE_URL + f, { ignoreSearch: true }));
+        return !!(await c.match(BASE_URL + fichierHTML(f), { ignoreSearch: true }));
     },
     async download(url, f) {
         try {
             var r = await fetch(url, { cache: 'no-store' });
             if (!r.ok) throw new Error('HTTP ' + r.status);
             var c = await this._c();
-            await c.put(url, r.clone());
+            if (/\.ecolia$/i.test(f)) {
+                var html = decoderEcolia(await r.text());
+                var cible = BASE_URL + fichierHTML(f);
+                await c.put(cible, new Response(html, { headers: { 'Content-Type': 'text/html; charset=utf-8' } }));
+            } else {
+                await c.put(BASE_URL + f, r.clone());
+            }
             return true;
         } catch (e) { console.error('DL err:', e.message); return false; }
     },
     async delete(f) {
-        try { var c = await this._c(); await c.delete(BASE_URL + f, { ignoreSearch: true }); } catch (e) {}
+        try { var c = await this._c(); await c.delete(BASE_URL + fichierHTML(f), { ignoreSearch: true }); } catch (e) {}
     },
     async getVersion(id) { return parseInt(localStorage.getItem('ecolia_v_' + id) || '0'); },
     async setVersion(id, v) { localStorage.setItem('ecolia_v_' + id, v.toString()); }
@@ -526,7 +546,7 @@ function getAllCours() {
 
 /* ═══════════ LECTURE / SUPPRESSION ═══════════ */
 async function ouvrirLocal(c) {
-    var url = BASE_URL + c.fichiers[0];
+    var url = BASE_URL + fichierHTML(c.fichiers[0]);
     try { if (!(await CoursStorage.getVersion(c.id))) await CoursStorage.setVersion(c.id, c.version); } catch(e) {}
     track('ecolia_open', { cours_id: c.id, cours_titre: c.titre });
 
@@ -545,7 +565,15 @@ async function ouvrirLocal(c) {
     try {
         var cache = await caches.open(CoursStorage.COURS_CACHE);
         var resp = await cache.match(url, { ignoreSearch: true });
-        if (!resp) { resp = await fetch(url); if (resp.ok) await cache.put(url, resp.clone()); }
+        if (!resp) {
+            var source = BASE_URL + c.fichiers[0];
+            resp = await fetch(source);
+            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+            var contenu = await resp.text();
+            var htmlRecupere = /\.ecolia$/i.test(c.fichiers[0]) ? decoderEcolia(contenu) : contenu;
+            resp = new Response(htmlRecupere, { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
+            await cache.put(url, resp.clone());
+        }
         var html = await resp.text();
         if (!/<base\s/i.test(html)) html = html.replace(/<head([^>]*)>/i, '<head$1><base href="' + BASE_URL + '">');
         frame.srcdoc = html;
