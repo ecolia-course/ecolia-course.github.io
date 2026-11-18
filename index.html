@@ -78,6 +78,7 @@ h1 { color:#00ff88; font-size:22px; margin-bottom:4px; }
 .btn-lire { background:#0099ff; color:#fff; }
 .btn-ligne { background:#4a4a8a; color:#fff; }
 .btn-supp { background:#3a1a1a; color:#ff6666; padding:6px 8px !important; }
+.btn-locked { background:#2a1a1a; color:#ff6666; font-size:10px; padding:6px 8px; border-radius:6px; border:1px solid #3a1a1a; white-space:nowrap; }
 
 .progress { position:fixed; bottom:0; left:0; right:0; background:#161b22; padding:10px; text-align:center; font-size:11px; color:#8b949e; border-top:1px solid #21262d; }
 .progress.ok { color:#00ff88; }
@@ -97,6 +98,10 @@ h1 { color:#00ff88; font-size:22px; margin-bottom:4px; }
 .modal-btn.primary { background:#00ff88; color:#121212; border-color:#00ff88; text-align:center; }
 .modal-btn.close-btn { background:transparent; color:#888; text-align:center; border:none; }
 .id-display { padding:14px; background:#0d1117; border:1px solid #00ff88; border-radius:10px; font-family:monospace; font-size:14px; color:#00ff88; text-align:center; word-break:break-all; letter-spacing:1px; }
+.id-statut { text-align:center; font-size:12px; padding:10px; border-radius:10px; line-height:1.5; }
+.id-statut.ok { background:rgba(0,255,136,0.1); border:1px solid #00ff88; color:#00ff88; }
+.id-statut.ko { background:rgba(255,102,102,0.1); border:1px solid #ff6666; color:#ff6666; }
+.id-statut.attente { background:rgba(255,170,0,0.1); border:1px solid #ffaa00; color:#ffaa00; }
 
 #decouvertesOverlay { display:none; position:fixed; inset:0; z-index:99999; background:#0d1117; overflow-y:auto; padding:16px; }
 .dec-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; max-width:500px; margin-left:auto; margin-right:auto; }
@@ -118,6 +123,10 @@ h1 { color:#00ff88; font-size:22px; margin-bottom:4px; }
 #coursHOverlay { display:none; position:fixed; inset:0; z-index:99999; background:#0d1117; overflow-y:auto; padding:16px; padding-bottom:80px; }
 #coursHOverlay .h-container { max-width:500px; margin:0 auto; }
 #coursHOverlay .h-loading { color:#666; text-align:center; padding:30px; }
+.h-statut { max-width:500px; margin:0 auto 14px auto; padding:10px 14px; border-radius:10px; font-size:12px; text-align:center; line-height:1.5; }
+.h-statut.ok { background:rgba(0,255,136,0.1); border:1px solid #00ff88; color:#00ff88; }
+.h-statut.ko { background:rgba(255,102,102,0.1); border:1px solid #ff6666; color:#ff6666; }
+.h-statut.attente { background:rgba(255,170,0,0.1); border:1px solid #ffaa00; color:#ffaa00; }
 </style>
 </head>
 <body>
@@ -184,12 +193,15 @@ h1 { color:#00ff88; font-size:22px; margin-bottom:4px; }
     </div>
 </div>
 
+<!-- MODAL MON ID -->
 <div class="modal-overlay" id="idOverlay" onclick="if(event.target===this)fermerID()">
     <div class="modal-panel">
         <div class="modal-title">🆔 Mon ID ECOLIA</div>
         <p class="modal-desc">Identifiant d'installation. Conserve-le pour retrouver tes cours sur cet appareil.</p>
         <div class="id-display" id="idValue">…</div>
+        <div class="id-statut attente" id="idStatut">⏳ Vérification…</div>
         <button class="modal-btn primary" onclick="copierID()">📋 Copier</button>
+        <button class="modal-btn" onclick="reverifierID()">🔄 Revérifier mon autorisation</button>
         <button class="modal-btn close-btn" onclick="fermerID()">Fermer</button>
     </div>
 </div>
@@ -213,7 +225,8 @@ h1 { color:#00ff88; font-size:22px; margin-bottom:4px; }
             <h1>📚 Cours H</h1>
             <button class="dec-close" onclick="fermerCoursH()">✕</button>
         </div>
-        <p class="dec-intro">Catalogue H — cours enrichis, mêmes fonctions que les cours classiques.</p>
+        <p class="dec-intro">Catalogue H — cours enrichis, mêmes fonctions que les cours classiques. Un ID autorisé est requis pour télécharger.</p>
+        <div id="hStatut" class="h-statut attente" style="display:none;">⏳ Vérification…</div>
         <div class="niveaux" id="hNiveaux"></div>
         <div class="souscats" id="hSouscats"></div>
         <div id="hListe"><p class="h-loading">Chargement…</p></div>
@@ -298,13 +311,18 @@ h1 { color:#00ff88; font-size:22px; margin-bottom:4px; }
 
 <script>
 /* ═══════════ CONFIG ═══════════ */
-var CATALOGUE_URL   = 'https://ecolia-course.github.io/catalogue.json';
-var CATALOGUE_H_URL = 'https://ecolia-course.github.io/ecolia-h/catalogue-h.json';
-var BASE_URL        = 'https://ecolia-course.github.io/';
-var BASE_URL_H      = 'https://ecolia-course.github.io/ecolia-h/';
-var PROMOS_URL      = 'https://ecolia-course.github.io/promos.json';
-var PROMOS_CACHE    = 'ecolia-promos-v1';
-var APP_SOURCE      = 'ecolia';
+var CATALOGUE_URL     = 'https://ecolia-course.github.io/catalogue.json';
+var CATALOGUE_H_URL   = 'https://ecolia-course.github.io/ecolia-h/catalogue-h.json';
+var BASE_URL          = 'https://ecolia-course.github.io/';
+var BASE_URL_H        = 'https://ecolia-course.github.io/ecolia-h/';
+var PROMOS_URL        = 'https://ecolia-course.github.io/promos.json';
+var PROMOS_CACHE      = 'ecolia-promos-v1';
+/* Autorisations : GitHub raw (garanti accessible même si Pages n'est pas activé). */
+var AUTORISATIONS_URL          = 'https://raw.githubusercontent.com/ecolia-course/ecolia-h/main/autorisations.json';
+var AUTORISATIONS_URL_FALLBACK = 'https://ecolia-course.github.io/ecolia-h/autorisations.json';
+var AUTH_CACHE_KEY   = 'ecolia_auth_cache_v1';
+var AUTH_CACHE_TTL   = 6 * 60 * 60 * 1000; // 6 heures
+var APP_SOURCE       = 'ecolia';
 
 function fichierHTML(f) { return /\.ecolia$/i.test(f) ? f.replace(/\.ecolia$/i, '.html') : f; }
 function decoderEcolia(texte) {
@@ -356,6 +374,74 @@ var CoursStorage = {
     async getVersion(id) { return parseInt(localStorage.getItem('ecolia_v_' + id) || '0'); },
     async setVersion(id, v) { localStorage.setItem('ecolia_v_' + id, v.toString()); }
 };
+
+/* ═══════════ AUTORISATION PAR ID ═══════════ */
+/* État mémoire (jamais persisté comme source de vérité, juste cache local). */
+var AUTH_DATA = null;        // { version, updated, ids: [ ... ] }
+var AUTH_FETCHED_AT = 0;
+var AUTH_LOADING = false;
+
+/* Charge les autorisations : cache local si frais, sinon fetch (avec fallback URL). */
+async function chargerAutorisations(forceRefresh) {
+    // Hydrate depuis cache local si présent
+    try {
+        var cached = JSON.parse(localStorage.getItem(AUTH_CACHE_KEY) || 'null');
+        if (cached && cached.data) {
+            AUTH_DATA = cached.data;
+            AUTH_FETCHED_AT = cached.fetchedAt || 0;
+        }
+    } catch(e) {}
+
+    var now = Date.now();
+    if (!forceRefresh && AUTH_DATA && (now - AUTH_FETCHED_AT) < AUTH_CACHE_TTL) {
+        return AUTH_DATA;
+    }
+    if (!navigator.onLine) {
+        return AUTH_DATA; // peut être null (premier démarrage hors ligne)
+    }
+    AUTH_LOADING = true;
+    try {
+        var data = await fetchAutorisations();
+        if (data && data.ids) {
+            AUTH_DATA = data;
+            AUTH_FETCHED_AT = now;
+            try { localStorage.setItem(AUTH_CACHE_KEY, JSON.stringify({ data: data, fetchedAt: now })); } catch(e) {}
+        }
+        return AUTH_DATA;
+    } catch(e) {
+        return AUTH_DATA;
+    } finally {
+        AUTH_LOADING = false;
+    }
+}
+
+async function fetchAutorisations() {
+    var urls = [AUTORISATIONS_URL, AUTORISATIONS_URL_FALLBACK];
+    var lastErr = null;
+    for (var i = 0; i < urls.length; i++) {
+        try {
+            var resp = await fetch(urls[i] + '?t=' + Date.now(), { cache: 'no-store' });
+            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+            var data = await resp.json();
+            if (!data.ids || !Array.isArray(data.ids)) throw new Error('JSON invalide');
+            return data;
+        } catch(e) { lastErr = e; }
+    }
+    throw lastErr || new Error('Fetch échoué');
+}
+
+/* Vérification synchrone (utilise l'état mémoire). */
+function estAutoriseSync(id) {
+    if (!id || !AUTH_DATA || !Array.isArray(AUTH_DATA.ids)) return false;
+    return AUTH_DATA.ids.indexOf(id) !== -1;
+}
+
+/* Vérification asynchrone (pour actions critiques comme le téléchargement). */
+async function estAutorise(id) {
+    var data = await chargerAutorisations(true);
+    if (!data || !Array.isArray(data.ids)) return false;
+    return data.ids.indexOf(id) !== -1;
+}
 
 /* ═══════════ ÉTAT GLOBAL ═══════════ */
 var CATALOGUE = null;
@@ -506,9 +592,25 @@ async function creerCoursElement(c) {
     var telechargement = telechargementsEnCours[c.id];
     var enCours = !!telechargement;
     var online = navigator.onLine;
+    var isH = (c._base === BASE_URL_H);
+
+    /* Vérification d'autorisation pour les cours H (synchrone, basée sur le cache mémoire). */
+    var autorise = true;
+    var authInconnue = false;
+    if (isH) {
+        if (AUTH_DATA === null) {
+            authInconnue = true;
+            autorise = false;
+        } else {
+            autorise = estAutoriseSync(getOrCreateID());
+        }
+    }
 
     var etatTexte = '', etatCls = '';
-    if (enCours) { etatTexte = '⏳ ' + telechargement.done + '/' + telechargement.total; etatCls = 'maj'; }
+    if (isH && !autorise) {
+        if (authInconnue) { etatTexte = '⏳ Autorisation à vérifier'; etatCls = 'maj'; }
+        else { etatTexte = '🔒 ID non autorisé'; etatCls = 'warn'; }
+    } else if (enCours) { etatTexte = '⏳ ' + telechargement.done + '/' + telechargement.total; etatCls = 'maj'; }
     else if (!dejaLa) { etatTexte = online ? 'Non téléchargé' : '⚠ Hors ligne'; etatCls = online ? '' : 'warn'; }
     else if (c.version > localV) { etatTexte = 'Mise à jour dispo'; etatCls = 'maj'; }
     else { etatTexte = '✓ Hors ligne'; etatCls = 'ok'; }
@@ -525,6 +627,8 @@ async function creerCoursElement(c) {
         '</div><div class="actions"></div>';
 
     var actions = div.querySelector('.actions');
+
+    /* Bouton Lire : disponible pour tout cours déjà téléchargé (auth passée). */
     if (dejaLa && !enCours) {
         var b1 = document.createElement('button');
         b1.className = 'btn-lire'; b1.textContent = '📖 Lire';
@@ -533,19 +637,35 @@ async function creerCoursElement(c) {
         b2.className = 'btn-supp'; b2.textContent = '🗑️';
         b2.onclick = function() { supprimer(c); }; actions.appendChild(b2);
     }
+
+    /* Bouton Télécharger + En ligne : seulement si autorisé (ou cours classique). */
     if (!dejaLa && online && !enCours) {
-        var b3 = document.createElement('button');
-        b3.className = 'btn-dl'; b3.textContent = '☁️ Télécharger';
-        b3.onclick = function() { telecharger(c); }; actions.appendChild(b3);
-        var b4 = document.createElement('button');
-        b4.className = 'btn-ligne'; b4.textContent = '🌐 En ligne';
-        b4.onclick = function() { window.location.href = (c._base || BASE_URL) + c.fichiers[0]; }; actions.appendChild(b4);
+        if (isH && !autorise) {
+            var lock = document.createElement('div');
+            lock.className = 'btn-locked';
+            lock.innerHTML = '🔒 ID requis';
+            lock.title = 'Communique ton ID au gestionnaire ECOLIA H';
+            actions.appendChild(lock);
+        } else {
+            var b3 = document.createElement('button');
+            b3.className = 'btn-dl'; b3.textContent = '☁️ Télécharger';
+            b3.onclick = function() { telecharger(c); }; actions.appendChild(b3);
+            var b4 = document.createElement('button');
+            b4.className = 'btn-ligne'; b4.textContent = '🌐 En ligne';
+            b4.onclick = function() { window.location.href = (c._base || BASE_URL) + c.fichiers[0]; };
+            actions.appendChild(b4);
+        }
     }
+
+    /* Bouton MàJ : seulement si autorisé (cours H) ou cours classique. */
     if (dejaLa && c.version > localV && online && !enCours) {
-        var b5 = document.createElement('button');
-        b5.className = 'btn-maj'; b5.textContent = '🔄 MàJ';
-        b5.onclick = function() { telecharger(c); }; actions.appendChild(b5);
+        if (!isH || autorise) {
+            var b5 = document.createElement('button');
+            b5.className = 'btn-maj'; b5.textContent = '🔄 MàJ';
+            b5.onclick = function() { telecharger(c); }; actions.appendChild(b5);
+        }
     }
+
     return div;
 }
 
@@ -575,6 +695,19 @@ async function afficherListeRecherche() {
 async function telecharger(c) {
     if (!navigator.onLine) { setProgress('⚠ Pas de connexion', 'err'); return; }
     if (telechargementsEnCours[c.id]) return;
+
+    /* VERROU D'AUTORISATION — cours H uniquement */
+    if (c._base === BASE_URL_H) {
+        var id = getOrCreateID();
+        var data = await chargerAutorisations(true);
+        if (!data || !Array.isArray(data.ids) || data.ids.indexOf(id) === -1) {
+            setProgress('🔒 ID non autorisé pour les cours H', 'err');
+            toast('🔒 Communique « ' + id + ' » au gestionnaire ECOLIA H');
+            rafraichirListes();
+            return;
+        }
+    }
+
     var base = c._base || BASE_URL;
     telechargementsEnCours[c.id] = { total: c.fichiers.length, done: 0 };
     setProgress('⏳ ' + c.titre + ' : 0/' + c.fichiers.length, '');
@@ -625,7 +758,7 @@ async function ouvrirLocal(c) {
     var base = c._base || BASE_URL;
     var url = base + fichierHTML(c.fichiers[0]);
     try { if (!(await CoursStorage.getVersion(c.id))) await CoursStorage.setVersion(c.id, c.version); } catch(e) {}
-    track('ecolia_open', { cours_id: c.id, cours_titre: c.titre });
+    track('ecolia_open', { cours_id: c.id, cours_titre: c.titre, source: c._base === BASE_URL_H ? 'h' : 'classique' });
 
     var o = document.createElement('div');
     o.id = 'readerOverlay';
@@ -667,7 +800,7 @@ async function supprimer(c) {
     rafraichirListes();
 }
 
-window.addEventListener('online', function() { setProgress('✓ Connecté', 'ok'); charger(); });
+window.addEventListener('online', function() { setProgress('✓ Connecté', 'ok'); charger(); chargerAutorisations(false).then(rafraichirListes); });
 window.addEventListener('offline', function() { setProgress('⚠ Hors ligne', ''); afficherListe(); });
 
 /* ═══════════ MENU FLOTTANT ═══════════ */
@@ -695,12 +828,47 @@ function getOrCreateID() {
         return newId;
     } catch(e) { return 'ECOLIA-UNKNOWN'; }
 }
-function afficherMonID() {
+
+async function afficherMonID() {
     fermerMenu();
-    document.getElementById('idValue').textContent = getOrCreateID();
+    var id = getOrCreateID();
+    document.getElementById('idValue').textContent = id;
     document.getElementById('idOverlay').classList.add('open');
     track('ecolia_id_view', {});
+    await majStatutID(false);
 }
+
+async function reverifierID() {
+    track('ecolia_id_refresh', {});
+    await majStatutID(true);
+}
+
+async function majStatutID(forceRefresh) {
+    var statut = document.getElementById('idStatut');
+    if (!statut) return;
+    statut.className = 'id-statut attente';
+    statut.textContent = '⏳ Vérification…';
+    var id = getOrCreateID();
+    try {
+        var data = await chargerAutorisations(!!forceRefresh);
+        if (!data || !Array.isArray(data.ids)) {
+            statut.className = 'id-statut attente';
+            statut.textContent = '⚠ Autorisation indisponible (connexion requise)';
+            return;
+        }
+        if (data.ids.indexOf(id) !== -1) {
+            statut.className = 'id-statut ok';
+            statut.textContent = '✅ ID autorisé pour les cours H';
+        } else {
+            statut.className = 'id-statut ko';
+            statut.textContent = '🔒 ID non autorisé pour les cours H';
+        }
+    } catch(e) {
+        statut.className = 'id-statut attente';
+        statut.textContent = '⚠ Vérification impossible';
+    }
+}
+
 function fermerID() { document.getElementById('idOverlay').classList.remove('open'); }
 function copierID() {
     copierTexte(getOrCreateID())
@@ -820,13 +988,42 @@ async function afficherHListe() {
     }
 }
 
-function ouvrirCoursH() {
+async function ouvrirCoursH() {
     fermerMenu();
     document.getElementById('coursHOverlay').style.display = 'block';
     track('ecolia_h_open', {});
+    await majStatutH();
     if (!H_CATALOGUE) chargerCatalogueH(); else afficherH();
 }
 function fermerCoursH() { document.getElementById('coursHOverlay').style.display = 'none'; }
+
+async function majStatutH() {
+    var el = document.getElementById('hStatut');
+    if (!el) return;
+    el.style.display = 'block';
+    el.className = 'h-statut attente';
+    el.textContent = '⏳ Vérification de l\'autorisation…';
+    var id = getOrCreateID();
+    try {
+        var data = await chargerAutorisations(false);
+        if (!data || !Array.isArray(data.ids)) {
+            el.className = 'h-statut attente';
+            el.textContent = '⚠ Autorisation indisponible (connexion requise). Ton ID : ' + id;
+            return;
+        }
+        if (data.ids.indexOf(id) !== -1) {
+            el.className = 'h-statut ok';
+            el.textContent = '✅ ID autorisé : ' + id;
+        } else {
+            el.className = 'h-statut ko';
+            el.textContent = '🔒 ID non autorisé — communique « ' + id + ' » au gestionnaire ECOLIA H';
+        }
+    } catch(e) {
+        el.className = 'h-statut attente';
+        el.textContent = '⚠ Erreur de vérification';
+    }
+    rafraichirListes();
+}
 
 /* ═══════════ DÉCOUVERTES ═══════════ */
 async function ouvrirDecouvertes() {
@@ -909,11 +1106,16 @@ async function verifierBadgePromos() {
 
 /* ═══════════ TRACKING ═══════════ */
 function track(nom, params) { if (typeof gtag === 'function') gtag('event', nom, params || {}); }
-track('ecolia_app_open', { version: '1.1.0', pwa: window.matchMedia('(display-mode: standalone)').matches });
+track('ecolia_app_open', { version: '1.2.0', pwa: window.matchMedia('(display-mode: standalone)').matches });
 
 var _oldDownload = telecharger;
 telecharger = function(c) {
-    track('ecolia_download', { cours_id: c.id, cours_titre: c.titre, fichiers: c.fichiers.length, source: c._base === BASE_URL_H ? 'h' : 'classique' });
+    track('ecolia_download_attempt', {
+        cours_id: c.id,
+        cours_titre: c.titre,
+        fichiers: c.fichiers.length,
+        source: c._base === BASE_URL_H ? 'h' : 'classique'
+    });
     return _oldDownload.call(this, c);
 };
 var _oldSupprimer = supprimer;
@@ -940,6 +1142,14 @@ window.addEventListener('appinstalled', function() { track('ecolia_pwa_install')
 /* ═══════════ DÉMARRAGE ═══════════ */
 verifierBadgePromos();
 charger();
+
+/* Préchargement des autorisations (non-bloquant) puis rafraîchissement des listes. */
+chargerAutorisations(false).then(function () {
+    rafraichirListes();
+    /* Si l'overlay H est déjà ouvert, on rafraîchit son statut. */
+    var hOverlay = document.getElementById('coursHOverlay');
+    if (hOverlay && hOverlay.style.display === 'block') majStatutH();
+});
 </script>
 </body>
 </html>
