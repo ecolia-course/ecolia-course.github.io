@@ -449,12 +449,12 @@ var HC = (function () {
    Chaque cours H est un fichier chiffré (.ecolia, format ECOLIA2) hébergé dans h-data/.
    Le fichier d'accès de l'ID (h-data/acces/<empreinte>.json) contient les clés, elles-mêmes chiffrées avec l'ID.
    Fichier d'accès supprimé ou date dépassée => plus de clé => le cours ne s'ouvre plus (téléchargé ou non). */
-var H_DATA_BASE = 'https://ecolia-course.github.io/h-data/';
+var H_DATA_BASE = 'https://ecolia-course.github.io/ecolia-h/h-data/';
 var HA_CACHE_KEY = 'ecolia_acces_v3';
-var HA_TTL = 6 * 60 * 60 * 1000;
-var HA_GRACE = 7 * 24 * 60 * 60 * 1000;
+var HA_TTL = 60 * 60 * 1000;                 /* revérification de l'accès : 1 heure maximum */
+var HA_GRACE = 24 * 60 * 60 * 1000;          /* hors ligne : lecture autorisée 24 h après la dernière vérification */
 var HA = (function () {
-    var ACCES = null, PRESENTS = {}, initP = null, enVol = null, CLES = {}, DB = null;
+    var DIAG = '', ACCES = null, PRESENTS = {}, initP = null, enVol = null, CLES = {}, DB = null;
     function jour(s) { var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(s || ''); return m ? m[3] + '/' + m[2] + '/' + m[1] : ''; }
     function maintenant() { return Date.now() + ((ACCES && ACCES.skew) || 0); }
     function sauver() { try { localStorage.setItem(HA_CACHE_KEY, JSON.stringify(ACCES)); } catch (e) {} }
@@ -515,8 +515,10 @@ var HA = (function () {
         if (enVol) return enVol;
         enVol = (async function () {
             try {
-                var url = H_DATA_BASE + 'acces/' + (await HC.nomAcces(getOrCreateID())) + '.json?t=' + Date.now();
-                var r = await fetch(url, { cache: 'no-store' });
+                var nomF = (await HC.nomAcces(getOrCreateID())) + '.json';
+                DIAG = nomF + ' (réseau indisponible)';
+                var r = await fetch(H_DATA_BASE + 'acces/' + nomF + '?t=' + Date.now(), { cache: 'no-store' });
+                DIAG = nomF + ' → réponse ' + r.status;
                 var d = r.headers && r.headers.get('Date'), srv = d ? Date.parse(d) : NaN;
                 var skew = isNaN(srv) ? ((ACCES && ACCES.skew) || 0) : (srv - Date.now());
                 var now = Date.now() + skew;
@@ -589,7 +591,8 @@ var HA = (function () {
         if (e === 'expire') return '🔒 Accès expiré le ' + jour(ACCES.fin) + ' — contacte ECOLIA H';
         return '🔒 ID non autorisé pour les cours H';
     }
-    return { init: init, rafraichir: rafraichir, etat: etat, droit: droit, present: present, telecharger: telecharger, lire: lire, supprimer: supprimer, resume: resume, msgKo: msgKo };
+    function diag() { return DIAG ? ' — fichier cherché : acces/' + DIAG : ''; }
+    return { diag: diag, init: init, rafraichir: rafraichir, etat: etat, droit: droit, present: present, telecharger: telecharger, lire: lire, supprimer: supprimer, resume: resume, msgKo: msgKo };
 })();
 
 /* Compatibilité avec le reste de l'application : renvoie null (inconnu) ou { ids:[ID] } si l'accès est valide. */
@@ -1110,7 +1113,7 @@ async function majStatutID(forceRefresh) {
             statut.textContent = '✅ ' + HA.resume();
         } else {
             statut.className = 'id-statut ko';
-            statut.textContent = HA.msgKo();
+            statut.textContent = HA.msgKo() + HA.diag();
         }
     } catch(e) {
         statut.className = 'id-statut attente';
