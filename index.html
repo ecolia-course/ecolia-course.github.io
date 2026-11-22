@@ -388,73 +388,280 @@ var CoursStorage = {
     async setVersion(id, v) { localStorage.setItem('ecolia_v_' + id, v.toString()); }
 };
 
-/* ═══════════ AUTORISATION PAR ID ═══════════ */
-/* État mémoire (jamais persisté comme source de vérité, juste cache local). */
-var AUTH_DATA = null;        // { version, updated, ids: [ ... ] }
-var AUTH_FETCHED_AT = 0;
-var AUTH_LOADING = false;
-
-/* Charge les autorisations : cache local si frais, sinon fetch (avec fallback URL). */
-async function chargerAutorisations(forceRefresh) {
-    // Hydrate depuis cache local si présent
-    try {
-        var cached = JSON.parse(localStorage.getItem(AUTH_CACHE_KEY) || 'null');
-        if (cached && cached.data) {
-            AUTH_DATA = cached.data;
-            AUTH_FETCHED_AT = cached.fetchedAt || 0;
+/* ═══ ECOLIA H — noyau de chiffrement (partagé par l'application et ecolia-admin.html) ═══ */
+var HC = (function () {
+    var enc = new TextEncoder(), dec = new TextDecoder(), memoEmb = {};
+    function b64d(s) { var b = atob(s), u = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u; }
+    function b64e(u) { var s = ''; for (var i = 0; i < u.length; i += 8192) s += String.fromCharCode.apply(null, u.subarray(i, i + 8192)); return btoa(s); }
+    function hex(u) { var s = ''; for (var i = 0; i < u.length; i++) s += ('0' + u[i].toString(16)).slice(-2); return s; }
+    function concat() { var n = 0, i, a = arguments; for (i = 0; i < a.length; i++) n += a[i].length; var o = new Uint8Array(n), p = 0; for (i = 0; i < a.length; i++) { o.set(a[i], p); p += a[i].length; } return o; }
+    function norm(id) { return String(id || '').trim().toUpperCase(); }
+    function dispo() { return !!(window.crypto && crypto.subtle && window.TextEncoder); }
+    async function pbk(id, salt, n) {
+        var k = await crypto.subtle.importKey('raw', enc.encode(norm(id)), 'PBKDF2', false, ['deriveBits']);
+        return new Uint8Array(await crypto.subtle.deriveBits({ name: 'PBKDF2', salt: enc.encode(salt), iterations: 100000, hash: 'SHA-256' }, k, n * 8));
+    }
+    async function hmac(kb, msg) {
+        var k = await crypto.subtle.importKey('raw', kb, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+        return new Uint8Array(await crypto.subtle.sign('HMAC', k, enc.encode(msg)));
+    }
+    async function nomAcces(id) { return hex(await pbk(id, 'ecolia-h/fichier', 16)); }
+    async function cleEmb(id) { id = norm(id); if (!memoEmb[id]) memoEmb[id] = await pbk(id, 'ecolia-h/emballage', 32); return memoEmb[id]; }
+    function aes(kb, use) { return crypto.subtle.importKey('raw', kb, { name: 'AES-GCM' }, false, [use]); }
+    async function emballer(kb, id) {
+        var iv = crypto.getRandomValues(new Uint8Array(12));
+        var ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, await aes(await cleEmb(id), 'encrypt'), kb));
+        return b64e(concat(iv, ct));
+    }
+    async function deballer(s, id) {
+        var raw = b64d(s);
+        return new Uint8Array(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: raw.slice(0, 12) }, await aes(await cleEmb(id), 'decrypt'), raw.slice(12)));
+    }
+    function clePromo(M, catId) { return hmac(M, 'promo:' + catId); }
+    function cleCours(kp, coursId) { return hmac(kp, 'cours:' + coursId); }
+    async function gz(u8, mode) {
+        var cs = mode === 'c' ? new CompressionStream('gzip') : new DecompressionStream('gzip');
+        var w = cs.writable.getWriter(); w.write(u8); w.close();
+        return new Uint8Array(await new Response(cs.readable).arrayBuffer());
+    }
+    async function chiffrer(texte, kc) {
+        var plain = enc.encode(texte), flag = 0;
+        if (typeof CompressionStream !== 'undefined') { plain = await gz(plain, 'c'); flag = 1; }
+        var iv = crypto.getRandomValues(new Uint8Array(12));
+        var ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, await aes(kc, 'encrypt'), plain));
+        return 'ECOLIA2:' + b64e(concat(new Uint8Array([flag]), iv, ct));
+    }
+    async function dechiffrer(t, kc) {
+        t = String(t).trim();
+        if (t.slice(0, 8) !== 'ECOLIA2:') throw new Error('format');
+        var raw = b64d(t.slice(8).replace(/\s+/g, '')), flag = raw[0];
+        var pt = new Uint8Array(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: raw.slice(1, 13) }, await aes(kc, 'decrypt'), raw.slice(13)));
+        if (flag === 1) {
+            if (typeof DecompressionStream === 'undefined') throw new Error('gzip');
+            pt = await gz(pt, 'd');
         }
-    } catch(e) {}
+        return dec.decode(pt);
+    }
+    return { b64d: b64d, b64e: b64e, hex: hex, norm: norm, dispo: dispo, nomAcces: nomAcces, emballer: emballer, deballer: deballer, clePromo: clePromo, cleCours: cleCours, chiffrer: chiffrer, dechiffrer: dechiffrer };
+})();
 
-    var now = Date.now();
-    if (!forceRefresh && AUTH_DATA && (now - AUTH_FETCHED_AT) < AUTH_CACHE_TTL) {
-        return AUTH_DATA;
+/* ═══════════ ECOLIA H — ACCÈS PAR ID + COURS CHIFFRÉS ═══════════
+   Chaque cours H est un fichier chiffré (.ecolia, format ECOLIA2) hébergé dans h-data/.
+   Le fichier d'accès de l'ID (h-data/acces/<empreinte>.json) contient les clés, elles-mêmes chiffrées avec l'ID.
+   Fichier d'accès supprimé ou date dépassée => plus de clé => le cours ne s'ouvre plus (téléchargé ou non). */
+var H_DATA_BASE = 'https://ecolia-course.github.io/h-data/';
+var HA_CACHE_KEY = 'ecolia_acces_v3';
+var HA_TTL = 6 * 60 * 60 * 1000;
+var HA_GRACE = 7 * 24 * 60 * 60 * 1000;
+var HA = (function () {
+    var ACCES = null, PRESENTS = {}, initP = null, enVol = null, CLES = {}, DB = null;
+    function jour(s) { var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(s || ''); return m ? m[3] + '/' + m[2] + '/' + m[1] : ''; }
+    function maintenant() { return Date.now() + ((ACCES && ACCES.skew) || 0); }
+    function sauver() { try { localStorage.setItem(HA_CACHE_KEY, JSON.stringify(ACCES)); } catch (e) {} }
+    function hydrater() { try { ACCES = JSON.parse(localStorage.getItem(HA_CACHE_KEY) || 'null'); } catch (e) { ACCES = null; } }
+    /* ── Stockage local (IndexedDB) des fichiers chiffrés ── */
+    function ouvrirDB() {
+        if (DB) return DB;
+        DB = new Promise(function (ok, ko) {
+            try {
+                var rq = indexedDB.open('ecolia-h', 1);
+                rq.onupgradeneeded = function () { rq.result.createObjectStore('enc', { keyPath: 'name' }); };
+                rq.onsuccess = function () { ok(rq.result); };
+                rq.onerror = function () { ko(rq.error); };
+            } catch (e) { ko(e); }
+        });
+        return DB;
     }
-    if (!navigator.onLine) {
-        return AUTH_DATA; // peut être null (premier démarrage hors ligne)
+    function tx(mode, fn) {
+        return ouvrirDB().then(function (db) {
+            return new Promise(function (ok, ko) {
+                var t = db.transaction('enc', mode), st = t.objectStore('enc'), r = fn(st);
+                t.oncomplete = function () { ok(r && r.result); };
+                t.onerror = t.onabort = function () { ko(t.error); };
+            });
+        });
     }
-    AUTH_LOADING = true;
-    try {
-        var data = await fetchAutorisations();
-        if (data && data.ids) {
-            AUTH_DATA = data;
-            AUTH_FETCHED_AT = now;
-            try { localStorage.setItem(AUTH_CACHE_KEY, JSON.stringify({ data: data, fetchedAt: now })); } catch(e) {}
+    function nom(c) { return c.fichiers[0]; }
+    /* ── Évaluation des droits (synchrone, à partir de l'état mémoire) ── */
+    function etat() {
+        if (!ACCES) return 'inconnu';
+        var n = maintenant();
+        if (ACCES.vu && n < ACCES.vu - 10 * 60 * 1000) return 'inconnu';          /* horloge reculée */
+        if (n - (ACCES.at || 0) > HA_GRACE) return 'inconnu';                      /* trop longtemps sans vérification en ligne */
+        if (ACCES.st === 'aucun') return 'aucun';
+        if (ACCES.fin && n > Date.parse(ACCES.fin + 'T23:59:59Z')) return 'expire';
+        return 'ok';
+    }
+    function droit(c) {
+        var e = etat();
+        if (e !== 'ok') return e;
+        if ((ACCES.promos && ACCES.promos[c._cat]) || (ACCES.cours && ACCES.cours[c.id])) return 'ok';
+        return 'aucun';
+    }
+    async function cle(c) {
+        if (droit(c) !== 'ok') throw new Error('droit');
+        if (CLES[c.id]) return CLES[c.id];
+        var id = getOrCreateID(), kc;
+        if (ACCES.promos && ACCES.promos[c._cat]) kc = await HC.cleCours(await HC.deballer(ACCES.promos[c._cat], id), c.id);
+        else kc = await HC.deballer(ACCES.cours[c.id], id);
+        CLES[c.id] = kc;
+        return kc;
+    }
+    /* ── Récupération du fichier d'accès de cet ID ── */
+    async function rafraichir(force) {
+        await init();
+        if (!force && ACCES && (Date.now() - (ACCES.at || 0)) < HA_TTL && etat() !== 'inconnu') return;
+        if (!navigator.onLine || !HC.dispo()) return;
+        if (enVol) return enVol;
+        enVol = (async function () {
+            try {
+                var url = H_DATA_BASE + 'acces/' + (await HC.nomAcces(getOrCreateID())) + '.json?t=' + Date.now();
+                var r = await fetch(url, { cache: 'no-store' });
+                var d = r.headers && r.headers.get('Date'), srv = d ? Date.parse(d) : NaN;
+                var skew = isNaN(srv) ? ((ACCES && ACCES.skew) || 0) : (srv - Date.now());
+                var now = Date.now() + skew;
+                if (r.status === 404) { ACCES = { st: 'aucun', at: Date.now(), vu: now, skew: skew }; CLES = {}; sauver(); return; }
+                if (!r.ok) return;
+                var j = await r.json();
+                if (!j || j.v !== 3) return;
+                ACCES = { st: 'ok', fin: j.fin || '', promos: j.promos || {}, cours: j.cours || {}, at: Date.now(), vu: now, skew: skew };
+                CLES = {}; sauver();
+            } catch (e) { /* réseau indisponible : on garde l'état précédent */ }
+            finally { enVol = null; }
+        })();
+        return enVol;
+    }
+    function init() {
+        if (!initP) initP = (async function () {
+            hydrater();
+            try {
+                var db = await ouvrirDB();
+                await new Promise(function (ok) {
+                    var rq = db.transaction('enc', 'readonly').objectStore('enc').getAllKeys();
+                    rq.onsuccess = function () { (rq.result || []).forEach(function (k) { PRESENTS[k] = true; }); ok(); };
+                    rq.onerror = function () { ok(); };
+                });
+            } catch (e) {}
+            if (ACCES) { ACCES.vu = Math.max(ACCES.vu || 0, maintenant()); sauver(); }
+        })();
+        return initP;
+    }
+    /* ── Téléchargement / lecture / suppression ── */
+    async function telecharger(c) {
+        if (!HC.dispo()) throw new Error('crypto');
+        var r = await fetch(H_DATA_BASE + nom(c) + '?t=' + Date.now(), { cache: 'no-store' });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        var t = await r.text();
+        await HC.dechiffrer(t, await cle(c));                       /* on vérifie que la clé ouvre bien le fichier */
+        await tx('readwrite', function (st) { return st.put({ name: nom(c), data: t, v: c.version }); });
+        PRESENTS[nom(c)] = true;
+    }
+    async function lire(c) {
+        if (!HC.dispo()) throw new Error('crypto');
+        await rafraichir(false);
+        if (droit(c) !== 'ok') throw new Error('droit');
+        var kc = await cle(c), t = null;
+        var rec = await tx('readonly', function (st) { return st.get(nom(c)); });
+        if (rec && rec.data) t = rec.data;
+        else {
+            var r = await fetch(H_DATA_BASE + nom(c) + '?t=' + Date.now(), { cache: 'no-store' });
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            t = await r.text();
         }
-        return AUTH_DATA;
-    } catch(e) {
-        return AUTH_DATA;
-    } finally {
-        AUTH_LOADING = false;
+        return HC.dechiffrer(t, kc);
     }
-}
-
-async function fetchAutorisations() {
-    var urls = [AUTORISATIONS_URL, AUTORISATIONS_URL_FALLBACK];
-    var lastErr = null;
-    for (var i = 0; i < urls.length; i++) {
+    function supprimer(c) { delete PRESENTS[nom(c)]; return tx('readwrite', function (st) { return st.delete(nom(c)); }).catch(function () {}); }
+    function present(c) { return !!PRESENTS[nom(c)]; }
+    /* ── Messages ── */
+    function resume() {
+        var f = ACCES && ACCES.fin ? ' jusqu\'au ' + jour(ACCES.fin) : '';
+        var noms = [];
         try {
-            var resp = await fetch(urls[i] + '?t=' + Date.now(), { cache: 'no-store' });
-            if (!resp.ok) throw new Error('HTTP ' + resp.status);
-            var data = await resp.json();
-            if (!data.ids || !Array.isArray(data.ids)) throw new Error('JSON invalide');
-            return data;
-        } catch(e) { lastErr = e; }
+            (H_CATALOGUE.categories || []).forEach(function (cat) {
+                if (ACCES.promos && ACCES.promos[cat.id]) noms.push(cat.nom);
+                (cat.cours || []).forEach(function (c) { if (ACCES.cours && ACCES.cours[c.id]) noms.push(c.titre); });
+            });
+        } catch (e) {}
+        return 'Accès ECOLIA H actif' + f + (noms.length ? ' : ' + noms.join(', ') : '');
     }
-    throw lastErr || new Error('Fetch échoué');
+    function msgKo() {
+        var e = etat();
+        if (e === 'expire') return '🔒 Accès expiré le ' + jour(ACCES.fin) + ' — contacte ECOLIA H';
+        return '🔒 ID non autorisé pour les cours H';
+    }
+    return { init: init, rafraichir: rafraichir, etat: etat, droit: droit, present: present, telecharger: telecharger, lire: lire, supprimer: supprimer, resume: resume, msgKo: msgKo };
+})();
+
+/* Compatibilité avec le reste de l'application : renvoie null (inconnu) ou { ids:[ID] } si l'accès est valide. */
+async function chargerAutorisations(forceRefresh) {
+    await HA.rafraichir(!!forceRefresh);
+    var e = HA.etat();
+    if (e === 'inconnu') return null;
+    return { ids: e === 'ok' ? [getOrCreateID()] : [] };
 }
 
-/* Vérification synchrone (utilise l'état mémoire). */
-function estAutoriseSync(id) {
-    if (!id || !AUTH_DATA || !Array.isArray(AUTH_DATA.ids)) return false;
-    return AUTH_DATA.ids.indexOf(id) !== -1;
+function _hVersion(id, v) {
+    try { if (typeof CoursInterface !== 'undefined') CoursInterface.setVersion(id, v); else localStorage.setItem('ecolia_v_' + id, String(v)); } catch (e) {}
 }
+function _hPurgerAncien(c) {
+    /* Anciennes copies en clair (téléchargées avant le chiffrement) : supprimées. */
+    try {
+        var f = c.fichiers[0].replace(/\.ecolia$/i, '.html');
+        if (typeof CoursInterface !== 'undefined') { if (CoursInterface.exists(f)) CoursInterface.delete(f); }
+        else if (window.caches) caches.open('ecolia-cours-v1').then(function (ca) { return ca.delete(BASE_URL_H + f, { ignoreSearch: true }); }).catch(function () {});
+    } catch (e) {}
+}
+async function telechargerH(c) {
+    if (!navigator.onLine) { setProgress('⚠ Pas de connexion', 'err'); return; }
+    await HA.rafraichir(true);
+    if (HA.droit(c) !== 'ok') {
+        setProgress(HA.msgKo(), 'err');
+        toast('🔒 Communique « ' + getOrCreateID() + ' » au gestionnaire ECOLIA H');
+        rafraichirListes();
+        return;
+    }
+    telechargementsEnCours[c.id] = { total: 1, done: 0, debut: Date.now() };
+    setProgress('⏳ ' + c.titre + ' : 0/1', '');
+    rafraichirListes();
+    try {
+        await HA.telecharger(c);
+        _hVersion(c.id, c.version);
+        delete telechargementsEnCours[c.id];
+        setProgress('✓ ' + c.titre + ' téléchargé', 'ok');
+        try { track('ecolia_download', { cours_id: c.id, source: 'h' }); } catch (e) {}
+    } catch (e) {
+        delete telechargementsEnCours[c.id];
+        setProgress(e && e.message === 'crypto' ? '❌ Ce téléphone ne gère pas le chiffrement : mets à jour Android System WebView / Chrome' : '❌ Erreur : ' + c.titre, 'err');
+    }
+    rafraichirListes();
+}
+async function ouvrirH(c) {
+    var o = document.createElement('div');
+    o.id = 'readerOverlay';
+    o.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#0d1117;display:flex;flex-direction:column;';
+    o.innerHTML =
+        '<div style="padding:12px;background:#161b22;border-bottom:1px solid #21262d;display:flex;align-items:center;gap:10px;flex-shrink:0;">' +
+            '<button id="closeReader" style="padding:8px 16px;background:#00ff88;color:#121212;border:none;border-radius:20px;font-weight:bold;cursor:pointer;font-size:14px;">← Retour</button>' +
+            '<span style="font-size:14px;font-weight:bold;color:#e6f1ff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + c.titre + '</span>' +
+        '</div>' +
+        '<iframe id="readerFrame" style="flex:1;border:none;background:#fff;width:100%;" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>';
+    document.body.appendChild(o);
+    o.querySelector('#closeReader').onclick = function () { o.remove(); };
+    var frame = o.querySelector('#readerFrame');
+    function msg(t, s) { frame.srcdoc = '<html><body style="padding:20px;font-family:sans-serif;"><h2>' + t + '</h2><p>' + s + '</p></body></html>'; }
+    try {
+        var html = await HA.lire(c);
+        track('ecolia_open', { cours_id: c.id, cours_titre: c.titre, source: 'h' });
+        frame.srcdoc = html;
+    } catch (e) {
+        var m = e && e.message;
+        if (m === 'droit') msg('🔒 Accès non autorisé', 'Ton accès à ce guide est inactif ou a expiré. Connecte-toi pour revérifier, ou contacte ECOLIA H avec ton ID : <b>' + getOrCreateID() + '</b>.');
+        else if (m === 'crypto') msg('⚠ Appareil non compatible', 'Mets à jour Android System WebView ou Chrome, puis réessaie.');
+        else msg('❌ Indisponible', 'Connecte-toi pour télécharger ce cours.');
+    }
+}
+HA.init().then(function () { try { rafraichirListes(); } catch (e) {} });
 
-/* Vérification asynchrone (pour actions critiques comme le téléchargement). */
-async function estAutorise(id) {
-    var data = await chargerAutorisations(true);
-    if (!data || !Array.isArray(data.ids)) return false;
-    return data.ids.indexOf(id) !== -1;
-}
 
 /* ═══════════ ÉTAT GLOBAL ═══════════ */
 var CATALOGUE = null;
@@ -605,7 +812,7 @@ async function afficherListe() {
 async function creerCoursElement(c) {
     var localV = await CoursStorage.getVersion(c.id);
     var htmlFile = c.fichiers[0];
-    var dejaLa = await CoursStorage.exists(htmlFile);
+    var dejaLa = (c._base === BASE_URL_H) ? HA.present(c) : await CoursStorage.exists(htmlFile);
     /* Cours déjà présent mais version jamais enregistrée : on la fixe (évite une fausse « mise à jour »). */
     if (dejaLa && !localV && !telechargementsEnCours[c.id]) { try { await CoursStorage.setVersion(c.id, c.version); } catch(e) {} localV = c.version; }
     var telechargement = telechargementsEnCours[c.id];
@@ -616,19 +823,13 @@ async function creerCoursElement(c) {
     /* Vérification d'autorisation pour les cours H (synchrone, basée sur le cache mémoire). */
     var autorise = true;
     var authInconnue = false;
-    if (isH) {
-        if (AUTH_DATA === null) {
-            authInconnue = true;
-            autorise = false;
-        } else {
-            autorise = estAutoriseSync(getOrCreateID());
-        }
-    }
+    var droitH = null;
+    if (isH) { droitH = HA.droit(c); autorise = (droitH === 'ok'); authInconnue = (droitH === 'inconnu'); }
 
     var etatTexte = '', etatCls = '';
     if (isH && !autorise) {
         if (authInconnue) { etatTexte = '⏳ Autorisation à vérifier'; etatCls = 'maj'; }
-        else { etatTexte = '🔒 ID non autorisé'; etatCls = 'warn'; }
+        else { etatTexte = (droitH === 'expire') ? '🔒 Accès expiré' : '🔒 Accès non débloqué'; etatCls = 'warn'; }
     } else if (enCours) { etatTexte = '⏳ Téléchargement ' + telechargement.done + '/' + telechargement.total; etatCls = 'maj'; }
     else if (!dejaLa) { etatTexte = online ? 'Non téléchargé' : '⚠ Hors ligne'; etatCls = online ? '' : 'warn'; }
     else if (c.version > localV) { etatTexte = 'Mise à jour dispo'; etatCls = 'maj'; }
@@ -661,6 +862,7 @@ async function creerCoursElement(c) {
         var b2 = document.createElement('button');
         b2.className = 'btn-supp'; b2.textContent = '🗑️';
         b2.onclick = function() { supprimer(c); }; actions.appendChild(b2);
+        if (isH && !autorise) { b1.remove(); if (!authInconnue) { var lk = document.createElement('a'); lk.className = 'btn-locked lien'; lk.href = urlPresentationH(); lk.innerHTML = '🔒 Débloquer →'; actions.appendChild(lk); } }
     }
 
     /* Bouton Télécharger + En ligne : seulement si autorisé (ou cours classique). */
@@ -737,6 +939,7 @@ async function afficherListeRecherche() {
 async function telecharger(c) {
     if (!navigator.onLine) { setProgress('⚠ Pas de connexion', 'err'); return; }
     if (telechargementsEnCours[c.id]) return;
+    if (c._base === BASE_URL_H) { return telechargerH(c); }
 
     /* VERROU D'AUTORISATION — cours H uniquement */
     if (c._base === BASE_URL_H) {
@@ -799,6 +1002,7 @@ function getAllCours() {
 }
 
 async function ouvrirLocal(c) {
+    if (c._base === BASE_URL_H) return ouvrirH(c);
     var base = c._base || BASE_URL;
     var url = base + fichierHTML(c.fichiers[0]);
     try { if (!(await CoursStorage.getVersion(c.id))) await CoursStorage.setVersion(c.id, c.version); } catch(e) {}
@@ -838,6 +1042,7 @@ async function ouvrirLocal(c) {
 }
 
 async function supprimer(c) {
+    if (c._base === BASE_URL_H) { await HA.supprimer(c); }
     for (var i = 0; i < c.fichiers.length; i++) await CoursStorage.delete(c.fichiers[i]);
     await CoursStorage.setVersion(c.id, 0);
     setProgress('🗑️ ' + c.titre + ' supprimé', '');
@@ -902,10 +1107,10 @@ async function majStatutID(forceRefresh) {
         }
         if (data.ids.indexOf(id) !== -1) {
             statut.className = 'id-statut ok';
-            statut.textContent = '✅ ID autorisé pour les cours H';
+            statut.textContent = '✅ ' + HA.resume();
         } else {
             statut.className = 'id-statut ko';
-            statut.textContent = '🔒 ID non autorisé pour les cours H';
+            statut.textContent = HA.msgKo();
         }
     } catch(e) {
         statut.className = 'id-statut attente';
@@ -934,9 +1139,9 @@ function partagerECOLIA() {
 
 /* ═══════════ COURS H ═══════════ */
 function tagHBase(cat) {
-    if (cat.cours) cat.cours.forEach(function(c) { c._base = BASE_URL_H; });
+    if (cat.cours) cat.cours.forEach(function(c) { c._base = BASE_URL_H; c._cat = cat.id; _hPurgerAncien(c); });
     if (cat.sousCategories) cat.sousCategories.forEach(function(sub) {
-        sub.cours.forEach(function(c) { c._base = BASE_URL_H; });
+        sub.cours.forEach(function(c) { c._base = BASE_URL_H; c._cat = cat.id; _hPurgerAncien(c); });
     });
 }
 
@@ -1060,10 +1265,10 @@ async function majStatutH() {
         }
         if (data.ids.indexOf(id) !== -1) {
             el.className = 'h-statut ok';
-            el.textContent = '✅ ID autorisé : ' + id;
+            el.textContent = '✅ ' + HA.resume() + ' — ' + id;
         } else {
             el.className = 'h-statut ko';
-            el.textContent = '🔒 ID non autorisé — communique « ' + id + ' » au gestionnaire ECOLIA H';
+            el.textContent = HA.msgKo() + ' — communique « ' + id + ' » au gestionnaire ECOLIA H';
         }
     } catch(e) {
         el.className = 'h-statut attente';
