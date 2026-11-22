@@ -59,7 +59,8 @@ self.addEventListener('fetch', event => {
   const req = event.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
-  if (url.origin !== self.location.origin) return;            // autres sites : on ne touche à rien
+  if (url.origin !== self.location.origin) return;
+  if (url.pathname.indexOf('/h-data/') !== -1) return;       // cours H chiffrés + fichiers d'accès : jamais interceptés (un accès retiré ne doit pas revenir du cache)            // autres sites : on ne touche à rien
   // Téléchargements de cours : gérés par l'app seule (pas de 2e copie en cache, pas de coupure à 8 s sur réseau lent)
   if (/\.ecolia$/i.test(url.pathname)) return;
   if (req.cache === 'no-store' && !/\.json$/i.test(url.pathname)) return;
